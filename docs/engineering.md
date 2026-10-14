@@ -5,6 +5,7 @@ mdchk uses one Markdown analysis and correction engine for both its command-line
 ## Confirmed choices
 
 - Name the command `mdchk`.
+- Implement the [89-rule catalog](rules/index.md) with stable numeric IDs and skipping MD002, MD006, MD008, MD015, MD016, and MD017.
 - Implement the project in Go.
 - Build and maintain an internal Markdown parser instead of using a third-party parser.
 - Minimize third-party dependencies across the project.
@@ -68,21 +69,15 @@ Keep packages internal initially. A public Go API can be designed later if there
 
 ## Rules and diagnostics
 
-Give each rule a stable descriptive identifier, summary, default setting, option schema, and documented fix policy. Avoid borrowing another linter's numbered IDs unless exact compatibility is an explicit commitment.
+Use the [ruleset to implement](rules/index.md) as the canonical scope. It contains 89 planned rules grouped by area, with one page per rule. Preserve the MDxxx IDs. Each rule page defines its internal behavior, options, default enablement, and correction policy.
+
+Give each rule a summary, default setting, option schema, and documented fix policy. Use the defaults in the rule pages; earlier five-rule defaults are preliminary configuration examples, not the complete ruleset.
 
 A diagnostic should carry the relative file path, rule ID, severity, message, source range, and fix availability. Internal spans should use byte offsets; public positions should use one-based lines and Unicode code-point columns, with tabs counted as one column. Document exclusive range ends. Sort results by path, source position, and rule ID for repeatable output.
 
-Proposed initial rules:
+Follow the catalog's implementation contract for rule specifications, fixtures, format activation, and resource boundaries. Keep heading hierarchy and missing code language fixes report-only when author intent cannot be inferred safely. MkDocs, Quarto, metadata key inspection, and invalid encoding checks require explicit integration designs before coding their rules.
 
-| Rule | Check | Fix policy |
-| --- | --- | --- |
-| `final-newline` | A nonempty file ends with a newline | Add the file's existing newline style; use LF if none exists |
-| `trailing-whitespace` | Redundant spaces or tabs at line ends | Remove only where syntax context proves meaning is preserved; retain hard breaks |
-| `heading-increment` | Headings do not jump over a level | Report only; intended hierarchy is ambiguous |
-| `fenced-code-language` | Fenced code has a language label | Report only; do not guess the language |
-| `unordered-list-marker` | List markers match configured style | Replace only validated marker spans without changing list structure |
-
-Start with one violation severity and no warning threshold controls. Add severities only when concrete rules justify them. Default-enable `final-newline`, `trailing-whitespace`, and `heading-increment`; make language labels and list style opt-in initially.
+Start with one violation severity and no warning threshold controls. Add severities only when concrete rules justify them.
 
 ## Safe correction contract
 
@@ -150,7 +145,7 @@ Before the first release, publish rule documentation, install instructions, plat
 
 ## Decisions to make next
 
-1. Define frontmatter configuration and header recognition details; agree on the initial rule set and default-enabled rules.
+1. Define frontmatter configuration and header recognition details; define default-enabled rules for the adopted catalog.
 2. Choose YAML or standard-library JSON and confirm the single-configuration discovery model.
 3. Approve the conservative fix policy, dry-run behavior, and exit codes.
 4. Define internal parser milestones and choose an MCP implementation after small compatibility prototypes and a dependency review.

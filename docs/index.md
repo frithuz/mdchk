@@ -45,6 +45,10 @@ Help and version output do not load project configuration or process Markdown fi
 | `config` | Work with configuration, including project-wide validation | [Config commands](commands/config.md) |
 | `mcp` | Provide lint and fix tools to AI agents in project or standalone mode | [MCP command](commands/mcp.md) |
 
+## Rules
+
+The [ruleset to implement](rules/index.md) covers 89 rules, grouped by focus area, with one planning page per rule.
+
 ## Understand and integrate results
 
 - [Markdown formats](markdown-formats.md) defines CommonMark, GFM, Pandoc Markdown, and independently optional frontmatter support.

@@ -70,7 +70,7 @@ See the [result formats guide](docs/output-formats.md) for readable output, JSON
 
 mdchk provides file and directory checks, safe fixes with previews, project configuration, results for people and integrations, and an MCP server.
 
-Rules cover final newlines, redundant trailing whitespace, heading level jumps, missing fenced-code languages, and configured list marker consistency. Language labels and list marker style are opt-in; the other rules are enabled by default.
+The [ruleset to implement](docs/rules/index.md) defines 89 checks with stable numeric IDs and reserved gaps. Rule pages are grouped by focus area. Each page specifies behavior, default enablement, options, examples, and correction policies.
 
 Full-document formatting, prose rewriting, remote link checks, dedicated editor extensions, and third-party rules are outside mdchk's scope.
 

@@ -36,7 +36,7 @@ To exclude a whole file from all rule linting, list its path under `exclude`. In
 
 `rules` sets expectations by rule name. Use `enabled: true` to enable a rule or `enabled: false` to disable it. Rule-specific options, such as the list `marker` above, sit alongside `enabled`. Omitted rules and options keep their defaults.
 
-Final newlines, redundant trailing whitespace, and heading level checks are enabled by default. Fenced-code language labels and list marker consistency are opt-in.
+The examples above use preliminary descriptive rule names. The [implementation ruleset](rules/index.md) adopts 89 numeric rule IDs; each rule page defines its option schema and default enablement. Descriptive aliases remain to be mapped before implementation.
 
 ## Control inline directives
 
