@@ -1,0 +1,596 @@
+# Rule recognition and special behavior
+
+Status: accepted on 2026-10-15; implementation and end-to-end verification remain pending.
+These requirements incorporate the revised **1 MiB per-file limit** where applicable.
+See the [contract index](contracts.md) for related specifications and issue ownership.
+
+## Malformed syntax candidates
+
+### Shared policy
+
+Define bounded source-candidate recognizers alongside the selected dialect parser. Preserve parser
+ownership of valid constructs and protected code/raw/control regions. Do not infer author intent.
+Candidate recognition must not cross block/container boundaries; initially keep unparsed inline
+candidates to one physical line. Intentionally excluded ambiguous candidates are outside the rule
+scope and do not themselves cause incomplete coverage. Unreliable parsing or an unavailable required
+prerequisite still causes affected incomplete coverage.
+
+### Md069
+
+Report identical consecutive bullet markers at the beginning of an item on the same source line,
+separated by whitespace and each lexically valid as a list marker, e.g. - - Text. Ignore mixed
+marker pairs, thematic breaks, escaped markers, and ordinary nesting across separate lines. Use
+parser-owned list/thematic-break classification; report once per repeated run, rather than
+flattening or guessing intended nesting.
+
+### Md037
+
+Recognize a single unambiguous, unnested pair of equal * or _ runs of length one or two in eligible
+inline text, with nonblank content and whitespace immediately inside at least one edge. Use
+word-boundary exclusions to avoid intraword marker runs; exclude escaped markers, code,
+competing/nested delimiter pairings and parser-owned list/thematic-break markers. Example source
+fixture: A * text * example. Do not treat the leading bullet in * text * at the start of a block as
+an emphasis opener.
+
+### Md011
+
+Recognize flat, immediately adjacent (label)[URL] candidates with nonblank label and a valid
+absolute HTTP or HTTPS URL with a nonempty host, on one line. Exclude images, escaped outer
+delimiters, nested/ambiguous delimiters, whitespace in the URL and relative destinations. Existing
+valid parsed constructs take precedence. Preserve the documented conditional correction policy,
+requiring reparse and proof of the intended link structure before any later fix.
+
+### Md052
+
+Recognize explicit full and collapsed reference syntax, including images: [text][id], [text][],
+![text][id], ![text][]. Reuse the selected dialect reference-label grammar and normalization and
+authoritative definition collection. Bare [text] is not guessed to be an unresolved shortcut;
+shortcuts remain eligible only when positively identified as references by the parser. Exclude
+escaped/malformed bracket pairs and candidates overlapping another valid parsed construct.
+
+### Md062
+
+Recognize flat, fully closed inline link/image candidates with whitespace inside a bare destination,
+e.g. `[Guide](my guide.md)`, on one physical line. Exclude valid destination-plus-title syntax,
+permitted angle-bracket destinations, escaped whitespace as specified by the rule, and nested or
+otherwise ambiguous malformed delimiters. Keep valid parsed destination checks intact; the extra
+candidate grammar handles forms which otherwise fall back to plain text. No percent-encoding fix is
+implied.
+
+### Md075
+
+Require at least two consecutive pipe-row candidates in one container, or a candidate row
+immediately adjacent to but outside a parsed table. A run has clear row structure when its rows have
+matching cell counts of at least two, or all rows have both outer pipes, or it contains a
+dialect-valid delimiter-shaped row adjacent to a pipe row. Single unconnected prose pipes are
+excluded. Use dialect-owned structural pipes, escaping, protected inline spans and separator
+classification. Rows already inside a parsed table belong to MD056 rather than MD075; do not
+manufacture a table from malformed rows.
+
+### Corrections
+
+Retain the existing rule-specific correction policies. MD069, MD037, MD052, MD062 and MD075 stay
+report-only. MD011 retains only its existing unambiguous conditional correction, with later shared
+fix validation.
+
+## Trailing whitespace and hard breaks
+
+### Configuration
+
+Keep MD009 enabled by default, hard_break_spaces an integer >=2 with default 2, strict=false, and
+code_blocks=false. hard_break_spaces is an exact permitted/canonical count, not a minimum.
+
+### Ordinary nonblank lines
+
+#### No trailing whitespace
+
+Allowed in both strict modes.
+
+#### One space
+
+Report in both strict modes.
+
+#### Exactly n spaces
+
+With strict=false, allow regardless of whether a parsed hard break results. With strict=true, allow
+only when the selected dialect parser confirms a hard break.
+
+#### Other nonzero space counts
+
+Report in both modes, including two or three spaces when N=4 and three or four spaces when N=2.
+
+#### Tabs or mixed tabs spaces
+
+Report in both modes; tabs never satisfy the configured all-space allowance.
+
+#### Eof
+
+With exactly N trailing spaces, strict=false permits them and strict=true reports them because EOF
+does not produce a hard break. Other counts follow the same table.
+
+### Blank lines
+
+Report whitespace-only lines in both strict modes; there is no hard-break allowance for them.
+Preserve any parser-owned structural indentation or container prefix when correcting.
+
+### Corrections
+
+For flagged whitespace that currently produces a real hard break, normalize to exactly N ASCII
+spaces. For other flagged trailing whitespace, remove it only after reparsing confirms preserved
+interpretation. Never introduce or remove a hard break or change container structure as a side
+effect. Already permitted whitespace is left alone. Preserve source newline conventions.
+
+### Literal code
+
+By default, code is excluded. With code_blocks=true, report trailing spaces or tabs in literal code
+without applying a Markdown hard-break allowance. Keep literal-code findings report-only;
+code_blocks opts into analysis, not modification of code bytes.
+
+### Protected regions
+
+Frontmatter, raw payloads and other protected regions retain their established protections; parser
+certainty remains required for automatic corrections.
+
+### Whitespace domain
+
+MD009 treats only ASCII spaces and tabs as trailing whitespace. Other Unicode spacing characters
+remain content and are not stripped by this rule.
+
+## ASCII punctuation
+
+### Configuration
+
+Keep MD088 disabled by default. style defaults to ascii and ascii is initially its only accepted
+value. The replacement table is fixed behavior, not a configurable replacements field; reject
+replacements as an unknown option under the shared strict schema.
+
+### Mapping
+
+#### U+2018
+
+'
+
+#### U+2019
+
+'
+
+#### U+201c
+
+"
+
+#### U+201d
+
+"
+
+#### U+2013
+
+-
+
+#### U+2014
+
+--
+
+### Scope
+
+Replace only those six source characters in eligible prose. Keep other Unicode characters unchanged.
+Preserve code, URLs/destinations, metadata, and existing protected syntax.
+
+### Corrections
+
+Use the existing source-span correction and preservation checks. Defer a correction if reparsing or
+required reference-preservation checks cannot establish safety; preserve relevant findings. No
+arbitrary replacement or broad transliteration feature is introduced.
+
+## Table of contents
+
+### Configuration
+
+Keep MD073 disabled by default. Keep `<!-- toc -->` and `<!-- /toc -->` defaults. Custom markers must be
+distinct, nonempty, single-line complete HTML comments. min_level and max_level are integers
+satisfying 1 <= min_level <= max_level <= 6; retain defaults 1 and 6.
+
+### Recognition
+
+Recognize marker-only lines in parser-confirmed eligible HTML comment spans, after accounting for
+container prefixes and surrounding spaces/tabs. Match configured comment text exactly and
+case-sensitively. Ignore marker text in code, metadata, raw payloads or other protected contexts. No
+markers means no TOC requirement.
+
+### Pairing
+
+Allow multiple sequential, nonoverlapping pairs. Each pair must remain in one container. Unmatched,
+nested or cross-container markers produce a located problem and no inferred regeneration extent;
+independently reliable regions may still be analyzed. Any affected analysis that requires uncertain
+region or heading ownership remains explicitly incomplete.
+
+### Heading selection
+
+Every TOC covers the same whole-document selection, in document order, filtered to
+min_level..max_level. Include parsed main-flow headings, including headings in ordinary parsed
+Div/section wrappers, but exclude headings inside blockquotes, list items, code, metadata and all
+marked TOC regions. Frontmatter virtual titles and arbitrary ID-bearing non-heading nodes are not
+TOC entries. Do not infer local/section-only TOCs.
+
+### Toc title
+
+Allow one optional leading heading inside each marked region. Preserve that heading byte-for-byte
+and exclude it from TOC entries. Do not guess TOC titles from text such as Contents. Headings
+outside a marked region use the ordinary eligibility rules.
+
+### Entries and anchors
+
+Use parsed visible heading text as the link label, with safe Markdown escaping, and the settled
+shared anchor service for destinations. Explicit anchor mode includes only eligible headings with
+usable explicit IDs; no new generated IDs. Known policy exclusions are not incomplete coverage.
+Actual parse/anchor uncertainty, including ambiguous target identities, blocks affected
+comparison/correction.
+
+### Comparison
+
+Compare entry order, visible labels, resolved fragment destinations and logical outline nesting.
+Equivalent bullet spelling, indentation or inline presentation alone is not an MD073 mismatch;
+existing formatting rules own those details.
+
+### Generation
+
+Generate a deterministic unordered list. Choose parents from the preceding eligible heading stack:
+pop headings of greater-or-equal level, attach beneath the remaining nearest shallower heading, and
+never invent empty levels for heading jumps. Honor effective bullet marker, indentation, root-indent
+and marker-spacing settings; use resolved document style for consistent-marker mode, or dash when no
+marker exists. Preserve source newline style and container prefixes. Empty heading selection removes
+entries while preserving markers and the optional title.
+
+### Safe replacement
+
+Replace only the list portion inside a valid marked region, preserving both markers, the optional
+leading heading and all outside content. Automatic regeneration is allowed for an empty region or
+one containing only that optional heading, whitespace and an ordinary TOC list. Unexpected prose,
+comments, directives or other blocks make the region report-only. Reparse candidates and require
+stable heading/anchor identities, intended list structure and the existing fix-safety guarantees.
+
+## Nested Markdown examples
+
+### Configuration
+
+Keep MD070 disabled by default and without rule-specific options. Introduce fixed extent markers
+`<!-- mdchk-example -->` and `<!-- /mdchk-example -->` for this rule only. Unmarked examples are outside
+MD070 scope.
+
+### Marker recognition
+
+Require marker-only lines, an opening marker in parser-confirmed eligible comment context outside
+protected content, and a unique nonnested closing marker in the same surrounding container. Use a
+bounded source scan for the closing marker so a prematurely closed outer fence cannot decide the
+intended extent. Do not activate a start marker displayed inside code, frontmatter or other
+protected content. Multiple separate pairs are allowed; nested, missing or conflicting markers are
+not guessed.
+
+### Outer block
+
+Between a valid pair, the first and last nonblank lines must be the intended outer opening and
+closing fences, using the same character. The opener must identify Markdown through md or markdown
+language metadata recognized by the selected dialect. The last line must be a delimiter-only closer
+valid for the opener, not a guessed fence later in the document. Missing/invalid outer boundaries
+produce a located problem and no automatic correction.
+
+### Inner fences
+
+Inspect only the declared example body, excluding the two outer delimiter lines. Count source-backed
+fenced-block opening/closing runs recognized within that Markdown payload by the selected dialect;
+ignore inline runs, escaped markers and non-fence code strings. Compare only runs using the outer
+fence character. Emit MD070 when an eligible inner run is at least as long as the outer opening
+fence.
+
+### Correction
+
+Set both intended outer delimiters to max(existing opener length, existing closer length, longest
+eligible same-character inner run + 1). Never shorten either delimiter. Preserve all example-body
+bytes, language/info/attributes, markers, line endings and container prefixes. Treat the pair as one
+atomic correction.
+
+### Validation
+
+Require the corrected region to parse as exactly one outer Markdown code block containing the
+declared body. Preserve content and reliable interpretation outside the region, and obey shared
+directive, reference and edit-safety checks. If safety cannot be established, retain the finding
+without applying a correction.
+
+### Scope
+
+Markers supply MD070 source extents only; they do not change normal Markdown parsing, activate other
+rules, suppress other findings or grant a new directive mechanism. Any correction that would
+unexpectedly alter effective directives or protected bindings remains deferred. Unmarked ambiguous
+prematurely closed fences remain outside MD070 scope rather than being heuristically reconstructed.
+
+## Decorative HTML images
+
+### Configuration
+
+Keep MD045 enabled by default, allow_decorative=false, and report-only.
+
+### Base check
+
+Check recognized Markdown images, reference images and raw HTML img elements. Missing HTML alt,
+empty alt and Unicode-whitespace-only alternative text are findings unless the explicit HTML
+decorative exemption applies. Decode HTML character references before classification; missing and
+present-empty attributes remain distinct.
+
+### Declaration
+
+When allow_decorative=true, an explicitly present HTML alt attribute whose decoded value is exactly
+empty declares the image decorative. No additional role is required. Empty HTML attribute syntax
+equivalent to alt="" is treated by its decoded value; do not trim whitespace-only alt into an empty
+decorative declaration.
+
+### Conflicts
+
+Do not grant the empty-alt exemption if the img has a nonblank title, any role other than an
+absent/empty role or a single none/presentation token, any aria-* attribute except
+aria-hidden="true", or a tabindex/usemap/ismap attribute. These are static, local disqualifiers for
+this narrow exemption, not a full accessible-name or accessibility-tree evaluation. A nonempty alt
+still satisfies the base MD045 check; unrelated ARIA conflicts are not new MD045 findings.
+
+### Non declarations
+
+role="none", role="presentation", aria-hidden="true", hidden, filenames and visual appearance alone
+never replace the required explicit empty alt declaration. Missing or whitespace-only alt remains
+reportable even with those attributes.
+
+### Markdown
+
+The exemption applies only to explicitly authored HTML img markup. Empty Markdown image syntax such
+as `![](image.png)`, including reference forms, remains reportable even with allow_decorative=true.
+
+### Uncertainty
+
+Malformed or duplicate relevant attributes that prevent reliable interpretation produce a located
+parsing problem and affected incomplete coverage rather than a guessed exemption or alternative
+text. Preserve reliably established independent findings.
+
+### Scope
+
+Do not infer whether an image is truly decorative from pixels or surrounding prose, fetch images,
+synthesize text, add attributes, or perform full page accessibility validation. Keep all MD045
+findings report-only.
+
+## Unicode hostnames
+
+### Activation
+
+Keep MD095 disabled by default and report-only. Use the shared parsed destination inventory and
+protected-region rules; do not infer additional links from arbitrary prose.
+
+### Host scope
+
+Check DNS hostnames in hierarchical absolute URLs and protocol-relative destinations with an
+authority. Separate user information and port before hostname processing. Paths, query strings,
+fragments, display text, local paths, opaque URIs including mailto, and IPv4/IPv6 literals are
+outside MD095. This is a character-lookalike heuristic, not brand reputation or proof of malicious
+intent.
+
+### Data
+
+#### Version
+
+17.0.0
+
+#### Url
+
+https://www.unicode.org/Public/17.0.0/security/confusables.txt
+
+#### Sha256
+
+091c7f82fc39ef208faf8f94d29c244de99254675e09de163160c810d13ef22a
+
+#### Bytes
+
+745683
+
+### Idna
+
+Pin Unicode 17.0.0 hostname processing and normalization alongside the confusable table. Use UTS #46
+nontransitional processing with STD3 ASCII rules, label/hyphen/joiner validation, bidi validation
+and DNS length validation; never silently remove leading dots or empty labels. Validate A-labels and
+decode them to the normalized Unicode form, checking round trips. Raw Unicode and equivalent xn--
+labels receive identical findings. Normalize one final root dot for comparison. IDNA compatibility
+forms that normalize to ordinary ASCII do not remain separate lookalike-domain findings.
+
+### Recognition
+
+After IDNA normalization, inspect each remaining non-ASCII code point. Report when its direct
+mapping in the pinned confusables.txt is a nonempty sequence solely of ASCII letters A-Z/a-z. Do not
+strip accents/combining marks, apply additional transliteration or recursively transform mappings.
+This is an explicitly scoped table-based rule, not a claim of full UTS #39 security-profile
+implementation. ASCII-only lookalikes and mappings to digits or punctuation are outside this rule;
+mixed scripts alone are not a violation.
+
+### Allowlist
+
+allowed_hosts entries are bare DNS hostnames, Unicode or A-label form. Apply the same validation and
+convert to lowercase canonical ASCII IDNA form, removing one final root dot. Match exact whole hosts
+only, independent of URL port; no implicit subdomain matching, wildcards, URL syntax, whitespace
+trimming or confusable-skeleton comparison. Invalid entries are configuration errors. Allowlisting
+the ASCII lookalike does not allow the distinct Unicode host.
+
+### Unreliable inputs
+
+Use shared syntax decoding once, with source mapping, including valid percent-encoded UTF-8 in a
+hostname; do not double-decode or reinterpret authority delimiters. Invalid URL authority, invalid
+UTF-8, invalid IDNA/Punycode or characters unsupported by the pinned profile produce a located
+problem and affected incomplete MD095 coverage, rather than guessed validity or a clean result.
+Continue reliable independent checks.
+
+### Reporting
+
+Report once per destination hostname occurrence, identifying the source hostname and flagged code
+points/mappings. For punycode or escaped source use the whole original hostname span if there is no
+precise character span. Shared reference-definition ownership avoids repeating the same source
+destination. Exact result encoding follows the accepted shared result schema.
+
+### Execution
+
+Embed reviewed versioned data with its SHA-256 and license; run entirely offline, with no DNS, HTTP,
+reputation lookup or runtime table update. Upgrades require explicit table/profile version changes
+and fixture review. Never rewrite a hostname.
+
+## Unused suppressions
+
+### Activation
+
+Keep MD087 disabled by default, with no rule-specific options, and report-only. Apply the ordinary
+MD087 state at each prospective finding anchor; later enabling does not retroactively activate
+earlier comments. Never remove directives automatically.
+
+### Candidates
+
+Evaluate each deduplicated target rule in a valid, allowed mdchk:disable directive independently.
+Ignore enable directives, invalid directives, globally inactive directives, protected literal
+comments, permission-blocked targets and rules for which document directives do not apply (including
+project-scoped MD074). Preserve their ordinary inspection/diagnostic treatment.
+
+### Ownership
+
+Use the existing actual per-rule state intervals: each allowed instruction owns its interval from
+immediately after its closing marker until the next allowed instruction for that rule or EOF. A
+repeated disable takes ownership even when state remains false. Credit a hidden finding only to the
+disable owning its diagnostic start/EOF anchor. This is interval attribution, not independently
+deleting each comment and replaying all remaining disables; repeated comments must not all be
+credited for one observation.
+
+### Counterfactual
+
+Evaluate target-rule observations using the same immutable source, full-document parser context,
+flavor, options, integrations, resource context and limits as ordinary analysis, without generating
+edits or emitting hidden target-rule findings as active violations. Use a separate would-be-enabled
+state initialized from effective configuration and honoring permitted enable directives while
+ignoring disable directives. An observation is otherwise reportable only where that state is
+enabled. A target configured off and never explicitly enabled therefore cannot make a disable useful
+merely because forced evaluation could find violations.
+
+### Demand
+
+When MD087 is active at a candidate target token, obtain enough target-rule observations to decide
+whether its interval contains an otherwise reportable finding, even if ordinary lint would skip that
+target because it is disabled everywhere. Reuse analysis where possible; keep observational
+execution separate from active/inactive counts. No required counterfactual evaluation when MD087 is
+disabled. Do not expand resource authorization or execute code; this work consumes shared operation
+budgets.
+
+### Decision
+
+A proved otherwise-reportable finding owned by the target disable makes that target used, even if
+other parts of its interval are incomplete. Report unused only when every relevant would-be-enabled
+part of the owned interval has complete reliable evaluation with no such finding, or the interval is
+proved incapable of hiding one (for example configured-off with no enabling instruction). Proven
+dialect inapplicability can establish no findings; missing required integration/context cannot.
+
+### Uncertainty
+
+If no hidden finding has been proved and required observations are unavailable because of an
+unimplemented rule, uncertain parsing, missing resources/context, cancellation or exhausted limits,
+withhold that unused claim and report affected MD087 coverage as incomplete. Reliable conclusions
+for other targets remain available. Do not synthesize a target-rule violation or treat absence of
+execution as a clean check. Existing configuration validation and operational-error precedence still
+apply.
+
+### Self reference
+
+Exclude MD087 itself from suppression usefulness analysis; do not recursively run MD087 or count its
+own findings as evidence that a suppression is useful. For a mixed disable naming MD087 and other
+rules, analyze the other eligible targets normally. The MD087 exclusion is intentional scope, not
+incomplete coverage.
+
+### Diagnostics
+
+Emit one MD087 finding per proved-unused target rule, anchored to its first source ID token in the
+comment. Repeated names inside one directive remain deduplicated. The message identifies the target
+rule; shared directive attribution links its effective interval. A mixed directive can therefore
+contain both used and unused targets without labeling the entire comment unused. Keep
+blocked/uncertain/used outcomes distinct in inspection.
+
+### Boundaries
+
+Use the shared diagnostic start-position rule, including file-wide and EOF anchors, rather than edit
+spans or overlap. Preserve all existing permission, configured-option and protected-source behavior.
+Recompute after any separately authorized safe fix against the candidate source.
+
+## UTF-8 validation
+
+### Mandatory gate
+
+Validate the original document snapshot as strict UTF-8 before Markdown parsing, metadata
+recognition or directive interpretation, independent of MD094 enablement and of whether any ordinary
+rule is enabled. The gate is mandatory core input handling. On failure, retain the original bytes,
+skip normal parsing and all content edits for that file, and continue independent selected files
+under existing partial-failure behavior. Never guess an encoding, transcode or substitute
+replacement characters.
+
+### Configuration
+
+Keep MD094 enabled by default with no rule-specific options. Accept shared enabled and
+allow_directives booleans under ordinary type validation. enabled controls MD094 attribution only:
+an invalid target document emits a single io error attributed to MD094 when enabled; when disabled,
+emit the same encoding failure as a generic io error without a rule attribution. Disabling
+attribution does not make malformed bytes acceptable or make the operation complete. With unresolved
+configuration in inspection, use the generic encoding error rather than guessing enablement.
+
+### Directives
+
+Document directives cannot control the pre-parse UTF-8 gate or MD094 attribution. In a valid parsed
+document, an otherwise valid directive naming MD094 is an inapplicable effect explained in
+processing notes, without changing its effective state; other permitted targets in the same comment
+retain their normal effects. When global directive interpretation is disabled retain existing
+inactive-candidate behavior. Invalid documents have no interpreted directives, including comments
+before the first bad byte. MD087 does not assess MD094 suppressions because directives do not apply
+to it.
+
+### Error location
+
+Emit one encoding error per failed target snapshot, identifying the first byte where decoding can no
+longer consume a valid UTF-8 scalar. For a malformed or truncated multibyte sequence, anchor at its
+leading byte. Preserve a zero-based original byte offset as the authoritative location. A one-based
+line/code-point-column point may be derived from the valid prefix using the shared line index; do
+not invent a Unicode width for an invalid byte or transcode to compute it. If a range is needed it
+is zero-width at that point; an original byte span may identify the first byte separately.
+
+### Results
+
+Store this as one operational io error, not also as an ordinary rule violation. Lint/fix/preview
+become incomplete with error status and exit 13 unless an existing higher-precedence internal
+failure applies. Decoding-dependent coverage remains unavailable with the encoding cause attached.
+Ordinary Markdown findings cannot be produced from a partially decoded file. Exact error and
+availability fields follow the [shared result schema](results.md#shared-result-schema).
+
+### Inspection
+
+If the raw file snapshot can be acquired and the report delivered, inspect retains status inspected
+and exit 0, includes original byte size/digests and the encoding error, and marks complete false.
+AST, parsed directives and decoding-dependent analysis are explicitly unavailable. Do not invent
+active/inactive state where unavailable directive interpretation could change it; independently
+resolved configuration data remains visible. Existing argument, target-acquisition, delivery and
+internal error exits still apply. A byte-based newline index can validate requested line bounds
+without treating invalid bytes as decoded characters.
+
+### Valid inputs
+
+Valid UTF-8 encoding of literal U+FFFD is not an encoding error. UTF-8 BOM bytes are also valid;
+retain their independent metadata/style treatment. Validate byte encoding only, without
+heuristically declaring a well-formed byte sequence to be another encoding based on apparent
+content. Empty files are valid UTF-8.
+
+### Resource and transport boundaries
+
+Filesystem resources needed only for read-only context keep the existing generic resource io
+decode-error and affected source-coverage contract; do not recursively run MD094 as a resource rule.
+Standalone MCP accepts exact Unicode strings, with malformed raw UTF-8 or unpaired surrogate escapes
+rejected at the existing request boundary before document analysis. Do not add binary/base64
+payloads to create invalid-byte standalone fixtures. Project MCP uses the same target-file decoding
+gate as CLI.
+
+### Catalog and execution
+
+Keep MD094 in the known catalog and preserve configured active/inactive accounting where state is
+resolvable. Inspection identifies mandatory input validation separately from configurable rule
+attribution, so a disabled MD094 entry does not imply that byte validation was skipped. Core
+validation must exist in every build that accepts document bytes; it is not an optional unavailable
+parser capability.

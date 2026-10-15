@@ -23,6 +23,7 @@ Git ignore support for lint and fix is deferred; use configuration exclusions fo
 
 | Option | Effect |
 | --- | --- |
+| `--limit NAME=VALUE` | Set a finite operator [resource limit](../engineering/limits.md); repeat for multiple limits |
 | `--config PATH` | Select a configuration inside the operation's discovery boundary |
 | `--format FORMAT` | Choose `text`, `json`, `vscode`, or `github`; defaults to `text` |
 

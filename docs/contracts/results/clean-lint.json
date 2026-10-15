@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "operation": "lint",
+  "mode": "cli",
+  "status": "clean",
+  "complete": true,
+  "checked_files": [
+    "README.md"
+  ],
+  "skipped_files": [],
+  "files": [
+    {
+      "path": "README.md",
+      "analysis": "complete",
+      "write_status": "not-requested",
+      "return_status": "not-requested",
+      "input_snapshot": {
+        "view": "original",
+        "sha256": "e01b17ff9af77056792f67c57e3d1908795b9d1ae4cfe72421d0a2838991b740",
+        "size_bytes": 8
+      },
+      "error_ids": [],
+      "coverage_ids": [],
+      "change_ids": [],
+      "result_snapshot": {
+        "view": "original",
+        "sha256": "e01b17ff9af77056792f67c57e3d1908795b9d1ae4cfe72421d0a2838991b740",
+        "size_bytes": 8
+      }
+    }
+  ],
+  "diagnostics": [],
+  "coverage": [],
+  "changes": [],
+  "deferred_fixes": [],
+  "errors": [],
+  "notes": [],
+  "interruptions": [],
+  "omissions": [],
+  "documents": [],
+  "suppressed_diagnostics": [],
+  "effective_limits": []
+}

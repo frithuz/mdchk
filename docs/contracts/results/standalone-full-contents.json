@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "operation": "fix",
+  "mode": "standalone",
+  "status": "clean",
+  "complete": true,
+  "checked_files": [
+    "a.md",
+    "b.md"
+  ],
+  "skipped_files": [],
+  "files": [
+    {
+      "path": "a.md",
+      "analysis": "complete",
+      "write_status": "not-requested",
+      "return_status": "returned",
+      "input_snapshot": {
+        "view": "original",
+        "sha256": "327f031b25e00b1a7cd9b0c18f05948b60f55d09f9b3d177d21083f83a3cb6df",
+        "size_bytes": 3
+      },
+      "error_ids": [],
+      "coverage_ids": [],
+      "change_ids": [
+        "change-1"
+      ],
+      "result_snapshot": {
+        "view": "candidate",
+        "sha256": "aa1237b773c38dbddef583c4868aaea7a44c5237ea7923aecca5513764b42d80",
+        "size_bytes": 4
+      }
+    },
+    {
+      "path": "b.md",
+      "analysis": "complete",
+      "write_status": "not-requested",
+      "return_status": "returned",
+      "input_snapshot": {
+        "view": "original",
+        "sha256": "a81d3fbddd441e2d690b9c03c18251323a295c8eb8ebbfb81ca45b63bf8d5a06",
+        "size_bytes": 4
+      },
+      "error_ids": [],
+      "coverage_ids": [],
+      "change_ids": [],
+      "result_snapshot": {
+        "view": "candidate",
+        "sha256": "a81d3fbddd441e2d690b9c03c18251323a295c8eb8ebbfb81ca45b63bf8d5a06",
+        "size_bytes": 4
+      }
+    }
+  ],
+  "diagnostics": [],
+  "coverage": [],
+  "changes": [
+    {
+      "id": "change-1",
+      "path": "a.md",
+      "disposition": "returned",
+      "before": {
+        "view": "original",
+        "sha256": "327f031b25e00b1a7cd9b0c18f05948b60f55d09f9b3d177d21083f83a3cb6df",
+        "size_bytes": 3
+      },
+      "candidate": {
+        "view": "candidate",
+        "sha256": "aa1237b773c38dbddef583c4868aaea7a44c5237ea7923aecca5513764b42d80",
+        "size_bytes": 4
+      },
+      "rules": [
+        "MD047"
+      ],
+      "edit_count": 1,
+      "diff": {
+        "format": "line-hunks",
+        "context_lines": 3,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "kind": "remove",
+                "text": "# A",
+                "line_ending": "none"
+              },
+              {
+                "kind": "add",
+                "text": "# A",
+                "line_ending": "lf"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "deferred_fixes": [],
+  "errors": [],
+  "notes": [],
+  "interruptions": [],
+  "omissions": [],
+  "documents": [
+    {
+      "path": "a.md",
+      "disposition": "returned",
+      "content": "# A\n",
+      "snapshot": {
+        "view": "candidate",
+        "sha256": "aa1237b773c38dbddef583c4868aaea7a44c5237ea7923aecca5513764b42d80",
+        "size_bytes": 4
+      }
+    },
+    {
+      "path": "b.md",
+      "disposition": "returned",
+      "content": "# B\n",
+      "snapshot": {
+        "view": "candidate",
+        "sha256": "a81d3fbddd441e2d690b9c03c18251323a295c8eb8ebbfb81ca45b63bf8d5a06",
+        "size_bytes": 4
+      }
+    }
+  ],
+  "suppressed_diagnostics": [],
+  "effective_limits": [],
+  "dry_run": false
+}

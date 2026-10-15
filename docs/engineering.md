@@ -29,7 +29,7 @@ mdchk uses one Markdown analysis and correction engine for both its command-line
 - Adopt the [fixed Pandoc profile](engineering/pandoc-compatibility.md), including source-preserving footnotes, tables, attributes, and rule-consumer behavior.
 - Adopt the [resource contract](engineering/resources.md): bounded read-only adapters, partial standalone inventories, shared anchor/index policy, immutable observations, and coordinated fix views.
 
-All choices below are proposals unless explicitly included in this list.
+The [accepted contract index](engineering/contracts.md) records the additional 21 policy groups, including optional contexts, exact rule behavior, fixes, results, limits, MCP and HTTP. Package layout suggestions remain implementation guidance; accepted behavior is normative.
 
 ## Go and delivery
 
@@ -53,7 +53,7 @@ Keep original source bytes alongside the syntax tree. Rules should use syntax co
 
 For GFM, retain original table cell counts before semantic padding or truncation, task-marker spans and spelling, strikethrough delimiter spans, and bare versus angle-delimited autolink origins. Keep filtered raw HTML protected and preserve its source. The [extension source contract](engineering/gfm-compatibility.md#extension-source-contract) defines the information shared by lint, fix, inspect, and MCP.
 
-Make frontmatter recognition independently optional for every supported flavor. When enabled, treat recognized headers as opaque blocks, protected from Markdown style rules and directive interpretation. When disabled, parse the source using ordinary flavor rules. YAML and TOML support remains the initial proposal; the setting, default, delimiters, and malformed-header behavior need decisions before implementation. Exclude code blocks, inline code, and raw HTML from generic style rules unless a rule explicitly targets those constructs. Preserve LF or CRLF conventions. Reject unsupported encodings with a file error rather than silently transcoding them.
+Make frontmatter recognition independently optional for every supported flavor. When enabled, treat recognized headers as opaque blocks, protected from Markdown style rules and directive interpretation. When disabled, parse the source using ordinary flavor rules. The [frontmatter contract](engineering/frontmatter.md) fixes disabled-by-default YAML/TOML recognition, delimiters, metadata semantics and malformed-header protection. Exclude code blocks, inline code, and raw HTML from generic style rules unless a rule explicitly targets those constructs. Preserve LF, CRLF and CR bytes using the [fix contract](engineering/fixes.md). Strict UTF-8 validation is unconditional; MD094 controls error attribution only, never whether bytes are validated.
 
 ## Shared engine and package boundaries
 
@@ -84,23 +84,29 @@ Give each rule a summary, default setting, option schema, and documented fix pol
 
 A diagnostic should carry the relative file path, rule ID, severity, message, source range, and fix availability. Internal spans should use byte offsets; public positions should use one-based lines and Unicode code-point columns, with tabs counted as one column. Document exclusive range ends. Sort results by path, source position, and rule ID for repeatable output.
 
-Follow the catalog's implementation contract for rule specifications, fixtures, format activation, and resource boundaries. Keep heading hierarchy and missing code language fixes report-only when author intent cannot be inferred safely. MkDocs, Quarto, metadata key inspection, and invalid encoding checks require explicit integration designs before coding their rules.
+Follow the catalog's implementation contract for rule specifications, fixtures, format activation, and resource boundaries. Keep heading hierarchy and missing code language fixes report-only when author intent cannot be inferred safely. MkDocs, Quarto and slide contexts follow the [integration contract](engineering/integrations.md); metadata and encoding checks follow the [frontmatter](engineering/frontmatter.md) and [special rule contracts](engineering/rule-behavior.md).
 
 Start with one violation severity and no warning threshold controls. Add severities only when concrete rules justify them.
 
 ## Safe correction contract
 
-`lint` must never modify source or configuration files, including when configuration requests fixing. Only the fix operation may write.
+`lint` never modifies source or configuration. Only fix apply may write.
+The [correction contract](engineering/fixes.md) defines atomic multi-edit groups,
+all-conflicting-group deferral, candidate reparse/preservation, ten changing rounds
+plus a read-only convergence check, and rollback of nonconvergent candidate components.
+Stable output must be idempotent; remaining manual findings need not be clean.
 
-For each file, compute edits against an immutable snapshot. Validate bounds and replacement preconditions, deduplicate identical edits, and defer conflicting edits with an explanation. Apply nonoverlapping edits from the end of the file toward the beginning.
+Build coordinated candidate views before any writes. Preview and standalone fixes
+use candidates; project results use confirmed saved bytes and invalidate stale or
+uncertain dependencies. Resource-only snapshots remain read-only. Preserve exact
+line endings, unrelated bytes, permissions and required metadata.
 
-Reparse and validate the candidate result before writing. Define rule-specific preservation checks; syntax-tree equality alone is insufficient to prove every fix safe. Re-run enabled rules on the final content. A second fix run on unchanged inputs must make no further changes.
-
-Preserve unrelated bytes, line endings, and file permissions. Use a temporary sibling file and replacement where the platform supports it. Before replacement, detect whether the source has changed since the snapshot; refuse stale edits. Resolve the remaining check-to-write race with an explicit filesystem strategy before claiming protection from concurrent writers. Never write through symlinks in the first release.
-
-Writes are atomic per file where supported, not across a whole directory. Continue processing independent files after a file error and report both successful changes and failures. Do not claim that a failed run changed nothing. In dry-run mode, return diffs and predicted remaining findings without filesystem writes.
-
-For cross-file checks, first build one candidate overlay for all fix targets and then analyze it consistently. Resource-only snapshots remain unchanged. After project writes, build the saved view from successful writes and confirmed unchanged snapshots; invalidate stale or uncertain dependencies and recheck affected results. A partial write must not produce findings against an imagined all-successful view. The [resource snapshot contract](engineering/resources.md#snapshots-caching-fixes-and-limits) defines these guarantees and their concurrency limits.
+Use verified per-file native atomic replacement and cooperating-writer locks.
+Refuse unsupported write guarantees. Noncooperating writers can still be overwritten
+if they change a file after the final check; no portable compare-and-swap or
+whole-project transaction is promised. A late symlink entry can be replaced without
+following it; do not claim every late substitution is refused. Report successful,
+refused, failed and uncertain writes truthfully, even after interruption.
 
 ## Configuration and file selection
 
@@ -116,7 +122,7 @@ Resolve inherited directive permissions as logical AND within the same ancestor 
 
 Resolve higher-level `allow_nested_excludes` policies separately from rule settings, as defined in the [configuration design](engineering/configuration.md#higher-level-exclusion-policy). A selected lower-level configuration cannot bypass an ancestor's restriction, including through explicit config selection. Keep ancestor policy reads within the operation's discovery boundary.
 
-With no paths, recursively select `.md` and `.markdown` files beneath the invocation root using ASCII-case-insensitive extension matching. Include hidden directories except `.git`; skip symlinks. Explicit regular files are eligible regardless of extension, but still honor exclusions, including matching ancestor directories. Explicit unreadable or missing paths are errors. Report explicitly excluded paths as skipped. Selecting no files is a usage error.
+With no paths, recursively select `.md` and `.markdown` files (also `.qmd` when Quarto is enabled) beneath the invocation root using ASCII-case-insensitive extension matching. Include hidden directories except `.git`; skip symlinks. Explicit regular files are eligible regardless of extension, but still honor exclusions, including matching ancestor directories. Explicit unreadable or missing paths are errors. Report explicitly excluded paths as skipped. Selecting no files is a usage error.
 
 The [configuration validation design](engineering/configuration.md) defines the separate project-wide scan used by `config validate`, including Git ignore support and scoped exclusions from nested definitions. Nested validation does not introduce overrides for Markdown operations. Defer Git ignore support for lint and fix, nested configuration overrides, stdin input, and global mdchk user configuration until their behavior is designed. The [configuration guide](configuration.md) defines user-facing settings and examples.
 
@@ -160,9 +166,9 @@ Before the first release, publish rule documentation, install instructions, plat
 
 ## Remaining work and decisions
 
-1. Define frontmatter configuration and header recognition details.
-2. Implement and verify the approved Pandoc profile and resource adapters.
-3. Complete safe-write mechanics and partial-write reporting against the approved resource snapshot contract.
-4. Define internal parser milestones and choose an MCP implementation after small compatibility prototypes and a dependency review.
-5. Choose a license, initial release platforms, and installation channels.
+1. Implement and verify the accepted contracts, syntax profiles and resource adapters.
+2. Select source-preserving metadata adapters, define exact work metering and the AST property catalog, and complete Git-ignore source discovery in their owning issues.
+3. Verify native filesystem write adapters and independent MCP/HTTP interoperability and deployment tests before claiming support.
+4. Choose a supported Go toolchain and maintain exact dependency checksums and licenses for the approved SDK and adapters.
+5. Choose a project license, release platforms and installation channels in release planning; these are outside the audited implementation policy decisions.
 

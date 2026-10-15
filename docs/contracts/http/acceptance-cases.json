@@ -1,0 +1,180 @@
+{
+  "status": "required acceptance cases, not executed tests",
+  "cases": [
+    {
+      "id": "local-native",
+      "scenario": "Local profile, exact Host, no Origin, native client",
+      "expected": "Allowed within the startup mode/root"
+    },
+    {
+      "id": "local-remote-bind",
+      "scenario": "Local profile with 0.0.0.0 listen",
+      "expected": "Startup refusal"
+    },
+    {
+      "id": "local-browser-default",
+      "scenario": "Local profile with any present Origin and empty allowlist",
+      "expected": "403; no tool work"
+    },
+    {
+      "id": "remote-no-token",
+      "scenario": "Remote /mcp without token",
+      "expected": "401 challenge; no config/document access"
+    },
+    {
+      "id": "wrong-audience",
+      "scenario": "Valid signed token for another project resource",
+      "expected": "401 invalid_token"
+    },
+    {
+      "id": "id-token",
+      "scenario": "ID token substituted for at+jwt access token",
+      "expected": "401 invalid_token"
+    },
+    {
+      "id": "expired",
+      "scenario": "Token outside expiration tolerance",
+      "expected": "401 invalid_token"
+    },
+    {
+      "id": "excess-lifetime",
+      "scenario": "Token lifetime exceeds operator cap",
+      "expected": "401 invalid_token"
+    },
+    {
+      "id": "duplicate-claims",
+      "scenario": "Signed token with ambiguous duplicate claim names",
+      "expected": "401 invalid_token"
+    },
+    {
+      "id": "read-lint",
+      "scenario": "Project token with mdchk:read calling lint",
+      "expected": "Allowed"
+    },
+    {
+      "id": "read-preview",
+      "scenario": "Project token with mdchk:read calling fix dry_run=true",
+      "expected": "Allowed; no writes"
+    },
+    {
+      "id": "read-apply",
+      "scenario": "Project token with mdchk:read calling fix without dry_run",
+      "expected": "403 insufficient_scope; no config/document access"
+    },
+    {
+      "id": "write-only",
+      "scenario": "Project token with mdchk:write but no mdchk:read",
+      "expected": "403; no implicit read grant"
+    },
+    {
+      "id": "write-apply",
+      "scenario": "Project token with both scopes, authorized audience",
+      "expected": "Engine execution still enforces root/policy/safe-write rules"
+    },
+    {
+      "id": "standalone-run",
+      "scenario": "Standalone audience and mdchk:run",
+      "expected": "Isolated request processing; no document filesystem access"
+    },
+    {
+      "id": "proxy-identity-spoof",
+      "scenario": "X-Forwarded-User plus absent/invalid access token",
+      "expected": "401; header grants nothing"
+    },
+    {
+      "id": "proxy-wrong-peer",
+      "scenario": "Proxy profile, socket peer not in configured loopback list",
+      "expected": "403"
+    },
+    {
+      "id": "host-rebind",
+      "scenario": "Valid token with arbitrary Host resolving to loopback",
+      "expected": "403 before tool execution"
+    },
+    {
+      "id": "origin-suffix",
+      "scenario": "https://trusted.example.attacker.invalid versus exact trusted origin",
+      "expected": "403"
+    },
+    {
+      "id": "origin-null",
+      "scenario": "Origin: null",
+      "expected": "403"
+    },
+    {
+      "id": "allowed-preflight",
+      "scenario": "Exact configured Origin requesting POST and permitted headers",
+      "expected": "Bounded preflight response without tool work"
+    },
+    {
+      "id": "header-body-mismatch",
+      "scenario": "Current revision Mcp-Name differs from body tool name",
+      "expected": "400 HeaderMismatch; no tool work"
+    },
+    {
+      "id": "legacy-initialize",
+      "scenario": "Headerless initialize carrying supported legacy version",
+      "expected": "Valid legacy negotiation"
+    },
+    {
+      "id": "legacy-headerless-call",
+      "scenario": "Non-initialize legacy call without version header",
+      "expected": "400; no unsupported-version inference"
+    },
+    {
+      "id": "session-header",
+      "scenario": "MCP-Session-Id supplied to stateless endpoint",
+      "expected": "400 unsupported session; no resumed state"
+    },
+    {
+      "id": "compressed-body",
+      "scenario": "Content-Encoding: gzip",
+      "expected": "415; no decompression"
+    },
+    {
+      "id": "body-over-limit",
+      "scenario": "Declared or chunked body exceeds raw-message cap",
+      "expected": "413; no operation"
+    },
+    {
+      "id": "slow-body",
+      "scenario": "Body trickles beyond absolute read deadline",
+      "expected": "408/connection close; no operation"
+    },
+    {
+      "id": "queue-expiry",
+      "scenario": "Admitted tool call waits beyond queue-time",
+      "expected": "Structured incomplete interruption if reply deliverable"
+    },
+    {
+      "id": "modern-disconnect",
+      "scenario": "Current-revision HTTP request disconnects during fix",
+      "expected": "Stop new commits when observed; preserve possible completed/in-flight write outcome"
+    },
+    {
+      "id": "legacy-disconnect",
+      "scenario": "Legacy stateless HTTP client disconnects",
+      "expected": "No no-write/cancel guarantee; finite operation deadline remains"
+    },
+    {
+      "id": "legacy-cancel-isolation",
+      "scenario": "Legacy cancellation POST reuses another caller request ID",
+      "expected": "Never cancel by unscoped global ID lookup"
+    },
+    {
+      "id": "output-cap",
+      "scenario": "Standalone corrected content would exceed response cap",
+      "expected": "Whole-content withholding/mandatory manifest under accepted result policy"
+    },
+    {
+      "id": "proxy-retry",
+      "scenario": "Proxy loses upstream fix response",
+      "expected": "No automatic POST replay"
+    },
+    {
+      "id": "shutdown",
+      "scenario": "Shutdown while calls queued and atomic write in progress",
+      "expected": "No new work/commits; bounded reconciliation of in-flight outcome"
+    }
+  ]
+}

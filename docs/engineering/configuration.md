@@ -30,7 +30,7 @@ Maintain metadata for all known catalog IDs separately from executable implement
 
 An unavailable rule with an explicit entry and effective `enabled: true` is a configuration error. Explicitly disabled unavailable rules are valid after option validation. Unmentioned unavailable default-enabled rules remain enabled expectations and produce `rule-unavailable` coverage records during analysis; unavailable default-disabled rules do not. Evaluate dialect applicability separately: a rule inapplicable to the selected dialect does not reduce coverage. Preserve the catalog defaults rather than enabling only registered implementations.
 
-Validate effective flavor and directive-processing availability before analysis. Default GFM never falls back to CommonMark. Before directive processing exists, effective global directive permission must be false. Frontmatter settings remain undefined and unsupported; explicit options requiring unavailable metadata interpretation fail for enabled rules. See [initial capability handling](../configuration.md#initial-capability-handling).
+Validate effective flavor and directive-processing availability before analysis. Default GFM never falls back to CommonMark. Before directive processing exists, effective global directive permission must be false. Validate the approved `frontmatter`, `integrations.quarto` and `documents.slides` settings. Explicitly enabled recognition and enabled-rule options requiring unavailable metadata capabilities fail capability validation. See [initial capability handling](../configuration.md#initial-capability-handling).
 
 Separate schema/policy validation from selected-operation capability validation. Ancestors consulted only for policy must be completely schema-valid, but their unselected rule options and flavor do not undergo execution-availability checks or become inherited settings. Each definition visited by `config validate` is checked as a selected definition using inherited permissions. Unmentioned unavailable default rules do not make that scan incomplete because it does not run Markdown checks.
 
@@ -84,7 +84,7 @@ Git ignores and valid mdchk exclusions combine as exclusion sources; a path must
 
 ## Results and command handling
 
-Accept one optional project-directory argument and `--format text|json|vscode|github`, plus global options. Reject unsupported flags such as `--config` and `--dry-run`. An existing directory with no eligible configuration files is a successful empty scan, distinct from lint or fix selecting no Markdown files.
+Accept one optional project-directory argument and `--format text|json|vscode|github`, the shared repeatable `--limit name=value` option, plus global options. Reject unsupported flags such as `--config` and `--dry-run`. An existing directory with no eligible configuration files is a successful empty scan, distinct from lint or fix selecting no Markdown files.
 
 Use the shared result envelope with operation `config validate`, configuration paths in checked files, skip reasons, empty `diagnostics` and `coverage` lists, no changes, and categorized `errors`. Invalid definitions are configuration errors, not Markdown rule violations. A fully traversed scan can be complete even when definitions are invalid; unreadable files or directories and untrusted exclusions from invalid configs must be explained in the report. A valid config exclusion is intentional scope, not incomplete work.
 

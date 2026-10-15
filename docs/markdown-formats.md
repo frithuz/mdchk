@@ -43,19 +43,27 @@ flavor: pandoc
 
 The approved target is Pandoc 3.12.1's `markdown` reader with a fixed set of 37 enabled and 37 disabled extensions. It has its own block and inline interpretation, including lists, footnotes, pipe tables, attributes, math, and raw content. It is not the `commonmark_x` reader. The [compatibility contract](engineering/pandoc-compatibility.md) and [machine-readable profile](engineering/pandoc-profile.json) pin every extension state and the source revision. No individual extension switches are exposed.
 
-Automatic Pandoc identifiers, implicit header references, smart typography, LaTeX macro expansion, implicit figures, metadata/title blocks, and non-pipe table forms are disabled. Shared `resources.anchor_style` controls heading anchors; supported explicit IDs remain targets. Frontmatter is independently optional and still needs its own configuration contract. Pandoc attributes do not automatically enable Quarto chunk interpretation.
+Automatic Pandoc identifiers, implicit header references, smart typography, LaTeX macro expansion, implicit figures, metadata/title blocks, and non-pipe table forms are disabled. Shared `resources.anchor_style` controls heading anchors; supported explicit IDs remain targets. Frontmatter is independently optional under its [accepted contract](engineering/frontmatter.md). Pandoc attributes do not automatically enable Quarto chunk interpretation.
 
 All enabled features and their source-preservation requirements must be verified before a build advertises this flavor. The contract does not add a renderer, filters, citeproc, a runtime Pandoc dependency, or compatibility with every Pandoc extension.
 
 ## Optional frontmatter headers
 
-Frontmatter recognition is a separate option from Markdown flavor. It must be possible to enable or disable it with CommonMark, GFM, or Pandoc Markdown, and with any format supported in the future. Selecting a flavor does not itself enable frontmatter.
+Frontmatter is disabled by default, independently of `commonmark`, `gfm`, or
+`pandoc`. Set `frontmatter.enabled: true`; `frontmatter.formats` defaults to
+`[yaml, toml]`. JSON headers are outside the initial contract.
 
-When enabled, a recognized metadata header is kept separate from the Markdown body and preserved as opaque content. Markdown style rules and inline directives do not interpret its contents. When disabled, the source follows the selected Markdown flavor's ordinary interpretation; for example, `---` can be Markdown syntax rather than a metadata delimiter.
+The opener is on the first line after an optional preserved UTF-8 BOM, with no
+preceding blank or comment. YAML uses `---` to open and `---` or `...` to close;
+TOML uses `+++` for both. Delimiter-only lines are unindented and may have trailing
+spaces/tabs. Empty headers are valid. An unterminated header remains protected
+through EOF, with affected incomplete coverage and no edits in that region.
 
-The existing engineering proposal includes YAML and TOML headers. The exact configuration setting, default, accepted delimiters, and handling of malformed or unterminated headers remain undecided. No frontmatter configuration syntax is specified yet.
-
-The initial configuration schema therefore rejects frontmatter settings. Until recognition is implemented, source follows ordinary flavor interpretation; explicit enabled-rule options requiring unavailable metadata interpretation fail capability validation. YAML configuration support does not itself enable YAML metadata headers.
+Ordinary Markdown rules and directives cannot interpret recognized header content.
+Metadata-aware checks decode on demand under the [metadata contract](engineering/frontmatter.md).
+With recognition disabled, source follows ordinary flavor parsing. Selecting YAML
+configuration or Pandoc does not enable headers. Explicitly enabled but unavailable
+recognition is a configuration error, never a silent fallback.
 
 ## Consistent interpretation
 

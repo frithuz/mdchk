@@ -210,7 +210,7 @@ content failure must not erase a successful existence check.
 | Actual filesystem read/decode failure | Attributed `io` error plus affected coverage; preserve unrelated findings |
 | Required parsed structure uncertain | Affected anchor/content queries are incomplete; do not infer absent IDs |
 | Invalid supplied schema, duplicate keys, conflicting map entries, malformed request Unicode | Reject before analysis through usage/protocol validation; no writes |
-| Acquisition/execution budget exceeded or cancelled | Explicit operational failure and affected coverage; no invented absence or truncated-success result |
+| Acquisition/execution budget exceeded or cancelled | Explicit interruption and affected incomplete coverage; no invented absence or truncated-success result |
 
 MD051 checks nonempty fragments only when the destination document exists and its
 anchor interpretation is available. Known missing documents belong to MD057;
@@ -237,9 +237,10 @@ flavor/frontmatter settings, and the same parser/source-aware anchor service.
 Use the established error precedence: operational error, incomplete coverage,
 violations, clean. Unknown/blocked resources normally produce exit 15; actual I/O
 failures produce exit 13 and retain coverage. Request/configuration errors keep
-their existing categories/codes. Limit mapping is usage for request/budget
-failures, with an explicit limit/cancellation reason; #189 must align transport
-error delivery and numeric policies without adding a silent-success outcome.
+their existing categories/codes. Known oversized or malformed input detected in preflight is usage (11). Runtime
+quota exhaustion, deadlines and cancellation are explicit interruptions with
+incomplete status (15), unless internal or I/O failure takes precedence. The
+[results](results.md), [limits](limits.md) and [MCP](mcp.md) contracts define delivery.
 Locate coverage at requesting source links and deduplicate underlying resource I/O
 errors by resource identity. Resource-only paths do not enter `checked_files`.
 
@@ -289,9 +290,8 @@ adds explicit IDs on supported ID-bearing nodes. Neither this contract nor
 `flavor: pandoc` selects an automatic Pandoc anchor style.
 
 MD074 consumes the shared index policy.
-Its configured docs root is a subroot of authorized resource access. The integration
-must explicitly define nav URLs, absolute-path handling, omitted-file inventories,
-and site-output mappings under #174; generic lookup does not infer MkDocs plugins,
+Its configured docs root is a subroot of authorized resource access. The [MkDocs integration](integrations.md#mkdocs-navigation)
+defines nav URLs, absolute-path handling and omitted-file inventories; generic lookup does not infer MkDocs plugins,
 rewrites, `.html`→`.md` conversion, or arbitrary YAML execution. MkDocs' own link
 validation depends on its configuration, reinforcing the need for an explicit
 integration contract. [MkDocs configuration reference](https://www.mkdocs.org/user-guide/configuration/#validation).
@@ -352,10 +352,12 @@ directory enumeration, acquisition retries, concurrency, wall time, and response
 bytes. Existence-only image checks need no binary loading. Repeated cache hits
 must not trigger new I/O, but request/entry byte limits still count all supplied
 data, including excluded files. Neither config nor inline directives can raise
-server limits. Numeric defaults and protocol cancellation belong to #189.
+server limits. The [shared limits](limits.md) set 1 MiB per text, 8 MiB aggregate content and
+response, and 16 MiB raw MCP requests. The [MCP](mcp.md) and [HTTP](http.md) contracts
+define protocol-specific cancellation, including the legacy HTTP limitation.
 
 Preflight known request limits before analysis/writes. If acquisition hits a limit,
-record unavailable coverage and an operational failure. Do not mark unvisited names
+record an explicit runtime interruption and affected incomplete coverage. Do not mark unvisited names
 missing or an interrupted directory enumeration complete. Resource-only content
 must not bloat fix responses; never return a partial corrected string as a full
 document. A navigation omitted-file check requires an exhaustive authorized

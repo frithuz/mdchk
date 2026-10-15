@@ -297,3 +297,17 @@ malformed raw UTF-8, and unpaired surrogate escapes. A valid literal U+FFFD is
 accepted. Request-level `resources` is a separate map schema, not a configuration
 option or permission to read host files. Its validation and parity cases are in
 the [resource contract](resources.md#verification-and-handoff).
+
+## Optional context schema cases
+
+The [optional context settings](../configuration.md#optional-document-contexts)
+are schema-1 fields. Use the complete default object there as a valid fixture.
+Also accept `frontmatter: {enabled: true, formats: [yaml]}`,
+`integrations: {quarto: {enabled: true}}`, and
+`documents: {slides: ["slides/**"]}` when required capabilities are available.
+
+Reject string booleans, `frontmatter.formats: [json]`, empty/duplicate format
+lists, unknown integration names, malformed slide patterns, and null mappings.
+Reject `rules.MD088.replacements` even when MD088 is disabled; its mapping is fixed.
+Reject `limits` or HTTP authentication fields in project/supplied configuration.
+Capability tests must distinguish accepted schema from an unavailable implementation.

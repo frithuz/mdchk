@@ -18,6 +18,7 @@ mdchk inspect docs/guide.md --lines 18-30
 
 | Option | Effect |
 | --- | --- |
+| `--limit NAME=VALUE` | Set a finite operator [resource limit](../engineering/limits.md); repeat for multiple limits |
 | `--lines N` | Focus on one line |
 | `--lines N-M` | Focus on an inclusive range of lines |
 | `--config PATH` | Select a configuration inside the target's discovery boundary |
@@ -73,3 +74,5 @@ See [configuration](../configuration.md) for settings and [result formats](../ou
 A completed inspection returns `0`, regardless of Markdown findings, directive problems, configuration problems shown in the report, or parsing notes. It does not return validation codes `10`, `12`, or `15` for those observations. Use [lint](lint.md) or [config validate](config/validate.md) when you want a validation result.
 
 Errors that prevent inspection still use the operational codes: `11` for missing or extra arguments, a directory target, or invalid line bounds; `13` for an unreadable or missing target or output failure; and `14` for an internal execution failure. An unreadable configuration is shown as unresolved configuration within the inspection when the target itself is readable. See [exit codes](../exit-codes.md).
+
+Runtime limits, deadlines and cancellation instead return `15` unless an operational error takes precedence. An acquired invalid UTF-8 snapshot can still produce a completed inspection: exit `0`, status `inspected`, `complete: false`, byte metadata and a decoding observation, with parsed sections unavailable.

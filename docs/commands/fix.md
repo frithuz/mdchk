@@ -18,6 +18,7 @@ mdchk fix README.md docs/
 
 | Option | Effect |
 | --- | --- |
+| `--limit NAME=VALUE` | Set a finite operator [resource limit](../engineering/limits.md); repeat for multiple limits |
 | `--config PATH` | Select a configuration inside the operation's discovery boundary |
 | `--format FORMAT` | Choose `text`, `json`, `vscode`, or `github`; defaults to `text` |
 | `--dry-run` | Compute corrections and report the predicted result without writing files |

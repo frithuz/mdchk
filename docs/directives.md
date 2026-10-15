@@ -89,3 +89,9 @@ mdchk inspect docs/guide.md --lines 20-40
 ```
 
 Inspect includes directives in that region and earlier directives still affecting it. It lists exact text, locations, resolved rule names, allowed or blocked effects, and effective ranges. When a rule is disabled, its entry identifies the directive responsible. Comments inside literal content are distinguished from effective directives.
+
+## Special rule effects
+
+MD074 is project-scoped and MD094 controls pre-parse UTF-8 error attribution; directives targeting either have an inapplicable effect. A valid mixed-rule comment still applies its other permitted effects. UTF-8 validation cannot be disabled.
+
+MD087 observes otherwise-enabled target rules without disable intervals, on the original source and shared budgets. Last permitted disable instructions own intervals, including repeated disables. A proved hidden finding establishes use; only complete absence establishes an unused suppression. Missing context, unavailable rules or interruption withhold that conclusion and report incomplete coverage. See the [counterfactual contract](engineering/rule-behavior.md#unused-suppressions).

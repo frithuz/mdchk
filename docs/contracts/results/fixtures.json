@@ -1,0 +1,85 @@
+[
+  {
+    "file": "clean-lint.json",
+    "kind": "result",
+    "expected_cli_exit": 0
+  },
+  {
+    "file": "fix-preview.json",
+    "kind": "result",
+    "expected_cli_exit": 0
+  },
+  {
+    "file": "conflicting-fix-groups.json",
+    "kind": "result",
+    "expected_cli_exit": 10
+  },
+  {
+    "file": "partial-project-writes.json",
+    "kind": "result",
+    "expected_cli_exit": 13
+  },
+  {
+    "file": "invalid-utf8-enabled.json",
+    "kind": "result",
+    "expected_cli_exit": 13
+  },
+  {
+    "file": "invalid-utf8-disabled.json",
+    "kind": "result",
+    "expected_cli_exit": 13
+  },
+  {
+    "file": "standalone-full-contents.json",
+    "kind": "result"
+  },
+  {
+    "file": "withheld-whole-content.json",
+    "kind": "result"
+  },
+  {
+    "file": "cancelled-after-write.json",
+    "kind": "result",
+    "expected_cli_exit": 15
+  },
+  {
+    "file": "inspection-invalid-utf8.json",
+    "kind": "result",
+    "expected_cli_exit": 0
+  },
+  {
+    "file": "configuration-validation-error.json",
+    "kind": "result",
+    "expected_cli_exit": 12
+  },
+  {
+    "file": "configuration-error-and-deadline.json",
+    "kind": "result",
+    "expected_cli_exit": 12
+  },
+  {
+    "file": "skipped-and-unfinished-discovery.json",
+    "kind": "result",
+    "expected_cli_exit": 15
+  },
+  {
+    "file": "ast-projection.json",
+    "kind": "definition",
+    "definition": "AstProjection"
+  },
+  {
+    "file": "directive-inspection.json",
+    "kind": "definition",
+    "definition": "Directive"
+  },
+  {
+    "file": "rule-inspection.json",
+    "kind": "definition",
+    "definition": "RuleInspection"
+  },
+  {
+    "file": "violations-lint.json",
+    "kind": "result",
+    "expected_cli_exit": 10
+  }
+]

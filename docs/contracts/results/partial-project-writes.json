@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "operation": "fix",
+  "mode": "cli",
+  "status": "error",
+  "complete": false,
+  "checked_files": [
+    "a.md",
+    "b.md"
+  ],
+  "skipped_files": [],
+  "files": [
+    {
+      "path": "a.md",
+      "analysis": "complete",
+      "write_status": "written",
+      "return_status": "not-requested",
+      "input_snapshot": {
+        "view": "original",
+        "sha256": "327f031b25e00b1a7cd9b0c18f05948b60f55d09f9b3d177d21083f83a3cb6df",
+        "size_bytes": 3
+      },
+      "error_ids": [],
+      "coverage_ids": [],
+      "change_ids": [
+        "change-1"
+      ],
+      "result_snapshot": {
+        "view": "saved",
+        "sha256": "aa1237b773c38dbddef583c4868aaea7a44c5237ea7923aecca5513764b42d80",
+        "size_bytes": 4
+      }
+    },
+    {
+      "path": "b.md",
+      "analysis": "partial",
+      "write_status": "refused",
+      "return_status": "not-requested",
+      "input_snapshot": {
+        "view": "original",
+        "sha256": "216f4c6ac9ef17add951aa097934202649a6c6ea5f29263b00c59772ea6cff61",
+        "size_bytes": 3
+      },
+      "error_ids": [
+        "error-1"
+      ],
+      "coverage_ids": [
+        "coverage-1"
+      ],
+      "change_ids": []
+    }
+  ],
+  "diagnostics": [],
+  "coverage": [
+    {
+      "id": "coverage-1",
+      "reason": "saved-view-unavailable",
+      "message": "Current saved content has not been reacquired.",
+      "path": "b.md",
+      "cause_ids": [
+        "error-1"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "id": "change-1",
+      "path": "a.md",
+      "disposition": "written",
+      "before": {
+        "view": "original",
+        "sha256": "327f031b25e00b1a7cd9b0c18f05948b60f55d09f9b3d177d21083f83a3cb6df",
+        "size_bytes": 3
+      },
+      "candidate": {
+        "view": "candidate",
+        "sha256": "aa1237b773c38dbddef583c4868aaea7a44c5237ea7923aecca5513764b42d80",
+        "size_bytes": 4
+      },
+      "rules": [
+        "MD047"
+      ],
+      "edit_count": 1,
+      "diff": {
+        "format": "line-hunks",
+        "context_lines": 3,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "kind": "remove",
+                "text": "# A",
+                "line_ending": "none"
+              },
+              {
+                "kind": "add",
+                "text": "# A",
+                "line_ending": "lf"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "deferred_fixes": [],
+  "errors": [
+    {
+      "id": "error-1",
+      "category": "io",
+      "code": "stale-source",
+      "scope": "operation",
+      "message": "The source changed before replacement; no replacement was attempted.",
+      "path": "b.md"
+    }
+  ],
+  "notes": [],
+  "interruptions": [],
+  "omissions": [],
+  "documents": [],
+  "suppressed_diagnostics": [],
+  "effective_limits": [],
+  "dry_run": false
+}

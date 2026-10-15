@@ -1,0 +1,57 @@
+{
+  "projection_version": 1,
+  "profile": "gfm",
+  "snapshot": {
+    "view": "original",
+    "sha256": "e01b17ff9af77056792f67c57e3d1908795b9d1ae4cfe72421d0a2838991b740",
+    "size_bytes": 8
+  },
+  "root": {
+    "id": "node-1",
+    "kind": "document",
+    "range": {
+      "start": {
+        "line": 1,
+        "column": 1
+      },
+      "end": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    "byte_range": {
+      "start": 0,
+      "end": 8
+    },
+    "context_only": false,
+    "properties": {},
+    "raw_attributes": [],
+    "children": [
+      {
+        "id": "node-2",
+        "kind": "heading",
+        "range": {
+          "start": {
+            "line": 1,
+            "column": 1
+          },
+          "end": {
+            "line": 1,
+            "column": 8
+          }
+        },
+        "byte_range": {
+          "start": 0,
+          "end": 7
+        },
+        "context_only": false,
+        "properties": {
+          "level": 1,
+          "visible_text": "Title"
+        },
+        "raw_attributes": [],
+        "children": []
+      }
+    ]
+  }
+}

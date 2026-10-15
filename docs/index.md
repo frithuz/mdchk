@@ -74,3 +74,5 @@ The [resource contract](engineering/resources.md) defines project boundaries, st
 The [inspection design](engineering/inspect.md) covers parser and rule instrumentation, line ranges, and directive attribution.
 
 The [directive processing design](engineering/directives.md) defines shared recognition, rule-state tracking, and suppression behavior.
+
+The [accepted contract index](engineering/contracts.md) links all policy decisions and owning issues. Detailed contracts cover [frontmatter](engineering/frontmatter.md), [integrations](engineering/integrations.md), [rule behavior](engineering/rule-behavior.md), [fix safety](engineering/fixes.md), [results and schemas](engineering/results.md), [resource limits](engineering/limits.md), and [HTTP deployment](engineering/http.md).

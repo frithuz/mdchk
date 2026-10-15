@@ -10,7 +10,7 @@ Use the exit code to decide whether a check passed, Markdown problems remain, or
 | `12` | Configuration could not be loaded or validated. | Check the config path, permissions, settings, rule names, and schema version. |
 | `13` | A file or I/O error prevented a complete run. | Review failed reads or writes, missing files, unsupported encodings, or output errors. If a file changed during fixing, check its current contents before retrying. |
 | `14` | mdchk encountered an internal execution failure. | Keep the error report and command details for a bug report. |
-| `15` | Lint, fix, or preview produced incomplete analysis without an overriding operational error. | Review coverage reasons and available findings; do not treat the run as a clean CI check. |
+| `15` | Analysis, inspection or configuration scanning was interrupted or incomplete without an overriding error. | Review coverage reasons and available findings; do not treat the run as a clean CI check. |
 
 ## Interpreting lint and fix results
 
@@ -28,19 +28,19 @@ Missing default-enabled rule implementations, uncertain supported syntax, or mis
 
 Invalid usage stops the command before processing. Invalid configuration stops lint and fix before file processing. An unreadable configuration file is a configuration error (`12`), rather than a general file error.
 
-During lint/fix processing, precedence is internal failure (`14`), file or I/O error (`13`), incomplete analysis (`15`), violations (`10`), then success (`0`). This is semantic precedence, not numeric order. The report includes all encountered problems and coverage reasons. Usage (`11`) and configuration (`12`) errors stop the operation before document processing.
+During lint/fix processing, precedence is internal failure (`14`), file or I/O error (`13`), incomplete analysis (`15`), violations (`10`), then success (`0`). This is semantic precedence, not numeric order. The report includes all encountered problems and coverage reasons. Usage (`11`) and configuration (`12`) errors stop the operation before document processing. Known oversized inputs rejected during preflight use `11`; runtime quotas, deadlines and cancellation use explicit interruption records and `15`. Stop starting commits once cancellation is observed; an in-flight atomic replacement can still finish. The first handled CLI interrupt follows this path; forced termination may prevent any report.
 
 ## Interpreting configuration validation
 
 [`config validate`](commands/config/validate.md) returns `0` when every discovered definition is valid, including when no configuration files are found. It returns `12` for invalid or unreadable configurations and continues scanning other eligible files. It does not use Markdown violation code `10`.
 
-If scanning also encounters traversal or I/O errors, `13` takes precedence over `12`; an internal failure (`14`) takes precedence over both. Check the report for all errors and whether the scan was complete. Config validation does not execute Markdown checks and does not use `15` for unmentioned unavailable default rules. It validates explicitly requested capabilities and effective flavor/directive availability as configuration requirements.
+If scanning also encounters traversal or I/O errors, `13` takes precedence over `12`; an internal failure (`14`) takes precedence over both. Check the report for all errors and whether the scan was complete. Runtime interruption returns `15` when no higher-priority error occurred: `14 > 13 > 12 > 15 > 0`. Config validation does not execute Markdown checks and does not use `15` for unmentioned unavailable default rules. It validates explicitly requested capabilities and effective flavor/directive availability as configuration requirements.
 
 ## Interpreting inspection
 
 [`inspect`](commands/inspect.md) returns `0` when it produces an inspection, even if the report contains Markdown findings, unresolved configuration, directive problems, or parsing notes. Those are processing observations rather than failed validation. Codes `10`, `12`, and `15` are not used for observations in an inspection report.
 
-Invalid arguments or line bounds return `11`. Target access or output errors that prevent inspection return `13`; internal execution failures return `14`. Use lint or config validate for a validation result.
+Invalid arguments or line bounds return `11`. Target access or output errors that prevent inspection return `13`; internal execution failures return `14`. Runtime interruption returns `15` with status `incomplete` unless an operational error overrides it. Successfully acquired invalid UTF-8 remains inspectable as bytes: report the decoding observation and unavailable parsed sections with status `inspected`, exit `0`, and `complete: false`. Use lint or config validate for a validation result.
 
 ## Using the codes in automation
 

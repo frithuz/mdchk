@@ -1,0 +1,163 @@
+{
+  "status": "accepted",
+  "profile": "initial shared CLI/MCP limits; not benchmark-derived performance promises",
+  "defaults": {
+    "document-bytes": {
+      "value": 1048576,
+      "unit": "bytes",
+      "scope": "Each target/resource text snapshot and each corrected candidate; do not load binary image contents for existence checks."
+    },
+    "total-content-bytes": {
+      "value": 8388608,
+      "unit": "bytes",
+      "scope": "Original supplied/acquired target and resource contents per operation, including submitted excluded files; independently cap each complete candidate overlay to the same size."
+    },
+    "request-bytes": {
+      "value": 16777216,
+      "unit": "bytes",
+      "scope": "Each incoming MCP JSON-RPC message before decoding; enforce for stdio and HTTP. Transport framing/header limits are separate."
+    },
+    "response-bytes": {
+      "value": 8388608,
+      "unit": "bytes",
+      "scope": "Each complete serialized CLI result or outgoing MCP result JSON message, including duplicated text/structured payloads and JSON escaping, excluding transport headers/framing."
+    },
+    "target-files": {
+      "value": 5000,
+      "unit": "files",
+      "scope": "Selected target files in CLI/project operations; supplied files entries in standalone, including excluded supplied entries."
+    },
+    "resource-identities": {
+      "value": 25000,
+      "unit": "identities",
+      "scope": "Combined targets, explicit supplied resource entries, inferred parent directories and distinct queried logical resource identities, including missing/blocked identities."
+    },
+    "resource-lookups": {
+      "value": 25000,
+      "unit": "distinct logical keys",
+      "scope": "Distinct canonical resource lookup keys including misses; directory/index attempts are separate keys. Cache hits do not count as new lookups."
+    },
+    "directory-entries": {
+      "value": 100000,
+      "unit": "observed entries",
+      "scope": "Entries visited during operation discovery/inventory/config scans, including examined excluded entries; reused cached enumeration is not new I/O."
+    },
+    "path-bytes": {
+      "value": 4096,
+      "unit": "UTF-8 bytes",
+      "scope": "A canonical logical relative path; native filesystem limits can be stricter."
+    },
+    "path-depth": {
+      "value": 64,
+      "unit": "segments",
+      "scope": "Canonical logical relative paths and traversal depth within the operation boundary; no symlink expansion."
+    },
+    "config-bytes": {
+      "value": 1048576,
+      "unit": "bytes",
+      "scope": "Each acquired configuration/policy text definition or supplied serialized config object."
+    },
+    "total-config-bytes": {
+      "value": 8388608,
+      "unit": "bytes",
+      "scope": "All configuration/policy source text acquired for the operation; also included in the applicable request/acquisition accounting."
+    },
+    "structured-input-depth": {
+      "value": 64,
+      "unit": "nested containers",
+      "scope": "Raw protocol JSON and configuration syntax. Reject before ordinary decoding loses evidence or allocates unbounded structures."
+    },
+    "syntax-depth": {
+      "value": 256,
+      "unit": "nested constructs",
+      "scope": "Markdown/metadata syntax and alias traversal; unavailable syntax remains explicit rather than being flattened."
+    },
+    "document-nodes": {
+      "value": 250000,
+      "unit": "nodes or source records",
+      "scope": "Each individual document parse, including metadata and retained source records, before allocating beyond the cap."
+    },
+    "total-nodes": {
+      "value": 2000000,
+      "unit": "nodes or source records constructed",
+      "scope": "Operation cumulative construction, including reparses/fix rounds/retries; reusing immutable nodes does not construct them again."
+    },
+    "work-units": {
+      "value": 250000000,
+      "unit": "metered work units",
+      "scope": "Operation-wide parser, rule, metadata, diff and preservation work; charge byte inspections/comparisons and structural/candidate visits with documented adapter metering. All fix rounds and counterfactual MD087 work share the meter."
+    },
+    "snapshot-retries": {
+      "value": 2,
+      "unit": "additional attempts",
+      "scope": "At most 3 acquisition attempts per unstable logical snapshot; retry bytes/work remain charged."
+    },
+    "operation-time": {
+      "value": 60,
+      "unit": "seconds",
+      "scope": "Monotonic wall time for validation/discovery/queueing/analysis/fix commits; MCP begins once the bounded message is received for processing. Network body/idle timeouts belong to transport policy."
+    },
+    "reporting-time": {
+      "value": 2,
+      "unit": "additional seconds",
+      "scope": "Reserved cleanup/outcome reconciliation/report construction after analysis stops; never used for additional fixes. It cannot guarantee interruption of an unresponsive OS call or report delivery to a disconnected client."
+    },
+    "report-reserve-bytes": {
+      "value": 65536,
+      "unit": "bytes within response budget",
+      "scope": "Minimum reserve for the envelope, interruption and omission summary; reserve the entire bounded per-target write-outcome manifest in addition before commits."
+    },
+    "active-calls": {
+      "value": 4,
+      "unit": "MCP tool calls",
+      "scope": "Server-wide active calls; separate small protocol-control handling must remain responsive."
+    },
+    "queued-calls": {
+      "value": 8,
+      "unit": "MCP tool calls",
+      "scope": "Server-wide admission queue. Above capacity return explicit busy/limit rejection without starting work."
+    },
+    "queue-time": {
+      "value": 10,
+      "unit": "seconds",
+      "scope": "Maximum queue wait, included in the operation-time budget; expiry follows accepted runtime interruption semantics."
+    },
+    "project-fixes": {
+      "value": 1,
+      "unit": "MCP project fix operation",
+      "scope": "Serialize project fix operations, including project previews initially; cooperating interprocess write coordination remains required separately."
+    },
+    "workers-per-operation": {
+      "value": 1,
+      "unit": "worker",
+      "scope": "Initial intra-operation engine worker limit; raise only through explicit operator setting and verified implementation support."
+    },
+    "fix-rounds": {
+      "value": 10,
+      "unit": "changing rounds",
+      "scope": "Previously accepted fixed correction cap plus a read-only convergence check; not raised by the generic limit override."
+    }
+  },
+  "overrides": {
+    "interface": "Repeatable command/startup option --limit name=value for lint, fix, inspect, config validate and mcp. Example: --limit operation-time=120s.",
+    "validation": "Known names and positive finite values only; byte sizes accept documented binary units, durations explicit units, counts decimal integers. Reject overflow, conflicting duplicate values and incoherent bounds. Identical repeated values may be deduplicated. Require document-bytes <= total-content-bytes, config-bytes <= total-config-bytes, queue-time <= operation-time, and sufficient response budget for the minimal reporting reserve.",
+    "authority": "CLI invoker and MCP server operator can set finite lower/higher limits within validated implementation bounds. Project configuration, Markdown directives and MCP tool arguments cannot alter them. No unlimited/zero escape hatch; no ambient project/environment override.",
+    "visibility": "Report effective limit values and the particular exceeded limit with observed/allowed amounts when known. Expose server values through documented discovery/metadata without adding tool-call fields; precise MCP location follows its protocol decision."
+  },
+  "accounting_notes": [
+    "Limits are independent and the first exhausted one stops affected work under the accepted interruption policy. Equivalent CLI/project/standalone work uses the same units/defaults; wire limits apply only where serialization exists.",
+    "Count submitted data before exclusions. Cache repeated observations once for logical identity/input totals, but charge actual repeated acquisition/parse/rule work and retry bytes. Do not retain every historical candidate body merely to detect cycles.",
+    "Use checked arithmetic and enforce caps before large allocations. The AST/work counter specification must identify metering points for every parser, metadata adapter, rule, preservation validator and diff routine; add deadline/cancellation checkpoints around bounded loops and I/O.",
+    "These are application-work limits, not a hard process-RSS or crash-proof OS isolation guarantee. Server concurrency multiplies resident operation data; operators must size deployment memory accordingly.",
+    "Changing numeric defaults requires documented review and representative/adversarial benchmarks; this contract selects starting values, not a claim that absent implementation has already met performance targets.",
+    "The 2026-10-15 revision reduces per-text, aggregate-content, request and response byte defaults by a factor of eight. Independent node, work, count and timing limits are unchanged. These starting values are not benchmark-derived performance promises."
+  ],
+  "response_policy": [
+    "Measure the actual encoded result size, including JSON escaping and any duplicated MCP fallback text. Validate known mandatory response feasibility before processing supplied requests where possible.",
+    "Before any filesystem commit, reserve space for every selected target\u2019s outcome and any attributable write error or uncertainty; if the essential manifest cannot fit, perform no commits and report the accepted limit outcome.",
+    "When details exceed the remaining budget, omit whole optional diff/AST sections first, then retain deterministically ordered whole diagnostic/observation records with explicit omitted counts and availability. Never imply omitted findings were absent or an omitted AST was empty; mark complete=false and the output-limit reason.",
+    "Never truncate a corrected content string. Standalone fix may withhold entire file-content records with explicit path/outcome attribution; do not label those files as successfully returned. If the essential file-identity/status list cannot fit, reject before analysis rather than silently dropping identities.",
+    "An output-size limit cannot discard the reserved manifest for files actually written. Later output delivery failure remains io under the accepted precedence. No automatic background storage, filesystem report spool for standalone payloads, pagination or opaque continuation token is introduced."
+  ],
+  "latest_revision": "resource_limits_01_one_mib"
+}

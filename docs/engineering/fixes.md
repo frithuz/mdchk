@@ -1,0 +1,205 @@
+# Correction planning and filesystem contract
+
+Status: accepted on 2026-10-15; implementation and end-to-end verification remain pending.
+These requirements incorporate the revised **1 MiB per-file limit** where applicable.
+See the [contract index](contracts.md) for related specifications and issue ownership.
+
+## Atomic edit groups and convergence
+
+### Scope
+
+Use one shared correction planner for CLI dry-run/apply, standalone corrected content and project
+MCP. Preserve the existing rule-specific correction limits; this does not authorize automatic fixes
+for report-only rules or broaden the initial MD047 implementation scope.
+
+### Atomicity
+
+A correction proposal is an atomic group of one or more edits. All component edits must pass source
+preconditions, directive permissions and preservation checks before any are eligible. If any
+required component is invalid, unsafe, blocked or conflicting, defer the entire group. Paired
+fences, list-wide indentation and similar coordinated corrections must declare their grouping
+explicitly.
+
+### Duplicates and conflicts
+
+Deduplicate byte-identical edits while retaining all provenance and group dependencies. Proposals
+sharing an identical edit form one planning unit for all-or-none validation. Defer every planning
+unit involved in a genuine conflict rather than choosing a winner by rule order. A distinct
+insertion at the same offset conflicts; insertion at or inside another proposal replacement boundary
+is also a conflict. Adjacent nonempty replacement spans can coexist. A producer needing ordered
+same-position insertions must consolidate them within its single atomic proposal. Independent
+nonconflicting planning units remain eligible.
+
+### Application
+
+Generate each round against one immutable source/candidate snapshot with original-byte
+preconditions, UTF-8-safe boundaries and intact CRLF sequences. Apply accepted edits from the end,
+preserving unrelated bytes. Reparse and validate the combined candidate, including rule-specific
+meaning, protected spans and unchanged directive structure/permissions. Separate-group safety alone
+does not prove their combination safe. If combined preservation cannot be established, defer the
+involved group(s), or conservatively the whole batch when they cannot be isolated; do not retain an
+unverified partial correction.
+
+### Repeated passes
+
+After each validated changing round, reanalyze and regenerate proposals from the updated candidate.
+Do not reuse stale offsets. Require a final planner/validation check with no further accepted
+changes under the same inputs. Allow at most 10 changing rounds, followed by a read-only convergence
+check. Record repeated candidate content to detect cycles early. The bound is initially fixed;
+shared operation budgets can terminate work earlier and cannot be bypassed by repeated passes.
+
+### Failure to stabilize
+
+If candidates oscillate or still need accepted changes after 10 changing rounds, retain the original
+content for the affected file and any coupled edit-dependency group; do not save or return an
+arbitrary intermediate correction as the completed candidate. Report explicit incomplete fix
+coverage and the reason, preserving reliable observations. Independently converged files may still
+proceed after revalidation against the retained originals. Precise serialized outcome/reason names
+belong to the results-and-limits area.
+
+### Dependencies
+
+Use a coordinated candidate overlay for all selected targets in each round. Track source and
+resource observations that drive edits or prove their safety, including target-to-target
+dependencies; coupled candidates must converge and validate together. If a rollback invalidates a
+dependency, discard or revalidate dependent candidates before they are eligible. Final cross-file
+findings must use the resulting complete candidate overlay, with saved-view reconciliation after
+writes under the existing resource contract. A convergence failure does not authorize writes to
+resource-only files.
+
+### Remaining findings
+
+Intentional deferral for conflicting or unsafe corrections does not by itself make completed lint
+analysis incomplete: retain the underlying violations and explicit deferral reasons. Report-only
+rules and deferred fixes can remain after a stable correction result. Distinguish these from failure
+to complete requested fix computation, missing prerequisites or operational failures. Idempotence
+means a second fix on the same final content/config/context makes no further changes, not that every
+violation is fixable.
+
+### Newlines
+
+Preserve existing physical LF, CRLF and lone-CR sequences individually wherever the rule does not
+explicitly add/remove them; never normalize the entire file as a side effect. For newly required
+line endings, reuse the nearest existing complete line-ending sequence in the current source
+snapshot by byte distance, preferring the preceding one on a tie; use LF when none exists,
+independent of host OS. At EOF this uses the last existing terminator. Never split a CRLF pair. This
+explicitly extends the preservation wording to lone CR recognized as a Markdown line ending.
+
+### Md047
+
+Keep empty files exempt. To add a missing final newline use the shared insertion convention. To
+reduce multiple terminal line-ending sequences, preserve the first existing terminator following the
+last non-line-ending source byte and remove only the excess terminators, subject to ordinary
+protection and semantic-preservation checks. For an otherwise empty sequence of line endings retain
+the first. Do not treat spaces on a terminal line as part of a bare newline suffix or silently
+change intentional hard breaks.
+
+### Reporting
+
+Report final candidate differences rather than intermediate-pass diffs. Expose deferred correction
+reasons separately from accepted proposed/applied changes. No project/CLI writes begin until
+candidate construction and required validation for the operation have finished. Filesystem
+stale-source checks and replacement guarantees follow the filesystem replacement section below.
+
+## Filesystem replacement
+
+### Guarantee
+
+Use atomic per-file replacement on explicitly supported platform/filesystem adapters, with final
+stale-source checks and coordination among participating mdchk writers. This provides whole-file
+publication and refuses detected stale inputs; it is not compare-and-swap against arbitrary external
+writers. A nonparticipating editor/process can change source or a dependency after the last check
+and before replacement; its newer content can be overwritten without detection. Document that the
+full no-lost-update guarantee requires exclusive/coordinated access during apply. Do not claim
+guaranteed concurrent-writer protection from hashes, timestamps, advisory locking or atomic rename
+alone.
+
+### Coordination
+
+Serialize overlapping write operations among cooperating mdchk invocations and within project MCP,
+using an OS-backed coordination mechanism with stable logical target/parent identity and
+deterministic acquisition order. Hold coordination across final validation and commit. An advisory
+lock only on the original file inode is insufficient across replacement. Lock failure or bounded
+waiting/cancellation prevents the affected commit, without an unlocked fallback. Finalize the native
+coordination mechanism and its scope under #146; do not imply unrelated editors honor it.
+
+### Preconditions
+
+Retain the analyzed snapshot, stable native file identity/type and relevant metadata. Immediately
+before commit revalidate the source bytes, directory-entry identity, regular-file type,
+permissions/security metadata, and every content/existence/absence dependency used to justify edits.
+A replaced file with identical bytes is still stale when identity changed. Refuse detected
+appearance/disappearance, symlink/type substitution, metadata changes or changed edit dependencies.
+Do not automatically rebase an old proposal onto new content. Report the affected
+source/dependencies and keep independent work eligible.
+
+### Confinement
+
+Use native directory/file handles and race-resistant no-follow operations within the authorized
+scope; do not rely on string path checks or an earlier symlink scan. Never follow symlinks/reparse
+points when creating, validating or replacing a write target or resolving its parent chain.
+Final-name replacement must operate on the directory entry rather than opening its referent for
+writing. Detected substitutions are refused; acknowledge the concurrent-writer limitation for a
+substitution after the final check. This does not broaden resource access, enable writes through
+inspection symlink exceptions, or claim resistance to privileged mount changes.
+
+### Replacement
+
+Create a private exclusive temporary sibling on the same filesystem, write the complete validated
+candidate, preserve required metadata, flush and check write/close outcomes, then publish with the
+adapter’s supported per-file replacement primitive. Never fall back to truncating/writing the target
+in place or deleting it before a replacement is ready. Keep candidate generation and all dry-run
+paths free of temporary files/locks that write to the filesystem. No new backup-file workflow is
+required for successful normal writes.
+
+### Metadata
+
+Preserve owner/group or equivalent ownership, access permissions and ACLs, security labels, extended
+attributes and named streams where present and supported. If the adapter cannot inspect or preserve
+relevant metadata safely, refuse that file rather than silently discarding it or relaxing access. Do
+not clear read-only/immutable restrictions to force a write. Content modification times and
+replacement identity may change; this is not a promise to retain inode identity or every historical
+timestamp. Exact per-platform metadata support and preservation ordering must be documented and
+tested before enabling that adapter.
+
+### Hard links
+
+Keep the existing per-logical-path contract: replacement changes only the selected directory entry;
+other hard-link aliases retain the old inode/content unless separately selected and successfully
+processed. Do not modify aliases in place or merge targets by inode. Make link-count/alias
+consequences visible in write notes; do not claim hard-link topology is preserved by sibling
+replacement.
+
+### Platform support
+
+Keep Linux, macOS and Windows as target platforms, but enable apply only for native
+adapters/filesystems whose actual replacement, no-follow, metadata and failure behavior has been
+implemented and verified. Generic os.Rename is not sufficient evidence of atomic Windows
+replacement. Unsupported or unverified environments get a clear write refusal and can use dry-run;
+no silent weaker fallback. Record the supported local-filesystem matrix; do not assume
+network/cloud/virtual filesystems share local guarantees.
+
+### Durability and failure
+
+Separate atomic visibility from power-loss durability. Flush the staged content and the containing
+directory where the native adapter supports the required flush, and report actual failures. Do not
+promise survival of arbitrary hardware/filesystem failures. Track whether publication occurred
+before a later flush, cleanup or cancellation failure: successful writes remain reported, uncertain
+outcomes are marked uncertain and reacquired when possible. Cleanup only owned temporary artifacts;
+report leftovers/failures. Do not roll back a published file in a way that could overwrite
+subsequent external changes.
+
+### Partial results
+
+No whole-directory transaction or rollback. Continue independent files after detected
+stale/unsupported/failed writes, retaining prior successes. Rebuild the actual saved view and rerun
+affected cross-file checks; externally changed or uncertain documents are unavailable until a fresh
+stable snapshot is obtained. A stale refusal/write failure remains an io error and exit 13 under
+existing precedence even if the unsaved candidate was clean. Post-write checks describe observed
+saved content, not a promise that external writers cannot change it later.
+
+### Design status
+
+This decision sets product guarantees and accepted limitations. The #146 native prototype,
+metadata/coordination details and Linux/macOS/Windows failure/race tests remain required
+implementation work before write-dependent issues can claim completion.

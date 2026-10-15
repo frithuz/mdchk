@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "operation": "fix",
+  "mode": "cli",
+  "status": "clean",
+  "complete": true,
+  "checked_files": [
+    "README.md"
+  ],
+  "skipped_files": [],
+  "files": [
+    {
+      "path": "README.md",
+      "analysis": "complete",
+      "write_status": "proposed",
+      "return_status": "not-requested",
+      "input_snapshot": {
+        "view": "original",
+        "sha256": "79aeaf7ba450cdab4b13e948c49101b1de4d13e9b45e10e51ee99442c982a7e8",
+        "size_bytes": 7
+      },
+      "error_ids": [],
+      "coverage_ids": [],
+      "change_ids": [
+        "change-1"
+      ],
+      "result_snapshot": {
+        "view": "candidate",
+        "sha256": "e01b17ff9af77056792f67c57e3d1908795b9d1ae4cfe72421d0a2838991b740",
+        "size_bytes": 8
+      }
+    }
+  ],
+  "diagnostics": [],
+  "coverage": [],
+  "changes": [
+    {
+      "id": "change-1",
+      "path": "README.md",
+      "disposition": "proposed",
+      "before": {
+        "view": "original",
+        "sha256": "79aeaf7ba450cdab4b13e948c49101b1de4d13e9b45e10e51ee99442c982a7e8",
+        "size_bytes": 7
+      },
+      "candidate": {
+        "view": "candidate",
+        "sha256": "e01b17ff9af77056792f67c57e3d1908795b9d1ae4cfe72421d0a2838991b740",
+        "size_bytes": 8
+      },
+      "rules": [
+        "MD047"
+      ],
+      "edit_count": 1,
+      "diff": {
+        "format": "line-hunks",
+        "context_lines": 3,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "kind": "remove",
+                "text": "# Title",
+                "line_ending": "none"
+              },
+              {
+                "kind": "add",
+                "text": "# Title",
+                "line_ending": "lf"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "deferred_fixes": [],
+  "errors": [],
+  "notes": [],
+  "interruptions": [],
+  "omissions": [],
+  "documents": [],
+  "suppressed_diagnostics": [],
+  "effective_limits": [],
+  "dry_run": true
+}

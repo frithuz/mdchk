@@ -46,3 +46,9 @@ Expose directive diagnostics and parsing or policy notes through the shared resu
 Link rule state, suppressed diagnostics, and fix decisions to exact source directives. Region filtering must include earlier transitions still affecting the selected lines. Distinguish effective directives, blocked directives, invalid directives, and literal candidates. Do not report a blocked request as the cause of an actual rule-state change.
 
 Test inline and standalone comments, multiline syntax, code and front matter exclusions, parser uncertainty, rule-name validation, directive ordering, repeated transitions, partial permission lists, global blocking, enabling configured-off rules, protected configured-on and configured-off rules, file boundaries, end-of-file anchors, crossing edits, and line-range attribution. Check consistency across CLI and MCP and verify config validation covers both permission fields.
+
+## Special rule effects
+
+MD074 is project-scoped and MD094 controls pre-parse UTF-8 error attribution; directives targeting either have an inapplicable effect. A valid mixed-rule comment still applies its other permitted effects. UTF-8 validation cannot be disabled.
+
+MD087 observes otherwise-enabled target rules without disable intervals, on the original source and shared budgets. Last permitted disable instructions own intervals, including repeated disables. A proved hidden finding establishes use; only complete absence establishes an unused suppression. Missing context, unavailable rules or interruption withhold that conclusion and report incomplete coverage. See the [counterfactual contract](rule-behavior.md#unused-suppressions).

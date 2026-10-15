@@ -28,7 +28,7 @@ rules:
 
 `flavor` selects Markdown interpretation: `commonmark`, `gfm`, or `pandoc`. CommonMark 0.31.2 is the base for CommonMark and GFM; the default is `gfm`. Pandoc uses its own pinned reader profile. It applies consistently to lint, fix, inspect, and MCP operations. See [Markdown formats](markdown-formats.md) for the support contract and conformance status.
 
-Frontmatter recognition is independently optional for every supported flavor. Its configuration syntax and default remain undecided; choosing a flavor does not itself enable metadata headers. See [optional frontmatter headers](markdown-formats.md#optional-frontmatter-headers).
+Frontmatter recognition is independently disabled by default for every flavor. Enable `frontmatter.enabled` to recognize YAML/TOML headers. See [optional contexts](#optional-document-contexts) and the [recognition contract](engineering/frontmatter.md).
 
 `exclude` lists paths to skip. Patterns are relative to the configuration file's directory; for example, `docs/generated/**` excludes files beneath that directory. Exclusions apply even when you name a file explicitly. Skipped files appear in the report. If no files are selected, mdchk reports an error rather than a clean check.
 
@@ -55,12 +55,15 @@ Types are strict: strings do not become booleans or numbers, numbers do not beco
 | `version` | Integer, exactly `1` | Required in a present file or supplied object |
 | `flavor` | `commonmark`, `gfm`, or `pandoc` | `gfm` |
 | `resources` | Shared resource policy mapping | `index_file: index.md`, `anchor_style: github` |
+| `frontmatter` | Mapping with `enabled` and `formats` | `enabled: false`, `formats: [yaml, toml]` |
+| `integrations` | Mapping with `quarto.enabled` | `quarto.enabled: false` |
+| `documents` | Mapping with `slides` pattern sequence | `slides: []` |
 | `rules` | Mapping from MDxxx IDs to option mappings | Catalog defaults |
 | `exclude` | Sequence of valid pattern strings | Empty sequence |
 | `directives` | Mapping containing optional boolean `enabled` | `enabled: true`, subject to ancestor restrictions |
 | `allow_nested_excludes` | Boolean | `true`, subject to ancestor restrictions |
 
-Each rule accepts boolean `enabled` and `allow_directives`, plus its documented options. `allow_directives` defaults to `true`, subject to ancestor restrictions. There is no frontmatter setting in the initial schema. All unrecognized keys are errors.
+Each rule accepts boolean `enabled` and `allow_directives`, plus its documented options. `allow_directives` defaults to `true`, subject to ancestor restrictions. All unrecognized keys are errors, including unknown nested fields. The optional contexts below are part of schema version 1.
 
 Standalone MCP configuration is a JSON object with the same semantic schema and validation. Duplicate JSON names, malformed raw UTF-8, and unpaired Unicode surrogate escapes must be rejected before ordinary decoding loses that information. File diagnostics carry source locations; supplied-object diagnostics identify property paths when source positions are unavailable.
 
@@ -87,7 +90,48 @@ The former `MD051.anchor_style`, `MD080.anchor_style`, and `MD057.index_file` op
 
 These settings do not grant access or select lint targets. Excluded or unselected files within the resource root may supply read-only existence or anchor information. Standalone MCP's request-level `resources` object supplies that context; it is distinct from this configuration mapping. See the [resource contract](engineering/resources.md) for roots, URL resolution, partial inventories, and failure outcomes.
 
-`flavor: pandoc` selects the complete [fixed Pandoc profile](engineering/pandoc-compatibility.md). No per-extension configuration switches are accepted. Frontmatter and Quarto integration remain separate work.
+`flavor: pandoc` selects the complete [fixed Pandoc profile](engineering/pandoc-compatibility.md). No per-extension configuration switches are accepted. Frontmatter and Quarto are independently configured; neither is enabled by choosing Pandoc.
+
+## Optional document contexts
+
+```yaml
+version: 1
+frontmatter:
+  enabled: false
+  formats: [yaml, toml]
+integrations:
+  quarto:
+    enabled: false
+documents:
+  slides: []
+```
+
+`frontmatter.enabled` is Boolean and defaults to false. `formats` is a nonempty
+sequence of the supported strings `yaml` and `toml`, defaulting to both. Reject
+unknown formats and duplicate entries. YAML starts with `---` and ends with `---`
+or `...`; TOML uses `+++`. The opener must be the first line after an optional
+preserved UTF-8 BOM. Delimiters are unindented lines with only optional trailing
+spaces/tabs. Recognized headers are opaque to ordinary rules and directives;
+an unterminated header is protected through EOF with incomplete coverage and no
+edits there. JSON headers are deferred. See [frontmatter and metadata](engineering/frontmatter.md).
+
+`integrations.quarto.enabled` is Boolean and defaults to false. When enabled,
+`.qmd` joins directory-scan extensions and explicit executable `r`, `python` and
+`julia` cells receive the [Quarto interpretation](engineering/integrations.md#quarto-chunks).
+It does not enable MD078/MD079 or frontmatter and never executes code.
+
+`documents.slides` is a sequence of patterns using the exclusion grammar and its
+base directory, but only annotates already selected files. It does not select or
+exclude files, choose a flavor, or enable MD090. Only the selected configuration
+supplies these patterns; standalone uses its virtual root. MD090's default
+`allow_slides: true` exempts marked documents; false checks them normally.
+
+MD074 enablement itself opts into the [MkDocs context](engineering/integrations.md#mkdocs-navigation).
+There is no second integration flag. `config_path`, default `mkdocs.yml`, resolves
+from the operation resource root and must stay inside it.
+
+Shared [resource limits](engineering/limits.md) and [HTTP policy](engineering/http.md)
+are operator options, not project configuration fields.
 
 ## Initial capability handling
 
@@ -115,7 +159,7 @@ directives:
   enabled: false
 ```
 
-This configuration still yields incomplete lint analysis if default-enabled applicable rules are unavailable. Frontmatter recognition remains deferred: no setting silently activates it, and source follows ordinary flavor interpretation. Explicit options on enabled rules that require unavailable metadata interpretation are configuration errors. Frontmatter settings and recognition boundaries will be defined separately.
+This configuration still yields incomplete lint analysis if default-enabled applicable rules are unavailable. Enabled frontmatter or Quarto recognition requires the corresponding implementation; unsupported explicitly requested capabilities are configuration errors. Disabled recognition uses ordinary flavor parsing. Explicit enabled-rule options requiring unavailable metadata interpretation are also configuration errors.
 
 Explicit shared resource settings require their corresponding implementation capabilities; unavailable explicitly requested behavior is a configuration error. Missing unmentioned default behavior produces incomplete coverage when an applicable analysis requires it.
 

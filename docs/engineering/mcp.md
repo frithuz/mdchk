@@ -1,36 +1,177 @@
-# MCP server engineering design
+# MCP server contract
 
-The MCP server supports project-backed operations and standalone operations on supplied configuration and Markdown content. Both modes call the same parser, rules, and correction engine. The [user guide](../commands/mcp.md) defines their observable behavior.
+Status: accepted on 2026-10-15; implementation and end-to-end verification remain pending.
+These requirements incorporate the revised **1 MiB per-file limit** where applicable.
+See the [contract index](contracts.md) for related specifications and issue ownership.
 
-## Confirmed requirements
+The [command guide](../commands/mcp.md) describes startup and tool use.
+HTTP authorization and network policy follow the [HTTP contract](http.md);
+all adapters share the [result schema](results.md) and [limits](limits.md).
 
-- Expose `lint` and `fix` through MCP.
-- Support a project root from which configuration is inferred.
-- Support standalone requests containing configuration and file content, including use as a web service.
-- Preserve the internal parser and minimal third-party dependency goals.
+## Sdk
 
-The transport choices below remain design proposals. Configuration semantics and incomplete-analysis results follow the approved shared contracts; user documentation presents the intended product interface.
+### Module
 
-## Modes and transports
+github.com/modelcontextprotocol/go-sdk
 
-Choose exactly one operation mode at startup: `--root PATH` or `--standalone`. Reject missing or conflicting mode selection. Mode does not change during a server process's lifetime.
+### Version
 
-Support `--transport stdio|http`, defaulting to stdio, for either mode. HTTP uses a single `/mcp` endpoint with MCP Streamable HTTP, rather than a custom REST lint API. `--listen` applies only to HTTP and defaults to `127.0.0.1:8080`. Follow the [MCP transport specification](https://modelcontextprotocol.io/specification/latest/basic/transports), and pin the supported protocol revision in the implementation and compatibility tests.
+v1.8.0
 
-Keep protocol adaptation separate from transport and operation mode. Compare a focused standard-library implementation with the [official Go SDK](https://github.com/modelcontextprotocol/go-sdk), considering conformance maintenance and transitive dependencies. HTTP is part of the required service support; it is not deferred.
+### Commit
+
+3f3b699b2b67e1ed033a63d6651671dab53c2d32
+
+### Choice
+
+Use the official SDK for protocol lifecycle, discovery, cancellation and transport framing. Keep
+shared operations, strict raw-input validation, output validation, limits and deployment
+authorization in mdchk adapters.
+
+### Comparison
+
+- A focused standard-library implementation avoids SDK dependencies but would require maintaining two lifecycle models, version-specific wire shapes, Streamable HTTP, cancellation and conformance fixes. These are substantial continuing responsibilities for a two-tool service.
+- The official SDK already implements both selected revisions, exposes raw arguments and configurable version support, and passed the isolated feasibility check. Its dependency graph and transport defaults still need explicit integration review; importing it does not enforce mdchk policies automatically.
+
+### License record
+
+The pinned LICENSE describes an Apache-2.0 transition with pre-existing contributions remaining MIT
+where consent was not obtained. Preserve applicable license/notices and inventory the exact linked
+dependencies; do not label the whole SDK simply MIT or simply Apache-2.0.
+
+### Dependencies
+
+Pin the exact module and transitive dependency checksums in go.mod/go.sum during implementation and
+inventory the linked modules and applicable licenses. The SDK declares Go 1.25.0; the isolated probe
+used Go 1.27.2. Choose and document a supported project Go toolchain.
+
+### Upgrades
+
+No floating latest dependency. Updates are routine reviewed changes requiring compatibility,
+raw-validation, cancellation and limit regression checks before release; do not silently expand the
+advertised protocol set.
+
+## Protocol
+
+### Supported revisions
+
+- 2026-07-28
+- 2025-11-25
+
+### Preferred
+
+2026-07-28
+
+### Lifecycle
+
+- Implement 2026-07-28 per-request metadata and server/discover; do not require an initialize handshake for that revision. Implement initialize/initialized only for the supported 2025-11-25 legacy revision.
+- Set ServerOptions.SupportedProtocolVersions explicitly. Unsupported legacy initialization requests receive a supported legacy version as required by negotiation; clients unable to speak it disconnect. Unsupported modern versions and mismatched HTTP metadata cannot execute a tool.
+- Serve both revisions over stdio and stateless Streamable HTTP at /mcp. HTTP uses complete application/json responses, no persistent MCP session ID, no replay/event store, no background tasks or persistent SSE stream. Authentication, Origin/Host/proxy rules and timeouts follow the HTTP contract.
+- Exactly one startup mode: --root or --standalone. Exactly lint and fix, in a deterministic order. Expose only the tools capability with listChanged=false; explicitly disable SDK-default logging and unused prompts/resources/subscriptions/sampling/roots/elicitation features. The request resources inventory is tool input, not an MCP resources capability.
+- No custom x-mcp-header annotations exposing document/config/path values. Set discovery/list cache policy to ttlMs=0 and private rather than inheriting the SDK public default. Tool results are not cached.
+- Do not replay project fix automatically after a timeout/disconnect; a lost reply can follow a completed write. A caller must inspect actual saved results before choosing to issue a new call.
+
+### Independent client fixtures
+
+#### Repository
+
+https://github.com/modelcontextprotocol/python-sdk
+
+#### Tag
+
+v2.3.0
+
+#### Commit
+
+2118f14f8a19bc158d8a1cf90af58d85d187f849
+
+#### Policy
+
+Pin this independent client and its dependency lock for the initial test matrix; also use explicit
+captured/raw protocol fixtures for both revisions, malformed requests and negotiation. Passing
+Go-to-Go smoke tests is not independent interoperability evidence. Advertise compatibility with
+these protocol revisions and tested clients, not every product brand or every older SDK.
 
 ## Tool inputs
 
-Expose two tools named `lint` and `fix`. Publish mode-specific schemas through MCP tool discovery, following the [MCP tools specification](https://modelcontextprotocol.io/specification/latest/server/tools). Reject unknown fields and inputs from the other mode rather than silently ignoring them.
+- Use four schema variants: project lint {paths?}; project fix {paths?,dry_run?}; standalone lint {config,files,resources?}; standalone fix {config,files,resources?,dry_run?}. dry_run is a strict Boolean default false and is forbidden on lint. Root/mode/authentication/limit/config-file options are never tool arguments.
+- Use JSON Schema 2020-12, explicit types and additionalProperties=false for each closed request object. Reuse the shared complete configuration/resource schemas and validators, including exact version:1 and known rule IDs; do not independently duplicate rule option definitions. Schemas must be self-contained with local refs when published through discovery.
+- Omitted project paths selects the root. A present paths array must be nonempty; entries are nonempty relative target spellings, not globs. Allow . for the root and a single terminal slash for a directory; other segments are canonical slash-separated names and reject parent/empty/dot segments, absolute/drive/UNC forms, backslashes, controls and malformed Unicode. A terminal slash requires a directory. Deduplicate overlapping targets through shared discovery without bypassing exclusions or confinement.
+- Standalone files remains nonempty with strict {path,content} records and canonical logical names. The already accepted resources, duplicates, exclusion, configuration and content limits apply without change. No filesystem fallback or cross-call content/configuration cache.
+- Validate bounded original bytes before lossy decoding: strict UTF-8, paired Unicode escapes, JSON syntax, depth and duplicate names after escape decoding. Validate the whole message before the SDK can normalize its envelope; retain Arguments as json.RawMessage and use Server.AddTool raw handlers, then schema/shared semantic validation before any operation. Never detect malformed Unicode by rejecting a valid literal U+FFFD.
+- For stdio use a bounded validating frame reader/IOTransport; for HTTP bound and validate the original request body before SDK handling. Apply the accepted 16 MiB raw-message and 64-level JSON limits explicitly, not the SDK defaults. Keep malformed-message errors content-free and prevent recovery from executing partially parsed input.
 
-| Mode | Shared arguments | Fix argument |
-| --- | --- | --- |
-| Project | Optional `paths` array of relative paths | Optional `dry_run`, default false |
-| Standalone | Required `config` object and nonempty `files` array; optional `resources` inventory | Optional `dry_run`, default false |
+## Tool annotations
 
-Each standalone file is an object with required UTF-8 strings `path` and `content`. Paths use the canonical, case-sensitive UTF-8 logical names in the [resource contract](resources.md#logical-names-and-url-resolution); reject absolute paths, empty/dot/parent segments, backslashes, drive prefixes, controls, and duplicates. They identify documents and provide exclusion matching, never filesystem locations. Empty content is valid. Optional request-level `resources` follows the [standalone map schema](resources.md#standalone-resource-map), separately from `config.resources`. Seed all submitted files, including excluded ones; reject overlaps and contradictory ancestors. Infer parent directories only from positive entries. Omitted inventory means partial context, never a filesystem fallback.
+### Lint both modes
 
-Standalone configuration uses the approved project configuration's semantic schema as a JSON object. Require integer `version: 1`, exact MDxxx IDs, and strict types; reject duplicate names, invalid raw UTF-8, and unpaired Unicode surrogate escapes before ordinary decoding loses that information. Preserve raw arguments long enough to perform these checks. Omitted settings inherit catalog defaults. Do not accept a config path or load settings from server-local project or user configuration. Validate the entire input, schema, policies, and requested capabilities before processing any document, using the shared configuration validator.
+#### Readonlyhint
+
+true
+
+#### Destructivehint
+
+false
+
+#### Idempotenthint
+
+true
+
+#### Openworldhint
+
+false
+
+### Fix project
+
+#### Readonlyhint
+
+false
+
+#### Destructivehint
+
+true
+
+#### Idempotenthint
+
+true
+
+#### Openworldhint
+
+false
+
+### Fix standalone
+
+#### Readonlyhint
+
+true
+
+#### Destructivehint
+
+false
+
+#### Idempotenthint
+
+true
+
+#### Openworldhint
+
+false
+
+### Meaning
+
+Project fix always advertises possible mutation even if one call previews. Idempotence assumes
+unchanged relevant content/configuration; it is not retry authorization. Annotations describe
+behavior and never grant permissions.
+
+## Results and errors
+
+- Set structuredContent to the accepted schema_version:1 shared result object, with mode/operation-specific output schema. Include exactly one TextContent block containing its serialized JSON for compatibility. Both copies, escaping, JSON-RPC and revision metadata count toward the accepted 8 MiB total response cap.
+- isError=false for domain clean/violations and true for domain incomplete/error. Findings alone are successful execution. A completed wire response can have resultType=complete under 2026-07-28 while the domain result has complete=false; protocol completion must not overwrite analysis completeness.
+- Malformed JSON uses a parse error; valid JSON with an invalid/ambiguous protocol envelope uses invalid-request/invalid-params as appropriate; unknown methods use method-not-found and unknown tools invalid-params. Preserve standard revision-specific version errors. If a complete frame is available, reject it without killing service; disconnect/unrecoverable oversized framing can terminate that connection.
+- Once a valid tools/call identifies a known tool, strict tool argument/schema/name/content validation failures return the shared usage error result with isError=true; invalid configuration uses configuration, file failures io, and operation faults internal. Unknown or mixed-mode tool arguments are rejected before execution. Do not convert these into server process exit codes.
+- Runtime limits/deadlines/cancellation retain the accepted interruptions, coverage, partial writes and status precedence. Emit a bounded structured result when the selected protocol/connection permits; a cancelled or disconnected client may not receive it. Never claim a rollback or no-write solely because no response arrived.
+- Bound serialization and preserve all mandatory per-file write outcomes before committing any changes. Use the accepted complete-record omission policy; never truncate returned content strings. Report effective operator limits in effective_limits. No hidden pagination/spooling or durable request storage.
+- Use stderr for stdio diagnostics and reserve stdout for protocol frames. Log generated/request identifiers, counts, timings and stable error categories only; no raw document/config/token payloads or content-bearing validation messages. Identifiers originating from clients must be bounded and sanitized.
 
 ## Project configuration and access
 
@@ -50,35 +191,63 @@ Resource inventory validation precedes analysis. Preserve authoritative absence 
 
 Configuration, document, and resource state are local to the call. Do not cache effective configuration or content across requests. Shared rule definitions must be immutable. Concurrent standalone calls can run independently within resource limits.
 
-A standalone fix returns full corrected contents for every successfully processed document, whether changed or unchanged, plus changes and remaining findings. A dry run returns full proposed contents and diffs marked as proposed. Failed or skipped documents do not receive corrected content. Compute all candidate documents into one overlay before cross-file post-fix checks; resource-only entries retain submitted snapshots. Return only successfully processed targets. The caller owns persistence and any check that its local files still match the submitted inputs. Project mode instead rechecks the actual saved overlay after partial writes, invalidating stale dependencies; see [snapshot handling](resources.md#snapshots-caching-fixes-and-limits).
-
-## Results and errors
-
-Adapt the shared result model into versioned structured MCP output: operation, mode, checked and skipped documents, diagnostics, coverage, changes, and errors. Distinguish `clean`, `violations`, `incomplete`, and `error`, with the same precedence, completeness indicator, and [coverage records](../output-formats.md#incomplete-analysis) as the CLI. Incomplete analysis preserves available findings and contents but is not a clean validation result. Standalone fixes additionally return per-file contents; distinguish returned, written, and proposed changes so clients never mistake an in-memory result for a saved file.
-
-Use the shared error categories `usage`, `configuration`, `io`, and `internal`. Keep deterministic ordering. Findings alone are successful tool execution; a tool execution failure uses the protocol's error result mechanism and preserves available partial results. Malformed protocol messages use protocol errors. Do not place per-call outcomes in the server process's exit status or shut down on ordinary tool errors.
-
-Use the same diagnostic coordinates and preservation checks as the CLI. After fixing, diagnostics refer to resulting content. Deferred conflicting or unsafe edits remain findings with explanations. A response must not claim completeness if work or output is truncated.
-
-Lint is read-only in both modes. Project fix can write files; standalone fix only transforms submitted data. Publish mode-appropriate tool descriptions and annotations. Enforce these behaviors in server code rather than relying on annotations for permissions.
-
-## Service boundaries and resource limits
-
-Bind HTTP to loopback by default. For remote deployment, require an explicit authenticated HTTPS deployment boundary, document proxy trust, and implement the selected MCP revision's HTTP security requirements, including Origin validation. Protect project-mode access with deployment authorization as well as root confinement. The standalone request's `config` cannot alter server limits or authentication.
-
-Bound request size, documents plus resource entries, per-content bytes, unique resource queries including misses, path length/depth, directory enumeration, acquisition retries, parsing work, concurrency, execution time, and response bytes. Existence-only image checks must not read binary payloads. Preflight limits before project writes and propagate budget failure through the shared operational-error and coverage model. Configure limits at startup and return actionable errors when exceeded. Propagate cancellation through parsing and rule execution. Avoid returning partial corrected content strings; a size failure must clearly mark the response incomplete. Numeric defaults remain a design decision.
-
-Keep submitted content and configuration out of normal logs and do not persist request payloads. Log request identifiers, timings, counts, and error categories. Reserve stdout for protocol messages under stdio. Never execute code from Markdown, invoke a shell, or fetch remote links as part of a tool call.
+A standalone fix returns full corrected contents for every successfully processed document, whether changed or unchanged, plus changes and remaining findings. A dry run returns full proposed contents and diffs marked as proposed. Failed, skipped or explicitly withheld documents do not receive corrected content. Budget-driven withholding is recorded per target; never truncate a content string. Compute all candidate documents into one overlay before cross-file post-fix checks; resource-only entries retain submitted snapshots. Return only successfully processed targets. The caller owns persistence and any check that its local files still match the submitted inputs. Project mode instead rechecks the actual saved overlay after partial writes, invalidating stale dependencies; see [snapshot handling](resources.md#snapshots-caching-fixes-and-limits).
 
 ## Verification
 
-Test CLI, project MCP, and standalone MCP parity for identical contents and effective configuration. Verify that standalone requests cannot read or write filesystem documents, settings do not leak between calls, and fixes return usable full contents with accurate locations.
+### Scope
 
-Cover mode-specific schema rejection, missing configuration, duplicate names, exclusions, empty inputs, configuration reloads, traversal, symlinks, concurrent fixes, partial failures, cancellation, and request and response limits. Test both modes over both transports, including protocol-version handling, HTTP authentication boundaries, Origin validation, and separation of protocol traffic from logs.
+Isolated official SDK feasibility probe; no mdchk implementation or production conformance claim.
 
-## Open design decisions
+### Toolchain
 
-- Supported MCP revision and client compatibility range.
-- Internal protocol implementation or a justified SDK dependency.
-- Authentication deployment details and server resource limits.
-- Final structured result schema and diff representation.
+go1.27.2 darwin/arm64
+
+### Sdk
+
+v1.8.0
+
+### Matrix
+
+- in-memory newline JSON / 2026-07-28
+- in-memory newline JSON / 2025-11-25
+- stateless HTTP JSON / 2026-07-28
+- stateless HTTP JSON / 2025-11-25
+
+### Checked
+
+Discovery plus five raw-argument cases per combination: ordinary, duplicate key, escape-equivalent
+duplicate, unpaired surrogate, nested duplicate. All 20 cases preserved the original argument JSON
+bytes for subsequent validation.
+
+### Passed cases
+
+20
+
+### Not checked
+
+- actual process stdio
+- independent Python client
+- full raw-message rejection middleware
+- invalid raw UTF-8 handling
+- authentication/Origin/Host/proxies
+- production queue/timeout/response accounting
+- cancellation and partial-write transport behavior
+
+- Freeze mode-specific schema documents using the accepted shared config/resource/result contracts; add positive and negative fixtures and output semantic validation in #189/#190/#197.
+- Implement and fuzz strict bounded raw validation around SDK framing; cover escaped duplicate names, UTF-8, surrogate pairs, unknown fields, malformed envelope IDs, limits and continued service after errors.
+- Run both modes over both actual transports with independently pinned Python and raw wire fixtures at both revisions. Test initialization/discovery differences, unsupported versions, cancellation/disconnects, errors, annotations, output-schema validation and structured/text parity.
+- Review exact linked dependency licenses/notices and security updates, preserve go.sum and record why SDK defaults were overridden. Audit SDK logs for payload leakage.
+- Keep full transport/rule parity in #196/#200/#206 to avoid making individual rule completion depend on all transport implementation.
+- Apply the [HTTP deployment contract](http.md) for authentication, authorized roots, Origin/Host validation, proxies and protocol I/O timeouts before #202-#204 completion.
+
+## Pinned references
+
+- https://github.com/modelcontextprotocol/go-sdk/releases/tag/v1.8.0
+- https://github.com/modelcontextprotocol/go-sdk/blob/3f3b699b2b67e1ed033a63d6651671dab53c2d32/mcp/server.go
+- https://github.com/modelcontextprotocol/go-sdk/blob/3f3b699b2b67e1ed033a63d6651671dab53c2d32/mcp/protocol.go
+- https://github.com/modelcontextprotocol/go-sdk/blob/3f3b699b2b67e1ed033a63d6651671dab53c2d32/mcp/streamable.go
+- https://github.com/modelcontextprotocol/go-sdk/blob/3f3b699b2b67e1ed033a63d6651671dab53c2d32/LICENSE
+- https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning
+- https://modelcontextprotocol.io/specification/2026-07-28/server/tools
+- https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.3.0

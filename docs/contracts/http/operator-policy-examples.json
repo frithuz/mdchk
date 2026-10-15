@@ -1,0 +1,40 @@
+{
+  "status": "accepted policy examples; referenced key/certificate files are placeholders",
+  "local": {
+    "version": 1,
+    "deployment": "local",
+    "allowed_origins": []
+  },
+  "remote_direct": {
+    "version": 1,
+    "deployment": "direct_tls",
+    "public_url": "https://docs-mcp.example.com/mcp",
+    "allowed_origins": [],
+    "oauth": {
+      "issuer": "https://identity.example.com",
+      "jwks_file": "keys/issuer-public.jwks"
+    },
+    "tls": {
+      "cert_file": "tls/server.crt",
+      "key_file": "tls/server.key"
+    }
+  },
+  "remote_proxy": {
+    "version": 1,
+    "deployment": "proxy_tls",
+    "public_url": "https://docs-mcp.example.com/mcp",
+    "allowed_origins": [],
+    "oauth": {
+      "issuer": "https://identity.example.com",
+      "jwks_file": "keys/issuer-public.jwks"
+    },
+    "trusted_proxy_ips": [
+      "127.0.0.1"
+    ]
+  },
+  "commands": [
+    "mdchk mcp --root /srv/docs --transport http",
+    "mdchk mcp --root /srv/docs --transport http --listen 0.0.0.0:8443 --http-policy /etc/mdchk/direct-http.json",
+    "mdchk mcp --standalone --transport http --listen 127.0.0.1:8080 --http-policy /etc/mdchk/proxy-http.json"
+  ]
+}

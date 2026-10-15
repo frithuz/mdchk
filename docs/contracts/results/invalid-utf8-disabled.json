@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "operation": "lint",
+  "mode": "cli",
+  "status": "error",
+  "complete": false,
+  "checked_files": [
+    "bad.md"
+  ],
+  "skipped_files": [],
+  "files": [
+    {
+      "path": "bad.md",
+      "analysis": "failed",
+      "write_status": "not-requested",
+      "return_status": "not-requested",
+      "input_snapshot": {
+        "view": "original",
+        "sha256": "01ce0241d2a0e71a4fecd5a8d71157fe2787197732fc15d889cbcf36c38e3c68",
+        "size_bytes": 3
+      },
+      "error_ids": [
+        "error-1"
+      ],
+      "coverage_ids": [
+        "coverage-1"
+      ],
+      "change_ids": []
+    }
+  ],
+  "diagnostics": [],
+  "coverage": [
+    {
+      "id": "coverage-1",
+      "reason": "decoding-failed",
+      "message": "Markdown parsing is unavailable.",
+      "path": "bad.md",
+      "cause_ids": [
+        "error-1"
+      ]
+    }
+  ],
+  "changes": [],
+  "deferred_fixes": [],
+  "errors": [
+    {
+      "id": "error-1",
+      "category": "io",
+      "code": "invalid-utf8",
+      "scope": "operation",
+      "message": "Invalid UTF-8 at byte offset 1.",
+      "path": "bad.md",
+      "byte_offset": 1,
+      "range": {
+        "start": {
+          "line": 1,
+          "column": 2
+        },
+        "end": {
+          "line": 1,
+          "column": 2
+        }
+      },
+      "snapshot": {
+        "view": "original",
+        "sha256": "01ce0241d2a0e71a4fecd5a8d71157fe2787197732fc15d889cbcf36c38e3c68",
+        "size_bytes": 3
+      }
+    }
+  ],
+  "notes": [],
+  "interruptions": [],
+  "omissions": [],
+  "documents": [],
+  "suppressed_diagnostics": [],
+  "effective_limits": []
+}

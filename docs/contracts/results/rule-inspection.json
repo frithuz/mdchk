@@ -1,0 +1,14 @@
+{
+  "rule": "MD001",
+  "implementation": "available",
+  "configured_enabled": true,
+  "allow_directives": true,
+  "options": {
+    "frontmatter_title": false
+  },
+  "effective_state": "active",
+  "intervals": [],
+  "active_evaluation": "complete",
+  "observational_evaluation": "not-requested",
+  "reasons": []
+}

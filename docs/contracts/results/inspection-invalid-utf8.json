@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "operation": "inspect",
+  "mode": "cli",
+  "status": "inspected",
+  "complete": false,
+  "checked_files": [
+    "bad.md"
+  ],
+  "skipped_files": [],
+  "files": [
+    {
+      "path": "bad.md",
+      "analysis": "failed",
+      "write_status": "not-requested",
+      "return_status": "not-requested",
+      "input_snapshot": {
+        "view": "original",
+        "sha256": "01ce0241d2a0e71a4fecd5a8d71157fe2787197732fc15d889cbcf36c38e3c68",
+        "size_bytes": 3
+      },
+      "error_ids": [
+        "error-1"
+      ],
+      "coverage_ids": [
+        "coverage-1"
+      ],
+      "change_ids": []
+    }
+  ],
+  "diagnostics": [],
+  "coverage": [
+    {
+      "id": "coverage-1",
+      "reason": "decoding-failed",
+      "message": "Parsed inspection sections are unavailable.",
+      "path": "bad.md",
+      "cause_ids": [
+        "error-1"
+      ]
+    }
+  ],
+  "changes": [],
+  "deferred_fixes": [],
+  "errors": [
+    {
+      "id": "error-1",
+      "category": "io",
+      "code": "invalid-utf8",
+      "scope": "observation",
+      "message": "Invalid UTF-8 at byte offset 1.",
+      "path": "bad.md",
+      "rule": "MD094",
+      "byte_offset": 1,
+      "range": {
+        "start": {
+          "line": 1,
+          "column": 2
+        },
+        "end": {
+          "line": 1,
+          "column": 2
+        }
+      },
+      "snapshot": {
+        "view": "original",
+        "sha256": "01ce0241d2a0e71a4fecd5a8d71157fe2787197732fc15d889cbcf36c38e3c68",
+        "size_bytes": 3
+      }
+    }
+  ],
+  "notes": [],
+  "interruptions": [],
+  "omissions": [],
+  "documents": [],
+  "suppressed_diagnostics": [],
+  "effective_limits": [],
+  "inspection": {
+    "projection_version": 1,
+    "file": {
+      "resolved_path": "/example/bad.md",
+      "binary_version": "development",
+      "size_bytes": 3,
+      "size_display": "3 B (3 bytes)",
+      "sha1": "2b962856b5d3a293cc64cbfaf1e1580c7cefeba7",
+      "sha256": "01ce0241d2a0e71a4fecd5a8d71157fe2787197732fc15d889cbcf36c38e3c68",
+      "normally_excluded": false
+    },
+    "configuration": {
+      "availability": "available",
+      "reasons": [],
+      "data": {
+        "effective": {
+          "version": 1,
+          "flavor": "gfm",
+          "directives": {
+            "enabled": true
+          },
+          "rules": {
+            "MD094": {
+              "enabled": true,
+              "allow_directives": true
+            }
+          }
+        },
+        "sources": [
+          {
+            "kind": "default"
+          }
+        ],
+        "provenance": []
+      }
+    },
+    "flavor": {
+      "availability": "available",
+      "reasons": [],
+      "data": "gfm"
+    },
+    "document_context": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    },
+    "ast": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    },
+    "rules": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    },
+    "rule_counts": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    },
+    "directives": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    },
+    "resources": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    },
+    "parsing_notes": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    }
+  }
+}

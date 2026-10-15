@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "operation": "config validate",
+  "mode": "cli",
+  "status": "error",
+  "complete": true,
+  "checked_files": [
+    ".mdchk.yaml"
+  ],
+  "skipped_files": [],
+  "files": [
+    {
+      "path": ".mdchk.yaml",
+      "analysis": "complete",
+      "write_status": "not-requested",
+      "return_status": "not-requested",
+      "input_snapshot": {
+        "view": "original",
+        "sha256": "16e0d1afd6e96036b776ab20684da35f075c50d6f3c0fd599ddc8218ebbdfb56",
+        "size_bytes": 11
+      },
+      "error_ids": [
+        "error-1"
+      ],
+      "coverage_ids": [],
+      "change_ids": [],
+      "result_snapshot": {
+        "view": "original",
+        "sha256": "16e0d1afd6e96036b776ab20684da35f075c50d6f3c0fd599ddc8218ebbdfb56",
+        "size_bytes": 11
+      }
+    }
+  ],
+  "diagnostics": [],
+  "coverage": [],
+  "changes": [],
+  "deferred_fixes": [],
+  "errors": [
+    {
+      "id": "error-1",
+      "category": "configuration",
+      "code": "config-version",
+      "scope": "operation",
+      "message": "Unsupported configuration version 2.",
+      "path": ".mdchk.yaml",
+      "range": {
+        "start": {
+          "line": 1,
+          "column": 10
+        },
+        "end": {
+          "line": 1,
+          "column": 11
+        }
+      },
+      "snapshot": {
+        "view": "original",
+        "sha256": "16e0d1afd6e96036b776ab20684da35f075c50d6f3c0fd599ddc8218ebbdfb56",
+        "size_bytes": 11
+      }
+    }
+  ],
+  "notes": [],
+  "interruptions": [],
+  "omissions": [],
+  "documents": [],
+  "suppressed_diagnostics": [],
+  "effective_limits": [],
+  "config_validation": {
+    "scan_complete": true,
+    "definitions_checked": 1,
+    "valid_definitions": 0,
+    "invalid_definitions": 1,
+    "skipped_definitions": 0
+  }
+}

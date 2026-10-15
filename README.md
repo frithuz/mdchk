@@ -76,4 +76,4 @@ The approved [format contracts](docs/markdown-formats.md) define CommonMark 0.31
 
 Full-document formatting, prose rewriting, remote link checks, dedicated editor extensions, and third-party rules are outside mdchk's scope.
 
-See [the engineering design](docs/engineering.md) for confirmed constraints, proposed implementation choices, and decisions still to make.
+See [the engineering design](docs/engineering.md) for accepted contracts and remaining implementation work. See the [contract index](docs/engineering/contracts.md) for the complete policy set.

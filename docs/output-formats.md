@@ -35,36 +35,23 @@ Fix reports show corrections and remaining findings. Dry runs show proposed diff
 mdchk lint docs/ --format json > result.json
 ```
 
-JSON output is one object, with no terminal decorations or surrounding text. It includes a schema version, operation, overall status, completeness, checked and skipped files, diagnostics, coverage reasons, changes, and errors. A lint result looks like this:
+JSON output is one object, without terminal decorations. The normative
+[schema](contracts/results/result.schema.json) defines every field. See the
+[complete lint example](contracts/results/violations-lint.json),
+[preview example](contracts/results/fix-preview.json),
+[partial-write example](contracts/results/partial-project-writes.json), and
+[inspection example](contracts/results/inspection-invalid-utf8.json).
 
-```json
-{
-  "schema_version": 1,
-  "operation": "lint",
-  "status": "violations",
-  "complete": true,
-  "checked_files": ["docs/guide.md"],
-  "skipped_files": [],
-  "diagnostics": [
-    {
-      "path": "docs/guide.md",
-      "rule": "MD001",
-      "severity": "error",
-      "message": "Heading jumps from level 2 to level 4. Choose the intended heading level.",
-      "range": {
-        "start": {"line": 18, "column": 1},
-        "end": {"line": 18, "column": 5}
-      },
-      "fix_available": false
-    }
-  ],
-  "coverage": [],
-  "changes": [],
-  "errors": []
-}
-```
+Every result contains `schema_version: 1`, `operation`, `mode`, `status`, `complete`,
+and arrays `checked_files`, `skipped_files`, `files`, `diagnostics`, `coverage`,
+`changes`, `deferred_fixes`, `errors`, `notes`, `interruptions`, `omissions`,
+`documents`, `suppressed_diagnostics`, and `effective_limits`, even when empty.
+`dry_run` is required only for fix. `checked_files` always contains path strings;
+`files` supplies authoritative analysis, write and content-return outcomes.
+Located records identify their exact original, candidate or saved snapshot by
+SHA-256 and byte count. See the [semantic contract](engineering/results.md).
 
-For lint/fix checks, `status` is `clean`, `violations`, `incomplete`, or `error`. An operational error selects `error`; otherwise a coverage deficit selects `incomplete`, then remaining findings select `violations`, and a complete check without findings selects `clean`. Error entries retain their categories: `usage`, `configuration`, `io`, or `internal`. Check `complete`, `coverage`, and `errors` before treating absent findings as a clean result. File failures or reduced analysis coverage make the result incomplete.
+For lint/fix checks, `status` is `clean`, `violations`, `incomplete`, or `error`. An operational error selects `error`; otherwise coverage deficits, interruptions or omissions select `incomplete`, then remaining findings select `violations`, and a complete check without findings selects `clean`. Error entries retain their categories: `usage`, `configuration`, `io`, or `internal`. Check `complete`, `coverage`, and `errors` before treating absent findings as a clean result. File failures or reduced analysis coverage make the result incomplete.
 
 Inspection JSON uses operation `inspect` and status `inspected` when a report is produced. Its `inspection` object contains resolved path, binary version, `size_display` and integer `size_bytes`, full-file checksums, flavor, AST, rules, active and inactive counts, directives, parsing notes, selected lines, and data availability. Reported findings remain in `diagnostics`; suppressed observations appear in `suppressed_diagnostics`. Unresolved processing data is marked unavailable, rather than represented as a successful empty check. An inspection can return success with `complete: false` and configuration errors in the report because it reveals processing details rather than validating them.
 
@@ -76,7 +63,7 @@ Check `schema_version` before consuming fields. Ordinary command and configurati
 
 Lint, fix, and previews return status `incomplete`, `complete: false`, and exit `15` when requested analysis is incomplete and no operational error overrides it. Findings and safe changes remain available. An unavailable default-enabled rule is a coverage deficit even if it would have found no violations. Explicitly requested unavailable capabilities instead fail configuration validation before analysis. Disabled or dialect-inapplicable rules are not coverage deficits.
 
-The `coverage` array is present even when empty. Each entry has required string fields `reason` and `message`, with optional `rule` (MDxxx), `path`, and `range` when attributable. Ranges use the same coordinates as findings. A build-wide unavailable rule needs no fabricated document location. Entries are deterministic: order by path (absent first), position (absent first), rule, then reason; deduplicate identical records.
+The `coverage` array is present even when empty. Each entry has required string fields `reason` and `message`, with required `id` and optional `rule` (MDxxx), `path`, `range`, `snapshot`, and `cause_ids` when attributable. Ranges use the same coordinates as findings. A build-wide unavailable rule needs no fabricated document location. Entries are deterministic: order by path (absent first), position (absent first), rule, then reason; deduplicate identical records.
 
 | Reason | Meaning |
 | --- | --- |
@@ -84,28 +71,12 @@ The `coverage` array is present even when empty. Each entry has required string 
 | `parser-uncertain` | Unsupported or ambiguous parsing prevents reliable analysis of a region |
 | `context-unavailable` | An enabled check lacks required resource or integration context |
 
-For example, if unmentioned MD001 is the only applicable enabled check unavailable in a build:
-
-```json
-{
-  "schema_version": 1,
-  "operation": "lint",
-  "status": "incomplete",
-  "complete": false,
-  "checked_files": ["README.md"],
-  "skipped_files": [],
-  "diagnostics": [],
-  "coverage": [
-    {
-      "reason": "rule-unavailable",
-      "rule": "MD001",
-      "message": "MD001 is enabled by default but unavailable in this build."
-    }
-  ],
-  "changes": [],
-  "errors": []
-}
-```
+Additional coverage reasons are `decoding-failed`, `saved-view-unavailable`,
+`fix-nonconvergent`, `cancelled`, `deadline-exceeded`, and `limit-exceeded`.
+Runtime interruption also has an `interruptions` record so config validation can
+report stopped scanning while keeping Markdown `coverage` empty. Completed
+inspect can retain `inspected`/exit 0 for observations; interrupted inspect uses
+`incomplete`/exit 15 unless an operational error takes precedence.
 
 Coverage deficits are distinct from Markdown violations and operational errors. A read or decoding failure remains an operational error and may coexist with coverage records. They cannot be suppressed by inline directives; actual rule disablement or inapplicability determines whether a check is required.
 
@@ -193,3 +164,17 @@ Results go to stdout and execution logs go to stderr. Text also displays errors 
 For `fix --dry-run`, text and JSON include proposed changes. VS Code and GitHub formats report only findings remaining in the proposed content, so locations may differ from the files on disk. Use `lint` for editor and CI locations that match current files, and text or JSON to review a fix preview.
 
 MCP calls return structured tool results rather than selecting a terminal format. They share the diagnostic and error meanings described here; see the [MCP guide](commands/mcp.md).
+
+## Bounded reporting
+
+The default encoded response budget is 8 MiB. Omit whole optional diff/AST sections
+first, then whole ordered records with exact omitted counts when known. Unknown
+counts are omitted, never fabricated as zero. Omission makes `complete: false`.
+Reserve every target write outcome before commits; no size reduction can discard
+actual write results. Standalone fix can withhold a whole file content record with
+an explicit `return_status: withheld`; it never truncates a content string.
+
+`effective_limits` reports applicable operator/default values. MCP's structured
+result and serialized JSON text fallback both count, including escaping. See
+[resource limits](engineering/limits.md) and the
+[withheld-content example](contracts/results/withheld-whole-content.json).

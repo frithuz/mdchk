@@ -12,9 +12,11 @@ Choose exactly one mode: `--root PATH` or `--standalone`.
 
 | Option | Effect |
 | --- | --- |
+| `--limit NAME=VALUE` | Set a finite operator [resource limit](../engineering/limits.md); repeat for multiple limits |
 | `--root PATH` | Work on files and infer configuration within this project root |
 | `--standalone` | Accept configuration and Markdown content with each tool call |
 | `--transport stdio\|http` | Choose the connection transport; defaults to `stdio` |
+| `--http-policy PATH` | Load strict operator JSON for local, direct TLS or trusted-proxy HTTP deployment |
 | `--listen ADDRESS` | HTTP bind address; defaults to `127.0.0.1:8080` and applies only to HTTP |
 
 Both modes support either transport. The [global options](../index.md#global-options) also apply. `--config`, `--format`, and `--dry-run` are not MCP startup options; configuration and previews follow the selected mode's tool interface.
@@ -115,10 +117,26 @@ Names must be canonical relative UTF-8 paths with `/` separators, without empty,
 
 ## Understand the results
 
-Results identify checked and skipped files, findings with locations and rule names, changes, and any execution errors. Fix findings describe the corrected content; preview findings describe the proposed content. Standalone fix results include the full content for each successfully processed file, including unchanged files. Excluded files appear as skipped and have no corrected content.
+Results identify checked and skipped files, findings with locations and rule names, changes, and any execution errors. Fix findings describe the corrected content; preview findings describe the proposed content. Standalone fix results include full contents for successfully returned files, including unchanged files. A response-size limit may withhold whole contents with explicit per-file outcomes and omissions. Excluded, failed or withheld files have no content entry; content strings are never truncated.
 
 Rule violations are a completed check, even when some cannot be fixed automatically. Invalid configuration, inaccessible project files, and server failures are errors. MCP tool results carry these distinctions; individual calls do not terminate the server or return shell exit codes. See the [exit code guide](../exit-codes.md) for terminal commands.
 
 For a project fix, an error can occur after other files have changed. Review the changes and failures before retrying. For a standalone fix, review returned contents and errors before saving files. Status `incomplete` and `complete: false` identify reduced analysis coverage; read the structured `coverage` reasons and do not treat missing results as clean checks. Operational errors take precedence and retain available coverage information.
 
-Keep the example HTTP service local. For access from other machines, configure your deployment's authenticated HTTPS endpoint. Submitted configuration and Markdown are sent to that service for processing.
+The default HTTP service trusts local native users and binds literal loopback.
+Remote access requires `--http-policy` with `direct_tls` or `proxy_tls`, an HTTPS
+public URL, one OAuth issuer and operator-provisioned public signing keys. Project
+lint/preview requires `mdchk:read`; apply also requires `mdchk:write`. Standalone
+requires `mdchk:run`. See the [HTTP deployment contract](../engineering/http.md)
+for policy examples, key provisioning, Host/Origin rules and proxy requirements.
+
+The supported MCP revisions are `2026-07-28` (preferred) and `2025-11-25`.
+Both use stateless HTTP JSON or stdio. Legacy stateless HTTP cancellation can be
+ignored without a persistent session; disconnect does not establish that work or
+writes stopped. Never automatically retry a project fix after a lost response.
+
+Defaults are 1 MiB per text, 8 MiB aggregate content, 16 MiB raw request and 8 MiB
+encoded response, including both structured output and JSON text fallback. See
+[limits](../engineering/limits.md) for concurrency, timeouts and finite overrides.
+Domain `clean`/`violations` results use `isError: false`; `incomplete`/`error` use
+`isError: true` under the [shared result schema](../engineering/results.md).

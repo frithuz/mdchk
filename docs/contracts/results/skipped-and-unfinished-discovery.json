@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "operation": "lint",
+  "mode": "cli",
+  "status": "incomplete",
+  "complete": false,
+  "checked_files": [],
+  "skipped_files": [
+    {
+      "path": "excluded.md",
+      "reason": "excluded",
+      "message": "Excluded by selected configuration."
+    }
+  ],
+  "files": [
+    {
+      "path": "excluded.md",
+      "analysis": "skipped",
+      "write_status": "not-requested",
+      "return_status": "skipped",
+      "error_ids": [],
+      "coverage_ids": [],
+      "change_ids": []
+    }
+  ],
+  "diagnostics": [],
+  "coverage": [],
+  "changes": [],
+  "deferred_fixes": [],
+  "errors": [],
+  "notes": [],
+  "interruptions": [
+    {
+      "id": "interruption-1",
+      "reason": "limit-exceeded",
+      "phase": "discovery",
+      "message": "Directory-entry limit reached.",
+      "limit": {
+        "name": "directory-entries",
+        "allowed": 100000,
+        "observed": 100001,
+        "unit": "entries"
+      }
+    }
+  ],
+  "omissions": [],
+  "documents": [],
+  "suppressed_diagnostics": [],
+  "effective_limits": []
+}

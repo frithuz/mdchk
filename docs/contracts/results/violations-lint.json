@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "operation": "lint",
+  "mode": "cli",
+  "status": "violations",
+  "complete": true,
+  "checked_files": [
+    "README.md"
+  ],
+  "skipped_files": [],
+  "files": [
+    {
+      "path": "README.md",
+      "analysis": "complete",
+      "write_status": "not-requested",
+      "return_status": "not-requested",
+      "input_snapshot": {
+        "view": "original",
+        "sha256": "e01b17ff9af77056792f67c57e3d1908795b9d1ae4cfe72421d0a2838991b740",
+        "size_bytes": 8
+      },
+      "error_ids": [],
+      "coverage_ids": [],
+      "change_ids": [],
+      "result_snapshot": {
+        "view": "original",
+        "sha256": "e01b17ff9af77056792f67c57e3d1908795b9d1ae4cfe72421d0a2838991b740",
+        "size_bytes": 8
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "diagnostic-1",
+      "path": "README.md",
+      "rule": "MD041",
+      "severity": "error",
+      "message": "Opening heading does not use the configured level 2.",
+      "range": {
+        "start": {
+          "line": 1,
+          "column": 1
+        },
+        "end": {
+          "line": 1,
+          "column": 8
+        }
+      },
+      "snapshot": {
+        "view": "original",
+        "sha256": "e01b17ff9af77056792f67c57e3d1908795b9d1ae4cfe72421d0a2838991b740",
+        "size_bytes": 8
+      },
+      "fix_available": false
+    }
+  ],
+  "coverage": [],
+  "changes": [],
+  "deferred_fixes": [],
+  "errors": [],
+  "notes": [],
+  "interruptions": [],
+  "omissions": [],
+  "documents": [],
+  "suppressed_diagnostics": [],
+  "effective_limits": [
+    {
+      "name": "document-bytes",
+      "value": 1048576,
+      "unit": "bytes",
+      "source": "default"
+    },
+    {
+      "name": "total-content-bytes",
+      "value": 8388608,
+      "unit": "bytes",
+      "source": "default"
+    },
+    {
+      "name": "response-bytes",
+      "value": 8388608,
+      "unit": "bytes",
+      "source": "default"
+    },
+    {
+      "name": "target-files",
+      "value": 5000,
+      "unit": "files",
+      "source": "default"
+    },
+    {
+      "name": "resource-identities",
+      "value": 25000,
+      "unit": "identities",
+      "source": "default"
+    },
+    {
+      "name": "resource-lookups",
+      "value": 25000,
+      "unit": "distinct logical keys",
+      "source": "default"
+    },
+    {
+      "name": "directory-entries",
+      "value": 100000,
+      "unit": "observed entries",
+      "source": "default"
+    },
+    {
+      "name": "path-bytes",
+      "value": 4096,
+      "unit": "UTF-8 bytes",
+      "source": "default"
+    },
+    {
+      "name": "path-depth",
+      "value": 64,
+      "unit": "segments",
+      "source": "default"
+    },
+    {
+      "name": "config-bytes",
+      "value": 1048576,
+      "unit": "bytes",
+      "source": "default"
+    },
+    {
+      "name": "total-config-bytes",
+      "value": 8388608,
+      "unit": "bytes",
+      "source": "default"
+    },
+    {
+      "name": "structured-input-depth",
+      "value": 64,
+      "unit": "nested containers",
+      "source": "default"
+    },
+    {
+      "name": "syntax-depth",
+      "value": 256,
+      "unit": "nested constructs",
+      "source": "default"
+    },
+    {
+      "name": "document-nodes",
+      "value": 250000,
+      "unit": "nodes or source records",
+      "source": "default"
+    },
+    {
+      "name": "total-nodes",
+      "value": 2000000,
+      "unit": "nodes or source records constructed",
+      "source": "default"
+    },
+    {
+      "name": "work-units",
+      "value": 250000000,
+      "unit": "metered work units",
+      "source": "default"
+    },
+    {
+      "name": "snapshot-retries",
+      "value": 2,
+      "unit": "additional attempts",
+      "source": "default"
+    },
+    {
+      "name": "operation-time",
+      "value": 60,
+      "unit": "seconds",
+      "source": "default"
+    },
+    {
+      "name": "reporting-time",
+      "value": 2,
+      "unit": "additional seconds",
+      "source": "default"
+    },
+    {
+      "name": "report-reserve-bytes",
+      "value": 65536,
+      "unit": "bytes within response budget",
+      "source": "default"
+    },
+    {
+      "name": "workers-per-operation",
+      "value": 1,
+      "unit": "worker",
+      "source": "default"
+    },
+    {
+      "name": "fix-rounds",
+      "value": 10,
+      "unit": "changing rounds",
+      "source": "default"
+    }
+  ]
+}
