@@ -18,7 +18,7 @@ mdchk fix README.md docs/
 
 | Option | Effect |
 | --- | --- |
-| `--config PATH` | Use the named configuration file instead of discovering one |
+| `--config PATH` | Select a configuration inside the operation's discovery boundary |
 | `--format FORMAT` | Choose `text`, `json`, `vscode`, or `github`; defaults to `text` |
 | `--dry-run` | Compute corrections and report the predicted result without writing files |
 
@@ -38,8 +38,10 @@ Corrections preserve meaning and unrelated content. For example, fix can add a m
 
 After corrections, mdchk checks the resulting content and reports remaining findings at their new locations. The report identifies changed files and what was corrected.
 
+Cross-file post-fix checks use one candidate view containing all proposed target changes. Referenced resources remain read-only. After project writes, results use the actual saved view: successful writes plus confirmed unchanged snapshots. If writes fail or a dependency changes, mdchk reports the error and affected incomplete coverage instead of treating every proposal as saved. See the [resource snapshot contract](../engineering/resources.md#snapshots-caching-fixes-and-limits).
+
 ## Understand the result
 
-Exit code `0` means no violations remain after corrections. Code `10` means problems remain, including those that cannot be safely fixed. For a dry run, those codes describe the predicted content; even a `0` can accompany changes that still need to be applied.
+Exit code `0` means analysis completed and no violations remain after corrections. Code `10` means a complete check found remaining problems, including those that cannot be safely fixed. Code `15` means post-fix analysis is incomplete; available safe changes and findings remain in the report, and uncertain regions remain protected. For a dry run, those codes describe the predicted content; even a `0` can accompany changes that still need to be applied.
 
 Errors can occur after other files have changed. Inspect both successful changes and failures before retrying. If a file changes during fixing, mdchk refuses stale edits rather than overwriting the newer contents. See the [exit code guide](../exit-codes.md) for usage, configuration, I/O, and internal error codes.

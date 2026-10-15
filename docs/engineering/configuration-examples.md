@@ -1,0 +1,299 @@
+# Configuration examples and fixture cases
+
+These cases specify inputs and expected outcomes for the approved
+[configuration contract](../configuration.md). They are examples for loader and
+integration fixtures; the loader is not implemented yet. Use the complete known
+rule catalog in every case, independently of the executable implementations.
+
+Unless a case specifies otherwise, assume the selected flavor, directive
+processor, and applicable rules are implemented, no ancestor restricts the
+definition, and all configuration paths are inside the discovery boundary. These
+conditions describe a test environment, not the current implementation status.
+
+## Valid definitions
+
+### Explicit project settings
+
+```yaml
+version: 1
+flavor: gfm
+exclude:
+  - 'vendor/**'
+  - 'docs/generated/**'
+rules:
+  MD013:
+    enabled: true
+    length: 100
+  MD004:
+    marker: dash
+```
+
+Expected: schema-valid, with GFM, a line-length limit of 100, and dash bullets.
+MD004 keeps its default enabled state. Both exclusions are relative to this
+definition's directory.
+
+### Comments flow collections and aliases
+
+```yaml
+# Reuse a valid disabled-rule setting within this document.
+version: 1
+rules:
+  MD001: &disabled {enabled: false}
+  MD013: *disabled
+```
+
+Expected: both rules disabled. The alias does not create external file access or
+merge keys. It is validated against MD013's option schema at its use site.
+
+### Empty mappings preserve defaults
+
+```yaml
+version: 1
+rules:
+  MD001: {}
+exclude: []
+```
+
+Expected: MD001 is explicitly configured and remains enabled with its catalog
+options. If MD001 is unavailable, this same definition fails capability validation;
+an empty entry does not count as an unmentioned rule.
+
+By contrast, `MD013: {}` keeps that rule's default disabled state and is valid
+even if MD013 is unavailable. Supplying only `length: 100` also leaves it disabled.
+
+### Explicitly disabled unavailable rule
+
+```yaml
+version: 1
+rules:
+  MD013:
+    enabled: false
+    length: 100
+```
+
+Expected even when MD013 has no implementation: validate its option types and
+range, retain the settings, and impose no coverage penalty for that disabled check.
+
+### CommonMark development settings
+
+```yaml
+version: 1
+flavor: commonmark
+directives:
+  enabled: false
+```
+
+Assume CommonMark exists, GFM and directives do not, and MD001 is the only applicable
+default-enabled rule missing an implementation. Expected: configuration succeeds;
+lint runs available checks, reports MD001 as `rule-unavailable`, sets
+`status: incomplete` and `complete: false`, and exits 15. A config validation scan
+does not execute MD001 and can succeed. Inspect can report the missing
+implementation while still exiting 0.
+
+## Invalid definitions
+
+Each table row is an independent complete YAML input written as a flow mapping.
+Expect a located configuration error before Markdown processing or writes. Types
+must be checked from source nodes, without relying on struct-decoder coercion.
+
+| Case | YAML input | Expected error |
+| --- | --- | --- |
+| Missing version | `{rules: {}}` | Required version missing |
+| Unsupported version | `{version: 2}` | Unsupported schema version |
+| Quoted version | `{version: '1'}` | String instead of integer |
+| Fractional version | `{version: 1.9}` | Fractional number instead of integer; never truncate |
+| Leading-zero integer | `{version: 01}` | Noncanonical integer notation |
+| Alternate-base integer | `{version: 0x1}` | Nondecimal integer notation |
+| Null setting | `{version: 1, exclude: null}` | Null where a sequence is required |
+| Numeric string coercion | `{version: 1, flavor: 123}` | Number where a string is required |
+| Wrong key case | `{Version: 1}` | Unknown key and missing required version |
+| Unknown key | `{version: 1, flavour: gfm}` | Unknown key |
+| Alias name | `{version: 1, rules: {final-newline: {}}}` | Unsupported descriptive rule alias |
+| Lowercase ID | `{version: 1, rules: {md013: {}}}` | Invalid canonical ID spelling |
+| Reserved ID | `{version: 1, rules: {MD002: {}}}` | Reserved rule ID |
+| Unknown ID | `{version: 1, rules: {MD999: {}}}` | Unknown rule ID |
+| Null rule | `{version: 1, rules: {MD013: null}}` | Expected an option mapping |
+| Quoted integer option | `{version: 1, rules: {MD013: {length: '100'}}}` | String instead of integer |
+| Out-of-range option | `{version: 1, rules: {MD013: {length: 0}}}` | Invalid length range |
+| Quoted boolean | `{version: 1, rules: {MD013: {enabled: 'true'}}}` | String instead of boolean |
+| Legacy boolean | `{version: 1, rules: {MD013: {enabled: on}}}` | Invalid boolean value |
+| Invalid disabled rule | `{version: 1, rules: {MD013: {enabled: false, lenght: 100}}}` | Unknown option despite disabled rule |
+| Escaping pattern base | `{version: 1, exclude: ['../**']}` | Parent-relative exclusion prohibited |
+| Unsupported negation | `{version: 1, exclude: ['!README.md']}` | Negation unsupported |
+| Embedded globstar | `{version: 1, exclude: ['docs/ab**cd']}` | Globstar must occupy a whole segment |
+| Unspecified frontmatter setting | `{version: 1, frontmatter: true}` | Unknown setting in the initial schema |
+
+The validator need not aggregate every error in one invalid definition. When
+multiple problems exist, at least one precise error must explain rejection;
+duplicate-key diagnostics identify both occurrences.
+
+### Duplicate keys
+
+```yaml
+version: 1
+rules:
+  MD013: {length: 100}
+  MD013: {length: 100}
+```
+
+Expected: duplicate rule key at line 4, referencing line 3. Identical values do not
+make a duplicate valid. Also cover duplicate top-level keys and duplicate option
+keys within one rule mapping.
+
+### Multiple documents
+
+```yaml
+version: 1
+---
+version: 1
+```
+
+Expected: extra document error. Successfully decoding only the first document is
+insufficient. Empty files, null documents, and sequence roots are also invalid.
+
+### Merge keys
+
+```yaml
+version: 1
+rules:
+  MD001: &base {enabled: false}
+  MD013:
+    <<: *base
+```
+
+Expected: unsupported merge key at line 5. A plain alias to a valid mapping is
+supported; merging mappings is outside the configuration schema. Also reject
+custom tags, alias cycles, unresolved aliases, and non-string mapping keys.
+
+## Capability cases
+
+Schema validity alone does not imply this build can honor a selected definition.
+
+| Definition or condition | Capability setup | Expected outcome |
+| --- | --- | --- |
+| `version: 1`, flavor omitted | GFM unavailable | Configuration error; no CommonMark fallback |
+| `flavor: pandoc` | Pandoc unavailable | Configuration error |
+| Global directives effectively true | Processor unavailable | Configuration error |
+| Child directives true beneath valid ancestor false | Processor unavailable | Effective false; no processor capability error |
+| Explicit MD001 entry, enabled or default-enabled | MD001 unavailable | Configuration error |
+| Explicit MD013 entry with `enabled: true` | MD013 unavailable | Configuration error |
+| Explicit MD013 entry without `enabled` | MD013 unavailable | Remains default-disabled, without coverage penalty |
+| No MD001 entry | MD001 unavailable and applicable | Lint/fix incomplete with exit 15 |
+| Unmentioned default-disabled rule | Implementation unavailable | Inactive without coverage penalty |
+| Unmentioned footnote rules in a dialect without footnotes | Extension inapplicable | No footnote coverage penalty |
+| Explicit metadata-dependent option on an enabled rule | Required metadata interpretation unavailable | Configuration error |
+| Enabled applicable resource-dependent check | Context unavailable | Analysis incomplete with `context-unavailable` |
+| A known unavailable rule enabled by a permitted source directive | Directive processor available | Retain state transition and report `rule-unavailable` for required coverage |
+
+Keep operational errors separate. A file read failure takes exit 13 ahead of
+incomplete analysis; an internal failure takes 14 ahead of both. Coverage deficits
+take 15 ahead of ordinary violations (10). Config validation does not use 15 for
+missing implicit default implementations, and completed inspect does not use 15.
+
+## Patterns discovery and policies
+
+Use explicit fixture roots and an injected filesystem view so host case behavior
+does not change expectations.
+
+| Fixture | Expected outcome |
+| --- | --- |
+| `vendor` versus `vendor/a.md` and `pkg/vendor/a.md` | First excluded through its ancestor directory; second eligible |
+| `**/vendor/` with root and nested vendor directories | Both subtrees excluded, including explicit targets |
+| `docs/generated/**` versus the directory itself | Directory pruned, including an empty directory |
+| `**/*.md` with root and nested lowercase extensions | Both match; zero-segment globstar works |
+| Same pattern with `README.MD` | Pattern does not match, but directory discovery still selects the file |
+| `.github/guide.md` without exclusions | Selected; hidden directories are included |
+| Explicit regular file `notes.txt` | Eligible despite extension, subject to exclusions |
+| Explicit target outside config directory | Config-relative patterns do not match it |
+| Symlink target in lint/fix discovery | Skipped; no traversal through it |
+| Explicit config outside enclosing repository | Configuration error; no widened boundary |
+| Explicit config inside a nested separate repository | Configuration error for crossing repository scope |
+| Config reached through a symlink | Configuration error |
+| Relative `--config docs/custom.yaml` | Resolved from working directory; same YAML parser |
+| Invalid nearest config, valid ancestor | Configuration error; no fallback |
+| Invalid ancestor schema, valid selected child | Configuration error before trusting ancestor permissions |
+| Schema-valid ancestor selecting an unavailable dialect, supported selected child | Ancestor policy still applies; unselected dialect is not executed or inherited |
+| Parent exclusion permission false, child true and no exclusions | Valid; effective permission remains false |
+| Same parent, child adds nonempty exclusions | Configuration error identifying the ancestor |
+| Parent per-rule directive permission false, child true | Valid; effective permission remains false with provenance |
+| Selected child changes enabled state or rule options | Settings come from child and built-ins, independently of ancestor rule settings |
+| Worktree with a `.git` file | Discovery stops at the worktree boundary |
+| Project MCP invocation | Discovery and ancestor reads stay inside startup root |
+| Standalone request | No filesystem configuration or ancestor lookup |
+| Validation scan starts below a parent config | Does not read that parent |
+| Invalid config with exclusions during validation scan | Report it and continue with valid inherited policies; apply none of its exclusions |
+
+For glob grammar, also cover classes, escaped metacharacters, trailing slashes,
+malformed classes, repeated separators, drive/UNC paths, absolute patterns, and
+backslashes as escapes rather than Windows separators. Compare Git ignore
+fixtures separately against Git semantics; the mdchk matcher is not a Git ignore
+implementation.
+
+## Standalone parity
+
+The same semantic validator accepts this object when its requested capabilities
+are available:
+
+```json
+{
+  "version": 1,
+  "flavor": "commonmark",
+  "directives": {"enabled": false},
+  "rules": {"MD013": {"enabled": true, "length": 100}}
+}
+```
+
+Reject duplicate JSON names before map construction, null values, unknown fields,
+incorrect types, and invalid option values. Match YAML outcomes for equivalent
+values. Errors identify property paths when byte/line locations are unavailable.
+No submitted name or setting causes a server-local configuration read.
+
+## Pandoc and shared resource policy
+
+This YAML and JSON pair select the same approved settings once their capabilities
+are implemented. All other rule defaults remain unchanged.
+
+```yaml
+version: 1
+flavor: pandoc
+resources:
+  index_file: README.md
+  anchor_style: explicit
+rules:
+  MD051:
+    cross_file: true
+```
+
+```json
+{
+  "version": 1,
+  "flavor": "pandoc",
+  "resources": {"index_file": "README.md", "anchor_style": "explicit"},
+  "rules": {"MD051": {"cross_file": true}}
+}
+```
+
+| Input or condition | Expected outcome |
+| --- | --- |
+| Omitted `resources`, or `resources: {}` | `index_file: index.md`, `anchor_style: github` |
+| `resources: {anchor_style: explicit}` | One policy for MD051, MD073, and MD080, including referenced Markdown |
+| `resources: {index_file: README.md}` | Directory lookups try that one filename once |
+| `resources: null`, a sequence, or an unknown resource field | Configuration error |
+| `resources: {index_file: docs/index.md}` | Configuration error: filename only |
+| Empty index filename, `.`/`..`, a glob, URL, query/fragment, drive prefix, backslash, or control character | Configuration error |
+| `resources: {anchor_style: pandoc}` | Configuration error: only `github` or `explicit` |
+| `rules: {MD051: {anchor_style: github}}` | Configuration error: removed rule option |
+| `rules: {MD080: {enabled: false, anchor_style: explicit}}` | Configuration error even though disabled |
+| `rules: {MD057: {index_file: index.md}}` | Configuration error: removed rule option |
+| `flavor: pandoc+footnotes` | Configuration error: invalid flavor value |
+| Top-level `pandoc_extensions` or `pandoc` mapping | Configuration error: no extension controls |
+| `flavor: pandoc` with any selected profile capability unavailable | Configuration error; no partial-profile fallback |
+| Explicit shared resource setting with required implementation unavailable | Configuration error before analysis |
+| Unmentioned default resource behavior unavailable for an applicable check | Incomplete coverage when required, not a false clean result |
+| An ancestor sets different shared resource options | Selected definition and built-ins supply policy; no ancestor option merge |
+
+Validate standalone JSON before ordinary decoding: reject duplicate names,
+malformed raw UTF-8, and unpaired surrogate escapes. A valid literal U+FFFD is
+accepted. Request-level `resources` is a separate map schema, not a configuration
+option or permission to read host files. Its validation and parity cases are in
+the [resource contract](resources.md#verification-and-handoff).

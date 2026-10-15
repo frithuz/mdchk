@@ -18,7 +18,7 @@ Each finding identifies the file, line, column, rule, and a useful explanation. 
 An illustrative finding:
 
 ```text
-docs/guide.md:18:1 heading-increment: Heading jumps from level 2 to level 4. Choose the intended heading level. [manual]
+docs/guide.md:18:1 MD001: Heading jumps from level 2 to level 4. Choose the intended heading level. [manual]
 ```
 
 ## Apply safe corrections
@@ -71,6 +71,8 @@ See the [result formats guide](docs/output-formats.md) for readable output, JSON
 mdchk provides file and directory checks, safe fixes with previews, project configuration, results for people and integrations, and an MCP server.
 
 The [ruleset to implement](docs/rules/index.md) defines 89 checks with stable numeric IDs and reserved gaps. Rule pages are grouped by focus area. Each page specifies behavior, default enablement, options, examples, and correction policies.
+
+The approved [format contracts](docs/markdown-formats.md) define CommonMark 0.31.2, the fixed GFM profile, and the fixed Pandoc 3.12.1 profile. The [resource contract](docs/engineering/resources.md) defines bounded link/anchor lookup and standalone context. Implementation and conformance verification remain pending.
 
 Full-document formatting, prose rewriting, remote link checks, dedicated editor extensions, and third-party rules are outside mdchk's scope.
 

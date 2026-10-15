@@ -62,14 +62,14 @@ mdchk mcp --standalone --transport http --listen 127.0.0.1:8080
 
 Connect an MCP client to `http://127.0.0.1:8080/mcp`. The HTTP endpoint accepts MCP requests; the examples below show tool arguments, rather than complete HTTP messages.
 
-Each standalone call includes `config` and a nonempty `files` list. Configuration is a structured object using the settings in the [configuration guide](../configuration.md). Send `{"version": 1}` to use default rules. Each file has a relative `path` for reporting and exclusion matching, plus its Markdown `content`:
+Each standalone call includes `config` and a nonempty `files` list. Configuration is a structured object using the settings in the [configuration guide](../configuration.md). Send `{"version": 1}` to select catalog defaults when the default dialect and directive processing are available. Known unavailable default-enabled checks remain visible as incomplete coverage. Explicitly requested unavailable capabilities are configuration errors. Each file has a relative `path` for reporting and exclusion matching, plus its Markdown `content`:
 
 ```json
 {
   "config": {
     "version": 1,
     "rules": {
-      "final-newline": {"enabled": true}
+      "MD047": {"enabled": true}
     }
   },
   "files": [
@@ -82,12 +82,43 @@ Call `lint` with these arguments to receive findings. Call `fix` to receive corr
 
 For `fix`, `"dry_run": true` returns a preview with proposed content and diffs. Neither standalone operation writes project files. Each request uses only its own configuration and contents, so you can use one service for multiple projects without sharing their settings.
 
+## Supply referenced resources
+
+Standalone requests can include an optional `resources` inventory alongside `files` and `config`:
+
+```json
+{
+  "config": {
+    "version": 1,
+    "resources": {"index_file": "index.md", "anchor_style": "github"},
+    "rules": {"MD051": {"cross_file": true}}
+  },
+  "files": [{"path": "README.md", "content": "[Guide](docs/guide.md#install)\n"}],
+  "resources": {
+    "complete": false,
+    "entries": [
+      {"path": "docs/guide.md", "kind": "file", "content": "# Install\n"},
+      {"path": "images/logo.png", "kind": "file"},
+      {"path": "empty", "kind": "directory"},
+      {"path": "removed.md", "kind": "missing"},
+      {"path": "private", "kind": "unavailable"}
+    ]
+  }
+}
+```
+
+`config.resources` sets policy; request-level `resources` supplies read-only context. Entries never become lint/fix targets or returned corrected content. Every `files` entry, including excluded ones, already supplies a resource; repeating its path in `resources.entries` is an error, even with identical content.
+
+Omitting the inventory gives a partial map seeded by `files`. `complete` defaults to false: an omitted path is unknown, not missing. Set it to true only for a full inventory of names and types under the virtual root. Explicit `missing` proves absence even in a partial map; `unavailable` marks an inaccessible subtree even in a complete map. A file entry without `content` proves existence but cannot supply anchors. Only checks needing unavailable context receive incomplete coverage.
+
+Names must be canonical relative UTF-8 paths with `/` separators, without empty, dot, parent, backslash, or drive-prefix segments. They are case-sensitive literal names, not URLs. Reject duplicate names, contradictory ancestors, malformed Unicode, and unknown fields before analysis. The server never looks up omitted resources on its filesystem or the network. See the [resource contract](../engineering/resources.md#standalone-resource-map) for exact validation and lookup rules.
+
 ## Understand the results
 
 Results identify checked and skipped files, findings with locations and rule names, changes, and any execution errors. Fix findings describe the corrected content; preview findings describe the proposed content. Standalone fix results include the full content for each successfully processed file, including unchanged files. Excluded files appear as skipped and have no corrected content.
 
 Rule violations are a completed check, even when some cannot be fixed automatically. Invalid configuration, inaccessible project files, and server failures are errors. MCP tool results carry these distinctions; individual calls do not terminate the server or return shell exit codes. See the [exit code guide](../exit-codes.md) for terminal commands.
 
-For a project fix, an error can occur after other files have changed. Review the changes and failures before retrying. For a standalone fix, review returned contents and errors before saving files. If a response is marked incomplete, do not treat missing results as clean checks.
+For a project fix, an error can occur after other files have changed. Review the changes and failures before retrying. For a standalone fix, review returned contents and errors before saving files. Status `incomplete` and `complete: false` identify reduced analysis coverage; read the structured `coverage` reasons and do not treat missing results as clean checks. Operational errors take precedence and retain available coverage information.
 
 Keep the example HTTP service local. For access from other machines, configure your deployment's authenticated HTTPS endpoint. Submitted configuration and Markdown are sent to that service for processing.

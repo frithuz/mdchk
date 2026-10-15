@@ -24,11 +24,15 @@ Use the shared configuration loader and precedence, with discovery starting at t
 
 Expose a versioned AST projection with node kind, source span, relevant attributes, and children. Preserve byte offsets and documented public coordinates. Include a full document root and source-backed nodes without generating an HTML representation. Ancestors included only for context must be explicitly marked. Do not recursively serialize private Go structs, pointer addresses, or unstable implementation fields.
 
-Instrument rule execution independently of findings. Record registered rule IDs, configured enablement, directive suppression spans, eligibility in the selected area, actual execution or skip status, and skip reasons. Do not infer that a rule ran because a finding exists, or report that it did not run merely because there are no findings.
+Instrument rule execution independently of findings. Record known catalog IDs, implementation availability, configured enablement, directive suppression spans, eligibility in the selected area, actual execution or skip status, and skip reasons. Do not infer that a rule ran because a finding exists, or report that it did not run merely because there are no findings. Unavailable implementations remain visible through catalog metadata.
 
 Use the same directive recognition, scopes, and suppression decisions as lint and fix. Preserve raw directive text, resolved rule IDs, source location, effective ranges, and links from suppressed findings to the responsible directives. Keep suppressed observations separate from emitted findings. Unknown directives and unresolved rule references produce notes. Raw candidates within code or other protected syntax must be distinguished from effective directives.
 
 The [directive processing design](directives.md) defines grammar and scoping. Inspect exposes the engine's shared semantics rather than implementing a separate suppression interpreter.
+
+Resource inspection uses the same [root and lookup contract](resources.md) as analysis, starting root discovery from the canonical target's parent. Record root/policy provenance, logical target identity, lookup outcome, and coverage without exposing unrelated contents or resolving blocked paths beyond the permitted context. The explicit-target symlink exception applies only to acquisition of that target.
+
+For Pandoc, expose source-backed footnote references and definitions independently of resolved note bodies, raw and effective attributes/IDs, original table cells and separators, and HTML-origin/container distinctions. The [Pandoc source contract](pandoc-compatibility.md) applies to the versioned projection; semantic normalization must not erase source facts required by rules.
 
 ## Line ranges
 
@@ -36,7 +40,7 @@ Parse and analyze the full snapshot before filtering presentation. Validate the 
 
 Include intersecting AST nodes and context ancestors. Include findings whose source ranges intersect the interval, treating zero-width findings as positions. Show which returned nodes or findings extend beyond the selected lines. Record rule evaluation source coverage so rules checked elsewhere can be distinguished from rules relevant to the region. File-wide checks need a defined diagnostic anchor or applicable range.
 
-For each registered rule, compute whether any selected source position is enabled after configuration and directives. Count it once as active if any position is enabled, otherwise once as inactive. Include partial suppression ranges and reasons, independently of whether syntax applicability or parser uncertainty permits execution. Active plus inactive must equal the registry size; never count a rule multiple times because it ran on several nodes.
+For each known catalog rule, compute whether any selected source position is enabled after configuration and directives. Count it once as active if any position is enabled, otherwise once as inactive. Include partial suppression ranges and reasons, independently of whether implementation availability, syntax applicability, or parser uncertainty permits execution. When configuration is resolved, active plus inactive must equal the known catalog size; never count a rule multiple times because it ran on several nodes.
 
 Include directives intersecting the interval and directives outside it that still affect its rule state. List each resolved ID for directives naming multiple rules. Preserve exact directive attribution when transitions overlap. Parser notes remain visible for the whole document, labeling whether each note intersects the region or affects its interpretation through context.
 
@@ -44,7 +48,7 @@ Include directives intersecting the interval and directives outside it that stil
 
 Invalid or unreadable configuration is inspection data: retain metadata, digests, raw directive candidates, and configuration errors. Mark effective flavor, AST, rule execution, counts, and findings as unavailable where they cannot be determined. Do not silently use default flavor or fabricate empty successful sections. Parser uncertainty similarly produces coverage notes and explicit skipped checks.
 
-Expose `--format text|json` only. Text uses labeled sections for all requested details. JSON uses operation `inspect` and a versioned `inspection` object within the shared envelope, including file identity, selected lines, configuration provenance, flavor, AST, rules, rule counts, directives, parsing notes, and per-section availability. Preserve shared `diagnostics`, categorized `errors`, and `complete` fields; add `suppressed_diagnostics` for observations removed by directives. Mirror file metadata in `checked_files` only after acquisition succeeds.
+Expose `--format text|json` only. Text uses labeled sections for all requested details. JSON uses operation `inspect` and a versioned `inspection` object within the shared envelope, including file identity, selected lines, configuration provenance, flavor, AST, rules, rule counts, directives, parsing notes, and per-section availability. Preserve shared `diagnostics`, `coverage`, categorized `errors`, and `complete` fields; add `suppressed_diagnostics` for observations removed by directives. Mirror file metadata in `checked_files` only after acquisition succeeds.
 
 A completed inspection uses status `inspected` and exits successfully even when `complete` is false or observed problems appear in `errors`. For this operation, completeness describes available processing data, not validation success. If argument validation, target acquisition, output delivery, or an internal failure prevents inspection, use the operational error status and codes from the command guide. Do not map observed Markdown findings or configuration problems to validation exit codes.
 

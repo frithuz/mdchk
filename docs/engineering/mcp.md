@@ -9,7 +9,7 @@ The MCP server supports project-backed operations and standalone operations on s
 - Support standalone requests containing configuration and file content, including use as a web service.
 - Preserve the internal parser and minimal third-party dependency goals.
 
-The schema and transport choices below define the design proposal. User documentation presents the intended product interface.
+The transport choices below remain design proposals. Configuration semantics and incomplete-analysis results follow the approved shared contracts; user documentation presents the intended product interface.
 
 ## Modes and transports
 
@@ -26,11 +26,11 @@ Expose two tools named `lint` and `fix`. Publish mode-specific schemas through M
 | Mode | Shared arguments | Fix argument |
 | --- | --- | --- |
 | Project | Optional `paths` array of relative paths | Optional `dry_run`, default false |
-| Standalone | Required `config` object and nonempty `files` array | Optional `dry_run`, default false |
+| Standalone | Required `config` object and nonempty `files` array; optional `resources` inventory | Optional `dry_run`, default false |
 
-Each standalone file is an object with required UTF-8 strings `path` and `content`. Paths are unique, nonempty, relative logical names using `/` separators; reject absolute paths, traversal segments, and duplicate names. They identify documents and provide exclusion matching, never filesystem locations. Empty content is valid. Do not infer additional files or fetch referenced documents.
+Each standalone file is an object with required UTF-8 strings `path` and `content`. Paths use the canonical, case-sensitive UTF-8 logical names in the [resource contract](resources.md#logical-names-and-url-resolution); reject absolute paths, empty/dot/parent segments, backslashes, drive prefixes, controls, and duplicates. They identify documents and provide exclusion matching, never filesystem locations. Empty content is valid. Optional request-level `resources` follows the [standalone map schema](resources.md#standalone-resource-map), separately from `config.resources`. Seed all submitted files, including excluded ones; reject overlaps and contradictory ancestors. Infer parent directories only from positive entries. Omitted inventory means partial context, never a filesystem fallback.
 
-Standalone configuration uses the project configuration's semantic schema as a JSON object, independent of the on-disk serialization choice. Require `version: 1`; omitted settings inherit built-in defaults. Do not accept a config path or load defaults from server-local project or user configuration. Validate the entire input and configuration before processing any document.
+Standalone configuration uses the approved project configuration's semantic schema as a JSON object. Require integer `version: 1`, exact MDxxx IDs, and strict types; reject duplicate names, invalid raw UTF-8, and unpaired Unicode surrogate escapes before ordinary decoding loses that information. Preserve raw arguments long enough to perform these checks. Omitted settings inherit catalog defaults. Do not accept a config path or load settings from server-local project or user configuration. Validate the entire input, schema, policies, and requested capabilities before processing any document, using the shared configuration validator.
 
 ## Project configuration and access
 
@@ -38,7 +38,7 @@ Resolve and validate the project root at startup. Infer `.mdchk.yaml` within tha
 
 Use shared exclusion- and directive-permission resolution within the configured root. Ancestor global or per-rule directive denials cannot be relaxed by descendant configuration; retain restriction provenance in processing notes. Standalone configuration has no parent hierarchy; a supplied `allow_nested_excludes` setting never causes filesystem policy discovery. Higher-level restrictions and directive permissions cannot be changed by Markdown content.
 
-Resolve request paths beneath the startup root. Configuration exclusions apply to explicit and discovered paths. Share the CLI's discovery, skip reporting, and empty-selection behavior. Reject escapes and symlinks for both configuration and document access. Root restrictions also apply to references a future rule might inspect.
+Resolve request paths beneath the startup root. Configuration exclusions apply to explicit and discovered paths. Share the CLI's discovery, skip reporting, and empty-selection behavior. Reject escapes and symlinks for both configuration and document access. The startup root also confines every referenced resource, including excluded or unselected files; reading a resource does not lint or fix it. Enforce exact logical-name spelling and reject all resource symlink components, Git metadata, and unsupported types according to the [resource contract](resources.md).
 
 Serialize project fix operations within the server instance. Retain the engine's stale-snapshot checks and per-file write guarantees; serialization does not protect against external writers. Lint and fix must each process immutable content snapshots. Project settings never expand access permissions or turn lint into fix.
 
@@ -46,13 +46,15 @@ Serialize project fix operations within the server instance. Retain the engine's
 
 Construct in-memory documents from request contents. Parse, lint, and compute fixes without temporary document files or filesystem lookups. Exclusions match supplied names relative to a virtual request root. Report excluded documents as skipped; if every document is excluded, return an empty-selection usage error.
 
-Configuration and document state are local to the call. Do not cache effective configuration or content across requests. Shared rule definitions must be immutable. Concurrent standalone calls can run independently within resource limits.
+Resource inventory validation precedes analysis. Preserve authoritative absence separately from unknown context and existence separately from content availability. File entries without content satisfy existence checks only. Charge submitted files and resource entries, lookup misses, parsing, and outputs against operation limits.
 
-A standalone fix returns full corrected contents for every successfully processed document, whether changed or unchanged, plus changes and remaining findings. A dry run returns full proposed contents and diffs marked as proposed. Failed or skipped documents do not receive corrected content. The caller owns persistence and any check that its local files still match the submitted inputs.
+Configuration, document, and resource state are local to the call. Do not cache effective configuration or content across requests. Shared rule definitions must be immutable. Concurrent standalone calls can run independently within resource limits.
+
+A standalone fix returns full corrected contents for every successfully processed document, whether changed or unchanged, plus changes and remaining findings. A dry run returns full proposed contents and diffs marked as proposed. Failed or skipped documents do not receive corrected content. Compute all candidate documents into one overlay before cross-file post-fix checks; resource-only entries retain submitted snapshots. Return only successfully processed targets. The caller owns persistence and any check that its local files still match the submitted inputs. Project mode instead rechecks the actual saved overlay after partial writes, invalidating stale dependencies; see [snapshot handling](resources.md#snapshots-caching-fixes-and-limits).
 
 ## Results and errors
 
-Adapt the shared result model into versioned structured MCP output: operation, mode, checked and skipped documents, diagnostics, changes, and errors. Include an overall status distinguishing `clean`, `violations`, and `error`, and an explicit completeness indicator. Standalone fixes additionally return per-file contents; distinguish returned, written, and proposed changes so clients never mistake an in-memory result for a saved file.
+Adapt the shared result model into versioned structured MCP output: operation, mode, checked and skipped documents, diagnostics, coverage, changes, and errors. Distinguish `clean`, `violations`, `incomplete`, and `error`, with the same precedence, completeness indicator, and [coverage records](../output-formats.md#incomplete-analysis) as the CLI. Incomplete analysis preserves available findings and contents but is not a clean validation result. Standalone fixes additionally return per-file contents; distinguish returned, written, and proposed changes so clients never mistake an in-memory result for a saved file.
 
 Use the shared error categories `usage`, `configuration`, `io`, and `internal`. Keep deterministic ordering. Findings alone are successful tool execution; a tool execution failure uses the protocol's error result mechanism and preserves available partial results. Malformed protocol messages use protocol errors. Do not place per-call outcomes in the server process's exit status or shut down on ordinary tool errors.
 
@@ -64,7 +66,7 @@ Lint is read-only in both modes. Project fix can write files; standalone fix onl
 
 Bind HTTP to loopback by default. For remote deployment, require an explicit authenticated HTTPS deployment boundary, document proxy trust, and implement the selected MCP revision's HTTP security requirements, including Origin validation. Protect project-mode access with deployment authorization as well as root confinement. The standalone request's `config` cannot alter server limits or authentication.
 
-Bound request size, document count, per-document bytes, concurrent work, execution time, and response bytes. Configure limits at startup and return actionable errors when exceeded. Propagate cancellation through parsing and rule execution. Avoid returning partial corrected content strings; a size failure must clearly mark the response incomplete. Numeric defaults remain a design decision.
+Bound request size, documents plus resource entries, per-content bytes, unique resource queries including misses, path length/depth, directory enumeration, acquisition retries, parsing work, concurrency, execution time, and response bytes. Existence-only image checks must not read binary payloads. Preflight limits before project writes and propagate budget failure through the shared operational-error and coverage model. Configure limits at startup and return actionable errors when exceeded. Propagate cancellation through parsing and rule execution. Avoid returning partial corrected content strings; a size failure must clearly mark the response incomplete. Numeric defaults remain a design decision.
 
 Keep submitted content and configuration out of normal logs and do not persist request payloads. Log request identifiers, timings, counts, and error categories. Reserve stdout for protocol messages under stdio. Never execute code from Markdown, invoke a shell, or fetch remote links as part of a tool call.
 

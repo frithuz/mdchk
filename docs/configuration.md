@@ -2,6 +2,8 @@
 
 Use `.mdchk.yaml` to define your project's Markdown expectations. Lint and fix use the same rules and exclusions, whether you run them from the terminal or through the project's MCP server. Without a configuration file, mdchk uses its defaults.
 
+This is the approved configuration contract; the loader and rule implementations are still pending. See [initial capability handling](#initial-capability-handling) for how development builds must report unavailable behavior.
+
 ## Define project expectations
 
 Place `.mdchk.yaml` in your project root:
@@ -13,30 +15,111 @@ exclude:
   - "vendor/**"
   - "docs/generated/**"
 rules:
-  final-newline:
+  MD047:
     enabled: true
-  heading-increment:
+  MD001:
     enabled: true
-  unordered-list-marker:
+  MD004:
     enabled: true
-    marker: "-"
+    marker: dash
 ```
 
-`version` identifies the configuration schema and is required. Use `1`.
+`version` identifies the configuration schema and is required. Use the integer `1`, not the string `"1"` or the number `1.0`.
 
-`flavor` selects Markdown interpretation: `commonmark`, `gfm`, or `pandoc`. CommonMark is the foundation; the default is `gfm`, which adds GitHub Flavored Markdown extensions. It applies consistently to lint, fix, inspect, and MCP operations. See [Markdown formats](markdown-formats.md) for the support contract and conformance status.
+`flavor` selects Markdown interpretation: `commonmark`, `gfm`, or `pandoc`. CommonMark 0.31.2 is the base for CommonMark and GFM; the default is `gfm`. Pandoc uses its own pinned reader profile. It applies consistently to lint, fix, inspect, and MCP operations. See [Markdown formats](markdown-formats.md) for the support contract and conformance status.
 
 Frontmatter recognition is independently optional for every supported flavor. Its configuration syntax and default remain undecided; choosing a flavor does not itself enable metadata headers. See [optional frontmatter headers](markdown-formats.md#optional-frontmatter-headers).
 
 `exclude` lists paths to skip. Patterns are relative to the configuration file's directory; for example, `docs/generated/**` excludes files beneath that directory. Exclusions apply even when you name a file explicitly. Skipped files appear in the report. If no files are selected, mdchk reports an error rather than a clean check.
 
-See [file selection and exclusions](file-selection.md) for command-specific behavior and the glob, case, hidden-directory, and platform details still awaiting implementation. Configuration exclusions are separate from Git ignores: config validation honors Git ignores, while Git ignore support for lint and fix is deferred.
+See [file selection and exclusions](file-selection.md) for the glob grammar, case matching, hidden directories, and platform behavior. Configuration exclusions are separate from Git ignores: config validation honors Git ignores, while Git ignore support for lint and fix is deferred.
 
 To exclude a whole file from all rule linting, list its path under `exclude`. Inline directives are for exceptions to specific rules within a document; they are not intended to suppress all rule linting across a file. Explicit inspection remains available for an excluded target.
 
-`rules` sets expectations by rule name. Use `enabled: true` to enable a rule or `enabled: false` to disable it. Rule-specific options, such as the list `marker` above, sit alongside `enabled`. Omitted rules and options keep their defaults.
+`rules` sets expectations by canonical, case-sensitive numeric ID, such as `MD013`. Use `enabled: true` to enable a rule or `enabled: false` to disable it. Rule-specific options, such as the list `marker` above, sit alongside `enabled`. Omitted rules and options keep their defaults.
 
-The examples above use preliminary descriptive rule names. The [implementation ruleset](rules/index.md) adopts 89 numeric rule IDs; each rule page defines its option schema and default enablement. Descriptive aliases remain to be mapped before implementation.
+The [implementation ruleset](rules/index.md) defines 89 numeric rule IDs; each rule page supplies its option schema and default enablement. Descriptive aliases, lowercase IDs, unknown IDs, and reserved IDs are rejected. Repeating an ID is an error even when its settings are identical. Descriptions may accompany IDs in reports without becoming configuration names.
+
+## Configuration syntax
+
+Only `.mdchk.yaml` is discovered automatically. An explicit `--config` file may have another name, but uses the same YAML syntax and must satisfy the [discovery boundaries](#choose-a-configuration-file). There are no additional `.yml`, JSON, or TOML discovery filenames.
+
+Use one UTF-8 YAML document with a mapping at its root. Comments, quoted strings, block and flow collections, and acyclic aliases within the same document are supported. A missing configuration file selects defaults; an empty file, a null document, or a second document is an error.
+
+The configuration schema rejects duplicate keys at every level, non-string keys, custom tags, merge keys (`<<`), cyclic aliases, and null values. No includes, external aliases, environment-variable expansion, or executable settings are supported. These are explicit configuration restrictions, enforced after parsing YAML.
+
+Types are strict: strings do not become booleans or numbers, numbers do not become strings, and fractional values do not become integers. Integer settings use decimal notation with no leading zeros except `0`; alternate-base forms are invalid. A leading minus is permitted syntactically, subject to each option's range. Boolean settings use `true` or `false`. Unknown options and invalid values are errors even on disabled rules. An empty rule mapping `{}` keeps defaults; a null rule value does not.
+
+| Top-level setting | Type | Default when omitted |
+| --- | --- | --- |
+| `version` | Integer, exactly `1` | Required in a present file or supplied object |
+| `flavor` | `commonmark`, `gfm`, or `pandoc` | `gfm` |
+| `resources` | Shared resource policy mapping | `index_file: index.md`, `anchor_style: github` |
+| `rules` | Mapping from MDxxx IDs to option mappings | Catalog defaults |
+| `exclude` | Sequence of valid pattern strings | Empty sequence |
+| `directives` | Mapping containing optional boolean `enabled` | `enabled: true`, subject to ancestor restrictions |
+| `allow_nested_excludes` | Boolean | `true`, subject to ancestor restrictions |
+
+Each rule accepts boolean `enabled` and `allow_directives`, plus its documented options. `allow_directives` defaults to `true`, subject to ancestor restrictions. There is no frontmatter setting in the initial schema. All unrecognized keys are errors.
+
+Standalone MCP configuration is a JSON object with the same semantic schema and validation. Duplicate JSON names, malformed raw UTF-8, and unpaired Unicode surrogate escapes must be rejected before ordinary decoding loses that information. File diagnostics carry source locations; supplied-object diagnostics identify property paths when source positions are unavailable.
+
+## Shared resource settings
+
+Set resource policy once for the operation:
+
+```yaml
+version: 1
+flavor: pandoc
+resources:
+  index_file: README.md
+  anchor_style: explicit
+rules:
+  MD051:
+    cross_file: true
+```
+
+`resources.index_file` defaults to `index.md`. It is a single nonempty filename, not a path, glob, URL, `.` or `..`; separators, query/fragment delimiters, drive prefixes, and control characters are invalid. The active adapter must be able to represent it. Directory references try exactly that filename once, without fallback or recursive index lookup.
+
+`resources.anchor_style` is `github` (default) or `explicit`. MD051, MD073, and MD080 share this policy, including anchors in referenced documents. Pandoc does not add another automatic slug convention. `MD051.cross_file` remains false by default; same-document references are checked independently of that switch.
+
+The former `MD051.anchor_style`, `MD080.anchor_style`, and `MD057.index_file` options are removed and rejected as unknown keys, even on disabled rules. There are no aliases. This is a preimplementation schema-1 amendment; catalog rule enablement stays unchanged.
+
+These settings do not grant access or select lint targets. Excluded or unselected files within the resource root may supply read-only existence or anchor information. Standalone MCP's request-level `resources` object supplies that context; it is distinct from this configuration mapping. See the [resource contract](engineering/resources.md) for roots, URL resolution, partial inventories, and failure outcomes.
+
+`flavor: pandoc` selects the complete [fixed Pandoc profile](engineering/pandoc-compatibility.md). No per-extension configuration switches are accepted. Frontmatter and Quarto integration remain separate work.
+
+## Initial capability handling
+
+Configuration validity and implementation availability are separate checks. The catalog's defaults do not change according to which implementations happen to be registered in a build.
+
+| Condition | Behavior |
+| --- | --- |
+| A known unavailable rule has an explicit entry and is effectively enabled | Configuration error before analysis |
+| A known unavailable rule is explicitly disabled | Valid after checking all its options; no missing-coverage penalty |
+| An unmentioned default-enabled rule is unavailable | Run available checks and report the missing rule as incomplete analysis |
+| An unmentioned default-disabled rule is unavailable | Inactive, with no missing-coverage penalty |
+| A rule does not apply to the selected dialect | Inactive for that dialect; this is not missing parser coverage |
+| An enabled applicable check lacks reliable parsing or required resource context | Incomplete analysis with an explicit reason |
+
+An explicit entry such as `MD001: {}` still selects that rule's default enablement. Adding only an option or permission does not change enablement: MD001 remains enabled, while default-disabled MD013 remains disabled unless `enabled: true` is supplied. Catalog metadata identifies known rules even when their executable implementations are absent.
+
+Lint, fix, and previews return exit `15` and status `incomplete` for reduced analysis coverage unless an operational error takes precedence. Available findings remain in the report. They must not claim a complete clean result or automatically fix uncertain regions. See [exit codes](exit-codes.md) and [structured coverage results](output-formats.md#incomplete-analysis).
+
+Unavailable dialects are configuration errors, including an omitted `flavor` resolving to unavailable default GFM. The loader never silently substitutes CommonMark. Until directive processing exists, the effective global directive permission must be false. An inherited false satisfies that requirement; per-rule permissions are still validated and retained. Selecting a supported CommonMark parser in an early development build therefore requires an explicit configuration such as:
+
+```yaml
+version: 1
+flavor: commonmark
+directives:
+  enabled: false
+```
+
+This configuration still yields incomplete lint analysis if default-enabled applicable rules are unavailable. Frontmatter recognition remains deferred: no setting silently activates it, and source follows ordinary flavor interpretation. Explicit options on enabled rules that require unavailable metadata interpretation are configuration errors. Frontmatter settings and recognition boundaries will be defined separately.
+
+Explicit shared resource settings require their corresponding implementation capabilities; unavailable explicitly requested behavior is a configuration error. Missing unmentioned default behavior produces incomplete coverage when an applicable analysis requires it.
+
+Config validation checks schema and explicitly requested capabilities, including the effective flavor, global directive setting, and shared resource settings. It does not execute Markdown checks, so unavailable unmentioned default rules alone do not make the validation scan incomplete. Ancestors read only for policy undergo complete schema and policy validation; their unselected rule and flavor capabilities are not executed or inherited.
 
 ## Control inline directives
 
@@ -47,7 +130,7 @@ version: 1
 directives:
   enabled: true
 rules:
-  heading-increment:
+  MD001:
     enabled: true
     allow_directives: false
 ```
@@ -65,7 +148,7 @@ For example, a project-root configuration can protect heading checks from inline
 ```yaml
 version: 1
 rules:
-  heading-increment:
+  MD001:
     enabled: true
     allow_directives: false
 ```
@@ -75,9 +158,9 @@ A descendant can enable language-label checks while attempting to permit heading
 ```yaml
 version: 1
 rules:
-  fenced-code-language:
+  MD040:
     enabled: true
-  heading-increment:
+  MD001:
     allow_directives: true
 ```
 
@@ -108,7 +191,7 @@ exclude:
   - "docs/generated/**"
 ```
 
-`allow_nested_excludes` defaults to `true`. Setting it to `false` permits this file's own exclusions but prohibits nonempty `exclude` lists in descendant configuration files. Descendants cannot restore the permission with `allow_nested_excludes: true`. A conflicting definition is a configuration error, and its exclusions are not applied.
+`allow_nested_excludes` defaults to `true`. Setting it to `false` permits this file's own exclusions but prohibits nonempty `exclude` lists in descendant configuration files. Combine permission values with logical AND. A descendant's `allow_nested_excludes: true` is valid but ineffective under an ancestor's false, just like directive permissions. A prohibited nonempty exclusion list is a configuration error, and that definition's exclusions are not applied.
 
 This policy governs mdchk configuration exclusions. It does not change Git ignore rules or introduce a separate mdchk ignore-file format. Applicable higher-level restrictions are checked even when a lower-level file is selected with `--config`. Discovery boundaries still apply: terminal commands stop at the repository root when identifiable, and project MCP never searches outside its configured root.
 
@@ -122,6 +205,10 @@ Use `--config` to choose a file explicitly:
 mdchk lint docs/ --config .mdchk.yaml
 mdchk fix docs/ --config .mdchk.yaml
 ```
+
+Resolve a relative `--config` path from the working directory. The selected file must remain inside the operation's discovery boundary: the nearest enclosing repository for terminal discovery, or the filesystem root when there is no enclosing repository. A `.git` directory or worktree `.git` file establishes a repository boundary. A config in another repository scope, outside the boundary, or reached through a symlink is a configuration error. Do not widen the boundary because an explicit path was supplied. External shared configurations are outside the initial contract.
+
+For inspect, establish the boundary from the resolved target's directory; for project MCP, use its startup root. Check applicable ancestors of the selected configuration through that boundary even after finding the nearest settings file. These configuration boundaries do not restrict explicit terminal document arguments to the selected config's directory; resource access has its own contract.
 
 Settings apply in this order: built-in defaults, the selected configuration file, then supported command-line overrides.
 
@@ -175,7 +262,7 @@ flowchart TD
     Check --> Targets
 ```
 
-Suppose A enables `unordered-list-marker` with `marker: "-"`, while C contains only `version: 1`. Selecting C leaves that rule at its built-in default: disabled. It does not inherit A's rule setting. The same principle applies to flavor, directive settings, and other omitted options.
+Suppose A configures `MD004` with `marker: dash`, while C contains only `version: 1`. Selecting C leaves that rule enabled with its built-in `marker: consistent` option. It does not inherit A's marker setting. The same principle applies to flavor and other rule options; permissions remain subject to inherited restrictions.
 
 For lint and fix, the selected file also supplies the `exclude` list. A and B's exclusion lists are not accumulated into C's selection settings. Each pattern in C is relative to `project/docs/guides/`. Ancestor exclusion and directive **permissions** are checked separately. The selected file's directive permissions are subject to inherited restrictions.
 
@@ -230,8 +317,10 @@ mdchk config validate .
 
 The scan includes nested configurations and respects Git ignores and configuration exclusions. It reports all discovered definition errors without changing files.
 
-mdchk rejects unknown settings, unknown rule names, invalid rule options, and unsupported schema versions. For lint and fix, configuration errors stop the operation before fixes are written. Config validate continues scanning other eligible definitions. An unreadable configuration file is also a configuration error.
+mdchk rejects unknown settings, invalid rule IDs and options, unsupported schema versions, and explicitly requested unavailable capabilities. For lint and fix, configuration errors stop the operation before Markdown processing or fixes. Config validate continues scanning other eligible definitions. An unreadable configuration file is also a configuration error.
 
 Terminal commands return exit code `12` for these errors; MCP calls report a `configuration` error. Read the accompanying message, correct the file or submitted settings, and retry. See the [exit code guide](exit-codes.md) for other outcomes.
 
 Configuration controls expectations and selection. It cannot turn lint into fix or grant the MCP server access outside its configured root.
+
+See the [configuration examples and fixture cases](engineering/configuration-examples.md) for valid and invalid inputs and expected outcomes.

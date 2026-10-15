@@ -36,7 +36,7 @@ Every rule is planned for implementation. Each linked page defines its behavior,
 
 ## Configuration and findings
 
-Configure rules using their MDxxx IDs. Each accepts `enabled` and `allow_directives`, both booleans. Default enablement is specified per rule; `allow_directives` defaults to true, subject to inherited restrictions. Options described on a rule page are nested beside these settings. Reject unknown options and values outside the documented domains. Descriptive aliases in older configuration examples remain preliminary and need an explicit mapping before implementation.
+Configure rules using their exact, case-sensitive MDxxx IDs. Each accepts `enabled` and `allow_directives`, both booleans. Default enablement is specified per rule; `allow_directives` defaults to true, subject to inherited restrictions. Options described on a rule page are nested beside these settings. Reject aliases, reserved or unknown IDs, duplicate entries, unknown options, and values outside the documented domains, including on disabled rules. An empty option mapping keeps defaults; null is invalid.
 
 ```yaml
 version: 1
@@ -49,23 +49,31 @@ rules:
     allow_directives: false
 ```
 
-Unless a page says otherwise, checks target the parsed Markdown body and exclude literal code, raw HTML, recognized metadata, escaped syntax, and comments. Rules that target those constructs explicitly inspect them. Container-relative spacing is measured after list and blockquote prefixes. A blank body line contains no non-whitespace body content, although container prefixes may remain.
+Unless a page says otherwise, checks target the parsed Markdown body and exclude literal code, raw HTML, recognized metadata, escaped syntax, and comments. Rules that target those constructs explicitly inspect them. In Pandoc, protect math, raw content, attributes, and citation control syntax while allowing parsed textual children and eligible Markdown children of HTML containers. Literal HTML interiors remain protected. The [Pandoc contract](../engineering/pandoc-compatibility.md) defines these boundaries and source retention. Container-relative spacing is measured after list and blockquote prefixes. A blank body line contains no non-whitespace body content, although container prefixes may remain.
 
 Findings identify the numeric rule ID, a concrete message, and the smallest relevant source range. Report offending delimiters or characters for token checks, markers for indentation checks, and complete heading or reference labels for structural checks. For missing material, use a zero-width position at the insertion point. A missing opening heading is reported at the first body block or end of an empty body. Use one-based line and Unicode code-point columns with exclusive range ends; retain byte offsets internally. MD094 is the decoding exception defined on its page.
 
 Use one violation severity initially. Default-disabled rules remain required implementation work. Their enablement is independent of availability of a format extension or resource context. Missing prerequisites produce explicit reduced-coverage information, not success or guessed violations.
 
+Keep known-rule metadata separate from executable registration. An explicitly configured rule that is effectively enabled but unavailable fails configuration validation. Unmentioned unavailable default-enabled rules produce incomplete analysis; explicitly disabled rules and dialect-inapplicable checks do not. Preserve per-rule defaults across builds. See [capability handling](../configuration.md#initial-capability-handling) and [incomplete results](../output-formats.md#incomplete-analysis).
+
 ## Anchor resolution
 
-For the `github` anchor convention, obtain visible heading text by removing inline markup while retaining text and image alternative text. Lowercase it using Unicode case mapping, remove punctuation except hyphens and underscores, and replace whitespace characters with hyphens. Resolve repeated bases in document order using the lowest available numeric suffix starting at `-1`. MD080 compares bases before suffix allocation. Explicit HTML IDs and supported format-specific heading IDs are also targets; an explicit heading ID takes precedence over its generated ID.
+Select the convention once through [`resources.anchor_style`](../configuration.md#shared-resource-settings), default `github`. MD051, MD073, and MD080 use the same policy for selected and referenced documents.
 
-For the `explicit` convention, accept only explicit IDs. Decode percent escapes in fragments as UTF-8 once; compare resulting IDs case-sensitively. Invalid escapes are unresolved fragments. Do not fetch remote documents. MD051 and MD073 share this resolution logic.
+For the `github` anchor convention, obtain visible heading text by removing inline markup while retaining text and image alternative text. Lowercase it using Unicode case mapping, remove punctuation except hyphens and underscores, and replace whitespace characters with hyphens. Resolve repeated bases in document order using the lowest available numeric suffix starting at `-1`. MD080 compares bases before suffix allocation. Explicit HTML IDs and supported format-specific IDs are also targets; an explicit heading ID takes precedence over its generated ID. Pandoc includes IDs on headings, code blocks, inline code, links, images, spans, divs, and captioned tables. Preserve raw attributes separately from the reader-effective ID. MD073 includes headings only; MD080 compares heading bases only, without becoming a general duplicate-ID rule.
+
+For the `explicit` convention, accept only explicit IDs. Decode percent escapes in fragments as UTF-8 once; compare resulting IDs case-sensitively. Invalid escapes are unresolved fragments. Do not fetch remote documents. An empty fragment refers to the document itself. MD051, MD073, and MD080 share the anchor policy; no automatic Pandoc slug convention is added.
 
 ## Resource-dependent checks
 
-For local links, remove query and fragment components, decode URL path escapes once, and resolve relative to the source document directory. Ignore remote schemes, protocol-relative URLs, and data URIs. Reject traversal outside the permitted project root. Do not follow symlinks outside that root. A blocked or unavailable path is reduced coverage, while an accessible nonexistent path is a finding. Directory links resolve to a configured index filename, initially `index.md`.
+Follow the [resource contract](../engineering/resources.md). Begin with parser-semantic destinations, split raw query/fragment before one path/fragment decode, retain literal plus signs, reject encoded separators and root escapes, and resolve relative to the source directory. Remote and non-file schemes are ignored without fetching. Absolute/file/drive/UNC paths, Git metadata, and every resource symlink component are blocked. Directory links try shared `resources.index_file` once, default `index.md`, without fallback or recursion.
 
-Project MCP reads only within its configured root. Standalone MCP must receive a logical source path and a supplied resource map for cross-file checks. Without that context, report the affected checks as unavailable. CLI checks use the established project boundary. Navigation validation also requires a supplied or readable project configuration. No rule may perform network requests.
+Resource roots are independent of lint selection and config discovery. Excluded or unselected resources may supply read-only context without becoming targets. Standalone resources are seeded by submitted files and optionally supplemented by a partial or complete logical inventory; an omitted entry is unknown unless completeness or an explicit absence establishes otherwise. Never fall back to host files.
+
+MD057 owns established missing targets; MD051 becomes inapplicable for a confirmed missing document and does not duplicate the finding. Unknown existence, unavailable content, blocked access, and uncertain parsing produce affected coverage instead. Existing files can pass existence checks without supplying content. Actual read/decode failures also produce attributed operational errors. Apply one operation flavor and anchor policy, without nested config discovery or recursively linting referenced documents. Navigation validation separately requires explicit integration context.
+
+Fix checks use coordinated candidate and actual saved views under the [snapshot contract](../engineering/resources.md#snapshots-caching-fixes-and-limits). Resource lookup itself never creates a write target.
 
 ## Implementation contract
 

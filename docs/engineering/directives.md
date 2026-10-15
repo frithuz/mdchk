@@ -13,11 +13,13 @@ Directives express exceptions to particular rules within a document. Whole-file 
 
 ## Recognition and validation
 
-Recognize directives only in parser-confirmed HTML comment source spans outside protected literal content. Trim surrounding comment whitespace, then require the exact command `mdchk:disable` or `mdchk:enable` followed by one or more whitespace-separated registered rule IDs. Treat names as case-sensitive; do not accept aliases, commas, wildcards, omitted rule lists, or an all-rules token. Permit multiline comments. Deduplicate repeated names within a directive.
+Recognize directives only in parser-confirmed HTML comment source spans outside protected literal content. Trim surrounding comment whitespace, then require the exact command `mdchk:disable` or `mdchk:enable` followed by one or more whitespace-separated known catalog rule IDs. Treat names as case-sensitive; do not accept aliases, commas, wildcards, omitted rule lists, or an all-rules token. Permit multiline comments. Deduplicate repeated names within a directive.
 
-Preserve raw text, comment span, closing-marker offset, operation, named and resolved rule IDs, and per-rule permission decisions. Validate the full directive before applying it. An unknown rule or malformed command invalidates the entire directive, producing a located diagnostic with identifier `directive`. This is an engine diagnostic rather than a configurable rule; it cannot be disabled by file content and is not counted in the registered-rule totals.
+Preserve raw text, comment span, closing-marker offset, operation, named and resolved rule IDs, and per-rule permission decisions. Validate the full directive before applying it. An unknown rule or malformed command invalidates the entire directive, producing a located diagnostic with identifier `directive`. This is an engine diagnostic rather than a configurable rule; it cannot be disabled by file content and is not counted in the rule catalog totals. A known unavailable rule is distinct from an unknown ID: if a permitted directive enables it in an applicable region, retain the state transition and report `rule-unavailable` coverage for the required check. Never claim execution or fabricate a violation.
 
 If global directives are disabled, retain candidates for inspection but do not interpret their syntax as directive violations. Valid directives naming protected rules produce blocked-effect notes for those rules while allowed effects are applied. Protection is not a syntax error. Uncertain parser context produces a parsing note and no transition. In incomplete or unresolved configuration, do not guess directive permissions.
+
+Use the selected flavor's source spans. In Pandoc, protect math, raw syntax, attributes, citation control syntax, and literal HTML interiors; parse permitted Markdown children of native HTML containers normally. Keep HTML origin metadata even when the semantic node is a native Div or Span. A resource's directives never alter its referring source, resource access, shared anchor/index policy, or execution budgets.
 
 ## State and configuration
 
