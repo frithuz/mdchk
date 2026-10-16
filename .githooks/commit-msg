@@ -1,0 +1,98 @@
+#!/bin/sh
+# Remove only Co-Authored-By entries that Git recognizes as trailers.
+
+LC_ALL=C
+export LC_ALL
+umask 077
+
+die() {
+	printf 'commit-msg: %s\n' "$*" >&2
+	exit 1
+}
+
+[ "$#" -eq 1 ] || die 'expected one commit message file'
+case $1 in
+	/*) message=$1 ;;
+	*) message=./$1 ;;
+esac
+[ -f "$message" ] && [ ! -L "$message" ] && [ -r "$message" ] &&
+	[ -w "$message" ] || die "cannot safely read and write $message"
+
+# Keep the replacement on the same filesystem so publication is a rename.
+work=$(mktemp -d "${message%/*}/.commit-msg.XXXXXX") ||
+	die 'cannot create temporary files beside the commit message'
+trap 'rm -rf "$work"' 0
+trap 'exit 1' HUP INT TERM
+
+cp -p "$message" "$work/original" || die 'cannot read the commit message'
+tr -d '\000' < "$work/original" > "$work/text" ||
+	die 'cannot check the commit message for NUL bytes'
+cmp -s "$work/original" "$work/text" ||
+	die 'cannot safely process a commit message containing NUL bytes'
+
+# interpret-trailers normalizes whitespace and can rename configured keys.
+# Append unique line markers to candidate values in a disposable copy. Only
+# markers returned by Git identify actual trailers, including when the same
+# text also occurs in the subject, body, comments, or below a scissors line.
+# The original message never receives these markers or Git's reformatted text.
+marker="mdchk-${work##*/}:"
+find_entries() {
+	awk -v marker="$marker" '
+		index($0, marker) { exit 1 }
+		{
+			if (tolower($0) ~ /^co-authored-by[ \t]*:/)
+				print $0 " " marker NR ":"
+			else
+				print
+		}
+	' "$1" > "$work/marked" || die 'cannot mark commit message lines safely'
+
+	# Always recognize the standard colon separator, regardless of user config.
+	# --parse implies --only-input, so configured trailer commands cannot run.
+	git -c trailer.separators=: interpret-trailers --parse --no-divider \
+		< "$work/marked" > "$work/parsed" ||
+		die 'Git could not parse commit trailers (Git 2.22 or newer is required)'
+
+	awk -v marker="$marker" '
+		pos = index($0, marker) {
+			line = substr($0, pos + length(marker))
+			if (line !~ /^[0-9]+:/) exit 1
+			sub(/:.*/, "", line)
+			print line
+		}
+	' "$work/parsed" > "$work/entries" ||
+		die 'cannot locate parsed trailers in the commit message'
+}
+
+find_entries "$work/original"
+[ -s "$work/entries" ] || exit 0
+
+bytes=$(wc -c < "$work/original") || die 'cannot measure the commit message'
+cp -p "$work/original" "$work/replacement" ||
+	die 'cannot prepare a commit message replacement'
+awk -v bytes="$bytes" '
+	FILENAME == ARGV[1] { remove[$1] = 1; next }
+	{
+		end += length($0) + 1
+		if (FNR in remove)
+			dropping = 1
+		else if ($0 !~ /^[[:space:]]/ || $0 ~ /^[[:space:]]*$/)
+			dropping = 0
+		if (!dropping)
+			printf "%s%s", $0, (end <= bytes ? "\n" : "")
+	}
+' "$work/entries" "$work/original" > "$work/replacement" ||
+	die 'cannot write the sanitized commit message'
+
+# Removing a whole footer must not expose an earlier prose paragraph as a new
+# co-author footer on the next run. Reject ambiguous messages without editing.
+find_entries "$work/replacement"
+[ ! -s "$work/entries" ] ||
+	die 'removing trailers exposes another co-author footer; separate it from prose'
+
+if ! { [ -f "$message" ] && [ ! -L "$message" ] && [ -w "$message" ] &&
+	cmp -s "$work/original" "$message"; }; then
+	die 'the commit message changed or became inaccessible during sanitization'
+fi
+mv -f "$work/replacement" "$message" ||
+	die 'cannot replace the commit message with its sanitized contents'
