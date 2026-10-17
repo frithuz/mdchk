@@ -3,9 +3,8 @@
   "supported_html_examples": [],
   "pending": [
     {
-      "reason": "foundation-only",
+      "reason": "syntax-unimplemented",
       "owners": [
-        5,
         6,
         18
       ],

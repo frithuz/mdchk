@@ -31,3 +31,7 @@ jobs:
         run: python3 -B tools/commonmark_corpus.py --check
       - name: Test CommonMark corpus tooling
         run: python3 -B -m unittest discover -s tools -p 'test_commonmark_corpus.py' -v
+      - name: Run staged CommonMark regression gate
+        run: python3 -B tools/commonmark_conformance.py
+      - name: Test CommonMark renderer transport and ratchet
+        run: python3 -B -m unittest discover -s tools -p 'test_commonmark_conformance.py' -v

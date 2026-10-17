@@ -190,8 +190,8 @@ func TestFoundationCorpusAccounting(t *testing.T) {
 	}
 	seen := make(map[int]bool)
 	for _, group := range inventory.Pending {
-		if group.Reason != "foundation-only" || !reflect.DeepEqual(group.Owners, []int{5, 6, 18}) {
-			t.Fatal("pending cases lack documented block/inline/adapter owners")
+		if group.Reason != "syntax-unimplemented" || !reflect.DeepEqual(group.Owners, []int{6, 18}) {
+			t.Fatal("pending cases lack documented block/inline owners")
 		}
 		for _, id := range group.Examples {
 			if id < 1 || id > 652 || seen[id] {

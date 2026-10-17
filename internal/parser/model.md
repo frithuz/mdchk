@@ -240,14 +240,18 @@ lookup has no entries. Mutable collection copies cannot change the document.
 
 [`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly lists
 all 652 upstream IDs as pending, with zero supported HTML-conformance examples.
-Owners #6/#18 supply the block/inline pipelines; #5 supplies the HTML adapter and
-runner, with individual syntax providers following their dependency graph. These
+Owners #6/#18 supply the pending block/inline pipelines, with individual syntax
+providers following their dependency graph. The test-only #5 adapter/runner is
+available in `internal/conformance` and `tools/commonmark_conformance.py`. These
 are foundational pending scopes, not a claim that each example uses every syntax
 feature. This inventory is maintained separately from unmodified upstream data.
 `TestFoundationCorpusAccounting` requires all IDs exactly once and confirms that
 every actual retained input remains explicitly uncertain. Those checks are not
-HTML passes. Foundation/model tests form the regression baseline; #5 and later
-syntax deliveries must ratchet actual supported examples. Final completion still
+HTML passes. The runner validates this complete pass/pending ledger and rejects
+supported passes becoming fail/error/pending, lost/duplicate identities and newly
+passing IDs not yet recorded in its supported baseline. It never edits the ledger
+or upstream expectations. Foundation/model tests remain independent; later
+syntax deliveries ratchet actual supported examples. Final completion still
 requires all examples without skips/exemptions.
 
 Run the Go build/test/vet/race and corpus checks in the contributor guide.

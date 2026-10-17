@@ -37,7 +37,8 @@ GOTOOLCHAIN=local GOWORK=off GOPROXY=off GOSUMDB=off GOFLAGS=-mod=readonly go ve
 The [Go workflow](../.github/workflows/go.yml) runs test, vet, and the CommonMark
 corpus checks below on pushes and pull requests. Its actions are pinned to commit
 IDs; module caching is disabled while there are no external dependencies. Go
-package builds currently produce no command-line executable.
+package builds provide no production command-line executable; the conformance
+adapter below is a separate test command.
 
 ### Package boundaries and current capability
 
@@ -73,8 +74,9 @@ outside the parser. Initial Go packages remain internal. The
 [engineering design](engineering.md#shared-engine-and-package-boundaries)
 describes the responsibilities planned for the other packages.
 
-The [conformance runner (#5)](https://github.com/frithuz/mdchk/issues/5), block/inline
-recognition and reference resolution remain later deliveries. Context is shared
+The [test-only conformance runner](#run-commonmark-regression-checks) is available;
+block/inline recognition and reference resolution remain later deliveries.
+Context is shared
 across phases; full budget metering/enforcement and cancellation hardening remain
 [#31](https://github.com/frithuz/mdchk/issues/31). Public positions mean one-based
 lines/Unicode code-point columns, tabs count as one column, with exclusive ends.
@@ -125,7 +127,7 @@ trips, raw line counts/ranges, exact CommonMark character classes, actual helper
 tab/NUL provenance, repeatability and original-byte preservation. The separate
 `scanner.json` registry names retained Tabs IDs 1–11 as scanner/indentation targets,
 checking identity, section and exact input fidelity. It adds no HTML passes: all
-652 upstream cases retain their pending recognizer/adapter owners.
+652 upstream cases retain their pending block/inline recognizer owners.
 
 ## Regenerate and verify the CommonMark corpus
 
@@ -153,6 +155,101 @@ not enter the generated JSON. See the [corpus README](../internal/parser/testdat
 for provenance, original licenses, all six upstream fields, source-line semantics,
 and drift recovery. Corpus ingestion includes every upstream example; it does
 not claim parser or correction conformance.
+
+## Run CommonMark regression checks
+
+From the repository root, with Go and Python 3.9 or newer installed:
+
+```sh
+python3 -B tools/commonmark_conformance.py
+python3 -B tools/commonmark_conformance.py --strict
+python3 -B tools/commonmark_conformance.py --example 207 --json
+python3 -B tools/commonmark_conformance.py --section '^Tabs$'
+python3 -B -m unittest discover -s tools -p 'test_commonmark_conformance.py' -v
+```
+
+The runner verifies the retained corpus/helper hashes, builds the test adapter
+once in a temporary directory, and invokes it once for each selected original
+example. It uses the real parser and a test-only renderer over its AST, without
+a native cmark library, third-party parser or production rendering command.
+Inputs and paths are resolved from the script, so invocation by absolute script
+path also works from another directory. The checks work offline; use the local
+toolchain/module environment above to forbid automatic downloads explicitly.
+
+Every unfiltered run currently reports **0 pass, 0 fail, 0 error, 652 pending**.
+All upstream Markdown inputs remain incomplete until syntax providers arrive.
+Pending records identify `syntax-unimplemented` and block/inline owners #6/#18;
+they are not conformance passes. Independent constructed AST tests verify renderer
+output for the core model catalog, escaping/URL encoding, raw segments, lists and
+image labels without claiming that Parse produced those trees. Malformed UTF-8,
+adapter execution/protocol failures and interruption cannot become syntax-pending.
+Raw HTML output preserves its spelling except for CommonMark's mandatory NUL to
+U+FFFD substitution; original source bytes/spans remain unchanged. Unsupported or
+unknown transformed raw contributions are refused rather than silently decoded.
+
+Default comparisons use the unchanged pinned upstream normalizer and its terminal
+newline convention. `--strict` compares exact HTML output instead. The report
+includes original example/section/spec-line identities, mismatch diffs, explicit
+pass/fail/error/pending counts and selected/filtered-out scope. JSON also supplies
+every original selected ID and `full_conformance`; staged success with pending
+cases always leaves that flag false.
+Ordinary per-example protocol or comparison exceptions become explicit error
+outcomes with the original identity and error metadata; remaining selected cases
+are still evaluated. A retained-normalizer error never becomes a pass or a
+fallback comparison. Process-level interruption is not swallowed as an ordinary
+comparison error.
+
+Exit 0 means the staged regression gate passed; pending cases are allowed. Exit 1
+means a mismatch, error, ratchet violation or unmet `--require-complete` gate.
+Exit 2 means setup, corpus/ledger validation or argument selection failed; no
+successful report is produced. `--require-complete` also fails on selected pending
+cases. Final all-case completion requires an unfiltered run with all 652 passes,
+no failures/errors/pending and `full_conformance: true`.
+
+Repeat `--example` to select several original IDs; `--section` is a case-insensitive
+regular expression and combines with example selection. Unknown IDs, invalid
+regexes and empty selections are errors. A filtered run validates the full ledger
+first, reports its smaller scope and never writes or weakens the baseline.
+
+`foundation.json` is mdchk's separately reviewed pass/pending ledger. It accounts
+for all 652 IDs exactly once. Its supported list starts empty. A supported case
+becoming fail/error/pending is a regression; missing/duplicate IDs invalidate the
+ledger. A newly passing case also fails the gate until its ID moves from pending
+to `supported_html_examples` in a reviewed syntax delivery with independent
+AST/source-span tests. Keep existing supported IDs and inspect any proposed ledger
+change for weakening. The runner never updates it automatically or edits generated
+expectations. CI runs the full gate and tests synthetic nonempty pass baselines so
+the zero-pass starting point cannot conceal broken regression enforcement.
+
+To reuse a compiled executable, build outside the checkout and pass its path:
+
+```sh
+adapter_dir=$(mktemp -d)
+go build -o "$adapter_dir/specadapter" ./internal/conformance/cmd/specadapter
+python3 -B tools/commonmark_conformance.py --adapter "$adapter_dir/specadapter"
+python3 -B internal/parser/testdata/commonmark/0.31.2/upstream/test/spec_tests.py \
+  --spec internal/parser/testdata/commonmark/0.31.2/upstream/spec.txt \
+  --program "$adapter_dir/specadapter" --number 207
+rm -r "$adapter_dir"
+```
+
+The last comparison intentionally exits 1 and reports one **error**, because the
+unchanged upstream helper has no pending category. The adapter's default protocol
+emits HTML alone on stdout only for complete rendered input. Pending input exits 2
+with an outcome on stderr, errors exit 1, and interruptions exit 3. Upstream maps
+all nonzero exits to error, including pending; use mdchk's runner for staged
+accounting. A complete empty input succeeds with empty stdout, while example 207
+must not falsely pass against its legitimately empty expected HTML. The retained
+helper splits `--program` on whitespace, so use an executable path without spaces
+for that helper. mdchk's runner uses an argument vector and accepts spaced paths.
+
+The adapter's `--json` protocol is for the test runner: transport success exits 0
+with a versioned `rendered`, `pending`, `error` or `interrupted` outcome. That exit
+alone says nothing about conformance. HTML is meaningful only for `rendered`.
+The focused Go/Python tests exercise actual empty/pending/encoding outcomes,
+retained-helper success and execution-error paths, both comparison modes, case
+207, filter errors, and simulated lost/new passes. Synthetic transport fixtures
+are separate from the immutable upstream corpus.
 
 ## Activate the commit message hook
 

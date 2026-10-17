@@ -57,9 +57,10 @@ and a missing helper. CI runs these tests and the read-only drift check.
 
 `foundation.json` is mdchk's explicit, separately maintained pending inventory.
 It lists every upstream ID exactly once as pending, with no supported HTML cases.
-Owners #6/#18 provide block/inline pipelines and their syntax deliveries; #5 owns
-the test-only adapter and executable HTML comparison runner. The inventory does
-not alter upstream inputs, expectations or provenance. Regeneration still writes
+Owners #6/#18 provide the remaining block/inline pipelines and syntax deliveries.
+The test-only adapter and executable HTML comparison runner are available; #5 is
+no longer an undelivered owner. The inventory does not alter upstream inputs,
+expectations or provenance. Regeneration still writes
 only examples.json.
 
 `go test ./internal/parser` checks complete/unique accounting against the retained
@@ -73,8 +74,30 @@ checks their unique upstream identities, Tabs section and exact original input
 spellings, then reconstructs physical lines and exercises scanner helpers without
 changing the source. Independent coordinate, character, NUL and partial-tab fixtures
 verify helper behavior. These checks add no supported HTML cases; all 652 IDs remain
-pending under the unchanged foundation owners. Do not rewrite upstream expectations
+pending under their block/inline owners. Do not rewrite upstream expectations
 or count helper assertions as HTML comparison passes.
+
+## Executable comparisons and passing baseline
+
+Run `python3 -B tools/commonmark_conformance.py` from the repository root, or pass
+`--strict` for exact HTML rather than retained-upstream-normalized comparison.
+See [contributor instructions](../../../../../docs/contributing.md#run-commonmark-regression-checks)
+for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
+
+The default staged regression gate allows explicitly pending cases: currently
+0 pass, 0 fail, 0 error, 652 pending, with `syntax-unimplemented` and owners #6/#18.
+It is not a conformance-completion claim. `--require-complete` fails on pending;
+final completion needs all 652 passes in an unfiltered run. The retained upstream
+helper has no pending status and counts the adapter's nonzero pending exit as
+error. Keep that behavior distinct from mdchk's explicit pending report.
+
+The runner validates all original IDs before selection, rejects supported-pass
+regressions including pass-to-pending, and requires newly passing IDs to be recorded
+in `supported_html_examples`. Move those IDs out of pending groups in reviewed
+syntax deliveries; retain prior passes and independent AST/source-span assertions.
+No command automatically rewrites this ledger or generated upstream expectations.
+CI checks the gate, and independent synthetic baselines verify that it rejects
+regressions even while the real parser has zero supported upstream cases.
 
 ## Attribution and licenses
 
