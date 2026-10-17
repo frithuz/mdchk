@@ -25,11 +25,13 @@ func TestParseStageOutcomes(t *testing.T) {
 		{name: "empty", input: []byte{}, status: parser.Complete, ast: parser.Available},
 		{name: "ordinary text", input: []byte("hello\n"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
 		{name: "whitespace", input: []byte(" \t\r\n"), status: parser.Complete, ast: parser.Available},
+		{name: "thematic only", input: []byte("***\r\n___"), status: parser.Complete, ast: parser.Available},
 		{name: "unsupported core syntax", input: []byte("**strong**"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
 		{name: "extension looking", input: []byte("~~strike~~"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
 		{name: "frontmatter looking", input: []byte("---\nx: y\n---\n"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
 		{name: "valid replacement and NUL", input: []byte("\ufffd\x00"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
 		{name: "invalid leading byte", input: []byte{0xff}, status: parser.Failed, ast: parser.Unavailable, failure: parser.InvalidUTF8},
+		{name: "invalid after thematic line", input: []byte("***\n\xff"), status: parser.Failed, ast: parser.Unavailable, failure: parser.InvalidUTF8},
 		{name: "truncated multibyte", input: []byte{'x', 0xe2, 0x82}, status: parser.Failed, ast: parser.Unavailable, failure: parser.InvalidUTF8},
 		{name: "overlong encoding", input: []byte{0xc0, 0x80}, status: parser.Failed, ast: parser.Unavailable, failure: parser.InvalidUTF8},
 	}
@@ -66,7 +68,7 @@ func TestParseStageOutcomes(t *testing.T) {
 			refs := result.Document.References()
 			if tt.reason == "" {
 				if len(result.Uncertainty) != 0 || result.Phases != (parser.PhaseProgress{Blocks: parser.PhaseComplete, Inlines: parser.PhaseComplete}) || refs.Availability != parser.Available || refs.LookupAvailability != parser.Available {
-					t.Fatalf("blank parse is not complete: %+v", result)
+					t.Fatalf("supported parse is not complete: %+v", result)
 				}
 			} else {
 				if len(result.Uncertainty) != 1 || result.Uncertainty[0].Reason != tt.reason || result.Uncertainty[0].Region.Start() != 0 || result.Uncertainty[0].Region.End() != len(tt.input) || result.Phases != (parser.PhaseProgress{Blocks: parser.Pending, Inlines: parser.NotStarted}) || refs.Availability != parser.Unavailable || refs.LookupAvailability != parser.Unavailable {
@@ -90,7 +92,7 @@ func TestParseInterruptionIsNotOperationalFailure(t *testing.T) {
 		ctx    context.Context
 		reason parser.Reason
 	}{{cancelled, parser.Cancelled}, {deadline, parser.DeadlineExceeded}} {
-		for _, input := range []string{"", "abc", " \t\r\n"} {
+		for _, input := range []string{"", "abc", " \t\r\n", "***\r\n"} {
 			r := parser.Parse(tt.ctx, parser.NewSource([]byte(input)))
 			if r.Status != parser.Incomplete || r.AST != parser.Partial || r.Failure != nil || r.Interruption != tt.reason || r.Document == nil || r.Phases.Blocks != parser.Interrupted || r.Phases.Inlines != parser.NotStarted {
 				t.Fatalf("wrong interruption outcome: %+v", r)

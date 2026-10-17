@@ -88,8 +88,8 @@ func TestScannerCorpusTargets(t *testing.T) {
 	if len(seen) != 652 {
 		t.Fatal("upstream inventory is incomplete")
 	}
-	// TestCoreCorpusAccounting separately keeps all 652 HTML results pending
-	// with their remaining-provider owners. None of these helper checks is an HTML pass.
+	// TestCoreCorpusAccounting separately checks all 652 supported/pending results.
+	// Example 11 now passes via actual thematic parsing, not these helper checks.
 }
 
 func TestLineIndexConcurrentReaders(t *testing.T) {

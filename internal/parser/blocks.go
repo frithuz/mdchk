@@ -6,7 +6,7 @@ import (
 )
 
 // blockLine is a borrowed view of one indexed physical line. Indent is capped
-// at four: this delivery only distinguishes a paragraph start from pending code.
+// at four: thematic breaks allow fewer than four structural columns.
 type blockLine struct {
 	physicalLine
 	contentStart int
@@ -41,6 +41,7 @@ func parseBlocks(ctx context.Context, document *Document) (PhaseState, error) {
 
 func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockStartHook) (PhaseState, error) {
 	document.references = ReferenceCollection{Availability: Unavailable, LookupAvailability: Unavailable}
+	document.inlineFree = false
 	if interruption(ctx) != "" {
 		return Interrupted, nil
 	}
@@ -58,8 +59,23 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 			continue
 		}
-		// Until all block/reference providers exist, even accumulated paragraphs
-		// are partial interpretation. A closed stack is not a complete phase.
+		markers, underline := p.thematicMarkers(line)
+		// Setext wins over a dash break after an open paragraph. Its provider
+		// is still pending, so let the conservative hooks defer that suffix.
+		// Otherwise thematic breaks win over list starts and continuation.
+		if len(markers) > 0 && !(underline && len(p.stack) > 1) {
+			if err := p.closeTo(1); err != nil {
+				return Pending, err
+			}
+			node, err := NewNode(NodeSpec{Kind: ThematicBreak, Envelope: p.index.span(line.start, line.next), Markers: markers})
+			if err != nil {
+				return Pending, err
+			}
+			p.closed = append(p.closed, node)
+			continue
+		}
+		// Paragraphs and deferred syntax still need later providers. Once any
+		// such line occurs, subsequent recognized breaks cannot complete it.
 		state = Pending
 		deferred := false
 		for _, hook := range p.hooks {
@@ -89,10 +105,49 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 	}
 	document.root = root
 	if state == PhaseComplete {
-		// The whole input was established to contain only ASCII blank lines.
+		// Every physical line was established as blank or a thematic break;
+		// neither can contain a definition or require inline interpretation.
 		document.references = ReferenceCollection{Availability: Available, LookupAvailability: Available}
+		document.inlineFree = true
 	}
 	return state, nil
+}
+
+// thematicMarkers validates one whole physical line before allocating metadata.
+// Each maximal contiguous marker run gets its exact original-byte range; spaces,
+// tabs and endings remain in the envelope, never in a marker. A single dash run
+// could instead underline an open paragraph, unlike spaced dashes.
+func (p *blockParser) thematicMarkers(line blockLine) (markers []Marker, underline bool) {
+	if line.indent >= 4 || !strings.ContainsRune("*-_", rune(line.first)) {
+		return nil, false
+	}
+	text := p.index.source.content
+	count, last := 0, line.contentStart
+	for i := line.contentStart; i < line.end; i++ {
+		switch text[i] {
+		case line.first:
+			count++
+			last = i
+		case ' ', '\t':
+		default:
+			return nil, false
+		}
+	}
+	if count < 3 {
+		return nil, false
+	}
+	for i := line.contentStart; i <= last; {
+		if text[i] != line.first {
+			i++
+			continue
+		}
+		start := i
+		for i <= last && text[i] == line.first {
+			i++
+		}
+		markers = append(markers, Marker{Role: "thematic-marker", Source: p.index.span(start, i)})
+	}
+	return markers, line.first == '-' && len(markers) == 1
 }
 
 func (p *blockParser) line(physical physicalLine) blockLine {

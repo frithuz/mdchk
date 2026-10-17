@@ -52,14 +52,16 @@ views without copying the complete snapshot for each range.
 
 Parse enforces strict UTF-8 before Markdown work. Empty and ASCII-blank input
 produce an available empty document, established empty references and completed
-phases. Other valid input yields a partial root with staged paragraph children
-where accumulated, and explicit whole-document `syntax-unimplemented` uncertainty.
-A private open-block stack handles continuation, blank closure and EOF; paragraph
-segments retain original-byte provenance for later inline parsing. Conservative
-start hooks defer possible unsupported blocks and leave the uncertain suffix
-source-only. Closed paragraphs remain partial: references and inline interpretation
-are unavailable. See the model contract for exact envelopes, content trimming,
-interior hard-break preservation and conservative start guards.
+phases. Fully accounted thematic-break/blank documents also complete with exact
+source-marker spans, empty references and vacuous inline work. Other valid input
+yields a partial root with staged paragraph/break children where accumulated, and
+explicit whole-document `syntax-unimplemented` uncertainty. A private stack handles
+continuation, thematic interruption, blank closure and EOF; paragraph segments
+retain original-byte provenance for later inline parsing. Conservative start hooks
+reserve Setext precedence and defer unsupported blocks, leaving the uncertain
+suffix source-only. Closed paragraphs remain partial: references and inline
+interpretation are unavailable. See the model contract for exact envelopes,
+content trimming, interior hard-break preservation and conservative start guards.
 
 Invalid UTF-8 retains the snapshot with typed failure, an authoritative
 snapshot-bound byte location and unavailable AST. Cancellation/deadline remain
@@ -71,9 +73,11 @@ versus zero-width ranges, deterministic traversal and reference-record ownership
 Constructed model fixtures verify the full catalog independently of actual parser
 recognition. Direct examples 219–227 and independent Parse AST/source assertions
 verify staged paragraph progress, with later-dependent structures still pending.
-All 652 retained upstream cases remain HTML-pending, with zero supported cases.
-Go tests check complete unique inventory accounting as well as ownership, range/provenance, outcome and
-phase-handoff behavior.
+Original thematic examples 43–61 and independently asserted cases 11/98 verify
+recognition, precedence and exact marker/envelope ranges. Nine upstream cases
+now pass actual HTML comparison (11, 43, 47, 50–54, 98); 643 remain pending.
+Go tests check complete unique inventory accounting as well as ownership,
+range/provenance, outcome and phase-handoff behavior.
 
 Keep file loading, configuration, rules, CLI/MCP adaptation, reporting and writes
 outside the parser. Initial Go packages remain internal. The
@@ -81,7 +85,7 @@ outside the parser. Initial Go packages remain internal. The
 describes the responsibilities planned for the other packages.
 
 The [test-only conformance runner](#run-commonmark-regression-checks) is available;
-other block recognizers, inline parsing and reference resolution remain later
+other block recognizers, inline text and reference definitions remain later
 deliveries. Context is shared across phases; full budget metering/enforcement and cancellation hardening remain
 [#31](https://github.com/frithuz/mdchk/issues/31). Public positions mean one-based
 lines/Unicode code-point columns, tabs count as one column, with exclusive ends.
@@ -131,8 +135,9 @@ Tests independently verify expected coordinates and rejection cases before round
 trips, raw line counts/ranges, exact CommonMark character classes, actual helper
 tab/NUL provenance, repeatability and original-byte preservation. The separate
 `scanner.json` registry names retained Tabs IDs 1–11 as scanner/indentation targets,
-checking identity, section and exact input fidelity. It adds no HTML passes: all
-652 upstream cases retain their pending block/inline recognizer owners.
+checking identity, section and exact input fidelity. It adds no HTML passes:
+example 11's supported HTML comes from actual thematic recognition. Other scanner
+targets retain their pending block/inline owners.
 
 ## Regenerate and verify the CommonMark corpus
 
@@ -181,13 +186,15 @@ Inputs and paths are resolved from the script, so invocation by absolute script
 path also works from another directory. The checks work offline; use the local
 toolchain/module environment above to forbid automatic downloads explicitly.
 
-Every unfiltered run currently reports **0 pass, 0 fail, 0 error, 652 pending**.
-All upstream Markdown inputs remain incomplete until syntax providers arrive.
-Pending records identify `syntax-unimplemented`. Named paragraph targets retain
-#17/#18 and their additional #8/#10/#21 providers; other cases use broad remaining
-inline/core-completion scopes #18/#29. These are not conformance passes. Independent constructed AST tests verify renderer
-output for the core model catalog, escaping/URL encoding, raw segments, lists and
-image labels without claiming that Parse produced those trees. Malformed UTF-8,
+Every unfiltered run currently reports **9 pass, 0 fail, 0 error, 643 pending**.
+The supported cases are 11, 43, 47, 50–54 and 98: actual thematic-only documents.
+Remaining records identify `syntax-unimplemented`. Named thematic targets retain
+their code/Setext/list/reference/inline/break/emphasis owners; paragraph targets
+retain #17/#18 and their additional #8/#10/#21 providers; other cases use broad remaining
+inline/core-completion scopes #18/#29. Pending cases are not conformance passes.
+Independent constructed AST tests verify renderer output for the core model
+catalog, escaping/URL encoding, raw segments, lists and image labels without
+claiming that Parse produced those trees. Malformed UTF-8,
 adapter execution/protocol failures and interruption cannot become syntax-pending.
 Raw HTML output preserves its spelling except for CommonMark's mandatory NUL to
 U+FFFD substitution; original source bytes/spans remain unchanged. Unsupported or
@@ -218,14 +225,14 @@ regexes and empty selections are errors. A filtered run validates the full ledge
 first, reports its smaller scope and never writes or weakens the baseline.
 
 `foundation.json` is mdchk's separately reviewed pass/pending ledger. It accounts
-for all 652 IDs exactly once. Its supported list starts empty. A supported case
-becoming fail/error/pending is a regression; missing/duplicate IDs invalidate the
-ledger. A newly passing case also fails the gate until its ID moves from pending
+for all 652 IDs exactly once. Its supported list records the nine passes above.
+A supported case becoming fail/error/pending is a regression; missing/duplicate
+IDs invalidate the ledger. A newly passing case also fails the gate until its ID moves from pending
 to `supported_html_examples` in a reviewed syntax delivery with independent
 AST/source-span tests. Keep existing supported IDs and inspect any proposed ledger
 change for weakening. The runner never updates it automatically or edits generated
-expectations. CI runs the full gate and tests synthetic nonempty pass baselines so
-the zero-pass starting point cannot conceal broken regression enforcement.
+expectations. CI runs the full gate and tests synthetic pass baselines to detect
+lost passes and unrecorded new passes independently of the real corpus counts.
 
 To reuse a compiled executable, build outside the checkout and pass its path:
 

@@ -110,20 +110,25 @@ class ExecutableBoundary(unittest.TestCase):
                        cwd=runner.corpus.ROOT, check=True, capture_output=True)
 
     def test_real_adapter_empty_pending_and_invalid_encoding(self):
-        for content, code, status in [
-                (b"", 0, "rendered"), (b" \t\r\n", 0, "rendered"),
-                (b"hello\n", 2, "pending"), (b"[foo]: /url\n", 2, "pending"),
-                (b"\xff", 1, "error")]:
+        for content, code, status, html in [
+                (b"", 0, "rendered", b""), (b" \t\r\n", 0, "rendered", b""),
+                (b"***\n", 0, "rendered", b"<hr />\n"),
+                (b"hello\n", 2, "pending", b""),
+                (b"Foo\n***\nbar\n", 2, "pending", b""),
+                (b"[foo]: /url\n", 2, "pending", b""),
+                (b"\xff", 1, "error", b"")]:
             with self.subTest(content=content):
                 plain = subprocess.run([str(self.adapter)], input=content, capture_output=True)
                 self.assertEqual(plain.returncode, code)
-                self.assertEqual(plain.stdout, b"")
+                self.assertEqual(plain.stdout, html)
                 if code:
                     self.assertEqual(json.loads(plain.stderr)["status"], status)
                 else:
                     self.assertEqual(plain.stderr, b"")
                 machine = subprocess.run([str(self.adapter), "--json"], input=content, capture_output=True, check=True)
-                self.assertEqual(json.loads(machine.stdout)["status"], status)
+                outcome = json.loads(machine.stdout)
+                self.assertEqual(outcome["status"], status)
+                self.assertEqual(outcome["html"], html.decode())
                 self.assertEqual(machine.stderr, b"")
 
     def test_all_652_actual_outputs_follow_ledger_in_both_modes(self):
@@ -133,10 +138,25 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 0, "fail": 0, "error": 0, "pending": 652})
+                self.assertEqual(report["counts"], {"pass": 9, "fail": 0, "error": 0, "pending": 643})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
+                supported = {11, 43, 47, 50, 51, 52, 53, 54, 98}
+                self.assertEqual(set(ledger["supported_html_examples"]), supported)
                 owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
-                self.assertTrue(all(r["reason"] == "syntax-unimplemented" and r["owners"] == owners[r["example"]] for r in report["outcomes"]))
+                for outcome in report["outcomes"]:
+                    if outcome["example"] in supported:
+                        self.assertEqual(outcome["status"], "pass")
+                        self.assertNotIn(outcome["example"], owners)
+                    else:
+                        self.assertEqual(outcome["status"], "pending")
+                        self.assertEqual(outcome["reason"], "syntax-unimplemented")
+                        self.assertEqual(outcome["owners"], owners[outcome["example"]])
+                self.assertEqual(owners[48], [10])
+                self.assertEqual(owners[49], [17, 18, 21])
+                self.assertEqual(owners[58], [17, 18])
+                self.assertEqual(owners[59], [9, 17, 18])
+                for example in [57, 60, 61]:
+                    self.assertEqual(owners[example], [14, 15, 16, 17, 18])
                 self.assertEqual(owners[219], [17, 18])
                 self.assertEqual(owners[220], [17, 18, 21])
                 self.assertEqual(owners[225], [10, 17, 18])

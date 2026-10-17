@@ -77,9 +77,9 @@ type ParseResult struct {
 }
 
 // Parse implements the core CommonMark foundation, with extensions/frontmatter
-// recognition disabled. Empty/ASCII-blank input is fully parsed. Other input
-// retains staged paragraph blocks and explicit whole-document uncertainty;
-// inline parsing, reference collection and other block providers remain pending.
+// recognition disabled. Blanks and thematic-only input are fully parsed. Other
+// input retains staged paragraphs/breaks and whole-document uncertainty;
+// inline text, reference definitions and other block providers remain pending.
 //
 // The strict UTF-8 gate precedes Markdown work and retains malformed bytes without
 // substitution. Its failure takes precedence over context interruption. Callers
@@ -156,21 +156,10 @@ func parseInlines(ctx context.Context, document *Document, blocks PhaseState) Ph
 	if interruption(ctx) != "" {
 		return Interrupted
 	}
-	if len(document.root.spec.Children) != 0 || !isBlankSource(document.Source().content) {
-		return Pending // #18 supplies nonempty inline interpretation
+	if !document.inlineFree {
+		return Pending // #18 supplies inline payload interpretation
 	}
 	return PhaseComplete
-}
-
-// This guard also protects the inline stub from a future incorrectly completed
-// nonblank block handoff, even when the source-only root has no children.
-func isBlankSource(text string) bool {
-	for i := range len(text) {
-		if text[i] != ' ' && text[i] != '\t' && text[i] != '\r' && text[i] != '\n' {
-			return false
-		}
-	}
-	return true
 }
 
 func interruption(ctx context.Context) Reason {
@@ -194,6 +183,7 @@ func interruptedResult(r ParseResult, reason Reason, region Span) ParseResult {
 		r.Phases.Inlines = Interrupted
 	}
 	r.Document.references = ReferenceCollection{Availability: Unavailable, LookupAvailability: Unavailable}
+	r.Document.inlineFree = false
 	r.Uncertainty = []Uncertainty{{Region: region, Reason: reason}}
 	return r
 }

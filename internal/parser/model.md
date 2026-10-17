@@ -1,9 +1,10 @@
 # Parser model and staged block contract
 
 `internal/parser` defines an in-memory CommonMark 0.31.2 model and a staged
-paragraph/block lifecycle. It completes empty/ASCII-blank documents and retains
-paragraph source content for later inline parsing. Other block providers,
-references and inlines remain pending. The model catalog also supports
+paragraph/block lifecycle and thematic-break recognition. It completes documents
+entirely accounted for by thematic breaks and ASCII blanks, and retains paragraph
+source content for later inline parsing. Other block providers, reference
+definitions and inline text remain pending. The model catalog also supports
 constructed fixtures; it does not promise recognition of every listed kind.
 
 ## Parse outcomes
@@ -21,13 +22,14 @@ to callers.
 | --- | --- | --- |
 | Nil or zero-length source | `Complete` / `Available` | Root `[0,0)`, no children, available empty reference records/lookup, both phases complete |
 | ASCII-blank source (space/tab/LF/CR only) | `Complete` / `Available` | Root `[0,N)`, no children, established empty references/lookup, both phases complete |
-| Other valid source | `Incomplete` / `Partial` | Root `[0,N)` with staged paragraph children where accumulated, one `SyntaxUnimplemented` uncertainty over `[0,N)`, blocks pending, inlines not started; references/lookup unavailable |
+| Thematic breaks and ASCII blank lines only | `Complete` / `Available` | Root `[0,N)` with source-bound breaks, established empty references/lookup, both phases complete, no uncertainty |
+| Other valid source | `Incomplete` / `Partial` | Root `[0,N)` with staged paragraphs/breaks where recognized, one `SyntaxUnimplemented` uncertainty over `[0,N)`, blocks pending, inlines not started; references/lookup unavailable |
 | Invalid UTF-8 | `Failed` / `Unavailable` | Original Source, typed `Failure` with `InvalidUTF8` code and snapshot-bound byte location, nil Document, neither phase started |
 | Cancellation/deadline on otherwise valid source | `Incomplete` / `Partial` | Original Source and partial root with any already-closed prefix blocks, affected region with `Cancelled`/`DeadlineExceeded`, separate Interruption, nil Failure; unfinished work interrupted |
 | Other operational failure | `Failed` / `Unavailable` | Retained Source, typed stable failure code, nil Document; InternalFailure if block-model construction violates invariants |
 
-Nonblank input, including extension/frontmatter-looking text, still has pending
-core interpretation; disabled extensions do not become errors. ASCII-blank input
+Mixed/unsupported input, including extension/frontmatter-looking text, retains
+pending interpretation; disabled extensions do not become errors. ASCII-blank input
 is affirmatively established to contain no blocks or references. NBSP and other
 nonblank Unicode content are never discarded as blank lines.
 A source-only root proves document identity and envelope, never absent syntax.
@@ -58,10 +60,12 @@ result := parser.Parse(context.Background(), source)
 ```
 
 The private block/reference phase precedes inline processing. Inlines cannot run
-until the block phase and effective reference lookup are complete. Empty and
-ASCII-blank documents establish an empty registry; all other sources leave it
-unavailable and skip inlines. The inline stub additionally refuses any nonblank
-source or block children even if a caller incorrectly supplies a complete handoff.
+until the block phase and effective reference lookup are complete. The block pass
+establishes an empty registry and a private inline-free handoff only after every
+physical line has been recognized as blank or a thematic break. Inline work is
+then vacuously complete. Paragraphs, unknown suffixes and interrupted work never
+establish that handoff. Supplying complete phases/references or constructed break
+children cannot bypass the guard; model constructors do not prove recognition.
 Both phases share the caller context. Checks occur at phase boundaries and before
 each indexed block line, not inside UTF-8/index scans or every constructor loop.
 #31 retains full work metering, cancellation checkpoints and budget enforcement;
@@ -84,17 +88,17 @@ internal tabs stay literal. Indented starts of four columns (including a tab
 reaching that boundary) defer to #10, while deep indentation can continue a
 paragraph. Diagnostic code-point columns are not used for that distinction.
 
-Start hooks precede paragraph continuation. Until providers exist, a conservative
-hook defers starts of four-column code and lines at indentation below four whose
-first nonblank byte is a digit or one of `#`, `>`, `*`, `_`, `~`, a backtick, `-`,
+After thematic dispatch below, start hooks precede paragraph continuation. A
+conservative hook defers starts of four-column code and lines below four columns
+whose first nonblank byte is a digit or one of `#`, `>`, `*`, `_`, `~`, a backtick, `-`,
 `+`, `=`, `[` or `<`. This is not a grammar recognizer: ordinary punctuation/numeric
 lines may also be deferred. A deferred
 line might transform the open paragraph (Setext) or start an unknown container,
-so its open paragraph is discarded, previously closed paragraphs are retained,
+so its open paragraph is discarded, previously closed blocks are retained,
 and the remaining suffix stays source-only. No boundary inside that suffix is
-invented. Nonblank results retain whole-document uncertainty, including retained
-paragraphs; these nodes are progress for later parsing, not reliable permission
-for syntax-dependent rules or fixes. Full providers will refine these guards.
+invented. Mixed/unsupported results retain whole-document uncertainty, including
+retained paragraphs; these nodes are progress for later parsing, not reliable
+permission for syntax-dependent rules or fixes. Full providers will refine these guards.
 
 `TestParagraphUpstreamTargets` consumes unmodified examples 219–227 with independent
 expected grouping, byte envelopes and content segments. Examples 219–224 establish
@@ -103,6 +107,35 @@ and 227's heading remain unknown, with only 227's already-closed paragraph retai
 All nine remain HTML-pending. Focused Parse fixtures cover blank/EOF closure,
 LF/CRLF/CR, Unicode/NUL/tab provenance, immutable ownership and repeatability.
 Private transition tests cover hook precedence and interrupted open work.
+
+## Thematic breaks and precedence
+
+Below four structural indentation columns, a line containing at least three
+matching `*`, `-` or `_` bytes and only ASCII spaces/tabs between or after them is
+a thematic break. Leading tabs reach the four-column boundary and do not qualify.
+Validate the full original line before allocating marker metadata. Each maximal
+contiguous marker run has a `thematic-marker` span excluding whitespace; the node
+envelope includes the entire physical line, original indentation, inter-marker and
+trailing whitespace, and LF/CRLF/CR ending or unterminated EOF. Breaks contain no
+inline children or semantic payload. Original bytes remain unchanged.
+
+Thematic recognition precedes generic list-start deferral and paragraph
+continuation. It closes a preceding paragraph and permits a following one without
+blank separators. A qualifying contiguous dash underline after an open paragraph
+is reserved for Setext (#9): conservatively defer the uncertain paragraph/suffix
+rather than publish a paragraph/break interpretation. Spaced dashes cannot be a
+Setext underline and may interrupt the paragraph as a break. Deeply indented
+continuation stays paragraph content. Unsupported container starts still defer
+their whole suffix rather than manufacturing nested breaks.
+
+`TestThematicUpstreamTargets` checks original examples 43–61 plus newly supported
+11/98 with independent node order, envelopes and exact marker ranges. Actual
+Parse/Evaluate reproduces HTML for 11, 43, 47, 50–54 and 98. Example 58 retains
+paragraph/break/paragraph progress but remains inline/reference-pending. Example
+59 reserves Setext, 48 awaits indented code, and 57/60/61 await lists/containers.
+Negative cases never acquire break nodes or false completeness. Independent
+fixtures cover tabs, indentation boundaries, Unicode/NUL/extra characters,
+endings/EOF, blank-separated breaks, ownership, repeatability and interruption.
 
 ## Snapshots, spans and ownership
 
@@ -282,18 +315,23 @@ first-selection consistency and coverage for an Available lookup, without doing
 normalization. Partial lookup may contain only known first selections; unavailable
 lookup has no entries. Mutable collection copies cannot change the document.
 
-[`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly lists
-all 652 upstream IDs as pending, with zero supported HTML-conformance examples.
+[`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly accounts
+for all 652 upstream IDs: nine supported HTML cases (11, 43, 47, 50–54, 98) and
+643 pending. The thematic targets name remaining code (#10), Setext (#9), list
+container (#14–#16), reference/inline (#17/#18), break (#21) and emphasis
+(#24/#25) owners where relevant. These are staged ownership scopes, not new native
+prerequisites for thematic recognition.
 Named paragraph targets record #17 reference knowledge and #18 inline scanning,
 plus #21 for multiline/break processing, #10 for example 225 and #8 for 227.
 Other examples use broad remaining inline/core-completion scopes #18/#29; these
-are ownership scopes, not a claim that every case needs every provider. The test-only #5 adapter/runner is
-available in `internal/conformance` and `tools/commonmark_conformance.py`. These
-are foundational pending scopes, not a claim that each example uses every syntax
+are ownership scopes, not a claim that every case needs every provider. The
+test-only #5 adapter/runner is available in `internal/conformance` and
+`tools/commonmark_conformance.py`. These are foundational pending scopes, not a
+claim that each example uses every syntax
 feature. This inventory is maintained separately from unmodified upstream data.
 `TestCoreCorpusAccounting` requires all IDs exactly once and confirms that
-every actual retained input remains explicitly uncertain. Those checks are not
-HTML passes. The runner validates this complete pass/pending ledger and rejects
+actual retained inputs agree with supported versus uncertain outcomes. The runner
+independently compares actual HTML, validates this complete ledger and rejects
 supported passes becoming fail/error/pending, lost/duplicate identities and newly
 passing IDs not yet recorded in its supported baseline. It never edits the ledger
 or upstream expectations. Foundation/model tests remain independent; later
@@ -304,8 +342,9 @@ Run the Go build/test/vet/race and corpus checks in the contributor guide.
 The separate [`scanner.json`](testdata/commonmark/0.31.2/scanner.json) registry
 names Tabs examples 1–11 as scanner/indentation targets. Its tests assert exact
 identity, section and original input spellings, raw line reconstruction and helper
-use, independently of HTML status. All 652 HTML cases retain their current pending
-owners. Independent coordinate/line tables, character fixtures and actual helper
-provenance tests establish scanner capabilities only. Current checks cannot
-establish syntax conformance, reference normalization, full resource enforcement,
+use, independently of HTML status. Example 11's HTML pass comes from thematic
+recognition, not scanner helper checks. Independent coordinate/line tables,
+character fixtures and actual helper provenance tests establish scanner
+capabilities only. Current checks cannot establish syntax conformance,
+reference normalization, full resource enforcement,
 fix safety or CLI/MCP parity.

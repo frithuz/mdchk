@@ -76,6 +76,10 @@ type ReferenceCollection struct {
 type Document struct {
 	root       *Node
 	references ReferenceCollection
+	// Set only by a finished block pass that accounted for the entire source
+	// without inline payload. Constructed nodes or available references alone
+	// cannot establish this private parse handoff.
+	inlineFree bool
 }
 
 // NewDocument binds a complete source envelope to records. It validates supplied

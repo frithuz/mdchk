@@ -55,13 +55,19 @@ and a missing helper. CI runs these tests and the read-only drift check.
 
 ## Foundation coverage accounting
 
-`foundation.json` is mdchk's explicit, separately maintained pending inventory.
-It lists every upstream ID exactly once as pending, with no supported HTML cases.
-The staged paragraph lifecycle is implemented. Named targets 219–227 now record
-remaining reference/inline owners #17/#18, plus #21 for multiline/break processing,
+`foundation.json` is mdchk's explicit, separately maintained pass/pending inventory.
+It lists every upstream ID exactly once: nine supported HTML cases (11, 43, 47,
+50–54, 98) and 643 pending. Thematic breaks and the staged paragraph lifecycle are
+implemented. Thematic-only documents complete with available empty references and
+vacuous inline work; mixed/unknown input remains partial. Named targets 219–227
+record remaining reference/inline owners #17/#18, plus #21 for multiline/break processing,
 #10 for indented code in 225 and #8 for the heading in 227. Other cases use broad
 remaining inline/core-completion scopes #18/#29, not a claim that every example
-needs every provider.
+needs every provider. Remaining thematic targets name code (#10), Setext (#9),
+lists/containers (#14–#16), reference/inline (#17/#18), breaks (#21) and emphasis
+(#24/#25) where relevant. These are coverage owners, not reverse blockers on the
+thematic delivery. No unsupported container children or Setext interpretations
+are manufactured to produce progress.
 The test-only adapter and executable HTML comparison runner are available; #5 is
 no longer an undelivered owner. The inventory does not alter upstream inputs,
 expectations or provenance. Regeneration still writes
@@ -72,7 +78,13 @@ corpus and verifies parse outcomes match the ledger. Actual Parse assertions fro
 original examples 219–227 independently check paragraph grouping and source spans;
 225 and 227 retain their undelivered structures as unknown. Those tests do not
 assert final HTML or use constructed nodes as proof of recognition. These
-are coverage-contract assertions, not HTML-conformance passes. See the
+are coverage-contract assertions, not HTML-conformance passes.
+`TestThematicUpstreamTargets` separately exercises unchanged 43–61 and extra
+supported cases 11/98 with independent actual-parser kinds, source envelopes and
+maximal contiguous `thematic-marker` run ranges. Parse/Evaluate produces the nine
+supported HTML outputs; pending cases stay distinct. Independent fixtures cover
+paragraph interruption, Setext/spaced-dash precedence, negative markers,
+tabs/indentation, Unicode/NUL, endings/EOF, source ownership and interruption. See the
 [model contract](../../../model.md) for supported outcomes and later ownership.
 
 `scanner.json` is a separate mdchk capability-target registry. It names exactly
@@ -80,9 +92,9 @@ Tabs IDs 1–11 as scanner/indentation validation targets. `TestScannerCorpusTar
 checks their unique upstream identities, Tabs section and exact original input
 spellings, then reconstructs physical lines and exercises scanner helpers without
 changing the source. Independent coordinate, character, NUL and partial-tab fixtures
-verify helper behavior. These checks add no supported HTML cases; all 652 IDs remain
-pending under their block/inline owners. Do not rewrite upstream expectations
-or count helper assertions as HTML comparison passes.
+verify helper behavior. These checks add no supported HTML cases: example 11's
+HTML pass comes from thematic parsing, not scanner helpers. Do not rewrite
+upstream expectations or count helper assertions as HTML comparison passes.
 
 ## Executable comparisons and passing baseline
 
@@ -92,10 +104,10 @@ See [contributor instructions](../../../../../docs/contributing.md#run-commonmar
 for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
 
 The default staged regression gate allows explicitly pending cases: currently
-0 pass, 0 fail, 0 error, 652 pending, with `syntax-unimplemented` and the remaining
-owners above. Synthetic empty/ASCII-blank documents complete and render empty HTML;
-none of the retained 652 inputs is entirely ASCII-blank, so this adds no upstream
-HTML pass.
+9 pass, 0 fail, 0 error, 643 pending, with `syntax-unimplemented` and the remaining
+owners above. The nine real passes include the seven standalone thematic targets,
+tab-separated markers (11) and consecutive dash breaks without paragraph text
+(98). Synthetic empty/ASCII-blank documents also complete and render empty HTML.
 It is not a conformance-completion claim. `--require-complete` fails on pending;
 final completion needs all 652 passes in an unfiltered run. The retained upstream
 helper has no pending status and counts the adapter's nonzero pending exit as
@@ -107,7 +119,7 @@ in `supported_html_examples`. Move those IDs out of pending groups in reviewed
 syntax deliveries; retain prior passes and independent AST/source-span assertions.
 No command automatically rewrites this ledger or generated upstream expectations.
 CI checks the gate, and independent synthetic baselines verify that it rejects
-regressions even while the real parser has zero supported upstream cases.
+regressions independently of the real parser's supported-case count.
 
 ## Attribution and licenses
 
