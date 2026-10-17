@@ -41,26 +41,47 @@ package builds currently produce no command-line executable.
 
 ### Package boundaries and current capability
 
-`internal/parser` provides only an in-memory `Source` foundation. `NewSource`
-copies the supplied bytes, and `Bytes` returns an independent copy. The zero value
-is empty; nil and empty inputs have the same empty content. Source retention
-does not normalize Unicode, line endings, tabs, NUL, or invalid encoding. This
-holder does not perform parsing or encoding validation.
+`internal/parser` provides immutable source snapshots, a source-bound core
+CommonMark model, and `Parse(ctx, source)`. `NewSource` copies incoming bytes and
+`Bytes` returns a copy; the zero Source remains empty. Acquisition preserves
+Unicode bytes, line endings, tabs, NUL and invalid encoding. `Source.Span` checks
+half-open byte bounds/ownership; `Source.Text` exposes immutable original-byte
+views without copying the complete snapshot for each range.
+
+Parse enforces strict UTF-8 before Markdown work. Empty input yields an available
+empty document, complete reference collection and completed block/inline phases.
+Every valid nonempty input yields a partial source-only root and explicit
+whole-document `syntax-unimplemented` uncertainty. Whitespace, extension-like and
+frontmatter-like text follow that same pending core interpretation. Invalid UTF-8
+retains the snapshot with typed failure, an authoritative snapshot-bound byte
+location and unavailable AST. Cancellation/deadline
+are separate incomplete outcomes, not operational failures. Empty children or nil
+failure alone never establish complete parsing.
+
+See the [parser model contract](../internal/parser/model.md) for the outcome
+example, core kind/property catalog, segmented raw/semantic provenance, absent
+versus zero-width ranges, deterministic traversal and reference-record ownership.
+Constructed model fixtures verify these representations; they are not parser
+outputs. All 652 retained upstream cases are explicitly pending, with zero
+supported HTML-conformance cases at this foundation stage. Go tests check complete
+unique inventory accounting as well as ownership, range/provenance, outcome and
+phase-handoff behavior.
 
 Keep file loading, configuration, rules, CLI/MCP adaptation, reporting and writes
 outside the parser. Initial Go packages remain internal. The
 [engineering design](engineering.md#shared-engine-and-package-boundaries)
 describes the responsibilities planned for the other packages.
 
-Bootstrap tests verify byte retention and ownership, not Markdown syntax.
-The pinned CommonMark corpus is retained as described below.
-[The AST/parse contract (#3)](https://github.com/frithuz/mdchk/issues/3),
-[line scanning/source mapping (#4)](https://github.com/frithuz/mdchk/issues/4),
-and [the conformance runner (#5)](https://github.com/frithuz/mdchk/issues/5)
-are separate deliveries. Syntax work must use the pinned upstream examples plus
-independent AST/source-span checks, explicitly account for pending cases and
-retain the passing baseline. No CommonMark, GFM or Pandoc conformance is claimed
-by this foundation; the full corpus completion gate remains unchanged.
+Concrete [line scanning/source mapping (#4)](https://github.com/frithuz/mdchk/issues/4),
+[the conformance runner (#5)](https://github.com/frithuz/mdchk/issues/5), block/inline
+recognition and reference resolution remain later deliveries. Context is shared
+across phases; full budget metering/enforcement and cancellation hardening remain
+[#31](https://github.com/frithuz/mdchk/issues/31). Public positions mean one-based
+lines/Unicode code-point columns, tabs count as one column, with exclusive ends;
+no source-to-position mapper is claimed yet. Syntax deliveries must use the pinned
+upstream cases plus independent AST/source-span checks and ratchet actual passing
+cases. No CommonMark, GFM or Pandoc conformance is claimed here; full corpus
+completion still requires every case without exemptions.
 
 ## Regenerate and verify the CommonMark corpus
 

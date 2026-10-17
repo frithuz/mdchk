@@ -53,6 +53,20 @@ upstream dump, check repeat generation from an unrelated directory, and require
 non-rewriting failures for changed HTML, a removed case, corrupt retained inputs,
 and a missing helper. CI runs these tests and the read-only drift check.
 
+## Foundation coverage accounting
+
+`foundation.json` is mdchk's explicit, separately maintained pending inventory.
+It lists every upstream ID exactly once as pending, with no supported HTML cases.
+Owners #6/#18 provide block/inline pipelines and their syntax deliveries; #5 owns
+the test-only adapter and executable HTML comparison runner. The inventory does
+not alter upstream inputs, expectations or provenance. Regeneration still writes
+only examples.json.
+
+`go test ./internal/parser` checks complete/unique accounting against the retained
+corpus and verifies every input has explicit foundation-stage uncertainty. These
+are coverage-contract assertions, not HTML-conformance passes. See the
+[model contract](../../../model.md) for supported outcomes and later ownership.
+
 ## Attribution and licenses
 
 The specification and derived examples are Copyright (C) 2014–16 John MacFarlane,

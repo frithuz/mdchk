@@ -1,6 +1,7 @@
-// Package parser holds the in-memory foundation for mdchk's internal Markdown
-// parser. It currently retains source bytes only; it does not parse or validate
-// Markdown, build a syntax tree, or establish dialect conformance.
+// Package parser defines mdchk's in-memory, source-preserving Markdown model.
+// Parse validates UTF-8 and completely parses empty input. Every valid nonempty
+// input currently has explicit whole-document uncertainty, not recognized syntax.
+// See model.md for the catalog, outcome contract and pending delivery boundaries.
 //
 // File loading, configuration, rules, CLI behavior, and reporting belong to
 // callers outside this package.
@@ -10,13 +11,18 @@ package parser
 // normalize line endings, decode text, or validate encoding. Its zero value is
 // an empty source. Nil and empty inputs represent the same empty content.
 type Source struct {
-	content string
+	content  string
+	identity *sourceIdentity
 }
+
+// Nonzero size ensures independent snapshots have distinct pointer identities.
+// Identity is private ownership metadata, never an output or serialization ID.
+type sourceIdentity struct{ marker byte }
 
 // NewSource copies content into a Source. Callers may reuse or modify content
 // after NewSource returns without changing the retained bytes.
 func NewSource(content []byte) Source {
-	return Source{content: string(content)}
+	return Source{content: string(content), identity: &sourceIdentity{}}
 }
 
 // Bytes returns a copy of the original bytes. Modifying the returned slice does
