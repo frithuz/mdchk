@@ -41,8 +41,9 @@ package builds currently produce no command-line executable.
 
 ### Package boundaries and current capability
 
-`internal/parser` provides immutable source snapshots, a source-bound core
-CommonMark model, and `Parse(ctx, source)`. `NewSource` copies incoming bytes and
+`internal/parser` provides immutable source snapshots, physical-line and text
+mapping, structural indentation helpers, a source-bound core CommonMark model,
+and `Parse(ctx, source)`. `NewSource` copies incoming bytes and
 `Bytes` returns a copy; the zero Source remains empty. Acquisition preserves
 Unicode bytes, line endings, tabs, NUL and invalid encoding. `Source.Span` checks
 half-open byte bounds/ownership; `Source.Text` exposes immutable original-byte
@@ -72,16 +73,59 @@ outside the parser. Initial Go packages remain internal. The
 [engineering design](engineering.md#shared-engine-and-package-boundaries)
 describes the responsibilities planned for the other packages.
 
-Concrete [line scanning/source mapping (#4)](https://github.com/frithuz/mdchk/issues/4),
-[the conformance runner (#5)](https://github.com/frithuz/mdchk/issues/5), block/inline
+The [conformance runner (#5)](https://github.com/frithuz/mdchk/issues/5), block/inline
 recognition and reference resolution remain later deliveries. Context is shared
 across phases; full budget metering/enforcement and cancellation hardening remain
 [#31](https://github.com/frithuz/mdchk/issues/31). Public positions mean one-based
-lines/Unicode code-point columns, tabs count as one column, with exclusive ends;
-no source-to-position mapper is claimed yet. Syntax deliveries must use the pinned
-upstream cases plus independent AST/source-span checks and ratchet actual passing
+lines/Unicode code-point columns, tabs count as one column, with exclusive ends.
+Syntax deliveries must use the pinned upstream cases plus independent AST/source-span
+checks and ratchet actual passing
 cases. No CommonMark, GFM or Pandoc conformance is claimed here; full corpus
 completion still requires every case without exemptions.
+
+### Scanner and mapping capabilities
+
+Build `parser.NewLineIndex(source)` once and reuse it. Its `LineCount` and `Line`
+methods retain physical LF, CRLF and CR content/ending spans even on malformed
+bytes. Empty input has zero selectable lines; a final ending adds no selectable
+line. `Position`/`Offset` convert strict-valid UTF-8 scalar boundaries, excluding
+CRLF interiors, and reject invalid requests with `ErrPosition`. They never clamp
+or guess. Terminator start is the preceding line's end position; terminator end
+is next-line column 1. Empty EOF is (1,1); a final ending creates a virtual EOF
+position on the next line without making that line selectable. Byte Span/Text
+access remains available for arbitrary bounded ranges.
+
+Malformed sources retain a typed InvalidUTF8 failure at the first invalid scalar's
+original leading byte; ordinary text conversion and semantic/indentation helpers
+are unavailable. `FailurePosition` derives that diagnostic point only from the
+valid prefix. It does not enable normal parsing or replace malformed bytes.
+
+`SemanticText` replaces valid NUL with semantic U+FFFD using explicit Normalized
+provenance over the original byte; literal source U+FFFD stays Exact. `Indentation`
+uses separate zero-based structural columns, four-column tab stops and residual
+PartialTab spans across repeated consumption and caller-interpreted markers.
+Remaining content keeps internal tabs literal. Cursor copies advance independently;
+the shared Source and LineIndex remain immutable. These helpers recognize no syntax.
+
+For example, `é\t\x00\r\nZ` has seven original bytes. NUL [3,4) contributes U+FFFD,
+but `Z` stays at original byte 6 / diagnostic (2,1), and EOF at byte 7 / (2,2).
+The tab counts as one diagnostic column; only structural indentation consumption
+uses tab stops. Semantic replacement length cannot be used to locate source edits.
+For `>\t\tfoo`, advancing the marker, consuming one delimiter column and four
+indentation columns leaves two semantic spaces backed by the second tab [2,3).
+
+Construction takes O(N) time and O(L) boundary storage. Position lookup takes
+O(log L + B), reverse lookup O(B), for the selected line-prefix byte count B;
+neither scans earlier lines or copies the whole source. Repeated long-line lookups
+may repeatedly decode their prefix. Semantic helpers take work/storage proportional
+to selected bytes. Optional measured follow-ups include checkpoints and benchmarks.
+
+Tests independently verify expected coordinates and rejection cases before round
+trips, raw line counts/ranges, exact CommonMark character classes, actual helper
+tab/NUL provenance, repeatability and original-byte preservation. The separate
+`scanner.json` registry names retained Tabs IDs 1–11 as scanner/indentation targets,
+checking identity, section and exact input fidelity. It adds no HTML passes: all
+652 upstream cases retain their pending recognizer/adapter owners.
 
 ## Regenerate and verify the CommonMark corpus
 

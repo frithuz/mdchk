@@ -10,9 +10,10 @@ Acquire a snapshot with `NewSource(content)`, then call `Parse(ctx, source)` wit
 a non-nil context. Both operations stay in memory. `Source` retains arbitrary
 bytes; Parse validates strict UTF-8 before any normal Markdown work. Malformed
 bytes remain available through `result.Source`, with no transcoding/replacement.
-Literal U+FFFD and U+0000 are valid encoding; semantic NUL substitution is not
-implemented here. Encoding failure takes precedence over interruption. Rule/io
-attribution, CLI exits and result-schema adaptation belong to callers.
+Literal U+FFFD and U+0000 are valid encoding; scanner helpers replace NUL only in
+semantic contributions, never in Source. Encoding failure takes precedence over
+interruption. Rule/io attribution, CLI exits and result-schema adaptation belong
+to callers.
 
 | Input/outcome | Status / AST | Reliable data and phase progress |
 | --- | --- | --- |
@@ -33,7 +34,8 @@ when incomplete. `Failure.Location` is a present, snapshot-owned zero-width poin
 at the first invalid scalar's leading original byte, including malformed/truncated
 multibyte sequences. Its Start is the authoritative zero-based offset; byte zero
 is distinct from an absent location on an unlocated/synthetic internal failure.
-Public line/column conversion remains #4 and engine/io attribution remains #123.
+LineIndex supplies public line/column conversion and valid-prefix failure points;
+engine/io attribution remains #123.
 Failure, uncertainty and interruption have typed codes so callers
 never need to parse messages. `InternalFailure` is available for constructed
 failure examples; Parse currently produces only `InvalidUTF8` operational failures.
@@ -74,8 +76,80 @@ rejects absent/foreign spans and returns an immutable string view without copyin
 the whole document. Retaining a view can retain the snapshot backing storage.
 
 Public `Position` means one-based physical lines and Unicode code-point columns,
-tabs count as one column, and range ends are exclusive. Concrete line/CRLF/tab
-mapping is #4; this foundation supplies no guessed byte-to-position conversion.
+tabs and combining code points each count as one column, and range ends are
+exclusive. Structural indentation uses a separate zero-based column count.
+
+## Physical lines, positions and scanner contributions
+
+`NewLineIndex(source)` reuses the immutable snapshot and records LF, CRLF and lone
+CR boundaries. The zero LineIndex indexes the empty zero Source. `LineCount` and
+one-based `Line` work on arbitrary bytes, even malformed UTF-8. PhysicalLine
+separates Content and Ending spans; an unterminated line has a present empty Ending
+at EOF. Empty input has zero selectable content lines. A terminal ending creates
+no extra selectable line; consecutive endings still delimit actual empty lines.
+
+On strict-valid UTF-8 sources, `Position(offset)` and `Offset(position)` convert
+original-byte scalar boundaries, rejecting continuation-byte and CRLF interiors,
+out-of-bounds offsets, nonpositive positions and nonexistent lines/columns with
+`ErrPosition`. They never clamp, snap or alias requests. The boundary before an
+entire terminator is the preceding line's end; after it is next-line column 1.
+Empty EOF is (1,1); EOF after a terminal ending has a virtual next-line position.
+Those valid endpoints do not create selectable content lines. Unterminated EOF
+is the final content line's end. Byte Span/Text access remains broader than this
+conversion domain. Line requests outside selectable content also return ErrPosition.
+
+`EncodingFailure` returns fresh typed InvalidUTF8 metadata, retaining the first
+invalid scalar's leading original-byte point. The metadata cannot mutate the
+index. Ordinary conversion, semantic and indentation operations on malformed
+sources return this typed failure; they do not partially parse, transcode or assign
+invalid bytes a character width. `FailurePosition` alone derives that first point
+from the valid prefix (or returns ErrPosition if there is no encoding failure).
+Byte-line indexing and raw spans remain usable independently of decoding.
+
+`SemanticText(span)` returns caller-owned Value/Segment slices. Exact runs retain
+original views; NUL contributes U+FFFD with Normalized provenance over the original
+one-byte NUL span. Literal U+FFFD stays Exact. Absent/foreign ranges return ErrRange;
+scalar-interior endpoints return ErrPosition, including empty interior ranges.
+Semantic byte ranges may split CRLF, independently of diagnostic conversion.
+
+`Indentation(line)` starts a caller-owned cursor at a physical content line. Its
+zero value is empty. `AdvanceMarker` advances one non-space/tab scalar selected
+by the caller and one structural column; it rejects EOF or a pending partial tab.
+`Consume(n)` strips up to n ASCII space/tab columns, stopping at content/EOF.
+Four-column tab stops keep their phase across calls and caller-interpreted
+container markers. Negative requests return ErrIndentation without mutation; zero
+is a no-op. Each consumed tab contribution has PartialTab provenance over its
+original one-byte span, even when a whole tab is expanded. Offset remains on a
+partly consumed tab until its last column is consumed. Remaining returns the
+residual spaces with that same provenance, followed by semantic content with
+internal tabs kept literal. Line endings are excluded. Cursor copies advance
+independently; simultaneous mutation of one cursor needs caller synchronization.
+These helpers recognize no quote, list, code or other Markdown syntax.
+
+For `>\t\tfoo`, advance `>`, consume one delimiter column, then four indentation
+columns. The cursor is at structural column 6, original byte 2, with two spaces
+remaining from tab [2,3), followed by Exact `foo` at [3,6). Repeating calls on the
+same immutable snapshot preserves the same raw provenance.
+
+For the seven original bytes `é\t\x00\r\nZ`, NUL [3,4) contributes U+FFFD; `Z`
+remains byte 6 / diagnostic (2,1), and EOF byte 7 / (2,2). The semantic replacement
+is longer in UTF-8, but shifts no original coordinates. The tab counts as one
+diagnostic column; structural consumption instead uses four-column stops.
+
+Construction is O(N) time and O(L) line-boundary storage, without another whole
+snapshot copy. Position lookup is O(log L + B) and reverse lookup O(B), where B is
+the selected line-prefix byte count; neither scans earlier lines. Encoding status
+is cached in the immutable index. Semantic output and Remaining take O(selected
+bytes) work/storage; Consume takes O(consumed bytes + columns). Repeated lookups
+on a long line may repeatedly decode its prefix. Checkpoints, batching and measured
+benchmarks remain optional follow-ups, with no numeric performance gate.
+
+Character helpers follow CommonMark 0.31.2: blank content is ASCII space/tab or
+empty, not an ending; Unicode whitespace is Zs plus TAB/LF/FF/CR; Unicode punctuation
+is P or S; ASCII controls are U+0000–001F/U+007F and ASCII punctuation is the four
+specified printable ranges. No broader whitespace predicate is substituted.
+
+## Constructed syntax ownership
 
 `NewNode`, `NewReferenceDefinition` and `NewDocument` validate source associations
 and snapshot every mutable input layer. Their accessors return independent mutable
@@ -115,7 +189,8 @@ original slices in order; differing semantic text needs explicit transformation
 or unavailable/synthetic provenance. The same rule applies to node Literal/Content.
 For `&amp;`, `[0,5)` selects five source bytes even when semantic text is `&`.
 Never infer offsets from semantic lengths or reconstruct Markdown to locate edits.
-#4/#18/#19 later populate partial-tab, inline and decoding mappings.
+Scanner helpers now populate partial-tab and NUL mappings; #18/#19 still own
+inline recognition and escape/entity decoding.
 
 ## Core kind and property catalog
 
@@ -176,5 +251,11 @@ syntax deliveries must ratchet actual supported examples. Final completion still
 requires all examples without skips/exemptions.
 
 Run the Go build/test/vet/race and corpus checks in the contributor guide.
-Current checks cannot establish syntax conformance, concrete coordinates,
-reference normalization, full resource enforcement, fix safety or CLI/MCP parity.
+The separate [`scanner.json`](testdata/commonmark/0.31.2/scanner.json) registry
+names Tabs examples 1–11 as scanner/indentation targets. Its tests assert exact
+identity, section and original input spellings, raw line reconstruction and helper
+use, independently of HTML status. All 652 HTML cases retain their current pending
+owners. Independent coordinate/line tables, character fixtures and actual helper
+provenance tests establish scanner capabilities only. Current checks cannot
+establish syntax conformance, reference normalization, full resource enforcement,
+fix safety or CLI/MCP parity.

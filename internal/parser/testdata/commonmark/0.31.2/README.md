@@ -67,6 +67,15 @@ corpus and verifies every input has explicit foundation-stage uncertainty. These
 are coverage-contract assertions, not HTML-conformance passes. See the
 [model contract](../../../model.md) for supported outcomes and later ownership.
 
+`scanner.json` is a separate mdchk capability-target registry. It names exactly
+Tabs IDs 1–11 as scanner/indentation validation targets. `TestScannerCorpusTargets`
+checks their unique upstream identities, Tabs section and exact original input
+spellings, then reconstructs physical lines and exercises scanner helpers without
+changing the source. Independent coordinate, character, NUL and partial-tab fixtures
+verify helper behavior. These checks add no supported HTML cases; all 652 IDs remain
+pending under the unchanged foundation owners. Do not rewrite upstream expectations
+or count helper assertions as HTML comparison passes.
+
 ## Attribution and licenses
 
 The specification and derived examples are Copyright (C) 2014–16 John MacFarlane,

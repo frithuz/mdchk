@@ -51,6 +51,7 @@ type Optional[T any] struct {
 func Some[T any](value T) Optional[T] { return Optional[T]{Value: value, Present: true} }
 
 // Position is a public one-based line/code-point coordinate, with exclusive range
-// ends and tabs counting as one column. Source-to-position mapping is delivery #4;
-// Span access never guesses positions from bytes or semantic string lengths.
+// ends and tabs counting as one column. LineIndex converts original-byte scalar
+// boundaries, excluding CRLF interiors. Span access has broader byte bounds and
+// never guesses positions from semantic string lengths or indentation columns.
 type Position struct{ Line, Column int }
