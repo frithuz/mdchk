@@ -80,4 +80,6 @@ See [the engineering design](docs/engineering.md) for accepted contracts and rem
 
 ## Contribute
 
-See the [contributor guide](docs/contributing.md) to activate the native Git commit message hook and run its integration tests.
+See the [contributor guide](docs/contributing.md) for the Go 1.27.2 minimum,
+build/test commands, current parser foundation, and native Git commit hook setup
+and integration tests.
