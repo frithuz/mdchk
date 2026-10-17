@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "format": "CommonMark 0.31.2",
+  "inputs": {
+    "upstream/spec.txt": {
+      "origin_url": "https://github.com/commonmark/commonmark-spec/blob/9103e341a973013013bb1a80e13567007c5cef6f/spec.txt",
+      "repository": "https://github.com/commonmark/commonmark-spec",
+      "commit": "9103e341a973013013bb1a80e13567007c5cef6f",
+      "retrieved_at": "2026-10-17",
+      "byte_count": 205025,
+      "sha256": "257c41ad946f7a1414a499aca402a1aa8fdac3678532266611348c1cf54f4b80",
+      "license": "CC-BY-SA-4.0",
+      "role": "Original CommonMark 0.31.2 specification and normative examples",
+      "git_mode": "100644"
+    },
+    "upstream/test/spec_tests.py": {
+      "origin_url": "https://github.com/commonmark/commonmark-spec/blob/9103e341a973013013bb1a80e13567007c5cef6f/test/spec_tests.py",
+      "repository": "https://github.com/commonmark/commonmark-spec",
+      "commit": "9103e341a973013013bb1a80e13567007c5cef6f",
+      "retrieved_at": "2026-10-17",
+      "byte_count": 6433,
+      "sha256": "9db1ea4a3ee79c5ec74eebc09c5985eb252427e8d9d19ef45e5cc3f2ae410855",
+      "license": "BSD-2-Clause",
+      "role": "Unmodified upstream fixture extractor",
+      "git_mode": "100755"
+    },
+    "upstream/test/cmark.py": {
+      "origin_url": "https://github.com/commonmark/commonmark-spec/blob/9103e341a973013013bb1a80e13567007c5cef6f/test/cmark.py",
+      "repository": "https://github.com/commonmark/commonmark-spec",
+      "commit": "9103e341a973013013bb1a80e13567007c5cef6f",
+      "retrieved_at": "2026-10-17",
+      "byte_count": 1340,
+      "sha256": "29c6a26f17c0203dfc2a190bdeae935021b754555711a1bf5a1db633cb6477fc",
+      "license": "BSD-2-Clause",
+      "role": "Unconditional extractor import; renderer is not used in dump mode",
+      "git_mode": "100644"
+    },
+    "upstream/test/normalize.py": {
+      "origin_url": "https://github.com/commonmark/commonmark-spec/blob/9103e341a973013013bb1a80e13567007c5cef6f/test/normalize.py",
+      "repository": "https://github.com/commonmark/commonmark-spec",
+      "commit": "9103e341a973013013bb1a80e13567007c5cef6f",
+      "retrieved_at": "2026-10-17",
+      "byte_count": 6508,
+      "sha256": "6fb1dac11284c1ec9e527aaa9a03b02e53d6f64be0034315f2e6a32de7f3a034",
+      "license": "BSD-2-Clause AND MIT",
+      "role": "Unconditional extractor import; normalization is not used in dump mode",
+      "git_mode": "100644"
+    },
+    "upstream/LICENSE": {
+      "origin_url": "https://github.com/commonmark/commonmark-spec/blob/9103e341a973013013bb1a80e13567007c5cef6f/LICENSE",
+      "repository": "https://github.com/commonmark/commonmark-spec",
+      "commit": "9103e341a973013013bb1a80e13567007c5cef6f",
+      "retrieved_at": "2026-10-17",
+      "byte_count": 2792,
+      "sha256": "3e4806ba6f20073e8ce40da5a0c4b59f7f44287965f538e195a4d734d833557b",
+      "license": "CC-BY-SA-4.0 AND BSD-2-Clause AND MIT",
+      "role": "Original upstream license and copyright notices for specification and test software",
+      "git_mode": "100644"
+    }
+  },
+  "generator": {
+    "upstream_commit": "9103e341a973013013bb1a80e13567007c5cef6f",
+    "entry_point": "upstream/test/spec_tests.py",
+    "arguments": [
+      "--spec",
+      "upstream/spec.txt",
+      "--dump-tests"
+    ],
+    "python_version_used": "3.9.6",
+    "python_minimum": "3.9",
+    "serialization": "Unmodified upstream json.dumps(ensure_ascii=False, indent=2), UTF-8, no terminal newline"
+  },
+  "generated": {
+    "path": "examples.json",
+    "byte_count": 140487,
+    "sha256": "d431b29d97b6f73e69d547109cf5081578fac931e72afe95639ebe766c1b2a20",
+    "license": "CC-BY-SA-4.0",
+    "role": "All 652 original upstream examples across 26 sections; no expected-output adaptations"
+  }
+}
