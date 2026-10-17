@@ -57,14 +57,21 @@ and a missing helper. CI runs these tests and the read-only drift check.
 
 `foundation.json` is mdchk's explicit, separately maintained pending inventory.
 It lists every upstream ID exactly once as pending, with no supported HTML cases.
-Owners #6/#18 provide the remaining block/inline pipelines and syntax deliveries.
+The staged paragraph lifecycle is implemented. Named targets 219–227 now record
+remaining reference/inline owners #17/#18, plus #21 for multiline/break processing,
+#10 for indented code in 225 and #8 for the heading in 227. Other cases use broad
+remaining inline/core-completion scopes #18/#29, not a claim that every example
+needs every provider.
 The test-only adapter and executable HTML comparison runner are available; #5 is
 no longer an undelivered owner. The inventory does not alter upstream inputs,
 expectations or provenance. Regeneration still writes
 only examples.json.
 
 `go test ./internal/parser` checks complete/unique accounting against the retained
-corpus and verifies every input has explicit foundation-stage uncertainty. These
+corpus and verifies parse outcomes match the ledger. Actual Parse assertions from
+original examples 219–227 independently check paragraph grouping and source spans;
+225 and 227 retain their undelivered structures as unknown. Those tests do not
+assert final HTML or use constructed nodes as proof of recognition. These
 are coverage-contract assertions, not HTML-conformance passes. See the
 [model contract](../../../model.md) for supported outcomes and later ownership.
 
@@ -85,7 +92,10 @@ See [contributor instructions](../../../../../docs/contributing.md#run-commonmar
 for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
 
 The default staged regression gate allows explicitly pending cases: currently
-0 pass, 0 fail, 0 error, 652 pending, with `syntax-unimplemented` and owners #6/#18.
+0 pass, 0 fail, 0 error, 652 pending, with `syntax-unimplemented` and the remaining
+owners above. Synthetic empty/ASCII-blank documents complete and render empty HTML;
+none of the retained 652 inputs is entirely ASCII-blank, so this adds no upstream
+HTML pass.
 It is not a conformance-completion claim. `--require-complete` fails on pending;
 final completion needs all 652 passes in an unfiltered run. The retained upstream
 helper has no pending status and counts the adapter's nonzero pending exit as

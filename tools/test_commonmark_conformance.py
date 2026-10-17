@@ -110,7 +110,10 @@ class ExecutableBoundary(unittest.TestCase):
                        cwd=runner.corpus.ROOT, check=True, capture_output=True)
 
     def test_real_adapter_empty_pending_and_invalid_encoding(self):
-        for content, code, status in [(b"", 0, "rendered"), (b"[foo]: /url\n", 2, "pending"), (b"\xff", 1, "error")]:
+        for content, code, status in [
+                (b"", 0, "rendered"), (b" \t\r\n", 0, "rendered"),
+                (b"hello\n", 2, "pending"), (b"[foo]: /url\n", 2, "pending"),
+                (b"\xff", 1, "error")]:
             with self.subTest(content=content):
                 plain = subprocess.run([str(self.adapter)], input=content, capture_output=True)
                 self.assertEqual(plain.returncode, code)
@@ -123,7 +126,7 @@ class ExecutableBoundary(unittest.TestCase):
                 self.assertEqual(json.loads(machine.stdout)["status"], status)
                 self.assertEqual(machine.stderr, b"")
 
-    def test_all_652_actual_outputs_stay_pending_in_both_modes(self):
+    def test_all_652_actual_outputs_follow_ledger_in_both_modes(self):
         ledger = json.loads((runner.corpus.CORPUS / "foundation.json").read_text())
         for normalize in [self.normalizer, None]:
             with self.subTest(normalized=normalize is not None):
@@ -132,7 +135,13 @@ class ExecutableBoundary(unittest.TestCase):
                 self.assertFalse(report["full_conformance"])
                 self.assertEqual(report["counts"], {"pass": 0, "fail": 0, "error": 0, "pending": 652})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
-                self.assertTrue(all(r["reason"] == "syntax-unimplemented" and r["owners"] == [6, 18] for r in report["outcomes"]))
+                owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
+                self.assertTrue(all(r["reason"] == "syntax-unimplemented" and r["owners"] == owners[r["example"]] for r in report["outcomes"]))
+                self.assertEqual(owners[219], [17, 18])
+                self.assertEqual(owners[220], [17, 18, 21])
+                self.assertEqual(owners[225], [10, 17, 18])
+                self.assertEqual(owners[226], [17, 18, 21])
+                self.assertEqual(owners[227], [8, 17, 18])
                 self.assertEqual(report["outcomes"][206]["status"], "pending")
         complete = runner.run_cases(self.cases, self.cases[206:207], ledger, self.adapter, None, True)
         self.assertFalse(complete["gate_passed"])

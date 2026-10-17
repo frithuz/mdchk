@@ -8,15 +8,20 @@ import (
 )
 
 func ExampleParse() {
-	for _, content := range []string{"", "hello\n"} {
+	for _, content := range []string{"", " \t\r\n", "hello\n"} {
 		result := parser.Parse(context.Background(), parser.NewSource([]byte(content)))
 		fmt.Println(result.Status, result.AST, result.Document.References().LookupAvailability)
+		fmt.Println("paragraphs:", len(result.Document.Root().Children()))
 		for _, deficit := range result.Uncertainty {
 			fmt.Println(deficit.Region.Start(), deficit.Region.End(), deficit.Reason)
 		}
 	}
 	// Output:
 	// complete available available
+	// paragraphs: 0
+	// complete available available
+	// paragraphs: 0
 	// incomplete partial unavailable
+	// paragraphs: 1
 	// 0 6 syntax-unimplemented
 }

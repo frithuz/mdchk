@@ -50,23 +50,29 @@ Unicode bytes, line endings, tabs, NUL and invalid encoding. `Source.Span` check
 half-open byte bounds/ownership; `Source.Text` exposes immutable original-byte
 views without copying the complete snapshot for each range.
 
-Parse enforces strict UTF-8 before Markdown work. Empty input yields an available
-empty document, complete reference collection and completed block/inline phases.
-Every valid nonempty input yields a partial source-only root and explicit
-whole-document `syntax-unimplemented` uncertainty. Whitespace, extension-like and
-frontmatter-like text follow that same pending core interpretation. Invalid UTF-8
-retains the snapshot with typed failure, an authoritative snapshot-bound byte
-location and unavailable AST. Cancellation/deadline
-are separate incomplete outcomes, not operational failures. Empty children or nil
-failure alone never establish complete parsing.
+Parse enforces strict UTF-8 before Markdown work. Empty and ASCII-blank input
+produce an available empty document, established empty references and completed
+phases. Other valid input yields a partial root with staged paragraph children
+where accumulated, and explicit whole-document `syntax-unimplemented` uncertainty.
+A private open-block stack handles continuation, blank closure and EOF; paragraph
+segments retain original-byte provenance for later inline parsing. Conservative
+start hooks defer possible unsupported blocks and leave the uncertain suffix
+source-only. Closed paragraphs remain partial: references and inline interpretation
+are unavailable. See the model contract for exact envelopes, content trimming,
+interior hard-break preservation and conservative start guards.
 
+Invalid UTF-8 retains the snapshot with typed failure, an authoritative
+snapshot-bound byte location and unavailable AST. Cancellation/deadline remain
+separate incomplete outcomes. Empty children or nil failure alone never establish
+complete parsing. No paragraph HTML or full dialect conformance is claimed.
 See the [parser model contract](../internal/parser/model.md) for the outcome
 example, core kind/property catalog, segmented raw/semantic provenance, absent
 versus zero-width ranges, deterministic traversal and reference-record ownership.
-Constructed model fixtures verify these representations; they are not parser
-outputs. All 652 retained upstream cases are explicitly pending, with zero
-supported HTML-conformance cases at this foundation stage. Go tests check complete
-unique inventory accounting as well as ownership, range/provenance, outcome and
+Constructed model fixtures verify the full catalog independently of actual parser
+recognition. Direct examples 219–227 and independent Parse AST/source assertions
+verify staged paragraph progress, with later-dependent structures still pending.
+All 652 retained upstream cases remain HTML-pending, with zero supported cases.
+Go tests check complete unique inventory accounting as well as ownership, range/provenance, outcome and
 phase-handoff behavior.
 
 Keep file loading, configuration, rules, CLI/MCP adaptation, reporting and writes
@@ -75,9 +81,8 @@ outside the parser. Initial Go packages remain internal. The
 describes the responsibilities planned for the other packages.
 
 The [test-only conformance runner](#run-commonmark-regression-checks) is available;
-block/inline recognition and reference resolution remain later deliveries.
-Context is shared
-across phases; full budget metering/enforcement and cancellation hardening remain
+other block recognizers, inline parsing and reference resolution remain later
+deliveries. Context is shared across phases; full budget metering/enforcement and cancellation hardening remain
 [#31](https://github.com/frithuz/mdchk/issues/31). Public positions mean one-based
 lines/Unicode code-point columns, tabs count as one column, with exclusive ends.
 Syntax deliveries must use the pinned upstream cases plus independent AST/source-span
@@ -178,8 +183,9 @@ toolchain/module environment above to forbid automatic downloads explicitly.
 
 Every unfiltered run currently reports **0 pass, 0 fail, 0 error, 652 pending**.
 All upstream Markdown inputs remain incomplete until syntax providers arrive.
-Pending records identify `syntax-unimplemented` and block/inline owners #6/#18;
-they are not conformance passes. Independent constructed AST tests verify renderer
+Pending records identify `syntax-unimplemented`. Named paragraph targets retain
+#17/#18 and their additional #8/#10/#21 providers; other cases use broad remaining
+inline/core-completion scopes #18/#29. These are not conformance passes. Independent constructed AST tests verify renderer
 output for the core model catalog, escaping/URL encoding, raw segments, lists and
 image labels without claiming that Parse produced those trees. Malformed UTF-8,
 adapter execution/protocol failures and interruption cannot become syntax-pending.

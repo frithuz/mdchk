@@ -49,7 +49,8 @@ const (
 
 // Failure is an operational failure, not unavailable syntax or interruption.
 // Code is machine-readable; Message is explanatory, never a discrimination API.
-// InvalidUTF8 is the only operational failure currently produced by Parse.
+// Parse reports InvalidUTF8 for bad encoding and InternalFailure if constructing
+// its block model violates the source/model invariants.
 type Failure struct {
 	Code    FailureCode
 	Message string
@@ -76,13 +77,14 @@ type ParseResult struct {
 }
 
 // Parse implements the core CommonMark foundation, with extensions/frontmatter
-// recognition disabled. Only empty input is fully parsed. All valid nonempty
-// input is source-only with explicit uncertainty. No syntax recognizer runs yet.
+// recognition disabled. Empty/ASCII-blank input is fully parsed. Other input
+// retains staged paragraph blocks and explicit whole-document uncertainty;
+// inline parsing, reference collection and other block providers remain pending.
 //
 // The strict UTF-8 gate precedes Markdown work and retains malformed bytes without
 // substitution. Its failure takes precedence over context interruption. Callers
-// must pass a non-nil context. Cancellation is checked at phase boundaries; full
-// work metering/checkpoints belong to #31. Both phases share this context and must
+// must pass a non-nil context. Cancellation is checked at phase boundaries and
+// before block lines; full work metering/checkpoints belong to #31. Phases must
 // later share the caller's operation budget across phases and candidate reparses.
 func Parse(ctx context.Context, source Source) ParseResult {
 	r := ParseResult{
@@ -106,7 +108,13 @@ func Parse(ctx context.Context, source Source) ParseResult {
 	if reason := interruption(ctx); reason != "" {
 		return interruptedResult(r, reason, span)
 	}
-	r.Phases.Blocks = parseBlocks(ctx, r.Document)
+	var err error
+	r.Phases.Blocks, err = parseBlocks(ctx, r.Document)
+	if err != nil {
+		r.Status, r.AST, r.Document = Failed, Unavailable, nil
+		r.Failure = &Failure{Code: InternalFailure, Message: "construct block model: " + err.Error()}
+		return r
+	}
 	if reason := interruption(ctx); reason != "" {
 		return interruptedResult(r, reason, span)
 	}
@@ -120,6 +128,8 @@ func Parse(ctx context.Context, source Source) ParseResult {
 	}
 	if r.Phases.Inlines == PhaseComplete {
 		r.Status, r.AST = Complete, Available
+	} else {
+		r.Uncertainty = []Uncertainty{{Region: span, Reason: SyntaxUnimplemented}}
 	}
 	return r
 }
@@ -138,18 +148,6 @@ func invalidUTF8Offset(content string) int {
 	return -1
 }
 
-func parseBlocks(ctx context.Context, document *Document) PhaseState {
-	if interruption(ctx) != "" {
-		return Interrupted
-	}
-	if document.Source().Len() != 0 {
-		return Pending
-	}
-	document.references.Availability = Available
-	document.references.LookupAvailability = Available
-	return PhaseComplete
-}
-
 func parseInlines(ctx context.Context, document *Document, blocks PhaseState) PhaseState {
 	// The reference handoff is required even if a future caller misorders phases.
 	if blocks != PhaseComplete || document.references.LookupAvailability != Available {
@@ -158,7 +156,21 @@ func parseInlines(ctx context.Context, document *Document, blocks PhaseState) Ph
 	if interruption(ctx) != "" {
 		return Interrupted
 	}
-	return PhaseComplete // only empty documents reach this phase in the foundation
+	if len(document.root.spec.Children) != 0 || !isBlankSource(document.Source().content) {
+		return Pending // #18 supplies nonempty inline interpretation
+	}
+	return PhaseComplete
+}
+
+// This guard also protects the inline stub from a future incorrectly completed
+// nonblank block handoff, even when the source-only root has no children.
+func isBlankSource(text string) bool {
+	for i := range len(text) {
+		if text[i] != ' ' && text[i] != '\t' && text[i] != '\r' && text[i] != '\n' {
+			return false
+		}
+	}
+	return true
 }
 
 func interruption(ctx context.Context) Reason {

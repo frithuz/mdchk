@@ -1,8 +1,10 @@
-# Parser foundation contract
+# Parser model and staged block contract
 
-`internal/parser` defines an in-memory CommonMark 0.31.2 model. It recognizes no
-nonempty syntax yet. The catalog is a contract for constructed fixtures and later
-providers, independent of private Go layout or the future JSON projection.
+`internal/parser` defines an in-memory CommonMark 0.31.2 model and a staged
+paragraph/block lifecycle. It completes empty/ASCII-blank documents and retains
+paragraph source content for later inline parsing. Other block providers,
+references and inlines remain pending. The model catalog also supports
+constructed fixtures; it does not promise recognition of every listed kind.
 
 ## Parse outcomes
 
@@ -18,13 +20,16 @@ to callers.
 | Input/outcome | Status / AST | Reliable data and phase progress |
 | --- | --- | --- |
 | Nil or zero-length source | `Complete` / `Available` | Root `[0,0)`, no children, available empty reference records/lookup, both phases complete |
-| Any valid nonempty source | `Incomplete` / `Partial` | Source-only root `[0,N)`, one `SyntaxUnimplemented` uncertainty over `[0,N)`, blocks pending, inlines not started; reference records/lookup unavailable |
+| ASCII-blank source (space/tab/LF/CR only) | `Complete` / `Available` | Root `[0,N)`, no children, established empty references/lookup, both phases complete |
+| Other valid source | `Incomplete` / `Partial` | Root `[0,N)` with staged paragraph children where accumulated, one `SyntaxUnimplemented` uncertainty over `[0,N)`, blocks pending, inlines not started; references/lookup unavailable |
 | Invalid UTF-8 | `Failed` / `Unavailable` | Original Source, typed `Failure` with `InvalidUTF8` code and snapshot-bound byte location, nil Document, neither phase started |
-| Cancellation/deadline on otherwise valid source | `Incomplete` / `Partial` | Original Source and source-only root, affected region with `Cancelled`/`DeadlineExceeded`, separate Interruption, nil Failure; unfinished work interrupted |
-| Other operational failure | `Failed` / `Unavailable` | Retained Source, typed stable failure code, nil Document; synthetic model contract only at present |
+| Cancellation/deadline on otherwise valid source | `Incomplete` / `Partial` | Original Source and partial root with any already-closed prefix blocks, affected region with `Cancelled`/`DeadlineExceeded`, separate Interruption, nil Failure; unfinished work interrupted |
+| Other operational failure | `Failed` / `Unavailable` | Retained Source, typed stable failure code, nil Document; InternalFailure if block-model construction violates invariants |
 
-Every nonempty input includes whitespace and extension/frontmatter-looking text.
-Its **core interpretation is pending**; disabled extensions do not become errors.
+Nonblank input, including extension/frontmatter-looking text, still has pending
+core interpretation; disabled extensions do not become errors. ASCII-blank input
+is affirmatively established to contain no blocks or references. NBSP and other
+nonblank Unicode content are never discarded as blank lines.
 A source-only root proves document identity and envelope, never absent syntax.
 Neither nil Failure nor empty children/references proves complete parsing. No
 syntax-dependent rule or fix may use uncertain regions as reliable syntax.
@@ -37,8 +42,8 @@ is distinct from an absent location on an unlocated/synthetic internal failure.
 LineIndex supplies public line/column conversion and valid-prefix failure points;
 engine/io attribution remains #123.
 Failure, uncertainty and interruption have typed codes so callers
-never need to parse messages. `InternalFailure` is available for constructed
-failure examples; Parse currently produces only `InvalidUTF8` operational failures.
+never need to parse messages. `InternalFailure` also reports an invariant failure
+while constructing block nodes; valid supported inputs should not reach that path.
 
 For example:
 
@@ -48,17 +53,56 @@ result := parser.Parse(context.Background(), source)
 // result.Status == parser.Incomplete; result.Failure == nil.
 // result.AST == parser.Partial; root envelope is [0,6).
 // result.Uncertainty[0].Reason == parser.SyntaxUnimplemented.
-// An empty child list here is not evidence of an empty Markdown document.
+// Root contains one Paragraph with raw content [0,5), but no inline children.
+// Its [0,6) envelope retains the terminal newline. Inline semantics are pending.
 ```
 
 The private block/reference phase precedes inline processing. Inlines cannot run
-until the block phase and effective reference lookup are complete. Empty input
-completes the empty registry; nonempty input leaves it unavailable and skips
-inlines. Both phases receive the same caller context. Context checks currently
-occur at phase boundaries, not within UTF-8 scanning or every constructor loop.
-#31 owns full cancellation checkpoints, exact work metering and budget enforcement.
-Its operation budget must be shared across both phases and candidate reparses,
-not reset in each phase/document. No speculative budget interface is added here.
+until the block phase and effective reference lookup are complete. Empty and
+ASCII-blank documents establish an empty registry; all other sources leave it
+unavailable and skip inlines. The inline stub additionally refuses any nonblank
+source or block children even if a caller incorrectly supplies a complete handoff.
+Both phases share the caller context. Checks occur at phase boundaries and before
+each indexed block line, not inside UTF-8/index scans or every constructor loop.
+#31 retains full work metering, cancellation checkpoints and budget enforcement;
+no speculative budget API is added here.
+
+## Staged paragraph lifecycle
+
+A private stack retains the open document and paragraph. Blank lines close a
+paragraph; EOF finalizes its last content line. Source-backed segments accumulate
+privately and nodes are validated/frozen once on closure. One LineIndex is reused.
+The envelope starts at the first physical line's original start (including its
+indentation) and ends after the last content line's original terminator, or EOF.
+Blank separators are excluded. Logical content omits each line's leading ASCII
+space/tab indentation, preserves interior endings and trailing spaces, and omits
+the last line's ending and paragraph-final spaces/tabs. Omitted bytes remain in
+Source. NUL has explicit Normalized provenance; other retained bytes stay Exact.
+There is no paragraph Literal or invented inline child. Paragraph indentation is
+fully consumed, so no residual partial tab is emitted into its logical content;
+internal tabs stay literal. Indented starts of four columns (including a tab
+reaching that boundary) defer to #10, while deep indentation can continue a
+paragraph. Diagnostic code-point columns are not used for that distinction.
+
+Start hooks precede paragraph continuation. Until providers exist, a conservative
+hook defers starts of four-column code and lines at indentation below four whose
+first nonblank byte is a digit or one of `#`, `>`, `*`, `_`, `~`, a backtick, `-`,
+`+`, `=`, `[` or `<`. This is not a grammar recognizer: ordinary punctuation/numeric
+lines may also be deferred. A deferred
+line might transform the open paragraph (Setext) or start an unknown container,
+so its open paragraph is discarded, previously closed paragraphs are retained,
+and the remaining suffix stays source-only. No boundary inside that suffix is
+invented. Nonblank results retain whole-document uncertainty, including retained
+paragraphs; these nodes are progress for later parsing, not reliable permission
+for syntax-dependent rules or fixes. Full providers will refine these guards.
+
+`TestParagraphUpstreamTargets` consumes unmodified examples 219–227 with independent
+expected grouping, byte envelopes and content segments. Examples 219–224 establish
+paragraph progress; 226 retains interior hard-break spaces; 225's indented code
+and 227's heading remain unknown, with only 227's already-closed paragraph retained.
+All nine remain HTML-pending. Focused Parse fixtures cover blank/EOF closure,
+LF/CRLF/CR, Unicode/NUL/tab provenance, immutable ownership and repeatability.
+Private transition tests cover hook precedence and interrupted open work.
 
 ## Snapshots, spans and ownership
 
@@ -240,12 +284,14 @@ lookup has no entries. Mutable collection copies cannot change the document.
 
 [`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly lists
 all 652 upstream IDs as pending, with zero supported HTML-conformance examples.
-Owners #6/#18 supply the pending block/inline pipelines, with individual syntax
-providers following their dependency graph. The test-only #5 adapter/runner is
+Named paragraph targets record #17 reference knowledge and #18 inline scanning,
+plus #21 for multiline/break processing, #10 for example 225 and #8 for 227.
+Other examples use broad remaining inline/core-completion scopes #18/#29; these
+are ownership scopes, not a claim that every case needs every provider. The test-only #5 adapter/runner is
 available in `internal/conformance` and `tools/commonmark_conformance.py`. These
 are foundational pending scopes, not a claim that each example uses every syntax
 feature. This inventory is maintained separately from unmodified upstream data.
-`TestFoundationCorpusAccounting` requires all IDs exactly once and confirms that
+`TestCoreCorpusAccounting` requires all IDs exactly once and confirms that
 every actual retained input remains explicitly uncertain. Those checks are not
 HTML passes. The runner validates this complete pass/pending ledger and rejects
 supported passes becoming fail/error/pending, lost/duplicate identities and newly

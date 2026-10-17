@@ -12,7 +12,7 @@ import (
 	"github.com/frithuz/mdchk/internal/parser"
 )
 
-func TestParseFoundationOutcomes(t *testing.T) {
+func TestParseStageOutcomes(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   []byte
@@ -24,7 +24,7 @@ func TestParseFoundationOutcomes(t *testing.T) {
 		{name: "nil", status: parser.Complete, ast: parser.Available},
 		{name: "empty", input: []byte{}, status: parser.Complete, ast: parser.Available},
 		{name: "ordinary text", input: []byte("hello\n"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
-		{name: "whitespace", input: []byte(" \t\r\n"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
+		{name: "whitespace", input: []byte(" \t\r\n"), status: parser.Complete, ast: parser.Available},
 		{name: "unsupported core syntax", input: []byte("**strong**"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
 		{name: "extension looking", input: []byte("~~strike~~"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
 		{name: "frontmatter looking", input: []byte("---\nx: y\n---\n"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
@@ -57,8 +57,8 @@ func TestParseFoundationOutcomes(t *testing.T) {
 				t.Fatalf("syntax availability mistaken for operational failure: %+v", result)
 			}
 			root := result.Document.Root()
-			if root.Kind() != parser.DocumentKind || root.Span().Start() != 0 || root.Span().End() != len(tt.input) || len(root.Children()) != 0 {
-				t.Fatal("incorrect source-only document root")
+			if root.Kind() != parser.DocumentKind || root.Span().Start() != 0 || root.Span().End() != len(tt.input) {
+				t.Fatal("incorrect document root")
 			}
 			if _, err := result.Source.Text(root.Span()); err != nil {
 				t.Fatal("root belongs to a different snapshot")
@@ -66,7 +66,7 @@ func TestParseFoundationOutcomes(t *testing.T) {
 			refs := result.Document.References()
 			if tt.reason == "" {
 				if len(result.Uncertainty) != 0 || result.Phases != (parser.PhaseProgress{Blocks: parser.PhaseComplete, Inlines: parser.PhaseComplete}) || refs.Availability != parser.Available || refs.LookupAvailability != parser.Available {
-					t.Fatalf("empty parse is not complete: %+v", result)
+					t.Fatalf("blank parse is not complete: %+v", result)
 				}
 			} else {
 				if len(result.Uncertainty) != 1 || result.Uncertainty[0].Reason != tt.reason || result.Uncertainty[0].Region.Start() != 0 || result.Uncertainty[0].Region.End() != len(tt.input) || result.Phases != (parser.PhaseProgress{Blocks: parser.Pending, Inlines: parser.NotStarted}) || refs.Availability != parser.Unavailable || refs.LookupAvailability != parser.Unavailable {
@@ -90,7 +90,7 @@ func TestParseInterruptionIsNotOperationalFailure(t *testing.T) {
 		ctx    context.Context
 		reason parser.Reason
 	}{{cancelled, parser.Cancelled}, {deadline, parser.DeadlineExceeded}} {
-		for _, input := range []string{"", "abc"} {
+		for _, input := range []string{"", "abc", " \t\r\n"} {
 			r := parser.Parse(tt.ctx, parser.NewSource([]byte(input)))
 			if r.Status != parser.Incomplete || r.AST != parser.Partial || r.Failure != nil || r.Interruption != tt.reason || r.Document == nil || r.Phases.Blocks != parser.Interrupted || r.Phases.Inlines != parser.NotStarted {
 				t.Fatalf("wrong interruption outcome: %+v", r)
@@ -156,7 +156,7 @@ func TestInvalidUTF8FailureLocation(t *testing.T) {
 	}
 }
 
-func TestFoundationCorpusAccounting(t *testing.T) {
+func TestCoreCorpusAccounting(t *testing.T) {
 	const base = "testdata/commonmark/0.31.2/"
 	b, err := os.ReadFile(base + "examples.json")
 	if err != nil {
@@ -185,13 +185,20 @@ func TestFoundationCorpusAccounting(t *testing.T) {
 	if err := json.Unmarshal(b, &inventory); err != nil {
 		t.Fatal(err)
 	}
-	if inventory.SchemaVersion != 1 || len(inventory.Supported) != 0 || len(examples) != 652 {
-		t.Fatal("foundation inventory implies HTML conformance or changed corpus")
+	if inventory.SchemaVersion != 1 || len(examples) != 652 {
+		t.Fatal("invalid inventory version or changed corpus")
 	}
 	seen := make(map[int]bool)
+	supported := make(map[int]bool)
+	for _, id := range inventory.Supported {
+		if id < 1 || id > 652 || seen[id] {
+			t.Fatalf("invalid/duplicate supported ID %d", id)
+		}
+		seen[id], supported[id] = true, true
+	}
 	for _, group := range inventory.Pending {
-		if group.Reason != "syntax-unimplemented" || !reflect.DeepEqual(group.Owners, []int{6, 18}) {
-			t.Fatal("pending cases lack documented block/inline owners")
+		if group.Reason != "syntax-unimplemented" || len(group.Owners) == 0 {
+			t.Fatal("pending cases lack reason/owners")
 		}
 		for _, id := range group.Examples {
 			if id < 1 || id > 652 || seen[id] {
@@ -207,11 +214,15 @@ func TestFoundationCorpusAccounting(t *testing.T) {
 		if example.Example != i+1 || !seen[example.Example] {
 			t.Fatalf("unaccounted upstream example %d", example.Example)
 		}
-		// Every retained case is valid nonempty input, and must remain explicitly
-		// uncertain in this foundation. This is not an HTML comparison/pass.
+		// Parser outcomes agree with complete unique ledger accounting. Actual HTML
+		// comparison/ratcheting belongs to the separate conformance runner.
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(example.Markdown)))
-		if r.Status != parser.Incomplete || r.Failure != nil || len(r.Uncertainty) != 1 || r.Uncertainty[0].Reason != parser.SyntaxUnimplemented {
-			t.Fatalf("example %d has false syntax coverage: %+v", example.Example, r)
+		if supported[example.Example] {
+			if r.Status != parser.Complete || r.AST != parser.Available || r.Failure != nil || len(r.Uncertainty) != 0 {
+				t.Fatalf("supported example %d lost parsing: %+v", example.Example, r)
+			}
+		} else if r.Status != parser.Incomplete || r.AST != parser.Partial || r.Failure != nil || len(r.Uncertainty) == 0 || r.Uncertainty[0].Reason != parser.SyntaxUnimplemented {
+			t.Fatalf("pending example %d has false syntax coverage: %+v", example.Example, r)
 		}
 	}
 }

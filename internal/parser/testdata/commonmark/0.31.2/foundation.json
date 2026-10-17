@@ -5,8 +5,8 @@
     {
       "reason": "syntax-unimplemented",
       "owners": [
-        6,
-        18
+        18,
+        29
       ],
       "examples": [
         1,
@@ -227,15 +227,6 @@
         216,
         217,
         218,
-        219,
-        220,
-        221,
-        222,
-        223,
-        224,
-        225,
-        226,
-        227,
         228,
         229,
         230,
@@ -661,6 +652,54 @@
         650,
         651,
         652
+      ]
+    },
+    {
+      "reason": "syntax-unimplemented",
+      "owners": [
+        17,
+        18
+      ],
+      "examples": [
+        219,
+        221
+      ]
+    },
+    {
+      "reason": "syntax-unimplemented",
+      "owners": [
+        17,
+        18,
+        21
+      ],
+      "examples": [
+        220,
+        222,
+        223,
+        224,
+        226
+      ]
+    },
+    {
+      "reason": "syntax-unimplemented",
+      "owners": [
+        10,
+        17,
+        18
+      ],
+      "examples": [
+        225
+      ]
+    },
+    {
+      "reason": "syntax-unimplemented",
+      "owners": [
+        8,
+        17,
+        18
+      ],
+      "examples": [
+        227
       ]
     }
   ]
