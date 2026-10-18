@@ -25,6 +25,7 @@ type atxBlockWant struct {
 	width    int
 	info     string
 	infoSpan byteRange
+	htmlForm int
 }
 type markerWant struct {
 	role string
@@ -119,6 +120,9 @@ func checkATX(t *testing.T, input string, complete bool, want []atxBlockWant) pa
 				props.Code = &parser.CodeProperties{Style: "fenced", Fence: parser.Some(w.fence), Width: parser.Some(w.width), Info: &info}
 			}
 			props.Literal = parser.Some(w.text)
+		}
+		if w.kind == parser.HTMLBlock {
+			props.HTML = &parser.HTMLProperties{BlockForm: parser.Some(w.htmlForm)}
 		}
 		if !reflect.DeepEqual(n.Properties(), props) {
 			t.Fatalf("block %d properties: %+v", i, n.Properties())

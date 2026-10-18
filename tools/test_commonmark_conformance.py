@@ -138,13 +138,16 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 53, "fail": 0, "error": 0, "pending": 599})
+                self.assertEqual(report["counts"], {"pass": 80, "fail": 0, "error": 0, "pending": 572})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
                 supported = {1, 2, 3, 8, 11, 18, 19, 36, 43, 47, 48, 50, 51, 52, 53, 54,
                              69, 79, 85, 98, 100, 107, 110, 111, 112, 116, 117,
                              118, 119, 120, 122, 123, 124, 125, 126, 127, 129,
                              130, 131, 132, 133, 134, 135, 136, 137, 139, 142,
-                             143, 144, 146, 147, 231, 289}
+                             143, 144, 146, 147, 231, 289,
+                             21, 31, 150, 151, 153, 154, 156, 157, 158, 159, 160,
+                             161, 162, 163, 164, 165, 166, 171, 173, 178, 181,
+                             183, 184, 186, 189, 190, 191}
                 self.assertEqual(set(ledger["supported_html_examples"]), supported)
                 owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
                 for outcome in report["outcomes"]:
@@ -155,6 +158,18 @@ class ExecutableBoundary(unittest.TestCase):
                         self.assertEqual(outcome["status"], "pending")
                         self.assertEqual(outcome["reason"], "syntax-unimplemented")
                         self.assertEqual(outcome["owners"], owners[outcome["example"]])
+                html_owners = {
+                    (17, 18): [149, 169, 170, 172, 179, 180, 182, 185],
+                    (17, 18, 24, 25): [152, 155, 167, 176, 177, 188],
+                    (17, 18, 21, 23, 24, 25): [148],
+                    (17, 18, 23, 24, 25): [168],
+                    (13, 17, 18): [174],
+                    (14, 15, 16, 17, 18): [175],
+                    (17, 18, 21, 23): [187],
+                }
+                for required, examples in html_owners.items():
+                    for example in examples:
+                        self.assertEqual(owners[example], list(required))
                 self.assertEqual(owners[49], [17, 18, 21])
                 self.assertEqual(owners[58], [17, 18])
                 self.assertEqual(owners[59], [17, 18])
@@ -163,7 +178,7 @@ class ExecutableBoundary(unittest.TestCase):
                     (17, 18, 24, 25): [80],
                     (17, 18, 21, 24, 25): [81, 82],
                     (17, 18, 21): [87, 88, 95, 104, 105],
-                    (12, 17, 18): [91],
+                    (17, 18, 20, 23): [91],
                     (13, 17, 18): [92, 101],
                     (13, 17, 18, 21): [93],
                     (14, 15, 16, 17, 18): [94, 99],

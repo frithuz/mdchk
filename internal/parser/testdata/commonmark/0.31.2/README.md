@@ -56,12 +56,14 @@ and a missing helper. CI runs these tests and the read-only drift check.
 ## Foundation coverage accounting
 
 `foundation.json` is mdchk's explicit, separately maintained pass/pending
-inventory. It lists every upstream ID exactly once: 53 supported HTML cases
-(1–3, 8, 11, 18–19, 36, 43, 47–48, 50–54, 69, 79, 85, 98, 100, 107, 110–112,
-116–120, 122–127, 129–137, 139, 142–144, 146–147, 231, 289) and 599 pending.
+inventory. It lists every upstream ID exactly once: 80 supported HTML cases
+(1–3, 8, 11, 18–19, 21, 31, 36, 43, 47–48, 50–54, 69, 79, 85, 98, 100,
+107, 110–112, 116–120, 122–127, 129–137, 139, 142–144, 146–147, 150–151,
+153–154, 156–166, 171, 173, 178, 181, 183–184, 186, 189–191, 231, 289)
+and 572 pending.
 Indented/fenced code, thematic breaks,
-ATX/Setext headings and the staged paragraph lifecycle are implemented.
-Documents of code with established info semantics, breaks, empty ATX headings and
+HTML blocks, ATX/Setext headings and the staged paragraph lifecycle are implemented.
+Documents of code with established info semantics, HTML, breaks, empty ATX headings and
 blanks complete with available
 empty references and vacuous inline work; nonempty headings/paragraphs and unknown
 input remain partial. Code-only passes in other sections do not establish general
@@ -75,7 +77,7 @@ code and a following paragraph, without pending #10 ownership. ATX targets retai
 and #21 for multiline content (70). Thematic targets retain lists/containers
 (#14–#16), reference/inline (#17/#18), breaks (#21) and emphasis (#24/#25) where
 relevant. Setext targets retain quotes 92/93/101 (#13), lists 94/99 (#14–#16),
-91's remaining HTML classification (#12), and actual reference/text,
+91's reference/text/code-span/inline-HTML providers (#17/#18/#20/#23), and actual reference/text,
 multiline, escape and emphasis owners for recognized headings/fallbacks. Fenced
 128 retains #13/#17/#18; 121 retains #17/#18/#20; 138/145 additionally retain #21;
 140/141 retain #17/#18 for surrounding text. Other
@@ -103,7 +105,7 @@ inline children. `TestSetextUpstreamTargets` covers unchanged 80–106 and 59,
 independently asserting whole-paragraph promotion, level/style, exact raw content,
 underline-only markers and multiline physical envelopes, plus following blocks
 and fallback/precedence. Nineteen Setext-section cases establish structural or
-ordinary-paragraph progress, including 91's prefix before pending HTML. Five
+ordinary-paragraph progress, including 91's invalid multiline-tag suffix. Five
 remain entirely source-only for quote/list providers;
 85/100 now pass as code and breaks, and 98 remains two breaks. Source-only deferral is not recognized heading coverage.
 Extra Setext fixtures cover single markers, whitespace/backslash handling, tabs,
@@ -123,6 +125,17 @@ fixtures cover paragraph interruption, Setext/spaced-dash precedence, negative
 markers, tabs/indentation, Unicode/NUL, endings/EOF, source ownership and
 interruption. See the [model contract](../../../model.md) for supported
 outcomes and later ownership.
+
+`TestHTMLUpstreamTargets` adds all unchanged 148–191 plus cross-feature 21/31,
+with independent original-byte envelopes/content ranges, form identity, node order
+and source ownership. Twenty-five HTML-section cases pass; nineteen mixed or
+container cases remain pending. Cases 174/175 retain quote/list owners, and other
+mixed cases retain their precise reference/text, break, inline-HTML and emphasis
+providers in the ledger. Fixed-form opacity, paragraph interruption, complete-tag
+near misses, terminating-line retention, code precedence, LF/CRLF/CR/EOF, NUL,
+Unicode, tabs, immutable accessors and interruption have separate fixtures.
+HTML preserves original endings in raw Content, with semantic NUL substitution;
+recognition adds no sanitizer, inline interpretation or production renderer.
 
 `scanner.json` is a separate mdchk capability-target registry. It names exactly
 Tabs IDs 1–11 as scanner/indentation validation targets. `TestScannerCorpusTargets`
@@ -153,9 +166,9 @@ See [contributor instructions](../../../../../docs/contributing.md#run-commonmar
 for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
 
 The default staged regression gate allows explicitly pending cases: currently
-53 pass, 0 fail, 0 error, 599 pending, with `syntax-unimplemented` and the
-remaining owners above. All 30 earlier passes remain; 23 actual fence-related
-passes are added, including cross-feature 19. Synthetic
+80 pass, 0 fail, 0 error, 572 pending, with `syntax-unimplemented` and the
+remaining owners above. All 53 earlier passes remain; 27 actual HTML-related
+passes are added, including cross-feature 21/31. Synthetic
 empty/ASCII-blank documents also complete and render empty HTML. It is not a
 conformance-completion claim. `--require-complete` fails on pending; final
 completion needs all 652 passes in an unfiltered run. The retained upstream

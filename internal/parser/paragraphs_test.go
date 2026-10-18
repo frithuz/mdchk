@@ -169,7 +169,7 @@ func TestParagraphClosureAndProvenance(t *testing.T) {
 }
 
 func TestPendingBlockBoundaries(t *testing.T) {
-	for _, input := range []string{"> quote\n", "- list\n", "1. list\n", "[foo]: /url\n", "<div>\na\n"} {
+	for _, input := range []string{"> quote\n", "- list\n", "1. list\n", "[foo]: /url\n"} {
 		t.Run(input, func(t *testing.T) { checkParagraphs(t, parser.NewSource([]byte(input)), nil) })
 	}
 	// Once a block boundary is unknown, its whole suffix is left uninterpreted.

@@ -78,7 +78,8 @@ type ParseResult struct {
 
 // Parse implements the core CommonMark foundation, with extensions/frontmatter
 // recognition disabled. Documents of blanks, indented/fenced code with known
-// info semantics, thematic breaks and empty ATX headings are fully parsed.
+// info semantics, opaque HTML blocks, thematic breaks and empty ATX headings
+// are fully parsed.
 // Eligible paragraphs promote to Setext headings with distinct raw content and
 // underline ranges. Fenced payload is literal; info requiring escape/entity
 // decoding stays partial. Other input retains staged blocks and whole-document

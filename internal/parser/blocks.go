@@ -35,6 +35,7 @@ type blockParser struct {
 	closed []*Node
 	code   *indentedCode
 	fence  *fencedCode
+	html   *htmlBlock
 	hooks  []blockStartHook
 }
 
@@ -56,6 +57,19 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			break
 		}
 		line := p.line(physical)
+		if p.html != nil {
+			if p.html.form >= 6 && line.contentStart == line.end {
+				if err := p.closeHTML(); err != nil {
+					return Pending, err
+				}
+				// The separating blank is outside the HTML block.
+			} else {
+				if err := p.appendHTMLLine(line); err != nil {
+					return Pending, err
+				}
+				continue
+			}
+		}
 		if p.fence != nil {
 			if closing := p.fenceClosing(line); closing.Present() {
 				p.fence.markers = append(p.fence.markers, Marker{Role: "closing", Source: closing})
@@ -104,6 +118,16 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			p.fence = fence
 			if !fence.info.Semantic.Present {
 				state = Pending // #19 supplies escape/entity info decoding.
+			}
+			continue
+		}
+		if form := p.htmlOpening(line, len(p.stack) > 1); form != 0 {
+			if err := p.closeTo(1); err != nil {
+				return Pending, err
+			}
+			p.html = &htmlBlock{start: line.start, form: form}
+			if err := p.appendHTMLLine(line); err != nil {
+				return Pending, err
 			}
 			continue
 		}
@@ -164,8 +188,8 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		}
 		p.appendParagraph(line)
 	}
-	// EOF finalization must not turn an interrupted open builder into a valid
-	// unclosed fence. Already closed blocks remain available as a partial prefix.
+	// EOF finalization must not turn an interrupted open builder into valid
+	// unclosed content. Already closed blocks remain available as a partial prefix.
 	if interruption(ctx) != "" {
 		state = Interrupted
 	}
@@ -173,6 +197,10 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		p.stack = p.stack[:1]
 		p.code = nil // Never publish an unfinished code block after interruption.
 		p.fence = nil
+		p.html = nil
+	}
+	if err := p.closeHTML(); err != nil {
+		return Pending, err
 	}
 	if err := p.closeFence(); err != nil {
 		return Pending, err
@@ -189,8 +217,8 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 	}
 	document.root = root
 	if state == PhaseComplete {
-		// Every line was recognized as blank, code, a thematic break or an empty
-		// ATX heading. None can define references or require inline interpretation.
+		// Every line was recognized as blank, code, opaque HTML, a thematic break
+		// or an empty ATX heading. None requires references or inline interpretation.
 		document.references = ReferenceCollection{Availability: Available, LookupAvailability: Available}
 		document.inlineFree = true
 	}
@@ -341,9 +369,9 @@ func pendingBlockStart(line blockLine, paragraphOpen bool) bool {
 		// A potential list item still needs its provider, including an empty one.
 		return line.contentStart+1 == line.end || line.second == ' ' || line.second == '\t'
 	}
-	// Fence candidates have already been classified. Invalid backtick/tilde
-	// openers are ordinary paragraph content, still awaiting the inline provider.
-	return strings.ContainsRune(">*_+[<", rune(first)) || first >= '0' && first <= '9'
+	// Fence and HTML candidates have already been classified. Invalid starts
+	// are ordinary paragraph content, still awaiting the inline provider.
+	return strings.ContainsRune(">*_+[", rune(first)) || first >= '0' && first <= '9'
 }
 
 func (p *blockParser) appendParagraph(line blockLine) {

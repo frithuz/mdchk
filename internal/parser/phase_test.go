@@ -27,6 +27,33 @@ type checkpointContext struct {
 	remaining int
 }
 
+func TestHTMLInterruptionDiscardsOnlyOpenBlock(t *testing.T) {
+	for _, opening := range []string{"<!--", "<pre>", "<div>", "<custom>"} {
+		source := NewSource([]byte("***\n<!-- closed -->\n" + opening + "\nopen\n"))
+		// Interrupt before the last payload line, or at EOF finalization.
+		for _, checkpoint := range []int{5, 6} {
+			r := Parse(context.Background(), source)
+			ctx := &checkpointContext{Context: context.Background(), remaining: checkpoint}
+			state, err := parseBlockLifecycle(ctx, r.Document, nil)
+			children := r.Document.Root().Children()
+			if err != nil || state != Interrupted || r.Document.inlineFree || r.Document.References().LookupAvailability != Unavailable {
+				t.Fatal("interrupted HTML handed off complete work", state, err)
+			}
+			if len(children) != 2 || children[0].Kind() != ThematicBreak || children[1].Kind() != HTMLBlock || children[1].Span().Start() != 4 || children[1].Span().End() != 20 || children[1].Properties().HTML.BlockForm != Some(2) {
+				t.Fatal("lost closed prefix or published interrupted HTML", children)
+			}
+		}
+	}
+	r := Parse(context.Background(), NewSource([]byte("<!-- closed -->\n")))
+	document, err := NewDocument(r.Document.Root(), r.Document.References())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if parseInlines(context.Background(), document, PhaseComplete) != Pending {
+		t.Fatal("constructed HTML tree claimed private recognition proof")
+	}
+}
+
 func (c *checkpointContext) Err() error {
 	c.remaining--
 	if c.remaining <= 0 {
