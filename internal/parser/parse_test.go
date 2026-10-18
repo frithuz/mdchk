@@ -25,6 +25,9 @@ func TestParseStageOutcomes(t *testing.T) {
 		{name: "empty", input: []byte{}, status: parser.Complete, ast: parser.Available},
 		{name: "ordinary text", input: []byte("hello\n"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
 		{name: "whitespace", input: []byte(" \t\r\n"), status: parser.Complete, ast: parser.Available},
+		{name: "empty headings", input: []byte("#\n### ###\r\n"), status: parser.Complete, ast: parser.Available},
+		{name: "nonempty headings", input: []byte("## x\n"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
+		{name: "invalid after heading", input: []byte("#\n\xff"), status: parser.Failed, ast: parser.Unavailable, failure: parser.InvalidUTF8},
 		{name: "thematic only", input: []byte("***\r\n___"), status: parser.Complete, ast: parser.Available},
 		{name: "unsupported core syntax", input: []byte("**strong**"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
 		{name: "extension looking", input: []byte("~~strike~~"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
@@ -92,7 +95,7 @@ func TestParseInterruptionIsNotOperationalFailure(t *testing.T) {
 		ctx    context.Context
 		reason parser.Reason
 	}{{cancelled, parser.Cancelled}, {deadline, parser.DeadlineExceeded}} {
-		for _, input := range []string{"", "abc", " \t\r\n", "***\r\n"} {
+		for _, input := range []string{"", "abc", " \t\r\n", "***\r\n", "#\n", "## x\n"} {
 			r := parser.Parse(tt.ctx, parser.NewSource([]byte(input)))
 			if r.Status != parser.Incomplete || r.AST != parser.Partial || r.Failure != nil || r.Interruption != tt.reason || r.Document == nil || r.Phases.Blocks != parser.Interrupted || r.Phases.Inlines != parser.NotStarted {
 				t.Fatalf("wrong interruption outcome: %+v", r)
@@ -104,9 +107,11 @@ func TestParseInterruptionIsNotOperationalFailure(t *testing.T) {
 	}
 	// Accepted operational-error precedence: encoding failure is not hidden by
 	// an already cancelled context, and malformed bytes remain retained.
-	r := parser.Parse(cancelled, parser.NewSource([]byte{0xff}))
-	if r.Status != parser.Failed || r.Interruption != "" || r.Failure == nil || r.Failure.Code != parser.InvalidUTF8 || r.Source.Bytes()[0] != 0xff {
-		t.Fatal("cancellation hid encoding failure")
+	for _, input := range []string{"\xff", "#\n\xff"} {
+		r := parser.Parse(cancelled, parser.NewSource([]byte(input)))
+		if r.Status != parser.Failed || r.Interruption != "" || r.Failure == nil || r.Failure.Code != parser.InvalidUTF8 || string(r.Source.Bytes()) != input {
+			t.Fatal("cancellation hid encoding failure")
+		}
 	}
 }
 

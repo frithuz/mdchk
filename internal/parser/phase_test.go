@@ -20,7 +20,7 @@ func TestInlinePhaseRequiresFinishedReferenceHandoff(t *testing.T) {
 	}
 }
 
-func TestInlineStubRefusesNonblankHandoff(t *testing.T) {
+func TestInlineStubRefusesNonemptyInlineHandoff(t *testing.T) {
 	for _, input := range []string{"hello\n", "# heading\n", "***\nhello\n", "***\n# heading\n"} {
 		r := Parse(context.Background(), NewSource([]byte(input)))
 		r.Document.references = ReferenceCollection{Availability: Available, LookupAvailability: Available}
@@ -115,5 +115,47 @@ func TestThematicInterruptionRetainsClosedBreak(t *testing.T) {
 	children := r.Document.Root().Children()
 	if err != nil || state != Interrupted || len(children) != 1 || children[0].Kind() != ThematicBreak || children[0].Span().Start() != 0 || children[0].Span().End() != 4 || r.Document.inlineFree || r.Document.References().LookupAvailability != Unavailable {
 		t.Fatal("interruption published unfinished or complete source", state, err)
+	}
+}
+
+func TestATXCompletionRequiresRecognizedInlineFreeSource(t *testing.T) {
+	source := NewSource([]byte("#\n"))
+	envelope, _ := source.Span(0, 2)
+	opening, _ := source.Span(0, 1)
+	heading, err := NewNode(NodeSpec{Kind: Heading, Envelope: envelope,
+		Markers:    []Marker{{Role: "opening", Source: opening}},
+		Properties: Properties{Heading: &HeadingProperties{Level: 1, Style: "atx"}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	root, err := NewNode(NodeSpec{Kind: DocumentKind, Envelope: envelope, Children: []*Node{heading}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	document, err := NewDocument(root, ReferenceCollection{Availability: Available, LookupAvailability: Available})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if parseInlines(context.Background(), document, PhaseComplete) != Pending {
+		t.Fatal("constructed empty heading fabricated recognition proof")
+	}
+	r := Parse(context.Background(), source)
+	if !r.Document.inlineFree || parseInlines(context.Background(), r.Document, PhaseComplete) != PhaseComplete {
+		t.Fatal("actually recognized empty heading did not complete")
+	}
+	// Cancel deterministically in the next ordinary line, before the following
+	// line's checkpoint. Retain the closed heading but discard unfinished text.
+	r = Parse(context.Background(), NewSource([]byte("#\nopen\nnext\n")))
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	state, err := parseBlockLifecycle(ctx, r.Document, []blockStartHook{func(line blockLine, open bool) bool {
+		if line.first == 'o' {
+			cancel()
+		}
+		return false
+	}})
+	children := r.Document.Root().Children()
+	if err != nil || state != Interrupted || len(children) != 1 || children[0].Kind() != Heading || children[0].Span().Start() != 0 || children[0].Span().End() != 2 || r.Document.inlineFree || r.Document.References().LookupAvailability != Unavailable {
+		t.Fatal("interruption lost closed heading or published a complete handoff", state, err)
 	}
 }

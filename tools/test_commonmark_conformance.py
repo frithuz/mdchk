@@ -138,9 +138,9 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 9, "fail": 0, "error": 0, "pending": 643})
+                self.assertEqual(report["counts"], {"pass": 10, "fail": 0, "error": 0, "pending": 642})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
-                supported = {11, 43, 47, 50, 51, 52, 53, 54, 98}
+                supported = {11, 43, 47, 50, 51, 52, 53, 54, 79, 98}
                 self.assertEqual(set(ledger["supported_html_examples"]), supported)
                 owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
                 for outcome in report["outcomes"]:
@@ -161,7 +161,14 @@ class ExecutableBoundary(unittest.TestCase):
                 self.assertEqual(owners[220], [17, 18, 21])
                 self.assertEqual(owners[225], [10, 17, 18])
                 self.assertEqual(owners[226], [17, 18, 21])
-                self.assertEqual(owners[227], [8, 17, 18])
+                self.assertEqual(owners[227], [17, 18])
+                for example in [62, 63, 64, 67, 68, 71, 72, 73, 74, 75, 77, 78]:
+                    self.assertEqual(owners[example], [17, 18])
+                for example in [65, 76]:
+                    self.assertEqual(owners[example], [17, 18, 19])
+                self.assertEqual(owners[66], [17, 18, 19, 24, 25])
+                self.assertEqual(owners[69], [10])
+                self.assertEqual(owners[70], [17, 18, 21])
                 self.assertEqual(report["outcomes"][206]["status"], "pending")
         complete = runner.run_cases(self.cases, self.cases[206:207], ledger, self.adapter, None, True)
         self.assertFalse(complete["gate_passed"])

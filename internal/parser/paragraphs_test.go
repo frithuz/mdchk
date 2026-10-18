@@ -74,7 +74,7 @@ func TestParagraphUpstreamTargets(t *testing.T) {
 		224: {{byteRange{0, 11}, []byteRange{{3, 7}, {7, 10}}, "aaa\nbbb"}},
 		225: nil, // #10: unknown indented code; its suffix remains source-only.
 		226: {{byteRange{0, 18}, []byteRange{{0, 9}, {9, 12}}, "aaa     \nbbb"}},
-		227: {{byteRange{4, 8}, []byteRange{{4, 7}}, "aaa"}}, // #8 heading is not a paragraph.
+		227: {{byteRange{4, 8}, []byteRange{{4, 7}}, "aaa"}}, // Heading is asserted separately below.
 	}
 	data, err := os.ReadFile("testdata/commonmark/0.31.2/examples.json")
 	if err != nil {
@@ -104,7 +104,14 @@ func TestParagraphUpstreamTargets(t *testing.T) {
 		seen[e.ID] = true
 		t.Run(e.Section+"/"+strconv.Itoa(e.ID), func(t *testing.T) {
 			s := parser.NewSource([]byte(e.Markdown))
-			checkParagraphs(t, s, want)
+			if e.ID == 227 {
+				checkATX(t, e.Markdown, false, []atxBlockWant{
+					atxParagraphWant(byteRange{4, 8}, "aaa", byteRange{4, 7}),
+					atxHeadingWant(1, byteRange{12, 18}, byteRange{12, 13}, byteRange{14, 17}, byteRange{}, "aaa"),
+				})
+			} else {
+				checkParagraphs(t, s, want)
+			}
 			if string(s.Bytes()) != e.Markdown {
 				t.Fatal("parser changed original upstream bytes")
 			}
@@ -160,11 +167,11 @@ func TestParagraphClosureAndProvenance(t *testing.T) {
 }
 
 func TestPendingBlockBoundaries(t *testing.T) {
-	for _, input := range []string{"# heading\n", "    code\n", "\tcode\n", "   \tcode\n", "```\na\n```\n", "> quote\n", "- list\n", "1. list\n", "[foo]: /url\n", "<div>\na\n", "aaa\n---\n", "aaa\n===\n"} {
+	for _, input := range []string{"    code\n", "\tcode\n", "   \tcode\n", "```\na\n```\n", "> quote\n", "- list\n", "1. list\n", "[foo]: /url\n", "<div>\na\n", "aaa\n---\n", "aaa\n===\n"} {
 		t.Run(input, func(t *testing.T) { checkParagraphs(t, parser.NewSource([]byte(input)), nil) })
 	}
 	// Once a block boundary is unknown, its whole suffix is left uninterpreted.
-	checkParagraphs(t, parser.NewSource([]byte("a\n\n# heading\n\nb\n")), []paragraphWant{{byteRange{0, 2}, []byteRange{{0, 1}}, "a"}})
+	checkParagraphs(t, parser.NewSource([]byte("a\n\n> quote\n\nb\n")), []paragraphWant{{byteRange{0, 2}, []byteRange{{0, 1}}, "a"}})
 }
 
 func TestBlankDocumentsComplete(t *testing.T) {

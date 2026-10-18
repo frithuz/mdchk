@@ -6,7 +6,7 @@ import (
 )
 
 // blockLine is a borrowed view of one indexed physical line. Indent is capped
-// at four: thematic breaks allow fewer than four structural columns.
+// at four: thematic breaks and ATX headings allow fewer than four columns.
 type blockLine struct {
 	physicalLine
 	contentStart int
@@ -74,6 +74,20 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			p.closed = append(p.closed, node)
 			continue
 		}
+		heading, err := p.atxHeading(line)
+		if err != nil {
+			return Pending, err
+		}
+		if heading != nil {
+			if err := p.closeTo(1); err != nil {
+				return Pending, err
+			}
+			p.closed = append(p.closed, heading)
+			if len(heading.spec.Content) != 0 {
+				state = Pending // #18 supplies nonempty inline interpretation.
+			}
+			continue
+		}
 		// Paragraphs and deferred syntax still need later providers. Once any
 		// such line occurs, subsequent recognized breaks cannot complete it.
 		state = Pending
@@ -105,12 +119,57 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 	}
 	document.root = root
 	if state == PhaseComplete {
-		// Every physical line was established as blank or a thematic break;
-		// neither can contain a definition or require inline interpretation.
+		// Every line was recognized as blank, a thematic break or an empty ATX
+		// heading. None can define references or require inline interpretation.
 		document.references = ReferenceCollection{Availability: Available, LookupAvailability: Available}
 		document.inlineFree = true
 	}
 	return state, nil
+}
+
+// atxHeading classifies original bytes before acquiring immutable metadata.
+// Closing hashes are block syntax; their escaped/nonclosing spellings remain
+// raw content for the later inline decoder. All trimming is ASCII space/tab.
+func (p *blockParser) atxHeading(line blockLine) (*Node, error) {
+	if line.indent >= 4 || line.first != '#' {
+		return nil, nil
+	}
+	text := p.index.source.content
+	openingEnd := line.contentStart
+	for openingEnd < line.end && text[openingEnd] == '#' {
+		openingEnd++
+		if openingEnd-line.contentStart > 6 {
+			return nil, nil
+		}
+	}
+	if openingEnd < line.end && text[openingEnd] != ' ' && text[openingEnd] != '\t' {
+		return nil, nil
+	}
+	start := openingEnd
+	for start < line.end && (text[start] == ' ' || text[start] == '\t') {
+		start++
+	}
+	end := line.end
+	for end > start && (text[end-1] == ' ' || text[end-1] == '\t') {
+		end--
+	}
+	markers := []Marker{{Role: "opening", Source: p.index.span(line.contentStart, openingEnd)}}
+	closingStart := end
+	for closingStart > start && text[closingStart-1] == '#' {
+		closingStart--
+	}
+	if closingStart < end && (text[closingStart-1] == ' ' || text[closingStart-1] == '\t') {
+		markers = append(markers, Marker{Role: "closing", Source: p.index.span(closingStart, end)})
+		end = closingStart
+		for end > start && (text[end-1] == ' ' || text[end-1] == '\t') {
+			end--
+		}
+	}
+	return NewNode(NodeSpec{
+		Kind: Heading, Envelope: p.index.span(line.start, line.next), Markers: markers,
+		Content:    p.index.semanticText(start, end).Segments,
+		Properties: Properties{Heading: &HeadingProperties{Level: openingEnd - line.contentStart, Style: "atx"}},
+	})
 }
 
 // thematicMarkers validates one whole physical line before allocating metadata.
@@ -174,7 +233,7 @@ func pendingBlockStart(line blockLine, paragraphOpen bool) bool {
 		return !paragraphOpen
 	}
 	first := line.first
-	return strings.ContainsRune("#>*_~`-+=[<", rune(first)) || first >= '0' && first <= '9'
+	return strings.ContainsRune(">*_~`-+=[<", rune(first)) || first >= '0' && first <= '9'
 }
 
 func (p *blockParser) appendParagraph(line blockLine) {

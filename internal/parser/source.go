@@ -1,8 +1,8 @@
 // Package parser defines mdchk's in-memory, source-preserving Markdown model,
 // physical-line index, diagnostic mapping and structural indentation helpers.
-// Parse validates UTF-8, recognizes thematic breaks and accumulates staged
-// paragraphs. Blanks and thematic-only input complete; other input retains
-// whole-document uncertainty until later block/reference/inline providers arrive.
+// Parse validates UTF-8, recognizes thematic breaks/ATX headings and accumulates
+// staged paragraphs. Documents of blanks, breaks and empty headings complete;
+// other input retains whole-document uncertainty until later providers arrive.
 // NewLineIndex indexes original bytes, including malformed input, without changing
 // Source ownership. Text mapping and semantic helpers require strict UTF-8.
 // See model.md for the catalog, outcome contract and pending delivery boundaries.

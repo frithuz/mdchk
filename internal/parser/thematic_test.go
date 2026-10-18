@@ -186,7 +186,6 @@ func TestThematicBoundariesAndPrecedence(t *testing.T) {
 		{"é\n* * *\r\nz", false, []blockWant{{parser.Paragraph, byteRange{0, 3}, nil}, {parser.ThematicBreak, byteRange{3, 10}, []byteRange{{3, 4}, {5, 6}, {7, 8}}}, {parser.Paragraph, byteRange{10, 11}, nil}}},
 		{"Foo\n--- \t\n", false, nil},
 		{"Foo\n  ---\rbar", false, nil},
-		{"***\n# h\n", false, []blockWant{{parser.ThematicBreak, byteRange{0, 4}, []byteRange{{0, 3}}}}},
 		{"***\nFoo\n---\n", false, []blockWant{{parser.ThematicBreak, byteRange{0, 4}, []byteRange{{0, 3}}}}},
 	} {
 		t.Run(tt.input, func(t *testing.T) { checkThematicBlocks(t, tt.input, tt.complete, tt.want) })

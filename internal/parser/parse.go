@@ -77,9 +77,10 @@ type ParseResult struct {
 }
 
 // Parse implements the core CommonMark foundation, with extensions/frontmatter
-// recognition disabled. Blanks and thematic-only input are fully parsed. Other
-// input retains staged paragraphs/breaks and whole-document uncertainty;
-// inline text, reference definitions and other block providers remain pending.
+// recognition disabled. Documents of blanks, thematic breaks and empty ATX
+// headings are fully parsed. Other input retains staged paragraphs/breaks/headings
+// and whole-document uncertainty; inline text, reference definitions and other
+// block providers remain pending.
 //
 // The strict UTF-8 gate precedes Markdown work and retains malformed bytes without
 // substitution. Its failure takes precedence over context interruption. Callers

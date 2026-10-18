@@ -51,17 +51,21 @@ half-open byte bounds/ownership; `Source.Text` exposes immutable original-byte
 views without copying the complete snapshot for each range.
 
 Parse enforces strict UTF-8 before Markdown work. Empty and ASCII-blank input
-produce an available empty document, established empty references and completed
-phases. Fully accounted thematic-break/blank documents also complete with exact
-source-marker spans, empty references and vacuous inline work. Other valid input
-yields a partial root with staged paragraph/break children where accumulated, and
-explicit whole-document `syntax-unimplemented` uncertainty. A private stack handles
-continuation, thematic interruption, blank closure and EOF; paragraph segments
-retain original-byte provenance for later inline parsing. Conservative start hooks
-reserve Setext precedence and defer unsupported blocks, leaving the uncertain
-suffix source-only. Closed paragraphs remain partial: references and inline
-interpretation are unavailable. See the model contract for exact envelopes,
-content trimming, interior hard-break preservation and conservative start guards.
+produce an available empty document, established empty references and
+completed phases. Documents accounted for by thematic breaks, empty ATX
+headings and blanks also complete with exact source-marker spans, empty
+references and vacuous inline work. Other valid input yields a partial root
+with staged paragraph/break/heading children where recognized, and explicit
+whole-document `syntax-unimplemented` uncertainty. A private stack handles
+continuation, thematic/heading interruption, blank closure and EOF. Paragraph
+and heading segments retain original-byte provenance for later inline parsing.
+ATX opening/closing markers stay separate from ASCII-trimmed raw content;
+invalid openers take the paragraph path when no other provider applies.
+Conservative start hooks reserve Setext precedence and defer unsupported
+blocks, leaving the uncertain suffix source-only. Closed paragraphs and
+nonempty headings remain partial: references and inline interpretation are
+unavailable. See the model contract for exact envelopes, content trimming,
+interior hard-break preservation and conservative start guards.
 
 Invalid UTF-8 retains the snapshot with typed failure, an authoritative
 snapshot-bound byte location and unavailable AST. Cancellation/deadline remain
@@ -74,8 +78,11 @@ Constructed model fixtures verify the full catalog independently of actual parse
 recognition. Direct examples 219–227 and independent Parse AST/source assertions
 verify staged paragraph progress, with later-dependent structures still pending.
 Original thematic examples 43–61 and independently asserted cases 11/98 verify
-recognition, precedence and exact marker/envelope ranges. Nine upstream cases
-now pass actual HTML comparison (11, 43, 47, 50–54, 98); 643 remain pending.
+recognition, precedence and exact marker/envelope ranges. All ATX examples 62–79
+and existing paragraph case 227 have independent structural/source assertions.
+Empty-heading 79 now passes actual Parse/Evaluate; nonempty headings stay pending.
+Ten upstream cases pass actual HTML comparison (11, 43, 47, 50–54, 79, 98);
+642 remain pending.
 Go tests check complete unique inventory accounting as well as ownership,
 range/provenance, outcome and phase-handoff behavior.
 
@@ -186,19 +193,24 @@ Inputs and paths are resolved from the script, so invocation by absolute script
 path also works from another directory. The checks work offline; use the local
 toolchain/module environment above to forbid automatic downloads explicitly.
 
-Every unfiltered run currently reports **9 pass, 0 fail, 0 error, 643 pending**.
-The supported cases are 11, 43, 47, 50–54 and 98: actual thematic-only documents.
-Remaining records identify `syntax-unimplemented`. Named thematic targets retain
-their code/Setext/list/reference/inline/break/emphasis owners; paragraph targets
-retain #17/#18 and their additional #8/#10/#21 providers; other cases use broad remaining
-inline/core-completion scopes #18/#29. Pending cases are not conformance passes.
-Independent constructed AST tests verify renderer output for the core model
-catalog, escaping/URL encoding, raw segments, lists and image labels without
-claiming that Parse produced those trees. Malformed UTF-8,
-adapter execution/protocol failures and interruption cannot become syntax-pending.
-Raw HTML output preserves its spelling except for CommonMark's mandatory NUL to
-U+FFFD substitution; original source bytes/spans remain unchanged. Unsupported or
-unknown transformed raw contributions are refused rather than silently decoded.
+Every unfiltered run currently reports **10 pass, 0 fail, 0 error, 642
+pending**. The supported cases are 11, 43, 47, 50–54, 79 and 98: actual
+thematic-only and empty-ATX documents. Remaining records identify
+`syntax-unimplemented`. Named thematic targets retain their
+code/Setext/list/reference/inline/break/emphasis owners; paragraph targets
+retain #17/#18 and their additional #10/#21 providers; 227's heading no longer
+has pending #8 ownership. ATX targets name #17/#18 for text/reference handoff,
+#19 for escapes (65/66/76), #24/#25 for emphasis (66), #10 for indented code
+(69) and #21 for multiline content (70). These owners do not block structural
+ATX delivery. Other cases use broad remaining inline/core-completion scopes
+#18/#29. Pending cases are not conformance passes. Independent constructed AST
+tests verify renderer output for the core model catalog, escaping/URL
+encoding, raw segments, lists and image labels without claiming that Parse
+produced those trees. Malformed UTF-8, adapter execution/protocol failures and
+interruption cannot become syntax-pending. Raw HTML output preserves its
+spelling except for CommonMark's mandatory NUL to U+FFFD substitution;
+original source bytes/spans remain unchanged. Unsupported or unknown
+transformed raw contributions are refused rather than silently decoded.
 
 Default comparisons use the unchanged pinned upstream normalizer and its terminal
 newline convention. `--strict` compares exact HTML output instead. The report
@@ -224,15 +236,16 @@ regular expression and combines with example selection. Unknown IDs, invalid
 regexes and empty selections are errors. A filtered run validates the full ledger
 first, reports its smaller scope and never writes or weakens the baseline.
 
-`foundation.json` is mdchk's separately reviewed pass/pending ledger. It accounts
-for all 652 IDs exactly once. Its supported list records the nine passes above.
-A supported case becoming fail/error/pending is a regression; missing/duplicate
-IDs invalidate the ledger. A newly passing case also fails the gate until its ID moves from pending
-to `supported_html_examples` in a reviewed syntax delivery with independent
-AST/source-span tests. Keep existing supported IDs and inspect any proposed ledger
-change for weakening. The runner never updates it automatically or edits generated
-expectations. CI runs the full gate and tests synthetic pass baselines to detect
-lost passes and unrecorded new passes independently of the real corpus counts.
+`foundation.json` is mdchk's separately reviewed pass/pending ledger. It
+accounts for all 652 IDs exactly once. Its supported list records the ten
+passes above. A supported case becoming fail/error/pending is a regression;
+missing/duplicate IDs invalidate the ledger. A newly passing case also fails
+the gate until its ID moves from pending to `supported_html_examples` in a
+reviewed syntax delivery with independent AST/source-span tests. Keep existing
+supported IDs and inspect any proposed ledger change for weakening. The runner
+never updates it automatically or edits generated expectations. CI runs the
+full gate and tests synthetic pass baselines to detect lost passes and
+unrecorded new passes independently of the real corpus counts.
 
 To reuse a compiled executable, build outside the checkout and pass its path:
 
