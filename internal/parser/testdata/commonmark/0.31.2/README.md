@@ -56,14 +56,16 @@ and a missing helper. CI runs these tests and the read-only drift check.
 ## Foundation coverage accounting
 
 `foundation.json` is mdchk's explicit, separately maintained pass/pending
-inventory. It lists every upstream ID exactly once: 30 supported HTML cases
-(1–3, 8, 11, 18, 36, 43, 47–48, 50–54, 69, 79, 85, 98, 100, 107, 110–112,
-116–118, 134, 231, 289) and 622 pending. Indented code, thematic breaks,
+inventory. It lists every upstream ID exactly once: 53 supported HTML cases
+(1–3, 8, 11, 18–19, 36, 43, 47–48, 50–54, 69, 79, 85, 98, 100, 107, 110–112,
+116–120, 122–127, 129–137, 139, 142–144, 146–147, 231, 289) and 599 pending.
+Indented/fenced code, thematic breaks,
 ATX/Setext headings and the staged paragraph lifecycle are implemented.
-Documents of code, breaks, empty ATX headings and blanks complete with available
+Documents of code with established info semantics, breaks, empty ATX headings and
+blanks complete with available
 empty references and vacuous inline work; nonempty headings/paragraphs and unknown
-input remain partial. Code recognition is not fenced-code, quote, list or inline
-recognition merely because a code-only case belongs to one of those sections.
+input remain partial. Code-only passes in other sections do not establish general
+quote, list or inline recognition. Info requiring decoding remains pending #19.
 
 Indented-code cases 108/109 retain list/container/reference/inline owners #14–#18;
 113 retains #17/#18/#21; 114/115 retain #17/#18. Paragraph targets 219–227 retain
@@ -73,8 +75,10 @@ code and a following paragraph, without pending #10 ownership. ATX targets retai
 and #21 for multiline content (70). Thematic targets retain lists/containers
 (#14–#16), reference/inline (#17/#18), breaks (#21) and emphasis (#24/#25) where
 relevant. Setext targets retain quotes 92/93/101 (#13), lists 94/99 (#14–#16),
-91's conservative fence/HTML classification (#11/#12), and actual reference/text,
-multiline, escape and emphasis owners for recognized headings/fallbacks. Other
+91's remaining HTML classification (#12), and actual reference/text,
+multiline, escape and emphasis owners for recognized headings/fallbacks. Fenced
+128 retains #13/#17/#18; 121 retains #17/#18/#20; 138/145 additionally retain #21;
+140/141 retain #17/#18 for surrounding text. Other
 examples use broad remaining inline/core-completion scopes #18/#29, not a claim
 that each needs every provider. Later coverage owners are not reverse native
 blockers on staged deliveries. No fabricated inline interpretation establishes
@@ -98,8 +102,9 @@ It proves actual Parse/Evaluate output for empty-heading 79 without fabricated
 inline children. `TestSetextUpstreamTargets` covers unchanged 80–106 and 59,
 independently asserting whole-paragraph promotion, level/style, exact raw content,
 underline-only markers and multiline physical envelopes, plus following blocks
-and fallback/precedence. Eighteen Setext-section cases establish structural or
-ordinary-paragraph progress; six explicitly defer to the block providers above;
+and fallback/precedence. Nineteen Setext-section cases establish structural or
+ordinary-paragraph progress, including 91's prefix before pending HTML. Five
+remain entirely source-only for quote/list providers;
 85/100 now pass as code and breaks, and 98 remains two breaks. Source-only deferral is not recognized heading coverage.
 Extra Setext fixtures cover single markers, whitespace/backslash handling, tabs,
 Unicode/NUL, LF/CRLF/CR/EOF, frozen accessors and interruption before/after
@@ -128,6 +133,18 @@ verify helper behavior. These checks add no supported HTML cases: example 11's
 HTML pass comes from thematic parsing, not scanner helpers. Do not rewrite
 upstream expectations or count helper assertions as HTML comparison passes.
 
+`TestFencedUpstreamTargets` reads all original 119–147 and cross-feature 19 with
+independent actual Parse assertions for node order/style, literal payload, raw
+info, fence character/width, token-only markers, indentation and physical envelopes.
+Twenty-three fenced-section cases match HTML, including prior indented-code 134;
+the six pending cases retain the actual providers listed above. Separate fixtures
+cover literal HTML/reference/entity/directive-looking payload, info escaping and
+unavailable decoding, empty/blank/unclosed/EOF blocks, LF/CRLF/CR, partial tabs,
+NUL/Unicode, immutable accessors, encoding precedence and interrupted prefixes.
+A valid missing closer is distinct from interruption, and constructed nodes or
+HTML alone cannot establish source-span acceptance. Source bytes and upstream
+expectations remain unchanged; see the model's fenced-code contract.
+
 ## Executable comparisons and passing baseline
 
 Run `python3 -B tools/commonmark_conformance.py` from the repository root, or pass
@@ -136,10 +153,9 @@ See [contributor instructions](../../../../../docs/contributing.md#run-commonmar
 for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
 
 The default staged regression gate allows explicitly pending cases: currently
-30 pass, 0 fail, 0 error, 622 pending, with `syntax-unimplemented` and the
-remaining owners above. The thirty real passes include the previous ten
-break/empty-ATX cases and twenty new indented-code documents, including code with
-following breaks. Synthetic
+53 pass, 0 fail, 0 error, 599 pending, with `syntax-unimplemented` and the
+remaining owners above. All 30 earlier passes remain; 23 actual fence-related
+passes are added, including cross-feature 19. Synthetic
 empty/ASCII-blank documents also complete and render empty HTML. It is not a
 conformance-completion claim. `--require-complete` fails on pending; final
 completion needs all 652 passes in an unfiltered run. The retained upstream

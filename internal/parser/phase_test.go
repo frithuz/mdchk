@@ -35,6 +35,32 @@ func (c *checkpointContext) Err() error {
 	return nil
 }
 
+func TestFencedInterruptionDiscardsOnlyOpenFence(t *testing.T) {
+	source := NewSource([]byte("***\n```\nfirst\n```\n~~~\nopen\n"))
+	// The last checkpoint interrupts at EOF, after the final payload line but
+	// before normal unclosed-fence finalization. No sleeps or goroutine race.
+	for _, checkpoint := range []int{6, 7, 8} {
+		r := Parse(context.Background(), source)
+		ctx := &checkpointContext{Context: context.Background(), remaining: checkpoint}
+		state, err := parseBlockLifecycle(ctx, r.Document, nil)
+		children := r.Document.Root().Children()
+		if err != nil || state != Interrupted || r.Document.inlineFree || r.Document.References().LookupAvailability != Unavailable {
+			t.Fatal("interrupted fence handed off complete work", state, err)
+		}
+		if len(children) != 2 || children[0].Kind() != ThematicBreak || children[1].Kind() != CodeBlock || children[1].Span().Start() != 4 || children[1].Span().End() != 18 || children[1].Properties().Literal != Some("first\n") || children[1].Properties().Code.Style != "fenced" {
+			t.Fatal("lost closed prefix or published interrupted open fence")
+		}
+	}
+	r := Parse(context.Background(), NewSource([]byte("```\ncode\n```\n")))
+	document, err := NewDocument(r.Document.Root(), r.Document.References())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if parseInlines(context.Background(), document, PhaseComplete) != Pending {
+		t.Fatal("constructed fenced tree claimed private recognition proof")
+	}
+}
+
 func TestIndentedInterruptionDiscardsOpenCodeAndBlanks(t *testing.T) {
 	source := NewSource([]byte("    first\n***\n    second\n    third\n\n    fourth\n"))
 	for _, checkpoint := range []int{5, 6, 7} {

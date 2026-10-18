@@ -52,10 +52,10 @@ views without copying the complete snapshot for each range.
 
 Parse enforces strict UTF-8 before Markdown work. Empty and ASCII-blank input
 produce an available empty document, established empty references and
-completed phases. Documents accounted for by indented code, thematic breaks,
-empty ATX headings and blanks also complete with exact source-marker spans, empty
-references and vacuous inline work. Other valid input yields a partial root
-with staged paragraph/break/heading children where recognized, and explicit
+completed phases. Documents accounted for by indented/fenced code with known
+info semantics, thematic breaks, empty ATX headings and blanks also complete
+with exact source-marker spans, empty references and vacuous inline work. Other valid input yields a partial root
+with staged source-bound block children where recognized, and explicit
 whole-document `syntax-unimplemented` uncertainty. A private stack handles
 continuation, thematic/heading interruption, blank closure and EOF. Paragraph
 and heading segments retain original-byte provenance for later inline parsing.
@@ -85,9 +85,10 @@ recognition, precedence and exact marker/envelope ranges. All ATX examples 62–
 and existing paragraph case 227 have independent structural/source assertions.
 Empty-heading 79 now passes actual Parse/Evaluate; nonempty headings stay pending.
 All Setext examples 80–106 and thematic 59 have independent Parse/source
-assertions. Eighteen Setext cases establish structural/fallback progress; 98
-remains a supported pair of breaks. Code cases 85/100 now pass. Six cases remain
-source-only: quotes 92/93/101, lists 94/99 and 91's conservative fence/HTML guards.
+assertions. Nineteen Setext cases establish structural/fallback progress; 98
+remains a supported pair of breaks. Code cases 85/100 pass. Five cases remain
+entirely source-only: quotes 92/93/101 and lists 94/99. Example 91 retains its
+initial heading/paragraph while the HTML suffix still awaits #12.
 Those deferrals are explicitly recorded, not claimed as recognized headings.
 Indented code retains original-byte envelopes, indentation markers and content
 separately from normalized Literal; code contents bypass inline parsing. Blank
@@ -95,7 +96,17 @@ runs belong to code only with a following code line, and a dedent resumes normal
 block dispatch. Actual retained 107–118 and cross-feature code targets have
 independent AST/source assertions, supplemented by tab/endings/EOF, NUL/Unicode,
 blank/whitespace preservation, immutable ownership and outcome fixtures.
-Thirty upstream cases pass actual HTML comparison; 622 remain pending.
+Fenced code recognizes backticks/tildes, paragraph interruption, matching closers
+and valid unclosed EOF, preserving original tokens, raw info and literal payload.
+All 119–147 plus cross-feature 19 have independent actual Parse/source assertions;
+23 fenced-section cases pass HTML, including indented-code 134. Empty and blank
+payloads, source line endings, partial tabs/NUL/Unicode, ownership and interruption
+have separate fixtures. Ordinary info semantics are available; punctuation escapes
+and plausible character references remain explicitly unavailable pending #19.
+Unknown names are not guessed decoded text. Mixed unsupported documents stay
+partial; code payload never defines references or inline syntax. See the model
+contract for the exact source/semantic and EOF conventions.
+Fifty-three upstream cases pass actual HTML comparison; 599 remain pending.
 Go tests check complete unique inventory accounting as well as ownership,
 range/provenance, outcome and phase-handoff behavior.
 
@@ -206,22 +217,26 @@ Inputs and paths are resolved from the script, so invocation by absolute script
 path also works from another directory. The checks work offline; use the local
 toolchain/module environment above to forbid automatic downloads explicitly.
 
-Every unfiltered run currently reports **30 pass, 0 fail, 0 error, 622
-pending**. Supported IDs are 1–3, 8, 11, 18, 36, 43, 47–48, 50–54, 69, 79, 85,
-98, 100, 107, 110–112, 116–118, 134, 231 and 289: actual inline-free documents
-with indented code, breaks, empty ATX headings and blanks. The twenty new code
-passes do not establish general inline, fenced-code, quote or list support.
+Every unfiltered run currently reports **53 pass, 0 fail, 0 error, 599
+pending**. Supported IDs are 1–3, 8, 11, 18–19, 36, 43, 47–48, 50–54, 69, 79,
+85, 98, 100, 107, 110–112, 116–120, 122–127, 129–137, 139, 142–144, 146–147,
+231 and 289: actual inline-free documents with indented/fenced code, breaks,
+empty ATX headings and blanks. Fence recognition adds 23 actual passes while
+retaining all 30 earlier passes; it does not establish general inlines, quotes,
+lists, extensions or full CommonMark conformance.
 Indented-code 108/109 retain #14–#18 list/container/reference/inline owners;
 113 retains #17/#18/#21, and 114/115 retain #17/#18. Paragraph 225 now retains
 its code with remaining #17/#18; other paragraph cases retain actual #17/#18/#21
 owners. Named thematic targets retain list/reference/inline/break/emphasis owners.
 ATX targets retain #17/#18 for text/reference handoff, #19 for escapes (65/66/76),
 #24/#25 for emphasis (66) and #21 for multiline content (70). Setext targets
-retain #13 for 92/93/101, #14–#16 for 94/99 and #11/#12 classification for 91.
+retain #13 for 92/93/101, #14–#16 for 94/99 and remaining #12 HTML for 91.
 Recognized Setext/fallback cases and 59 retain #17/#18, plus actual multiline
 (#21), escape (102/106, #19) and emphasis (80–82, #24/#25) owners. Setext cannot
-be empty; its nonempty headings remain pending. Other cases use broad remaining
-inline/core-completion scopes #18/#29. These coverage owners are not reverse
+be empty; its nonempty headings remain pending. Fenced 128 retains #13/#17/#18;
+121 retains #17/#18/#20; 138/145 additionally retain #21; 140/141 retain #17/#18
+for surrounding paragraphs/headings. Info decoding remains #19. Other cases use
+broad remaining inline/core-completion scopes #18/#29. These coverage owners are not reverse
 prerequisites on this staged delivery. Pending cases are not conformance passes. Independent constructed AST
 tests verify renderer output for the core model catalog, escaping/URL
 encoding, raw segments, lists and image labels without claiming that Parse
@@ -256,7 +271,7 @@ regexes and empty selections are errors. A filtered run validates the full ledge
 first, reports its smaller scope and never writes or weakens the baseline.
 
 `foundation.json` is mdchk's separately reviewed pass/pending ledger. It
-accounts for all 652 IDs exactly once. Its supported list records the thirty
+accounts for all 652 IDs exactly once. Its supported list records the 53
 passes above. A supported case becoming fail/error/pending is a regression;
 missing/duplicate IDs invalidate the ledger. A newly passing case also fails
 the gate until its ID moves from pending to `supported_html_examples` in a

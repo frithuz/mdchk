@@ -138,11 +138,13 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 30, "fail": 0, "error": 0, "pending": 622})
+                self.assertEqual(report["counts"], {"pass": 53, "fail": 0, "error": 0, "pending": 599})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
-                supported = {1, 2, 3, 8, 11, 18, 36, 43, 47, 48, 50, 51, 52, 53, 54,
+                supported = {1, 2, 3, 8, 11, 18, 19, 36, 43, 47, 48, 50, 51, 52, 53, 54,
                              69, 79, 85, 98, 100, 107, 110, 111, 112, 116, 117,
-                             118, 134, 231, 289}
+                             118, 119, 120, 122, 123, 124, 125, 126, 127, 129,
+                             130, 131, 132, 133, 134, 135, 136, 137, 139, 142,
+                             143, 144, 146, 147, 231, 289}
                 self.assertEqual(set(ledger["supported_html_examples"]), supported)
                 owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
                 for outcome in report["outcomes"]:
@@ -161,7 +163,7 @@ class ExecutableBoundary(unittest.TestCase):
                     (17, 18, 24, 25): [80],
                     (17, 18, 21, 24, 25): [81, 82],
                     (17, 18, 21): [87, 88, 95, 104, 105],
-                    (11, 12, 17, 18): [91],
+                    (12, 17, 18): [91],
                     (13, 17, 18): [92, 101],
                     (13, 17, 18, 21): [93],
                     (14, 15, 16, 17, 18): [94, 99],
@@ -188,6 +190,12 @@ class ExecutableBoundary(unittest.TestCase):
                     self.assertEqual(owners[example], [14, 15, 16, 17, 18])
                 self.assertEqual(owners[113], [17, 18, 21])
                 for example in [114, 115]:
+                    self.assertEqual(owners[example], [17, 18])
+                self.assertEqual(owners[121], [17, 18, 20])
+                self.assertEqual(owners[128], [13, 17, 18])
+                for example in [138, 145]:
+                    self.assertEqual(owners[example], [17, 18, 20, 21])
+                for example in [140, 141]:
                     self.assertEqual(owners[example], [17, 18])
                 self.assertEqual(report["outcomes"][206]["status"], "pending")
         complete = runner.run_cases(self.cases, self.cases[206:207], ledger, self.adapter, None, True)

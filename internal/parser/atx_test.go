@@ -21,6 +21,10 @@ type atxBlockWant struct {
 	markers  []markerWant
 	content  []byteRange
 	text     string
+	fence    byte
+	width    int
+	info     string
+	infoSpan byteRange
 }
 type markerWant struct {
 	role string
@@ -103,6 +107,17 @@ func checkATX(t *testing.T, input string, complete bool, want []atxBlockWant) pa
 		}
 		if w.kind == parser.CodeBlock {
 			props.Code = &parser.CodeProperties{Style: "indented"}
+			if w.style == "fenced" {
+				info := parser.Value{Semantic: parser.Some(w.info)}
+				if w.infoSpan != (byteRange{}) {
+					span, err := source.Span(w.infoSpan.start, w.infoSpan.end)
+					if err != nil {
+						t.Fatal(err)
+					}
+					info.Segments = []parser.Segment{{Source: span, Transformation: parser.Exact, Semantic: parser.Some(w.info)}}
+				}
+				props.Code = &parser.CodeProperties{Style: "fenced", Fence: parser.Some(w.fence), Width: parser.Some(w.width), Info: &info}
+			}
 			props.Literal = parser.Some(w.text)
 		}
 		if !reflect.DeepEqual(n.Properties(), props) {

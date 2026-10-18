@@ -34,6 +34,7 @@ type blockParser struct {
 	stack  []openBlock
 	closed []*Node
 	code   *indentedCode
+	fence  *fencedCode
 	hooks  []blockStartHook
 }
 
@@ -55,6 +56,18 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			break
 		}
 		line := p.line(physical)
+		if p.fence != nil {
+			if closing := p.fenceClosing(line); closing.Present() {
+				p.fence.markers = append(p.fence.markers, Marker{Role: "closing", Source: closing})
+				p.fence.end = line.next
+				if err := p.closeFence(); err != nil {
+					return Pending, err
+				}
+			} else {
+				p.appendFenceLine(physical)
+			}
+			continue
+		}
 		if p.code != nil {
 			if line.contentStart == line.end {
 				p.code.blanks = append(p.code.blanks, physical)
@@ -82,6 +95,16 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		if line.indent >= 4 && len(p.stack) == 1 {
 			p.code = &indentedCode{start: line.start}
 			p.appendCodeLine(physical)
+			continue
+		}
+		if fence := p.fenceOpening(line); fence != nil {
+			if err := p.closeTo(1); err != nil {
+				return Pending, err
+			}
+			p.fence = fence
+			if !fence.info.Semantic.Present {
+				state = Pending // #19 supplies escape/entity info decoding.
+			}
 			continue
 		}
 		// A valid underline promotes the entire open paragraph before thematic
@@ -141,9 +164,18 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		}
 		p.appendParagraph(line)
 	}
+	// EOF finalization must not turn an interrupted open builder into a valid
+	// unclosed fence. Already closed blocks remain available as a partial prefix.
+	if interruption(ctx) != "" {
+		state = Interrupted
+	}
 	if state == Interrupted {
 		p.stack = p.stack[:1]
 		p.code = nil // Never publish an unfinished code block after interruption.
+		p.fence = nil
+	}
+	if err := p.closeFence(); err != nil {
+		return Pending, err
 	}
 	if err := p.closeCode(); err != nil {
 		return Pending, err
@@ -309,7 +341,9 @@ func pendingBlockStart(line blockLine, paragraphOpen bool) bool {
 		// A potential list item still needs its provider, including an empty one.
 		return line.contentStart+1 == line.end || line.second == ' ' || line.second == '\t'
 	}
-	return strings.ContainsRune(">*_~`+[<", rune(first)) || first >= '0' && first <= '9'
+	// Fence candidates have already been classified. Invalid backtick/tilde
+	// openers are ordinary paragraph content, still awaiting the inline provider.
+	return strings.ContainsRune(">*_+[<", rune(first)) || first >= '0' && first <= '9'
 }
 
 func (p *blockParser) appendParagraph(line blockLine) {

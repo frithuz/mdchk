@@ -33,7 +33,8 @@ func TestSetextUpstreamTargets(t *testing.T) {
 		88: {atxParagraphWant(byteRange{0, 8}, "Foo\n= =", byteRange{0, 4}, byteRange{4, 7}), atxParagraphWant(byteRange{9, 13}, "Foo", byteRange{9, 12}), {kind: parser.ThematicBreak, envelope: byteRange{13, 19}, markers: []markerWant{{"thematic-marker", byteRange{13, 16}}, {"thematic-marker", byteRange{17, 18}}}}},
 		89: {setextWant(2, byteRange{0, 12}, byteRange{6, 11}, "Foo", byteRange{0, 3})},
 		90: {setextWant(2, byteRange{0, 10}, byteRange{5, 9}, "Foo\\", byteRange{0, 4})},
-		91: nil,          // #11/#12: conservative backtick/HTML start classification.
+		// The invalid fence becomes heading/paragraph content; HTML still needs #12.
+		91: {setextWant(2, byteRange{0, 10}, byteRange{5, 9}, "`Foo", byteRange{0, 4}), atxParagraphWant(byteRange{10, 12}, "`", byteRange{10, 11})},
 		92: nil, 93: nil, // #13: block quotes and lazy continuation.
 		94:  nil, // #14–#16: list/container classification.
 		95:  {setextWant(2, byteRange{0, 12}, byteRange{8, 11}, "Foo\nBar", byteRange{0, 4}, byteRange{4, 7})},
@@ -119,9 +120,13 @@ func TestSetextBoundariesAndProvenance(t *testing.T) {
 		}
 	}
 	checkATX(t, "a\n--\t-\nb", false, []atxBlockWant{atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}), {kind: parser.ThematicBreak, envelope: byteRange{2, 7}, markers: []markerWant{{"thematic-marker", byteRange{2, 4}}, {"thematic-marker", byteRange{5, 6}}}}, atxParagraphWant(byteRange{7, 8}, "b", byteRange{7, 8})})
-	for _, input := range []string{"-", "- ", "-\tx", "> a\n---", "a\n- item\n---", "a\n```\n---", "a\n<div>\n---"} {
+	for _, input := range []string{"-", "- ", "-\tx", "> a\n---", "a\n- item\n---", "a\n<div>\n---"} {
 		checkATX(t, input, false, nil) // Unavailable providers never manufacture headings.
 	}
+	checkATX(t, "a\n```\n---\n", false, []atxBlockWant{
+		atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}),
+		fencedWant(byteRange{2, 10}, byteRange{2, 5}, byteRange{}, '`', "---\n", "", byteRange{}, nil, byteRange{6, 9}, byteRange{9, 10}),
+	})
 	checkATX(t, "a\n-\n#\n***\n", false, []atxBlockWant{setextWant(2, byteRange{0, 4}, byteRange{2, 3}, "a", byteRange{0, 1}), atxHeadingWant(1, byteRange{4, 6}, byteRange{4, 5}, byteRange{}, byteRange{}, ""), atxThematicWant(byteRange{6, 10}, byteRange{6, 9})})
 	checkATX(t, "a\n\n===\n", false, []atxBlockWant{atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}), atxParagraphWant(byteRange{3, 7}, "===", byteRange{3, 6})})
 	checkATX(t, "\u00a0\n=\n", false, []atxBlockWant{setextWant(1, byteRange{0, 5}, byteRange{3, 4}, "\u00a0", byteRange{0, 2})})
