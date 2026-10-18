@@ -6,12 +6,13 @@ import (
 )
 
 // blockLine is a borrowed view of one indexed physical line. Indent is capped
-// at four: thematic breaks and ATX headings allow fewer than four columns.
+// at four: thematic breaks and heading markers allow fewer than four columns.
 type blockLine struct {
 	physicalLine
 	contentStart int
 	indent       int
 	first        byte
+	second       byte
 }
 
 // A start hook runs before paragraph continuation. true defers interpretation;
@@ -59,11 +60,20 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 			continue
 		}
-		markers, underline := p.thematicMarkers(line)
-		// Setext wins over a dash break after an open paragraph. Its provider
-		// is still pending, so let the conservative hooks defer that suffix.
-		// Otherwise thematic breaks win over list starts and continuation.
-		if len(markers) > 0 && !(underline && len(p.stack) > 1) {
+		// A valid underline promotes the entire open paragraph before thematic
+		// or list dispatch. Without a paragraph, ordinary block precedence wins.
+		setext, err := p.setextHeading(line)
+		if err != nil {
+			return Pending, err
+		}
+		if setext != nil {
+			p.closed = append(p.closed, setext)
+			p.stack = p.stack[:1]
+			state = Pending // Nonempty content still needs references/inlines.
+			continue
+		}
+		markers := p.thematicMarkers(line)
+		if len(markers) > 0 {
 			if err := p.closeTo(1); err != nil {
 				return Pending, err
 			}
@@ -99,9 +109,9 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 		}
 		if deferred {
-			// The new line might transform the open paragraph (e.g. Setext), or
-			// start an unknown container. Retain only previously closed blocks;
-			// leave this suffix source-only rather than invent its boundaries.
+			// The new line might start an unknown container or other block.
+			// Retain only previously closed blocks and leave this suffix
+			// source-only rather than invent its boundaries.
 			p.stack = p.stack[:1]
 			break
 		}
@@ -172,13 +182,43 @@ func (p *blockParser) atxHeading(line blockLine) (*Node, error) {
 	})
 }
 
+// setextHeading validates the complete underline before freezing an eligible
+// paragraph. Its delayed last line contributes content without its ending;
+// the envelope, unlike content and marker, retains both physical line endings.
+func (p *blockParser) setextHeading(line blockLine) (*Node, error) {
+	if len(p.stack) == 1 || line.indent >= 4 || line.first != '=' && line.first != '-' {
+		return nil, nil
+	}
+	text := p.index.source.content
+	end := line.contentStart
+	for end < line.end && text[end] == line.first {
+		end++
+	}
+	for i := end; i < line.end; i++ {
+		if text[i] != ' ' && text[i] != '\t' {
+			return nil, nil
+		}
+	}
+	level := 1
+	if line.first == '-' {
+		level = 2
+	}
+	paragraph := p.stack[len(p.stack)-1]
+	return NewNode(NodeSpec{
+		Kind: Heading, Envelope: p.index.span(paragraph.start, line.next),
+		Content:    p.paragraphContent(paragraph),
+		Markers:    []Marker{{Role: "underline", Source: p.index.span(line.contentStart, end)}},
+		Properties: Properties{Heading: &HeadingProperties{Level: level, Style: "setext"}},
+	})
+}
+
 // thematicMarkers validates one whole physical line before allocating metadata.
 // Each maximal contiguous marker run gets its exact original-byte range; spaces,
 // tabs and endings remain in the envelope, never in a marker. A single dash run
-// could instead underline an open paragraph, unlike spaced dashes.
-func (p *blockParser) thematicMarkers(line blockLine) (markers []Marker, underline bool) {
+// could instead underline an open paragraph, handled before this recognizer.
+func (p *blockParser) thematicMarkers(line blockLine) (markers []Marker) {
 	if line.indent >= 4 || !strings.ContainsRune("*-_", rune(line.first)) {
-		return nil, false
+		return nil
 	}
 	text := p.index.source.content
 	count, last := 0, line.contentStart
@@ -189,11 +229,11 @@ func (p *blockParser) thematicMarkers(line blockLine) (markers []Marker, underli
 			last = i
 		case ' ', '\t':
 		default:
-			return nil, false
+			return nil
 		}
 	}
 	if count < 3 {
-		return nil, false
+		return nil
 	}
 	for i := line.contentStart; i <= last; {
 		if text[i] != line.first {
@@ -206,7 +246,7 @@ func (p *blockParser) thematicMarkers(line blockLine) (markers []Marker, underli
 		}
 		markers = append(markers, Marker{Role: "thematic-marker", Source: p.index.span(start, i)})
 	}
-	return markers, line.first == '-' && len(markers) == 1
+	return markers
 }
 
 func (p *blockParser) line(physical physicalLine) blockLine {
@@ -220,6 +260,9 @@ func (p *blockParser) line(physical physicalLine) blockLine {
 			line.indent = 4
 		default:
 			line.first = text[line.contentStart]
+			if line.contentStart+1 < line.end {
+				line.second = text[line.contentStart+1]
+			}
 			return line
 		}
 		line.contentStart++
@@ -233,7 +276,12 @@ func pendingBlockStart(line blockLine, paragraphOpen bool) bool {
 		return !paragraphOpen
 	}
 	first := line.first
-	return strings.ContainsRune(">*_~`-+=[<", rune(first)) || first >= '0' && first <= '9'
+	if first == '-' {
+		// Failed underlines and non-list dash text can be ordinary paragraphs.
+		// A potential list item still needs its provider, including an empty one.
+		return line.contentStart+1 == line.end || line.second == ' ' || line.second == '\t'
+	}
+	return strings.ContainsRune(">*_~`+[<", rune(first)) || first >= '0' && first <= '9'
 }
 
 func (p *blockParser) appendParagraph(line blockLine) {
@@ -251,13 +299,7 @@ func (p *blockParser) appendParagraph(line blockLine) {
 func (p *blockParser) closeTo(depth int) error {
 	for len(p.stack) > depth {
 		paragraph := p.stack[len(p.stack)-1]
-		end := paragraph.last.end
-		text := p.index.source.content
-		for end > paragraph.last.contentStart && (text[end-1] == ' ' || text[end-1] == '\t') {
-			end--
-		}
-		paragraph.content = append(paragraph.content, p.index.semanticText(paragraph.last.contentStart, end).Segments...)
-		node, err := NewNode(NodeSpec{Kind: paragraph.kind, Envelope: p.index.span(paragraph.start, paragraph.last.next), Content: paragraph.content})
+		node, err := NewNode(NodeSpec{Kind: paragraph.kind, Envelope: p.index.span(paragraph.start, paragraph.last.next), Content: p.paragraphContent(paragraph)})
 		if err != nil {
 			return err
 		}
@@ -265,4 +307,15 @@ func (p *blockParser) closeTo(depth int) error {
 		p.stack = p.stack[:len(p.stack)-1]
 	}
 	return nil
+}
+
+// The private builder owns the segment backing storage until NewNode freezes it.
+// This is called once on closure/promotion, never for each continuation line.
+func (p *blockParser) paragraphContent(paragraph openBlock) []Segment {
+	end := paragraph.last.end
+	text := p.index.source.content
+	for end > paragraph.last.contentStart && (text[end-1] == ' ' || text[end-1] == '\t') {
+		end--
+	}
+	return append(paragraph.content, p.index.semanticText(paragraph.last.contentStart, end).Segments...)
 }

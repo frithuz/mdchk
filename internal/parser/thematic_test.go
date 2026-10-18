@@ -62,7 +62,11 @@ func checkThematicBlocks(t *testing.T, input string, complete bool, want []block
 		for _, m := range n.Markers() {
 			ranges = append(ranges, byteRange{m.Source.Start(), m.Source.End()})
 			text, err := source.Text(m.Source)
-			if err != nil || m.Role != "thematic-marker" || len(text) == 0 {
+			role := "thematic-marker"
+			if n.Kind() == parser.Heading {
+				role = "underline"
+			}
+			if err != nil || m.Role != role || len(text) == 0 {
 				t.Fatal("marker lost original spelling/role", m, err)
 			}
 			for j := range len(text) {
@@ -100,7 +104,9 @@ func TestThematicUpstreamTargets(t *testing.T) {
 	wants := map[int][]blockWant{
 		11: {{parser.ThematicBreak, byteRange{0, 7}, []byteRange{{0, 1}, {2, 3}, {4, 5}}}},
 		43: {{parser.ThematicBreak, byteRange{0, 4}, []byteRange{{0, 3}}}, {parser.ThematicBreak, byteRange{4, 8}, []byteRange{{4, 7}}}, {parser.ThematicBreak, byteRange{8, 12}, []byteRange{{8, 11}}}},
-		44: nil, 45: nil, 46: nil,
+		44: nil,
+		45: {{parser.Paragraph, byteRange{0, 4}, nil}}, // Equals without content is a paragraph.
+		46: nil,
 		47: {{parser.ThematicBreak, byteRange{0, 5}, []byteRange{{1, 4}}}, {parser.ThematicBreak, byteRange{5, 11}, []byteRange{{7, 10}}}, {parser.ThematicBreak, byteRange{11, 18}, []byteRange{{14, 17}}}},
 		48: nil, // #10: indented code is still unknown.
 		49: {{parser.Paragraph, byteRange{0, 12}, nil}},
@@ -111,7 +117,8 @@ func TestThematicUpstreamTargets(t *testing.T) {
 		54: {{parser.ThematicBreak, byteRange{0, 12}, []byteRange{{0, 1}, {2, 3}, {4, 5}, {6, 7}}}},
 		55: nil, 56: nil, 57: nil,
 		58: {{parser.Paragraph, byteRange{0, 4}, nil}, {parser.ThematicBreak, byteRange{4, 8}, []byteRange{{4, 7}}}, {parser.Paragraph, byteRange{8, 12}, nil}},
-		59: nil, 60: nil, 61: nil, // Setext and unresolved list containers defer.
+		59: {{parser.Heading, byteRange{0, 8}, []byteRange{{4, 7}}}, {parser.Paragraph, byteRange{8, 12}, nil}},
+		60: nil, 61: nil, // Unresolved list containers defer.
 		98: {{parser.ThematicBreak, byteRange{0, 4}, []byteRange{{0, 3}}}, {parser.ThematicBreak, byteRange{4, 8}, []byteRange{{4, 7}}}},
 	}
 	data, err := os.ReadFile("testdata/commonmark/0.31.2/examples.json")
@@ -184,9 +191,9 @@ func TestThematicBoundariesAndPrecedence(t *testing.T) {
 		{" \n***\r\n \t\r___", true, []blockWant{{parser.ThematicBreak, byteRange{2, 7}, []byteRange{{2, 5}}}, {parser.ThematicBreak, byteRange{10, 13}, []byteRange{{10, 13}}}}},
 		{"Foo\n - - -\nbar\n", false, []blockWant{{parser.Paragraph, byteRange{0, 4}, nil}, {parser.ThematicBreak, byteRange{4, 11}, []byteRange{{5, 6}, {7, 8}, {9, 10}}}, {parser.Paragraph, byteRange{11, 15}, nil}}},
 		{"é\n* * *\r\nz", false, []blockWant{{parser.Paragraph, byteRange{0, 3}, nil}, {parser.ThematicBreak, byteRange{3, 10}, []byteRange{{3, 4}, {5, 6}, {7, 8}}}, {parser.Paragraph, byteRange{10, 11}, nil}}},
-		{"Foo\n--- \t\n", false, nil},
-		{"Foo\n  ---\rbar", false, nil},
-		{"***\nFoo\n---\n", false, []blockWant{{parser.ThematicBreak, byteRange{0, 4}, []byteRange{{0, 3}}}}},
+		{"Foo\n--- \t\n", false, []blockWant{{parser.Heading, byteRange{0, 10}, []byteRange{{4, 7}}}}},
+		{"Foo\n  ---\rbar", false, []blockWant{{parser.Heading, byteRange{0, 10}, []byteRange{{6, 9}}}, {parser.Paragraph, byteRange{10, 13}, nil}}},
+		{"***\nFoo\n---\n", false, []blockWant{{parser.ThematicBreak, byteRange{0, 4}, []byteRange{{0, 3}}}, {parser.Heading, byteRange{4, 12}, []byteRange{{8, 11}}}}},
 	} {
 		t.Run(tt.input, func(t *testing.T) { checkThematicBlocks(t, tt.input, tt.complete, tt.want) })
 	}

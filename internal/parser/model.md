@@ -1,7 +1,7 @@
 # Parser model and staged block contract
 
 `internal/parser` defines an in-memory CommonMark 0.31.2 model and a staged
-paragraph/block lifecycle with thematic-break and ATX-heading recognition. It
+paragraph/block lifecycle with thematic-break, ATX and Setext recognition. It
 completes documents entirely accounted for by thematic breaks, empty ATX headings
 and ASCII blanks, and retains paragraph/heading source content for later inline
 parsing. Other block providers, reference definitions and inline text remain
@@ -90,14 +90,16 @@ internal tabs stay literal. Indented starts of four columns (including a tab
 reaching that boundary) defer to #10, while deep indentation can continue a
 paragraph. Diagnostic code-point columns are not used for that distinction.
 
-After thematic and ATX dispatch below, start hooks precede paragraph
+After Setext, thematic and ATX dispatch below, start hooks precede paragraph
 continuation. A conservative hook defers starts of four-column code and lines
 below four columns whose first nonblank byte is a digit or one of `>`, `*`,
-`_`, `~`, a backtick, `-`, `+`, `=`, `[` or `<`. This is not a grammar
+`_`, `~`, a backtick, `+`, `[` or `<`, or a possible dash list marker
+(a dash followed by ASCII space/tab or end of line). Failed equals/dash
+underlines otherwise take the ordinary paragraph path. This is not a grammar
 recognizer: ordinary punctuation/numeric lines may also be deferred. A
-deferred line might transform the open paragraph (Setext) or start an unknown
-container, so its open paragraph is discarded, previously closed blocks are
-retained, and the remaining suffix stays source-only. No boundary inside that
+deferred line might start an unknown container or other block, so its open
+paragraph is discarded, previously closed blocks are retained, and the remaining
+suffix stays source-only. No boundary inside that
 suffix is invented. Mixed/unsupported results retain whole-document
 uncertainty, including retained paragraphs; these nodes are progress for later
 parsing, not reliable permission for syntax-dependent rules or fixes. Full
@@ -127,9 +129,8 @@ inline children or semantic payload. Original bytes remain unchanged.
 Thematic recognition precedes generic list-start deferral and paragraph
 continuation. It closes a preceding paragraph and permits a following one without
 blank separators. A qualifying contiguous dash underline after an open paragraph
-is reserved for Setext (#9): conservatively defer the uncertain paragraph/suffix
-rather than publish a paragraph/break interpretation. Spaced dashes cannot be a
-Setext underline and may interrupt the paragraph as a break. Deeply indented
+promotes that paragraph to Setext before thematic dispatch. Spaced dashes cannot
+be a Setext underline and may interrupt the paragraph as a break. Deeply indented
 continuation stays paragraph content. Unsupported container starts still defer
 their whole suffix rather than manufacturing nested breaks.
 
@@ -137,7 +138,8 @@ their whole suffix rather than manufacturing nested breaks.
 11/98 with independent node order, envelopes and exact marker ranges. Actual
 Parse/Evaluate reproduces HTML for 11, 43, 47, 50–54 and 98. Example 58 retains
 paragraph/break/paragraph progress but remains inline/reference-pending. Example
-59 reserves Setext, 48 awaits indented code, and 57/60/61 await lists/containers.
+59 retains a Setext heading and following paragraph, 48 awaits indented code,
+and 57/60/61 await lists/containers.
 Negative cases never acquire break nodes or false completeness. Independent
 fixtures cover tabs, indentation boundaries, Unicode/NUL/extra characters,
 endings/EOF, blank-separated breaks, ownership, repeatability and interruption.
@@ -150,7 +152,7 @@ retains an open paragraph; scanning resumes after the heading. Failed hash-start
 candidates follow ordinary paragraph handling when no other provider applies;
 there is no blanket hash-start deferral. Four-column starts still defer to code,
 and deeply indented lines can continue paragraphs. Unsupported containers and
-Setext reservations keep their conservative boundaries.
+other unsupported starts keep their conservative boundaries.
 
 Heading Level and Style (`atx`) use the existing property catalog. The envelope
 retains the complete original physical line, indentation and LF/CRLF/CR ending or
@@ -175,6 +177,43 @@ ordering, paragraph interruption and empty content. Additional fixtures cover
 original endings/EOF, tabs, non-ASCII whitespace, Unicode/NUL, mixed completion,
 unsupported suffixes, ownership and repeatability. Phase fixtures reject
 constructed empty-heading handoffs and retain closed headings on interruption.
+
+## Setext headings and promotion
+
+Below four structural indentation columns, a nonempty contiguous equals/dash
+run with only trailing ASCII space/tab promotes the whole eligible open
+paragraph to Heading level 1/2, style `setext`. Single markers qualify. This
+dispatch precedes thematic/list handling; without a paragraph, equals lines are
+ordinary text and standalone breaks keep thematic precedence. Malformed
+underlines continue paragraphs when no other provider applies; four-column
+underline-like continuation stays text. Blank lines prevent promotion across
+their boundary. Genuine unresolved list/code/HTML/container starts still defer.
+
+The `underline` marker selects only the contiguous run. The envelope spans the
+first content line's physical start through the underline's ending or EOF.
+Promotion acquires the delayed final paragraph contribution once and freezes
+one node, then resumes scanning. Content uses the paragraph's original-byte
+segments and ASCII trimming: interior endings/spaces remain; final content-line
+spaces/tabs, its ending and the underline are omitted. A final backslash remains
+raw content without a fabricated hard break. Omitted bytes remain in Source.
+Unicode/NUL provenance, snapshot ownership and LF/CRLF/CR/EOF remain unchanged.
+
+Setext cannot be empty. These headings remain Incomplete/Partial, blocks pending,
+inlines not started, references/lookup unavailable, with whole-document syntax
+uncertainty and pending adapter output. No inline children or HTML are invented;
+empty-ATX completion does not apply. Existing complete input, strict UTF-8 and
+interruption guards remain intact.
+
+`TestSetextUpstreamTargets` exercises all original 80–106 and thematic 59 with
+independent actual-Parse node order, level/style, envelope, content and marker
+ranges. Eighteen Setext-section cases establish structural/fallback progress;
+98 stays a supported pair of breaks. Eight cases remain source-only behind
+unavailable providers: code 85/100 (#10), quote 92/93/101 (#13), list 94/99
+(#14–#16), and 91's conservative backtick/HTML classification (#11/#12).
+Source-only deferral is not heading recognition. Focused fixtures cover single
+markers, negative/mixed/extra characters, tabs/indentation, blank separation,
+following blocks, final whitespace/backslash, Unicode/NUL, original endings,
+immutable accessors and interruption before/after promotion.
 
 ## Snapshots, spans and ownership
 
@@ -357,10 +396,15 @@ lookup has no entries. Mutable collection copies cannot change the document.
 [`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly
 accounts for all 652 upstream IDs: ten supported HTML cases (11, 43, 47,
 50–54, 79, 98) and 642 pending. The thematic targets name remaining code
-(#10), Setext (#9), list container (#14–#16), reference/inline (#17/#18),
+(#10), list container (#14–#16), reference/inline (#17/#18),
 break (#21) and emphasis (#24/#25) owners where relevant. These are staged
 ownership scopes, not new native prerequisites for thematic or ATX
-recognition. ATX cases name #17/#18 for conservative reference/inline handoff,
+recognition. Setext targets explicitly name #10 for 85/100, #13 for
+92/93/101, #14–#16 for 94/99 and #11/#12 classification for 91. Recognized
+Setext/fallback cases and 59 retain #17/#18, with #21 for multiline content,
+#19 for escapes in 102/106 and #24/#25 for emphasis in 80–82. Example 98
+remains supported. Structural delivery adds no new HTML pass. ATX cases name
+#17/#18 for conservative reference/inline handoff,
 #19 for escapes in 65/66/76, #24/#25 for emphasis in 66, #10 for indented code
 in 69 and #21 for multiline content in 70. Example 79 has no pending owner
 because actual HTML now passes. Named paragraph targets record #17 reference

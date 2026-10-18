@@ -154,7 +154,23 @@ class ExecutableBoundary(unittest.TestCase):
                 self.assertEqual(owners[48], [10])
                 self.assertEqual(owners[49], [17, 18, 21])
                 self.assertEqual(owners[58], [17, 18])
-                self.assertEqual(owners[59], [9, 17, 18])
+                self.assertEqual(owners[59], [17, 18])
+                setext_owners = {
+                    (17, 18): [83, 84, 86, 89, 90, 96, 97, 103],
+                    (17, 18, 24, 25): [80],
+                    (17, 18, 21, 24, 25): [81, 82],
+                    (10,): [85, 100],
+                    (17, 18, 21): [87, 88, 95, 104, 105],
+                    (11, 12, 17, 18): [91],
+                    (13, 17, 18): [92, 101],
+                    (13, 17, 18, 21): [93],
+                    (14, 15, 16, 17, 18): [94, 99],
+                    (17, 18, 19): [102],
+                    (17, 18, 19, 21): [106],
+                }
+                for required, examples in setext_owners.items():
+                    for example in examples:
+                        self.assertEqual(owners[example], list(required))
                 for example in [57, 60, 61]:
                     self.assertEqual(owners[example], [14, 15, 16, 17, 18])
                 self.assertEqual(owners[219], [17, 18])

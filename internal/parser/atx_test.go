@@ -17,6 +17,7 @@ type atxBlockWant struct {
 	kind     parser.Kind
 	envelope byteRange
 	level    int
+	style    string
 	markers  []markerWant
 	content  []byteRange
 	text     string
@@ -94,7 +95,11 @@ func checkATX(t *testing.T, input string, complete bool, want []atxBlockWant) pa
 		checkRange(n.Span(), w.envelope)
 		props := parser.Properties{}
 		if w.kind == parser.Heading {
-			props.Heading = &parser.HeadingProperties{Level: w.level, Style: "atx"}
+			style := w.style
+			if style == "" {
+				style = "atx"
+			}
+			props.Heading = &parser.HeadingProperties{Level: w.level, Style: style}
 		}
 		if !reflect.DeepEqual(n.Properties(), props) {
 			t.Fatalf("block %d properties: %+v", i, n.Properties())
@@ -248,7 +253,7 @@ func TestATXBoundariesAndProvenance(t *testing.T) {
 		{"***\n# h\n", false, []atxBlockWant{atxThematicWant(byteRange{0, 4}, byteRange{0, 3}), atxHeadingWant(1, byteRange{4, 8}, byteRange{4, 5}, byteRange{6, 7}, byteRange{}, "h")}},
 		{"#\n \t\r\n***\r### ###", true, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, ""), atxThematicWant(byteRange{6, 10}, byteRange{6, 9}), atxHeadingWant(3, byteRange{10, 17}, byteRange{10, 13}, byteRange{}, byteRange{14, 17}, "")}},
 		{"#\n> quote\n#\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, "")}},
-		{"#\na\n---\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, "")}},
+		{"#\na\n---\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, ""), setextWant(2, byteRange{2, 8}, byteRange{4, 7}, "a", byteRange{2, 3})}},
 		{"#\n    #\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, "")}},
 		{"# h\n#\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 4}, byteRange{0, 1}, byteRange{2, 3}, byteRange{}, "h"), atxHeadingWant(1, byteRange{4, 6}, byteRange{4, 5}, byteRange{}, byteRange{}, "")}},
 		{"#\nx\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, ""), atxParagraphWant(byteRange{2, 4}, "x", byteRange{2, 3})}},

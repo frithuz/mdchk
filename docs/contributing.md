@@ -61,10 +61,13 @@ continuation, thematic/heading interruption, blank closure and EOF. Paragraph
 and heading segments retain original-byte provenance for later inline parsing.
 ATX opening/closing markers stay separate from ASCII-trimmed raw content;
 invalid openers take the paragraph path when no other provider applies.
-Conservative start hooks reserve Setext precedence and defer unsupported
-blocks, leaving the uncertain suffix source-only. Closed paragraphs and
-nonempty headings remain partial: references and inline interpretation are
-unavailable. See the model contract for exact envelopes, content trimming,
+Valid Setext underlines promote the entire eligible paragraph before thematic
+dispatch, with separate content/underline spans and complete physical envelopes.
+Failed equals/dash underlines fall back to paragraphs where no other provider
+applies; potential list and other unsupported starts still defer their suffix.
+Promotion acquires final content once and resumes following blocks. Closed
+paragraphs and nonempty headings remain partial: references and inline
+interpretation are unavailable. See the model contract for exact envelopes, content trimming,
 interior hard-break preservation and conservative start guards.
 
 Invalid UTF-8 retains the snapshot with typed failure, an authoritative
@@ -81,6 +84,11 @@ Original thematic examples 43–61 and independently asserted cases 11/98 verify
 recognition, precedence and exact marker/envelope ranges. All ATX examples 62–79
 and existing paragraph case 227 have independent structural/source assertions.
 Empty-heading 79 now passes actual Parse/Evaluate; nonempty headings stay pending.
+All Setext examples 80–106 and thematic 59 have independent Parse/source
+assertions. Eighteen Setext cases establish structural/fallback progress; 98
+remains a supported pair of breaks. Eight cases remain source-only: code 85/100,
+quotes 92/93/101, lists 94/99 and 91's conservative fence/HTML start guards.
+Those deferrals are explicitly recorded, not claimed as recognized headings.
 Ten upstream cases pass actual HTML comparison (11, 43, 47, 50–54, 79, 98);
 642 remain pending.
 Go tests check complete unique inventory accounting as well as ownership,
@@ -197,12 +205,17 @@ Every unfiltered run currently reports **10 pass, 0 fail, 0 error, 642
 pending**. The supported cases are 11, 43, 47, 50–54, 79 and 98: actual
 thematic-only and empty-ATX documents. Remaining records identify
 `syntax-unimplemented`. Named thematic targets retain their
-code/Setext/list/reference/inline/break/emphasis owners; paragraph targets
+code/list/reference/inline/break/emphasis owners; paragraph targets
 retain #17/#18 and their additional #10/#21 providers; 227's heading no longer
 has pending #8 ownership. ATX targets name #17/#18 for text/reference handoff,
 #19 for escapes (65/66/76), #24/#25 for emphasis (66), #10 for indented code
 (69) and #21 for multiline content (70). These owners do not block structural
-ATX delivery. Other cases use broad remaining inline/core-completion scopes
+ATX delivery. Setext targets name #10 for 85/100, #13 for 92/93/101,
+#14–#16 for 94/99 and #11/#12 classification for 91. Recognized Setext/fallback
+cases and 59 retain #17/#18, plus actual multiline (#21), escape (102/106,
+#19) and emphasis (80–82, #24/#25) owners. Setext cannot be empty; structural
+promotion adds no new HTML pass and never inherits empty-ATX completion.
+Other cases use broad remaining inline/core-completion scopes
 #18/#29. Pending cases are not conformance passes. Independent constructed AST
 tests verify renderer output for the core model catalog, escaping/URL
 encoding, raw segments, lists and image labels without claiming that Parse

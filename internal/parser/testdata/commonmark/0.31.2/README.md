@@ -57,8 +57,8 @@ and a missing helper. CI runs these tests and the read-only drift check.
 
 `foundation.json` is mdchk's explicit, separately maintained pass/pending
 inventory. It lists every upstream ID exactly once: ten supported HTML cases
-(11, 43, 47, 50–54, 79, 98) and 642 pending. Thematic breaks, ATX headings and
-the staged paragraph lifecycle are implemented. Documents of breaks, empty ATX
+(11, 43, 47, 50–54, 79, 98) and 642 pending. Thematic breaks, ATX/Setext headings
+and the staged paragraph lifecycle are implemented. Documents of breaks, empty ATX
 headings and blanks complete with available empty references and vacuous
 inline work; nonempty headings and other inline-dependent/unknown input remain
 partial. Named targets 219–227 record remaining reference/inline owners
@@ -69,13 +69,18 @@ are #17/#18. ATX targets 62–79 explicitly track reference/text handoff
 in 69 (#10) and multiline content in 70 (#21). Example 79 actually passes and
 has no pending owner. Other cases use broad remaining inline/core-completion
 scopes #18/#29, not a claim that every example needs every provider. Remaining
-thematic targets name code (#10), Setext (#9), lists/containers (#14–#16),
+thematic targets name code (#10), lists/containers (#14–#16),
 reference/inline (#17/#18), breaks (#21) and emphasis (#24/#25) where
 relevant. These are coverage owners, not reverse blockers on the thematic/ATX
-delivery. No unsupported container children or Setext interpretations are
-manufactured to produce progress. The test-only adapter and executable HTML
-comparison runner are available; #5 is no longer an undelivered owner. The
-inventory does not alter upstream inputs, expectations or provenance.
+delivery. Setext targets now record code 85/100 (#10), quotes 92/93/101 (#13),
+lists 94/99 (#14–#16), and 91's conservative fence/HTML classification
+(#11/#12). Recognized Setext/fallback cases and 59 retain reference/text
+(#17/#18), with actual multiline breaks (#21), escapes in 102/106 (#19) and
+emphasis in 80–82 (#24/#25). Example 98 remains supported. These later owners
+are not reverse blockers on staged Setext recognition. No unsupported children
+or inline interpretation are manufactured to produce progress. The test-only
+adapter and executable HTML comparison runner are available; #5 is no longer an
+undelivered owner. The inventory does not alter upstream inputs, expectations or provenance.
 Regeneration still writes only examples.json.
 
 `go test ./internal/parser` checks complete/unique accounting against the
@@ -91,7 +96,15 @@ independent actual-parser kinds, source envelopes and maximal contiguous
 62–79 plus 227, with independent node order, heading level/style,
 opening/closing spans, trimmed source-backed content and full line envelopes.
 It proves actual Parse/Evaluate output for empty-heading 79 without fabricated
-inline children. Nonempty/unsupported cases stay pending; extra ATX fixtures
+inline children. `TestSetextUpstreamTargets` covers unchanged 80–106 and 59,
+independently asserting whole-paragraph promotion, level/style, exact raw content,
+underline-only markers and multiline physical envelopes, plus following blocks
+and fallback/precedence. Eighteen Setext-section cases establish structural or
+ordinary-paragraph progress; eight explicitly defer to the block providers above;
+98 remains two breaks. Source-only deferral is not recognized heading coverage.
+Extra Setext fixtures cover single markers, whitespace/backslash handling, tabs,
+Unicode/NUL, LF/CRLF/CR/EOF, frozen accessors and interruption before/after
+promotion. Nonempty/unsupported cases stay pending; extra ATX fixtures
 check raw escapes, ASCII-only whitespace, Unicode/NUL provenance, endings/EOF,
 completion guards and immutable ownership. Together these actual parser tests
 cover the ten supported HTML outputs; pending cases stay distinct. Independent

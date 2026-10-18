@@ -21,11 +21,36 @@ func TestInlinePhaseRequiresFinishedReferenceHandoff(t *testing.T) {
 }
 
 func TestInlineStubRefusesNonemptyInlineHandoff(t *testing.T) {
-	for _, input := range []string{"hello\n", "# heading\n", "***\nhello\n", "***\n# heading\n"} {
+	for _, input := range []string{"hello\n", "# heading\n", "***\nhello\n", "***\n# heading\n", "heading\n=\n"} {
 		r := Parse(context.Background(), NewSource([]byte(input)))
 		r.Document.references = ReferenceCollection{Availability: Available, LookupAvailability: Available}
 		if got := parseInlines(context.Background(), r.Document, PhaseComplete); got != Pending {
 			t.Fatalf("inline stub completed %q without a provider: %s", input, got)
+		}
+	}
+}
+
+func TestSetextInterruptionKeepsOnlyPromotedHeadings(t *testing.T) {
+	for _, cancelOn := range []byte{'T', 'o'} {
+		r := Parse(context.Background(), NewSource([]byte("Title\n---\nopen\nnext\n")))
+		ctx, cancel := context.WithCancel(context.Background())
+		state, err := parseBlockLifecycle(ctx, r.Document, []blockStartHook{func(line blockLine, open bool) bool {
+			if line.first == cancelOn {
+				cancel()
+			}
+			return false
+		}})
+		cancel()
+		children := r.Document.Root().Children()
+		if err != nil || state != Interrupted || r.Document.inlineFree || r.Document.References().LookupAvailability != Unavailable {
+			t.Fatal("interrupted Setext work claimed completeness", state, err)
+		}
+		if cancelOn == 'T' {
+			if len(children) != 0 {
+				t.Fatal("interrupted paragraph was promoted")
+			}
+		} else if len(children) != 1 || children[0].Kind() != Heading || children[0].Properties().Heading.Style != "setext" || children[0].Span().Start() != 0 || children[0].Span().End() != 10 {
+			t.Fatal("interruption lost promoted heading or published unfinished paragraph")
 		}
 	}
 }
