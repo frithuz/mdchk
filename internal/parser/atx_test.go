@@ -101,6 +101,10 @@ func checkATX(t *testing.T, input string, complete bool, want []atxBlockWant) pa
 			}
 			props.Heading = &parser.HeadingProperties{Level: w.level, Style: style}
 		}
+		if w.kind == parser.CodeBlock {
+			props.Code = &parser.CodeProperties{Style: "indented"}
+			props.Literal = parser.Some(w.text)
+		}
 		if !reflect.DeepEqual(n.Properties(), props) {
 			t.Fatalf("block %d properties: %+v", i, n.Properties())
 		}
@@ -173,7 +177,7 @@ func TestATXUpstreamTargets(t *testing.T) {
 		66:  {atxHeadingWant(1, byteRange{0, 20}, byteRange{0, 1}, byteRange{2, 19}, byteRange{}, "foo *bar* \\*baz\\*")},
 		67:  {atxHeadingWant(1, byteRange{0, 44}, byteRange{0, 1}, byteRange{19, 22}, byteRange{}, "foo")},
 		68:  {atxHeadingWant(3, byteRange{0, 9}, byteRange{1, 4}, byteRange{5, 8}, byteRange{}, "foo"), atxHeadingWant(2, byteRange{9, 18}, byteRange{11, 13}, byteRange{14, 17}, byteRange{}, "foo"), atxHeadingWant(1, byteRange{18, 27}, byteRange{21, 22}, byteRange{23, 26}, byteRange{}, "foo")},
-		69:  nil, // #10 indented code remains an unsupported suffix.
+		69:  {indentedWant(byteRange{0, 10}, "# foo\n", []byteRange{{0, 4}}, byteRange{4, 9}, byteRange{9, 10})},
 		70:  {atxParagraphWant(byteRange{0, 14}, "foo\n# bar", byteRange{0, 4}, byteRange{8, 13})},
 		71:  {atxHeadingWant(2, byteRange{0, 10}, byteRange{0, 2}, byteRange{3, 6}, byteRange{7, 9}, "foo"), atxHeadingWant(3, byteRange{10, 29}, byteRange{12, 15}, byteRange{18, 21}, byteRange{25, 28}, "bar")},
 		72:  {atxHeadingWant(1, byteRange{0, 41}, byteRange{0, 1}, byteRange{2, 5}, byteRange{6, 40}, "foo"), atxHeadingWant(5, byteRange{41, 54}, byteRange{41, 46}, byteRange{47, 50}, byteRange{51, 53}, "foo")},
@@ -214,9 +218,9 @@ func TestATXUpstreamTargets(t *testing.T) {
 		}
 		seen[e.ID] = true
 		t.Run(strconv.Itoa(e.ID), func(t *testing.T) {
-			r := checkATX(t, e.Markdown, e.ID == 79, want)
-			if e.ID == 79 && conformance.Evaluate(r).HTML != e.HTML {
-				t.Fatal("actual empty-heading HTML differs from upstream")
+			r := checkATX(t, e.Markdown, e.ID == 79 || e.ID == 69, want)
+			if (e.ID == 79 || e.ID == 69) && conformance.Evaluate(r).HTML != e.HTML {
+				t.Fatal("actual supported HTML differs from upstream")
 			}
 		})
 	}
@@ -254,7 +258,7 @@ func TestATXBoundariesAndProvenance(t *testing.T) {
 		{"#\n \t\r\n***\r### ###", true, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, ""), atxThematicWant(byteRange{6, 10}, byteRange{6, 9}), atxHeadingWant(3, byteRange{10, 17}, byteRange{10, 13}, byteRange{}, byteRange{14, 17}, "")}},
 		{"#\n> quote\n#\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, "")}},
 		{"#\na\n---\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, ""), setextWant(2, byteRange{2, 8}, byteRange{4, 7}, "a", byteRange{2, 3})}},
-		{"#\n    #\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, "")}},
+		{"#\n    #\n", true, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, ""), indentedWant(byteRange{2, 8}, "#\n", []byteRange{{2, 6}}, byteRange{6, 7}, byteRange{7, 8})}},
 		{"# h\n#\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 4}, byteRange{0, 1}, byteRange{2, 3}, byteRange{}, "h"), atxHeadingWant(1, byteRange{4, 6}, byteRange{4, 5}, byteRange{}, byteRange{}, "")}},
 		{"#\nx\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, ""), atxParagraphWant(byteRange{2, 4}, "x", byteRange{2, 3})}},
 		{"a\n    # h", false, []atxBlockWant{atxParagraphWant(byteRange{0, 9}, "a\n# h", byteRange{0, 2}, byteRange{6, 9})}},
@@ -262,8 +266,8 @@ func TestATXBoundariesAndProvenance(t *testing.T) {
 		t.Run(tt.input, func(t *testing.T) { checkATX(t, tt.input, tt.complete, tt.want) })
 	}
 	// These inputs cannot be ATX headings. Hash-prefixed failed candidates take
-	// the paragraph path; four-column starts remain pending code, not headings.
-	for _, input := range []string{"#######", "####### x", "#x", "#\u00a0x", "#\vx", "#\fx", "\\# x", "\t# x", " \t# x", "   \t# x", "    # x"} {
+	// the paragraph path; indented_test.go checks four-column starts as literal code.
+	for _, input := range []string{"#######", "####### x", "#x", "#\u00a0x", "#\vx", "#\fx", "\\# x"} {
 		t.Run("negative/"+input, func(t *testing.T) {
 			r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 			if r.Status != parser.Incomplete || r.Failure != nil || string(r.Source.Bytes()) != input {

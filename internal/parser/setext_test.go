@@ -27,7 +27,7 @@ func TestSetextUpstreamTargets(t *testing.T) {
 		82: {setextWant(1, byteRange{0, 22}, byteRange{17, 21}, "Foo *bar\nbaz*", byteRange{2, 11}, byteRange{11, 15})},
 		83: {setextWant(2, byteRange{0, 30}, byteRange{4, 29}, "Foo", byteRange{0, 3}), setextWant(1, byteRange{31, 37}, byteRange{35, 36}, "Foo", byteRange{31, 34})},
 		84: {setextWant(2, byteRange{0, 11}, byteRange{7, 10}, "Foo", byteRange{3, 6}), setextWant(2, byteRange{12, 24}, byteRange{18, 23}, "Foo", byteRange{14, 17}), setextWant(1, byteRange{25, 37}, byteRange{33, 36}, "Foo", byteRange{27, 30})},
-		85: nil, // #10: code starts before any eligible paragraph.
+		85: {indentedWant(byteRange{0, 25}, "Foo\n---\n\nFoo\n", []byteRange{{0, 4}, {8, 12}, {17, 21}}, byteRange{4, 7}, byteRange{7, 8}, byteRange{12, 15}, byteRange{15, 16}, byteRange{16, 17}, byteRange{21, 24}, byteRange{24, 25}), atxThematicWant(byteRange{25, 29}, byteRange{25, 28})},
 		86: {setextWant(2, byteRange{0, 18}, byteRange{7, 11}, "Foo", byteRange{0, 3})},
 		87: {atxParagraphWant(byteRange{0, 12}, "Foo\n---", byteRange{0, 4}, byteRange{8, 11})},
 		88: {atxParagraphWant(byteRange{0, 8}, "Foo\n= =", byteRange{0, 4}, byteRange{4, 7}), atxParagraphWant(byteRange{9, 13}, "Foo", byteRange{9, 12}), {kind: parser.ThematicBreak, envelope: byteRange{13, 19}, markers: []markerWant{{"thematic-marker", byteRange{13, 16}}, {"thematic-marker", byteRange{17, 18}}}}},
@@ -41,7 +41,7 @@ func TestSetextUpstreamTargets(t *testing.T) {
 		97:  {atxParagraphWant(byteRange{1, 6}, "====", byteRange{1, 5})},
 		98:  {atxThematicWant(byteRange{0, 4}, byteRange{0, 3}), atxThematicWant(byteRange{4, 8}, byteRange{4, 7})},
 		99:  nil, // #14–#16: list/container classification.
-		100: nil, // #10: indented code.
+		100: {indentedWant(byteRange{0, 8}, "foo\n", []byteRange{{0, 4}}, byteRange{4, 7}, byteRange{7, 8}), atxThematicWant(byteRange{8, 12}, byteRange{8, 11})},
 		101: nil, // #13: block quote.
 		102: {setextWant(2, byteRange{0, 14}, byteRange{7, 13}, "\\> foo", byteRange{0, 6})},
 		103: {atxParagraphWant(byteRange{0, 4}, "Foo", byteRange{0, 3}), setextWant(2, byteRange{5, 13}, byteRange{9, 12}, "bar", byteRange{5, 8}), atxParagraphWant(byteRange{13, 17}, "baz", byteRange{13, 16})},
@@ -77,8 +77,8 @@ func TestSetextUpstreamTargets(t *testing.T) {
 		}
 		seen[e.ID] = true
 		t.Run(strconv.Itoa(e.ID), func(t *testing.T) {
-			r := checkATX(t, e.Markdown, e.ID == 98, want)
-			if e.ID == 98 && conformance.Evaluate(r).HTML != e.HTML {
+			r := checkATX(t, e.Markdown, e.ID == 98 || e.ID == 85 || e.ID == 100, want)
+			if (e.ID == 98 || e.ID == 85 || e.ID == 100) && conformance.Evaluate(r).HTML != e.HTML {
 				t.Fatal("actual supported thematic HTML changed")
 			}
 		})

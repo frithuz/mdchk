@@ -1,10 +1,10 @@
 # Parser model and staged block contract
 
 `internal/parser` defines an in-memory CommonMark 0.31.2 model and a staged
-paragraph/block lifecycle with thematic-break, ATX and Setext recognition. It
-completes documents entirely accounted for by thematic breaks, empty ATX headings
-and ASCII blanks, and retains paragraph/heading source content for later inline
-parsing. Other block providers, reference definitions and inline text remain
+paragraph/block lifecycle with indented-code, thematic-break, ATX and Setext
+recognition. It completes documents entirely accounted for by indented code,
+thematic breaks, empty ATX headings and ASCII blanks, and retains paragraph/heading
+source content for later inline parsing. Other block providers, reference definitions and inline text remain
 pending. The model catalog also supports constructed fixtures; it does not
 promise recognition of every listed kind.
 
@@ -23,7 +23,7 @@ to callers.
 | --- | --- | --- |
 | Nil or zero-length source | `Complete` / `Available` | Root `[0,0)`, no children, available empty reference records/lookup, both phases complete |
 | ASCII-blank source (space/tab/LF/CR only) | `Complete` / `Available` | Root `[0,N)`, no children, established empty references/lookup, both phases complete |
-| Thematic breaks, empty ATX headings and ASCII blanks only | `Complete` / `Available` | Root `[0,N)` with source-bound blocks, established empty references/lookup, both phases complete, no uncertainty |
+| Indented code, thematic breaks, empty ATX headings and ASCII blanks only | `Complete` / `Available` | Root `[0,N)` with source-bound blocks, established empty references/lookup, both phases complete, no uncertainty |
 | Other valid source | `Incomplete` / `Partial` | Root `[0,N)` with staged paragraphs/breaks/headings where recognized, one `SyntaxUnimplemented` uncertainty over `[0,N)`, blocks pending, inlines not started; references/lookup unavailable |
 | Invalid UTF-8 | `Failed` / `Unavailable` | Original Source, typed `Failure` with `InvalidUTF8` code and snapshot-bound byte location, nil Document, neither phase started |
 | Cancellation/deadline on otherwise valid source | `Incomplete` / `Partial` | Original Source and partial root with any already-closed prefix blocks, affected region with `Cancelled`/`DeadlineExceeded`, separate Interruption, nil Failure; unfinished work interrupted |
@@ -63,8 +63,9 @@ result := parser.Parse(context.Background(), source)
 The private block/reference phase precedes inline processing. Inlines cannot run
 until the block phase and effective reference lookup are complete. The block pass
 establishes an empty registry and a private inline-free handoff only after every
-physical line has been recognized as blank, a thematic break or an empty ATX
-heading. Inline work is then vacuously complete. Paragraphs, nonempty headings,
+physical line has been recognized as blank, indented code, a thematic break or
+an empty ATX heading. Inline work is then vacuously complete. Paragraphs, nonempty
+headings,
 unknown suffixes and interrupted work never establish that handoff. Supplying
 complete phases/references or constructed break/heading children cannot bypass
 the guard; model constructors do not prove recognition.
@@ -87,12 +88,13 @@ Source. NUL has explicit Normalized provenance; other retained bytes stay Exact.
 There is no paragraph Literal or invented inline child. Paragraph indentation is
 fully consumed, so no residual partial tab is emitted into its logical content;
 internal tabs stay literal. Indented starts of four columns (including a tab
-reaching that boundary) defer to #10, while deep indentation can continue a
-paragraph. Diagnostic code-point columns are not used for that distinction.
+reaching that boundary) open code only without an existing paragraph; deep
+indentation continues an open paragraph. Diagnostic code-point columns are not
+used for that distinction.
 
 After Setext, thematic and ATX dispatch below, start hooks precede paragraph
-continuation. A conservative hook defers starts of four-column code and lines
-below four columns whose first nonblank byte is a digit or one of `>`, `*`,
+continuation. A conservative hook defers lines below four columns whose first
+nonblank byte is a digit or one of `>`, `*`,
 `_`, `~`, a backtick, `+`, `[` or `<`, or a possible dash list marker
 (a dash followed by ASCII space/tab or end of line). Failed equals/dash
 underlines otherwise take the ordinary paragraph path. This is not a grammar
@@ -108,7 +110,8 @@ providers will refine these guards.
 `TestParagraphUpstreamTargets` consumes unmodified examples 219–227 with
 independent expected grouping, byte envelopes and content segments. Examples
 219–224 establish paragraph progress; 226 retains interior hard-break spaces;
-225's indented code remains unknown. Example 227 now retains both its
+225 retains its code and following paragraph with independent source expectations.
+Example 227 now retains both its
 paragraph and ATX heading, with independent source expectations shared with
 the ATX targets. All nine remain HTML-pending for their later providers.
 Focused Parse fixtures cover blank/EOF closure, LF/CRLF/CR, Unicode/NUL/tab
@@ -138,8 +141,8 @@ their whole suffix rather than manufacturing nested breaks.
 11/98 with independent node order, envelopes and exact marker ranges. Actual
 Parse/Evaluate reproduces HTML for 11, 43, 47, 50–54 and 98. Example 58 retains
 paragraph/break/paragraph progress but remains inline/reference-pending. Example
-59 retains a Setext heading and following paragraph, 48 awaits indented code,
-and 57/60/61 await lists/containers.
+59 retains a Setext heading and following paragraph; 48 now passes as literal
+indented code, and 57/60/61 await lists/containers.
 Negative cases never acquire break nodes or false completeness. Independent
 fixtures cover tabs, indentation boundaries, Unicode/NUL/extra characters,
 endings/EOF, blank-separated breaks, ownership, repeatability and interruption.
@@ -150,7 +153,8 @@ Below four structural indentation columns, one to six opening hashes followed
 by ASCII space/tab or end of line form an ATX heading. A valid heading closes and
 retains an open paragraph; scanning resumes after the heading. Failed hash-start
 candidates follow ordinary paragraph handling when no other provider applies;
-there is no blanket hash-start deferral. Four-column starts still defer to code,
+there is no blanket hash-start deferral. Four-column starts open code without an
+existing paragraph,
 and deeply indented lines can continue paragraphs. Unsupported containers and
 other unsupported starts keep their conservative boundaries.
 
@@ -187,7 +191,7 @@ dispatch precedes thematic/list handling; without a paragraph, equals lines are
 ordinary text and standalone breaks keep thematic precedence. Malformed
 underlines continue paragraphs when no other provider applies; four-column
 underline-like continuation stays text. Blank lines prevent promotion across
-their boundary. Genuine unresolved list/code/HTML/container starts still defer.
+their boundary. Genuine unresolved list/fenced-code/HTML/container starts still defer.
 
 The `underline` marker selects only the contiguous run. The envelope spans the
 first content line's physical start through the underline's ending or EOF.
@@ -207,13 +211,59 @@ interruption guards remain intact.
 `TestSetextUpstreamTargets` exercises all original 80–106 and thematic 59 with
 independent actual-Parse node order, level/style, envelope, content and marker
 ranges. Eighteen Setext-section cases establish structural/fallback progress;
-98 stays a supported pair of breaks. Eight cases remain source-only behind
-unavailable providers: code 85/100 (#10), quote 92/93/101 (#13), list 94/99
-(#14–#16), and 91's conservative backtick/HTML classification (#11/#12).
+98 stays a supported pair of breaks; 85/100 now pass with indented code and
+following breaks. Six cases remain source-only behind unavailable providers:
+quote 92/93/101 (#13), list 94/99 (#14–#16), and 91's conservative
+backtick/HTML classification (#11/#12).
 Source-only deferral is not heading recognition. Focused fixtures cover single
 markers, negative/mixed/extra characters, tabs/indentation, blank separation,
 following blocks, final whitespace/backslash, Unicode/NUL, original endings,
 immutable accessors and interruption before/after promotion.
+
+## Indented code and literal handoff
+
+Four structural indentation columns open code only when no paragraph is open.
+Code continuation precedes heading/thematic dispatch; Markdown-looking content
+at code indentation remains literal. A nonblank line below four columns closes
+code and is reprocessed normally. Interior blank runs are acquired only when
+another code line follows; leading/trailing blanks are excluded. Unsupported
+container starts still defer their entire suffix rather than exposing nested
+indentation as reliable top-level code.
+
+The code envelope starts at the first nonblank code line's physical start and
+ends after the last nonblank code line's original terminator or EOF. Each nonempty
+removed indentation prefix has an `indent-prefix` marker selecting its original
+bytes. Content retains the remainder and each included ending in source order;
+interior blanks remove up to four columns, retaining any excess. Internal tabs,
+extra indentation and trailing spaces/tabs remain literal. Four-column removal
+from column zero ends at a tab stop; it does not expand later literal tabs.
+The existing cursor supports partial-tab provenance when a consumer splits a tab.
+
+Code.Style is `indented`; fence/width/info and inline children are absent. Literal
+concatenates semantic contributions once at closure. Unchanged contributions and
+LF endings are Exact; NUL and CR/CRLF endings use Normalized contributions (U+FFFD
+and LF respectively). An unterminated nonblank EOF appends a Synthetic LF anchored
+at the present zero-width EOF span. No semantic length supplies an original offset,
+and normalization never rewrites Source. Raw content and markers omit trailing
+blanks while Source and the document envelope retain them.
+
+Recognized code can join blanks, breaks and empty ATX headings in a complete,
+reference-free/inline-free document. Reference-looking content inside code cannot
+define references. Nonempty paragraphs/headings, unknown suffixes and interrupted
+open code do not acquire that handoff. An interruption discards the unfinished
+code builder and its deferred blanks while retaining already-closed prefix nodes.
+Full work metering/checkpoint hardening remains #31.
+
+`TestIndentedUpstreamTargets` reads unchanged 107–118 and independently asserts
+node ordering, raw envelopes/content/indentation ranges and semantic values.
+107, 110–112 and 116–118 match actual Parse/Evaluate HTML; list cases 108/109
+remain source-only, while 113–115 retain available structure and pending inlines.
+Cross-feature tests now retain actual code in 48, 69, 85, 100 and 225. Additional
+upstream fixtures verify newly rendered 1–3, 8, 18, 36, 134, 231 and 289 without
+claiming their named section's syntax providers are generally implemented.
+Focused fixtures cover literal syntax, tabs/whitespace, blank ownership, dedent,
+original/normalized endings and EOF, Unicode/NUL, immutable source/accessors,
+repeatability, encoding precedence and complete/pending/interrupted guards.
 
 ## Snapshots, spans and ownership
 
@@ -394,26 +444,24 @@ normalization. Partial lookup may contain only known first selections; unavailab
 lookup has no entries. Mutable collection copies cannot change the document.
 
 [`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly
-accounts for all 652 upstream IDs: ten supported HTML cases (11, 43, 47,
-50–54, 79, 98) and 642 pending. The thematic targets name remaining code
-(#10), list container (#14–#16), reference/inline (#17/#18),
-break (#21) and emphasis (#24/#25) owners where relevant. These are staged
-ownership scopes, not new native prerequisites for thematic or ATX
-recognition. Setext targets explicitly name #10 for 85/100, #13 for
-92/93/101, #14–#16 for 94/99 and #11/#12 classification for 91. Recognized
-Setext/fallback cases and 59 retain #17/#18, with #21 for multiline content,
-#19 for escapes in 102/106 and #24/#25 for emphasis in 80–82. Example 98
-remains supported. Structural delivery adds no new HTML pass. ATX cases name
-#17/#18 for conservative reference/inline handoff,
-#19 for escapes in 65/66/76, #24/#25 for emphasis in 66, #10 for indented code
-in 69 and #21 for multiline content in 70. Example 79 has no pending owner
-because actual HTML now passes. Named paragraph targets record #17 reference
-knowledge and #18 inline scanning, plus #21 for multiline/break processing and
-#10 for example 225. Example 227 no longer has #8 ownership: its heading is
-recognized but its text remains pending. Other examples use broad remaining
-inline/core-completion scopes #18/#29; these are ownership scopes, not a claim
-that every case needs every provider. The test-only #5 adapter/runner is
-available in `internal/conformance` and `tools/commonmark_conformance.py`.
+accounts for all 652 upstream IDs: 30 supported HTML cases and 622 pending.
+Supported IDs are 1–3, 8, 11, 18, 36, 43, 47–48, 50–54, 69, 79, 85, 98, 100,
+107, 110–112, 116–118, 134, 231 and 289. These are recognized inline-free
+documents, not implementation of every syntax feature in their named sections.
+Indented-code 108/109 retain list/container/reference/inline owners #14–#18;
+113 retains #17/#18/#21, and 114/115 retain #17/#18. Paragraph 225 now retains
+code and its following paragraph, with only #17/#18 pending. Thematic cases
+retain list/container (#14–#16), reference/inline (#17/#18), break (#21) and
+emphasis (#24/#25) owners where relevant. Setext targets name #13 for 92/93/101,
+#14–#16 for 94/99 and #11/#12 classification for 91. Recognized Setext/fallback
+cases and 59 retain #17/#18, with #21 for multiline content, #19 for escapes
+in 102/106 and #24/#25 for emphasis in 80–82. ATX cases name #17/#18 for
+text/reference handoff, #19 for escapes in 65/66/76, #24/#25 for emphasis in 66
+and #21 for multiline content in 70. Paragraph cases retain #17/#18 and #21
+where multiline/break processing is required. Other examples use broad remaining
+inline/core-completion scopes #18/#29. These are coverage owners, not reverse
+native prerequisites on staged syntax deliveries. The test-only #5 adapter/runner
+is available in `internal/conformance` and `tools/commonmark_conformance.py`.
 These are foundational pending scopes, not a claim that each example uses
 every syntax feature. This inventory is maintained separately from unmodified
 upstream data. `TestCoreCorpusAccounting` requires all IDs exactly once and

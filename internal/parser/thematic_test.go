@@ -63,13 +63,16 @@ func checkThematicBlocks(t *testing.T, input string, complete bool, want []block
 			ranges = append(ranges, byteRange{m.Source.Start(), m.Source.End()})
 			text, err := source.Text(m.Source)
 			role := "thematic-marker"
+			if n.Kind() == parser.CodeBlock {
+				role = "indent-prefix"
+			}
 			if n.Kind() == parser.Heading {
 				role = "underline"
 			}
 			if err != nil || m.Role != role || len(text) == 0 {
 				t.Fatal("marker lost original spelling/role", m, err)
 			}
-			for j := range len(text) {
+			for j := 0; role != "indent-prefix" && j < len(text); j++ {
 				if text[j] != text[0] || text[j] != '*' && text[j] != '-' && text[j] != '_' {
 					t.Fatal("marker range contains non-marker bytes", text)
 				}
@@ -108,7 +111,7 @@ func TestThematicUpstreamTargets(t *testing.T) {
 		45: {{parser.Paragraph, byteRange{0, 4}, nil}}, // Equals without content is a paragraph.
 		46: nil,
 		47: {{parser.ThematicBreak, byteRange{0, 5}, []byteRange{{1, 4}}}, {parser.ThematicBreak, byteRange{5, 11}, []byteRange{{7, 10}}}, {parser.ThematicBreak, byteRange{11, 18}, []byteRange{{14, 17}}}},
-		48: nil, // #10: indented code is still unknown.
+		48: {{parser.CodeBlock, byteRange{0, 8}, []byteRange{{0, 4}}}},
 		49: {{parser.Paragraph, byteRange{0, 12}, nil}},
 		50: {{parser.ThematicBreak, byteRange{0, 38}, []byteRange{{0, 37}}}},
 		51: {{parser.ThematicBreak, byteRange{0, 7}, []byteRange{{1, 2}, {3, 4}, {5, 6}}}},
@@ -151,7 +154,7 @@ func TestThematicUpstreamTargets(t *testing.T) {
 		}
 		seen[e.ID] = true
 		t.Run(strconv.Itoa(e.ID), func(t *testing.T) {
-			complete := e.ID == 11 || e.ID == 43 || e.ID == 47 || e.ID >= 50 && e.ID <= 54 || e.ID == 98
+			complete := e.ID == 11 || e.ID == 43 || e.ID == 47 || e.ID == 48 || e.ID >= 50 && e.ID <= 54 || e.ID == 98
 			r := checkThematicBlocks(t, e.Markdown, complete, want)
 			got := conformance.Evaluate(r)
 			if complete {
@@ -197,7 +200,7 @@ func TestThematicBoundariesAndPrecedence(t *testing.T) {
 	} {
 		t.Run(tt.input, func(t *testing.T) { checkThematicBlocks(t, tt.input, tt.complete, tt.want) })
 	}
-	for _, input := range []string{"\t***\n", " \t***\n", "   \t***\n", "    ***", "+++", "===", "**", "--", "__", "*-*", "***x", "***\x00", "***\u00a0", "***\v", "***\f", "\u00a0***", "***é"} {
+	for _, input := range []string{"+++", "===", "**", "--", "__", "*-*", "***x", "***\x00", "***\u00a0", "***\v", "***\f", "\u00a0***", "***é"} {
 		t.Run(input, func(t *testing.T) {
 			r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 			if r.Status != parser.Incomplete || r.Failure != nil || string(r.Source.Bytes()) != input {

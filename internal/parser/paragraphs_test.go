@@ -72,7 +72,7 @@ func TestParagraphUpstreamTargets(t *testing.T) {
 		222: {{byteRange{0, 11}, []byteRange{{2, 6}, {7, 10}}, "aaa\nbbb"}},
 		223: {{byteRange{0, 64}, []byteRange{{0, 4}, {17, 21}, {60, 63}}, "aaa\nbbb\nccc"}},
 		224: {{byteRange{0, 11}, []byteRange{{3, 7}, {7, 10}}, "aaa\nbbb"}},
-		225: nil, // #10: unknown indented code; its suffix remains source-only.
+		225: nil, // Code and following paragraph are asserted together below.
 		226: {{byteRange{0, 18}, []byteRange{{0, 9}, {9, 12}}, "aaa     \nbbb"}},
 		227: {{byteRange{4, 8}, []byteRange{{4, 7}}, "aaa"}}, // Heading is asserted separately below.
 	}
@@ -104,7 +104,9 @@ func TestParagraphUpstreamTargets(t *testing.T) {
 		seen[e.ID] = true
 		t.Run(e.Section+"/"+strconv.Itoa(e.ID), func(t *testing.T) {
 			s := parser.NewSource([]byte(e.Markdown))
-			if e.ID == 227 {
+			if e.ID == 225 {
+				checkATX(t, e.Markdown, false, []atxBlockWant{indentedWant(byteRange{0, 8}, "aaa\n", []byteRange{{0, 4}}, byteRange{4, 7}, byteRange{7, 8}), atxParagraphWant(byteRange{8, 12}, "bbb", byteRange{8, 11})})
+			} else if e.ID == 227 {
 				checkATX(t, e.Markdown, false, []atxBlockWant{
 					atxParagraphWant(byteRange{4, 8}, "aaa", byteRange{4, 7}),
 					atxHeadingWant(1, byteRange{12, 18}, byteRange{12, 13}, byteRange{14, 17}, byteRange{}, "aaa"),
@@ -167,7 +169,7 @@ func TestParagraphClosureAndProvenance(t *testing.T) {
 }
 
 func TestPendingBlockBoundaries(t *testing.T) {
-	for _, input := range []string{"    code\n", "\tcode\n", "   \tcode\n", "```\na\n```\n", "> quote\n", "- list\n", "1. list\n", "[foo]: /url\n", "<div>\na\n"} {
+	for _, input := range []string{"```\na\n```\n", "> quote\n", "- list\n", "1. list\n", "[foo]: /url\n", "<div>\na\n"} {
 		t.Run(input, func(t *testing.T) { checkParagraphs(t, parser.NewSource([]byte(input)), nil) })
 	}
 	// Once a block boundary is unknown, its whole suffix is left uninterpreted.

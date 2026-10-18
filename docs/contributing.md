@@ -52,8 +52,8 @@ views without copying the complete snapshot for each range.
 
 Parse enforces strict UTF-8 before Markdown work. Empty and ASCII-blank input
 produce an available empty document, established empty references and
-completed phases. Documents accounted for by thematic breaks, empty ATX
-headings and blanks also complete with exact source-marker spans, empty
+completed phases. Documents accounted for by indented code, thematic breaks,
+empty ATX headings and blanks also complete with exact source-marker spans, empty
 references and vacuous inline work. Other valid input yields a partial root
 with staged paragraph/break/heading children where recognized, and explicit
 whole-document `syntax-unimplemented` uncertainty. A private stack handles
@@ -86,11 +86,16 @@ and existing paragraph case 227 have independent structural/source assertions.
 Empty-heading 79 now passes actual Parse/Evaluate; nonempty headings stay pending.
 All Setext examples 80–106 and thematic 59 have independent Parse/source
 assertions. Eighteen Setext cases establish structural/fallback progress; 98
-remains a supported pair of breaks. Eight cases remain source-only: code 85/100,
-quotes 92/93/101, lists 94/99 and 91's conservative fence/HTML start guards.
+remains a supported pair of breaks. Code cases 85/100 now pass. Six cases remain
+source-only: quotes 92/93/101, lists 94/99 and 91's conservative fence/HTML guards.
 Those deferrals are explicitly recorded, not claimed as recognized headings.
-Ten upstream cases pass actual HTML comparison (11, 43, 47, 50–54, 79, 98);
-642 remain pending.
+Indented code retains original-byte envelopes, indentation markers and content
+separately from normalized Literal; code contents bypass inline parsing. Blank
+runs belong to code only with a following code line, and a dedent resumes normal
+block dispatch. Actual retained 107–118 and cross-feature code targets have
+independent AST/source assertions, supplemented by tab/endings/EOF, NUL/Unicode,
+blank/whitespace preservation, immutable ownership and outcome fixtures.
+Thirty upstream cases pass actual HTML comparison; 622 remain pending.
 Go tests check complete unique inventory accounting as well as ownership,
 range/provenance, outcome and phase-handoff behavior.
 
@@ -201,22 +206,23 @@ Inputs and paths are resolved from the script, so invocation by absolute script
 path also works from another directory. The checks work offline; use the local
 toolchain/module environment above to forbid automatic downloads explicitly.
 
-Every unfiltered run currently reports **10 pass, 0 fail, 0 error, 642
-pending**. The supported cases are 11, 43, 47, 50–54, 79 and 98: actual
-thematic-only and empty-ATX documents. Remaining records identify
-`syntax-unimplemented`. Named thematic targets retain their
-code/list/reference/inline/break/emphasis owners; paragraph targets
-retain #17/#18 and their additional #10/#21 providers; 227's heading no longer
-has pending #8 ownership. ATX targets name #17/#18 for text/reference handoff,
-#19 for escapes (65/66/76), #24/#25 for emphasis (66), #10 for indented code
-(69) and #21 for multiline content (70). These owners do not block structural
-ATX delivery. Setext targets name #10 for 85/100, #13 for 92/93/101,
-#14–#16 for 94/99 and #11/#12 classification for 91. Recognized Setext/fallback
-cases and 59 retain #17/#18, plus actual multiline (#21), escape (102/106,
-#19) and emphasis (80–82, #24/#25) owners. Setext cannot be empty; structural
-promotion adds no new HTML pass and never inherits empty-ATX completion.
-Other cases use broad remaining inline/core-completion scopes
-#18/#29. Pending cases are not conformance passes. Independent constructed AST
+Every unfiltered run currently reports **30 pass, 0 fail, 0 error, 622
+pending**. Supported IDs are 1–3, 8, 11, 18, 36, 43, 47–48, 50–54, 69, 79, 85,
+98, 100, 107, 110–112, 116–118, 134, 231 and 289: actual inline-free documents
+with indented code, breaks, empty ATX headings and blanks. The twenty new code
+passes do not establish general inline, fenced-code, quote or list support.
+Indented-code 108/109 retain #14–#18 list/container/reference/inline owners;
+113 retains #17/#18/#21, and 114/115 retain #17/#18. Paragraph 225 now retains
+its code with remaining #17/#18; other paragraph cases retain actual #17/#18/#21
+owners. Named thematic targets retain list/reference/inline/break/emphasis owners.
+ATX targets retain #17/#18 for text/reference handoff, #19 for escapes (65/66/76),
+#24/#25 for emphasis (66) and #21 for multiline content (70). Setext targets
+retain #13 for 92/93/101, #14–#16 for 94/99 and #11/#12 classification for 91.
+Recognized Setext/fallback cases and 59 retain #17/#18, plus actual multiline
+(#21), escape (102/106, #19) and emphasis (80–82, #24/#25) owners. Setext cannot
+be empty; its nonempty headings remain pending. Other cases use broad remaining
+inline/core-completion scopes #18/#29. These coverage owners are not reverse
+prerequisites on this staged delivery. Pending cases are not conformance passes. Independent constructed AST
 tests verify renderer output for the core model catalog, escaping/URL
 encoding, raw segments, lists and image labels without claiming that Parse
 produced those trees. Malformed UTF-8, adapter execution/protocol failures and
@@ -250,7 +256,7 @@ regexes and empty selections are errors. A filtered run validates the full ledge
 first, reports its smaller scope and never writes or weakens the baseline.
 
 `foundation.json` is mdchk's separately reviewed pass/pending ledger. It
-accounts for all 652 IDs exactly once. Its supported list records the ten
+accounts for all 652 IDs exactly once. Its supported list records the thirty
 passes above. A supported case becoming fail/error/pending is a regression;
 missing/duplicate IDs invalidate the ledger. A newly passing case also fails
 the gate until its ID moves from pending to `supported_html_examples` in a

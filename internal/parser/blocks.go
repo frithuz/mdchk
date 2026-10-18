@@ -33,6 +33,7 @@ type blockParser struct {
 	index  LineIndex
 	stack  []openBlock
 	closed []*Node
+	code   *indentedCode
 	hooks  []blockStartHook
 }
 
@@ -54,10 +55,33 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			break
 		}
 		line := p.line(physical)
+		if p.code != nil {
+			if line.contentStart == line.end {
+				p.code.blanks = append(p.code.blanks, physical)
+				continue
+			}
+			if line.indent >= 4 {
+				for _, blank := range p.code.blanks {
+					p.appendCodeLine(blank)
+				}
+				p.code.blanks = nil
+				p.appendCodeLine(physical)
+				continue
+			}
+			if err := p.closeCode(); err != nil {
+				return Pending, err
+			}
+			// The dedented line still needs normal block dispatch below.
+		}
 		if line.contentStart == line.end {
 			if err := p.closeTo(1); err != nil {
 				return Pending, err
 			}
+			continue
+		}
+		if line.indent >= 4 && len(p.stack) == 1 {
+			p.code = &indentedCode{start: line.start}
+			p.appendCodeLine(physical)
 			continue
 		}
 		// A valid underline promotes the entire open paragraph before thematic
@@ -119,6 +143,10 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 	}
 	if state == Interrupted {
 		p.stack = p.stack[:1]
+		p.code = nil // Never publish an unfinished code block after interruption.
+	}
+	if err := p.closeCode(); err != nil {
+		return Pending, err
 	}
 	if err := p.closeTo(1); err != nil {
 		return Pending, err
@@ -129,8 +157,8 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 	}
 	document.root = root
 	if state == PhaseComplete {
-		// Every line was recognized as blank, a thematic break or an empty ATX
-		// heading. None can define references or require inline interpretation.
+		// Every line was recognized as blank, code, a thematic break or an empty
+		// ATX heading. None can define references or require inline interpretation.
 		document.references = ReferenceCollection{Availability: Available, LookupAvailability: Available}
 		document.inlineFree = true
 	}

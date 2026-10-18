@@ -138,9 +138,11 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 10, "fail": 0, "error": 0, "pending": 642})
+                self.assertEqual(report["counts"], {"pass": 30, "fail": 0, "error": 0, "pending": 622})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
-                supported = {11, 43, 47, 50, 51, 52, 53, 54, 79, 98}
+                supported = {1, 2, 3, 8, 11, 18, 36, 43, 47, 48, 50, 51, 52, 53, 54,
+                             69, 79, 85, 98, 100, 107, 110, 111, 112, 116, 117,
+                             118, 134, 231, 289}
                 self.assertEqual(set(ledger["supported_html_examples"]), supported)
                 owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
                 for outcome in report["outcomes"]:
@@ -151,7 +153,6 @@ class ExecutableBoundary(unittest.TestCase):
                         self.assertEqual(outcome["status"], "pending")
                         self.assertEqual(outcome["reason"], "syntax-unimplemented")
                         self.assertEqual(outcome["owners"], owners[outcome["example"]])
-                self.assertEqual(owners[48], [10])
                 self.assertEqual(owners[49], [17, 18, 21])
                 self.assertEqual(owners[58], [17, 18])
                 self.assertEqual(owners[59], [17, 18])
@@ -159,7 +160,6 @@ class ExecutableBoundary(unittest.TestCase):
                     (17, 18): [83, 84, 86, 89, 90, 96, 97, 103],
                     (17, 18, 24, 25): [80],
                     (17, 18, 21, 24, 25): [81, 82],
-                    (10,): [85, 100],
                     (17, 18, 21): [87, 88, 95, 104, 105],
                     (11, 12, 17, 18): [91],
                     (13, 17, 18): [92, 101],
@@ -175,7 +175,7 @@ class ExecutableBoundary(unittest.TestCase):
                     self.assertEqual(owners[example], [14, 15, 16, 17, 18])
                 self.assertEqual(owners[219], [17, 18])
                 self.assertEqual(owners[220], [17, 18, 21])
-                self.assertEqual(owners[225], [10, 17, 18])
+                self.assertEqual(owners[225], [17, 18])
                 self.assertEqual(owners[226], [17, 18, 21])
                 self.assertEqual(owners[227], [17, 18])
                 for example in [62, 63, 64, 67, 68, 71, 72, 73, 74, 75, 77, 78]:
@@ -183,8 +183,12 @@ class ExecutableBoundary(unittest.TestCase):
                 for example in [65, 76]:
                     self.assertEqual(owners[example], [17, 18, 19])
                 self.assertEqual(owners[66], [17, 18, 19, 24, 25])
-                self.assertEqual(owners[69], [10])
                 self.assertEqual(owners[70], [17, 18, 21])
+                for example in [108, 109]:
+                    self.assertEqual(owners[example], [14, 15, 16, 17, 18])
+                self.assertEqual(owners[113], [17, 18, 21])
+                for example in [114, 115]:
+                    self.assertEqual(owners[example], [17, 18])
                 self.assertEqual(report["outcomes"][206]["status"], "pending")
         complete = runner.run_cases(self.cases, self.cases[206:207], ledger, self.adapter, None, True)
         self.assertFalse(complete["gate_passed"])

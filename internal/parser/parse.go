@@ -77,8 +77,8 @@ type ParseResult struct {
 }
 
 // Parse implements the core CommonMark foundation, with extensions/frontmatter
-// recognition disabled. Documents of blanks, thematic breaks and empty ATX
-// headings are fully parsed. Eligible paragraphs promote to Setext headings with
+// recognition disabled. Documents of blanks, indented code, thematic breaks
+// and empty ATX headings are fully parsed. Eligible paragraphs promote to Setext headings with
 // distinct raw content and underline ranges. Other input retains staged blocks
 // and whole-document uncertainty; inline text, reference definitions and other
 // block providers remain pending.

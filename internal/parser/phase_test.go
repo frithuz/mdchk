@@ -20,6 +20,47 @@ func TestInlinePhaseRequiresFinishedReferenceHandoff(t *testing.T) {
 	}
 }
 
+// Deterministic operation-budget stand-in: cancel at a selected checkpoint,
+// without racing a goroutine against the parser or depending on wall-clock time.
+type checkpointContext struct {
+	context.Context
+	remaining int
+}
+
+func (c *checkpointContext) Err() error {
+	c.remaining--
+	if c.remaining <= 0 {
+		return context.Canceled
+	}
+	return nil
+}
+
+func TestIndentedInterruptionDiscardsOpenCodeAndBlanks(t *testing.T) {
+	source := NewSource([]byte("    first\n***\n    second\n    third\n\n    fourth\n"))
+	for _, checkpoint := range []int{5, 6, 7} {
+		r := Parse(context.Background(), source)
+		ctx := &checkpointContext{Context: context.Background(), remaining: checkpoint}
+		state, err := parseBlockLifecycle(ctx, r.Document, nil)
+		children := r.Document.Root().Children()
+		if err != nil || state != Interrupted || r.Document.inlineFree || r.Document.References().LookupAvailability != Unavailable {
+			t.Fatal("interrupted code handed off complete work", state, err)
+		}
+		if len(children) != 2 || children[0].Kind() != CodeBlock || children[0].Span().Start() != 0 || children[0].Span().End() != 10 || children[0].Properties().Literal != Some("first\n") || children[1].Kind() != ThematicBreak {
+			t.Fatal("lost closed prefix or published interrupted code/blanks")
+		}
+	}
+	// A constructed code tree and supplied references still cannot manufacture
+	// the private proof of recognition used by the inline-free handoff.
+	r := Parse(context.Background(), NewSource([]byte("    code\n")))
+	document, err := NewDocument(r.Document.Root(), r.Document.References())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if parseInlines(context.Background(), document, PhaseComplete) != Pending {
+		t.Fatal("constructed CodeBlock tree claimed recognition")
+	}
+}
+
 func TestInlineStubRefusesNonemptyInlineHandoff(t *testing.T) {
 	for _, input := range []string{"hello\n", "# heading\n", "***\nhello\n", "***\n# heading\n", "heading\n=\n"} {
 		r := Parse(context.Background(), NewSource([]byte(input)))
