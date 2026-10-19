@@ -115,7 +115,7 @@ class ExecutableBoundary(unittest.TestCase):
                 (b"***\n", 0, "rendered", b"<hr />\n"),
                 (b"hello\n", 2, "pending", b""),
                 (b"Foo\n***\nbar\n", 2, "pending", b""),
-                (b"[foo]: /url\n", 2, "pending", b""),
+                (b"[foo]: /url\n", 0, "rendered", b""),
                 (b"\xff", 1, "error", b"")]:
             with self.subTest(content=content):
                 plain = subprocess.run([str(self.adapter)], input=content, capture_output=True)
@@ -138,9 +138,9 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 86, "fail": 0, "error": 0, "pending": 566})
+                self.assertEqual(report["counts"], {"pass": 87, "fail": 0, "error": 0, "pending": 565})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
-                supported = {1, 2, 3, 6, 7, 284, 236, 239, 240, 8, 11, 18, 19, 36, 43, 47, 48, 50, 51, 52, 53, 54,
+                supported = {207, 1, 2, 3, 6, 7, 284, 236, 239, 240, 8, 11, 18, 19, 36, 43, 47, 48, 50, 51, 52, 53, 54,
                              69, 79, 85, 98, 100, 107, 110, 111, 112, 116, 117,
                              118, 119, 120, 122, 123, 124, 125, 126, 127, 129,
                              130, 131, 132, 133, 134, 135, 136, 137, 139, 142,
@@ -159,71 +159,71 @@ class ExecutableBoundary(unittest.TestCase):
                         self.assertEqual(outcome["reason"], "syntax-unimplemented")
                         self.assertEqual(outcome["owners"], owners[outcome["example"]])
                 html_owners = {
-                    (17, 18): [149, 169, 170, 172, 174, 175, 179, 180, 182, 185],
-                    (17, 18, 24, 25): [152, 155, 167, 176, 177, 188],
-                    (17, 18, 21, 23, 24, 25): [148],
-                    (17, 18, 23, 24, 25): [168],
-                    (17, 18, 21, 23): [187],
+                    (18,): [149, 169, 170, 172, 174, 175, 179, 180, 182, 185],
+                    (18, 24, 25): [152, 155, 167, 176, 177, 188],
+                    (18, 21, 23, 24, 25): [148],
+                    (18, 23, 24, 25): [168],
+                    (18, 21, 23): [187],
                 }
                 for required, examples in html_owners.items():
                     for example in examples:
                         self.assertEqual(owners[example], list(required))
-                self.assertEqual(owners[49], [17, 18, 21])
-                self.assertEqual(owners[58], [17, 18])
-                self.assertEqual(owners[59], [17, 18])
+                self.assertEqual(owners[49], [18, 21])
+                self.assertEqual(owners[58], [18])
+                self.assertEqual(owners[59], [18])
                 setext_owners = {
-                    (17, 18): [83, 84, 86, 89, 90, 92, 94, 96, 97, 99, 101, 103],
-                    (17, 18, 24, 25): [80],
-                    (17, 18, 21, 24, 25): [81, 82],
-                    (17, 18, 21): [87, 88, 93, 95, 104, 105],
-                    (17, 18, 20, 23): [91],
-                    (17, 18, 19): [102],
-                    (17, 18, 19, 21): [106],
+                    (18,): [83, 84, 86, 89, 90, 92, 94, 96, 97, 99, 101, 103],
+                    (18, 24, 25): [80],
+                    (18, 21, 24, 25): [81, 82],
+                    (18, 21): [87, 88, 93, 95, 104, 105],
+                    (18, 20, 23): [91],
+                    (18, 19): [102],
+                    (18, 19, 21): [106],
                 }
                 for required, examples in setext_owners.items():
                     for example in examples:
                         self.assertEqual(owners[example], list(required))
                 for example in [57, 60, 61]:
-                    self.assertEqual(owners[example], [17, 18])
-                self.assertEqual(owners[219], [17, 18])
-                self.assertEqual(owners[220], [17, 18, 21])
-                self.assertEqual(owners[225], [17, 18])
-                self.assertEqual(owners[226], [17, 18, 21])
-                self.assertEqual(owners[227], [17, 18])
+                    self.assertEqual(owners[example], [18])
+                self.assertEqual(owners[219], [18])
+                self.assertEqual(owners[220], [18, 21])
+                self.assertEqual(owners[225], [18])
+                self.assertEqual(owners[226], [18, 21])
+                self.assertEqual(owners[227], [18])
                 for example in [62, 63, 64, 67, 68, 71, 72, 73, 74, 75, 77, 78]:
-                    self.assertEqual(owners[example], [17, 18])
+                    self.assertEqual(owners[example], [18])
                 for example in [65, 76]:
-                    self.assertEqual(owners[example], [17, 18, 19])
-                self.assertEqual(owners[66], [17, 18, 19, 24, 25])
-                self.assertEqual(owners[70], [17, 18, 21])
+                    self.assertEqual(owners[example], [18, 19])
+                self.assertEqual(owners[66], [18, 19, 24, 25])
+                self.assertEqual(owners[70], [18, 21])
                 for example in [108, 109]:
-                    self.assertEqual(owners[example], [17, 18])
-                self.assertEqual(owners[113], [17, 18, 21])
+                    self.assertEqual(owners[example], [18])
+                self.assertEqual(owners[113], [18, 21])
                 for example in [114, 115]:
-                    self.assertEqual(owners[example], [17, 18])
-                self.assertEqual(owners[121], [17, 18, 20])
-                self.assertEqual(owners[128], [17, 18])
+                    self.assertEqual(owners[example], [18])
+                self.assertEqual(owners[121], [18, 20])
+                self.assertEqual(owners[128], [18])
                 for example in [138, 145]:
-                    self.assertEqual(owners[example], [17, 18, 20, 21])
+                    self.assertEqual(owners[example], [18, 20, 21])
                 for example in [140, 141]:
-                    self.assertEqual(owners[example], [17, 18])
+                    self.assertEqual(owners[example], [18])
                 quote_owners = {
-                    (17, 18, 21): [228, 229, 230, 232, 233, 238, 243, 247, 250, 251],
-                    (17, 18): [234, 235, 237, 241, 242, 244, 245, 246, 248, 249, 252],
-                    (17, 18, 27): [214, 218],
+                    (18, 21): [228, 229, 230, 232, 233, 238, 243, 247, 250, 251],
+                    (18,): [234, 235, 237, 241, 242, 244, 245, 246, 248, 249, 252],
+                    (18, 27): [214, 218],
                 }
                 for required, examples in quote_owners.items():
                     for example in examples:
                         self.assertEqual(owners[example], list(required))
                 # Marker recognition, item ownership and grouping are delivered.
-                # Text/reference/break providers remain explicit; only complete
-                # original cases 7 and 284 join the supported HTML baseline.
+                # Text/break providers remain explicit. Definitions now finish
+                # block work; case 207 adds one actual HTML pass.
                 list_owners = {
-                    (17, 18): [255, 256, 257, 258, 259, 260, 261, 262, 263,
+                    (18,): [255, 256, 257, 258, 259, 260, 261, 262, 263,
                                264, 265, 266, 267, 268, 269, 270, 271, 272,
                                273, 274, 275, 276, 277, 278, 279, 280, 281,
                                282, 283, 294, 295, 296, 297, 298, 299, 300],
-                    (17, 18, 21): [253, 254, 285, 286, 287, 288, 290, 291, 292, 293],
+                    (18, 21): [253, 254, 285, 286, 287, 288, 290, 291, 292, 293],
                 }
                 seen = set()
                 for required, examples in list_owners.items():
@@ -234,12 +234,24 @@ class ExecutableBoundary(unittest.TestCase):
                 self.assertEqual(seen | {284, 289}, set(range(253, 301)))
                 self.assertEqual(report["outcomes"][288]["status"], "pass")
                 for example in range(301, 327):
-                    self.assertEqual(owners[example], [17, 18, 21] if example in [304, 312] else [17, 18])
+                    self.assertEqual(owners[example], [18, 21] if example in [304, 312] else [18])
                 self.assertEqual(report["outcomes"][6]["status"], "pass")
                 self.assertEqual(report["outcomes"][283]["status"], "pass")
-                self.assertEqual(report["outcomes"][206]["status"], "pending")
+                self.assertEqual(report["outcomes"][206]["status"], "pass")
+                definition_owners = {
+                    (18, 27): [192, 193, 195, 196, 198, 199, 200, 203, 204, 205, 206, 209, 211, 212, 214, 215, 218],
+                    (18, 19, 27): [194, 202],
+                    (18, 21, 27): [197, 213, 216, 217],
+                    (18, 23, 27): [201],
+                    (18,): [208, 210],
+                }
+                self.assertFalse(any(17 in providers for providers in owners.values()))
+                for required, examples in definition_owners.items():
+                    for example in examples:
+                        self.assertEqual(owners[example], list(required))
         complete = runner.run_cases(self.cases, self.cases[206:207], ledger, self.adapter, None, True)
-        self.assertFalse(complete["gate_passed"])
+        self.assertTrue(complete["gate_passed"])
+        self.assertFalse(complete["full_conformance"])
 
     def test_normalization_discriminator_and_diff_context(self):
         expected, actual = "<p>a  b</p>\n", "<p>a b</p>\n"
@@ -254,16 +266,25 @@ class ExecutableBoundary(unittest.TestCase):
         self.assertIn("diff", report["outcomes"][0])
 
     def test_pinned_upstream_helper_reports_unsupported_as_error(self):
-        case = self.cases[206]
-        self.assertEqual((case["example"], case["html"]), (207, ""))
+        case = self.cases[207]
+        self.assertEqual(case["example"], 208)
+        for mode in [[], ["--no-normalize"]]:
+            result = subprocess.run([sys.executable, "-E", "-s", "-B",
+                                     str(runner.corpus.CORPUS / "upstream/test/spec_tests.py"),
+                                     "--spec", str(runner.corpus.CORPUS / "upstream/spec.txt"),
+                                     "--program", str(self.adapter), "--number", "208", *mode], capture_output=True)
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(b"0 passed, 0 failed, 1 errored, 651 skipped", result.stdout)
+            self.assertIn(b'"status":"pending"', result.stdout)
+
+    def test_pinned_upstream_helper_recognized_definition_only(self):
         for mode in [[], ["--no-normalize"]]:
             result = subprocess.run([sys.executable, "-E", "-s", "-B",
                                      str(runner.corpus.CORPUS / "upstream/test/spec_tests.py"),
                                      "--spec", str(runner.corpus.CORPUS / "upstream/spec.txt"),
                                      "--program", str(self.adapter), "--number", "207", *mode], capture_output=True)
-            self.assertEqual(result.returncode, 1)
-            self.assertIn(b"0 passed, 0 failed, 1 errored, 651 skipped", result.stdout)
-            self.assertIn(b'"status":"pending"', result.stdout)
+            self.assertEqual(result.returncode, 0)
+            self.assertIn(b"1 passed, 0 failed, 0 errored, 651 skipped", result.stdout)
 
     def test_pinned_upstream_helper_complete_empty_transport_and_execution_failure(self):
         # A separate synthetic spec drives the real retained helper's pass path.
@@ -330,9 +351,10 @@ class ExecutableBoundary(unittest.TestCase):
         result = subprocess.run(command, cwd=self.temp.name, capture_output=True, check=True)
         report = json.loads(result.stdout)
         self.assertEqual((report["selected_count"], report["filtered_out_count"]), (1, 651))
-        self.assertEqual(report["counts"]["pending"], 1)
+        self.assertEqual(report["counts"]["pass"], 1)
+        self.assertEqual(report["counts"]["pending"], 0)
         final = subprocess.run([*command, "--require-complete"], capture_output=True)
-        self.assertEqual(final.returncode, 1)
+        self.assertEqual(final.returncode, 0)
         for extra in [["--section", "["], ["--section", "absent"]]:
             result = subprocess.run([*command, *extra], capture_output=True)
             self.assertEqual(result.returncode, 2)

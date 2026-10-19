@@ -21,7 +21,7 @@ func ExampleParse() {
 	// paragraphs: 0
 	// complete available available
 	// paragraphs: 0
-	// incomplete partial unavailable
+	// incomplete partial available
 	// paragraphs: 1
 	// 0 6 syntax-unimplemented
 }

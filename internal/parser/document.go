@@ -20,7 +20,7 @@ func validAvailability(a Availability) bool {
 
 // ReferenceSpec retains a definition independently of its use or effective lookup.
 // Raw spelling is selected by Value segments; normalized labels are supplied by
-// later reference providers, not computed by this foundation.
+// Parse's reference provider (or a constructed-model caller).
 type ReferenceSpec struct {
 	Envelope        Span
 	Markers         []Marker

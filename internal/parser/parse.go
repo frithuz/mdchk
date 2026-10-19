@@ -86,17 +86,23 @@ type ParseResult struct {
 // Eligible paragraphs promote to Setext headings with distinct raw content and
 // underline ranges. Fenced payload is literal; info requiring escape/entity
 // decoding stays partial. Other input retains staged blocks and whole-document
-// uncertainty; inline text, references and other block providers remain pending.
+// uncertainty. Leading definitions are collected in source order before inline
+// work, with raw-label Unicode folding and first-definition lookup. Ordinary
+// text-bearing blocks finish with pending inlines; missing destination/title or
+// fence-info decoding keeps Blocks pending with the raw registry available.
+// Definition-only input with known semantics completes vacuous inline work.
 // ListItems retain marker/prefix facts and ordered nested block children, with
 // tab-aware continuation, blank boundaries, sibling ownership and closure. They
 // acquire List parents, initial ordered starts and independently derived Tight
 // facts. Lists of empty items/inline-free blocks can complete; text and unresolved
-// reference definitions retain their staged partial outcomes and boundaries.
+// inline interpretation retains its staged partial outcome. Non-rendered
+// definitions preserve private list boundaries without becoming child nodes.
 //
 // The strict UTF-8 gate precedes Markdown work and retains malformed bytes without
 // substitution. Its failure takes precedence over context interruption. Callers
 // must pass a non-nil context. Cancellation is checked at phase boundaries and
-// before block lines; full work metering/checkpoints belong to #31. Phases must
+// before block lines and during reference recognition; full work metering and
+// index/UTF-8 checkpoints belong to #31. Phases must
 // later share the caller's operation budget across phases and candidate reparses.
 func Parse(ctx context.Context, source Source) ParseResult {
 	r := ParseResult{

@@ -2,6 +2,7 @@ package parser
 
 import (
 	"context"
+	"sort"
 	"strings"
 )
 
@@ -13,6 +14,7 @@ type blockLine struct {
 	indent       int
 	first        byte
 	cursor       Indentation // after container prefixes, before leaf indentation
+	lazy         bool        // at least one enclosing container prefix was absent
 }
 
 // A start hook runs before paragraph continuation. true defers interpretation;
@@ -21,32 +23,40 @@ type blockLine struct {
 type blockStartHook func(blockLine, bool) bool
 
 type openBlock struct {
-	kind     Kind
-	start    int
-	last     blockLine
-	content  []Segment
-	end      int
-	markers  []Marker
-	children []parsedBlock
-	list     *ListProperties
-	empty    bool // an item whose opening line was blank and has no later content
-	partial  bool // an unavailable suffix prevents final list interpretation
+	kind        Kind
+	start       int
+	last        blockLine
+	content     []Segment
+	end         int
+	markers     []Marker
+	children    []parsedBlock
+	list        *ListProperties
+	empty       bool // an item whose opening line was blank and has no later content
+	partial     bool // an unavailable suffix prevents final list interpretation
+	reference   *referenceParagraph
+	definitions []Span // non-rendered direct definition boundaries (item-only)
 }
 
 // Accumulation belongs exclusively to this parse. Freeze nodes once on closure;
 // no mutable builder storage crosses the immutable model boundary.
 type blockParser struct {
-	index  LineIndex
-	stack  []openBlock
-	closed []parsedBlock
-	code   *indentedCode
-	fence  *fencedCode
-	html   *htmlBlock
-	hooks  []blockStartHook
+	index                     LineIndex
+	stack                     []openBlock
+	closed                    []parsedBlock
+	code                      *indentedCode
+	fence                     *fencedCode
+	html                      *htmlBlock
+	hooks                     []blockStartHook
+	ctx                       context.Context
+	definitions               []*ReferenceDefinition
+	inlinePayload             bool
+	referenceSemanticsPending bool
+	referenceInterrupted      bool
+	deferred                  bool
 }
 
 func parseBlocks(ctx context.Context, document *Document) (PhaseState, error) {
-	return parseBlockLifecycle(ctx, document, []blockStartHook{pendingBlockStart})
+	return parseBlockLifecycle(ctx, document, nil)
 }
 
 func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockStartHook) (PhaseState, error) {
@@ -55,7 +65,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 	if interruption(ctx) != "" {
 		return Interrupted, nil
 	}
-	p := blockParser{index: NewLineIndex(document.Source()), stack: []openBlock{{kind: DocumentKind}}, hooks: hooks}
+	p := blockParser{index: NewLineIndex(document.Source()), stack: []openBlock{{kind: DocumentKind}}, hooks: hooks, ctx: ctx}
 	state := PhaseComplete
 	for _, physical := range p.index.lines {
 		if interruption(ctx) != "" {
@@ -77,10 +87,11 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		if matched < p.containerDepth() {
 			// Unmatched containers may still own paragraph continuation text. In
 			// particular an unmarked equals underline cannot promote a lazy paragraph.
-			if p.paragraphOpen() && line.contentStart != line.end && !p.siblingItem(matched, line) && !p.interruptsParagraph(line) {
+			if p.paragraphOpen() && line.contentStart != line.end && !p.siblingItem(matched, line) && !p.interruptsParagraph(line) && p.paragraphAllowsLazy(physical) {
 				for i := 1; i < p.containerDepth(); i++ {
 					p.stack[i].end = physical.next
 				}
+				line.lazy = true
 				p.appendParagraph(line)
 				continue
 			}
@@ -187,11 +198,15 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		if err != nil {
 			return Pending, err
 		}
+		if p.referenceInterrupted {
+			state = Interrupted
+			break
+		}
 		// Promote marked, eligible paragraphs before thematic/list dispatch.
 		if setext != nil {
 			p.stack = p.stack[:depth]
 			p.attach(setext)
-			state = Pending
+			p.inlinePayload = true
 			continue
 		}
 		markers := p.thematicMarkers(line)
@@ -216,7 +231,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 			p.attach(heading)
 			if len(heading.spec.Content) != 0 {
-				state = Pending
+				p.inlinePayload = true
 			}
 			continue
 		}
@@ -234,7 +249,6 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			// Completed siblings are grouped once when their parent closes.
 			goto dispatch
 		}
-		state = Pending
 		deferred := false
 		for _, hook := range p.hooks {
 			if hook(line, p.paragraphOpen()) {
@@ -243,6 +257,8 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 		}
 		if deferred {
+			p.deferred = true
+			state = Pending
 			// Do not invent the shape of an unavailable reference suffix. Keep
 			// established quote prefixes/closed children, but discard an open paragraph.
 			p.stack = p.stack[:depth]
@@ -253,7 +269,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		}
 		p.appendParagraph(line)
 	}
-	if interruption(ctx) != "" {
+	if interruption(ctx) != "" || p.referenceInterrupted {
 		state = Interrupted
 	}
 	if state == Interrupted {
@@ -268,6 +284,12 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 	if err := p.closeTo(1); err != nil {
 		return Pending, err
 	}
+	if p.referenceInterrupted {
+		state = Interrupted
+	}
+	if state != Interrupted && p.referenceSemanticsPending {
+		state = Pending
+	}
 	children, err := p.groupLists(p.closed)
 	if err != nil {
 		return Pending, err
@@ -277,10 +299,19 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		return Pending, err
 	}
 	document.root = root
-	if state == PhaseComplete {
-		// Recognition proves that every container/leaf is established inline-free.
-		document.references = ReferenceCollection{Availability: Available, LookupAvailability: Available}
-		document.inlineFree = true
+	if state != Interrupted && !p.deferred {
+		sort.SliceStable(p.definitions, func(i, j int) bool {
+			return p.definitions[i].spec.Envelope.Start() < p.definitions[j].spec.Envelope.Start()
+		})
+		lookup := make(map[string]int)
+		for i, definition := range p.definitions {
+			label := definition.spec.NormalizedLabel.Value
+			if _, exists := lookup[label]; !exists {
+				lookup[label] = i
+			}
+		}
+		document.references = ReferenceCollection{Availability: Available, LookupAvailability: Available, Definitions: p.definitions, Lookup: lookup}
+		document.inlineFree = state == PhaseComplete && !p.inlinePayload
 	}
 	return state, nil
 }
@@ -334,22 +365,18 @@ func (p *blockParser) atxHeading(line blockLine) (*Node, error) {
 // paragraph. Its delayed last line contributes content without its ending;
 // the envelope, unlike content and marker, retains both physical line endings.
 func (p *blockParser) setextHeading(line blockLine) (*Node, error) {
-	if !p.paragraphOpen() || line.indent >= 4 || line.first != '=' && line.first != '-' {
+	if !p.paragraphOpen() {
 		return nil, nil
 	}
-	text := p.index.source.content
-	end := line.contentStart
-	for end < line.end && text[end] == line.first {
-		end++
+	end, level := p.setextUnderline(line)
+	if level == 0 {
+		return nil, nil
 	}
-	for i := end; i < line.end; i++ {
-		if text[i] != ' ' && text[i] != '\t' {
-			return nil, nil
-		}
+	if err := p.stripReferences(); err != nil {
+		return nil, err
 	}
-	level := 1
-	if line.first == '-' {
-		level = 2
+	if !p.paragraphOpen() || p.referenceInterrupted {
+		return nil, nil
 	}
 	paragraph := p.stack[len(p.stack)-1]
 	return NewNode(NodeSpec{
@@ -358,6 +385,29 @@ func (p *blockParser) setextHeading(line blockLine) (*Node, error) {
 		Markers:    []Marker{{Role: "underline", Source: p.index.span(line.contentStart, end)}},
 		Properties: Properties{Heading: &HeadingProperties{Level: level, Style: "setext"}},
 	})
+}
+
+// Classification is shared with read-only reference lookahead. Unlike heading
+// promotion, it does not extract definitions or mutate the open paragraph.
+func (p *blockParser) setextUnderline(line blockLine) (end, level int) {
+	if line.indent >= 4 || line.first != '=' && line.first != '-' {
+		return 0, 0
+	}
+	text := p.index.source.content
+	end = line.contentStart
+	for end < line.end && text[end] == line.first {
+		end++
+	}
+	for i := end; i < line.end; i++ {
+		if text[i] != ' ' && text[i] != '\t' {
+			return 0, 0
+		}
+	}
+	level = 1
+	if line.first == '-' {
+		level = 2
+	}
+	return end, level
 }
 
 // thematicMarkers validates one whole physical line before allocating metadata.
@@ -426,23 +476,20 @@ func (p *blockParser) logicalLine(physical physicalLine, cursor Indentation) blo
 	return line
 }
 
-func pendingBlockStart(line blockLine, paragraphOpen bool) bool {
-	if line.indent >= 4 {
-		// Indented code cannot interrupt an existing paragraph.
-		return !paragraphOpen
-	}
-	// Lists, fences and HTML have their own grammar-aware classifiers. Invalid
-	// candidates are ordinary paragraph content, still awaiting inlines. Reference
-	// definitions retain their conservative boundary until #17.
-	return line.first == '['
-}
-
 func (p *blockParser) appendParagraph(line blockLine) {
 	if !p.paragraphOpen() {
-		p.stack = append(p.stack, openBlock{kind: Paragraph, start: line.start, last: line})
+		block := openBlock{kind: Paragraph, start: line.start, last: line}
+		if line.first == '[' {
+			block.reference = &referenceParagraph{}
+			block.reference.append(p.index.source, line)
+		}
+		p.stack = append(p.stack, block)
 		return
 	}
 	paragraph := &p.stack[len(p.stack)-1]
+	if paragraph.reference != nil {
+		paragraph.reference.append(p.index.source, line)
+	}
 	// Keep interior trailing spaces and the complete original ending. Delay the
 	// final line's contribution so closure can trim only paragraph-final bytes.
 	paragraph.content = append(paragraph.content, p.index.semanticText(paragraph.last.contentStart, paragraph.last.next).Segments...)
@@ -451,6 +498,18 @@ func (p *blockParser) appendParagraph(line blockLine) {
 
 func (p *blockParser) closeTo(depth int) error {
 	for len(p.stack) > depth {
+		if p.paragraphOpen() {
+			if err := p.stripReferences(); err != nil {
+				return err
+			}
+			if p.referenceInterrupted {
+				p.stack = p.stack[:1]
+				return nil
+			}
+			if len(p.stack) <= depth {
+				break
+			}
+		}
 		block := p.stack[len(p.stack)-1]
 		children, err := p.groupLists(block.children)
 		if err != nil {
@@ -461,6 +520,7 @@ func (p *blockParser) closeTo(depth int) error {
 			spec.Properties.List = block.list
 		}
 		if block.kind == Paragraph {
+			p.inlinePayload = true
 			spec.Envelope = p.index.span(block.start, block.last.next)
 			spec.Content = p.paragraphContent(block)
 		}

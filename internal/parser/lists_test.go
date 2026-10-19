@@ -472,7 +472,7 @@ func TestListMarkerBytesEndingsAndUnavailableSuffix(t *testing.T) {
 		bytes := []byte(input)
 		source := parser.NewSource(bytes)
 		r := parser.Parse(context.Background(), source)
-		if r.Status != parser.Incomplete || r.Failure != nil || r.Document.References().LookupAvailability != parser.Unavailable {
+		if r.Status != parser.Incomplete || r.Failure != nil || r.Document.References().LookupAvailability != parser.Available {
 			t.Fatal(r)
 		}
 		n := ungroupedChildren(r.Document.Root())[0]

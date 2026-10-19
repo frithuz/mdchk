@@ -32,7 +32,7 @@ func checkThematicBlocks(t *testing.T, input string, complete bool, want []block
 		if r.Status != parser.Complete || r.AST != parser.Available || len(r.Uncertainty) != 0 || r.Phases != (parser.PhaseProgress{Blocks: parser.PhaseComplete, Inlines: parser.PhaseComplete}) || refs.Availability != parser.Available || refs.LookupAvailability != parser.Available {
 			t.Fatalf("thematic-only input did not complete: %+v", r)
 		}
-	} else if r.Status != parser.Incomplete || r.AST != parser.Partial || len(r.Uncertainty) != 1 || r.Uncertainty[0].Reason != parser.SyntaxUnimplemented || r.Uncertainty[0].Region.Start() != 0 || r.Uncertainty[0].Region.End() != source.Len() || r.Phases != (parser.PhaseProgress{Blocks: parser.Pending, Inlines: parser.NotStarted}) || refs.Availability != parser.Unavailable || refs.LookupAvailability != parser.Unavailable {
+	} else if r.Status != parser.Incomplete || r.AST != parser.Partial || len(r.Uncertainty) != 1 || r.Uncertainty[0].Reason != parser.SyntaxUnimplemented || r.Uncertainty[0].Region.Start() != 0 || r.Uncertainty[0].Region.End() != source.Len() || r.Phases != (parser.PhaseProgress{Blocks: parser.PhaseComplete, Inlines: parser.Pending}) || refs.Availability != parser.Available || refs.LookupAvailability != parser.Available {
 		t.Fatalf("mixed/unknown source gained false completeness: %+v", r)
 	}
 	if len(refs.Definitions) != 0 || len(refs.Lookup) != 0 {

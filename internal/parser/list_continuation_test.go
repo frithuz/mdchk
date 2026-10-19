@@ -218,7 +218,7 @@ func TestListContinuationBoundaries(t *testing.T) {
 		{"- first\n  continued\n", []listTreeWant{itemTree(0, 20, paragraphTree(2, 20, "first\ncontinued", byteRange{2, 8}, byteRange{10, 19}))}},
 		{"- first\n- sibling\n", []listTreeWant{itemTree(0, 8, paragraphTree(2, 8, "first", byteRange{2, 7})), itemTree(8, 18, paragraphTree(10, 18, "sibling", byteRange{10, 17}))}},
 		{"- first\n\n# later\n", []listTreeWant{itemTree(0, 9, paragraphTree(2, 8, "first", byteRange{2, 7})), headingTree(9, 17, "later", byteRange{11, 16})}},
-		{"- first\n  [x]: /url\n", []listTreeWant{itemTree(0, 20)}},
+		{"- first\n  [x]: /url\n", []listTreeWant{itemTree(0, 20, paragraphTree(2, 20, "first\n[x]: /url", byteRange{2, 8}, byteRange{10, 19}))}},
 		{"- foo\n2. bar\n", []listTreeWant{itemTree(0, 13, paragraphTree(2, 13, "foo\n2. bar", byteRange{2, 6}, byteRange{6, 12}))}},
 		{"1. foo\n2. bar\n", []listTreeWant{itemTree(0, 7, paragraphTree(3, 7, "foo", byteRange{3, 6})), itemTree(7, 14, paragraphTree(10, 14, "bar", byteRange{10, 13}))}},
 		{"- foo\n+\n", []listTreeWant{itemTree(0, 8, paragraphTree(2, 8, "foo\n+", byteRange{2, 6}, byteRange{6, 7}))}},

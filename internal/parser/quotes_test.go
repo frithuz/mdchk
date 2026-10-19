@@ -205,9 +205,9 @@ func TestQuoteSetextAndProvenance(t *testing.T) {
 	if _, err := foreign.Text(span); !errors.Is(err, parser.ErrRange) {
 		t.Fatal("foreign snapshot accepted quote span")
 	}
-	for _, input := range []string{"> text\n", "> # title\n", "> ``` &amp;\n", "> [ref]: /url\n"} {
+	for _, input := range []string{"> text\n", "> # title\n", "> ``` &amp;\n"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-		if r.Status != parser.Incomplete || r.Document.References().LookupAvailability != parser.Unavailable || conformance.Evaluate(r).Status != "pending" {
+		if r.Status != parser.Incomplete || r.Document.References().LookupAvailability != parser.Available || conformance.Evaluate(r).Status != "pending" {
 			t.Fatal("unavailable provider gained completion", r)
 		}
 	}

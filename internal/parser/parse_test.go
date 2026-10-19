@@ -74,7 +74,7 @@ func TestParseStageOutcomes(t *testing.T) {
 					t.Fatalf("supported parse is not complete: %+v", result)
 				}
 			} else {
-				if len(result.Uncertainty) != 1 || result.Uncertainty[0].Reason != tt.reason || result.Uncertainty[0].Region.Start() != 0 || result.Uncertainty[0].Region.End() != len(tt.input) || result.Phases != (parser.PhaseProgress{Blocks: parser.Pending, Inlines: parser.NotStarted}) || refs.Availability != parser.Unavailable || refs.LookupAvailability != parser.Unavailable {
+				if len(result.Uncertainty) != 1 || result.Uncertainty[0].Reason != tt.reason || result.Uncertainty[0].Region.Start() != 0 || result.Uncertainty[0].Region.End() != len(tt.input) || result.Phases != (parser.PhaseProgress{Blocks: parser.PhaseComplete, Inlines: parser.Pending}) || refs.Availability != parser.Available || refs.LookupAvailability != parser.Available {
 					t.Fatalf("unsupported input advertised reliable syntax: %+v", result)
 				}
 			}

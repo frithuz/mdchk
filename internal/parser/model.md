@@ -8,7 +8,8 @@ empty ATX headings and ASCII blanks, including empty/inline-free quotes and list
 paragraph/heading source content for later inline parsing. ListItems retain
 first-line metadata, nested block children, continuation and closure. Compatible
 siblings acquire List parents and independently derived tightness.
-Reference definitions and inline text remain pending. The model
+Leading reference definitions are recognized and normalized document-wide; inline
+text and reference-use resolution remain pending. The model
 catalog also supports constructed fixtures; it does not promise recognition of
 every listed kind.
 
@@ -28,7 +29,9 @@ to callers.
 | Nil or zero-length source | `Complete` / `Available` | Root `[0,0)`, no children, available empty reference records/lookup, both phases complete |
 | ASCII-blank source (space/tab/LF/CR only) | `Complete` / `Available` | Root `[0,N)`, no children, established empty references/lookup, both phases complete |
 | Indented/fenced code with known info semantics, HTML blocks, thematic breaks, empty ATX headings and ASCII blanks, including quotes and lists of empty items or established inline-free blocks, nested in either kind of container | `Complete` / `Available` | Root `[0,N)` with source-bound blocks, established empty references/lookup, both phases complete, no uncertainty |
-| Other valid source, including lists requiring reference or inline interpretation | `Incomplete` / `Partial` | Root `[0,N)` with staged source-bound blocks where recognized, one `SyntaxUnimplemented` uncertainty over `[0,N)`, blocks pending, inlines not started; references/lookup unavailable |
+| Fully scanned text-bearing core blocks | `Incomplete` / `Partial` | Source-bound blocks and available reference records/lookup; Blocks complete, Inlines pending; whole-document `SyntaxUnimplemented` uncertainty |
+| Definition-only input with established destination/title semantics (including inside otherwise inline-free containers) | `Complete` / `Available` | All records retained, first-definition lookup available; no definition block children; both phases complete |
+| Definition destination/title or fence info needs #19 decoding | `Incomplete` / `Partial` | Raw components and available reference records/lookup; absent affected semantics, Blocks pending, Inlines not started; whole-document uncertainty |
 | Invalid UTF-8 | `Failed` / `Unavailable` | Original Source, typed `Failure` with `InvalidUTF8` code and snapshot-bound byte location, nil Document, neither phase started |
 | Cancellation/deadline on otherwise valid source | `Incomplete` / `Partial` | Original Source and partial root with any already-closed prefix blocks, affected region with `Cancelled`/`DeadlineExceeded`, separate Interruption, nil Failure; unfinished work interrupted |
 | Other operational failure | `Failed` / `Unavailable` | Retained Source, typed stable failure code, nil Document; InternalFailure if block-model construction violates invariants |
@@ -66,18 +69,21 @@ result := parser.Parse(context.Background(), source)
 
 The private block/reference phase precedes inline processing. Inlines cannot run
 until the block phase and effective reference lookup are complete. The block pass
-establishes an empty registry and a private inline-free handoff only after every
-logical line has been recognized as blank or container prefixes and established
-inline-free leaves: indented/fenced code with known info semantics, opaque HTML,
-a thematic break or an empty ATX heading. Inline work is then
-vacuously complete. Paragraphs, nonempty headings, unknown suffixes, unestablished
-info and interrupted work never establish that handoff. Supplying
-complete phases/references or constructed break/heading children cannot bypass
-the guard; model constructors do not prove recognition.
-Both phases share the caller context. Checks occur at phase boundaries and before
-each indexed block line and before EOF finalization, not inside UTF-8/index scans or every constructor loop.
-#31 retains full work metering, cancellation checkpoints and budget enforcement;
-no speculative budget API is added here.
+publishes the complete source-ordered registry and first-selection lookup only
+following a successful whole-document scan/finalization. Ordinary paragraphs and
+nonempty headings have established block structure and pending inline work;
+Blocks is complete and Inlines pending. Missing destination/title/fence-info
+semantics leave Blocks pending and Inlines not started, while the recognized
+registry is still available. A finished definition-only/inline-free document with
+known semantics has both phases complete. Constructed nodes or supplied registry
+data cannot establish the private inline-free recognition handoff.
+
+Both phases share the caller context. Checks occur at phase boundaries, before
+indexed block lines/EOF, and during reference recognition (bounded labels and long
+components). Interrupted collection invalidates global registry availability and
+discards unfinished containers rather than finalizing them as normal EOF. Already
+closed root prefixes survive. Strict UTF-8 failure still precedes interruption.
+#31 retains full work metering, index/UTF-8 scan checkpoints and budget enforcement.
 
 ## Staged paragraph lifecycle
 
@@ -105,14 +111,35 @@ ordinary paragraph handling unless another unavailable provider applies. After
 fence, HTML, Setext, thematic and ATX dispatch, grammar-aware list classification
 precedes the remaining start hooks and paragraph continuation. Invalid list
 candidates, including ordinary punctuation/numeric text, follow the paragraph path.
-Only a possible reference definition (first nonblank byte `[`) retains a conservative
-hook below four columns. Its open
-paragraph is discarded, previously closed blocks are retained, and the remaining
-suffix stays source-only. No boundary inside that
-suffix is invented. Mixed/unsupported results retain whole-document
-uncertainty, including retained paragraphs; these nodes are progress for later
-parsing, not reliable permission for syntax-dependent rules or fixes. The
-reference provider will refine that guard.
+Reference-looking starts follow the paragraph path. Closure removes only a valid
+leading sequence of definitions; invalid candidates and ordinary remainders stay
+source-preserving paragraph content. Definitions never interrupt existing prose,
+including lazy quote/item prose. A definition-only paragraph cannot acquire lazy
+outside text. Setext promotion extracts leading definitions before deciding whether
+heading text remains; otherwise the underline is reprocessed normally. The former
+conservative reference guards in ordinary dispatch and quote interruption are gone.
+Pending inline interpretation still retains whole-document uncertainty and does
+not authorize syntax-dependent rules or corrections.
+
+Container laziness applies to paragraph text, never missing definition
+components. At the first unmatched prefix, a read-only recognition probe settles
+the leading candidate against following logical lines up to the next real block
+boundary. It neither changes container builders nor publishes records. A title
+scan retains its offset, delimiter and fallback state as lines arrive, avoiding
+repeated scans of a growing title. An invalid/unfinished candidate that remains
+ordinary prose keeps genuine paragraph laziness. A definition that would need an
+unmatched prefix instead closes the affected container before that line; matched
+outer containers are preserved. Accumulated lines also retain lazy provenance,
+and extraction independently refuses any definition spanning a lazy line.
+
+`TestReferenceComponentsRequireContainerPrefixes` checks incomplete labels,
+destinations and titles in quotes/items, fully prefixed counterparts, nested partial
+container matches, exact paragraph ownership/source and pending versus complete
+outcomes. Optional next-line-title fallback and genuine lazy prose have separate
+fixtures. Deterministic cancellation sweeps include lookahead and resumed titles.
+`TestReferenceLazyTitleWorkIsLinear` bounds context-check growth when inputs double;
+the accompanying benchmark covers 1k/2k/4k/8k closed/unfinished missing-prefix titles
+and fully prefixed controls without a machine-specific latency threshold.
 
 `TestParagraphUpstreamTargets` consumes unmodified examples 219–227 with
 independent expected grouping, byte envelopes and content segments. Examples
@@ -141,16 +168,16 @@ continuation. It closes a preceding paragraph and permits a following one withou
 blank separators. A qualifying contiguous dash underline after an open paragraph
 promotes that paragraph to Setext before thematic dispatch. Spaced dashes cannot
 be a Setext underline and may interrupt the paragraph as a break. Deeply indented
-continuation stays paragraph content. Unsupported container starts still defer
-their whole suffix rather than manufacturing nested breaks.
+continuation stays paragraph content. Container starts use their established
+grammar rather than manufacturing nested breaks.
 
 `TestThematicUpstreamTargets` checks original examples 43–61 plus newly supported
 11/98 with independent node order, envelopes and exact marker ranges. Actual
 Parse/Evaluate reproduces HTML for 11, 43, 47, 50–54 and 98. Example 58 retains
-paragraph/break/paragraph progress but remains inline/reference-pending. Example
+paragraph/break/paragraph progress but remains inline-pending. Example
 59 retains a Setext heading and following paragraph; 48 now passes as literal
 indented code, and 57/60/61 retain grouped items and outside breaks while
-reference/inline interpretation remains pending.
+inline interpretation remains pending.
 Negative cases never acquire break nodes or false completeness. Independent
 fixtures cover tabs, indentation boundaries, Unicode/NUL/extra characters,
 endings/EOF, blank-separated breaks, ownership, repeatability and interruption.
@@ -179,8 +206,8 @@ with explicit Normalized provenance only for semantic NUL replacement. No inline
 children or semantic Literal are invented.
 
 Empty content established by recognition can join supported breaks/blanks in a
-complete document; nonempty headings retain conservative pending block/reference
-and inline handoff, whole-document uncertainty and adapter-pending outcomes.
+complete document; nonempty headings retain complete block/reference work,
+pending inline work, whole-document uncertainty and adapter-pending outcomes.
 Empty children alone never prove empty content or completion. Actual
 Parse/Evaluate renders unchanged example 79, including its empty heading with a
 closer. All 18 original examples 62–79 have independent actual Parse assertions:
@@ -199,8 +226,8 @@ dispatch precedes thematic/list handling; without a paragraph, equals lines are
 ordinary text and standalone breaks keep thematic precedence. Malformed
 underlines continue paragraphs when no other provider applies; four-column
 underline-like continuation stays text. Blank lines prevent promotion across
-their boundary. Recognized items dispatch nested blocks and continuation; unresolved
-reference starts still defer, while fences and HTML have their own
+their boundary. Leading definitions are removed before promotion, and recognized
+items dispatch nested blocks and continuation. Fences and HTML have their own
 recognition and continuation before ordinary dispatch.
 
 The `underline` marker selects only the contiguous run. The envelope spans the
@@ -212,8 +239,8 @@ spaces/tabs, its ending and the underline are omitted. A final backslash remains
 raw content without a fabricated hard break. Omitted bytes remain in Source.
 Unicode/NUL provenance, snapshot ownership and LF/CRLF/CR/EOF remain unchanged.
 
-Setext cannot be empty. These headings remain Incomplete/Partial, blocks pending,
-inlines not started, references/lookup unavailable, with whole-document syntax
+Setext cannot be empty. Text-bearing headings remain Incomplete/Partial, blocks
+complete, inlines pending, references/lookup available, with whole-document syntax
 uncertainty and pending adapter output. No inline children or HTML are invented;
 empty-ATX completion does not apply. Existing complete input, strict UTF-8 and
 interruption guards remain intact.
@@ -225,11 +252,11 @@ ranges. Nineteen Setext-section cases establish structural/fallback progress;
 following breaks. Quotes 92/101 now contain paragraphs followed by outside
 thematic breaks; 93 retains lazy paragraph text without Setext promotion. Only
 list cases 94/99 retain item paragraphs followed by outside thematic breaks,
-with reference/inline #17/#18 still pending.
+with inline #18 still pending.
 Example 91 retains its initial
 heading and paragraph after invalid fence classification; its invalid multiline
 complete-tag suffix now also establishes Setext/paragraph structure. Inline
-reference/text/code-span/HTML classification remains pending (#17/#18/#20/#23).
+inline text/code-span/HTML classification remains pending (#18/#20/#23).
 Source-only deferral is not heading recognition. Focused fixtures cover single
 markers, negative/mixed/extra characters, tabs/indentation, blank separation,
 following blocks, final whitespace/backslash, Unicode/NUL, original endings,
@@ -263,8 +290,9 @@ Literal normalizes endings/NUL independently of its exact source spans. Original
 Source identity and immutable accessor ownership remain unchanged.
 
 Empty quotes and quotes containing only established inline-free leaves complete
-with known-empty references and vacuous inlines. Text, nonempty headings, unknown
-info and unavailable list/reference/inline providers remain partial. Interruption
+with available references and vacuous inlines, including definition-only quotes
+with known semantics. Text/nonempty headings retain pending inlines; unknown
+required info/definition semantics keep block work pending. Interruption
 discards unfinished nested containers rather than finalizing them as normal EOF;
 already-closed root children survive. Strict encoding failure still takes precedence.
 Full depth/node/work limits and cancellation hardening remain #31.
@@ -272,10 +300,10 @@ Full depth/node/work limits and cancellation hardening remain #31.
 `TestQuoteUpstreamTargets` asserts actual trees, child order, envelopes, markers and
 content ranges for all unchanged 228–252 independently of HTML. Cases 236/239/240
 newly pass HTML; existing literal-code case 231 remains supported. List case 235
-retains its quoted item and outside sibling, with #17/#18 pending. Other quote cases retain #17/#18, plus #21 for multiline text.
+retains its quoted item and outside sibling, with #18 pending. Other quote cases retain #18, plus #21 for multiline text.
 `TestQuotePartialTabUpstream6` independently verifies the newly supported tab/code
 case. Earlier Setext 92/93/101, fence 128 and HTML 174 now assert quote structure;
-214/218 remain pending for reference/text/resolution providers #17/#18/#27.
+214/218 remain pending for reference/text/resolution providers #18/#27.
 Boundary fixtures cover all seven HTML forms, prefix-free payload, marked Setext,
 code transitions, partial tabs, Unicode/NUL/endings/EOF, immutable ownership and
 deterministic interruption with closed-prefix retention. These are staged
@@ -318,16 +346,16 @@ HTML nodes cannot manufacture the private recognition/handoff proof.
 TestHTMLUpstreamTargets independently asserts form, node order, physical envelopes
 and content ranges for all unchanged 148–191 inputs plus cross-feature passes 21/31.
 Twenty-five HTML-section cases now pass actual Parse/Evaluate. Nineteen remain
-pending: 174 retains its quote and outside paragraph (#17/#18); 175 retains
-grouped items with an HTML child and reference/text work (#17/#18). Other mixed cases
-need reference/text (#17/#18), breaks (#21), inline HTML (#23) or emphasis
+pending: 174 retains its quote and outside paragraph (#18); 175 retains
+grouped items with an HTML child and reference/text work (#18). Other mixed cases
+need reference/text (#18), breaks (#21), inline HTML (#23) or emphasis
 (#24/#25) as recorded in foundation.json. These are coverage owners, not reverse
 blockers on this syntax stage. Separate fixtures cover grammar near misses,
 case/EOF/fixed-form boundaries, code and paragraph precedence, opaque payload,
 LF/CRLF/CR/NUL/Unicode/tab provenance, immutable accessors, encoding precedence and
 deterministic interruption, including at EOF finalization. Actual full-corpus
-normalized/strict gates record 86 pass and 566 pending, preserving all 84
-pre-grouping passes; full conformance remains false.
+normalized/strict gates now record 87 pass and 565 pending, preserving all 86
+earlier passes; full conformance remains false.
 
 ## Indented code and literal handoff
 
@@ -422,9 +450,9 @@ Full metering/checkpoint hardening remains #31.
 opening/closing/indentation spans, physical envelopes, payload and info for every
 unchanged 119–147 input plus newly passing cross-feature 19. Twenty-three fenced
 section cases pass actual Parse/Evaluate, including existing indented-code 134.
-128 retains its quote-contained fence and outside paragraph (#17/#18);
+128 retains its quote-contained fence and outside paragraph (#18);
 121 needs references/inline/code spans
-(#17/#18/#20), 138/145 additionally soft breaks (#21), and 140/141 retain actual
+(#18/#20), 138/145 additionally soft breaks (#21), and 140/141 retain actual
 fence/paragraph/heading structure with surrounding reference/inline work pending.
 Extra fixtures cover empty/unclosed/blank/EOF, malformed openers/closers, literal
 payload and test-renderer escaping, semantic-info availability, original
@@ -490,15 +518,16 @@ sibling run is frozen once, each item's marker/child evidence is scanned in orde
 and unowned gaps use binary searches in the shared line index. There is no repeated
 construction of growing Lists or per-ancestor walk of all descendant subtrees.
 
-Lists of empty items or established inline-free blocks now complete
-with empty references and vacuous inline work. Text-bearing lists stay Pending for
-reference/inline providers. Unsupported reference starts retain only established
-container prefixes and closed children, withholding an open paragraph and the unseen
-suffix. Affected Lists have unavailable Tight, not an invented tight/loose value;
-example 317 stops before its unexamined third item. Cancellation/deadline discards
-unfinished items/quotes without normal EOF finalization, retains already-closed
-prefix blocks (now wrapped in Lists where appropriate), and preserves strict UTF-8
-failure precedence.
+Lists of empty items, definition-only items with known semantics, or established
+inline-free blocks complete with available references and vacuous inline work.
+Text-bearing lists retain complete block/reference work and pending inlines.
+Non-rendered definition spans contribute direct private item boundaries, so their
+removal does not erase blank separation or invent rendered children. Example 317
+has all three items, one document-wide definition and outer Tight=false. Empty
+quotes/items and later siblings survive. Local inner/outer tightness stays
+independent. Cancellation/deadline discards unfinished items/quotes, retains
+already-closed prefixes (wrapped in Lists where appropriate), invalidates global
+registry availability and preserves strict UTF-8 failure precedence.
 
 `ListProperties` adds optional, item-only facts:
 
@@ -536,10 +565,10 @@ completion/coverage owners, not reverse prerequisites on this structural increme
 
 | Cases | Current recognition and remaining full-case work |
 | --- | --- |
-| 253, 285 | Paragraph/code/quote introduction or noninterrupting empty markers; #17/#18 reference/text and #21 breaks |
-| 261, 266, 269, 272, 275 | Ordinary nonmarkers or paragraph/code examples; #17/#18 |
-| 254, 286–288, 290–293 | Established items with multiline/code/quote children and lazy ownership; #17/#18, #21 |
-| 255–260, 262–265, 267–268, 270–271, 273–274, 276–283, 294–300 | Established item/nested/sibling/outside ownership and leaf content; #17/#18 |
+| 253, 285 | Paragraph/code/quote introduction or noninterrupting empty markers; #18 reference/text and #21 breaks |
+| 261, 266, 269, 272, 275 | Ordinary nonmarkers or paragraph/code examples; #18 |
+| 254, 286–288, 290–293 | Established items with multiline/code/quote children and lazy ownership; #18, #21 |
+| 255–260, 262–265, 267–268, 270–271, 273–274, 276–283, 294–300 | Established item/nested/sibling/outside ownership and leaf content; #18 |
 | 284 | Complete empty item in a tight List; supported HTML |
 | 289 | Existing complete indented code; unchanged HTML pass |
 
@@ -555,15 +584,16 @@ ordinary paragraph structure where the former conservative hook stopped.
 `TestListGroupingUpstreamTargets` independently asserts the complete available
 List/item/block hierarchy, exact envelopes/segments, original marker ranges and
 per-list properties for every unchanged Lists input 301–326. Text/reference work
-remains #17/#18; multiline 304/312 additionally retain #21. Cases 307/319 distinguish
+remains #18; multiline 304/312 additionally retain #21. Cases 307/319 distinguish
 loose inner lists from tight parents, 318 protects code blanks, 320/321 cover quote
 and consecutive-block context, and 324–326 distinguish direct separation and nested
 tightness. Constructed renderer tests separately check mixed inner/outer tightness
 and quoted paragraphs; they do not establish recognition. Complete actual-Parse
 source assertions and HTML checks promote Tabs 7 and empty item 284, preserving all
-84 previous passes: 86 pass, 566 pending. Boundary fixtures cover blank ownership,
-opaque trailing blanks, empty-item gaps in quotes, all endings/EOF and conservative
-nested reference suffixes. FuzzListGroupingBoundaries independently generates
+84 previous passes at that increment. Definition-only 207 now adds a pass,
+preserving all 86 earlier IDs: 87 pass, 565 pending. Boundary fixtures cover blank ownership,
+opaque trailing blanks, empty-item gaps in quotes, all endings/EOF and
+nested reference definitions. FuzzListGroupingBoundaries independently generates
 marker changes, sibling counts and blank boundaries. Full grammar/budgets/rules
 and CLI/MCP remain later work.
 
@@ -736,7 +766,37 @@ optional Title Values and optional NormalizedLabel. Keep all definitions, includ
 duplicates and unused definitions, in `Document.References().Definitions` source
 order. Markers use the label/destination/title roles above and `definition-colon`.
 These are not rendered block children. Raw spellings and semantic values remain
-separate. #17/#27 later recognize, normalize and resolve them.
+separate. Parse recognizes and normalizes definitions; #27 later resolves uses.
+
+Recognition uses a private logical paragraph view with an advancing byte cursor
+and original-line mappings; each definition is frozen once. It handles multiline
+labels/destinations/titles, escaped delimiters, balanced bare destinations, angle
+destinations, and optional quoted/parenthesized titles. A failed same-line title
+invalidates that definition; failed next-line titles retain a destination-only
+record and preserve the following prose. Only leading valid sequences are removed.
+Labels retain raw escapes/entities. Matching uses full default Unicode 17.0.0 folding
+(C + F, excluding Turkic T), trims/collapses only space/tab/CR/LF, and counts the
+999-character bound before folding in Unicode scalars, not bytes. Empty/whitespace
+labels and unescaped nested brackets are invalid. The shared private normalizer is
+ready for #27; no visible-inline decoding enters its identity. Pinned source,
+license and offline table verification live in [the Unicode provenance directory](testdata/unicode/17.0.0/README.md).
+
+Values retain component segments with source-backed NUL/newline normalization.
+Absent titles differ from present empty titles; empty angle destinations retain
+zero-width ranges. Escapes/plausible entities in destinations/titles withhold
+semantic values and use MappingUnavailable until #19. Source bytes never change.
+Definition envelopes start after container prefixes (including remaining leaf
+indentation) and end after the final consumed physical line ending or at EOF;
+component segments exclude container prefixes inside multiline records.
+
+Actual Parse assertions cover all unchanged 192–218 cases, exact definition and
+marker envelopes, duplicate/first-selection behavior, paragraph/Setext remnants,
+opaque code/HTML, container/endings/EOF/tab variants, 999/1000-character labels,
+full-fold/raw-spelling distinctions, immutable accessors and phase semantics.
+Example 207 additionally passes actual Parse/Evaluate with one definition, no block
+children, completed phases and empty HTML. Deterministic cancellation/deadline
+sweeps cover recognition, closure and EOF; a registry/source invariant fuzz target
+retains definition order, source ownership and earliest matching selections.
 
 Records Availability and effective LookupAvailability are independent: unavailable
 data never means a proved-empty registry. Lookup maps already supplied normalized
@@ -746,25 +806,25 @@ normalization. Partial lookup may contain only known first selections; unavailab
 lookup has no entries. Mutable collection copies cannot change the document.
 
 [`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly
-accounts for all 652 upstream IDs: 86 supported HTML cases and 566 pending.
+accounts for all 652 upstream IDs: 87 supported HTML cases and 565 pending.
 Supported IDs are 1–3, 6–8, 11, 18–19, 21, 31, 36, 43, 47–48, 50–54, 69, 79,
 85, 98, 100, 107, 110–112, 116–120, 122–127, 129–137, 139, 142–144, 146–147,
-150–151, 153–154, 156–166, 171, 173, 178, 181, 183–184, 186, 189–191, 231,
+150–151, 153–154, 156–166, 171, 173, 178, 181, 183–184, 186, 189–191, 207, 231,
 236, 239–240, 284 and 289.
 These are recognized inline-free documents, not implementation of every syntax feature in their named sections.
-Indented-code 108/109 retain reference/inline owners #17/#18;
-113 retains #17/#18/#21, and 114/115 retain #17/#18. Paragraph 225 now retains
-code and its following paragraph, with only #17/#18 pending. Thematic cases
-retain reference/inline (#17/#18), break (#21) and
-emphasis (#24/#25) owners where relevant. Setext targets retain #17/#18 for
-92/101 and additionally #21 for 93, #17/#18 for 94/99 and #17/#18/#20/#23
-for 91. Recognized Setext/fallback cases and 59 retain #17/#18, with #21 for multiline content, #19 for escapes
-in 102/106 and #24/#25 for emphasis in 80–82. ATX cases name #17/#18 for
+Indented-code 108/109 retain reference/inline owners #18;
+113 retains #18/#21, and 114/115 retain #18. Paragraph 225 now retains
+code and its following paragraph, with only #18 pending. Thematic cases
+retain reference/inline (#18), break (#21) and
+emphasis (#24/#25) owners where relevant. Setext targets retain #18 for
+92/101 and additionally #21 for 93, #18 for 94/99 and #18/#20/#23
+for 91. Recognized Setext/fallback cases and 59 retain #18, with #21 for multiline content, #19 for escapes
+in 102/106 and #24/#25 for emphasis in 80–82. ATX cases name #18 for
 text/reference handoff, #19 for escapes in 65/66/76, #24/#25 for emphasis in 66
-and #21 for multiline content in 70. Paragraph cases retain #17/#18 and #21
+and #21 for multiline content in 70. Paragraph cases retain #18 and #21
 where multiline/break processing is required. The fenced-code section retains
-#17/#18 for 128, #17/#18/#20 for 121, additionally #21 for 138/145, and
-#17/#18 for 140/141. Info decoding remains #19. Other examples use broad remaining
+#18 for 128, #18/#20 for 121, additionally #21 for 138/145, and
+#18 for 140/141. Info decoding remains #19. Other examples use broad remaining
 inline/core-completion scopes #18/#29. These are coverage owners, not reverse
 native prerequisites on staged syntax deliveries. The test-only #5 adapter/runner
 is available in `internal/conformance` and `tools/commonmark_conformance.py`.
@@ -788,5 +848,5 @@ use, independently of HTML status. Example 11's HTML pass comes from thematic
 recognition, not scanner helper checks. Independent coordinate/line tables,
 character fixtures and actual helper provenance tests establish scanner
 capabilities only. Current checks cannot establish syntax conformance,
-reference normalization, full resource enforcement,
+general inline/link conformance, full resource enforcement,
 fix safety or CLI/MCP parity.

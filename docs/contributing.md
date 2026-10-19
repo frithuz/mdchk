@@ -67,11 +67,13 @@ invalid openers take the paragraph path when no other provider applies.
 Valid Setext underlines promote the entire eligible paragraph before thematic
 dispatch, with separate content/underline spans and complete physical envelopes.
 Failed equals/dash underlines fall back to paragraphs where no other provider
-applies; unsupported reference starts still defer their suffix.
+applies; valid leading definitions are removed before Setext promotion.
 Promotion acquires final content once and resumes following blocks. Closed
-paragraphs and nonempty headings remain partial: references and inline
-interpretation are unavailable. See the model contract for exact envelopes, content trimming,
-interior hard-break preservation and conservative start guards.
+paragraphs and nonempty headings have complete block/reference work but pending
+inline interpretation. Reference-only input with known semantics completes;
+undecoded destination/title or fence-info semantics keep Blocks pending and
+Inlines not started, with available records/lookup. See the model contract for
+exact envelopes, trimming, hard-break preservation and phase availability.
 
 Invalid UTF-8 retains the snapshot with typed failure, an authoritative
 snapshot-bound byte location and unavailable AST. Cancellation/deadline remain
@@ -91,9 +93,9 @@ All Setext examples 80–106 and thematic 59 have independent Parse/source
 assertions. Nineteen Setext cases establish structural/fallback progress; 98
 remains a supported pair of breaks. Code cases 85/100 pass. Quotes 92/101 now
 precede outside thematic breaks; 93 remains lazy paragraph text. List cases 94/99 retain item paragraphs and outside breaks;
-reference/inline work remains pending. Example 91 retains its
+inline work remains pending. Example 91 retains its
 initial heading/paragraph plus Setext/paragraph structure in the invalid multiline
-tag suffix; reference/text/code-span/inline-HTML work remains pending.
+tag suffix; inline text/code-span/inline-HTML work remains pending.
 Those deferrals are explicitly recorded, not claimed as recognized headings.
 Indented code retains original-byte envelopes, indentation markers and content
 separately from normalized Literal; code contents bypass inline parsing. Blank
@@ -148,11 +150,12 @@ providers](../internal/parser/model.md#list-markers-continuation-and-staged-grou
 Every unchanged 253–300 input retains independent item/leaf source assertions
 through the new List wrappers. Every Lists input 301–326 additionally has explicit
 available List ancestry, tightness, start/type, exact envelopes/segments and marker
-range expectations. Unsupported reference suffixes, notably 317, stay conservative
-with unavailable Tight where final interpretation is not established. Empty items
-and lists of established inline-free blocks complete; text/reference-dependent
-cases remain pending. Tabs 7 and empty item 284 now pass actual Parse/Evaluate,
-preserving all 84 previous passes: 86 pass and 566 pending.
+range expectations. Non-rendered definition boundaries preserve item separation:
+317 retains all three items and outer Tight=false. Empty/definition-only items
+and established inline-free blocks complete; text-dependent cases retain pending
+inline interpretation with available references. Tabs 7 and empty item 284 now pass actual Parse/Evaluate,
+reaching the previous 86-pass baseline. Definition-only 207 now raises it to
+87 pass and 565 pending, preserving all 86 earlier passes.
 
 Focused fixtures cover original source facts, mixed inner/outer tightness, quotes,
 opaque internal/trailing blanks, empty-item gaps, all endings/EOF, tab provenance,
@@ -272,33 +275,34 @@ Inputs and paths are resolved from the script, so invocation by absolute script
 path also works from another directory. The checks work offline; use the local
 toolchain/module environment above to forbid automatic downloads explicitly.
 
-Every unfiltered run currently reports **86 pass, 0 fail, 0 error, 566
+Every unfiltered run currently reports **87 pass, 0 fail, 0 error, 565
 pending**. Supported IDs are 1–3, 6–8, 11, 18–19, 21, 31, 36, 43, 47–48, 50–54,
 69, 79, 85, 98, 100, 107, 110–112, 116–120, 122–127, 129–137, 139, 142–144,
 146–147, 150–151, 153–154, 156–166, 171, 173, 178, 181, 183–184, 186,
-189–191, 231, 236, 239–240, 284 and 289: actual inline-free documents with
+189–191, 207, 231, 236, 239–240, 284 and 289: actual inline-free documents with
 indented/fenced code, HTML, breaks, empty ATX headings, blanks, quotes and lists.
-Grouping adds two passes (7/284) while retaining all 84 earlier passes.
+Grouping previously added 7/284; definition-only 207 now adds a pass while
+retaining all 86 earlier IDs.
 It does not establish general inlines, extensions or full CommonMark conformance.
-Indented-code 108/109 retain #17/#18 reference/inline owners;
-113 retains #17/#18/#21, and 114/115 retain #17/#18. Paragraph 225 now retains
-its code with remaining #17/#18; other paragraph cases retain actual #17/#18/#21
+Indented-code 108/109 retain #18 reference/inline owners;
+113 retains #18/#21, and 114/115 retain #18. Paragraph 225 now retains
+its code with remaining #18; other paragraph cases retain actual #18/#21
 owners. Named thematic targets retain reference/inline/break/emphasis owners.
-ATX targets retain #17/#18 for text/reference handoff, #19 for escapes (65/66/76),
+ATX targets retain #18 for text/reference handoff, #19 for escapes (65/66/76),
 #24/#25 for emphasis (66) and #21 for multiline content (70). Setext targets
-retain #17/#18 for 92/101, additionally #21 for 93, #17/#18 for 94/99 and
-#17/#18/#20/#23 for 91.
-Recognized Setext/fallback cases and 59 retain #17/#18, plus actual multiline
+retain #18 for 92/101, additionally #21 for 93, #18 for 94/99 and
+#18/#20/#23 for 91.
+Recognized Setext/fallback cases and 59 retain #18, plus actual multiline
 (#21), escape (102/106, #19) and emphasis (80–82, #24/#25) owners. Setext cannot
-be empty; its nonempty headings remain pending. Fenced 128 retains #17/#18;
-121 retains #17/#18/#20; 138/145 additionally retain #21; 140/141 retain #17/#18
+be empty; its nonempty headings remain pending. Fenced 128 retains #18;
+121 retains #18/#20; 138/145 additionally retain #21; 140/141 retain #18
 for surrounding paragraphs/headings. Info decoding remains #19. HTML 174 retains
-#17/#18, 175 retains #17/#18, and mixed HTML cases retain their actual reference/text,
-break, inline-HTML or emphasis providers (#17/#18/#21/#23–#25). Other cases use
+#18, 175 retains #18, and mixed HTML cases retain their actual reference/text,
+break, inline-HTML or emphasis providers (#18/#21/#23–#25). Other cases use
 broad remaining inline/core-completion scopes #18/#29. Quote 235 retains
-#17/#18; other pending quote cases retain #17/#18, plus #21 for multiline text.
-Lists 301–326 retain #17/#18, with #21 additionally for multiline 304/312.
-Reference cases 214/218 retain #17/#18/#27. These coverage owners are not reverse
+#18; other pending quote cases retain #18, plus #21 for multiline text.
+Lists 301–326 retain #18, with #21 additionally for multiline 304/312.
+Reference cases 214/218 retain #18/#27. These coverage owners are not reverse
 prerequisites on this staged delivery. Pending cases are not conformance passes. Independent constructed AST
 tests verify renderer output for the core model catalog, escaping/URL
 encoding, raw segments, lists and image labels without claiming that Parse
@@ -333,7 +337,7 @@ regexes and empty selections are errors. A filtered run validates the full ledge
 first, reports its smaller scope and never writes or weakens the baseline.
 
 `foundation.json` is mdchk's separately reviewed pass/pending ledger. It
-accounts for all 652 IDs exactly once. Its supported list records the 86
+accounts for all 652 IDs exactly once. Its supported list records the 87
 passes above. A supported case becoming fail/error/pending is a regression;
 missing/duplicate IDs invalidate the ledger. A newly passing case also fails
 the gate until its ID moves from pending to `supported_html_examples` in a
@@ -355,13 +359,15 @@ python3 -B internal/parser/testdata/commonmark/0.31.2/upstream/test/spec_tests.p
 rm -r "$adapter_dir"
 ```
 
-The last comparison intentionally exits 1 and reports one **error**, because the
-unchanged upstream helper has no pending category. The adapter's default protocol
+The last comparison now exits 0: example 207 is a recognized definition-only
+document with legitimately empty HTML. The unchanged upstream helper still has no
+pending category; use `--number 208` to observe an unsupported case as an error. The adapter's default protocol
 emits HTML alone on stdout only for complete rendered input. Pending input exits 2
 with an outcome on stderr, errors exit 1, and interruptions exit 3. Upstream maps
 all nonzero exits to error, including pending; use mdchk's runner for staged
-accounting. A complete empty input succeeds with empty stdout, while example 207
-must not falsely pass against its legitimately empty expected HTML. The retained
+accounting. Complete empty and definition-only 207 inputs succeed with empty
+stdout only after affirmative complete parsing; pending text must not falsely
+pass by returning empty output. The retained
 helper splits `--program` on whitespace, so use an executable path without spaces
 for that helper. mdchk's runner uses an argument vector and accepts spaced paths.
 
@@ -372,6 +378,47 @@ The focused Go/Python tests exercise actual empty/pending/encoding outcomes,
 retained-helper success and execution-error paths, both comparison modes, case
 207, filter errors, and simulated lost/new passes. Synthetic transport fixtures
 are separate from the immutable upstream corpus.
+
+
+### Reference definitions and Unicode folding
+
+Leading definitions are collected document-wide before inline resolution, outside
+AST child traversal. All duplicate/unused records retain original components and
+markers; normalized lookup selects the earliest. Invalid candidates and ordinary
+remainders retain their paragraph/Setext/container structure. Actual Parse tests
+exercise every unchanged definition example 192–218, plus list 317 and independent
+boundary/source, full-fold, ownership and deterministic interruption fixtures.
+Only 207 becomes a new HTML pass; the remaining definition examples retain exact
+inline/link/decoding providers in `foundation.json`, not #17 or a blanket exemption.
+
+Unicode matching uses the pinned Unicode 17.0.0 full default folding table with
+standard-library-only runtime code. No host locale/Python database or runtime
+fetch influences matching. See [provenance and license](../internal/parser/testdata/unicode/17.0.0/README.md).
+Regenerate/check offline with Python 3.9+ and gofmt:
+
+```sh
+python3 -B tools/unicode_casefold.py
+python3 -B tools/unicode_casefold.py --check
+go test ./internal/parser -run 'Reference|FullCaseFold'
+```
+
+Lazy-continuation regressions also assert that incomplete definitions cannot
+consume missing quote/item prefixes, while genuine lazy prose is retained.
+Deterministic work counts and a focused benchmark cover growing multiline titles:
+
+```sh
+go test ./internal/parser -run 'ReferenceComponents|ReferenceLazy|ReferenceInterruption' -count=1
+GOMAXPROCS=1 go test ./internal/parser -run '^$' -bench '^BenchmarkReferenceContainerTitles$' -benchtime=1x -count=3
+```
+
+The closed missing-prefix fixture remains ordinary visible text; only its fully
+prefixed counterpart defines a reference. Compare unterminated and fully prefixed
+controls separately when assessing performance; no general resource-budget or
+machine-specific numeric gate is implied.
+
+The check validates pinned source bytes and regenerated Go bytes; Go tests compare
+all C/F mappings directly with the retained source, including default versus
+Turkic behavior. #31 retains comprehensive parser-budget hardening.
 
 ## Activate the commit message hook
 

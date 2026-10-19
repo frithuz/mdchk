@@ -268,7 +268,7 @@ func TestActualParseOutcomeBoundary(t *testing.T) {
 	for _, tt := range []struct {
 		input, status, reason string
 	}{
-		{"", "rendered", ""}, {"[foo]: /url\n", "pending", "syntax-unimplemented"},
+		{"", "rendered", ""}, {"[foo]: /url\n", "rendered", ""},
 		{" \t\r\n", "rendered", ""}, {"\xff", "error", "invalid-utf8"},
 		{"hello\n", "pending", "syntax-unimplemented"},
 		{"aaa     \nbbb     \n", "pending", "syntax-unimplemented"},

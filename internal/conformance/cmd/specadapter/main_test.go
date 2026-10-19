@@ -13,7 +13,8 @@ func TestProtocolBoundary(t *testing.T) {
 		input, status string
 		code          int
 	}{
-		{"", "rendered", 0}, {"[foo]: /url\n", "pending", 2}, {"\xff", "error", 1},
+		{"", "rendered", 0}, {"[foo]: /url\n", "rendered", 0},
+		{"[foo]: /url\n[foo]\n", "pending", 2}, {"\xff", "error", 1},
 	} {
 		var stdout, stderr bytes.Buffer
 		if code := run(nil, bytes.NewBufferString(tt.input), &stdout, &stderr); code != tt.code || stdout.Len() != 0 {

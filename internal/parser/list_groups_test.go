@@ -150,7 +150,7 @@ func TestListGroupingUpstreamTargets(t *testing.T) {
 		314: {u(0, 13, '-', false, i(0, 4, p(2, 4, "a", byteRange{2, 3})), i(4, 9, p(6, 8, "b", byteRange{6, 7})), i(9, 13, p(11, 13, "c", byteRange{11, 12})))},
 		315: {u(0, 11, '*', false, i(0, 4, p(2, 4, "a", byteRange{2, 3})), i(4, 6), i(7, 11, p(9, 11, "c", byteRange{9, 10})))},
 		316: {u(0, 17, '-', false, i(0, 4, p(2, 4, "a", byteRange{2, 3})), i(4, 13, p(6, 8, "b", byteRange{6, 7}), p(11, 13, "c", byteRange{11, 12})), i(13, 17, p(15, 17, "d", byteRange{15, 16})))},
-		317: {u(0, 23, '-', false, i(0, 4, p(2, 4, "a", byteRange{2, 3})), i(4, 23, p(6, 8, "b", byteRange{6, 7})))},
+		317: {u(0, 27, '-', false, i(0, 4, p(2, 4, "a", byteRange{2, 3})), i(4, 23, p(6, 8, "b", byteRange{6, 7})), i(23, 27, p(25, 27, "d", byteRange{25, 26})))},
 		318: {u(0, 26, '-', true, i(0, 4, p(2, 4, "a", byteRange{2, 3})), i(4, 22, c(6, 22, "b\n\n\n", byteRange{12, 13}, byteRange{13, 14}, byteRange{14, 15}, byteRange{15, 16})), i(22, 26, p(24, 26, "c", byteRange{24, 25})))},
 		319: {u(0, 21, '-', true, i(0, 17, p(2, 4, "a", byteRange{2, 3}), u(6, 17, '-', false, i(6, 17, p(8, 10, "b", byteRange{8, 9}), p(15, 17, "c", byteRange{15, 16})))), i(17, 21, p(19, 21, "d", byteRange{19, 20})))},
 		320: {u(0, 18, '*', true, i(0, 14, p(2, 4, "a", byteRange{2, 3}), q(6, 14, p(8, 10, "b", byteRange{8, 9}))), i(14, 18, p(16, 18, "c", byteRange{16, 17})))},
@@ -161,14 +161,12 @@ func TestListGroupingUpstreamTargets(t *testing.T) {
 		325: {u(0, 21, '*', false, i(0, 21, p(2, 6, "foo", byteRange{2, 5}), u(8, 15, '*', true, i(8, 15, p(10, 14, "bar", byteRange{10, 13}))), p(17, 21, "baz", byteRange{17, 20})))},
 		326: {u(0, 33, '-', false, i(0, 17, p(2, 4, "a", byteRange{2, 3}), u(6, 17, '-', true, i(6, 10, p(8, 10, "b", byteRange{8, 9})), i(12, 17, p(14, 16, "c", byteRange{14, 15})))), i(17, 33, p(19, 21, "d", byteRange{19, 20}), u(23, 33, '-', true, i(23, 27, p(25, 27, "e", byteRange{25, 26})), i(29, 33, p(31, 33, "f", byteRange{31, 32})))))},
 	}
-	// The definition provider is absent: the recognized prefix is retained, but
-	// the unexamined suffix cannot establish final list tightness or a third item.
-	wants[317][0].list.Tight = parser.Optional[bool]{}
+	// Non-rendered definitions still separate direct item blocks in case 317.
 	markers := map[int][]byteRange{
 		301: {{0, 1}, {6, 7}, {12, 13}}, 302: {{0, 2}, {7, 9}, {14, 16}}, 303: {{4, 5}, {10, 11}}, 304: {}, 305: {{37, 39}},
 		306: {{0, 1}, {7, 8}, {15, 16}}, 307: {{0, 1}, {8, 9}, {18, 19}}, 308: {{0, 1}, {6, 7}, {23, 24}, {29, 30}}, 309: {{0, 1}, {22, 23}},
 		310: {{0, 1}, {5, 6}, {11, 12}, {18, 19}, {24, 25}, {29, 30}, {33, 34}}, 311: {{0, 2}, {8, 10}, {17, 19}}, 312: {{0, 1}, {5, 6}, {11, 12}, {18, 19}}, 313: {{0, 2}, {8, 10}},
-		314: {{0, 1}, {4, 5}, {9, 10}}, 315: {{0, 1}, {4, 5}, {7, 8}}, 316: {{0, 1}, {4, 5}, {13, 14}}, 317: {{0, 1}, {4, 5}}, 318: {{0, 1}, {4, 5}, {22, 23}},
+		314: {{0, 1}, {4, 5}, {9, 10}}, 315: {{0, 1}, {4, 5}, {7, 8}}, 316: {{0, 1}, {4, 5}, {13, 14}}, 317: {{0, 1}, {4, 5}, {23, 24}}, 318: {{0, 1}, {4, 5}, {22, 23}},
 		319: {{0, 1}, {6, 7}, {17, 18}}, 320: {{0, 1}, {14, 15}}, 321: {{0, 1}, {26, 27}}, 322: {{0, 1}}, 323: {{0, 1}, {6, 7}}, 324: {{0, 2}}, 325: {{0, 1}, {8, 9}},
 		326: {{0, 1}, {6, 7}, {12, 13}, {17, 18}, {23, 24}, {29, 30}},
 	}
@@ -316,11 +314,14 @@ func TestListOrderedStartAndReferenceBoundaries(t *testing.T) {
 	for _, input := range []string{"- [r]: /url\n- unseen\n", "- > [r]: /url\n- unseen\n", "- #\n  - [r]: /url\n- unseen\n"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 		if r.Status != parser.Incomplete || conformance.Evaluate(r).Status != "pending" {
-			t.Fatal("reference suffix invented")
+			t.Fatal("inline suffix falsely completed")
+		}
+		if refs := r.Document.References(); refs.LookupAvailability != parser.Available || len(refs.Definitions) != 1 || refs.Lookup["r"] != 0 {
+			t.Fatal("missing document-wide reference", refs)
 		}
 		parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
-			if n.Kind() == parser.List && n.Properties().List.Tight.Present {
-				t.Fatal("partial reference list acquired final tightness")
+			if n.Kind() == parser.List && n.Properties().List.Tight != parser.Some(true) {
+				t.Fatal("established reference list lost final tightness")
 			}
 			return true
 		})

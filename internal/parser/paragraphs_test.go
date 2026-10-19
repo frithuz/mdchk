@@ -22,12 +22,12 @@ type paragraphWant struct {
 func checkParagraphs(t *testing.T, source parser.Source, want []paragraphWant) parser.ParseResult {
 	t.Helper()
 	r := parser.Parse(context.Background(), source)
-	if r.Status != parser.Incomplete || r.AST != parser.Partial || r.Failure != nil || r.Interruption != "" || r.Phases != (parser.PhaseProgress{Blocks: parser.Pending, Inlines: parser.NotStarted}) || len(r.Uncertainty) != 1 || r.Uncertainty[0].Region.Start() != 0 || r.Uncertainty[0].Region.End() != source.Len() || r.Uncertainty[0].Reason != parser.SyntaxUnimplemented {
+	if r.Status != parser.Incomplete || r.AST != parser.Partial || r.Failure != nil || r.Interruption != "" || r.Phases != (parser.PhaseProgress{Blocks: parser.PhaseComplete, Inlines: parser.Pending}) || len(r.Uncertainty) != 1 || r.Uncertainty[0].Region.Start() != 0 || r.Uncertainty[0].Region.End() != source.Len() || r.Uncertainty[0].Reason != parser.SyntaxUnimplemented {
 		t.Fatalf("staged syntax claimed completion: %+v", r)
 	}
 	refs := r.Document.References()
-	if refs.Availability != parser.Unavailable || refs.LookupAvailability != parser.Unavailable || len(refs.Definitions) != 0 || len(refs.Lookup) != 0 {
-		t.Fatal("partial block work claimed known-empty references")
+	if refs.Availability != parser.Available || refs.LookupAvailability != parser.Available || len(refs.Definitions) != 0 || len(refs.Lookup) != 0 {
+		t.Fatal("finished block scan lost available empty references")
 	}
 	nodes := r.Document.Root().Children()
 	if len(nodes) != len(want) {
@@ -168,10 +168,7 @@ func TestParagraphClosureAndProvenance(t *testing.T) {
 	}
 }
 
-func TestPendingBlockBoundaries(t *testing.T) {
-	for _, input := range []string{"[foo]: /url\n"} {
-		t.Run(input, func(t *testing.T) { checkParagraphs(t, parser.NewSource([]byte(input)), nil) })
-	}
+func TestEstablishedBlockBoundaries(t *testing.T) {
 	checkATX(t, "- list\n", false, []atxBlockWant{bulletWant(byteRange{0, 7}, byteRange{0, 2}, byteRange{0, 1}, '-', 1, 2, "list", byteRange{2, 6})})
 	checkATX(t, "1. list\n", false, []atxBlockWant{orderedWant(byteRange{0, 8}, byteRange{0, 3}, byteRange{0, 2}, 1, '.', 1, 3, "list", byteRange{3, 7})})
 	// The blank belongs to the item; the following dedented paragraph is outside.

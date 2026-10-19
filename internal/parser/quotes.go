@@ -18,6 +18,9 @@ func (p *blockParser) attach(node *Node) {
 }
 
 func (p *blockParser) attachBlock(block parsedBlock) {
+	if p.referenceInterrupted {
+		return
+	}
 	if len(p.stack) == 1 {
 		p.closed = append(p.closed, block)
 		return
@@ -66,7 +69,7 @@ func (p *blockParser) interruptsParagraph(line blockLine) bool {
 	}
 	heading, _ := p.atxHeading(line)
 	_, list := classifyListStart(line, true)
-	return heading != nil || list || pendingBlockStart(line, true)
+	return heading != nil || list
 }
 
 // Append raw logical lines while coalescing adjacent Exact original ranges. This

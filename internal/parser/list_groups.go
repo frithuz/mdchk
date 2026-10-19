@@ -89,22 +89,34 @@ func (p *blockParser) blankItemGap(end, start int) bool {
 // separate direct blocks; the trailing summary is consulted only if another
 // sibling item (or a following direct block) actually exists.
 func itemBlankBoundaries(item openBlock, children []parsedBlock) (loose, trailing bool) {
+	type boundary struct {
+		span         Span
+		trailingList bool
+	}
+	boundaries := make([]boundary, 0, len(children)+len(item.definitions))
+	for _, child := range children {
+		boundaries = append(boundaries, boundary{child.node.Span(), child.node.Kind() == List && child.trailingBlank})
+	}
+	for _, definition := range item.definitions {
+		boundaries = append(boundaries, boundary{span: definition})
+	}
+	sort.SliceStable(boundaries, func(i, j int) bool { return boundaries[i].span.Start() < boundaries[j].span.Start() })
 	child := 0
 	for _, marker := range item.markers {
 		if marker.Role != "item-blank" {
 			continue
 		}
 		blank := marker.Source
-		for child < len(children) && children[child].node.Span().End() <= blank.Start() {
+		for child < len(boundaries) && boundaries[child].span.End() <= blank.Start() {
 			child++
 		}
-		before, after := child > 0, child < len(children)
-		if after && children[child].node.Span().Start() <= blank.Start() {
-			block := children[child]
-			if block.node.Kind() != List || !block.trailingBlank || blank.End() != block.node.Span().End() {
+		before, after := child > 0, child < len(boundaries)
+		if after && boundaries[child].span.Start() <= blank.Start() {
+			block := boundaries[child]
+			if !block.trailingList || blank.End() != block.span.End() {
 				continue
 			}
-			before, after = true, child+1 < len(children)
+			before, after = true, child+1 < len(boundaries)
 		}
 		loose = loose || before && after
 		trailing = trailing || blank.End() == item.end

@@ -159,7 +159,7 @@ func TestFencedInfoAvailability(t *testing.T) {
 	for _, info := range []string{"\\*", "&amp;", "&#65;", "&#x41;", "&NotEqualTilde;", "&unknown;", "a \\&amp;"} {
 		input := "~~~ " + info + "\ncontent\n~~~\n"
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-		if r.Status != parser.Incomplete || r.Phases.Blocks != parser.Pending || r.Phases.Inlines != parser.NotStarted || r.Document.References().LookupAvailability != parser.Unavailable || conformance.Evaluate(r).Status != "pending" {
+		if r.Status != parser.Incomplete || r.Phases.Blocks != parser.Pending || r.Phases.Inlines != parser.NotStarted || r.Document.References().LookupAvailability != parser.Available || conformance.Evaluate(r).Status != "pending" {
 			t.Fatal("missing info provider falsely completed", info, r)
 		}
 		n := r.Document.Root().Children()[0]
