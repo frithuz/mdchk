@@ -26,6 +26,7 @@ type atxBlockWant struct {
 	info     string
 	infoSpan byteRange
 	htmlForm int
+	children []atxBlockWant
 }
 type markerWant struct {
 	role string
@@ -92,72 +93,80 @@ func checkATX(t *testing.T, input string, complete bool, want []atxBlockWant) pa
 			t.Fatal("independent source accepted span")
 		}
 	}
-	for i, n := range nodes {
-		w := want[i]
-		if n.Kind() != w.kind || len(n.Children()) != 0 {
-			t.Fatalf("block %d wrong kind or invented inline children", i)
+	var checkNodes func([]*parser.Node, []atxBlockWant)
+	checkNodes = func(nodes []*parser.Node, want []atxBlockWant) {
+		if len(nodes) != len(want) {
+			t.Fatalf("got %d nested blocks, want %d", len(nodes), len(want))
 		}
-		checkRange(n.Span(), w.envelope)
-		props := parser.Properties{}
-		if w.kind == parser.Heading {
-			style := w.style
-			if style == "" {
-				style = "atx"
+		for i, n := range nodes {
+			w := want[i]
+			if n.Kind() != w.kind {
+				t.Fatalf("block %d wrong kind or invented inline children", i)
 			}
-			props.Heading = &parser.HeadingProperties{Level: w.level, Style: style}
-		}
-		if w.kind == parser.CodeBlock {
-			props.Code = &parser.CodeProperties{Style: "indented"}
-			if w.style == "fenced" {
-				info := parser.Value{Semantic: parser.Some(w.info)}
-				if w.infoSpan != (byteRange{}) {
-					span, err := source.Span(w.infoSpan.start, w.infoSpan.end)
-					if err != nil {
-						t.Fatal(err)
+			checkRange(n.Span(), w.envelope)
+			props := parser.Properties{}
+			if w.kind == parser.Heading {
+				style := w.style
+				if style == "" {
+					style = "atx"
+				}
+				props.Heading = &parser.HeadingProperties{Level: w.level, Style: style}
+			}
+			if w.kind == parser.CodeBlock {
+				props.Code = &parser.CodeProperties{Style: "indented"}
+				if w.style == "fenced" {
+					info := parser.Value{Semantic: parser.Some(w.info)}
+					if w.infoSpan != (byteRange{}) {
+						span, err := source.Span(w.infoSpan.start, w.infoSpan.end)
+						if err != nil {
+							t.Fatal(err)
+						}
+						info.Segments = []parser.Segment{{Source: span, Transformation: parser.Exact, Semantic: parser.Some(w.info)}}
 					}
-					info.Segments = []parser.Segment{{Source: span, Transformation: parser.Exact, Semantic: parser.Some(w.info)}}
+					props.Code = &parser.CodeProperties{Style: "fenced", Fence: parser.Some(w.fence), Width: parser.Some(w.width), Info: &info}
 				}
-				props.Code = &parser.CodeProperties{Style: "fenced", Fence: parser.Some(w.fence), Width: parser.Some(w.width), Info: &info}
+				props.Literal = parser.Some(w.text)
 			}
-			props.Literal = parser.Some(w.text)
-		}
-		if w.kind == parser.HTMLBlock {
-			props.HTML = &parser.HTMLProperties{BlockForm: parser.Some(w.htmlForm)}
-		}
-		if !reflect.DeepEqual(n.Properties(), props) {
-			t.Fatalf("block %d properties: %+v", i, n.Properties())
-		}
-		markers := n.Markers()
-		if len(markers) != len(w.markers) {
-			t.Fatalf("block %d markers: %v, want %v", i, markers, w.markers)
-		}
-		for j, m := range markers {
-			if m.Role != w.markers[j].role {
-				t.Fatal("wrong marker role", m.Role)
+			if w.kind == parser.HTMLBlock {
+				props.HTML = &parser.HTMLProperties{BlockForm: parser.Some(w.htmlForm)}
 			}
-			checkRange(m.Source, w.markers[j].span)
-		}
-		content := n.Content()
-		if len(content) != len(w.content) {
-			t.Fatalf("block %d content count: %d want %d", i, len(content), len(w.content))
-		}
-		var text string
-		for j, s := range content {
-			checkRange(s.Source, w.content[j])
-			raw, _ := source.Text(s.Source)
-			if raw == "\x00" {
-				if s.Transformation != parser.Normalized || s.Semantic != parser.Some("\ufffd") {
-					t.Fatal("NUL provenance lost")
+			if !reflect.DeepEqual(n.Properties(), props) {
+				t.Fatalf("block %d properties: %+v", i, n.Properties())
+			}
+			markers := n.Markers()
+			if len(markers) != len(w.markers) {
+				t.Fatalf("block %d markers: %v, want %v", i, markers, w.markers)
+			}
+			for j, m := range markers {
+				if m.Role != w.markers[j].role {
+					t.Fatal("wrong marker role", m.Role)
 				}
-			} else if s.Transformation != parser.Exact || s.Semantic != parser.Some(raw) {
-				t.Fatal("exact provenance lost", s)
+				checkRange(m.Source, w.markers[j].span)
 			}
-			text += s.Semantic.Value
-		}
-		if text != w.text {
-			t.Fatalf("block %d content %q, want %q", i, text, w.text)
+			content := n.Content()
+			if len(content) != len(w.content) {
+				t.Fatalf("block %d content count: %d want %d", i, len(content), len(w.content))
+			}
+			var text string
+			for j, s := range content {
+				checkRange(s.Source, w.content[j])
+				raw, _ := source.Text(s.Source)
+				if raw == "\x00" {
+					if s.Transformation != parser.Normalized || s.Semantic != parser.Some("\ufffd") {
+						t.Fatal("NUL provenance lost")
+					}
+				} else if s.Transformation != parser.Exact || s.Semantic != parser.Some(raw) {
+					t.Fatal("exact provenance lost", s)
+				}
+				text += s.Semantic.Value
+			}
+			if text != w.text {
+				t.Fatalf("block %d content %q, want %q", i, text, w.text)
+			}
+			checkNodes(n.Children(), w.children)
 		}
 	}
+	checkNodes(nodes, want)
 	outcome := conformance.Evaluate(r)
 	if complete {
 		if outcome.Status != "rendered" {
@@ -275,7 +284,7 @@ func TestATXBoundariesAndProvenance(t *testing.T) {
 		{"a\n\n# h\n\nb\n", false, []atxBlockWant{atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}), atxHeadingWant(1, byteRange{3, 7}, byteRange{3, 4}, byteRange{5, 6}, byteRange{}, "h"), atxParagraphWant(byteRange{8, 10}, "b", byteRange{8, 9})}},
 		{"***\n# h\n", false, []atxBlockWant{atxThematicWant(byteRange{0, 4}, byteRange{0, 3}), atxHeadingWant(1, byteRange{4, 8}, byteRange{4, 5}, byteRange{6, 7}, byteRange{}, "h")}},
 		{"#\n \t\r\n***\r### ###", true, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, ""), atxThematicWant(byteRange{6, 10}, byteRange{6, 9}), atxHeadingWant(3, byteRange{10, 17}, byteRange{10, 13}, byteRange{}, byteRange{14, 17}, "")}},
-		{"#\n> quote\n#\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, "")}},
+		{"#\n> quote\n#\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, ""), quoteWant(byteRange{2, 10}, []byteRange{{2, 4}}, atxParagraphWant(byteRange{4, 10}, "quote", byteRange{4, 9})), atxHeadingWant(1, byteRange{10, 12}, byteRange{10, 11}, byteRange{}, byteRange{}, "")}},
 		{"#\na\n---\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, ""), setextWant(2, byteRange{2, 8}, byteRange{4, 7}, "a", byteRange{2, 3})}},
 		{"#\n    #\n", true, []atxBlockWant{atxHeadingWant(1, byteRange{0, 2}, byteRange{0, 1}, byteRange{}, byteRange{}, ""), indentedWant(byteRange{2, 8}, "#\n", []byteRange{{2, 6}}, byteRange{6, 7}, byteRange{7, 8})}},
 		{"# h\n#\n", false, []atxBlockWant{atxHeadingWant(1, byteRange{0, 4}, byteRange{0, 1}, byteRange{2, 3}, byteRange{}, "h"), atxHeadingWant(1, byteRange{4, 6}, byteRange{4, 5}, byteRange{}, byteRange{}, "")}},

@@ -261,3 +261,44 @@ func TestActualParseOutcomeBoundary(t *testing.T) {
 		t.Fatal("nil tree accepted as complete", r)
 	}
 }
+
+func TestRawHTMLRejectsInvalidResidualTabs(t *testing.T) {
+	for _, tt := range []struct {
+		input  string
+		offset int
+		spaces parser.Optional[string]
+		kind   parser.Kind
+	}{
+		{"\t<div>", 0, known("    "), parser.HTMLBlock},
+		{"\t<div>", 0, known("x"), parser.HTMLBlock},
+		{"\t<div>", 0, parser.Optional[string]{}, parser.HTMLBlock},
+		{"x\t<div>", 1, known("  "), parser.HTMLBlock},
+		{"\t<div>", 0, known("  "), parser.InlineHTML},
+	} {
+		source := parser.NewSource([]byte(tt.input))
+		envelope, _ := source.Span(0, source.Len())
+		tab, _ := source.Span(tt.offset, tt.offset+1)
+		tail, _ := source.Span(tt.offset+1, source.Len())
+		var content []parser.Segment
+		if tt.offset != 0 {
+			prefix, _ := source.Span(0, tt.offset)
+			content = append(content, parser.Segment{Source: prefix, Transformation: parser.Exact})
+		}
+		content = append(content, parser.Segment{Source: tab, Transformation: parser.PartialTab, Semantic: tt.spaces}, parser.Segment{Source: tail, Transformation: parser.Exact})
+		html, err := parser.NewNode(parser.NodeSpec{Kind: tt.kind, Envelope: envelope, Content: content})
+		if err != nil {
+			t.Fatal(err)
+		}
+		root, err := parser.NewNode(parser.NodeSpec{Kind: parser.DocumentKind, Envelope: envelope, Children: []*parser.Node{html}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		doc, err := parser.NewDocument(root, parser.ReferenceCollection{Availability: parser.Available, LookupAvailability: parser.Available})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if output, err := RenderDocument(doc); err == nil || output != "" {
+			t.Fatal("invalid residual tab emitted HTML", tt, output, err)
+		}
+	}
+}

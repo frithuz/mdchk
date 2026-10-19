@@ -278,3 +278,48 @@ func TestATXCompletionRequiresRecognizedInlineFreeSource(t *testing.T) {
 		t.Fatal("interruption lost closed heading or published a complete handoff", state, err)
 	}
 }
+
+func TestQuoteInterruptionRetainsClosedContainersOnly(t *testing.T) {
+	source := NewSource([]byte("***\n> #\n\n> > ```\n> > open\n"))
+	for _, checkpoint := range []int{6, 7} {
+		r := Parse(context.Background(), source)
+		ctx := &checkpointContext{Context: context.Background(), remaining: checkpoint}
+		state, err := parseBlockLifecycle(ctx, r.Document, nil)
+		children := r.Document.Root().Children()
+		if err != nil || state != Interrupted || r.Document.inlineFree || r.Document.References().LookupAvailability != Unavailable {
+			t.Fatal("interrupted containers completed", state, err)
+		}
+		if len(children) != 2 || children[0].Kind() != ThematicBreak || children[1].Kind() != BlockQuote || children[1].Span().Start() != 4 || children[1].Span().End() != 8 || len(children[1].Children()) != 1 || children[1].Children()[0].Kind() != Heading {
+			t.Fatal("closed prefix lost or unfinished nested quote finalized", children)
+		}
+	}
+	for _, deadline := range []bool{false, true} {
+		ctx := &quoteCheckpoint{checkpointContext: checkpointContext{Context: context.Background(), remaining: 8}, deadline: deadline}
+		r := Parse(ctx, source)
+		reason := Cancelled
+		if deadline {
+			reason = DeadlineExceeded
+		}
+		if r.Status != Incomplete || r.Failure != nil || r.Interruption != reason || r.Phases.Blocks != Interrupted || len(r.Document.Root().Children()) != 2 || r.Document.References().LookupAvailability != Unavailable {
+			t.Fatal("wrong typed quote interruption", r)
+		}
+		bad := NewSource([]byte(">\xff"))
+		r = Parse(ctx, bad)
+		if r.Status != Failed || r.Document != nil || r.Failure == nil || r.Failure.Code != InvalidUTF8 || r.Failure.Location.Start() != 1 || r.Interruption != "" {
+			t.Fatal("encoding lost precedence to interruption", r)
+		}
+	}
+}
+
+type quoteCheckpoint struct {
+	checkpointContext
+	deadline bool
+}
+
+func (c *quoteCheckpoint) Err() error {
+	err := c.checkpointContext.Err()
+	if err != nil && c.deadline {
+		return context.DeadlineExceeded
+	}
+	return err
+}

@@ -6,20 +6,20 @@ import "strings"
 // when another nonblank code line follows; trailing blanks never reach the node.
 type indentedCode struct {
 	start   int
-	last    physicalLine
-	blanks  []physicalLine
+	last    blockLine
+	blanks  []blockLine
 	content []Segment
 	markers []Marker
 }
 
-func (p *blockParser) appendCodeLine(line physicalLine) {
+func (p *blockParser) appendCodeLine(line blockLine) {
 	code := p.code
-	cursor := Indentation{index: p.index, offset: line.start, end: line.end}
+	cursor := line.cursor
 	// Nonblank code has at least four columns. Interior blanks may have fewer.
 	// The fixed nonnegative request cannot fail for this source-owned cursor.
-	_, _ = cursor.Consume(4)
-	if cursor.Offset() > line.start {
-		code.markers = append(code.markers, Marker{Role: "indent-prefix", Source: p.index.span(line.start, cursor.Offset())})
+	consumed, _ := cursor.Consume(4)
+	if len(consumed.Content.Segments) > 0 {
+		code.markers = append(code.markers, Marker{Role: "indent-prefix", Source: p.index.span(line.start, consumed.Content.Segments[len(consumed.Content.Segments)-1].Source.End())})
 	}
 	code.content = append(code.content, cursor.Remaining().Segments...)
 	ending := Segment{Source: p.index.span(line.end, line.next), Transformation: Exact, Semantic: Some("\n")}
@@ -51,7 +51,7 @@ func (p *blockParser) closeCode() error {
 	if err != nil {
 		return err
 	}
-	p.closed = append(p.closed, node)
+	p.attach(node)
 	p.code = nil
 	return nil
 }

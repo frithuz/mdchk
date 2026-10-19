@@ -2,11 +2,11 @@
 
 `internal/parser` defines an in-memory CommonMark 0.31.2 model and a staged
 paragraph/block lifecycle with indented/fenced-code, HTML-block, thematic-break,
-ATX and Setext recognition. It completes documents entirely accounted for by code
-with established info semantics, opaque HTML blocks, thematic breaks, empty ATX
-headings and ASCII blanks, and retains paragraph/heading source content for later
-inline parsing. Other
-block providers, reference definitions and inline text remain pending. The model
+ATX, Setext and nested block-quote recognition. It completes documents accounted
+for by code with established info semantics, opaque HTML blocks, thematic breaks,
+empty ATX headings and ASCII blanks, including empty/inline-free quotes. It retains
+paragraph/heading source content for later inline parsing. Other block providers,
+reference definitions and inline text remain pending. The model
 catalog also supports constructed fixtures; it does not promise recognition of
 every listed kind.
 
@@ -25,7 +25,7 @@ to callers.
 | --- | --- | --- |
 | Nil or zero-length source | `Complete` / `Available` | Root `[0,0)`, no children, available empty reference records/lookup, both phases complete |
 | ASCII-blank source (space/tab/LF/CR only) | `Complete` / `Available` | Root `[0,N)`, no children, established empty references/lookup, both phases complete |
-| Indented/fenced code with known info semantics, HTML blocks, thematic breaks, empty ATX headings and ASCII blanks only | `Complete` / `Available` | Root `[0,N)` with source-bound blocks, established empty references/lookup, both phases complete, no uncertainty |
+| Indented/fenced code with known info semantics, HTML blocks, thematic breaks, empty ATX headings and ASCII blanks, including empty/inline-free quotes | `Complete` / `Available` | Root `[0,N)` with source-bound blocks, established empty references/lookup, both phases complete, no uncertainty |
 | Other valid source | `Incomplete` / `Partial` | Root `[0,N)` with staged source-bound blocks where recognized, one `SyntaxUnimplemented` uncertainty over `[0,N)`, blocks pending, inlines not started; references/lookup unavailable |
 | Invalid UTF-8 | `Failed` / `Unavailable` | Original Source, typed `Failure` with `InvalidUTF8` code and snapshot-bound byte location, nil Document, neither phase started |
 | Cancellation/deadline on otherwise valid source | `Incomplete` / `Partial` | Original Source and partial root with any already-closed prefix blocks, affected region with `Cancelled`/`DeadlineExceeded`, separate Interruption, nil Failure; unfinished work interrupted |
@@ -65,8 +65,9 @@ result := parser.Parse(context.Background(), source)
 The private block/reference phase precedes inline processing. Inlines cannot run
 until the block phase and effective reference lookup are complete. The block pass
 establishes an empty registry and a private inline-free handoff only after every
-physical line has been recognized as blank, indented/fenced code with established
-info semantics, opaque HTML, a thematic break or an empty ATX heading. Inline work is then
+logical line has been recognized as blank or quote prefixes and established
+inline-free leaves: indented/fenced code with known info semantics, opaque HTML,
+a thematic break or an empty ATX heading. Inline work is then
 vacuously complete. Paragraphs, nonempty headings, unknown suffixes, unestablished
 info and interrupted work never establish that handoff. Supplying
 complete phases/references or constructed break/heading children cannot bypass
@@ -78,11 +79,11 @@ no speculative budget API is added here.
 
 ## Staged paragraph lifecycle
 
-A private stack retains the open document and paragraph. Blank lines close a
-paragraph; EOF finalizes its last content line. Source-backed segments accumulate
+A private stack retains the open document, nested quotes and paragraph. Blank
+lines close a paragraph; EOF finalizes its last content line. Source-backed segments accumulate
 privately and nodes are validated/frozen once on closure. One LineIndex is reused.
-The envelope starts at the first physical line's original start (including its
-indentation) and ends after the last content line's original terminator, or EOF.
+The envelope starts after the first line's enclosing quote prefixes (including
+remaining leaf indentation) and ends after the last content line's original terminator, or EOF.
 Blank separators are excluded. Logical content omits each line's leading ASCII
 space/tab indentation, preserves interior endings and trailing spaces, and omits
 the last line's ending and paragraph-final spaces/tabs. Omitted bytes remain in
@@ -94,12 +95,14 @@ reaching that boundary) open code only without an existing paragraph; deep
 indentation continues an open paragraph. Diagnostic code-point columns are not
 used for that distinction.
 
-Active HTML/fences consume opaque/literal payload before ordinary dispatch. Valid fence
+Existing quote containers match before active HTML/fences consume opaque/literal
+payload and ordinary leaf dispatch. A quote can also start after indented code
+dedents. Valid fence
 openers close preceding paragraphs; invalid backtick/tilde candidates follow
 ordinary paragraph handling unless another unavailable provider applies. After
 fence, HTML, Setext, thematic and ATX dispatch, start hooks precede paragraph
 continuation. A conservative hook defers lines below four columns whose first
-nonblank byte is a digit or one of `>`, `*`, `_`, `+` or `[`, or a possible
+nonblank byte is a digit or one of `*`, `_`, `+` or `[`, or a possible
 dash list marker (a dash followed by ASCII space/tab or end of line). Failed equals/dash
 underlines otherwise take the ordinary paragraph path. This is not a grammar
 recognizer: ordinary punctuation/numeric lines may also be deferred. A
@@ -217,8 +220,9 @@ interruption guards remain intact.
 independent actual-Parse node order, level/style, envelope, content and marker
 ranges. Nineteen Setext-section cases establish structural/fallback progress;
 98 stays a supported pair of breaks; 85/100 now pass with indented code and
-following breaks. Five cases remain entirely source-only behind quotes
-92/93/101 (#13) or lists 94/99 (#14–#16). Example 91 retains its initial
+following breaks. Quotes 92/101 now contain paragraphs followed by outside
+thematic breaks; 93 retains lazy paragraph text without Setext promotion. Only
+list cases 94/99 (#14–#16) remain entirely source-only. Example 91 retains its initial
 heading and paragraph after invalid fence classification; its invalid multiline
 complete-tag suffix now also establishes Setext/paragraph structure. Inline
 reference/text/code-span/HTML classification remains pending (#17/#18/#20/#23).
@@ -227,28 +231,77 @@ markers, negative/mixed/extra characters, tabs/indentation, blank separation,
 following blocks, final whitespace/backslash, Unicode/NUL, original endings,
 immutable accessors and interruption before/after promotion.
 
+## Block quotes and container handoff
+
+The lifecycle matches existing quote prefixes before continuing any leaf. Each
+prefix permits up to three structural indentation columns, `>` and one optional
+space/tab column. The cursor carries original tab-stop phase through nested
+prefixes and code indentation. New quotes can interrupt paragraphs. Closed
+children attach to their actual parent, and outside lines resume normal dispatch
+after unmatched containers close. An unmarked blank separates quotes; a marked
+blank can close a paragraph while retaining its quote. Consecutive marked lines
+remain one quote.
+
+Only existing paragraph continuation can omit outer or nested markers. Lazy
+lines add no synthetic prefix markers. A markerless equals underline remains
+paragraph text; a thematic break ends the quote, whereas a marked eligible
+Setext underline promotes its paragraph. Code and HTML never borrow paragraph
+laziness. A quote boundary closes otherwise unclosed code/HTML before outside
+content is processed. Remaining `>` bytes inside active leaf payload stay opaque.
+
+BlockQuote has ordered children, an original-byte envelope from the start of its
+first prefix through its last owned line, and ordered per-line `quote-prefix`
+markers. A nested quote starts after its enclosing prefixes. Leaf envelopes start
+after prefixes too, but may span later omitted prefix bytes; only Content segments
+represent logical text. HTML segments exclude all enclosing prefixes. A delimiter
+splitting a tab shares that original byte with residual PartialTab content; code
+Literal normalizes endings/NUL independently of its exact source spans. Original
+Source identity and immutable accessor ownership remain unchanged.
+
+Empty quotes and quotes containing only established inline-free leaves complete
+with known-empty references and vacuous inlines. Text, nonempty headings, unknown
+info and unavailable list/reference/inline providers remain partial. Interruption
+discards unfinished nested containers rather than finalizing them as normal EOF;
+already-closed root children survive. Strict encoding failure still takes precedence.
+Full depth/node/work limits and cancellation hardening remain #31.
+
+`TestQuoteUpstreamTargets` asserts actual trees, child order, envelopes, markers and
+content ranges for all unchanged 228–252 independently of HTML. Cases 236/239/240
+newly pass HTML; existing literal-code case 231 remains supported. List case 235
+retains #14–#18. Other quote cases retain #17/#18, plus #21 for multiline text.
+`TestQuotePartialTabUpstream6` independently verifies the newly supported tab/code
+case. Earlier Setext 92/93/101, fence 128 and HTML 174 now assert quote structure;
+214/218 remain pending for reference/text/resolution providers #17/#18/#27.
+Boundary fixtures cover all seven HTML forms, prefix-free payload, marked Setext,
+code transitions, partial tabs, Unicode/NUL/endings/EOF, immutable ownership and
+deterministic interruption with closed-prefix retention. These are staged
+recognition assertions, not general inline or full CommonMark conformance.
+
 ## HTML blocks and opaque source handoff
 
 The parser recognizes all seven CommonMark 0.31.2 HTML-block forms. It classifies
 starts below four indentation columns using the pinned ASCII tag-name/attribute
 grammar. Forms 1–6 can interrupt a paragraph; form 7 requires a complete tag alone
 on its physical line and cannot interrupt. Invalid starts take ordinary paragraph
-handling. Fenced/indented code keeps precedence, and quote/list providers retain
-their genuine boundaries. No browser HTML parser or sanitizer is involved.
+handling. Fenced/indented code keeps precedence after quote matching; unavailable
+list providers retain their genuine boundaries. No browser HTML parser or sanitizer is involved.
 
 One private fixed-form state consumes each physical line before normal dispatch.
 Forms 1–5 close on their specified delimiter and include the entire terminating
 line, even trailing Markdown-looking bytes. Form 1 accepts any of its four closing
 tags, independent of its opener. Forms 6–7 end before a blank line; apparent nested
 HTML cannot change the active form. Normal unclosed EOF is valid. Container-end
-handling belongs to later container recognition. Interrupted unfinished HTML is
+handling closes the active HTML block before processing outside content. Interrupted unfinished HTML is
 discarded, while previously closed prefix blocks remain available.
 
-HTMLBlock stores HTML.BlockForm 1–7 and an original-byte envelope/content covering
-all owned physical lines, including indentation and endings. Content is acquired
-once at closure, then frozen by NewNode. Only NUL splits a Normalized semantic
-contribution from surrounding Exact raw spans; original LF/CRLF/CR and tabs remain
-raw, with no synthetic source ending. The test-only serializer preserves that raw
+HTMLBlock stores HTML.BlockForm 1–7 and an original-byte envelope covering all
+owned lines after the first prefix. Logical Content is acquired once per line,
+coalescing adjacent Exact ranges without copying earlier payload, then frozen by
+NewNode. Top-level content remains contiguous except NUL normalization; quoted
+content omits prefixes and can retain residual leading PartialTab spaces. Original
+LF/CRLF/CR and internal tabs remain raw, with no synthetic source ending. The
+test-only serializer accepts only Exact, validated NUL normalization and validated
+leading residual-tab contributions for block HTML; it preserves logical raw
 spelling except mandatory NUL replacement and its final LF when absent. Source
 bytes and their ownership never change. Payload stays opaque: no inline children,
 reference definitions, directive interpretation, execution or resource acquisition.
@@ -261,15 +314,16 @@ HTML nodes cannot manufacture the private recognition/handoff proof.
 TestHTMLUpstreamTargets independently asserts form, node order, physical envelopes
 and content ranges for all unchanged 148–191 inputs plus cross-feature passes 21/31.
 Twenty-five HTML-section cases now pass actual Parse/Evaluate. Nineteen remain
-pending: 174 needs quotes (#13), 175 needs lists (#14–#16), and other mixed cases
+pending: 174 retains its quote and outside paragraph (#17/#18), 175 needs lists
+(#14–#16), and other mixed cases
 need reference/text (#17/#18), breaks (#21), inline HTML (#23) or emphasis
 (#24/#25) as recorded in foundation.json. These are coverage owners, not reverse
 blockers on this syntax stage. Separate fixtures cover grammar near misses,
 case/EOF/fixed-form boundaries, code and paragraph precedence, opaque payload,
 LF/CRLF/CR/NUL/Unicode/tab provenance, immutable accessors, encoding precedence and
 deterministic interruption, including at EOF finalization. Actual full-corpus
-normalized/strict gates now record 80 pass and 572 pending, preserving all 53
-previous passes; full conformance remains false.
+normalized/strict gates record 84 pass and 568 pending, preserving all 80
+pre-quote passes; full conformance remains false.
 
 ## Indented code and literal handoff
 
@@ -334,7 +388,7 @@ endings. The envelope spans the opener's physical start through the closer's
 ending/EOF, or normal document EOF when unclosed. Missing closers are absent,
 not synthetic zero-width markers. Opener-only and empty closed fences have a
 known empty Literal and no payload segments. Unclosed fences are valid syntax;
-container-end integration remains pending with the container provider.
+a quote boundary also closes an otherwise unclosed fence.
 
 Each payload line removes up to the opening indentation using the existing
 structural cursor; excess whitespace, internal tabs and blank lines remain
@@ -363,7 +417,8 @@ Full metering/checkpoint hardening remains #31.
 opening/closing/indentation spans, physical envelopes, payload and info for every
 unchanged 119–147 input plus newly passing cross-feature 19. Twenty-three fenced
 section cases pass actual Parse/Evaluate, including existing indented-code 134.
-128 remains source-only for quotes (#13); 121 needs references/inline/code spans
+128 retains its quote-contained fence and outside paragraph (#17/#18);
+121 needs references/inline/code spans
 (#17/#18/#20), 138/145 additionally soft breaks (#21), and 140/141 retain actual
 fence/paragraph/heading structure with surrounding reference/inline work pending.
 Extra fixtures cover empty/unclosed/blank/EOF, malformed openers/closers, literal
@@ -480,7 +535,7 @@ An envelope may include stripped container prefixes between content segments.
 It is not permission to replace a contiguous envelope as logical text. For the
 eight bytes represented by `> a\r\n> b`, the envelope is `[0,8)`, content segments
 `[2,5)`/`[7,8)` select `a\r\n`/`b`, and quote prefixes occupy `[0,2)`/`[5,7)`.
-The model tests construct this representation; Parse does not recognize quotes.
+Model fixtures and actual quote Parse tests independently verify this representation.
 
 `Segment.Source` always selects original bytes. `Transformation` is one of:
 
@@ -549,23 +604,24 @@ normalization. Partial lookup may contain only known first selections; unavailab
 lookup has no entries. Mutable collection copies cannot change the document.
 
 [`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly
-accounts for all 652 upstream IDs: 80 supported HTML cases and 572 pending.
-Supported IDs are 1–3, 8, 11, 18–19, 21, 31, 36, 43, 47–48, 50–54, 69, 79,
+accounts for all 652 upstream IDs: 84 supported HTML cases and 568 pending.
+Supported IDs are 1–3, 6, 8, 11, 18–19, 21, 31, 36, 43, 47–48, 50–54, 69, 79,
 85, 98, 100, 107, 110–112, 116–120, 122–127, 129–137, 139, 142–144, 146–147,
-150–151, 153–154, 156–166, 171, 173, 178, 181, 183–184, 186, 189–191, 231 and 289.
+150–151, 153–154, 156–166, 171, 173, 178, 181, 183–184, 186, 189–191, 231,
+236, 239–240 and 289.
 These are recognized inline-free documents, not implementation of every syntax feature in their named sections.
 Indented-code 108/109 retain list/container/reference/inline owners #14–#18;
 113 retains #17/#18/#21, and 114/115 retain #17/#18. Paragraph 225 now retains
 code and its following paragraph, with only #17/#18 pending. Thematic cases
 retain list/container (#14–#16), reference/inline (#17/#18), break (#21) and
-emphasis (#24/#25) owners where relevant. Setext targets name #13 for 92/93/101,
-#14–#16 for 94/99 and #17/#18/#20/#23 for 91. Recognized
-Setext/fallback cases and 59 retain #17/#18, with #21 for multiline content, #19 for escapes
+emphasis (#24/#25) owners where relevant. Setext targets retain #17/#18 for
+92/101 and additionally #21 for 93, #14–#16 for 94/99 and #17/#18/#20/#23
+for 91. Recognized Setext/fallback cases and 59 retain #17/#18, with #21 for multiline content, #19 for escapes
 in 102/106 and #24/#25 for emphasis in 80–82. ATX cases name #17/#18 for
 text/reference handoff, #19 for escapes in 65/66/76, #24/#25 for emphasis in 66
 and #21 for multiline content in 70. Paragraph cases retain #17/#18 and #21
 where multiline/break processing is required. The fenced-code section retains
-#13/#17/#18 for 128, #17/#18/#20 for 121, additionally #21 for 138/145, and
+#17/#18 for 128, #17/#18/#20 for 121, additionally #21 for 138/145, and
 #17/#18 for 140/141. Info decoding remains #19. Other examples use broad remaining
 inline/core-completion scopes #18/#29. These are coverage owners, not reverse
 native prerequisites on staged syntax deliveries. The test-only #5 adapter/runner

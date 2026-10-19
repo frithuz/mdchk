@@ -66,9 +66,9 @@ func (p *blockParser) fenceClosing(line blockLine) Span {
 	return p.index.span(line.contentStart, end)
 }
 
-func (p *blockParser) appendFenceLine(line physicalLine) {
+func (p *blockParser) appendFenceLine(line blockLine) {
 	fence := p.fence
-	cursor := Indentation{index: p.index, offset: line.start, end: line.end}
+	cursor := line.cursor
 	consumed, _ := cursor.Consume(fence.indent)
 	if len(consumed.Content.Segments) > 0 {
 		// A partially consumed tab belongs to both the removed prefix and the
@@ -109,7 +109,7 @@ func (p *blockParser) closeFence() error {
 	if err != nil {
 		return err
 	}
-	p.closed = append(p.closed, node)
+	p.attach(node)
 	p.fence = nil
 	return nil
 }

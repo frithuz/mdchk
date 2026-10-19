@@ -232,6 +232,16 @@ func (r *renderer) node(n *parser.Node, tight bool) error {
 				if !segment.Semantic.Present || segment.Semantic.Value != normalized {
 					return fmt.Errorf("raw HTML: unknown normalization")
 				}
+			case parser.PartialTab:
+				// Only a residual leading tab from container indentation can
+				// contribute spaces to block HTML. Other transformations and
+				// inline HTML still require their existing explicit mappings.
+				spaces := segment.Semantic.Value
+				atLineStart := raw.Len() == 0 || strings.HasSuffix(raw.String(), "\n") || strings.HasSuffix(raw.String(), "\r")
+				if n.Kind() != parser.HTMLBlock || text != "\t" || !segment.Semantic.Present || len(spaces) < 1 || len(spaces) > 3 || strings.Trim(spaces, " ") != "" || !atLineStart {
+					return fmt.Errorf("raw HTML: invalid residual tab")
+				}
+				normalized = spaces
 			default:
 				return fmt.Errorf("raw HTML: unsupported transformation %q", segment.Transformation)
 			}

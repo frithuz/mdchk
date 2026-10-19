@@ -3,10 +3,12 @@ package parser
 import "strings"
 
 // The active form is fixed at opening. Only the current line is searched for a
-// terminator; source content is acquired and frozen once, at closure or normal EOF.
+// terminator. Logical lines acquire original-source segments without prefixes;
+// closure or normal EOF freezes the node once.
 type htmlBlock struct {
 	start, end int
 	form       int
+	content    []Segment
 }
 
 func (p *blockParser) htmlOpening(line blockLine, paragraphOpen bool) int {
@@ -44,6 +46,7 @@ func (p *blockParser) htmlOpening(line blockLine, paragraphOpen bool) int {
 
 func (p *blockParser) appendHTMLLine(line blockLine) error {
 	p.html.end = line.next
+	p.html.content = p.appendRawLine(p.html.content, line)
 	s := p.index.source.content[line.start:line.end]
 	closed := false
 	switch p.html.form {
@@ -80,13 +83,13 @@ func (p *blockParser) closeHTML() error {
 	}
 	node, err := NewNode(NodeSpec{
 		Kind: HTMLBlock, Envelope: p.index.span(h.start, h.end),
-		Content:    p.index.semanticText(h.start, h.end).Segments,
+		Content:    h.content,
 		Properties: Properties{HTML: &HTMLProperties{BlockForm: Some(h.form)}},
 	})
 	if err != nil {
 		return err
 	}
-	p.closed = append(p.closed, node)
+	p.attach(node)
 	p.html = nil
 	return nil
 }

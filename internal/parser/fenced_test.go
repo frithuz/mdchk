@@ -41,7 +41,7 @@ func TestFencedUpstreamTargets(t *testing.T) {
 		125: {fencedWant(byteRange{0, 18}, byteRange{0, 4}, byteRange{13, 17}, '~', "aaa\n~~~\n", "", byteRange{}, nil, byteRange{5, 8}, byteRange{8, 9}, byteRange{9, 12}, byteRange{12, 13})},
 		126: {fencedWant(byteRange{0, 4}, byteRange{0, 3}, byteRange{}, '`', "", "", byteRange{}, nil)},
 		127: {fencedWant(byteRange{0, 15}, byteRange{0, 5}, byteRange{}, '`', "\n```\naaa\n", "", byteRange{}, nil, byteRange{6, 7}, byteRange{7, 10}, byteRange{10, 11}, byteRange{11, 14}, byteRange{14, 15})},
-		128: nil, // #13 owns the unknown quote suffix, not a fence failure.
+		128: {quoteWant(byteRange{0, 12}, []byteRange{{0, 2}, {6, 8}}, fencedWant(byteRange{2, 12}, byteRange{2, 5}, byteRange{}, '`', "aaa\n", "", byteRange{}, nil, byteRange{8, 11}, byteRange{11, 12})), atxParagraphWant(byteRange{13, 17}, "bbb", byteRange{13, 16})},
 		129: {fencedWant(byteRange{0, 12}, byteRange{0, 3}, byteRange{8, 11}, '`', "\n  \n", "", byteRange{}, nil, byteRange{4, 5}, byteRange{5, 7}, byteRange{7, 8})},
 		130: {fencedWant(byteRange{0, 8}, byteRange{0, 3}, byteRange{4, 7}, '`', "", "", byteRange{}, nil)},
 		131: {fencedWant(byteRange{0, 18}, byteRange{1, 4}, byteRange{14, 17}, '`', "aaa\naaa\n", "", byteRange{}, []byteRange{{5, 6}}, byteRange{6, 9}, byteRange{9, 10}, byteRange{10, 13}, byteRange{13, 14})},

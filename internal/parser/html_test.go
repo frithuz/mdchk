@@ -41,7 +41,8 @@ func TestHTMLUpstreamTargets(t *testing.T) {
 		171: {htmlWant(1, 0, 38)},
 		172: {htmlWant(1, 0, 68), atxParagraphWant(byteRange{68, 73}, "okay", byteRange{68, 72})},
 		173: {htmlWant(1, 0, 31)},
-		174: nil, 175: nil, // #13 and #14–#16 own quote/list boundaries.
+		174: {quoteWant(byteRange{0, 14}, []byteRange{{0, 2}, {8, 10}}, atxBlockWant{kind: parser.HTMLBlock, htmlForm: 6, envelope: byteRange{2, 14}, content: []byteRange{{2, 8}, {10, 14}}, text: "<div>\nfoo\n"}), atxParagraphWant(byteRange{15, 19}, "bar", byteRange{15, 18})},
+		175: nil, // #14–#16 own list boundaries.
 		176: {htmlWant(1, 0, 29)}, 177: {htmlWant(2, 0, 18)},
 		178: {htmlWant(1, 0, 31)},
 		179: {htmlWant(2, 0, 25), atxParagraphWant(byteRange{25, 30}, "okay", byteRange{25, 29})},

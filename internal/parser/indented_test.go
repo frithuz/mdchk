@@ -105,14 +105,12 @@ func TestIndentedLiteralBoundaries(t *testing.T) {
 			checkATX(t, input, true, []atxBlockWant{indentedWant(byteRange{0, len(input)}, text+"\n", []byteRange{{0, len(prefix)}}, byteRange{len(prefix), len(input) - 1}, byteRange{len(input) - 1, len(input)})})
 		}
 	}
-	for _, input := range []string{"   x\n", "a\n\tcode\n", "    a\n> quote\n    b\n", "- item\n\n    code\n"} {
+	for _, input := range []string{"   x\n", "a\n\tcode\n", "- item\n\n    code\n"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 		if r.Status != parser.Incomplete || r.Failure != nil || r.Document.References().LookupAvailability != parser.Unavailable {
 			t.Fatal("unknown/inline input gained completion", input, r)
 		}
-		if strings.HasPrefix(input, "    a") && (len(r.Document.Root().Children()) != 1 || r.Document.Root().Children()[0].Kind() != parser.CodeBlock) {
-			t.Fatal("closed code prefix lost or unknown suffix parsed")
-		}
+
 		if strings.HasPrefix(input, "- item") && len(r.Document.Root().Children()) != 0 {
 			t.Fatal("unknown container suffix became code")
 		}
