@@ -107,7 +107,8 @@ func TestIndentedLiteralBoundaries(t *testing.T) {
 	}
 	for _, input := range []string{"   x\n", "a\n\tcode\n", "- item\n\n    code\n"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-		if r.Status != parser.Incomplete || r.Failure != nil || r.Document.References().LookupAvailability != parser.Available {
+		checkStagedTextOutcome(t, r, false)
+		if r.Failure != nil || r.Document.References().LookupAvailability != parser.Available {
 			t.Fatal("unknown/inline input gained completion", input, r)
 		}
 

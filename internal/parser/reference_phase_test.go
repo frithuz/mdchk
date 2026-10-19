@@ -19,7 +19,7 @@ func TestReferencePhaseAndSemanticAvailability(t *testing.T) {
 		semantic        bool
 	}{
 		{"[a]: /url\n", PhaseComplete, PhaseComplete, Complete, true},
-		{"text\n\n[a]: /url\n", PhaseComplete, Pending, Incomplete, true},
+		{"text\n\n[a]: /url\n", PhaseComplete, PhaseComplete, Complete, true},
 		{"[a]: /url\\*\n", Pending, NotStarted, Incomplete, false},
 		{"[a]: /url \"&amp;\"\n", Pending, NotStarted, Incomplete, true},
 	} {
@@ -47,7 +47,11 @@ func TestReferenceInterruptionCannotPublishGlobalRegistry(t *testing.T) {
 		"***\n- > [a\n  b]: /url\n",
 	} {
 		source := NewSource([]byte(input))
-		completeChildren := Parse(context.Background(), source).Document.Root().Children()
+		baseline := Parse(context.Background(), source)
+		if _, err := parseBlocks(context.Background(), baseline.Document); err != nil {
+			t.Fatal(err)
+		}
+		completeChildren := baseline.Document.Root().Children()
 		interrupted := 0
 		for _, deadline := range []bool{false, true} {
 			// Deterministic checkpoints sweep line processing, component scanning,
@@ -71,7 +75,7 @@ func TestReferenceInterruptionCannotPublishGlobalRegistry(t *testing.T) {
 					t.Fatal("interruption invented blocks")
 				}
 				for i, child := range children {
-					if !reflect.DeepEqual(child, completeChildren[i]) {
+					if !reflect.DeepEqual(inlineBlockShape(child), inlineBlockShape(completeChildren[i])) {
 						t.Fatal("interruption published unfinished structure", checkpoint, child)
 					}
 				}
@@ -174,4 +178,17 @@ func FuzzReferenceRegistry(f *testing.F) {
 			}
 		}
 	})
+}
+
+// Inline processing changes only leaf children; block interruption comparisons
+// retain all independently expected block facts while ignoring that later phase.
+func inlineBlockShape(n *Node) *Node {
+	copy := *n
+	copy.spec.Children = nil
+	if n.Kind() != Paragraph && n.Kind() != Heading {
+		for _, child := range n.spec.Children {
+			copy.spec.Children = append(copy.spec.Children, inlineBlockShape(child))
+		}
+	}
+	return &copy
 }

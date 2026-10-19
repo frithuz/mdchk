@@ -80,6 +80,9 @@ type Document struct {
 	// without inline payload. Constructed nodes or available references alone
 	// cannot establish this private parse handoff.
 	inlineFree bool
+	// Only a successful, complete block pass establishes this handoff. Model
+	// constructors cannot manufacture recognition of the original source.
+	blocksRecognized bool
 }
 
 // NewDocument binds a complete source envelope to records. It validates supplied

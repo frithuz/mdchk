@@ -22,9 +22,7 @@ type paragraphWant struct {
 func checkParagraphs(t *testing.T, source parser.Source, want []paragraphWant) parser.ParseResult {
 	t.Helper()
 	r := parser.Parse(context.Background(), source)
-	if r.Status != parser.Incomplete || r.AST != parser.Partial || r.Failure != nil || r.Interruption != "" || r.Phases != (parser.PhaseProgress{Blocks: parser.PhaseComplete, Inlines: parser.Pending}) || len(r.Uncertainty) != 1 || r.Uncertainty[0].Region.Start() != 0 || r.Uncertainty[0].Region.End() != source.Len() || r.Uncertainty[0].Reason != parser.SyntaxUnimplemented {
-		t.Fatalf("staged syntax claimed completion: %+v", r)
-	}
+	checkStagedTextOutcome(t, r, false)
 	refs := r.Document.References()
 	if refs.Availability != parser.Available || refs.LookupAvailability != parser.Available || len(refs.Definitions) != 0 || len(refs.Lookup) != 0 {
 		t.Fatal("finished block scan lost available empty references")
@@ -35,9 +33,10 @@ func checkParagraphs(t *testing.T, source parser.Source, want []paragraphWant) p
 	}
 	for i, node := range nodes {
 		w := want[i]
-		if node.Kind() != parser.Paragraph || node.Span().Start() != w.envelope.start || node.Span().End() != w.envelope.end || len(node.Children()) != 0 || node.Properties().Literal.Present {
+		if node.Kind() != parser.Paragraph || node.Span().Start() != w.envelope.start || node.Span().End() != w.envelope.end || node.Properties().Literal.Present {
 			t.Fatalf("paragraph %d has wrong envelope or invented inlines: %+v", i, node)
 		}
+		checkInlineText(t, r, node, w.text, w.content)
 		if _, err := source.Text(node.Span()); err != nil {
 			t.Fatal("paragraph has foreign snapshot")
 		}

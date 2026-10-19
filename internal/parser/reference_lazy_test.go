@@ -25,7 +25,8 @@ func TestReferenceComponentsRequireContainerPrefixes(t *testing.T) {
 		} {
 			input := tc.first + ending + tc.outside + ending
 			r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-			if r.Failure != nil || r.Status != parser.Incomplete || r.Phases != (parser.PhaseProgress{Blocks: parser.PhaseComplete, Inlines: parser.Pending}) || conformance.Evaluate(r).Status != "pending" || len(r.Document.References().Definitions) != 0 {
+			checkStagedTextOutcome(t, r, false)
+			if r.Failure != nil || len(r.Document.References().Definitions) != 0 {
 				t.Fatalf("outside line became invisible definition: %q %+v", input, r)
 			}
 			var paragraphs []*parser.Node

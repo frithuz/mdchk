@@ -7,15 +7,15 @@ import (
 
 func TestInlinePhaseRequiresFinishedReferenceHandoff(t *testing.T) {
 	r := Parse(context.Background(), NewSource(nil))
-	if got := parseInlines(context.Background(), r.Document, Pending); got != NotStarted {
+	if got := inlinePhase(t, context.Background(), r.Document, Pending); got != NotStarted {
 		t.Fatal("inline phase consumed unfinished block work")
 	}
 	r.Document.references.LookupAvailability = Unavailable
-	if got := parseInlines(context.Background(), r.Document, PhaseComplete); got != NotStarted {
+	if got := inlinePhase(t, context.Background(), r.Document, PhaseComplete); got != NotStarted {
 		t.Fatal("inline phase consumed unavailable references")
 	}
 	r.Document.references.LookupAvailability = Available
-	if got := parseInlines(context.Background(), r.Document, PhaseComplete); got != PhaseComplete {
+	if got := inlinePhase(t, context.Background(), r.Document, PhaseComplete); got != PhaseComplete {
 		t.Fatal("complete empty handoff did not permit inline phase")
 	}
 }
@@ -94,7 +94,7 @@ func TestHTMLInterruptionDiscardsOnlyOpenBlock(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if parseInlines(context.Background(), document, PhaseComplete) != Pending {
+	if inlinePhase(t, context.Background(), document, PhaseComplete) != Pending {
 		t.Fatal("constructed HTML tree claimed private recognition proof")
 	}
 }
@@ -128,7 +128,7 @@ func TestFencedInterruptionDiscardsOnlyOpenFence(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if parseInlines(context.Background(), document, PhaseComplete) != Pending {
+	if inlinePhase(t, context.Background(), document, PhaseComplete) != Pending {
 		t.Fatal("constructed fenced tree claimed private recognition proof")
 	}
 }
@@ -154,17 +154,17 @@ func TestIndentedInterruptionDiscardsOpenCodeAndBlanks(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if parseInlines(context.Background(), document, PhaseComplete) != Pending {
+	if inlinePhase(t, context.Background(), document, PhaseComplete) != Pending {
 		t.Fatal("constructed CodeBlock tree claimed recognition")
 	}
 }
 
-func TestInlineStubRefusesNonemptyInlineHandoff(t *testing.T) {
+func TestInlinePhaseCompletesSupportedHandoff(t *testing.T) {
 	for _, input := range []string{"hello\n", "# heading\n", "***\nhello\n", "***\n# heading\n", "heading\n=\n"} {
 		r := Parse(context.Background(), NewSource([]byte(input)))
 		r.Document.references = ReferenceCollection{Availability: Available, LookupAvailability: Available}
-		if got := parseInlines(context.Background(), r.Document, PhaseComplete); got != Pending {
-			t.Fatalf("inline stub completed %q without a provider: %s", input, got)
+		if got := inlinePhase(t, context.Background(), r.Document, PhaseComplete); got != PhaseComplete {
+			t.Fatalf("supported inline handoff did not complete %q: %s", input, got)
 		}
 	}
 }
@@ -212,12 +212,12 @@ func TestInlineStubRequiresProvenInlineFreeSource(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if got := parseInlines(context.Background(), document, PhaseComplete); got != Pending {
+		if got := inlinePhase(t, context.Background(), document, PhaseComplete); got != Pending {
 			t.Fatal("unproven handoff completed", got)
 		}
 	}
 	r := Parse(context.Background(), source)
-	if !r.Document.inlineFree || parseInlines(context.Background(), r.Document, PhaseComplete) != PhaseComplete {
+	if !r.Document.inlineFree || inlinePhase(t, context.Background(), r.Document, PhaseComplete) != PhaseComplete {
 		t.Fatal("proven thematic-only handoff did not complete")
 	}
 	ctx, cancel := context.WithCancel(context.Background())
@@ -300,11 +300,11 @@ func TestATXCompletionRequiresRecognizedInlineFreeSource(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if parseInlines(context.Background(), document, PhaseComplete) != Pending {
+	if inlinePhase(t, context.Background(), document, PhaseComplete) != Pending {
 		t.Fatal("constructed empty heading fabricated recognition proof")
 	}
 	r := Parse(context.Background(), source)
-	if !r.Document.inlineFree || parseInlines(context.Background(), r.Document, PhaseComplete) != PhaseComplete {
+	if !r.Document.inlineFree || inlinePhase(t, context.Background(), r.Document, PhaseComplete) != PhaseComplete {
 		t.Fatal("actually recognized empty heading did not complete")
 	}
 	// Cancel deterministically in the next ordinary line, before the following
@@ -367,4 +367,13 @@ func (c *quoteCheckpoint) Err() error {
 		return context.DeadlineExceeded
 	}
 	return err
+}
+
+func inlinePhase(t *testing.T, ctx context.Context, document *Document, blocks PhaseState) PhaseState {
+	t.Helper()
+	state, err := parseInlines(ctx, document, blocks)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return state
 }

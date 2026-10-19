@@ -207,8 +207,12 @@ func TestQuoteSetextAndProvenance(t *testing.T) {
 	}
 	for _, input := range []string{"> text\n", "> # title\n", "> ``` &amp;\n"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-		if r.Status != parser.Incomplete || r.Document.References().LookupAvailability != parser.Available || conformance.Evaluate(r).Status != "pending" {
-			t.Fatal("unavailable provider gained completion", r)
+		wantStatus, wantRender := parser.Complete, "rendered"
+		if strings.Contains(input, "&amp;") {
+			wantStatus, wantRender = parser.Incomplete, "pending"
+		}
+		if r.Status != wantStatus || r.Document.References().LookupAvailability != parser.Available || conformance.Evaluate(r).Status != wantRender {
+			t.Fatal("wrong text/decoder availability", r)
 		}
 	}
 }

@@ -50,7 +50,7 @@ const (
 // Failure is an operational failure, not unavailable syntax or interruption.
 // Code is machine-readable; Message is explanatory, never a discrimination API.
 // Parse reports InvalidUTF8 for bad encoding and InternalFailure if constructing
-// its block model violates the source/model invariants.
+// its block or inline model violates the source/model invariants.
 type Failure struct {
 	Code    FailureCode
 	Message string
@@ -88,21 +88,22 @@ type ParseResult struct {
 // decoding stays partial. Other input retains staged blocks and whole-document
 // uncertainty. Leading definitions are collected in source order before inline
 // work, with raw-label Unicode folding and first-definition lookup. Ordinary
-// text-bearing blocks finish with pending inlines; missing destination/title or
+// text-bearing blocks acquire source-preserving Text children; missing inline
+// handlers retain pending interpretation. Missing destination/title or
 // fence-info decoding keeps Blocks pending with the raw registry available.
 // Definition-only input with known semantics completes vacuous inline work.
 // ListItems retain marker/prefix facts and ordered nested block children, with
 // tab-aware continuation, blank boundaries, sibling ownership and closure. They
 // acquire List parents, initial ordered starts and independently derived Tight
-// facts. Lists of empty items/inline-free blocks can complete; text and unresolved
-// inline interpretation retains its staged partial outcome. Non-rendered
-// definitions preserve private list boundaries without becoming child nodes.
+// facts. Supported text and inline-free lists complete; interpretation needing
+// later providers retains its staged partial outcome. Non-rendered definitions
+// preserve private list boundaries without becoming child nodes.
 //
 // The strict UTF-8 gate precedes Markdown work and retains malformed bytes without
 // substitution. Its failure takes precedence over context interruption. Callers
 // must pass a non-nil context. Cancellation is checked at phase boundaries and
-// before block lines and during reference recognition; full work metering and
-// index/UTF-8 checkpoints belong to #31. Phases must
+// before block lines, during reference recognition and bounded inline scanning.
+// Full work metering and index/UTF-8 checkpoints belong to #31. Phases must
 // later share the caller's operation budget across phases and candidate reparses.
 func Parse(ctx context.Context, source Source) ParseResult {
 	r := ParseResult{
@@ -140,7 +141,12 @@ func Parse(ctx context.Context, source Source) ParseResult {
 		r.Uncertainty = []Uncertainty{{Region: span, Reason: SyntaxUnimplemented}}
 		return r
 	}
-	r.Phases.Inlines = parseInlines(ctx, r.Document, r.Phases.Blocks)
+	r.Phases.Inlines, err = parseInlines(ctx, r.Document, r.Phases.Blocks)
+	if err != nil {
+		r.Status, r.AST, r.Document = Failed, Unavailable, nil
+		r.Failure = &Failure{Code: InternalFailure, Message: "construct inline model: " + err.Error()}
+		return r
+	}
 	if reason := interruption(ctx); reason != "" {
 		return interruptedResult(r, reason, span)
 	}
@@ -166,20 +172,6 @@ func invalidUTF8Offset(content string) int {
 	return -1
 }
 
-func parseInlines(ctx context.Context, document *Document, blocks PhaseState) PhaseState {
-	// The reference handoff is required even if a future caller misorders phases.
-	if blocks != PhaseComplete || document.references.LookupAvailability != Available {
-		return NotStarted
-	}
-	if interruption(ctx) != "" {
-		return Interrupted
-	}
-	if !document.inlineFree {
-		return Pending // #18 supplies inline payload interpretation
-	}
-	return PhaseComplete
-}
-
 func interruption(ctx context.Context) Reason {
 	err := ctx.Err()
 	switch {
@@ -202,6 +194,7 @@ func interruptedResult(r ParseResult, reason Reason, region Span) ParseResult {
 	}
 	r.Document.references = ReferenceCollection{Availability: Unavailable, LookupAvailability: Unavailable}
 	r.Document.inlineFree = false
+	r.Document.blocksRecognized = false
 	r.Uncertainty = []Uncertainty{{Region: region, Reason: reason}}
 	return r
 }

@@ -118,7 +118,7 @@ func TestHTMLGrammarAndFixedForm(t *testing.T) {
 	for _, input := range []string{"<pre/>", "<script/>", "<style/>", "<textarea/>", "<a_b>", "<1a>", "<a x=>", "<a x=\"unclosed>", "<a x='unclosed>", "<a x=`v`>", "<a x=<v>", "<a x=v=z>", "<a x=\"v\"y>", "<a / >", "</a x>", "</a/>", "<a>tail", "<a>\u00a0", "<![cdata[", "<!1>", "<a 0x>", "<diverse bad=>"} {
 		t.Run("invalid/"+input, func(t *testing.T) {
 			r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-			if r.Status != parser.Incomplete || r.Failure != nil || len(r.Document.Root().Children()) != 1 || r.Document.Root().Children()[0].Kind() != parser.Paragraph {
+			if r.Failure != nil || len(r.Document.Root().Children()) != 1 || r.Document.Root().Children()[0].Kind() != parser.Paragraph {
 				t.Fatal("invalid candidate did not fall back to paragraph", r)
 			}
 		})

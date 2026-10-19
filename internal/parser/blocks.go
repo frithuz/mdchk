@@ -62,6 +62,7 @@ func parseBlocks(ctx context.Context, document *Document) (PhaseState, error) {
 func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockStartHook) (PhaseState, error) {
 	document.references = ReferenceCollection{Availability: Unavailable, LookupAvailability: Unavailable}
 	document.inlineFree = false
+	document.blocksRecognized = false
 	if interruption(ctx) != "" {
 		return Interrupted, nil
 	}
@@ -312,6 +313,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		}
 		document.references = ReferenceCollection{Availability: Available, LookupAvailability: Available, Definitions: p.definitions, Lookup: lookup}
 		document.inlineFree = state == PhaseComplete && !p.inlinePayload
+		document.blocksRecognized = state == PhaseComplete
 	}
 	return state, nil
 }

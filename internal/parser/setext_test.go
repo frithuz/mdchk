@@ -116,7 +116,7 @@ func TestSetextBoundariesAndProvenance(t *testing.T) {
 	for _, input := range []string{"a\n=\t=", "a\n===x", "a\n---\x00", "a\n---\u00a0", "a\n---\v", "a\n\t---", "a\n   \t=", "a\n    ="} {
 		// All are ordinary paragraph continuations, never valid underlines.
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-		if r.Status != parser.Incomplete || r.Failure != nil || len(r.Document.Root().Children()) != 1 || r.Document.Root().Children()[0].Kind() != parser.Paragraph || string(r.Source.Bytes()) != input {
+		if r.Failure != nil || len(r.Document.Root().Children()) != 1 || r.Document.Root().Children()[0].Kind() != parser.Paragraph || string(r.Source.Bytes()) != input {
 			t.Fatal("malformed/deep underline did not remain a paragraph", input, r)
 		}
 	}

@@ -107,7 +107,11 @@ func checkListTrees(t *testing.T, input string, want []listTreeWant) parser.Pars
 			if n.Kind() == parser.CodeBlock && n.Properties().Literal != parser.Some(w.text) {
 				t.Fatal("literal/source mismatch")
 			}
-			check(n.Children(), w.children)
+			if n.Kind() == parser.Paragraph || n.Kind() == parser.Heading {
+				checkInlineText(t, r, n, w.text, w.content)
+			} else {
+				check(n.Children(), w.children)
+			}
 		}
 	}
 	checkSpan(r.Document.Root().Span(), byteRange{0, len(input)})
@@ -194,14 +198,7 @@ func TestListContinuationUpstreamTargets(t *testing.T) {
 				t.Fatal("unaccounted case")
 			}
 			r := checkListTrees(t, e.Markdown, w)
-			got := conformance.Evaluate(r)
-			if e.ID == 289 || e.ID == 284 {
-				if got.Status != "rendered" || got.HTML != e.HTML {
-					t.Fatal(got)
-				}
-			} else if got.Status != "pending" || got.HTML != "" {
-				t.Fatal("unavailable semantics became HTML", got)
-			}
+			checkCorpusTextOutcome(t, e.ID, e.HTML, r)
 		})
 	}
 	if len(seen) != 48 || len(wants) != 48 {
@@ -268,7 +265,7 @@ func TestListContinuationLeafBoundaries(t *testing.T) {
 		input := "- " + opening + "\n  - > opaque\noutside\n"
 		t.Run(opening, func(t *testing.T) {
 			r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-			if r.Failure != nil || r.Status != parser.Incomplete || conformance.Evaluate(r).Status != "pending" {
+			if r.Failure != nil || r.Status != parser.Complete || conformance.Evaluate(r).Status != "rendered" {
 				t.Fatal(r)
 			}
 			nodes := ungroupedChildren(r.Document.Root())

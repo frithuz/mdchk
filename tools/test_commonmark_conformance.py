@@ -113,8 +113,8 @@ class ExecutableBoundary(unittest.TestCase):
         for content, code, status, html in [
                 (b"", 0, "rendered", b""), (b" \t\r\n", 0, "rendered", b""),
                 (b"***\n", 0, "rendered", b"<hr />\n"),
-                (b"hello\n", 2, "pending", b""),
-                (b"Foo\n***\nbar\n", 2, "pending", b""),
+                (b"hello\n", 0, "rendered", b"<p>hello</p>\n"),
+                (b"Foo\n***\nbar\n", 0, "rendered", b"<p>Foo</p>\n<hr />\n<p>bar</p>\n"),
                 (b"[foo]: /url\n", 0, "rendered", b""),
                 (b"\xff", 1, "error", b"")]:
             with self.subTest(content=content):
@@ -138,16 +138,31 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 87, "fail": 0, "error": 0, "pending": 565})
+                self.assertEqual(report["counts"], {"pass": 239, "fail": 0, "error": 0, "pending": 413})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
-                supported = {207, 1, 2, 3, 6, 7, 284, 236, 239, 240, 8, 11, 18, 19, 36, 43, 47, 48, 50, 51, 52, 53, 54,
-                             69, 79, 85, 98, 100, 107, 110, 111, 112, 116, 117,
-                             118, 119, 120, 122, 123, 124, 125, 126, 127, 129,
-                             130, 131, 132, 133, 134, 135, 136, 137, 139, 142,
-                             143, 144, 146, 147, 231, 289,
-                             21, 31, 150, 151, 153, 154, 156, 157, 158, 159, 160,
-                             161, 162, 163, 164, 165, 166, 171, 173, 178, 181,
-                             183, 184, 186, 189, 190, 191}
+                supported = {
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 18, 19, 21, 31, 36,
+                    42, 43, 44, 45, 47, 48, 50, 51, 52, 53, 54, 57, 58, 59,
+                    60, 61, 62, 63, 64, 67, 68, 69, 71, 72, 73, 74, 75, 77,
+                    78, 79, 83, 84, 85, 86, 89, 90, 91, 92, 94, 96, 97, 98,
+                    99, 100, 101, 103, 107, 108, 109, 110, 111, 112, 114, 115,
+                    116, 117, 118, 119, 120, 122, 123, 124, 125, 126, 127,
+                    128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 139,
+                    140, 141, 142, 143, 144, 146, 147, 149, 150, 151, 153,
+                    154, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165,
+                    166, 169, 170, 171, 172, 173, 174, 175, 178, 179, 180,
+                    181, 182, 183, 184, 185, 186, 189, 190, 191, 207, 208,
+                    210, 219, 221, 225, 227, 231, 234, 235, 236, 237, 239,
+                    240, 241, 242, 244, 245, 246, 248, 249, 252, 255, 256,
+                    257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267,
+                    268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278,
+                    279, 280, 281, 282, 283, 284, 289, 294, 295, 296, 297,
+                    298, 299, 300, 301, 302, 303, 305, 306, 307, 308, 309,
+                    310, 311, 313, 314, 315, 316, 317, 318, 319, 320, 321,
+                    322, 323, 324, 325, 326, 347, 348, 365, 420, 421, 434,
+                    435, 436, 439, 448, 451, 611, 612, 644, 645, 646, 647,
+                    650, 651, 652
+                }
                 self.assertEqual(set(ledger["supported_html_examples"]), supported)
                 owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
                 for outcome in report["outcomes"]:
@@ -158,97 +173,20 @@ class ExecutableBoundary(unittest.TestCase):
                         self.assertEqual(outcome["status"], "pending")
                         self.assertEqual(outcome["reason"], "syntax-unimplemented")
                         self.assertEqual(outcome["owners"], owners[outcome["example"]])
-                html_owners = {
-                    (18,): [149, 169, 170, 172, 174, 175, 179, 180, 182, 185],
-                    (18, 24, 25): [152, 155, 167, 176, 177, 188],
-                    (18, 21, 23, 24, 25): [148],
-                    (18, 23, 24, 25): [168],
-                    (18, 21, 23): [187],
-                }
-                for required, examples in html_owners.items():
-                    for example in examples:
-                        self.assertEqual(owners[example], list(required))
-                self.assertEqual(owners[49], [18, 21])
-                self.assertEqual(owners[58], [18])
-                self.assertEqual(owners[59], [18])
-                setext_owners = {
-                    (18,): [83, 84, 86, 89, 90, 92, 94, 96, 97, 99, 101, 103],
-                    (18, 24, 25): [80],
-                    (18, 21, 24, 25): [81, 82],
-                    (18, 21): [87, 88, 93, 95, 104, 105],
-                    (18, 20, 23): [91],
-                    (18, 19): [102],
-                    (18, 19, 21): [106],
-                }
-                for required, examples in setext_owners.items():
-                    for example in examples:
-                        self.assertEqual(owners[example], list(required))
-                for example in [57, 60, 61]:
-                    self.assertEqual(owners[example], [18])
-                self.assertEqual(owners[219], [18])
-                self.assertEqual(owners[220], [18, 21])
-                self.assertEqual(owners[225], [18])
-                self.assertEqual(owners[226], [18, 21])
-                self.assertEqual(owners[227], [18])
-                for example in [62, 63, 64, 67, 68, 71, 72, 73, 74, 75, 77, 78]:
-                    self.assertEqual(owners[example], [18])
-                for example in [65, 76]:
-                    self.assertEqual(owners[example], [18, 19])
-                self.assertEqual(owners[66], [18, 19, 24, 25])
-                self.assertEqual(owners[70], [18, 21])
-                for example in [108, 109]:
-                    self.assertEqual(owners[example], [18])
-                self.assertEqual(owners[113], [18, 21])
-                for example in [114, 115]:
-                    self.assertEqual(owners[example], [18])
-                self.assertEqual(owners[121], [18, 20])
-                self.assertEqual(owners[128], [18])
+                self.assertFalse(any(18 in providers or 17 in providers for providers in owners.values()))
+                for example in [49, 70, 87, 88, 93, 95, 104, 105, 113, 220, 226, 243, 304, 312, 648, 649]:
+                    self.assertEqual(owners[example], [21])
+                for example in [65, 76, 102]:
+                    self.assertEqual(owners[example], [19])
+                self.assertEqual(owners[66], [19, 24, 25])
+                self.assertEqual(owners[327], [20])
+                self.assertEqual(owners[121], [20])
                 for example in [138, 145]:
-                    self.assertEqual(owners[example], [18, 20, 21])
-                for example in [140, 141]:
-                    self.assertEqual(owners[example], [18])
-                quote_owners = {
-                    (18, 21): [228, 229, 230, 232, 233, 238, 243, 247, 250, 251],
-                    (18,): [234, 235, 237, 241, 242, 244, 245, 246, 248, 249, 252],
-                    (18, 27): [214, 218],
-                }
-                for required, examples in quote_owners.items():
-                    for example in examples:
-                        self.assertEqual(owners[example], list(required))
-                # Marker recognition, item ownership and grouping are delivered.
-                # Text/break providers remain explicit. Definitions now finish
-                # block work; case 207 adds one actual HTML pass.
-                list_owners = {
-                    (18,): [255, 256, 257, 258, 259, 260, 261, 262, 263,
-                               264, 265, 266, 267, 268, 269, 270, 271, 272,
-                               273, 274, 275, 276, 277, 278, 279, 280, 281,
-                               282, 283, 294, 295, 296, 297, 298, 299, 300],
-                    (18, 21): [253, 254, 285, 286, 287, 288, 290, 291, 292, 293],
-                }
-                seen = set()
-                for required, examples in list_owners.items():
-                    for example in examples:
-                        self.assertNotIn(example, seen)
-                        seen.add(example)
-                        self.assertEqual(owners[example], list(required))
-                self.assertEqual(seen | {284, 289}, set(range(253, 301)))
-                self.assertEqual(report["outcomes"][288]["status"], "pass")
-                for example in range(301, 327):
-                    self.assertEqual(owners[example], [18, 21] if example in [304, 312] else [18])
-                self.assertEqual(report["outcomes"][6]["status"], "pass")
-                self.assertEqual(report["outcomes"][283]["status"], "pass")
-                self.assertEqual(report["outcomes"][206]["status"], "pass")
-                definition_owners = {
-                    (18, 27): [192, 193, 195, 196, 198, 199, 200, 203, 204, 205, 206, 209, 211, 212, 214, 215, 218],
-                    (18, 19, 27): [194, 202],
-                    (18, 21, 27): [197, 213, 216, 217],
-                    (18, 23, 27): [201],
-                    (18,): [208, 210],
-                }
-                self.assertFalse(any(17 in providers for providers in owners.values()))
-                for required, examples in definition_owners.items():
-                    for example in examples:
-                        self.assertEqual(owners[example], list(required))
+                    self.assertEqual(owners[example], [20, 21])
+                for example in [214, 218]:
+                    self.assertEqual(owners[example], [27])
+                for example in [650, 651, 652, 347, 348, 611, 612, 644, 645, 646, 647]:
+                    self.assertEqual(report["outcomes"][example-1]["status"], "pass")
         complete = runner.run_cases(self.cases, self.cases[206:207], ledger, self.adapter, None, True)
         self.assertTrue(complete["gate_passed"])
         self.assertFalse(complete["full_conformance"])
@@ -266,13 +204,13 @@ class ExecutableBoundary(unittest.TestCase):
         self.assertIn("diff", report["outcomes"][0])
 
     def test_pinned_upstream_helper_reports_unsupported_as_error(self):
-        case = self.cases[207]
-        self.assertEqual(case["example"], 208)
+        case = self.cases[326]
+        self.assertEqual(case["example"], 327)
         for mode in [[], ["--no-normalize"]]:
             result = subprocess.run([sys.executable, "-E", "-s", "-B",
                                      str(runner.corpus.CORPUS / "upstream/test/spec_tests.py"),
                                      "--spec", str(runner.corpus.CORPUS / "upstream/spec.txt"),
-                                     "--program", str(self.adapter), "--number", "208", *mode], capture_output=True)
+                                     "--program", str(self.adapter), "--number", "327", *mode], capture_output=True)
             self.assertEqual(result.returncode, 1)
             self.assertIn(b"0 passed, 0 failed, 1 errored, 651 skipped", result.stdout)
             self.assertIn(b'"status":"pending"', result.stdout)

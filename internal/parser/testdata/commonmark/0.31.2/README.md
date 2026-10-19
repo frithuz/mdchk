@@ -55,160 +55,58 @@ and a missing helper. CI runs these tests and the read-only drift check.
 
 ## Foundation coverage accounting
 
-`foundation.json` is mdchk's explicit, separately maintained pass/pending
-inventory. It lists every upstream ID exactly once: 87 supported HTML cases
-(1–3, 6–8, 11, 18–19, 21, 31, 36, 43, 47–48, 50–54, 69, 79, 85, 98, 100,
-107, 110–112, 116–120, 122–127, 129–137, 139, 142–144, 146–147, 150–151,
-153–154, 156–166, 171, 173, 178, 181, 183–184, 186, 189–191, 207, 231, 236,
-239–240, 284, 289)
-and 565 pending.
-Indented/fenced code, thematic breaks,
-HTML blocks, ATX/Setext headings, nested block quotes, leading reference
-definitions and the source-preserving paragraph lifecycle are implemented.
-Documents of code with established info semantics, HTML, breaks, empty ATX headings
-and blanks, including empty/inline-free quotes and lists, complete with available
-references and vacuous inline work. Definition-only 207 also completes;
-text-bearing documents have complete block/reference work and pending inlines.
-Undecoded definition/fence-info semantics keep Blocks pending/Inlines not started,
-with raw components and available reference records/lookup. Code-only passes in other sections do not establish general
-inline recognition. Info requiring decoding remains pending #19.
+`foundation.json` is mdchk's separately reviewed pass/pending inventory. Every
+original upstream ID occurs exactly once: **239 supported HTML cases and 413
+pending**, preserving all 87 previous passes and adding 152 from inline text.
+The parser recognizes the block structure described in the
+[model contract](../../../model.md), collects document-wide definitions, and
+constructs source-preserving Text children in paragraphs and headings after the
+block/reference handoff. Code and raw HTML payloads stay opaque.
 
-Indented-code cases 108/109 retain reference/inline owners #18;
-113 retains #18/#21; 114/115 retain #18. Paragraph targets 219–227 retain
-#18, plus #21 where actual multiline/break processing applies; 225 now has
-code and a following paragraph, without pending #10 ownership. ATX targets retain
-#18 for reference/text, #19 for escapes (65/66/76), #24/#25 for emphasis (66)
-and #21 for multiline content (70). Thematic targets retain reference/inline
-(#18), breaks (#21) and emphasis (#24/#25) where
-relevant. Setext 92/101 retain #18, 93 also retains #21, and lists 94/99
-retain #18. Case 91 retains reference/text/code-span/inline-HTML providers
-(#18/#20/#23); recognized headings/fallbacks retain their actual reference/text,
-multiline, escape and emphasis owners. Fenced
-128 retains #18; 121 retains #18/#20; 138/145 additionally retain #21;
-140/141 retain #18 for surrounding text. Other
-examples use broad remaining inline/core-completion scopes #18/#29, not a claim
-that each needs every provider. Later coverage owners are not reverse native
-blockers on staged deliveries. No fabricated inline interpretation establishes
-progress. The #5 test-only adapter/runner is available; the inventory does not
-alter upstream inputs, expectations or provenance.
-Regeneration still writes only examples.json.
+The unchanged 650–652 cases now pass actual Parse/Evaluate. Example 327 remains
+pending for #20; unmatched backticks in 347/348 are literal. Independent inline
+AST/source assertions also cover Tabs 4/5/9/10, literal backslashes 13, block-local
+backticks 42, unmatched emphasis markers and invalid/bare autolinks. Existing
+paragraph/ATX/Setext/thematic/code/HTML/quote/list tests retain their independent
+block envelopes, marker ranges, original content and hierarchy, adding Text checks
+where applicable. Exact byte ranges are separate assertions from HTML comparison.
 
-`go test ./internal/parser` checks complete/unique accounting against the
-retained corpus and verifies parse outcomes match the ledger. Actual Parse
-assertions from original examples 219–227 independently check paragraph
-grouping and source spans; 225 asserts code followed by a paragraph; 227's heading
-is now independently asserted. Those tests do not assert final HTML or use
-constructed nodes as proof of recognition. These are coverage-contract
-assertions, not HTML-conformance passes. `TestThematicUpstreamTargets`
-separately exercises unchanged 43–61 and extra supported cases 11/98 with
-independent actual-parser kinds, source envelopes and maximal contiguous
-`thematic-marker` run ranges. `TestATXUpstreamTargets` adds all unchanged
-62–79 plus 227, with independent node order, heading level/style,
-opening/closing spans, trimmed source-backed content and full line envelopes.
-It proves actual Parse/Evaluate output for empty-heading 79 without fabricated
-inline children. `TestSetextUpstreamTargets` covers unchanged 80–106 and 59,
-independently asserting whole-paragraph promotion, level/style, exact raw content,
-underline-only markers and multiline physical envelopes, plus following blocks
-and fallback/precedence. Nineteen Setext-section cases establish structural or
-heading/paragraph progress, including 91's invalid multiline-tag suffix. Quotes
-92/101 now precede outside breaks and 93 retains lazy text; list cases 94/99 now
-retain item paragraphs and outside breaks, with inline work pending.
-Cases 85/100 pass as code and breaks, and 98 remains two breaks. Source-only
-deferral is not recognized heading coverage.
-Extra Setext fixtures cover single markers, whitespace/backslash handling, tabs,
-Unicode/NUL, LF/CRLF/CR/EOF, frozen accessors and interruption before/after
-promotion. Nonempty/unsupported cases stay pending; extra ATX fixtures
-check raw escapes, ASCII-only whitespace, Unicode/NUL provenance, endings/EOF,
-completion guards and immutable ownership. Together these actual parser tests
-cover the supported HTML outputs; pending cases stay distinct.
-`TestIndentedUpstreamTargets` covers all unchanged 107–118 and newly passing
-code-only inputs 1–3, 8, 18, 36, 134, 231 and 289 with independent source and
-literal expectations. Thematic 48, ATX 69 and Setext 85/100 assert code in their
-own fixtures. Extra code tests distinguish raw slices from normalized Literal,
-LF/CRLF/CR and synthetic EOF LF provenance, indentation markers and trailing
-blanks/whitespace; they also verify immutable snapshots and truthful interrupted
-versus complete/pending outcomes. No code content is parsed inline. Independent
-fixtures cover paragraph interruption, Setext/spaced-dash precedence, negative
-markers, tabs/indentation, Unicode/NUL, endings/EOF, source ownership and
-interruption. See the [model contract](../../../model.md) for supported
-outcomes and later ownership.
+`TestInlineSegmentedSourceAndDetachedAccessors` verifies omitted prefixes, lazy
+continuation, nested quote/item text, both heading styles, original endings/EOF,
+Unicode/NUL provenance and immutable Text accessors. Matched syntax whose provider
+is undelivered remains pending, even beside supported text. Dispatch/state hooks
+alone never establish syntax support; conservative checks also defer some invalid
+candidates until their actual handlers can prove fallback. Multiline mapping
+preserves exact source endings while semantic breaks remain #21.
 
-`TestHTMLUpstreamTargets` adds all unchanged 148–191 plus cross-feature 21/31,
-with independent original-byte envelopes/content ranges, form identity, node order
-and source ownership. Twenty-five HTML-section cases pass; nineteen mixed or
-container cases remain pending. Case 174 retains its quote and outside paragraph
-(#18); 175 retains reference/inline owners (#18), and other
-mixed cases retain their precise reference/text, break, inline-HTML and emphasis
-providers in the ledger. Fixed-form opacity, paragraph interruption, complete-tag
-near misses, terminating-line retention, code precedence, LF/CRLF/CR/EOF, NUL,
-Unicode, tabs, immutable accessors and interruption have separate fixtures.
-HTML preserves original endings in raw Content, with semantic NUL substitution;
-recognition adds no sanitizer, inline interpretation or production renderer.
+The ledger no longer lists #18 as an undelivered provider. Remaining scopes are
+#19 decoding, #20 code spans, #21 breaks, #22 autolinks, #23 inline HTML, #24/#25
+emphasis, #26/#27 links and #28 images, as applicable to each case. Auxiliary
+coverage owners can be conservative when a later code/HTML handler may prove
+content opaque; they are not reverse native prerequisites or conformance passes.
+Thematic 55, for example, remains pending for conservative delimiter
+classification (#24/#25), while 57–61 now pass. Refer to the exact per-ID ledger rather than inferring support from a
+section name. Source-only structural progress is not a complete HTML pass.
 
-`TestQuoteUpstreamTargets` exercises all unchanged 228–252 with independent actual
-Parse nesting, node order, envelopes, per-line prefix markers and logical content
-ranges. Cases 236/239/240 newly pass HTML; literal-code 231 remains supported.
-`TestQuotePartialTabUpstream6` verifies the fourth new pass with exact original
-partial-tab/code provenance. Setext 92/93/101, fence 128 and HTML 174 also assert
-quote structure. Reference cases 214/218 remain pending for #18/#27; quote 235
-retains #18 inline ownership, and other pending quote cases retain #18 with
-#21 where multiline text requires it. Separate fixtures verify all seven HTML
-forms at quote boundaries, opaque payload, prefix-free raw content and residual
-tabs, marked Setext versus unmarked laziness, omitted nested prefixes, code
-transitions, NUL/Unicode/endings/EOF and immutable ownership. Deterministic checks
-discard unfinished nested containers on cancellation/deadline while retaining
-closed prefixes; strict UTF-8 failure keeps precedence. No copied stripped source,
-new runtime dependency, public schema or production renderer is introduced.
+Every unchanged 192–218 definition, 219–227 paragraph, 62–79 ATX, 80–106 Setext,
+43–61 thematic, 107–118 indented, 119–147 fenced, 148–191 HTML, 228–252 quote,
+253–300 list-item and 301–326 list case retains independent actual-Parse/source
+coverage. The tests preserve invalid fallback, precedence, stripping/trimming,
+partial tabs, NUL, CRLF/CR/LF/EOF, blank ownership, initial ordinals, list tightness,
+non-rendered definition boundaries and protected payload behavior. Constructed
+renderer fixtures remain separate from actual parser recognition.
 
-`TestListMarkerUpstreamTargets` preserves independent opening metadata expectations
-for unchanged List items examples 253–300. `TestListContinuationUpstreamTargets`
-separately supplies complete independent trees, child ordering, item/leaf envelopes
-and logical source ranges for all 48 inputs: 40 with item structure, seven non-item
-cases and existing complete code 289. Item continuation now matches effective
-indentation with mixed quotes, paragraph-only laziness, blank/empty boundaries,
-code and recursive same-line starts. Prefix properties survive closure; leaves
-retain segmented original source and consumed/residual tab provenance. Earlier
-94/99, 108/109, 175 and 235 now assert nested content and outside siblings/breaks.
-Grouping/tightness is now established by List parents; actual remaining
-reference/text/break providers are individually recorded in the ledger. Lists
-301–326 have independent full available hierarchy, per-list Tight/start/type,
-envelopes, original marker ranges and leaf-segment assertions. Definition-bearing
-317 now retains all three items and explicit outer Tight=false. Cases 307/319,
-318, 320/321 and 324–326 verify independent nested boundaries, opaque blanks,
-quotes and direct-block separation. Existing item/leaf fixtures retain their exact
-source assertions through the new List wrappers; constructed renderer tests
-separately verify mixed tightness and quoted paragraphs.
+Deterministic cancellation/deadline checks cover block/reference and inline work.
+Interrupted inline construction does not mutate already frozen block handles or
+publish a partly constructed tree; strict invalid-UTF-8 failure keeps precedence.
+Bounded fuzz targets retain source, reference, list and inline provenance oracles.
+These checks do not establish full resource/work/depth-budget enforcement (#31),
+fix safety or production CLI/MCP parity.
 
-Tabs 7 and empty item 284 have independent complete Parse/source and actual HTML
-assertions. They add two passes while preserving the earlier 84 IDs at that increment. Definition-only 207 now adds
-one more pass, preserving all 86 previous IDs: 87 pass, 565 pending. All 301–326 retain #18, with #21 additionally for multiline
-304/312. Blank-boundary fixtures cover code/HTML/quote ownership, empty-item gaps,
-LF/CRLF/CR/EOF and nested definition recognition. FuzzListGroupingBoundaries generates
-marker changes, blanks, quote parents and endings with an independent grouping
-oracle. Interruption preserves closed prefixes and discards unfinished containers;
-no missing inline interpretation or adapter completion check is weakened.
-Final conformance still requires all 652 cases without exemptions.
-
-`scanner.json` is a separate mdchk capability-target registry. It names exactly
-Tabs IDs 1–11 as scanner/indentation validation targets. `TestScannerCorpusTargets`
-checks their unique upstream identities, Tabs section and exact original input
-spellings, then reconstructs physical lines and exercises scanner helpers without
-changing the source. Independent coordinate, character, NUL and partial-tab fixtures
-verify helper behavior. These checks add no supported HTML cases: example 11's
-HTML pass comes from thematic parsing, not scanner helpers. Do not rewrite
-upstream expectations or count helper assertions as HTML comparison passes.
-
-`TestFencedUpstreamTargets` reads all original 119–147 and cross-feature 19 with
-independent actual Parse assertions for node order/style, literal payload, raw
-info, fence character/width, token-only markers, indentation and physical envelopes.
-Twenty-three fenced-section cases match HTML, including prior indented-code 134;
-the six pending cases retain the actual providers listed above. Separate fixtures
-cover literal HTML/reference/entity/directive-looking payload, info escaping and
-unavailable decoding, empty/blank/unclosed/EOF blocks, LF/CRLF/CR, partial tabs,
-NUL/Unicode, immutable accessors, encoding precedence and interrupted prefixes.
-A valid missing closer is distinct from interruption, and constructed nodes or
-HTML alone cannot establish source-span acceptance. Source bytes and upstream
-expectations remain unchanged; see the model's fenced-code contract.
+The runner verifies exact upstream identities and provenance, compares actual
+HTML, rejects lost passes and unrecorded new passes, and never rewrites this
+ledger or generated expectations. Regeneration still writes only examples.json.
+Final completion requires all 652 cases without skips or exemptions.
 
 ## Reference-definition recognition
 
@@ -221,7 +119,7 @@ LF/CRLF/CR/EOF, prefixes/tabs, immutability, literal code/HTML and interruption.
 Definition-only 207 has one actual definition, no paragraph, complete phases and
 empty HTML. List 317 retains all three items, its non-rendered definition and loose
 outer list. #17 ownership is removed; remaining 192–218 cases identify actual
-#18/#19/#21/#23/#27 providers in the ledger. No forward resolution is claimed.
+#19/#21/#23/#27 providers in the ledger. No forward resolution is claimed.
 
 ## Executable comparisons and passing baseline
 
@@ -231,8 +129,8 @@ See [contributor instructions](../../../../../docs/contributing.md#run-commonmar
 for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
 
 The default staged regression gate allows explicitly pending cases: currently
-87 pass, 0 fail, 0 error, 565 pending, with `syntax-unimplemented` and the
-remaining owners above. All 86 earlier passes remain; definition-only 207 adds one pass. Synthetic
+239 pass, 0 fail, 0 error, 413 pending, with `syntax-unimplemented` and the
+remaining owners above. All 87 earlier passes remain; text scanning adds 152 passes. Synthetic
 empty/ASCII-blank documents also complete and render empty HTML. It is not a
 conformance-completion claim. `--require-complete` fails on pending; final
 completion needs all 652 passes in an unfiltered run. The retained upstream

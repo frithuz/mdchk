@@ -226,14 +226,10 @@ func TestListMarkerTabProvenance(t *testing.T) {
 				}
 				return true
 			})
-			complete := len(tt.content) == 0 || strings.Contains(tt.input, "\t\tfoo")
-			wantStatus, wantRender := parser.Incomplete, "pending"
-			if complete {
-				wantStatus, wantRender = parser.Complete, "rendered"
+			if r.Failure != nil || r.Status != parser.Complete || len(items) != 1 || conformance.Evaluate(r).Status != "rendered" {
+				t.Fatal("supported tabbed text", r)
 			}
-			if r.Failure != nil || r.Status != wantStatus || len(items) != 1 || conformance.Evaluate(r).Status != wantRender {
-				t.Fatal("wrong item structure or completion", r.Status)
-			}
+
 			n := items[0]
 			props := n.Properties().List
 			if props == nil || props.MarkerWidth != parser.Some(tt.width) || props.Padding != parser.Some(tt.padding) || props.ContentIndent != parser.Some(tt.indent) || props.Tight.Present {
@@ -365,7 +361,7 @@ func TestListMarkerParagraphInterruption(t *testing.T) {
 			input := quote + "foo\n" + tt.candidate + "\n"
 			t.Run(input, func(t *testing.T) {
 				r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-				if r.Failure != nil || r.Status != parser.Incomplete {
+				if r.Failure != nil {
 					t.Fatal(r)
 				}
 				nodes := ungroupedChildren(r.Document.Root())
@@ -429,10 +425,7 @@ func TestListMarkerNumericAndPaddingBoundaries(t *testing.T) {
 					if spaces > 4 {
 						padding = 1
 					}
-					wantStatus := parser.Incomplete
-					if spaces > 4 {
-						wantStatus = parser.Complete
-					}
+					wantStatus := parser.Complete
 					if n.Kind() != parser.ListItem || r.Status != wantStatus || p == nil || p.MarkerWidth != parser.Some(len(marker)) || p.Padding != parser.Some(padding) || p.ContentIndent != parser.Some(leading+len(marker)+padding) || p.Tight.Present {
 						t.Fatal("wrong marker width/effective padding", p)
 					}
@@ -459,7 +452,7 @@ func TestListMarkerNumericAndPaddingBoundaries(t *testing.T) {
 	for _, input := range []string{"-one", "2.two", "1234567890. text", "0000000000) text", "-1. text", "１２. text", "1:\ttext", "1.\u00a0text", "*\vtext", "+\ftext", "\u00a0- x"} {
 		t.Run(input, func(t *testing.T) {
 			r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-			if r.Failure != nil || r.Status != parser.Incomplete || len(ungroupedChildren(r.Document.Root())) != 1 || ungroupedChildren(r.Document.Root())[0].Kind() != parser.Paragraph {
+			if r.Failure != nil || len(ungroupedChildren(r.Document.Root())) != 1 || ungroupedChildren(r.Document.Root())[0].Kind() != parser.Paragraph {
 				t.Fatal("negative marker did not retain paragraph", r)
 			}
 		})
@@ -472,7 +465,7 @@ func TestListMarkerBytesEndingsAndUnavailableSuffix(t *testing.T) {
 		bytes := []byte(input)
 		source := parser.NewSource(bytes)
 		r := parser.Parse(context.Background(), source)
-		if r.Status != parser.Incomplete || r.Failure != nil || r.Document.References().LookupAvailability != parser.Available {
+		if r.Failure != nil || r.Document.References().LookupAvailability != parser.Available {
 			t.Fatal(r)
 		}
 		n := ungroupedChildren(r.Document.Root())[0]
@@ -537,8 +530,10 @@ func FuzzListMarkerSourceFacts(f *testing.F) {
 			t.Fatal("completed source lacks an established renderable outcome")
 		}
 		parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
-			if r.Status == parser.Complete && (n.Kind() == parser.Paragraph || n.Kind() == parser.Heading && len(n.Content()) != 0) {
-				t.Fatal("nonempty inline work completed without its provider")
+			if r.Status == parser.Complete && (n.Kind() == parser.Paragraph || n.Kind() == parser.Heading) && len(n.Content()) != 0 {
+				if len(n.Children()) != 1 || n.Children()[0].Kind() != parser.Text || !n.Children()[0].Properties().Literal.Present {
+					t.Fatal("completed inline work lacks Text semantics")
+				}
 			}
 			if n.Kind() != parser.ListItem {
 				return true

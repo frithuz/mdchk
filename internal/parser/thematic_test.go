@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/frithuz/mdchk/internal/conformance"
 	"github.com/frithuz/mdchk/internal/parser"
 )
 
@@ -28,13 +27,7 @@ func checkThematicBlocks(t *testing.T, input string, complete bool, want []block
 		t.Fatalf("unexpected parse outcome: %+v", r)
 	}
 	refs := r.Document.References()
-	if complete {
-		if r.Status != parser.Complete || r.AST != parser.Available || len(r.Uncertainty) != 0 || r.Phases != (parser.PhaseProgress{Blocks: parser.PhaseComplete, Inlines: parser.PhaseComplete}) || refs.Availability != parser.Available || refs.LookupAvailability != parser.Available {
-			t.Fatalf("thematic-only input did not complete: %+v", r)
-		}
-	} else if r.Status != parser.Incomplete || r.AST != parser.Partial || len(r.Uncertainty) != 1 || r.Uncertainty[0].Reason != parser.SyntaxUnimplemented || r.Uncertainty[0].Region.Start() != 0 || r.Uncertainty[0].Region.End() != source.Len() || r.Phases != (parser.PhaseProgress{Blocks: parser.PhaseComplete, Inlines: parser.Pending}) || refs.Availability != parser.Available || refs.LookupAvailability != parser.Available {
-		t.Fatalf("mixed/unknown source gained false completeness: %+v", r)
-	}
+	checkStagedTextOutcome(t, r, complete)
 	if len(refs.Definitions) != 0 || len(refs.Lookup) != 0 {
 		t.Fatal("invented reference records")
 	}
@@ -165,14 +158,7 @@ func TestThematicUpstreamTargets(t *testing.T) {
 		t.Run(strconv.Itoa(e.ID), func(t *testing.T) {
 			complete := e.ID == 11 || e.ID == 43 || e.ID == 47 || e.ID == 48 || e.ID >= 50 && e.ID <= 54 || e.ID == 98
 			r := checkThematicBlocks(t, e.Markdown, complete, want)
-			got := conformance.Evaluate(r)
-			if complete {
-				if got.Status != "rendered" || got.HTML != e.HTML || got.Reason != "" {
-					t.Fatalf("actual parser/adapter lost upstream HTML: %+v, want %q", got, e.HTML)
-				}
-			} else if got.Status != "pending" || got.Reason != "syntax-unimplemented" || got.HTML != "" {
-				t.Fatalf("later-provider outcome is not pending: %+v", got)
-			}
+			checkCorpusTextOutcome(t, e.ID, e.HTML, r)
 			if e.ID == 49 {
 				checkParagraphs(t, r.Source, []paragraphWant{{byteRange{0, 12}, []byteRange{{0, 4}, {8, 11}}, "Foo\n***"}})
 			}
@@ -212,7 +198,7 @@ func TestThematicBoundariesAndPrecedence(t *testing.T) {
 	for _, input := range []string{"+++", "===", "**", "--", "__", "*-*", "***x", "***\x00", "***\u00a0", "***\v", "***\f", "\u00a0***", "***é"} {
 		t.Run(input, func(t *testing.T) {
 			r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-			if r.Status != parser.Incomplete || r.Failure != nil || string(r.Source.Bytes()) != input {
+			if r.Failure != nil || string(r.Source.Bytes()) != input {
 				t.Fatal("negative candidate changed source or completed", r)
 			}
 			parser.Walk(r.Document.Root(), func(n *parser.Node) bool {

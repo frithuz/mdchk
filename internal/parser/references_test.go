@@ -169,9 +169,8 @@ func TestReferenceUpstreamTargets(t *testing.T) {
 				if r.Status != parser.Complete || r.Phases != (parser.PhaseProgress{Blocks: parser.PhaseComplete, Inlines: parser.PhaseComplete}) || len(nodes) != 0 || out.Status != "rendered" || out.HTML != e.HTML {
 					t.Fatal("definition-only recognition incomplete", r, out)
 				}
-			} else if r.Status != parser.Incomplete || conformance.Evaluate(r).Status != "pending" {
-				t.Fatal("dependent syntax falsely complete", r)
 			}
+			checkCorpusTextOutcome(t, e.ID, e.HTML, r)
 			switch e.ID {
 			case 197:
 				if len(nodes) != 3 {

@@ -70,7 +70,7 @@ func TestListGroupingEarlierConsumers(t *testing.T) {
 		seen++
 		t.Run(strconv.Itoa(e.ID), func(t *testing.T) {
 			r := parser.Parse(context.Background(), parser.NewSource([]byte(e.Markdown)))
-			if r.Failure != nil || r.Status != parser.Incomplete {
+			if r.Failure != nil {
 				t.Fatal("wrong staged result", r)
 			}
 			count := 0
@@ -193,9 +193,7 @@ func TestListGroupingUpstreamTargets(t *testing.T) {
 		t.Run(strconv.Itoa(e.ID), func(t *testing.T) {
 			r := checkListTrees(t, e.Markdown, wants[e.ID])
 			checkGroupedItemMarkers(t, r, markers[e.ID])
-			if r.Status != parser.Incomplete || r.AST != parser.Partial || conformance.Evaluate(r).Status != "pending" {
-				t.Fatal("later reference/inline providers invented", r)
-			}
+			checkCorpusTextOutcome(t, e.ID, e.HTML, r)
 		})
 	}
 	if len(seen) != 26 || len(wants) != 26 {
@@ -313,8 +311,8 @@ func TestListOrderedStartAndReferenceBoundaries(t *testing.T) {
 	checkGroupedItemMarkers(t, r, []byteRange{{0, 4}, {7, 9}, {12, 14}})
 	for _, input := range []string{"- [r]: /url\n- unseen\n", "- > [r]: /url\n- unseen\n", "- #\n  - [r]: /url\n- unseen\n"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-		if r.Status != parser.Incomplete || conformance.Evaluate(r).Status != "pending" {
-			t.Fatal("inline suffix falsely completed")
+		if r.Status != parser.Complete || conformance.Evaluate(r).Status != "rendered" {
+			t.Fatal("supported inline suffix did not complete")
 		}
 		if refs := r.Document.References(); refs.LookupAvailability != parser.Available || len(refs.Definitions) != 1 || refs.Lookup["r"] != 0 {
 			t.Fatal("missing document-wide reference", refs)

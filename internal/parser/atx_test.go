@@ -63,13 +63,7 @@ func checkATX(t *testing.T, input string, complete bool, want []atxBlockWant) pa
 		t.Fatalf("unexpected parse result: %+v", r)
 	}
 	refs := r.Document.References()
-	if complete {
-		if r.Status != parser.Complete || r.AST != parser.Available || len(r.Uncertainty) != 0 || r.Phases != (parser.PhaseProgress{Blocks: parser.PhaseComplete, Inlines: parser.PhaseComplete}) || refs.Availability != parser.Available || refs.LookupAvailability != parser.Available {
-			t.Fatalf("proven inline-free document did not complete: %+v", r)
-		}
-	} else if r.Status != parser.Incomplete || r.AST != parser.Partial || len(r.Uncertainty) != 1 || r.Uncertainty[0].Reason != parser.SyntaxUnimplemented || r.Uncertainty[0].Region.Start() != 0 || r.Uncertainty[0].Region.End() != len(input) || r.Phases != (parser.PhaseProgress{Blocks: parser.PhaseComplete, Inlines: parser.Pending}) || refs.Availability != parser.Available || refs.LookupAvailability != parser.Available {
-		t.Fatalf("unimplemented content gained false completeness: %+v", r)
-	}
+	checkStagedTextOutcome(t, r, complete)
 	if len(refs.Definitions) != 0 || len(refs.Lookup) != 0 {
 		t.Fatal("invented references")
 	}
@@ -183,18 +177,23 @@ func checkATX(t *testing.T, input string, complete bool, want []atxBlockWant) pa
 			if text != w.text {
 				t.Fatalf("block %d content %q, want %q", i, text, w.text)
 			}
-			checkNodes(ungroupedChildren(n), w.children)
+			if n.Kind() == parser.Paragraph || n.Kind() == parser.Heading {
+				checkInlineText(t, r, n, w.text, w.content)
+			} else {
+				checkNodes(ungroupedChildren(n), w.children)
+			}
 		}
 	}
 	checkNodes(nodes, want)
 	outcome := conformance.Evaluate(r)
-	if complete {
+	if r.Status == parser.Complete {
 		if outcome.Status != "rendered" {
-			t.Fatal("proven complete input not rendered", outcome)
+			t.Fatal(outcome)
 		}
-	} else if outcome.Status != "pending" || outcome.Reason != "syntax-unimplemented" || outcome.HTML != "" {
-		t.Fatal("pending content rendered", outcome)
+	} else if outcome.Status != "pending" || outcome.HTML != "" {
+		t.Fatal(outcome)
 	}
+
 	if len(original) > 0 {
 		original[0] = '!'
 	}
@@ -318,7 +317,7 @@ func TestATXBoundariesAndProvenance(t *testing.T) {
 	for _, input := range []string{"#######", "####### x", "#x", "#\u00a0x", "#\vx", "#\fx", "\\# x"} {
 		t.Run("negative/"+input, func(t *testing.T) {
 			r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-			if r.Status != parser.Incomplete || r.Failure != nil || string(r.Source.Bytes()) != input {
+			if r.Failure != nil || string(r.Source.Bytes()) != input {
 				t.Fatal("negative input changed or completed", r)
 			}
 			parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
