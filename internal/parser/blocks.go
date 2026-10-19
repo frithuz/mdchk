@@ -12,7 +12,6 @@ type blockLine struct {
 	contentStart int
 	indent       int
 	first        byte
-	second       byte
 	cursor       Indentation // after container prefixes, before leaf indentation
 }
 
@@ -219,6 +218,20 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			continue
 		}
 		state = Pending
+		if start, ok := classifyListStart(line, p.paragraphOpen()); ok {
+			if err := p.closeTo(depth); err != nil {
+				return Pending, err
+			}
+			item, err := start.firstLine()
+			if err != nil {
+				return Pending, err
+			}
+			p.attach(item)
+			// #15 must establish continuation/closure before later physical lines
+			// can be attached to this item or treated as sibling blocks. #16 owns
+			// grouping/tightness; do not put a guessed List on the container stack.
+			break
+		}
 		deferred := false
 		for _, hook := range p.hooks {
 			if hook(line, p.paragraphOpen()) {
@@ -227,7 +240,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 		}
 		if deferred {
-			// Do not invent the shape of an unavailable list/reference suffix. Keep
+			// Do not invent the shape of an unavailable reference suffix. Keep
 			// established quote prefixes/closed children, but discard an open paragraph.
 			p.stack = p.stack[:depth]
 			break
@@ -395,9 +408,6 @@ func (p *blockParser) logicalLine(physical physicalLine, cursor Indentation) blo
 		default:
 			line.contentStart, line.indent = c.offset, min(4, c.column-cursor.column)
 			line.first = text[c.offset]
-			if c.offset+1 < c.end {
-				line.second = text[c.offset+1]
-			}
 			return line
 		}
 		c.offset++
@@ -411,15 +421,10 @@ func pendingBlockStart(line blockLine, paragraphOpen bool) bool {
 		// Indented code cannot interrupt an existing paragraph.
 		return !paragraphOpen
 	}
-	first := line.first
-	if first == '-' {
-		// Failed underlines and non-list dash text can be ordinary paragraphs.
-		// A potential list item still needs its provider, including an empty one.
-		return line.contentStart+1 == line.end || line.second == ' ' || line.second == '\t'
-	}
-	// Fence and HTML candidates have already been classified. Invalid starts
-	// are ordinary paragraph content, still awaiting the inline provider.
-	return strings.ContainsRune("*_+[", rune(first)) || first >= '0' && first <= '9'
+	// Lists, fences and HTML have their own grammar-aware classifiers. Invalid
+	// candidates are ordinary paragraph content, still awaiting inlines. Reference
+	// definitions retain their conservative boundary until #17.
+	return line.first == '['
 }
 
 func (p *blockParser) appendParagraph(line blockLine) {

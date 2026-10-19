@@ -59,7 +59,7 @@ func checkThematicBlocks(t *testing.T, input string, complete bool, want []block
 			t.Fatal("independent snapshot accepted node envelope")
 		}
 		var ranges []byteRange
-		for _, m := range n.Markers() {
+		for markerIndex, m := range n.Markers() {
 			ranges = append(ranges, byteRange{m.Source.Start(), m.Source.End()})
 			text, err := source.Text(m.Source)
 			role := "thematic-marker"
@@ -69,10 +69,16 @@ func checkThematicBlocks(t *testing.T, input string, complete bool, want []block
 			if n.Kind() == parser.Heading {
 				role = "underline"
 			}
+			if n.Kind() == parser.ListItem {
+				role = "item-prefix"
+				if markerIndex == 1 {
+					role = "item-marker"
+				}
+			}
 			if err != nil || m.Role != role || len(text) == 0 {
 				t.Fatal("marker lost original spelling/role", m, err)
 			}
-			for j := 0; role != "indent-prefix" && j < len(text); j++ {
+			for j := 0; n.Kind() != parser.ListItem && role != "indent-prefix" && j < len(text); j++ {
 				if text[j] != text[0] || text[j] != '*' && text[j] != '-' && text[j] != '_' {
 					t.Fatal("marker range contains non-marker bytes", text)
 				}
@@ -107,9 +113,9 @@ func TestThematicUpstreamTargets(t *testing.T) {
 	wants := map[int][]blockWant{
 		11: {{parser.ThematicBreak, byteRange{0, 7}, []byteRange{{0, 1}, {2, 3}, {4, 5}}}},
 		43: {{parser.ThematicBreak, byteRange{0, 4}, []byteRange{{0, 3}}}, {parser.ThematicBreak, byteRange{4, 8}, []byteRange{{4, 7}}}, {parser.ThematicBreak, byteRange{8, 12}, []byteRange{{8, 11}}}},
-		44: nil,
+		44: {{parser.Paragraph, byteRange{0, 4}, nil}},
 		45: {{parser.Paragraph, byteRange{0, 4}, nil}}, // Equals without content is a paragraph.
-		46: nil,
+		46: {{parser.Paragraph, byteRange{0, 9}, nil}},
 		47: {{parser.ThematicBreak, byteRange{0, 5}, []byteRange{{1, 4}}}, {parser.ThematicBreak, byteRange{5, 11}, []byteRange{{7, 10}}}, {parser.ThematicBreak, byteRange{11, 18}, []byteRange{{14, 17}}}},
 		48: {{parser.CodeBlock, byteRange{0, 8}, []byteRange{{0, 4}}}},
 		49: {{parser.Paragraph, byteRange{0, 12}, nil}},
@@ -118,10 +124,13 @@ func TestThematicUpstreamTargets(t *testing.T) {
 		52: {{parser.ThematicBreak, byteRange{0, 20}, []byteRange{{1, 3}, {5, 6}, {7, 9}, {10, 11}, {12, 14}, {15, 16}, {17, 19}}}},
 		53: {{parser.ThematicBreak, byteRange{0, 22}, []byteRange{{0, 1}, {6, 7}, {13, 14}, {20, 21}}}},
 		54: {{parser.ThematicBreak, byteRange{0, 12}, []byteRange{{0, 1}, {2, 3}, {4, 5}, {6, 7}}}},
-		55: nil, 56: nil, 57: nil,
+		55: {{parser.Paragraph, byteRange{0, 10}, nil}, {parser.Paragraph, byteRange{11, 19}, nil}, {parser.Paragraph, byteRange{20, 28}, nil}},
+		56: {{parser.Paragraph, byteRange{0, 5}, nil}},
+		57: {{parser.ListItem, byteRange{0, 6}, []byteRange{{0, 2}, {0, 1}}}},
 		58: {{parser.Paragraph, byteRange{0, 4}, nil}, {parser.ThematicBreak, byteRange{4, 8}, []byteRange{{4, 7}}}, {parser.Paragraph, byteRange{8, 12}, nil}},
 		59: {{parser.Heading, byteRange{0, 8}, []byteRange{{4, 7}}}, {parser.Paragraph, byteRange{8, 12}, nil}},
-		60: nil, 61: nil, // Unresolved list containers defer.
+		60: {{parser.ListItem, byteRange{0, 6}, []byteRange{{0, 2}, {0, 1}}}},
+		61: {{parser.ListItem, byteRange{0, 6}, []byteRange{{0, 2}, {0, 1}}}},
 		98: {{parser.ThematicBreak, byteRange{0, 4}, []byteRange{{0, 3}}}, {parser.ThematicBreak, byteRange{4, 8}, []byteRange{{4, 7}}}},
 	}
 	data, err := os.ReadFile("testdata/commonmark/0.31.2/examples.json")

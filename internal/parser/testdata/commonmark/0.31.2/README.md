@@ -71,15 +71,15 @@ empty references and vacuous inline work; nonempty headings/paragraphs and unkno
 input remain partial. Code-only passes in other sections do not establish general
 list or inline recognition. Info requiring decoding remains pending #19.
 
-Indented-code cases 108/109 retain list/container/reference/inline owners #14–#18;
+Indented-code cases 108/109 retain list/container/reference/inline owners #15–#18;
 113 retains #17/#18/#21; 114/115 retain #17/#18. Paragraph targets 219–227 retain
 #17/#18, plus #21 where actual multiline/break processing applies; 225 now has
 code and a following paragraph, without pending #10 ownership. ATX targets retain
 #17/#18 for reference/text, #19 for escapes (65/66/76), #24/#25 for emphasis (66)
 and #21 for multiline content (70). Thematic targets retain lists/containers
-(#14–#16), reference/inline (#17/#18), breaks (#21) and emphasis (#24/#25) where
+(#15/#16), reference/inline (#17/#18), breaks (#21) and emphasis (#24/#25) where
 relevant. Setext 92/101 retain #17/#18, 93 also retains #21, and lists 94/99
-retain #14–#16. Case 91 retains reference/text/code-span/inline-HTML providers
+retain #15/#16. Case 91 retains reference/text/code-span/inline-HTML providers
 (#17/#18/#20/#23); recognized headings/fallbacks retain their actual reference/text,
 multiline, escape and emphasis owners. Fenced
 128 retains #17/#18; 121 retains #17/#18/#20; 138/145 additionally retain #21;
@@ -109,9 +109,10 @@ independently asserting whole-paragraph promotion, level/style, exact raw conten
 underline-only markers and multiline physical envelopes, plus following blocks
 and fallback/precedence. Nineteen Setext-section cases establish structural or
 heading/paragraph progress, including 91's invalid multiline-tag suffix. Quotes
-92/101 now precede outside breaks and 93 retains lazy text; only list cases 94/99
-remain entirely source-only. Cases 85/100 pass as code and breaks, and 98 remains
-two breaks. Source-only deferral is not recognized heading coverage.
+92/101 now precede outside breaks and 93 retains lazy text; list cases 94/99 now
+retain the first item prefix, with continuation/closure and grouping still pending.
+Cases 85/100 pass as code and breaks, and 98 remains two breaks. Source-only
+deferral is not recognized heading coverage.
 Extra Setext fixtures cover single markers, whitespace/backslash handling, tabs,
 Unicode/NUL, LF/CRLF/CR/EOF, frozen accessors and interruption before/after
 promotion. Nonempty/unsupported cases stay pending; extra ATX fixtures
@@ -148,7 +149,7 @@ ranges. Cases 236/239/240 newly pass HTML; literal-code 231 remains supported.
 `TestQuotePartialTabUpstream6` verifies the fourth new pass with exact original
 partial-tab/code provenance. Setext 92/93/101, fence 128 and HTML 174 also assert
 quote structure. Reference cases 214/218 remain pending for #17/#18/#27; quote 235
-retains #14–#18 list ownership, and other pending quote cases retain #17/#18 with
+retains #15–#18 list ownership, and other pending quote cases retain #17/#18 with
 #21 where multiline text requires it. Separate fixtures verify all seven HTML
 forms at quote boundaries, opaque payload, prefix-free raw content and residual
 tabs, marked Setext versus unmarked laziness, omitted nested prefixes, code
@@ -156,6 +157,19 @@ transitions, NUL/Unicode/endings/EOF and immutable ownership. Deterministic chec
 discard unfinished nested containers on cancellation/deadline while retaining
 closed prefixes; strict UTF-8 failure keeps precedence. No copied stripped source,
 new runtime dependency, public schema or production renderer is introduced.
+
+`TestListMarkerUpstreamTargets` independently asserts all unchanged List items
+examples 253–300: 40 bounded first-line item prefixes, seven non-item cases and
+existing complete code case 289. Markers retain raw spelling/ordinal, effective
+padding, relative content indentation and source-backed Prefix contributions,
+including consumed/residual tab provenance. Parsing stops at the observed line;
+no continuation/closure, List parent, nested content or tightness is guessed.
+#15 owns continuation/closure and #16 grouping/tightness; reference/text/break
+providers remain as individually recorded in foundation.json. Earlier cases
+94/99, 108/109 and 235 likewise retain the first prefix, with #15–#18 remaining.
+See the [bounded marker contract and per-case coverage table](../../../model.md#first-line-list-markers-and-staged-item-prefixes).
+This structural progress adds no HTML pass: the same 84 supported IDs and 568
+pending cases remain, and final completion still requires every original case.
 
 `scanner.json` is a separate mdchk capability-target registry. It names exactly
 Tabs IDs 1–11 as scanner/indentation validation targets. `TestScannerCorpusTargets`

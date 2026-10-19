@@ -61,7 +61,8 @@ func (p *blockParser) interruptsParagraph(line blockLine) bool {
 		return true
 	}
 	heading, _ := p.atxHeading(line)
-	return heading != nil || pendingBlockStart(line, true)
+	_, list := classifyListStart(line, true)
+	return heading != nil || list || pendingBlockStart(line, true)
 }
 
 // Append raw logical lines while coalescing adjacent Exact original ranges. This

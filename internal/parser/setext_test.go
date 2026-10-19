@@ -37,12 +37,12 @@ func TestSetextUpstreamTargets(t *testing.T) {
 		91:  {setextWant(2, byteRange{0, 10}, byteRange{5, 9}, "`Foo", byteRange{0, 4}), atxParagraphWant(byteRange{10, 12}, "`", byteRange{10, 11}), setextWant(2, byteRange{13, 33}, byteRange{29, 32}, "<a title=\"a lot", byteRange{13, 28}), atxParagraphWant(byteRange{33, 46}, "of dashes\"/>", byteRange{33, 45})},
 		92:  {quoteWant(byteRange{0, 6}, []byteRange{{0, 2}}, atxParagraphWant(byteRange{2, 6}, "Foo", byteRange{2, 5})), atxThematicWant(byteRange{6, 10}, byteRange{6, 9})},
 		93:  {quoteWant(byteRange{0, 14}, []byteRange{{0, 2}}, atxParagraphWant(byteRange{2, 14}, "foo\nbar\n===", byteRange{2, 6}, byteRange{6, 10}, byteRange{10, 13}))},
-		94:  nil, // #14–#16: list/container classification.
+		94:  {bulletWant(byteRange{0, 6}, byteRange{0, 2}, byteRange{0, 1}, '-', 1, 2, "Foo", byteRange{2, 5})},
 		95:  {setextWant(2, byteRange{0, 12}, byteRange{8, 11}, "Foo\nBar", byteRange{0, 4}, byteRange{4, 7})},
 		96:  {atxThematicWant(byteRange{0, 4}, byteRange{0, 3}), setextWant(2, byteRange{4, 12}, byteRange{8, 11}, "Foo", byteRange{4, 7}), setextWant(2, byteRange{12, 20}, byteRange{16, 19}, "Bar", byteRange{12, 15}), atxParagraphWant(byteRange{20, 24}, "Baz", byteRange{20, 23})},
 		97:  {atxParagraphWant(byteRange{1, 6}, "====", byteRange{1, 5})},
 		98:  {atxThematicWant(byteRange{0, 4}, byteRange{0, 3}), atxThematicWant(byteRange{4, 8}, byteRange{4, 7})},
-		99:  nil, // #14–#16: list/container classification.
+		99:  {bulletWant(byteRange{0, 6}, byteRange{0, 2}, byteRange{0, 1}, '-', 1, 2, "foo", byteRange{2, 5})},
 		100: {indentedWant(byteRange{0, 8}, "foo\n", []byteRange{{0, 4}}, byteRange{4, 7}, byteRange{7, 8}), atxThematicWant(byteRange{8, 12}, byteRange{8, 11})},
 		101: {quoteWant(byteRange{0, 6}, []byteRange{{0, 2}}, atxParagraphWant(byteRange{2, 6}, "foo", byteRange{2, 5})), atxThematicWant(byteRange{6, 12}, byteRange{6, 11})},
 		102: {setextWant(2, byteRange{0, 14}, byteRange{7, 13}, "\\> foo", byteRange{0, 6})},
@@ -121,9 +121,9 @@ func TestSetextBoundariesAndProvenance(t *testing.T) {
 		}
 	}
 	checkATX(t, "a\n--\t-\nb", false, []atxBlockWant{atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}), {kind: parser.ThematicBreak, envelope: byteRange{2, 7}, markers: []markerWant{{"thematic-marker", byteRange{2, 4}}, {"thematic-marker", byteRange{5, 6}}}}, atxParagraphWant(byteRange{7, 8}, "b", byteRange{7, 8})})
-	for _, input := range []string{"-", "- ", "-\tx", "a\n- item\n---"} {
-		checkATX(t, input, false, nil) // Unavailable providers never manufacture headings.
-	}
+	checkATX(t, "-", false, []atxBlockWant{bulletWant(byteRange{0, 1}, byteRange{0, 1}, byteRange{0, 1}, '-', 1, 2, "")})
+	checkATX(t, "- ", false, []atxBlockWant{bulletWant(byteRange{0, 2}, byteRange{0, 2}, byteRange{0, 1}, '-', 1, 2, "")})
+	checkATX(t, "a\n- item\n---", false, []atxBlockWant{atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}), bulletWant(byteRange{2, 9}, byteRange{2, 4}, byteRange{2, 3}, '-', 1, 2, "item", byteRange{4, 8})})
 	checkATX(t, "a\n```\n---\n", false, []atxBlockWant{
 		atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}),
 		fencedWant(byteRange{2, 10}, byteRange{2, 5}, byteRange{}, '`', "---\n", "", byteRange{}, nil, byteRange{6, 9}, byteRange{9, 10}),

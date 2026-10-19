@@ -86,6 +86,8 @@ type ParseResult struct {
 // underline ranges. Fenced payload is literal; info requiring escape/entity
 // decoding stays partial. Other input retains staged blocks and whole-document
 // uncertainty; inline text, references and other block providers remain pending.
+// List markers retain a bounded ListItem first-line prefix and indentation facts,
+// then stop: continuation/closure, grouping and tightness remain unavailable.
 //
 // The strict UTF-8 gate precedes Markdown work and retains malformed bytes without
 // substitution. Its failure takes precedence over context interruption. Callers

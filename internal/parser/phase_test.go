@@ -27,6 +27,22 @@ type checkpointContext struct {
 	remaining int
 }
 
+func TestListMarkerInterruptionDoesNotFinalizeOpenQuote(t *testing.T) {
+	source := NewSource([]byte("***\n> - item\n  continuation\n"))
+	for _, checkpoint := range []int{3, 4} {
+		r := Parse(context.Background(), source)
+		ctx := &checkpointContext{Context: context.Background(), remaining: checkpoint}
+		state, err := parseBlockLifecycle(ctx, r.Document, nil)
+		children := r.Document.Root().Children()
+		if err != nil || state != Interrupted || r.Document.inlineFree || r.Document.References().LookupAvailability != Unavailable {
+			t.Fatal("interrupted marker work completed", state, err)
+		}
+		if len(children) != 1 || children[0].Kind() != ThematicBreak || children[0].Span().End() != 4 {
+			t.Fatal("lost closed prefix or finalized interrupted quote", children)
+		}
+	}
+}
+
 func TestHTMLInterruptionDiscardsOnlyOpenBlock(t *testing.T) {
 	for _, opening := range []string{"<!--", "<pre>", "<div>", "<custom>"} {
 		source := NewSource([]byte("***\n<!-- closed -->\n" + opening + "\nopen\n"))

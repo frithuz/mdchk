@@ -34,8 +34,8 @@ func TestIndentedUpstreamTargets(t *testing.T) {
 		36:  {indentedWant(byteRange{0, 19}, "f&ouml;f&ouml;\n", []byteRange{{0, 4}}, byteRange{4, 18}, byteRange{18, 19})},
 		48:  {indentedWant(byteRange{0, 8}, "***\n", []byteRange{{0, 4}}, byteRange{4, 7}, byteRange{7, 8})},
 		107: {indentedWant(byteRange{0, 39}, "a simple\n  indented code block\n", []byteRange{{0, 4}, {13, 17}}, byteRange{4, 12}, byteRange{12, 13}, byteRange{17, 38}, byteRange{38, 39})},
-		108: nil, // #14–#16: the unknown list owns its whole suffix.
-		109: nil,
+		108: {bulletWant(byteRange{0, 8}, byteRange{0, 4}, byteRange{2, 3}, '-', 1, 4, "foo", byteRange{4, 7})},
+		109: {orderedWant(byteRange{0, 8}, byteRange{0, 4}, byteRange{0, 2}, 1, '.', 2, 4, "foo", byteRange{4, 7})},
 		110: {indentedWant(byteRange{0, 29}, "<a/>\n*hi*\n\n- one\n", []byteRange{{0, 4}, {9, 13}, {19, 23}}, byteRange{4, 8}, byteRange{8, 9}, byteRange{13, 17}, byteRange{17, 18}, byteRange{18, 19}, byteRange{23, 28}, byteRange{28, 29})},
 		111: {indentedWant(byteRange{0, 41}, "chunk1\n\nchunk2\n\n\n\nchunk3\n", []byteRange{{0, 4}, {12, 16}, {23, 25}, {26, 27}, {28, 29}, {30, 34}}, byteRange{4, 10}, byteRange{10, 11}, byteRange{11, 12}, byteRange{16, 22}, byteRange{22, 23}, byteRange{25, 26}, byteRange{27, 28}, byteRange{29, 30}, byteRange{34, 40}, byteRange{40, 41})},
 		112: {indentedWant(byteRange{0, 31}, "chunk1\n  \n  chunk2\n", []byteRange{{0, 4}, {11, 15}, {18, 22}}, byteRange{4, 10}, byteRange{10, 11}, byteRange{15, 17}, byteRange{17, 18}, byteRange{22, 30}, byteRange{30, 31})},
@@ -111,8 +111,11 @@ func TestIndentedLiteralBoundaries(t *testing.T) {
 			t.Fatal("unknown/inline input gained completion", input, r)
 		}
 
-		if strings.HasPrefix(input, "- item") && len(r.Document.Root().Children()) != 0 {
-			t.Fatal("unknown container suffix became code")
+		if strings.HasPrefix(input, "- item") {
+			nodes := r.Document.Root().Children()
+			if len(nodes) != 1 || nodes[0].Kind() != parser.ListItem || nodes[0].Span().End() != 7 || len(nodes[0].Children()) != 0 {
+				t.Fatal("unknown container suffix became code")
+			}
 		}
 	}
 }

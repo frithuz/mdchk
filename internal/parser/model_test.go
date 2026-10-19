@@ -206,6 +206,60 @@ func TestPropertiesSnapshotNestedValues(t *testing.T) {
 	}
 }
 
+func TestListItemMetadataValidationAndOwnership(t *testing.T) {
+	s := parser.NewSource([]byte("-\ttext\n"))
+	e := span(t, s, 0, 7)
+	prefix := parser.Value{Semantic: parser.Some("-   "), Segments: []parser.Segment{
+		{Source: span(t, s, 0, 1), Transformation: parser.Exact, Semantic: parser.Some("-")},
+		{Source: span(t, s, 1, 2), Transformation: parser.PartialTab, Semantic: parser.Some("   ")},
+	}}
+	p := &parser.ListProperties{Bullet: parser.Some(byte('-')), MarkerWidth: parser.Some(1), Padding: parser.Some(3), ContentIndent: parser.Some(4), Prefix: &prefix}
+	n := node(t, parser.NodeSpec{Kind: parser.ListItem, Envelope: e, Properties: parser.Properties{List: p}})
+	p.Padding = parser.Some(1)
+	prefix.Segments[0].Transformation = parser.Synthetic
+	prefix.Semantic.Value = "changed"
+	got := n.Properties().List
+	got.Prefix.Segments[1].Semantic.Value = "changed"
+	*got.Prefix = parser.Value{}
+	got.MarkerWidth = parser.Some(8)
+	if frozen := n.Properties().List; frozen.Padding != parser.Some(3) || frozen.MarkerWidth != parser.Some(1) || frozen.Prefix.Semantic != parser.Some("-   ") || frozen.Prefix.Segments[0].Transformation != parser.Exact || frozen.Prefix.Segments[1].Semantic != parser.Some("   ") {
+		t.Fatal("item prefix escaped constructor/accessor snapshot boundary", frozen)
+	}
+	foreign := parser.NewSource([]byte("-\ttext\n"))
+	for name, change := range map[string]func(*parser.ListProperties){
+		"bullet width": func(p *parser.ListProperties) { p.MarkerWidth = parser.Some(2) },
+		"ordered width": func(p *parser.ListProperties) {
+			p.Ordered = true
+			p.Bullet = parser.Optional[byte]{}
+			p.MarkerWidth = parser.Some(1)
+		},
+		"zero padding":         func(p *parser.ListProperties) { p.Padding = parser.Some(0) },
+		"excess padding":       func(p *parser.ListProperties) { p.Padding = parser.Some(5) },
+		"small indent":         func(p *parser.ListProperties) { p.ContentIndent = parser.Some(1) },
+		"large indent":         func(p *parser.ListProperties) { p.ContentIndent = parser.Some(18) },
+		"four leading columns": func(p *parser.ListProperties) { p.ContentIndent = parser.Some(8) },
+		"foreign prefix":       func(p *parser.ListProperties) { p.Prefix.Segments[0].Source = span(t, foreign, 0, 1) },
+		"unmapped prefix semantics": func(p *parser.ListProperties) {
+			p.Prefix = &parser.Value{Segments: []parser.Segment{raw(span(t, s, 0, 1))}, Semantic: parser.Some("wrong")}
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			p := n.Properties().List
+			change(p)
+			if _, err := parser.NewNode(parser.NodeSpec{Kind: parser.ListItem, Envelope: e, Properties: parser.Properties{List: p}}); !errors.Is(err, parser.ErrModel) {
+				t.Fatal("invalid item facts accepted", err)
+			}
+		})
+	}
+	if _, err := parser.NewNode(parser.NodeSpec{Kind: parser.List, Envelope: e, Properties: parser.Properties{List: n.Properties().List}}); !errors.Is(err, parser.ErrModel) {
+		t.Fatal("item-only metadata accepted on list")
+	}
+	// Unknown first-line facts remain absent on existing constructed fixtures.
+	if _, err := parser.NewNode(parser.NodeSpec{Kind: parser.ListItem, Envelope: e, Properties: parser.Properties{List: &parser.ListProperties{}}}); err != nil {
+		t.Fatal("optional item facts made mandatory", err)
+	}
+}
+
 func TestReferenceRecordsKeepDuplicatesSeparateFromLookup(t *testing.T) {
 	s := parser.NewSource([]byte("[x]: /a\n[x]: /b\n"))
 	makeReference := func(start int) *parser.ReferenceDefinition {

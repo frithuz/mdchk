@@ -26,6 +26,7 @@ type atxBlockWant struct {
 	info     string
 	infoSpan byteRange
 	htmlForm int
+	list     *parser.ListProperties
 	children []atxBlockWant
 }
 type markerWant struct {
@@ -129,6 +130,25 @@ func checkATX(t *testing.T, input string, complete bool, want []atxBlockWant) pa
 			}
 			if w.kind == parser.HTMLBlock {
 				props.HTML = &parser.HTMLProperties{BlockForm: parser.Some(w.htmlForm)}
+			}
+			if w.list != nil {
+				p := *w.list
+				prefix, marker := w.markers[0].span, w.markers[1].span
+				value := parser.Value{Semantic: parser.Some("")}
+				for _, r := range []byteRange{{prefix.start, marker.start}, marker, {marker.end, prefix.end}} {
+					if r.start == r.end {
+						continue
+					}
+					span, err := source.Span(r.start, r.end)
+					if err != nil {
+						t.Fatal(err)
+					}
+					raw, _ := source.Text(span)
+					value.Segments = append(value.Segments, parser.Segment{Source: span, Transformation: parser.Exact, Semantic: parser.Some(raw)})
+					value.Semantic.Value += raw
+				}
+				p.Prefix = &value
+				props.List = &p
 			}
 			if !reflect.DeepEqual(n.Properties(), props) {
 				t.Fatalf("block %d properties: %+v", i, n.Properties())

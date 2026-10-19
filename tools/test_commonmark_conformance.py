@@ -163,7 +163,7 @@ class ExecutableBoundary(unittest.TestCase):
                     (17, 18, 24, 25): [152, 155, 167, 176, 177, 188],
                     (17, 18, 21, 23, 24, 25): [148],
                     (17, 18, 23, 24, 25): [168],
-                    (14, 15, 16, 17, 18): [175],
+                    (15, 16, 17, 18): [175],
                     (17, 18, 21, 23): [187],
                 }
                 for required, examples in html_owners.items():
@@ -178,7 +178,7 @@ class ExecutableBoundary(unittest.TestCase):
                     (17, 18, 21, 24, 25): [81, 82],
                     (17, 18, 21): [87, 88, 93, 95, 104, 105],
                     (17, 18, 20, 23): [91],
-                    (14, 15, 16, 17, 18): [94, 99],
+                    (15, 16, 17, 18): [94, 99],
                     (17, 18, 19): [102],
                     (17, 18, 19, 21): [106],
                 }
@@ -186,7 +186,7 @@ class ExecutableBoundary(unittest.TestCase):
                     for example in examples:
                         self.assertEqual(owners[example], list(required))
                 for example in [57, 60, 61]:
-                    self.assertEqual(owners[example], [14, 15, 16, 17, 18])
+                    self.assertEqual(owners[example], [15, 16, 17, 18])
                 self.assertEqual(owners[219], [17, 18])
                 self.assertEqual(owners[220], [17, 18, 21])
                 self.assertEqual(owners[225], [17, 18])
@@ -199,7 +199,7 @@ class ExecutableBoundary(unittest.TestCase):
                 self.assertEqual(owners[66], [17, 18, 19, 24, 25])
                 self.assertEqual(owners[70], [17, 18, 21])
                 for example in [108, 109]:
-                    self.assertEqual(owners[example], [14, 15, 16, 17, 18])
+                    self.assertEqual(owners[example], [15, 16, 17, 18])
                 self.assertEqual(owners[113], [17, 18, 21])
                 for example in [114, 115]:
                     self.assertEqual(owners[example], [17, 18])
@@ -212,12 +212,33 @@ class ExecutableBoundary(unittest.TestCase):
                 quote_owners = {
                     (17, 18, 21): [228, 229, 230, 232, 233, 238, 243, 247, 250, 251],
                     (17, 18): [234, 237, 241, 242, 244, 245, 246, 248, 249, 252],
-                    (14, 15, 16, 17, 18): [235],
+                    (15, 16, 17, 18): [235],
                     (17, 18, 27): [214, 218],
                 }
                 for required, examples in quote_owners.items():
                     for example in examples:
                         self.assertEqual(owners[example], list(required))
+                # All original List items cases retain explicit remaining
+                # providers. Marker recognition itself (#14) is delivered;
+                # structural progress is not an additional HTML pass.
+                list_owners = {
+                    (17, 18): [261, 266, 269, 272, 275],
+                    (17, 18, 21): [253, 285],
+                    (15, 16): [284],
+                    (15, 16, 17, 18, 21): [254, 286, 287, 288, 290, 291, 292, 293],
+                    (15, 16, 17, 18): [255, 256, 257, 258, 259, 260, 262, 263,
+                                      264, 265, 267, 268, 270, 271, 273, 274,
+                                      276, 277, 278, 279, 280, 281, 282, 283,
+                                      294, 295, 296, 297, 298, 299, 300],
+                }
+                seen = set()
+                for required, examples in list_owners.items():
+                    for example in examples:
+                        self.assertNotIn(example, seen)
+                        seen.add(example)
+                        self.assertEqual(owners[example], list(required))
+                self.assertEqual(seen | {289}, set(range(253, 301)))
+                self.assertEqual(report["outcomes"][288]["status"], "pass")
                 self.assertEqual(report["outcomes"][206]["status"], "pending")
         complete = runner.run_cases(self.cases, self.cases[206:207], ledger, self.adapter, None, True)
         self.assertFalse(complete["gate_passed"])

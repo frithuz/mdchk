@@ -75,6 +75,13 @@ type ListProperties struct {
 	Delimiter Optional[byte]
 	Bullet    Optional[byte]
 	Tight     Optional[bool]
+	// Item-only first-line facts. ContentIndent is relative to the enclosing
+	// container, including leading indentation, marker width and effective padding.
+	// Prefix maps actual consumed bytes/columns; empty-item padding may be virtual.
+	MarkerWidth   Optional[int]
+	Padding       Optional[int]
+	ContentIndent Optional[int]
+	Prefix        *Value
 }
 type CodeProperties struct {
 	Style string
@@ -293,6 +300,32 @@ func validateProperties(k Kind, e Span, p Properties) error {
 		return ErrModel
 	}
 	if p.List != nil {
+		item := p.List
+		if k != ListItem && (item.MarkerWidth.Present || item.Padding.Present || item.ContentIndent.Present || item.Prefix != nil) {
+			return ErrModel
+		}
+		if item.MarkerWidth.Present && ((!item.Ordered && item.MarkerWidth.Value != 1) || (item.Ordered && (item.MarkerWidth.Value < 2 || item.MarkerWidth.Value > 10))) {
+			return ErrModel
+		}
+		if item.Padding.Present && (item.Padding.Value < 1 || item.Padding.Value > 4) {
+			return ErrModel
+		}
+		if item.ContentIndent.Present {
+			if item.ContentIndent.Value < 2 || item.ContentIndent.Value > 17 {
+				return ErrModel
+			}
+			if item.MarkerWidth.Present && item.Padding.Present {
+				leading := item.ContentIndent.Value - item.MarkerWidth.Value - item.Padding.Value
+				if leading < 0 || leading > 3 {
+					return ErrModel
+				}
+			}
+		}
+		if item.Prefix != nil {
+			if err := validateValue(e, *item.Prefix); err != nil {
+				return err
+			}
+		}
 		if p.List.Ordered {
 			if p.List.Bullet.Present || (p.List.Start.Present && (p.List.Start.Value < 0 || p.List.Start.Value > 999999999)) {
 				return ErrModel
@@ -415,6 +448,9 @@ func cloneValuePointer(p *Value) *Value {
 func cloneProperties(p Properties) Properties {
 	p.Heading = clonePointer(p.Heading)
 	p.List = clonePointer(p.List)
+	if p.List != nil {
+		p.List.Prefix = cloneValuePointer(p.List.Prefix)
+	}
 	p.Code = clonePointer(p.Code)
 	p.HTML = clonePointer(p.HTML)
 	p.Delimiter = clonePointer(p.Delimiter)

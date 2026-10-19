@@ -169,11 +169,13 @@ func TestParagraphClosureAndProvenance(t *testing.T) {
 }
 
 func TestPendingBlockBoundaries(t *testing.T) {
-	for _, input := range []string{"- list\n", "1. list\n", "[foo]: /url\n"} {
+	for _, input := range []string{"[foo]: /url\n"} {
 		t.Run(input, func(t *testing.T) { checkParagraphs(t, parser.NewSource([]byte(input)), nil) })
 	}
-	// Once a block boundary is unknown, its whole suffix is left uninterpreted.
-	checkParagraphs(t, parser.NewSource([]byte("a\n\n- list\n\nb\n")), []paragraphWant{{byteRange{0, 2}, []byteRange{{0, 1}}, "a"}})
+	checkATX(t, "- list\n", false, []atxBlockWant{bulletWant(byteRange{0, 7}, byteRange{0, 2}, byteRange{0, 1}, '-', 1, 2, "list", byteRange{2, 6})})
+	checkATX(t, "1. list\n", false, []atxBlockWant{orderedWant(byteRange{0, 8}, byteRange{0, 3}, byteRange{0, 2}, 1, '.', 1, 3, "list", byteRange{3, 7})})
+	// The first line is established; continuation/closure of the rest is unknown.
+	checkATX(t, "a\n\n- list\n\nb\n", false, []atxBlockWant{atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}), bulletWant(byteRange{3, 10}, byteRange{3, 5}, byteRange{3, 4}, '-', 1, 2, "list", byteRange{5, 9})})
 }
 
 func TestBlankDocumentsComplete(t *testing.T) {
