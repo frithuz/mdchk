@@ -42,7 +42,7 @@ func checkThematicBlocks(t *testing.T, input string, complete bool, want []block
 	if root.Span().Start() != 0 || root.Span().End() != len(input) {
 		t.Fatal("root does not account for the original snapshot envelope")
 	}
-	nodes := root.Children()
+	nodes := ungroupedChildren(root)
 	if len(nodes) != len(want) {
 		t.Fatalf("got %d blocks, want %d", len(nodes), len(want))
 	}

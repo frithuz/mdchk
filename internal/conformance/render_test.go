@@ -112,6 +112,43 @@ func TestConstructedLinksImagesAndLists(t *testing.T) {
 		f.node(parser.List, bullet, f.node(parser.ListItem, parser.Properties{}, paragraph, f.node(parser.List, bullet, item))))
 }
 
+func TestConstructedMixedListTightnessAndQuotes(t *testing.T) {
+	f := newFixture(t)
+	paragraph := func(s string) *parser.Node { return f.node(parser.Paragraph, parser.Properties{}, f.text(s)) }
+	list := func(tight bool, children ...*parser.Node) *parser.Node {
+		return f.node(parser.List, parser.Properties{List: &parser.ListProperties{Tight: parser.Some(tight)}},
+			f.node(parser.ListItem, parser.Properties{}, children...))
+	}
+	quote := f.node(parser.BlockQuote, parser.Properties{}, paragraph("q"))
+	for _, tt := range []struct {
+		outer, inner bool
+		want         string
+	}{
+		{true, false, "<ul>\n<li>a\n<ul>\n<li>\n<p>b</p>\n</li>\n</ul>\n<blockquote>\n<p>q</p>\n</blockquote>\n</li>\n</ul>\n"},
+		{false, true, "<ul>\n<li>\n<p>a</p>\n<ul>\n<li>b</li>\n</ul>\n<blockquote>\n<p>q</p>\n</blockquote>\n</li>\n</ul>\n"},
+	} {
+		n := list(tt.outer, paragraph("a"), list(tt.inner, paragraph("b")), quote)
+		before := 0
+		parser.Walk(n, func(n *parser.Node) bool {
+			if n.Kind() == parser.Paragraph {
+				before++
+			}
+			return true
+		})
+		f.check(tt.want, n)
+		after := 0
+		parser.Walk(n, func(n *parser.Node) bool {
+			if n.Kind() == parser.Paragraph {
+				after++
+			}
+			return true
+		})
+		if before != 3 || after != before {
+			t.Fatal("rendering removed paragraphs")
+		}
+	}
+}
+
 func TestOriginalSegmentsAndSemanticValues(t *testing.T) {
 	s := parser.NewSource([]byte("&amp; <i>skip</i>"))
 	span := func(a, b int) parser.Span {

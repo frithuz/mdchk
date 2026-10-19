@@ -121,8 +121,8 @@ func TestSetextBoundariesAndProvenance(t *testing.T) {
 		}
 	}
 	checkATX(t, "a\n--\t-\nb", false, []atxBlockWant{atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}), {kind: parser.ThematicBreak, envelope: byteRange{2, 7}, markers: []markerWant{{"thematic-marker", byteRange{2, 4}}, {"thematic-marker", byteRange{5, 6}}}}, atxParagraphWant(byteRange{7, 8}, "b", byteRange{7, 8})})
-	checkATX(t, "-", false, []atxBlockWant{bulletWant(byteRange{0, 1}, byteRange{0, 1}, byteRange{0, 1}, '-', 1, 2, "")})
-	checkATX(t, "- ", false, []atxBlockWant{bulletWant(byteRange{0, 2}, byteRange{0, 2}, byteRange{0, 1}, '-', 1, 2, "")})
+	checkATX(t, "-", true, []atxBlockWant{bulletWant(byteRange{0, 1}, byteRange{0, 1}, byteRange{0, 1}, '-', 1, 2, "")})
+	checkATX(t, "- ", true, []atxBlockWant{bulletWant(byteRange{0, 2}, byteRange{0, 2}, byteRange{0, 1}, '-', 1, 2, "")})
 	checkATX(t, "a\n- item\n---", false, []atxBlockWant{atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}), bulletWant(byteRange{2, 9}, byteRange{2, 4}, byteRange{2, 3}, '-', 1, 2, "item", byteRange{4, 8}), atxThematicWant(byteRange{9, 12}, byteRange{9, 12})})
 	checkATX(t, "a\n```\n---\n", false, []atxBlockWant{
 		atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}),

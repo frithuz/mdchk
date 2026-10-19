@@ -3,7 +3,7 @@ package parser
 import "strings"
 
 // listStart establishes the marker and first-line indentation. The container
-// lifecycle establishes ownership; grouping and tightness remain #16.
+// lifecycle establishes ownership; parent closure groups compatible siblings.
 // All cursors borrow the original source and preserve its physical tab phase.
 type listStart struct {
 	line                   blockLine
@@ -144,8 +144,8 @@ func (s listStart) openItem() (openBlock, error) {
 
 // matchContainer consumes only a container's structural prefix. A blank line may
 // omit item indentation, but a second opening blank closes an otherwise empty
-// item. Markers preserve per-line indentation/blank evidence for #16; they do not
-// establish grouping or tightness. Lazy lines never acquire invented prefixes.
+// item. Markers preserve per-line indentation/blank evidence for grouping and
+// tightness at closure. Lazy lines never acquire invented prefixes.
 func (p *blockParser) matchContainer(depth int, physical physicalLine, cursor Indentation) (Indentation, bool) {
 	block := &p.stack[depth]
 	if block.kind == BlockQuote {
@@ -177,10 +177,10 @@ func (p *blockParser) matchContainer(depth int, physical physicalLine, cursor In
 	return next, true
 }
 
-// Compatible sibling items can end an item's paragraph even with an empty
-// marker or an ordered start other than 1. New/different lists still obey the
-// paragraph interruption restrictions. This recognizes item boundaries only;
-// #16 will group compatible siblings and derive tightness from their structure.
+// Sibling ordered markers can end an ordered item's paragraph even with a
+// start other than 1: a delimiter change then starts a separate List. Other new
+// list types still obey paragraph interruption restrictions. Empty compatible
+// siblings likewise end the prior item without interrupting ordinary prose.
 func (p *blockParser) siblingItem(depth int, line blockLine) bool {
 	block := &p.stack[depth]
 	if block.kind != ListItem {
@@ -191,7 +191,7 @@ func (p *blockParser) siblingItem(depth int, line blockLine) bool {
 		return false
 	}
 	a, b := block.list, start.properties
-	return a.Ordered == b.Ordered && a.Bullet == b.Bullet && a.Delimiter == b.Delimiter
+	return a.Ordered && b.Ordered || !a.Ordered && !b.Ordered && a.Bullet == b.Bullet
 }
 
 // appendListPrefixIndentation writes previously classified whitespace directly

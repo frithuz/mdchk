@@ -112,7 +112,7 @@ func TestIndentedLiteralBoundaries(t *testing.T) {
 		}
 
 		if strings.HasPrefix(input, "- item") {
-			nodes := r.Document.Root().Children()
+			nodes := ungroupedChildren(r.Document.Root())
 			if len(nodes) != 1 || nodes[0].Kind() != parser.ListItem || nodes[0].Span().End() != len(input) || len(nodes[0].Children()) != 2 || nodes[0].Children()[1].Kind() != parser.Paragraph {
 				t.Fatal("item-relative indentation was mistaken for code")
 			}
@@ -129,7 +129,7 @@ func TestIndentedNormalizedSourceAndEOF(t *testing.T) {
 		if r.Status != parser.Complete || r.Failure != nil {
 			t.Fatal(r)
 		}
-		n := r.Document.Root().Children()[0]
+		n := ungroupedChildren(r.Document.Root())[0]
 		if n.Kind() != parser.CodeBlock || n.Span().Start() != 0 || n.Span().End() != len(input) || n.Properties().Literal != parser.Some("é\ufffd\t \n") || len(n.Children()) != 0 {
 			t.Fatal("code metadata/literal", n)
 		}
@@ -186,7 +186,7 @@ func TestIndentedEncodingAndInterruption(t *testing.T) {
 	cancel()
 	for _, c := range []context.Context{ctx, expiredContext()} {
 		r := parser.Parse(c, parser.NewSource([]byte("    code\n")))
-		if r.Status != parser.Incomplete || r.Interruption == "" || r.Document.References().LookupAvailability != parser.Unavailable || len(r.Document.Root().Children()) != 0 || conformance.Evaluate(r).Status != "interrupted" {
+		if r.Status != parser.Incomplete || r.Interruption == "" || r.Document.References().LookupAvailability != parser.Unavailable || len(ungroupedChildren(r.Document.Root())) != 0 || conformance.Evaluate(r).Status != "interrupted" {
 			t.Fatal("interrupted code gained recognition", r)
 		}
 		r = parser.Parse(c, parser.NewSource([]byte("    \xff\n")))

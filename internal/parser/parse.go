@@ -79,7 +79,7 @@ type ParseResult struct {
 // Parse implements the core CommonMark foundation, with extensions/frontmatter
 // recognition disabled. Documents of blanks, indented/fenced code with known
 // info semantics, opaque HTML blocks, thematic breaks and empty ATX headings
-// and empty or inline-free nested block quotes are fully parsed.
+// and empty or inline-free nested block quotes and lists are fully parsed.
 // Item indentation and quote markers match before leaf continuation; only
 // paragraphs may continue lazily. Logical leaf segments exclude prefixes on the
 // original Source.
@@ -89,8 +89,9 @@ type ParseResult struct {
 // uncertainty; inline text, references and other block providers remain pending.
 // ListItems retain marker/prefix facts and ordered nested block children, with
 // tab-aware continuation, blank boundaries, sibling ownership and closure. They
-// remain ungrouped: List parents/tightness, references and inlines are unavailable,
-// so list-bearing documents remain partial even for an empty item at EOF.
+// acquire List parents, initial ordered starts and independently derived Tight
+// facts. Lists of empty items/inline-free blocks can complete; text and unresolved
+// reference definitions retain their staged partial outcomes and boundaries.
 //
 // The strict UTF-8 gate precedes Markdown work and retains malformed bytes without
 // substitution. Its failure takes precedence over context interruption. Callers

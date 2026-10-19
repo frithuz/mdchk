@@ -27,9 +27,10 @@ type openBlock struct {
 	content  []Segment
 	end      int
 	markers  []Marker
-	children []*Node
+	children []parsedBlock
 	list     *ListProperties
 	empty    bool // an item whose opening line was blank and has no later content
+	partial  bool // an unavailable suffix prevents final list interpretation
 }
 
 // Accumulation belongs exclusively to this parse. Freeze nodes once on closure;
@@ -37,7 +38,7 @@ type openBlock struct {
 type blockParser struct {
 	index  LineIndex
 	stack  []openBlock
-	closed []*Node
+	closed []parsedBlock
 	code   *indentedCode
 	fence  *fencedCode
 	html   *htmlBlock
@@ -219,7 +220,6 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 			continue
 		}
-		state = Pending
 		if start, ok := classifyListStart(line, p.paragraphOpen()); ok {
 			if err := p.closeTo(depth); err != nil {
 				return Pending, err
@@ -231,9 +231,10 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			p.stack = append(p.stack, item)
 			cursor = start.content
 			// The first payload can itself open another item/quote, or any leaf.
-			// Grouping/tightness still belong to #16; no List parent is guessed.
+			// Completed siblings are grouped once when their parent closes.
 			goto dispatch
 		}
+		state = Pending
 		deferred := false
 		for _, hook := range p.hooks {
 			if hook(line, p.paragraphOpen()) {
@@ -245,6 +246,9 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			// Do not invent the shape of an unavailable reference suffix. Keep
 			// established quote prefixes/closed children, but discard an open paragraph.
 			p.stack = p.stack[:depth]
+			for i := range p.stack {
+				p.stack[i].partial = true
+			}
 			break
 		}
 		p.appendParagraph(line)
@@ -264,7 +268,11 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 	if err := p.closeTo(1); err != nil {
 		return Pending, err
 	}
-	root, err := NewNode(NodeSpec{Kind: DocumentKind, Envelope: p.index.span(0, p.index.source.Len()), Children: p.closed})
+	children, err := p.groupLists(p.closed)
+	if err != nil {
+		return Pending, err
+	}
+	root, err := NewNode(NodeSpec{Kind: DocumentKind, Envelope: p.index.span(0, p.index.source.Len()), Children: blockNodes(children)})
 	if err != nil {
 		return Pending, err
 	}
@@ -444,7 +452,11 @@ func (p *blockParser) appendParagraph(line blockLine) {
 func (p *blockParser) closeTo(depth int) error {
 	for len(p.stack) > depth {
 		block := p.stack[len(p.stack)-1]
-		spec := NodeSpec{Kind: block.kind, Envelope: p.index.span(block.start, block.end), Markers: block.markers, Children: block.children}
+		children, err := p.groupLists(block.children)
+		if err != nil {
+			return err
+		}
+		spec := NodeSpec{Kind: block.kind, Envelope: p.index.span(block.start, block.end), Markers: block.markers, Children: blockNodes(children)}
 		if block.list != nil {
 			spec.Properties.List = block.list
 		}
@@ -457,7 +469,11 @@ func (p *blockParser) closeTo(depth int) error {
 			return err
 		}
 		p.stack = p.stack[:len(p.stack)-1]
-		p.attach(node)
+		closed := parsedBlock{node: node, partial: block.partial}
+		if block.kind == ListItem {
+			closed.loose, closed.trailingBlank = itemBlankBoundaries(block, children)
+		}
+		p.attachBlock(closed)
 	}
 	return nil
 }

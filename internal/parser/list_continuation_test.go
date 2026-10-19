@@ -23,6 +23,7 @@ type listTreeWant struct {
 	text     string
 	content  []byteRange
 	children []listTreeWant
+	list     *parser.ListProperties
 }
 
 func itemTree(a, b int, children ...listTreeWant) listTreeWant {
@@ -61,9 +62,18 @@ func checkListTrees(t *testing.T, input string, want []listTreeWant) parser.Pars
 			t.Fatal("foreign source accepted span")
 		}
 	}
+	// Older continuation fixtures independently retain their item/leaf facts;
+	// grouping fixtures below assert the new List ancestry without flattening.
+	explicitGroups := false
+	for _, w := range want {
+		explicitGroups = explicitGroups || w.kind == parser.List
+	}
 	var check func([]*parser.Node, []listTreeWant)
 	check = func(nodes []*parser.Node, wants []listTreeWant) {
 		t.Helper()
+		if !explicitGroups {
+			nodes = flattenListGroups(nodes)
+		}
 		if len(nodes) != len(wants) {
 			t.Fatalf("child count %d want %d", len(nodes), len(wants))
 		}
@@ -87,9 +97,12 @@ func checkListTrees(t *testing.T, input string, want []listTreeWant) parser.Pars
 			}
 			if n.Kind() == parser.ListItem {
 				p := n.Properties().List
-				if p == nil || p.Prefix == nil || p.Tight.Present || r.Status != parser.Incomplete || r.AST != parser.Partial || r.Phases.Inlines != parser.NotStarted || conformance.Evaluate(r).Status != "pending" {
+				if p == nil || p.Prefix == nil || p.Tight.Present {
 					t.Fatal("fabricated item completion", r)
 				}
+			}
+			if w.list != nil && !reflect.DeepEqual(n.Properties().List, w.list) {
+				t.Fatalf("list properties %+v want %+v", n.Properties().List, w.list)
 			}
 			if n.Kind() == parser.CodeBlock && n.Properties().Literal != parser.Some(w.text) {
 				t.Fatal("literal/source mismatch")
@@ -182,7 +195,7 @@ func TestListContinuationUpstreamTargets(t *testing.T) {
 			}
 			r := checkListTrees(t, e.Markdown, w)
 			got := conformance.Evaluate(r)
-			if e.ID == 289 {
+			if e.ID == 289 || e.ID == 284 {
 				if got.Status != "rendered" || got.HTML != e.HTML {
 					t.Fatal(got)
 				}
@@ -234,7 +247,9 @@ func TestListContinuationSourceImmutability(t *testing.T) {
 		props := n.Properties()
 		if props.List != nil {
 			props.List.ContentIndent = parser.Some(99)
-			props.List.Prefix.Segments[0].Source = parser.Span{}
+			if props.List.Prefix != nil {
+				props.List.Prefix.Segments[0].Source = parser.Span{}
+			}
 		}
 		return true
 	})
@@ -256,7 +271,7 @@ func TestListContinuationLeafBoundaries(t *testing.T) {
 			if r.Failure != nil || r.Status != parser.Incomplete || conformance.Evaluate(r).Status != "pending" {
 				t.Fatal(r)
 			}
-			nodes := r.Document.Root().Children()
+			nodes := ungroupedChildren(r.Document.Root())
 			end := 2 + len(opening) + 1 + len("  - > opaque\n")
 			if len(nodes) != 2 || nodes[0].Kind() != parser.ListItem || nodes[0].Span().End() != end || nodes[1].Kind() != parser.Paragraph || nodes[1].Span().Start() != end {
 				t.Fatal("dedented line swallowed", nodes)
@@ -276,7 +291,7 @@ func TestListContinuationLeafBoundaries(t *testing.T) {
 	for _, opening := range []string{"```", "~~~"} {
 		input := "- " + opening + "\n  - > opaque\noutside\n"
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-		nodes := r.Document.Root().Children()
+		nodes := ungroupedChildren(r.Document.Root())
 		if r.Failure != nil || len(nodes) != 2 || nodes[0].Kind() != parser.ListItem || nodes[0].Span().End() != 19 || nodes[1].Span().Start() != 19 {
 			t.Fatal("unclosed fence crossed dedent", r)
 		}
@@ -296,11 +311,11 @@ func TestListContinuationPartialTabsAndEndings(t *testing.T) {
 			input := ">  -\t\tX\x00" + ending + ">\t\t\tY" + terminal
 			source := parser.NewSource([]byte(input))
 			r := parser.Parse(context.Background(), source)
-			if r.Failure != nil || r.Status != parser.Incomplete || conformance.Evaluate(r).Status != "pending" {
+			if r.Failure != nil || r.Status != parser.Complete || conformance.Evaluate(r).Status != "rendered" {
 				t.Fatal(r)
 			}
-			q := r.Document.Root().Children()[0]
-			item := q.Children()[0]
+			q := ungroupedChildren(r.Document.Root())[0]
+			item := ungroupedChildren(q)[0]
 			code := item.Children()[0]
 			if q.Kind() != parser.BlockQuote || item.Kind() != parser.ListItem || len(item.Children()) != 1 || code.Kind() != parser.CodeBlock || code.Properties().Literal != parser.Some("   X\ufffd\n   Y\n") {
 				t.Fatal("partial-tab code or item ownership", r)
@@ -360,7 +375,7 @@ func TestListContinuationBlankMarkers(t *testing.T) {
 	if r.Failure != nil {
 		t.Fatal(r)
 	}
-	items := r.Document.Root().Children()
+	items := ungroupedChildren(r.Document.Root())
 	markers := items[0].Markers()
 	want := []markerWant{{"item-prefix", byteRange{0, 2}}, {"item-marker", byteRange{0, 1}}, {"item-indent", byteRange{8, 10}}, {"item-blank", byteRange{8, 11}}, {"item-indent", byteRange{11, 13}}, {"item-blank", byteRange{20, 21}}}
 	if len(items) != 2 || items[0].Span().End() != 21 || items[1].Span().Start() != 21 || len(markers) != len(want) {
@@ -382,7 +397,7 @@ func TestListContinuationParagraphEndings(t *testing.T) {
 			if r.Failure != nil || r.Status != parser.Incomplete {
 				t.Fatal(r)
 			}
-			item := r.Document.Root().Children()[0]
+			item := ungroupedChildren(r.Document.Root())[0]
 			paragraph := item.Children()[0]
 			if item.Span().End() != len(input) || paragraph.Kind() != parser.Paragraph || paragraph.Span().Start() != 2 || paragraph.Span().End() != len(input) {
 				t.Fatal("multibyte/endings ownership")

@@ -77,7 +77,7 @@ func checkATX(t *testing.T, input string, complete bool, want []atxBlockWant) pa
 	if root.Span().Start() != 0 || root.Span().End() != len(input) {
 		t.Fatal("wrong root envelope")
 	}
-	nodes := root.Children()
+	nodes := ungroupedChildren(root)
 	if len(nodes) != len(want) {
 		t.Fatalf("got %d blocks, want %d: %q", len(nodes), len(want), input)
 	}
@@ -183,7 +183,7 @@ func checkATX(t *testing.T, input string, complete bool, want []atxBlockWant) pa
 			if text != w.text {
 				t.Fatalf("block %d content %q, want %q", i, text, w.text)
 			}
-			checkNodes(n.Children(), w.children)
+			checkNodes(ungroupedChildren(n), w.children)
 		}
 	}
 	checkNodes(nodes, want)

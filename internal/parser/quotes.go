@@ -14,12 +14,16 @@ func (p *blockParser) containerDepth() int {
 }
 
 func (p *blockParser) attach(node *Node) {
+	p.attachBlock(parsedBlock{node: node})
+}
+
+func (p *blockParser) attachBlock(block parsedBlock) {
 	if len(p.stack) == 1 {
-		p.closed = append(p.closed, node)
+		p.closed = append(p.closed, block)
 		return
 	}
 	parent := &p.stack[len(p.stack)-1]
-	parent.children = append(parent.children, node)
+	parent.children = append(parent.children, block)
 }
 
 func (p *blockParser) closeLeaves() error {

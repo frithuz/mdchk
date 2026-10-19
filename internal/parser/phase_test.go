@@ -35,7 +35,7 @@ func TestListContinuationInterruptionDiscardsOpenItems(t *testing.T) {
 		r := Parse(context.Background(), source)
 		state, err := parseBlockLifecycle(&checkpointContext{Context: context.Background(), remaining: checkpoint}, r.Document, nil)
 		children := r.Document.Root().Children()
-		if err != nil || state != Interrupted || r.Document.inlineFree || r.Document.References().LookupAvailability != Unavailable || len(children) != 2 || children[0].Kind() != ListItem || children[0].Span().End() != 8 || children[1].Kind() != Heading || children[1].Span().End() != 10 {
+		if err != nil || state != Interrupted || r.Document.inlineFree || r.Document.References().LookupAvailability != Unavailable || len(children) != 2 || children[0].Kind() != List || len(children[0].Children()) != 1 || children[0].Children()[0].Kind() != ListItem || children[0].Span().End() != 8 || children[1].Kind() != Heading || children[1].Span().End() != 10 {
 			t.Fatal("unfinished item finalized or closed prefix lost", state, err, children)
 		}
 	}

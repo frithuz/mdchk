@@ -4,10 +4,10 @@
 paragraph/block lifecycle with indented/fenced-code, HTML-block, thematic-break,
 ATX, Setext, mixed block-quote/list-item recognition and continuation. It completes documents accounted
 for by code with established info semantics, opaque HTML blocks, thematic breaks,
-empty ATX headings and ASCII blanks, including empty/inline-free quotes. It retains
+empty ATX headings and ASCII blanks, including empty/inline-free quotes and lists. It retains
 paragraph/heading source content for later inline parsing. ListItems retain
-first-line metadata, nested block children, continuation and closure; grouping
-and tightness remain unavailable.
+first-line metadata, nested block children, continuation and closure. Compatible
+siblings acquire List parents and independently derived tightness.
 Reference definitions and inline text remain pending. The model
 catalog also supports constructed fixtures; it does not promise recognition of
 every listed kind.
@@ -27,8 +27,8 @@ to callers.
 | --- | --- | --- |
 | Nil or zero-length source | `Complete` / `Available` | Root `[0,0)`, no children, available empty reference records/lookup, both phases complete |
 | ASCII-blank source (space/tab/LF/CR only) | `Complete` / `Available` | Root `[0,N)`, no children, established empty references/lookup, both phases complete |
-| Indented/fenced code with known info semantics, HTML blocks, thematic breaks, empty ATX headings and ASCII blanks, including empty/inline-free quotes | `Complete` / `Available` | Root `[0,N)` with source-bound blocks, established empty references/lookup, both phases complete, no uncertainty |
-| Other valid source | `Incomplete` / `Partial` | Root `[0,N)` with staged source-bound blocks where recognized, one `SyntaxUnimplemented` uncertainty over `[0,N)`, blocks pending, inlines not started; references/lookup unavailable |
+| Indented/fenced code with known info semantics, HTML blocks, thematic breaks, empty ATX headings and ASCII blanks, including quotes and lists of empty items or established inline-free blocks, nested in either kind of container | `Complete` / `Available` | Root `[0,N)` with source-bound blocks, established empty references/lookup, both phases complete, no uncertainty |
+| Other valid source, including lists requiring reference or inline interpretation | `Incomplete` / `Partial` | Root `[0,N)` with staged source-bound blocks where recognized, one `SyntaxUnimplemented` uncertainty over `[0,N)`, blocks pending, inlines not started; references/lookup unavailable |
 | Invalid UTF-8 | `Failed` / `Unavailable` | Original Source, typed `Failure` with `InvalidUTF8` code and snapshot-bound byte location, nil Document, neither phase started |
 | Cancellation/deadline on otherwise valid source | `Incomplete` / `Partial` | Original Source and partial root with any already-closed prefix blocks, affected region with `Cancelled`/`DeadlineExceeded`, separate Interruption, nil Failure; unfinished work interrupted |
 | Other operational failure | `Failed` / `Unavailable` | Retained Source, typed stable failure code, nil Document; InternalFailure if block-model construction violates invariants |
@@ -149,8 +149,8 @@ their whole suffix rather than manufacturing nested breaks.
 Parse/Evaluate reproduces HTML for 11, 43, 47, 50–54 and 98. Example 58 retains
 paragraph/break/paragraph progress but remains inline/reference-pending. Example
 59 retains a Setext heading and following paragraph; 48 now passes as literal
-indented code, and 57/60/61 retain actual item children and outside breaks while
-grouping remains unavailable.
+indented code, and 57/60/61 retain grouped items and outside breaks while
+reference/inline interpretation remains pending.
 Negative cases never acquire break nodes or false completeness. Independent
 fixtures cover tabs, indentation boundaries, Unicode/NUL/extra characters,
 endings/EOF, blank-separated breaks, ownership, repeatability and interruption.
@@ -225,7 +225,7 @@ ranges. Nineteen Setext-section cases establish structural/fallback progress;
 following breaks. Quotes 92/101 now contain paragraphs followed by outside
 thematic breaks; 93 retains lazy paragraph text without Setext promotion. Only
 list cases 94/99 retain item paragraphs followed by outside thematic breaks,
-with grouping #16 and reference/inline #17/#18 still pending.
+with reference/inline #17/#18 still pending.
 Example 91 retains its initial
 heading and paragraph after invalid fence classification; its invalid multiline
 complete-tag suffix now also establishes Setext/paragraph structure. Inline
@@ -272,7 +272,7 @@ Full depth/node/work limits and cancellation hardening remain #31.
 `TestQuoteUpstreamTargets` asserts actual trees, child order, envelopes, markers and
 content ranges for all unchanged 228–252 independently of HTML. Cases 236/239/240
 newly pass HTML; existing literal-code case 231 remains supported. List case 235
-retains its quoted item and outside sibling, with #16–#18 pending. Other quote cases retain #17/#18, plus #21 for multiline text.
+retains its quoted item and outside sibling, with #17/#18 pending. Other quote cases retain #17/#18, plus #21 for multiline text.
 `TestQuotePartialTabUpstream6` independently verifies the newly supported tab/code
 case. Earlier Setext 92/93/101, fence 128 and HTML 174 now assert quote structure;
 214/218 remain pending for reference/text/resolution providers #17/#18/#27.
@@ -318,16 +318,16 @@ HTML nodes cannot manufacture the private recognition/handoff proof.
 TestHTMLUpstreamTargets independently asserts form, node order, physical envelopes
 and content ranges for all unchanged 148–191 inputs plus cross-feature passes 21/31.
 Twenty-five HTML-section cases now pass actual Parse/Evaluate. Nineteen remain
-pending: 174 retains its quote and outside paragraph (#17/#18), 175 needs lists
-(#16), retaining an HTML child and outside sibling item, and other mixed cases
+pending: 174 retains its quote and outside paragraph (#17/#18); 175 retains
+grouped items with an HTML child and reference/text work (#17/#18). Other mixed cases
 need reference/text (#17/#18), breaks (#21), inline HTML (#23) or emphasis
 (#24/#25) as recorded in foundation.json. These are coverage owners, not reverse
 blockers on this syntax stage. Separate fixtures cover grammar near misses,
 case/EOF/fixed-form boundaries, code and paragraph precedence, opaque payload,
 LF/CRLF/CR/NUL/Unicode/tab provenance, immutable accessors, encoding precedence and
 deterministic interruption, including at EOF finalization. Actual full-corpus
-normalized/strict gates record 84 pass and 568 pending, preserving all 80
-pre-quote passes; full conformance remains false.
+normalized/strict gates record 86 pass and 566 pending, preserving all 84
+pre-grouping passes; full conformance remains false.
 
 ## Indented code and literal handoff
 
@@ -466,15 +466,39 @@ boundary evidence; blanks inside a code/quote child do not by themselves decide
 list tightness. The initially blank marker line remains identifiable from the
 first-line prefix, original line ending and first child position.
 
-No List parent, grouping or Tight fact is fabricated. Adjacent and nested items
-remain directly attached to their established document/quote/item parent; #16
-will group them and derive tightness. All list-bearing documents stay Pending
-with unavailable references and inlines, even an empty EOF item. Unavailable
-reference starts still conservatively stop the lifecycle: only observed container
-prefixes and closed children survive, with an open paragraph withheld; no unseen
-suffix or complete item interpretation is claimed. Cancellation/deadline instead
-discards every unfinished item/quote rather than publishing normal EOF closure,
-retaining already-closed root blocks and strict UTF-8 failure precedence.
+Parent closure groups compatible sibling items once, recursively within document,
+quote and item parents. Bullet changes, ordered-delimiter changes, type changes and
+intervening blocks split groups. Later ordered numbers do not change the List's
+initial numeric Start; every item retains its original ordinal spelling. Ordered
+siblings with a changed delimiter can end an ordered item even when the new number
+is not 1; the new-list interruption restriction still protects ordinary prose.
+
+A List envelope runs from the first item's start through the last item's end,
+including separating gaps and owned trailing blanks. It contains only ListItems,
+has empty Content/Markers, and carries Ordered, Bullet or Delimiter, initial Start
+for ordered lists, and Tight when established. Item-only source/indent fields never
+move to List. Item/leaf envelopes and source segments are unchanged by wrapping;
+paragraph nodes remain present regardless of HTML suppression.
+
+Tightness uses separation between sibling items or directly contained item blocks.
+Private trailing-blank summaries propagate only through a final nested list/item
+boundary, never from an arbitrary loose descendant, quote or opaque leaf. Marked
+quote blanks and code-internal blanks do not loosen an outer list. Trailing blanks
+alone do not loosen the last item. Empty items can close before an unowned blank;
+a whole physical-line gap between established siblings still separates them. Each
+sibling run is frozen once, each item's marker/child evidence is scanned in order,
+and unowned gaps use binary searches in the shared line index. There is no repeated
+construction of growing Lists or per-ancestor walk of all descendant subtrees.
+
+Lists of empty items or established inline-free blocks now complete
+with empty references and vacuous inline work. Text-bearing lists stay Pending for
+reference/inline providers. Unsupported reference starts retain only established
+container prefixes and closed children, withholding an open paragraph and the unseen
+suffix. Affected Lists have unavailable Tight, not an invented tight/loose value;
+example 317 stops before its unexamined third item. Cancellation/deadline discards
+unfinished items/quotes without normal EOF finalization, retains already-closed
+prefix blocks (now wrapped in Lists where appropriate), and preserves strict UTF-8
+failure precedence.
 
 `ListProperties` adds optional, item-only facts:
 
@@ -514,9 +538,9 @@ completion/coverage owners, not reverse prerequisites on this structural increme
 | --- | --- |
 | 253, 285 | Paragraph/code/quote introduction or noninterrupting empty markers; #17/#18 reference/text and #21 breaks |
 | 261, 266, 269, 272, 275 | Ordinary nonmarkers or paragraph/code examples; #17/#18 |
-| 254, 286–288, 290–293 | Established items with multiline/code/quote children and lazy ownership; #16 grouping/tightness, #17/#18, #21 |
-| 255–260, 262–265, 267–268, 270–271, 273–274, 276–283, 294–300 | Established item/nested/sibling/outside ownership and leaf content; #16 grouping/tightness and #17/#18 |
-| 284 | Closed empty item; #16 grouping/tightness |
+| 254, 286–288, 290–293 | Established items with multiline/code/quote children and lazy ownership; #17/#18, #21 |
+| 255–260, 262–265, 267–268, 270–271, 273–274, 276–283, 294–300 | Established item/nested/sibling/outside ownership and leaf content; #17/#18 |
+| 284 | Complete empty item in a tight List; supported HTML |
 | 289 | Existing complete indented code; unchanged HTML pass |
 
 Independent fixtures cover all bullets/delimiters, digit bounds, padding boundaries,
@@ -528,9 +552,20 @@ Earlier list-dependent quote/Setext/code/HTML/thematic fixtures now assert actua
 item children and following siblings/outside blocks. Invalid punctuation candidates also retain
 ordinary paragraph structure where the former conservative hook stopped.
 
-No new HTML pass is claimed: all prior 84 supported IDs stay unchanged and 568
-remain pending. Actual structural progress and constructed renderer fixtures are
-not HTML conformance. Full grammar, budgets, rules and CLI/MCP remain later work.
+`TestListGroupingUpstreamTargets` independently asserts the complete available
+List/item/block hierarchy, exact envelopes/segments, original marker ranges and
+per-list properties for every unchanged Lists input 301–326. Text/reference work
+remains #17/#18; multiline 304/312 additionally retain #21. Cases 307/319 distinguish
+loose inner lists from tight parents, 318 protects code blanks, 320/321 cover quote
+and consecutive-block context, and 324–326 distinguish direct separation and nested
+tightness. Constructed renderer tests separately check mixed inner/outer tightness
+and quoted paragraphs; they do not establish recognition. Complete actual-Parse
+source assertions and HTML checks promote Tabs 7 and empty item 284, preserving all
+84 previous passes: 86 pass, 566 pending. Boundary fixtures cover blank ownership,
+opaque trailing blanks, empty-item gaps in quotes, all endings/EOF and conservative
+nested reference suffixes. FuzzListGroupingBoundaries independently generates
+marker changes, sibling counts and blank boundaries. Full grammar/budgets/rules
+and CLI/MCP remain later work.
 
 ## Snapshots, spans and ownership
 
@@ -679,7 +714,7 @@ Roles in Markers identify source spellings; each marker has its exact source spa
 | `Heading` | Heading Level 1–6 and Style `atx`/`setext`; marker roles `opening`, `closing`, `underline` as applicable; content/inline children. |
 | `ThematicBreak` | Marker spelling/ranges use `thematic-marker`; envelope preserves intervening spaces. |
 | `BlockQuote` | Ordered block children; per-line `quote-prefix` markers. |
-| `List`, `ListItem` | List.Ordered; optional Start, Delimiter (`.`/`)`), Bullet (`-`/`+`/`*`), Tight when known. Item-only MarkerWidth/Padding/ContentIndent and source-backed Prefix; `item-prefix`/`item-marker` ranges. Recognized items have ordered block children, empty raw Content, and per-line `item-indent`/`item-blank` evidence; grouping/tightness remains unavailable. |
+| `List`, `ListItem` | List.Ordered; optional Start, Delimiter (`.`/`)`), Bullet (`-`/`+`/`*`), Tight when known. Item-only MarkerWidth/Padding/ContentIndent and source-backed Prefix; `item-prefix`/`item-marker` ranges. Recognized items have ordered block children, empty raw Content, and per-line `item-indent`/`item-blank` evidence; grouping and independently derived Tight belong to the List parent. |
 | `CodeBlock` | Code.Style `indented`/`fenced`; optional Fence byte/Width, raw/semantic Info Value. `opening`, optional `closing`, `indent-prefix` markers; raw Content and semantic Literal. |
 | `HTMLBlock`, `InlineHTML` | HTML.BlockForm 1–7 only for block origins; protected raw source Content. |
 | `Text` | Original Content segments, semantic Literal and per-segment transformation provenance. |
@@ -711,18 +746,18 @@ normalization. Partial lookup may contain only known first selections; unavailab
 lookup has no entries. Mutable collection copies cannot change the document.
 
 [`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly
-accounts for all 652 upstream IDs: 84 supported HTML cases and 568 pending.
-Supported IDs are 1–3, 6, 8, 11, 18–19, 21, 31, 36, 43, 47–48, 50–54, 69, 79,
+accounts for all 652 upstream IDs: 86 supported HTML cases and 566 pending.
+Supported IDs are 1–3, 6–8, 11, 18–19, 21, 31, 36, 43, 47–48, 50–54, 69, 79,
 85, 98, 100, 107, 110–112, 116–120, 122–127, 129–137, 139, 142–144, 146–147,
 150–151, 153–154, 156–166, 171, 173, 178, 181, 183–184, 186, 189–191, 231,
-236, 239–240 and 289.
+236, 239–240, 284 and 289.
 These are recognized inline-free documents, not implementation of every syntax feature in their named sections.
-Indented-code 108/109 retain grouping/reference/inline owners #16–#18;
+Indented-code 108/109 retain reference/inline owners #17/#18;
 113 retains #17/#18/#21, and 114/115 retain #17/#18. Paragraph 225 now retains
 code and its following paragraph, with only #17/#18 pending. Thematic cases
-retain grouping (#16), reference/inline (#17/#18), break (#21) and
+retain reference/inline (#17/#18), break (#21) and
 emphasis (#24/#25) owners where relevant. Setext targets retain #17/#18 for
-92/101 and additionally #21 for 93, #16–#18 for 94/99 and #17/#18/#20/#23
+92/101 and additionally #21 for 93, #17/#18 for 94/99 and #17/#18/#20/#23
 for 91. Recognized Setext/fallback cases and 59 retain #17/#18, with #21 for multiline content, #19 for escapes
 in 102/106 and #24/#25 for emphasis in 80–82. ATX cases name #17/#18 for
 text/reference handoff, #19 for escapes in 65/66/76, #24/#25 for emphasis in 66
