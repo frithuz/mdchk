@@ -174,8 +174,8 @@ func TestPendingBlockBoundaries(t *testing.T) {
 	}
 	checkATX(t, "- list\n", false, []atxBlockWant{bulletWant(byteRange{0, 7}, byteRange{0, 2}, byteRange{0, 1}, '-', 1, 2, "list", byteRange{2, 6})})
 	checkATX(t, "1. list\n", false, []atxBlockWant{orderedWant(byteRange{0, 8}, byteRange{0, 3}, byteRange{0, 2}, 1, '.', 1, 3, "list", byteRange{3, 7})})
-	// The first line is established; continuation/closure of the rest is unknown.
-	checkATX(t, "a\n\n- list\n\nb\n", false, []atxBlockWant{atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}), bulletWant(byteRange{3, 10}, byteRange{3, 5}, byteRange{3, 4}, '-', 1, 2, "list", byteRange{5, 9})})
+	// The blank belongs to the item; the following dedented paragraph is outside.
+	checkATX(t, "a\n\n- list\n\nb\n", false, []atxBlockWant{atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}), continuedItemWant(bulletWant(byteRange{3, 10}, byteRange{3, 5}, byteRange{3, 4}, '-', 1, 2, "list", byteRange{5, 9}), 11, []markerWant{{"item-blank", byteRange{10, 11}}}), atxParagraphWant(byteRange{11, 13}, "b", byteRange{11, 12})})
 }
 
 func TestBlankDocumentsComplete(t *testing.T) {

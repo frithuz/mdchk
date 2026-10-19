@@ -88,8 +88,8 @@ Empty-heading 79 now passes actual Parse/Evaluate; nonempty headings stay pendin
 All Setext examples 80–106 and thematic 59 have independent Parse/source
 assertions. Nineteen Setext cases establish structural/fallback progress; 98
 remains a supported pair of breaks. Code cases 85/100 pass. Quotes 92/101 now
-precede outside thematic breaks; 93 remains lazy paragraph text. List cases 94/99 now retain the first item prefix;
-continuation and grouping remain pending. Example 91 retains its
+precede outside thematic breaks; 93 remains lazy paragraph text. List cases 94/99 retain item paragraphs and outside breaks;
+grouping/reference/inline work remains pending. Example 91 retains its
 initial heading/paragraph plus Setext/paragraph structure in the invalid multiline
 tag suffix; reference/text/code-span/inline-HTML work remains pending.
 Those deferrals are explicitly recorded, not claimed as recognized headings.
@@ -124,24 +124,31 @@ all 80 prior passes. Additional fixtures cover seven-form HTML quote-end closure
 residual tabs, NUL/Unicode/endings/EOF, immutable accessors and deterministic nested
 interruption without normal-EOF publication. Eighty-four upstream cases pass
 actual HTML comparison; 568 remain pending.
-List-marker recognition now retains a bounded first-line ListItem directly in the
-current document or quote, with marker spelling/ordinal, effective padding,
-relative content indentation and source-backed Prefix contributions. Tabs preserve
-physical phase and consumed/residual PartialTab mappings. Empty markers have
-virtual effective padding without invented bytes. Normal dispatch and quoted
-paragraph interruption share classification; invalid/noninterrupting candidates
-retain paragraph content, and code/HTML remain opaque. Item Content is raw
-first-line payload, not established nested blocks or inlines. Parsing stops there:
-#15 owns continuation/closure and #16 grouping/tightness; all marker items remain
-partial, including empty EOF items. See the [item contract and per-case remaining
-providers](../internal/parser/model.md#first-line-list-markers-and-staged-item-prefixes).
-All unchanged 253–300 have independent actual-Parse source/metadata assertions:
-40 initial item prefixes, seven non-item examples and existing complete code 289.
-The passing HTML baseline stays at 84; no pass was added or weakened. Focused
-fixtures cover tabs/padding/ordinals, source endings, negative/interrupting markers,
-opaque payloads, metadata validation/immutability and interrupted open quotes.
-The bounded FuzzListMarkerSourceFacts target checks source/ordinal/provenance
-invariants; it is not full list conformance or resource-budget verification.
+List items now retain ordered nested block children and established multiline
+ownership/closure in mixed quote/item containers. Effective indentation keeps the
+original tab phase; paragraph-only laziness can omit prefixes. Blank-start/empty
+items, dedented siblings/outside blocks and recursive same-line starts have
+independent actual-Parse assertions. Existing marker/ordinal/padding/ContentIndent
+and Prefix facts survive closure. `item-indent` and `item-blank` markers preserve
+original continuation/boundary evidence for #16; leaf content remains segmented
+on the original Source. Code/HTML stays opaque. Interruption discards unfinished
+items instead of assigning normal EOF closure.
+
+No List parent or tightness is guessed. #16 still owns grouping/tightness and
+reference/inline providers remain unavailable as applicable, so every list-bearing
+document stays partial, even an empty EOF item. The model documents conservative
+handling of unresolved reference suffixes. See the [item contract and per-case
+providers](../internal/parser/model.md#list-markers-continuation-and-staged-grouping).
+Every unchanged 253–300 input has independent tree/source assertions: 40 inputs
+with item ownership, seven non-item cases and complete code 289. Earlier dependent
+quote/Setext/code/HTML/thematic tests reflect actual structural progress. The
+passing HTML baseline remains 84 with 568 pending; no pass was added or weakened.
+Focused fixtures cover original marker facts, continuation/blank markers, tab
+phase/shared bytes, all endings/EOF, Unicode/NUL, immutable accessors, seven-form
+HTML/fence boundaries and deterministic cancellation/deadline. Bounded
+FuzzListMarkerSourceFacts and FuzzListContinuationOwnership targets check source
+facts and generated continuation/sibling ownership; they do not establish full
+list conformance or comprehensive #31 resource-budget protection.
 Go tests check complete unique inventory accounting as well as ownership,
 range/provenance, outcome and phase-handoff behavior.
 
@@ -260,23 +267,23 @@ pending**. Supported IDs are 1–3, 6, 8, 11, 18–19, 21, 31, 36, 43, 47–48, 
 indented/fenced code, HTML, breaks, empty ATX headings, blanks and quotes.
 Quote recognition adds four passes while retaining all 80 earlier passes.
 It does not establish general inlines, lists, extensions or full CommonMark conformance.
-Indented-code 108/109 retain #15–#18 list/container/reference/inline owners;
+Indented-code 108/109 retain #16–#18 grouping/reference/inline owners;
 113 retains #17/#18/#21, and 114/115 retain #17/#18. Paragraph 225 now retains
 its code with remaining #17/#18; other paragraph cases retain actual #17/#18/#21
 owners. Named thematic targets retain list/reference/inline/break/emphasis owners.
 ATX targets retain #17/#18 for text/reference handoff, #19 for escapes (65/66/76),
 #24/#25 for emphasis (66) and #21 for multiline content (70). Setext targets
-retain #17/#18 for 92/101, additionally #21 for 93, #15/#16 for 94/99 and
+retain #17/#18 for 92/101, additionally #21 for 93, #16–#18 for 94/99 and
 #17/#18/#20/#23 for 91.
 Recognized Setext/fallback cases and 59 retain #17/#18, plus actual multiline
 (#21), escape (102/106, #19) and emphasis (80–82, #24/#25) owners. Setext cannot
 be empty; its nonempty headings remain pending. Fenced 128 retains #17/#18;
 121 retains #17/#18/#20; 138/145 additionally retain #21; 140/141 retain #17/#18
 for surrounding paragraphs/headings. Info decoding remains #19. HTML 174 retains
-#17/#18, 175 retains #15/#16, and mixed HTML cases retain their actual reference/text,
+#17/#18, 175 retains #16–#18, and mixed HTML cases retain their actual reference/text,
 break, inline-HTML or emphasis providers (#17/#18/#21/#23–#25). Other cases use
 broad remaining inline/core-completion scopes #18/#29. Quote 235 retains
-#15–#18; other pending quote cases retain #17/#18, plus #21 for multiline text.
+#16–#18; other pending quote cases retain #17/#18, plus #21 for multiline text.
 Reference cases 214/218 retain #17/#18/#27. These coverage owners are not reverse
 prerequisites on this staged delivery. Pending cases are not conformance passes. Independent constructed AST
 tests verify renderer output for the core model catalog, escaping/URL

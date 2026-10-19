@@ -28,6 +28,8 @@ type openBlock struct {
 	end      int
 	markers  []Marker
 	children []*Node
+	list     *ListProperties
+	empty    bool // an item whose opening line was blank and has no later content
 }
 
 // Accumulation belongs exclusively to this parse. Freeze nodes once on closure;
@@ -62,11 +64,10 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		cursor := Indentation{index: p.index, offset: physical.start, end: physical.end}
 		matched := 1
 		for matched < p.containerDepth() {
-			next, prefix, ok := p.quotePrefix(cursor)
+			next, ok := p.matchContainer(matched, physical, cursor)
 			if !ok {
 				break
 			}
-			p.stack[matched].markers = append(p.stack[matched].markers, Marker{Role: "quote-prefix", Source: prefix})
 			p.stack[matched].end = physical.next
 			cursor = next
 			matched++
@@ -75,7 +76,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		if matched < p.containerDepth() {
 			// Unmatched containers may still own paragraph continuation text. In
 			// particular an unmarked equals underline cannot promote a lazy paragraph.
-			if p.paragraphOpen() && line.contentStart != line.end && !p.interruptsParagraph(line) {
+			if p.paragraphOpen() && line.contentStart != line.end && !p.siblingItem(matched, line) && !p.interruptsParagraph(line) {
 				for i := 1; i < p.containerDepth(); i++ {
 					p.stack[i].end = physical.next
 				}
@@ -133,6 +134,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 				return Pending, err
 			}
 		}
+	dispatch:
 		// Continuing leaves have already consumed this line. A dedented code
 		// line is reprocessed here too, so it can open a new quote container.
 		for {
@@ -222,15 +224,15 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			if err := p.closeTo(depth); err != nil {
 				return Pending, err
 			}
-			item, err := start.firstLine()
+			item, err := start.openItem()
 			if err != nil {
 				return Pending, err
 			}
-			p.attach(item)
-			// #15 must establish continuation/closure before later physical lines
-			// can be attached to this item or treated as sibling blocks. #16 owns
-			// grouping/tightness; do not put a guessed List on the container stack.
-			break
+			p.stack = append(p.stack, item)
+			cursor = start.content
+			// The first payload can itself open another item/quote, or any leaf.
+			// Grouping/tightness still belong to #16; no List parent is guessed.
+			goto dispatch
 		}
 		deferred := false
 		for _, hook := range p.hooks {
@@ -443,6 +445,9 @@ func (p *blockParser) closeTo(depth int) error {
 	for len(p.stack) > depth {
 		block := p.stack[len(p.stack)-1]
 		spec := NodeSpec{Kind: block.kind, Envelope: p.index.span(block.start, block.end), Markers: block.markers, Children: block.children}
+		if block.list != nil {
+			spec.Properties.List = block.list
+		}
 		if block.kind == Paragraph {
 			spec.Envelope = p.index.span(block.start, block.last.next)
 			spec.Content = p.paragraphContent(block)

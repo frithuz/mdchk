@@ -126,11 +126,11 @@ func TestThematicUpstreamTargets(t *testing.T) {
 		54: {{parser.ThematicBreak, byteRange{0, 12}, []byteRange{{0, 1}, {2, 3}, {4, 5}, {6, 7}}}},
 		55: {{parser.Paragraph, byteRange{0, 10}, nil}, {parser.Paragraph, byteRange{11, 19}, nil}, {parser.Paragraph, byteRange{20, 28}, nil}},
 		56: {{parser.Paragraph, byteRange{0, 5}, nil}},
-		57: {{parser.ListItem, byteRange{0, 6}, []byteRange{{0, 2}, {0, 1}}}},
+		57: {{parser.ListItem, byteRange{0, 6}, []byteRange{{0, 2}, {0, 1}}}, {parser.ThematicBreak, byteRange{6, 10}, []byteRange{{6, 9}}}, {parser.ListItem, byteRange{10, 16}, []byteRange{{10, 12}, {10, 11}}}},
 		58: {{parser.Paragraph, byteRange{0, 4}, nil}, {parser.ThematicBreak, byteRange{4, 8}, []byteRange{{4, 7}}}, {parser.Paragraph, byteRange{8, 12}, nil}},
 		59: {{parser.Heading, byteRange{0, 8}, []byteRange{{4, 7}}}, {parser.Paragraph, byteRange{8, 12}, nil}},
-		60: {{parser.ListItem, byteRange{0, 6}, []byteRange{{0, 2}, {0, 1}}}},
-		61: {{parser.ListItem, byteRange{0, 6}, []byteRange{{0, 2}, {0, 1}}}},
+		60: {{parser.ListItem, byteRange{0, 6}, []byteRange{{0, 2}, {0, 1}}}, {parser.ThematicBreak, byteRange{6, 12}, []byteRange{{6, 7}, {8, 9}, {10, 11}}}, {parser.ListItem, byteRange{12, 18}, []byteRange{{12, 14}, {12, 13}}}},
+		61: {{parser.ListItem, byteRange{0, 6}, []byteRange{{0, 2}, {0, 1}}}, {parser.ListItem, byteRange{6, 14}, []byteRange{{6, 8}, {6, 7}}}},
 		98: {{parser.ThematicBreak, byteRange{0, 4}, []byteRange{{0, 3}}}, {parser.ThematicBreak, byteRange{4, 8}, []byteRange{{4, 7}}}},
 	}
 	data, err := os.ReadFile("testdata/commonmark/0.31.2/examples.json")

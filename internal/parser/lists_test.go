@@ -17,10 +17,13 @@ import (
 // These helpers only assemble independently supplied source ranges/column facts.
 // They never classify Markdown or inspect parser/scanner/renderer output.
 func bulletWant(envelope, prefix, marker byteRange, bullet byte, padding, indent int, text string, content ...byteRange) atxBlockWant {
-	return atxBlockWant{kind: parser.ListItem, envelope: envelope,
+	w := atxBlockWant{kind: parser.ListItem, envelope: envelope,
 		markers: []markerWant{{"item-prefix", prefix}, {"item-marker", marker}},
-		content: content, text: text,
-		list: &parser.ListProperties{Bullet: parser.Some(bullet), MarkerWidth: parser.Some(1), Padding: parser.Some(padding), ContentIndent: parser.Some(indent)}}
+		list:    &parser.ListProperties{Bullet: parser.Some(bullet), MarkerWidth: parser.Some(1), Padding: parser.Some(padding), ContentIndent: parser.Some(indent)}}
+	if len(content) != 0 {
+		w.children = []atxBlockWant{atxParagraphWant(byteRange{prefix.end, envelope.end}, text, content...)}
+	}
+	return w
 }
 
 func orderedWant(envelope, prefix, marker byteRange, start int, delimiter byte, padding, indent int, text string, content ...byteRange) atxBlockWant {
@@ -31,10 +34,21 @@ func orderedWant(envelope, prefix, marker byteRange, start int, delimiter byte, 
 	return w
 }
 
+// Continue an independently specified item with explicit original-byte boundary
+// markers and block children. No source classification happens in this helper.
+func continuedItemWant(w atxBlockWant, end int, markers []markerWant, children ...atxBlockWant) atxBlockWant {
+	w.envelope.end = end
+	w.markers = append(w.markers, markers...)
+	if children != nil {
+		w.children = children
+	}
+	return w
+}
+
 func TestListMarkerUpstreamTargets(t *testing.T) {
-	// Exact first-line prefixes, raw payloads and numeric/structural facts for
-	// all 48 unchanged List items examples. Subsequent lines remain unowned until
-	// #15; grouping/tightness remains #16. This is not an all-HTML-pass assertion.
+	// Retain independently specified opening marker/padding facts. The separate
+	// TestListContinuationUpstreamTargets asserts full trees and source spans for
+	// all 48 inputs; grouping/tightness still belongs to #16.
 	wants := map[int][]atxBlockWant{
 		254: {orderedWant(byteRange{0, 16}, byteRange{0, 4}, byteRange{0, 2}, 1, '.', 2, 4, "A paragraph", byteRange{4, 15})},
 		255: {bulletWant(byteRange{0, 6}, byteRange{0, 2}, byteRange{0, 1}, '-', 1, 2, "one", byteRange{2, 5})},
@@ -111,7 +125,35 @@ func TestListMarkerUpstreamTargets(t *testing.T) {
 			if !ok {
 				t.Fatal("unaccounted original case")
 			}
-			checkATX(t, e.Markdown, false, want)
+			// Non-item negative cases retain their original paragraph assertions.
+			w := want[0]
+			for w.kind == parser.BlockQuote {
+				w = w.children[0]
+			}
+			if w.kind != parser.ListItem {
+				checkATX(t, e.Markdown, false, want)
+				return
+			}
+			r := parser.Parse(context.Background(), parser.NewSource([]byte(e.Markdown)))
+			var item *parser.Node
+			parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
+				if item == nil && n.Kind() == parser.ListItem {
+					item = n
+				}
+				return true
+			})
+			if r.Failure != nil || item == nil {
+				t.Fatal("lost opening marker", r)
+			}
+			m, props := item.Markers(), item.Properties().List
+			if props == nil || props.Ordered != w.list.Ordered || props.Start != w.list.Start || props.Delimiter != w.list.Delimiter || props.Bullet != w.list.Bullet || props.MarkerWidth != w.list.MarkerWidth || props.Padding != w.list.Padding || props.ContentIndent != w.list.ContentIndent || props.Tight.Present || props.Prefix == nil {
+				t.Fatal("opening properties changed", props)
+			}
+			for j := range w.markers {
+				if m[j].Role != w.markers[j].role || m[j].Source.Start() != w.markers[j].span.start || m[j].Source.End() != w.markers[j].span.end {
+					t.Fatal("opening marker source changed", m)
+				}
+			}
 		})
 	}
 	if len(seen) != 48 || len(wants) != 45 {
@@ -185,11 +227,11 @@ func TestListMarkerTabProvenance(t *testing.T) {
 				return true
 			})
 			if r.Failure != nil || r.Status != parser.Incomplete || len(items) != 1 || conformance.Evaluate(r).Status != "pending" {
-				t.Fatal("marker stage completed or lost item", r)
+				t.Fatal("ungrouped item completed or lost structure", r)
 			}
 			n := items[0]
 			props := n.Properties().List
-			if props == nil || props.MarkerWidth != parser.Some(tt.width) || props.Padding != parser.Some(tt.padding) || props.ContentIndent != parser.Some(tt.indent) || props.Tight.Present || len(n.Children()) != 0 {
+			if props == nil || props.MarkerWidth != parser.Some(tt.width) || props.Padding != parser.Some(tt.padding) || props.ContentIndent != parser.Some(tt.indent) || props.Tight.Present {
 				t.Fatal("wrong structural facts", props)
 			}
 			markers := n.Markers()
@@ -220,7 +262,21 @@ func TestListMarkerTabProvenance(t *testing.T) {
 			if props.Prefix == nil || props.Prefix.Semantic != parser.Some(check(props.Prefix.Segments, tt.consumed)) {
 				t.Fatal("prefix semantic mapping")
 			}
-			check(n.Content(), tt.content)
+			if len(tt.content) != 0 {
+				child := n.Children()[0]
+				if strings.Contains(tt.input, "\t\tfoo") {
+					// Indented code consumes four of the six residual columns;
+					// the second original tab contributes two remaining spaces.
+					if child.Kind() != parser.CodeBlock || child.Properties().Literal != parser.Some("  foo\n") {
+						t.Fatal("padding did not open code")
+					}
+					check(child.Content(), []contribution{{2, 3, parser.PartialTab, "  "}, {3, 6, parser.Exact, "foo"}, {6, 7, parser.Exact, "\n"}})
+				} else {
+					check(child.Content(), tt.content)
+				}
+			} else if len(n.Children()) != 0 {
+				t.Fatal("empty item acquired children")
+			}
 			if strings.HasPrefix(tt.input, " >") {
 				q := r.Document.Root().Children()[0]
 				if q.Markers()[0].Source.End() != 3 || n.Span().Start() != 2 {
@@ -354,7 +410,7 @@ func TestListMarkerNumericAndPaddingBoundaries(t *testing.T) {
 					}
 					nodes := r.Document.Root().Children()
 					if len(nodes) != 1 {
-						t.Fatal("lost bounded first block", nodes)
+						t.Fatal("lost item or code block", nodes)
 					}
 					if leading == 4 {
 						if nodes[0].Kind() != parser.CodeBlock || r.Status != parser.Complete {
@@ -376,10 +432,15 @@ func TestListMarkerNumericAndPaddingBoundaries(t *testing.T) {
 						t.Fatal("original marker/prefix ranges", n.Markers())
 					}
 					var content string
-					for _, seg := range n.Content() {
+					child := n.Children()[0]
+					for _, seg := range child.Content() {
 						content += seg.Semantic.Value
 					}
-					if content != strings.Repeat(" ", spaces-padding)+"x" {
+					wantContent := "x"
+					if spaces > 4 {
+						wantContent = strings.Repeat(" ", spaces-padding-4) + "x\n"
+					}
+					if content != wantContent {
 						t.Fatal("padding swallowed content", content)
 					}
 				})
@@ -406,16 +467,15 @@ func TestListMarkerBytesEndingsAndUnavailableSuffix(t *testing.T) {
 			t.Fatal(r)
 		}
 		n := r.Document.Root().Children()[0]
-		if n.Kind() != parser.ListItem || n.Span().End() != len(input) || n.Properties().List.Start != parser.Some(3) || n.Properties().List.Tight.Present || len(n.Children()) != 0 {
+		if n.Kind() != parser.ListItem || n.Span().End() != len(input) || n.Properties().List.Start != parser.Some(3) || n.Properties().List.Tight.Present || len(n.Children()) != 1 {
 			t.Fatal("false item completion")
 		}
-		segments := n.Content()
-		if len(segments) != 3 {
+		segments := n.Children()[0].Content()
+		if len(segments) != 2 {
 			t.Fatal("NUL source mapping", segments)
 		}
 		assertSegment(t, source, segments[0], 5, 7, parser.Exact, "é", "é")
 		assertSegment(t, source, segments[1], 7, 8, parser.Normalized, "\x00", "\ufffd")
-		assertSegment(t, source, segments[2], 8, 10, parser.Exact, " \t", " \t")
 		props := n.Properties()
 		props.List.Padding = parser.Some(4)
 		props.List.Prefix.Segments[0].Source = parser.Span{}
@@ -431,9 +491,6 @@ func TestListMarkerBytesEndingsAndUnavailableSuffix(t *testing.T) {
 	}
 	checkATX(t, "003.", false, []atxBlockWant{orderedWant(byteRange{0, 4}, byteRange{0, 4}, byteRange{0, 4}, 3, '.', 1, 5, "")})
 	checkATX(t, "   -\n", false, []atxBlockWant{bulletWant(byteRange{0, 5}, byteRange{0, 4}, byteRange{3, 4}, '-', 1, 5, "")})
-	for _, suffix := range []string{"continued\n", "  continued\n", "- sibling\n", "\n# later\n", "  [x]: /url\n"} {
-		checkATX(t, "- first\n"+suffix, false, []atxBlockWant{bulletWant(byteRange{0, 8}, byteRange{0, 2}, byteRange{0, 1}, '-', 1, 2, "first", byteRange{2, 7})})
-	}
 	for _, input := range []string{"```\n- item\n```\n", "<!--\n1. item\n-->\n", "<div>\n* item\n"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 		if r.Status != parser.Complete || r.Failure != nil {
@@ -471,15 +528,15 @@ func FuzzListMarkerSourceFacts(f *testing.F) {
 			if n.Kind() != parser.ListItem {
 				return true
 			}
-			if r.Status != parser.Incomplete || r.AST != parser.Partial || r.Phases.Inlines != parser.NotStarted || conformance.Evaluate(r).Status != "pending" || len(n.Children()) != 0 {
-				t.Fatal("marker-only facts acquired completion")
+			if r.Status != parser.Incomplete || r.AST != parser.Partial || r.Phases.Inlines != parser.NotStarted || conformance.Evaluate(r).Status != "pending" || len(n.Content()) != 0 {
+				t.Fatal("ungrouped items acquired completion or raw payload")
 			}
 			p := n.Properties().List
 			if p == nil || p.Tight.Present || p.Prefix == nil {
 				t.Fatal("missing item prefix or invented tightness")
 			}
 			markers := n.Markers()
-			if len(markers) != 2 {
+			if len(markers) < 2 {
 				t.Fatal("missing original marker")
 			}
 			raw, err := source.Text(markers[1].Source)

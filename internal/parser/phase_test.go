@@ -27,6 +27,35 @@ type checkpointContext struct {
 	remaining int
 }
 
+func TestListContinuationInterruptionDiscardsOpenItems(t *testing.T) {
+	// The first item is closed by the following heading. Interruption inside the
+	// last mixed item/quote or at EOF must not publish it as a finished item.
+	source := NewSource([]byte("- first\n#\n- > second\n  > continued\n"))
+	for _, checkpoint := range []int{4, 5, 6} {
+		r := Parse(context.Background(), source)
+		state, err := parseBlockLifecycle(&checkpointContext{Context: context.Background(), remaining: checkpoint}, r.Document, nil)
+		children := r.Document.Root().Children()
+		if err != nil || state != Interrupted || r.Document.inlineFree || r.Document.References().LookupAvailability != Unavailable || len(children) != 2 || children[0].Kind() != ListItem || children[0].Span().End() != 8 || children[1].Kind() != Heading || children[1].Span().End() != 10 {
+			t.Fatal("unfinished item finalized or closed prefix lost", state, err, children)
+		}
+	}
+	for _, deadline := range []bool{false, true} {
+		ctx := &quoteCheckpoint{checkpointContext: checkpointContext{Context: context.Background(), remaining: 7}, deadline: deadline}
+		r := Parse(ctx, source)
+		reason := Cancelled
+		if deadline {
+			reason = DeadlineExceeded
+		}
+		if r.Failure != nil || r.Status != Incomplete || r.Interruption != reason || r.Phases.Blocks != Interrupted || len(r.Document.Root().Children()) != 2 {
+			t.Fatal("wrong typed item interruption", r)
+		}
+		r = Parse(ctx, NewSource([]byte("- \xff")))
+		if r.Status != Failed || r.Failure == nil || r.Failure.Code != InvalidUTF8 || r.Interruption != "" {
+			t.Fatal("encoding lost precedence", r)
+		}
+	}
+}
+
 func TestListMarkerInterruptionDoesNotFinalizeOpenQuote(t *testing.T) {
 	source := NewSource([]byte("***\n> - item\n  continuation\n"))
 	for _, checkpoint := range []int{3, 4} {

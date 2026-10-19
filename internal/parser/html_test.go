@@ -42,7 +42,7 @@ func TestHTMLUpstreamTargets(t *testing.T) {
 		172: {htmlWant(1, 0, 68), atxParagraphWant(byteRange{68, 73}, "okay", byteRange{68, 72})},
 		173: {htmlWant(1, 0, 31)},
 		174: {quoteWant(byteRange{0, 14}, []byteRange{{0, 2}, {8, 10}}, atxBlockWant{kind: parser.HTMLBlock, htmlForm: 6, envelope: byteRange{2, 14}, content: []byteRange{{2, 8}, {10, 14}}, text: "<div>\nfoo\n"}), atxParagraphWant(byteRange{15, 19}, "bar", byteRange{15, 18})},
-		175: {bulletWant(byteRange{0, 8}, byteRange{0, 2}, byteRange{0, 1}, '-', 1, 2, "<div>", byteRange{2, 7})},
+		175: {continuedItemWant(bulletWant(byteRange{0, 8}, byteRange{0, 2}, byteRange{0, 1}, '-', 1, 2, ""), 8, nil, atxBlockWant{kind: parser.HTMLBlock, htmlForm: 6, envelope: byteRange{2, 8}, content: []byteRange{{2, 8}}, text: "<div>\n"}), bulletWant(byteRange{8, 14}, byteRange{8, 10}, byteRange{8, 9}, '-', 1, 2, "foo", byteRange{10, 13})},
 		176: {htmlWant(1, 0, 29), atxParagraphWant(byteRange{29, 35}, "*foo*", byteRange{29, 34})}, 177: {htmlWant(2, 0, 18), atxParagraphWant(byteRange{18, 24}, "*baz*", byteRange{18, 23})},
 		178: {htmlWant(1, 0, 31)},
 		179: {htmlWant(2, 0, 25), atxParagraphWant(byteRange{25, 30}, "okay", byteRange{25, 29})},

@@ -2,11 +2,12 @@
 
 `internal/parser` defines an in-memory CommonMark 0.31.2 model and a staged
 paragraph/block lifecycle with indented/fenced-code, HTML-block, thematic-break,
-ATX, Setext, nested block-quote and first-line list-marker recognition. It completes documents accounted
+ATX, Setext, mixed block-quote/list-item recognition and continuation. It completes documents accounted
 for by code with established info semantics, opaque HTML blocks, thematic breaks,
 empty ATX headings and ASCII blanks, including empty/inline-free quotes. It retains
-paragraph/heading source content for later inline parsing. ListItem prefixes retain
-first-line metadata, then stop before unknown continuation/closure and grouping.
+paragraph/heading source content for later inline parsing. ListItems retain
+first-line metadata, nested block children, continuation and closure; grouping
+and tightness remain unavailable.
 Reference definitions and inline text remain pending. The model
 catalog also supports constructed fixtures; it does not promise recognition of
 every listed kind.
@@ -66,7 +67,7 @@ result := parser.Parse(context.Background(), source)
 The private block/reference phase precedes inline processing. Inlines cannot run
 until the block phase and effective reference lookup are complete. The block pass
 establishes an empty registry and a private inline-free handoff only after every
-logical line has been recognized as blank or quote prefixes and established
+logical line has been recognized as blank or container prefixes and established
 inline-free leaves: indented/fenced code with known info semantics, opaque HTML,
 a thematic break or an empty ATX heading. Inline work is then
 vacuously complete. Paragraphs, nonempty headings, unknown suffixes, unestablished
@@ -83,7 +84,7 @@ no speculative budget API is added here.
 A private stack retains the open document, nested quotes and paragraph. Blank
 lines close a paragraph; EOF finalizes its last content line. Source-backed segments accumulate
 privately and nodes are validated/frozen once on closure. One LineIndex is reused.
-The envelope starts after the first line's enclosing quote prefixes (including
+The envelope starts after the first line's enclosing container prefixes (including
 remaining leaf indentation) and ends after the last content line's original terminator, or EOF.
 Blank separators are excluded. Logical content omits each line's leading ASCII
 space/tab indentation, preserves interior endings and trailing spaces, and omits
@@ -148,8 +149,8 @@ their whole suffix rather than manufacturing nested breaks.
 Parse/Evaluate reproduces HTML for 11, 43, 47, 50–54 and 98. Example 58 retains
 paragraph/break/paragraph progress but remains inline/reference-pending. Example
 59 retains a Setext heading and following paragraph; 48 now passes as literal
-indented code, and 57/60/61 retain the first item prefix while continuation and
-grouping remain unavailable.
+indented code, and 57/60/61 retain actual item children and outside breaks while
+grouping remains unavailable.
 Negative cases never acquire break nodes or false completeness. Independent
 fixtures cover tabs, indentation boundaries, Unicode/NUL/extra characters,
 endings/EOF, blank-separated breaks, ownership, repeatability and interruption.
@@ -198,7 +199,7 @@ dispatch precedes thematic/list handling; without a paragraph, equals lines are
 ordinary text and standalone breaks keep thematic precedence. Malformed
 underlines continue paragraphs when no other provider applies; four-column
 underline-like continuation stays text. Blank lines prevent promotion across
-their boundary. Recognized lists stop after their first-line prefix; unresolved
+their boundary. Recognized items dispatch nested blocks and continuation; unresolved
 reference starts still defer, while fences and HTML have their own
 recognition and continuation before ordinary dispatch.
 
@@ -223,7 +224,8 @@ ranges. Nineteen Setext-section cases establish structural/fallback progress;
 98 stays a supported pair of breaks; 85/100 now pass with indented code and
 following breaks. Quotes 92/101 now contain paragraphs followed by outside
 thematic breaks; 93 retains lazy paragraph text without Setext promotion. Only
-list cases 94/99 now retain the first item prefix, with #15/#16 still pending.
+list cases 94/99 retain item paragraphs followed by outside thematic breaks,
+with grouping #16 and reference/inline #17/#18 still pending.
 Example 91 retains its initial
 heading and paragraph after invalid fence classification; its invalid multiline
 complete-tag suffix now also establishes Setext/paragraph structure. Inline
@@ -270,7 +272,7 @@ Full depth/node/work limits and cancellation hardening remain #31.
 `TestQuoteUpstreamTargets` asserts actual trees, child order, envelopes, markers and
 content ranges for all unchanged 228–252 independently of HTML. Cases 236/239/240
 newly pass HTML; existing literal-code case 231 remains supported. List case 235
-retains its first item prefix and #15–#18. Other quote cases retain #17/#18, plus #21 for multiline text.
+retains its quoted item and outside sibling, with #16–#18 pending. Other quote cases retain #17/#18, plus #21 for multiline text.
 `TestQuotePartialTabUpstream6` independently verifies the newly supported tab/code
 case. Earlier Setext 92/93/101, fence 128 and HTML 174 now assert quote structure;
 214/218 remain pending for reference/text/resolution providers #17/#18/#27.
@@ -317,7 +319,7 @@ TestHTMLUpstreamTargets independently asserts form, node order, physical envelop
 and content ranges for all unchanged 148–191 inputs plus cross-feature passes 21/31.
 Twenty-five HTML-section cases now pass actual Parse/Evaluate. Nineteen remain
 pending: 174 retains its quote and outside paragraph (#17/#18), 175 needs lists
-(#15/#16), retaining the first item prefix, and other mixed cases
+(#16), retaining an HTML child and outside sibling item, and other mixed cases
 need reference/text (#17/#18), breaks (#21), inline HTML (#23) or emphasis
 (#24/#25) as recorded in foundation.json. These are coverage owners, not reverse
 blockers on this syntax stage. Separate fixtures cover grammar near misses,
@@ -364,7 +366,7 @@ Full work metering/checkpoint hardening remains #31.
 `TestIndentedUpstreamTargets` reads unchanged 107–118 and independently asserts
 node ordering, raw envelopes/content/indentation ranges and semantic values.
 107, 110–112 and 116–118 match actual Parse/Evaluate HTML; list cases 108/109
-retain the first item prefix without attributing subsequent code to it, while
+retain actual item paragraphs/nested items using item-relative indentation, while
 113–115 retain available structure and pending inlines.
 Cross-feature tests now retain actual code in 48, 69, 85, 100 and 225. Additional
 upstream fixtures verify newly rendered 1–3, 8, 18, 36, 134, 231 and 289 without
@@ -428,7 +430,7 @@ Extra fixtures cover empty/unclosed/blank/EOF, malformed openers/closers, litera
 payload and test-renderer escaping, semantic-info availability, original
 LF/CRLF/CR, synthetic LF, tabs/NUL/Unicode, ownership and interrupted prefixes.
 
-## First-line list markers and staged item prefixes
+## List markers, continuation and staged grouping
 
 List classification recognizes `-`, `+`, `*`, or one to nine ASCII digits followed
 by `.`/`)`, with a following ASCII space/tab or end of line. Zero and leading-zero
@@ -439,16 +441,40 @@ a paragraph. Normal dispatch and quoted lazy-paragraph interruption use the same
 classifier. Setext/thematic precedence and code/HTML opacity remain intact; quoted
 example 238 still has lazy text rather than an item.
 
-A recognized start produces a bounded `ListItem` directly in the current document
-or quote, with no guessed `List` parent or children. Its envelope covers only the
-observed first logical line, including its original terminator or EOF; it is not
-a complete item envelope. Content retains uninterpreted first-line payload after
-the effective prefix, including trailing whitespace and PartialTab/NUL provenance.
-It is not a paragraph, code block, heading, nested item or inline parse. Processing
-stops at that line: no subsequent line is assigned to the item or treated as a
-sibling. #15 must establish continuation/closure and nested contents; #16 must
-establish grouping/tightness. Even an empty marker at EOF remains partial. No
-reference/inline handoff or syntax-dependent fix eligibility follows from it.
+A recognized start opens a `ListItem` in its actual document, quote or item
+parent. The item retains ordered block children, not uninterpreted raw Content.
+The first payload is dispatched recursively, so same-line nested items, quotes,
+headings and code are recognized without a stripped copy of Source. Subsequent
+lines match the item's effective ContentIndent before leaf continuation, retaining
+physical tab phase through mixed containers. Paragraph-only lazy lines may omit
+some or all prefixes. Dedents/interruptions close containers before outside
+blocks or siblings are dispatched; compatible empty/ordered siblings can end an
+item paragraph without imposing the new-list paragraph-interruption restriction.
+An item with a blank opening line can accept its next indented nonblank line, but
+a second blank closes an otherwise empty item.
+
+The envelope starts before the item's first-line indentation and ends at its last
+owned line, including owned trailing blanks. Leaves start after their enclosing
+prefixes; their segmented Content excludes later matched prefixes and trims only
+paragraph whitespace as documented. `item-prefix`/`item-marker` preserve first-line
+facts. Each matched nonempty indentation removal has an `item-indent` source span,
+including a shared tab byte where removal splits it. Every matched blank has an
+`item-blank` span from that line's cursor before item indentation through its
+original ending (or EOF). Both markers can start at the same byte. Lazy lines have
+no invented indentation marker. These markers and children preserve downstream
+boundary evidence; blanks inside a code/quote child do not by themselves decide
+list tightness. The initially blank marker line remains identifiable from the
+first-line prefix, original line ending and first child position.
+
+No List parent, grouping or Tight fact is fabricated. Adjacent and nested items
+remain directly attached to their established document/quote/item parent; #16
+will group them and derive tightness. All list-bearing documents stay Pending
+with unavailable references and inlines, even an empty EOF item. Unavailable
+reference starts still conservatively stop the lifecycle: only observed container
+prefixes and closed children survive, with an open paragraph withheld; no unseen
+suffix or complete item interpretation is claimed. Cancellation/deadline instead
+discards every unfinished item/quote rather than publishing normal EOF closure,
+retaining already-closed root blocks and strict UTF-8 failure precedence.
 
 `ListProperties` adds optional, item-only facts:
 
@@ -477,17 +503,20 @@ Missing fields remain unknown on existing constructed fixtures; no new fact is
 inferred from their zero values. Constructors still do not recognize grammar.
 
 `TestListMarkerUpstreamTargets` independently asserts all 48 unchanged 253–300:
-40 first-line item prefixes, seven non-item cases and one complete code case.
+40 inputs with established item/block ownership, seven non-item cases and one
+complete code case. Opening marker facts remain independently asserted by the
+retained marker table; `TestListContinuationUpstreamTargets` separately asserts
+full trees, child order, exact envelopes and logical leaf segments for every case.
 The per-case remaining owners below also appear in foundation.json; they are
-completion/coverage owners, not reverse prerequisites on #14.
+completion/coverage owners, not reverse prerequisites on this structural increment.
 
 | Cases | Current recognition and remaining full-case work |
 | --- | --- |
 | 253, 285 | Paragraph/code/quote introduction or noninterrupting empty markers; #17/#18 reference/text and #21 breaks |
 | 261, 266, 269, 272, 275 | Ordinary nonmarkers or paragraph/code examples; #17/#18 |
-| 254, 286–288, 290–293 | Initial ordered prefix; #15 continuation/nested contents/closure, #16 grouping/tightness, #17/#18, #21 |
-| 255–260, 262–265, 267–268, 270–271, 273–274, 276–283, 294–300 | Initial item prefix; #15 continuation/nested contents/closure, #16 grouping/tightness and #17/#18 |
-| 284 | Empty initial bullet prefix; #15 closure and #16 grouping/tightness |
+| 254, 286–288, 290–293 | Established items with multiline/code/quote children and lazy ownership; #16 grouping/tightness, #17/#18, #21 |
+| 255–260, 262–265, 267–268, 270–271, 273–274, 276–283, 294–300 | Established item/nested/sibling/outside ownership and leaf content; #16 grouping/tightness and #17/#18 |
+| 284 | Closed empty item; #16 grouping/tightness |
 | 289 | Existing complete indented code; unchanged HTML pass |
 
 Independent fixtures cover all bullets/delimiters, digit bounds, padding boundaries,
@@ -495,8 +524,8 @@ empty defaults, raw ordinal spelling, leading/quote/tab phases, shared tab bytes
 paragraph interruption/fallback, opaque payloads, UTF-8/NUL/endings/EOF, source and
 model immutability and deterministic interruption. The bounded list-marker fuzz
 target checks source/ordinal/provenance invariants, not complete list grammar.
-Earlier list-dependent quote/Setext/code/HTML/thematic fixtures now assert prefixes
-without assigning their suffixes. Invalid punctuation candidates also retain
+Earlier list-dependent quote/Setext/code/HTML/thematic fixtures now assert actual
+item children and following siblings/outside blocks. Invalid punctuation candidates also retain
 ordinary paragraph structure where the former conservative hook stopped.
 
 No new HTML pass is claimed: all prior 84 supported IDs stay unchanged and 568
@@ -650,7 +679,7 @@ Roles in Markers identify source spellings; each marker has its exact source spa
 | `Heading` | Heading Level 1–6 and Style `atx`/`setext`; marker roles `opening`, `closing`, `underline` as applicable; content/inline children. |
 | `ThematicBreak` | Marker spelling/ranges use `thematic-marker`; envelope preserves intervening spaces. |
 | `BlockQuote` | Ordered block children; per-line `quote-prefix` markers. |
-| `List`, `ListItem` | List.Ordered; optional Start, Delimiter (`.`/`)`), Bullet (`-`/`+`/`*`), Tight when known. Item-only MarkerWidth/Padding/ContentIndent and source-backed Prefix; `item-prefix`/`item-marker` ranges. Full items have ordered block children; staged first-line items retain raw Content without asserting children/closure. |
+| `List`, `ListItem` | List.Ordered; optional Start, Delimiter (`.`/`)`), Bullet (`-`/`+`/`*`), Tight when known. Item-only MarkerWidth/Padding/ContentIndent and source-backed Prefix; `item-prefix`/`item-marker` ranges. Recognized items have ordered block children, empty raw Content, and per-line `item-indent`/`item-blank` evidence; grouping/tightness remains unavailable. |
 | `CodeBlock` | Code.Style `indented`/`fenced`; optional Fence byte/Width, raw/semantic Info Value. `opening`, optional `closing`, `indent-prefix` markers; raw Content and semantic Literal. |
 | `HTMLBlock`, `InlineHTML` | HTML.BlockForm 1–7 only for block origins; protected raw source Content. |
 | `Text` | Original Content segments, semantic Literal and per-segment transformation provenance. |
@@ -688,12 +717,12 @@ Supported IDs are 1–3, 6, 8, 11, 18–19, 21, 31, 36, 43, 47–48, 50–54, 69
 150–151, 153–154, 156–166, 171, 173, 178, 181, 183–184, 186, 189–191, 231,
 236, 239–240 and 289.
 These are recognized inline-free documents, not implementation of every syntax feature in their named sections.
-Indented-code 108/109 retain list/container/reference/inline owners #15–#18;
+Indented-code 108/109 retain grouping/reference/inline owners #16–#18;
 113 retains #17/#18/#21, and 114/115 retain #17/#18. Paragraph 225 now retains
 code and its following paragraph, with only #17/#18 pending. Thematic cases
-retain list/container (#15/#16), reference/inline (#17/#18), break (#21) and
+retain grouping (#16), reference/inline (#17/#18), break (#21) and
 emphasis (#24/#25) owners where relevant. Setext targets retain #17/#18 for
-92/101 and additionally #21 for 93, #15/#16 for 94/99 and #17/#18/#20/#23
+92/101 and additionally #21 for 93, #16–#18 for 94/99 and #17/#18/#20/#23
 for 91. Recognized Setext/fallback cases and 59 retain #17/#18, with #21 for multiline content, #19 for escapes
 in 102/106 and #24/#25 for emphasis in 80–82. ATX cases name #17/#18 for
 text/reference handoff, #19 for escapes in 65/66/76, #24/#25 for emphasis in 66

@@ -80,14 +80,17 @@ type ParseResult struct {
 // recognition disabled. Documents of blanks, indented/fenced code with known
 // info semantics, opaque HTML blocks, thematic breaks and empty ATX headings
 // and empty or inline-free nested block quotes are fully parsed.
-// Quote markers match before leaf continuation; only paragraphs may continue
-// lazily. Logical leaf segments exclude prefixes on the original Source.
+// Item indentation and quote markers match before leaf continuation; only
+// paragraphs may continue lazily. Logical leaf segments exclude prefixes on the
+// original Source.
 // Eligible paragraphs promote to Setext headings with distinct raw content and
 // underline ranges. Fenced payload is literal; info requiring escape/entity
 // decoding stays partial. Other input retains staged blocks and whole-document
 // uncertainty; inline text, references and other block providers remain pending.
-// List markers retain a bounded ListItem first-line prefix and indentation facts,
-// then stop: continuation/closure, grouping and tightness remain unavailable.
+// ListItems retain marker/prefix facts and ordered nested block children, with
+// tab-aware continuation, blank boundaries, sibling ownership and closure. They
+// remain ungrouped: List parents/tightness, references and inlines are unavailable,
+// so list-bearing documents remain partial even for an empty item at EOF.
 //
 // The strict UTF-8 gate precedes Markdown work and retains malformed bytes without
 // substitution. Its failure takes precedence over context interruption. Callers

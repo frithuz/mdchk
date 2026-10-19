@@ -2,8 +2,8 @@ package parser
 
 import "strings"
 
-// listStart establishes only the marker and first-line indentation. It does not
-// establish item continuation/closure (#15), grouping or tightness (#16).
+// listStart establishes the marker and first-line indentation. The container
+// lifecycle establishes ownership; grouping and tightness remain #16.
 // All cursors borrow the original source and preserve its physical tab phase.
 type listStart struct {
 	line                   blockLine
@@ -107,10 +107,9 @@ func advanceListSpace(c *Indentation) {
 	c.offset++
 }
 
-// firstLine freezes a bounded item prefix, not a completed list/item container.
-// Its content is uninterpreted first-line text; no paragraph/inline or list
-// grouping facts are fabricated. The caller stops block processing afterward.
-func (s listStart) firstLine() (*Node, error) {
+// openItem opens a private item builder. Prefix facts survive closure; payload
+// is dispatched as blocks, never copied into a stripped replacement source.
+func (s listStart) openItem() (openBlock, error) {
 	c := s.line.cursor
 	// Classification already counted the accepted prefix contributions. Build
 	// them once in exact private storage, without a second padding Segment buffer
@@ -119,7 +118,7 @@ func (s listStart) firstLine() (*Node, error) {
 	var text strings.Builder
 	text.Grow(s.content.column - c.column)
 	if err := appendListPrefixIndentation(&prefix, &text, &c, s.marker.column); err != nil {
-		return nil, err
+		return openBlock{}, err
 	}
 	markerSpan := c.index.span(s.marker.offset, s.after.offset)
 	markerText := c.index.source.content[markerSpan.start:markerSpan.end]
@@ -128,19 +127,71 @@ func (s listStart) firstLine() (*Node, error) {
 	text.WriteString(markerText)
 	c = s.after
 	if err := appendListPrefixIndentation(&prefix, &text, &c, s.content.column); err != nil {
-		return nil, err
+		return openBlock{}, err
 	}
 	prefix.Semantic = Some(text.String())
 	s.properties.Prefix = &prefix
 	prefixEnd := prefix.Segments[len(prefix.Segments)-1].Source.End()
-	return NewNode(NodeSpec{
-		Kind: ListItem, Envelope: c.index.span(s.line.start, s.line.next),
-		Markers: []Marker{
+	return openBlock{
+		kind: ListItem, start: s.line.start, end: s.line.next,
+		markers: []Marker{
 			{Role: "item-prefix", Source: c.index.span(s.line.start, prefixEnd)},
 			{Role: "item-marker", Source: markerSpan},
 		},
-		Content: s.content.Remaining().Segments, Properties: Properties{List: &s.properties},
-	})
+		list: &s.properties, empty: s.content.offset == s.content.end,
+	}, nil
+}
+
+// matchContainer consumes only a container's structural prefix. A blank line may
+// omit item indentation, but a second opening blank closes an otherwise empty
+// item. Markers preserve per-line indentation/blank evidence for #16; they do not
+// establish grouping or tightness. Lazy lines never acquire invented prefixes.
+func (p *blockParser) matchContainer(depth int, physical physicalLine, cursor Indentation) (Indentation, bool) {
+	block := &p.stack[depth]
+	if block.kind == BlockQuote {
+		next, prefix, ok := p.quotePrefix(cursor)
+		if ok {
+			block.markers = append(block.markers, Marker{Role: "quote-prefix", Source: prefix})
+		}
+		return next, ok
+	}
+	line := p.logicalLine(physical, cursor)
+	blank := line.contentStart == line.end
+	if blank && block.empty {
+		return cursor, false
+	}
+	next := cursor
+	consumed, _ := next.Consume(block.list.ContentIndent.Value)
+	if !blank && consumed.Columns != block.list.ContentIndent.Value {
+		return cursor, false
+	}
+	if len(consumed.Content.Segments) != 0 {
+		end := consumed.Content.Segments[len(consumed.Content.Segments)-1].Source.End()
+		block.markers = append(block.markers, Marker{Role: "item-indent", Source: p.index.span(cursor.offset, end)})
+	}
+	if blank {
+		block.markers = append(block.markers, Marker{Role: "item-blank", Source: p.index.span(cursor.offset, physical.next)})
+	} else {
+		block.empty = false
+	}
+	return next, true
+}
+
+// Compatible sibling items can end an item's paragraph even with an empty
+// marker or an ordered start other than 1. New/different lists still obey the
+// paragraph interruption restrictions. This recognizes item boundaries only;
+// #16 will group compatible siblings and derive tightness from their structure.
+func (p *blockParser) siblingItem(depth int, line blockLine) bool {
+	block := &p.stack[depth]
+	if block.kind != ListItem {
+		return false
+	}
+	start, ok := classifyListStart(line, false)
+	if !ok {
+		return false
+	}
+	a, b := block.list, start.properties
+	return a.Ordered == b.Ordered && a.Bullet == b.Bullet && a.Delimiter == b.Delimiter
 }
 
 // appendListPrefixIndentation writes previously classified whitespace directly

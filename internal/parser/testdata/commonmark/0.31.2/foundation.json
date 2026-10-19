@@ -622,7 +622,6 @@
     {
       "reason": "syntax-unimplemented",
       "owners": [
-        15,
         16,
         17,
         18
@@ -822,7 +821,6 @@
     {
       "reason": "syntax-unimplemented",
       "owners": [
-        15,
         16,
         17,
         18,
@@ -842,7 +840,6 @@
     {
       "reason": "syntax-unimplemented",
       "owners": [
-        15,
         16
       ],
       "examples": [
