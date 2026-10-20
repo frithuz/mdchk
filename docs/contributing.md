@@ -82,9 +82,9 @@ outside payload, and trimmed source bytes retain explicit transformation provena
 Per-block raw-run indexes and monotonic source cursors avoid repeated suffix or
 segment-prefix searches. Private trees publish only after successful inline work.
 
-Delimiter/bracket pairs and possible inline HTML remain honestly pending
-for later handlers. Conservative checks can defer invalid candidates; they do
-not recognize those constructs. External physical endings produce semantic break
+Delimiter/bracket pairs remain honestly pending for later handlers. Inline HTML
+is now recognized atomically; malformed HTML resumes ordinary interpretation.
+External physical endings produce semantic break
 nodes, while endings consumed inside code remain code normalization. Unsupported interpretation retains
 whole-document uncertainty and cannot render. Empty, definition-only and other
 inline-free inputs retain their affirmative completion guards; constructed trees
@@ -93,27 +93,30 @@ cannot manufacture the private block handoff.
 The [model contract](../internal/parser/model.md) defines exact outcomes,
 byte envelopes, raw/semantic mappings, reference ownership and property meanings.
 Retained upstream block tests independently assert paragraph/heading/container
-structure, markers and original ranges, with Text/CodeSpan/break/autolink checks
+structure, markers and original ranges, with
+Text/CodeSpan/break/InlineHTML/autolink checks
 where applicable.
 `TestCodeSpanUpstreamAcceptanceAndNewPasses` checks unchanged 327–349 and newly
 unlocked cases with independent node/literal/marker/payload assertions. Outside
-providers remain explicit: 334 completes with a soft break, 344 needs #23,
+providers remain explicit: 334 completes with a soft break, 344 completes with
+raw HTML,
 and 346 completes through its opaque autolink.
 Nested/lazy mappings, both heading styles, NUL/Unicode, LF/CRLF/CR/EOF, opaque blocks,
 mixed decoding, immutable accessors and block/call isolation have focused checks.
 Deterministic cancellation/deadline sweeps protect unfinished inline publication;
 strict invalid UTF-8 retains precedence. `FuzzInlineTextProvenance` reconstructs
-Text, CodeSpan, break and autolink semantics independently from original-byte
+Text, CodeSpan, break, InlineHTML and autolink semantics independently from
+original-byte
 contributions.
 
-All 652 unchanged cases remain in the ledger: **355 pass, 297 pending**, retaining
-all 331 previous passes and adding 24 from angle autolinks and their fallback.
+All 652 unchanged cases remain in the ledger: **383 pass, 269 pending**, retaining
+all 355 previous passes and adding 28 from inline HTML and ordinary fallback.
 These are staged results, not full CommonMark or extension conformance. Coverage owners are downstream
 completion providers, never reverse blockers on this increment. Full work/depth-
 budget hardening remains #31.
 
 `TestBreakUpstreamAcceptance` checks unchanged 633–649 and preserves actual
-pending emphasis/HTML providers. `TestBreakOriginsMappingAndCoordinates` and
+pending emphasis providers. `TestBreakOriginsMappingAndCoordinates` and
 `TestBreakBlockBoundariesAndOpaqueContexts` independently assert kinds/origins,
 complete physical endings and markers, LF/CRLF/CR scalar positions, tabs/spaces,
 escaped backslashes, entity-generated characters, heading/paragraph termination,
@@ -186,7 +189,8 @@ interiors before ordinary escape/entity or delimiter processing. Labels retain
 literal backslashes/entities and original angle/address spans; email destinations
 add a source-absent Synthetic `mailto:` prefix. URI semantics are unencoded, with
 URL/HTML escaping performed only by the test adapter. Failed autolinks resume
-ordinary text interpretation while possible inline HTML remains pending. Bare
+ordinary text interpretation, including recognized inline HTML where applicable.
+Bare
 URI/email forms stay Text. See the [model contract](../internal/parser/model.md#inline-text-and-staged-providers)
 for marker roles, source ownership and stage boundaries.
 
@@ -200,6 +204,30 @@ checks for Links as well as their previous source assertions. Focused checks:
 ```sh
 go test ./internal/parser -run 'Autolink|Inline|CodeSpan|Decoding'
 python3 -B tools/commonmark_conformance.py --strict --section '^Autolinks$'
+```
+
+### Inline raw HTML
+
+Raw inline tags, attributes, comments, processing instructions, declarations and
+CDATA follow CommonMark 0.31.2. Recognition consumes accepted interiors opaquely;
+malformed candidates resume ordinary Markdown interpretation. InlineHTML retains
+original ordered Content and exact byte envelopes through container gaps, with
+confirmed-comment opening/closing markers documented in the model contract.
+The short comments `<!-->` and `<!--->` have explicit closing boundaries.
+No directive interpretation or production rendering is added.
+
+All Raw HTML examples 613–632 now pass actual Parse/Evaluate. Inline HTML adds
+28 passes overall: 187, 344, 475–477, 524, 536, 613–617, 619–632 and 642–643.
+Literal fallback 618 was already supported. Independent AST/source tests cover
+each promotion alongside unchanged HTML, including raw entity/backslash spelling,
+quoted punctuation, malformed fallback, block-first boundaries, heading/container
+mapping, Unicode/NUL, physical endings and immutable accessors. Deterministic
+cancellation/deadline sweeps protect indexing, scanning and mapping publication;
+the inline/list fuzz oracles now validate raw HTML provenance too. Focused checks:
+
+```sh
+go test ./internal/parser -run 'InlineHTML|HTML|Inline'
+python3 -B tools/commonmark_conformance.py --strict --section '^Raw HTML$'
 ```
 
 ## Regenerate and verify the CommonMark corpus
@@ -249,14 +277,15 @@ Inputs and paths are resolved from the script, so invocation by absolute script
 path also works from another directory. The checks work offline; use the local
 toolchain/module environment above to forbid automatic downloads explicitly.
 
-Every unfiltered run currently reports **355 pass, 0 fail, 0 error, 297
+Every unfiltered run currently reports **383 pass, 0 fail, 0 error, 269
 pending**. The separately maintained `foundation.json` lists every supported ID
 and remaining provider exactly once. Angle autolinks add 24 passes while retaining
 all 331 established IDs: 20, 346, 480–481, 526, 538, 594–610 and literal HTML
 fallback 618. All 19 Autolinks examples 594–612 now complete; bare 611–612 remain
-ordinary Text. Examples 638–639 retain emphasis, 344/642/643 retain inline HTML
-#23, and 640–641 retain code opacity. Remaining providers are #23 inline HTML,
-#24/#25 emphasis, #26/#27 links and #28 images. Conservative pending checks may
+ordinary Text. Examples 638–639 retain emphasis; 344/642/643 now pass with opaque
+inline HTML,
+and 640–641 retain code opacity. Remaining providers are #24/#25 emphasis,
+#26/#27 links and #28 images. Conservative pending checks may
 also defer malformed candidates until their handler proves literal fallback.
 No pending case is counted as a conformance pass. Final completion still requires
 all 652 cases without exemptions. These coverage owners are not reverse native
@@ -294,7 +323,7 @@ regexes and empty selections are errors. A filtered run validates the full ledge
 first, reports its smaller scope and never writes or weakens the baseline.
 
 `foundation.json` is mdchk's separately reviewed pass/pending ledger. It
-accounts for all 652 IDs exactly once. Its supported list records the 355
+accounts for all 652 IDs exactly once. Its supported list records the 383
 passes above. A supported case becoming fail/error/pending is a regression;
 missing/duplicate IDs invalidate the ledger. A newly passing case also fails
 the gate until its ID moves from pending to `supported_html_examples` in a
@@ -318,8 +347,9 @@ rm -r "$adapter_dir"
 
 The last comparison now exits 0: example 207 is a recognized definition-only
 document with legitimately empty HTML. The unchanged upstream helper still has no
-pending category; use `--number 344` to observe an unsupported inline HTML case as
-an error. Example 334 now passes with an external soft break. The adapter's default protocol
+pending category; use `--number 638` to observe unsupported emphasis as an error.
+Example 344 now succeeds through actual inline HTML recognition. Example 334 now
+passes with an external soft break. The adapter's default protocol
 emits HTML alone on stdout only for complete rendered input. Pending input exits 2
 with an outcome on stderr, errors exit 1, and interruptions exit 3. Upstream maps
 all nonzero exits to error, including pending; use mdchk's runner for staged

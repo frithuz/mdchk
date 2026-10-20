@@ -80,37 +80,6 @@ func emailLocal(c byte) bool {
 	return false
 }
 
-// This remains a conservative availability guard, not an HTML parser. Autolink
-// rejection proves literal fallback only when the opener cannot start HTML.
-// Tag names use ASCII letters/digits/hyphens; attributes begin after whitespace.
-// Declarations, comments, CDATA and processing instructions stay with #23.
-func (s *inlineScanner) possibleInlineHTML(start int) bool {
-	if s.angleClose <= start || start+1 >= len(s.text) {
-		return false
-	}
-	i := start + 1
-	if s.text[i] == '!' || s.text[i] == '?' {
-		return true
-	}
-	if s.text[i] == '/' {
-		i++
-	}
-	if i >= len(s.text) || !asciiLetter(s.text[i]) {
-		return false
-	}
-	for i < len(s.text) && (asciiAlphanumeric(s.text[i]) || s.text[i] == '-') {
-		if (i-start)%256 == 0 && interruption(s.ctx) != "" {
-			return false
-		}
-		i++
-	}
-	if i >= len(s.text) {
-		return false
-	}
-	c := s.text[i]
-	return c == '>' || c == '/' || c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f'
-}
-
 // The cursor borrows immutable block Content. NewNode snapshots the private
 // slices at publication; Label/Content/child source facts may safely share the
 // borrowed immutable contributions. Destination alone owns a synthetic prefix.

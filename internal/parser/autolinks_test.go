@@ -278,13 +278,13 @@ func TestAutolinkOpacitySourceAndOwnership(t *testing.T) {
 			return true
 		})
 	}
-	for _, input := range []string{"x <i><ab:x></i>", "*a* <ab:x>", "[a](b) <ab:x>", "x <!-- <ab:x> -->", "x <?pi> <ab:x>", "x <![CDATA[a]]> <ab:x>", "x </tag> <ab:x>"} {
+	for _, input := range []string{"*a* <ab:x>", "[a](b) <ab:x>"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 		if r.Status != parser.Incomplete || conformance.Evaluate(r).Status != "pending" {
 			t.Fatal("lost remaining provider", input, r)
 		}
 	}
-	for _, input := range []string{"x <<ab:x>>", "x <invalid<ab:x>>", "x <ab:unterminated", "x <ab:x>\n\nnext", "x <ab:x><a@b>"} {
+	for _, input := range []string{"x <i><ab:x></i>", "x <!-- <ab:x> -->", "x <?pi> <ab:x>", "x <![CDATA[a]]> <ab:x>", "x </tag> <ab:x>", "x <<ab:x>>", "x <invalid<ab:x>>", "x <ab:unterminated", "x <ab:x>\n\nnext", "x <ab:x><a@b>"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 		checkStagedTextOutcome(t, r, true)
 		parser.Walk(r.Document.Root(), func(n *parser.Node) bool {

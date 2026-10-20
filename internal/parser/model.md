@@ -5,11 +5,13 @@ paragraph/block lifecycle with indented/fenced-code, HTML-block, thematic-break,
 ATX, Setext, mixed block-quote/list-item recognition and continuation. It completes documents accounted
 for by code with established info semantics, opaque HTML blocks, thematic breaks,
 empty ATX headings and ASCII blanks, including empty/inline-free quotes and lists. It retains
-paragraph/heading source content and constructs source-preserving Text/CodeSpan/break/autolink children. ListItems retain
+paragraph/heading source content and constructs source-preserving
+Text/CodeSpan/break/InlineHTML/autolink children. ListItems retain
 first-line metadata, nested block children, continuation and closure. Compatible
 siblings acquire List parents and independently derived tightness.
 Leading reference definitions are recognized and normalized document-wide; inline
-text, code spans, breaks and angle autolinks are recognized; reference-use resolution remains pending. The model
+text, code spans, breaks, raw inline HTML and angle autolinks are recognized;
+reference-use resolution remains pending. The model
 catalog also supports constructed fixtures; it does not promise recognition of
 every listed kind.
 
@@ -251,7 +253,8 @@ ranges. Nineteen Setext-section cases establish structural/fallback progress;
 following breaks. Quotes 92/101 now contain paragraphs followed by outside
 thematic breaks; 93 retains lazy paragraph text without Setext promotion. List cases 94/99 now render their text and outside breaks. Example 91's initial
 heading/paragraph and invalid multiline-tag suffix have established ordinary
-Setext/paragraph text and now pass; no code span or inline HTML is recognized.
+Setext/paragraph text and now pass. The block stage itself recognizes neither
+code spans nor inline HTML; the later inline pass now supplies both.
 Source-only deferral is not heading recognition. Focused fixtures cover single
 markers, negative/mixed/extra characters, tabs/indentation, blank separation,
 following blocks, final whitespace/backslash, Unicode/NUL, original endings,
@@ -340,15 +343,15 @@ HTML nodes cannot manufacture the private recognition/handoff proof.
 
 TestHTMLUpstreamTargets independently asserts form, node order, physical envelopes
 and content ranges for all unchanged 148–191 inputs plus cross-feature passes 21/31.
-Thirty-five HTML-section cases now pass actual Parse/Evaluate, including text
-around opaque blocks. Remaining mixed cases need inline HTML (#23)
-or emphasis (#24/#25), as recorded in foundation.json. Coverage owners are not
+Thirty-six HTML-section cases now pass actual Parse/Evaluate, including text
+around opaque blocks. Remaining mixed cases need emphasis (#24/#25), as recorded
+in foundation.json. Coverage owners are not
 reverse blockers on this syntax stage. Separate fixtures cover grammar near misses,
 case/EOF/fixed-form boundaries, code and paragraph precedence, opaque payload,
 LF/CRLF/CR/NUL/Unicode/tab provenance, immutable accessors, encoding precedence and
 deterministic interruption, including at EOF finalization. Actual full-corpus
-normalized/strict gates now record 355 pass and 297 pending, preserving all 331
-passes established before autolinks; full conformance remains false.
+normalized/strict gates now record 383 pass and 269 pending, preserving all 355
+passes established before inline HTML; full conformance remains false.
 
 ## Indented code and literal handoff
 
@@ -582,7 +585,8 @@ source assertions and HTML checks promote Tabs 7 and empty item 284, preserving 
 84 previous passes at that increment. Definition-only 207 now adds a pass,
 at that increment. Code spans raised the baseline from 254 to 279 passes;
 physical breaks raised it to 331 passes; angle autolinks now retain those passes
-and raise it to 355 pass, 297 pending. Boundary fixtures cover blank ownership,
+and now coexist with inline HTML at 383 pass, 269 pending. Boundary fixtures cover
+blank ownership,
 opaque trailing blanks, empty-item gaps in quotes, all endings/EOF and
 nested reference definitions. FuzzListGroupingBoundaries independently generates
 marker changes, sibling counts and blank boundaries. Full grammar/budgets/rules
@@ -626,9 +630,9 @@ scheme grammar, not URL registration/validation. Email recognition uses the pinn
 local-part/domain grammar. Raw backslashes, entity spellings and punctuation stay
 literal inside accepted links. Generated/escaped opening angles never create links;
 code spans and opaque blocks take precedence when opened first. Invalid autolinks
-resume ordinary interpretation. A conservative HTML-opener guard keeps possible
-inline HTML pending for #23; it does not claim HTML recognition. Unmatched angles
-and provably non-HTML rejected forms can complete as ordinary text.
+resume ordinary interpretation. Actual inline HTML recognition follows autolink
+rejection. Rejected HTML and
+unmatched angles resume ordinary text interpretation.
 
 Autolinks use resolved Link origin `autolink`, Available resolution, Label and
 Destination Values, and one literal Text label child. Content and Label retain the
@@ -647,11 +651,13 @@ Dispatch retains per-block delimiter-run and bracket/image-opener state. Repeate
 star/underscore runs and paired brackets defer to later providers. Valid ordinary
 escapes/entities consume original spelling atomically without becoming new syntax.
 States never cross paragraphs/headings or calls. Pending blocks may contain
-provisional Text/CodeSpan/break/autolink mappings but retain whole-document
-uncertainty and pending Evaluate outcomes. No Emphasis or InlineHTML is invented;
-#23–#28 own remaining interpretation. The adapter's affirmative completion checks
+provisional Text/CodeSpan/break/InlineHTML/autolink mappings but retain whole-document
+uncertainty and pending Evaluate outcomes. No Emphasis, resolved non-autolink Link
+or Image is invented;
+#24–#28 own remaining interpretation. The adapter's affirmative completion checks
 are unchanged. Code-span 334 completes with its outside soft break; 346 completes
-with its opaque autolink; 344 still needs #23. No interior punctuation introduces
+with its opaque autolink; 344 now completes with its raw HTML tag. No interior
+punctuation introduces
 reverse prerequisites. Final conformance requires all 652 without exemptions.
 
 `TestAutolinkUpstreamAcceptanceAndNewPasses` consumes unchanged 594–612 and newly
@@ -853,13 +859,14 @@ are already omitted from logical Content by block recognition; no terminal break
 is fabricated. All original bytes remain in Source and block envelopes/content.
 Code spans consume their internal endings opaquely, while raw code/HTML blocks are
 unchanged. Original escapes/entities are consumed atomically; generated endings,
-spaces and backslashes never enter break dispatch. Unsupported inline HTML and
-other providers retain whole-document uncertainty even beside provisional breaks.
+spaces and backslashes never enter break dispatch. Unsupported emphasis/link/image
+syntax retains whole-document uncertainty even beside provisional breaks.
 
 `TestBreakUpstreamAcceptance` consumes unchanged 633–649 with independent kind,
 origin, marker, ending and Text assertions as well as actual Parse/Evaluate. Cases
 633–637 and 644–649 render; 640–641 retain code opacity, 638–639 await emphasis and
-642–643 await inline HTML (#23), correcting stale link ownership. Case 334 now
+642–643 now complete through raw inline HTML, without creating internal breaks.
+Case 334 now
 renders with its external soft break. Independent fixtures cover LF/CRLF/CR,
 Unicode/NUL/scalar coordinates, zero/one/many spaces, mixed tabs, escaped
 backslashes, generated characters, nested/lazy containers, both heading styles,
@@ -897,6 +904,52 @@ basic supplied heading/fence/HTML/delimiter/origin values and all source ranges.
 They do not recognize syntax, normalize labels or validate complete Markdown
 grammar. Unknown facts remain absent rather than fabricated. These meanings are
 internal catalog contracts; #139 owns projection/schema adaptation.
+
+## Recognized inline raw HTML
+
+The inline pass recognizes the pinned CommonMark Raw HTML grammar on original
+logical paragraph/heading content: open/closing tags and attributes, comments,
+processing instructions, declarations and CDATA. Block-first recognition remains
+separate, including the seven block forms and their physical-line termination.
+Code spans and angle autolinks retain their precedence. Escaped/entity-generated
+angles never start HTML. Rejected candidates resume ordinary text decoding and
+syntax dispatch; accepted raw interiors bypass all such dispatch, including
+backticks, breaks, brackets and emphasis punctuation.
+
+Recognized nodes have Kind InlineHTML, HTML properties with absent BlockForm,
+no Literal and no children. Content covers the entire raw construct, including
+delimiters, using ordered snapshot-owned segments. Its envelope spans first to
+last original byte; omitted container prefixes remain gaps rather than payload.
+Physical endings and raw escapes/entities stay intact. NUL retains its original
+byte with Normalized semantic U+FFFD. Paragraph continuation indentation is
+already omitted by the block contract; internal tabs remain literal bytes.
+
+Confirmed comments alone carry `html-comment-open` and `html-comment-close`
+markers. The opener selects the original four bytes `<!--`. Ordinary closers
+select `-->`; the short forms `<!-->` and `<!--->` select `>` and `->`
+respectively, beginning immediately after the opener. The close marker's Start
+and End provide exact original closing boundaries, including multiline comments
+whose envelopes contain source gaps. Other inline HTML has no comment markers.
+Comment-looking text inside quoted attributes or code is not a comment node.
+These are parser facts for future consumers, not directive interpretation.
+Constructed nodes still do not establish private parsing-completion evidence.
+
+Terminator and quote positions are lazily indexed once per logical inline block;
+lookups use ordered indexes rather than repeated failed suffix searches. State
+does not cross blocks or calls. Indexing, grammar scanning and source mapping
+retain caller-context checkpoints and private publication. Full resource budgets
+remain #31. This is no general performance or whole-parser conformance claim.
+
+`TestInlineHTMLUpstreamAcceptanceAndNewPasses` consumes unchanged 613–632 and
+all 28 newly available cases with independent original HTML-node envelopes,
+raw-source grammar/provenance, comment markers and actual Parse/Evaluate HTML.
+Grammar, malformed-fallback, quoted-content, block-boundary, container/heading,
+Unicode/NUL, physical-ending, immutability and deterministic interruption checks
+supplement the corpus. Shared inline/list fuzz consumers independently validate
+InlineHTML source facts alongside their established checks. The ledger now has
+383 passes and 269 pending; all prior 355 passes remain. Remaining interpretation
+belongs to emphasis, links and images, not inline HTML. No production renderer,
+directive processor, fix or extension is added.
 
 ## Reference records and completion inventory
 
@@ -947,10 +1000,10 @@ normalization. Partial lookup may contain only known first selections; unavailab
 lookup has no entries. Mutable collection copies cannot change the document.
 
 [`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly
-accounts for all 652 upstream IDs: 355 supported HTML cases and 297 pending.
-Autolinks add 24 demonstrated passes while preserving all prior 331: 20, 346,
-480–481, 526, 538, 594–610 and 618. Other cases retain their
-actual #23–#28 providers, with no undelivered #17–#22 ownership. Dispatch may defer
+accounts for all 652 upstream IDs: 383 supported HTML cases and 269 pending.
+Inline HTML adds 28 demonstrated passes while preserving all prior 355;
+all Raw HTML 613–632 now pass (618 was already established literal fallback). Other cases retain their
+actual #24–#28 providers, with no undelivered #17–#23 ownership. Dispatch may defer
 potential invalid candidates conservatively until a provider proves fallback.
 These coverage scopes are not reverse native prerequisites on this increment.
 The test-only adapter/runner remains in internal/conformance and

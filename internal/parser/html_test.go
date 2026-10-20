@@ -24,7 +24,7 @@ func TestHTMLUpstreamTargets(t *testing.T) {
 	wants := map[int][]atxBlockWant{
 		21:  {htmlWant(7, 0, 19)},
 		31:  {htmlWant(7, 0, 29)},
-		148: {htmlWant(6, 0, 33), atxParagraphWant(byteRange{34, 50}, "_world_.\n</pre>", byteRange{34, 43}, byteRange{43, 49}), htmlWant(6, 50, 69)},
+		148: {htmlWant(6, 0, 33), withInlines(atxParagraphWant(byteRange{34, 50}, "_world_.\n</pre>", byteRange{34, 43}, byteRange{43, 49}), textWant(34, 42, "_world_."), breakWant(42, 42, 43, "line-ending", "\n"), htmlInlineWant(43, 49, "</pre>")), htmlWant(6, 50, 69)},
 		149: {htmlWant(6, 0, 65), atxParagraphWant(byteRange{66, 72}, "okay.", byteRange{66, 71})},
 		150: {htmlWant(6, 0, 35)}, 151: {htmlWant(6, 0, 13)},
 		152: {htmlWant(6, 0, 18), atxParagraphWant(byteRange{19, 30}, "*Markdown*", byteRange{19, 29}), htmlWant(6, 31, 38)}, 153: {htmlWant(6, 0, 36)},
@@ -35,7 +35,7 @@ func TestHTMLUpstreamTargets(t *testing.T) {
 		162: {htmlWant(7, 0, 26)}, 163: {htmlWant(7, 0, 27)},
 		164: {htmlWant(7, 0, 27)}, 165: {htmlWant(7, 0, 13)},
 		166: {htmlWant(7, 0, 19)}, 167: {htmlWant(7, 0, 6), atxParagraphWant(byteRange{7, 13}, "*foo*", byteRange{7, 12}), htmlWant(7, 14, 21)},
-		168: {atxParagraphWant(byteRange{0, 17}, "<del>*foo*</del>", byteRange{0, 16})},
+		168: {withInlines(atxParagraphWant(byteRange{0, 17}, "<del>*foo*</del>", byteRange{0, 16}), htmlInlineWant(0, 5, "<del>"), textWant(5, 10, "*foo*"), htmlInlineWant(10, 16, "</del>"))},
 		169: {htmlWant(1, 0, 115), atxParagraphWant(byteRange{115, 120}, "okay", byteRange{115, 119})},
 		170: {htmlWant(1, 0, 130), atxParagraphWant(byteRange{130, 135}, "okay", byteRange{130, 134})},
 		171: {htmlWant(1, 0, 38)},
@@ -53,12 +53,12 @@ func TestHTMLUpstreamTargets(t *testing.T) {
 		184: {htmlWant(6, 0, 8), indentedWant(byteRange{9, 19}, "<div>\n", []byteRange{{9, 13}}, byteRange{13, 18}, byteRange{18, 19})},
 		185: {atxParagraphWant(byteRange{0, 4}, "Foo", byteRange{0, 3}), htmlWant(6, 4, 21)},
 		186: {htmlWant(6, 0, 23)},
-		187: {atxParagraphWant(byteRange{0, 23}, "Foo\n<a href=\"bar\">\nbaz", byteRange{0, 4}, byteRange{4, 19}, byteRange{19, 22})},
+		187: {withInlines(atxParagraphWant(byteRange{0, 23}, "Foo\n<a href=\"bar\">\nbaz", byteRange{0, 4}, byteRange{4, 19}, byteRange{19, 22}), textWant(0, 3, "Foo"), breakWant(3, 3, 4, "line-ending", "\n"), htmlInlineWant(4, 18, `<a href="bar">`), breakWant(18, 18, 19, "line-ending", "\n"), textWant(19, 22, "baz"))},
 		188: {htmlWant(6, 0, 6), atxParagraphWant(byteRange{7, 26}, "*Emphasized* text.", byteRange{7, 25}), htmlWant(6, 27, 34)}, 189: {htmlWant(6, 0, 32)},
 		190: {htmlWant(6, 0, 8), htmlWant(6, 9, 14), htmlWant(6, 15, 29), htmlWant(6, 30, 36), htmlWant(6, 37, 46)},
 		191: {htmlWant(6, 0, 8), htmlWant(6, 9, 16), indentedWant(byteRange{17, 45}, "<td>\n  Hi\n</td>\n", []byteRange{{17, 21}, {26, 30}, {35, 39}}, byteRange{21, 25}, byteRange{25, 26}, byteRange{30, 34}, byteRange{34, 35}, byteRange{39, 44}, byteRange{44, 45}), htmlWant(6, 46, 54), htmlWant(6, 55, 64)},
 	}
-	pending := map[int]bool{148: true, 149: true, 152: true, 155: true, 167: true, 168: true, 169: true, 170: true, 172: true, 174: true, 175: true, 176: true, 177: true, 179: true, 180: true, 182: true, 185: true, 187: true, 188: true}
+	pending := map[int]bool{148: true, 149: true, 152: true, 155: true, 167: true, 168: true, 169: true, 170: true, 172: true, 174: true, 175: true, 176: true, 177: true, 179: true, 180: true, 182: true, 185: true, 188: true}
 	data, err := os.ReadFile("testdata/commonmark/0.31.2/examples.json")
 	if err != nil {
 		t.Fatal(err)
@@ -147,7 +147,7 @@ func TestHTMLGrammarAndFixedForm(t *testing.T) {
 		w.text = form
 		checkATX(t, input, false, []atxBlockWant{atxParagraphWant(byteRange{0, 2}, "a", byteRange{0, 1}), w})
 	}
-	checkATX(t, "a\n<x>\n", false, []atxBlockWant{atxParagraphWant(byteRange{0, 6}, "a\n<x>", byteRange{0, 2}, byteRange{2, 5})})
+	checkATX(t, "a\n<x>\n", false, []atxBlockWant{withInlines(atxParagraphWant(byteRange{0, 6}, "a\n<x>", byteRange{0, 2}, byteRange{2, 5}), textWant(0, 1, "a"), breakWant(1, 1, 2, "line-ending", "\n"), htmlInlineWant(2, 5, "<x>"))})
 }
 
 func TestHTMLSourceOwnershipEndingsAndIsolation(t *testing.T) {

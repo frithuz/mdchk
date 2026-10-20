@@ -89,7 +89,7 @@ type ParseResult struct {
 // and whole-document
 // uncertainty. Leading definitions are collected in source order before inline
 // work, with raw-label Unicode folding and first-definition lookup. Ordinary
-// text-bearing blocks acquire source-preserving Text, CodeSpan, break and resolved autolink children; missing inline
+// text-bearing blocks acquire source-preserving Text, CodeSpan, break, raw InlineHTML and resolved autolink children; missing inline
 // handlers retain pending interpretation. Text, definition destination/title and
 // fence-info values decode escapes/entities once, preserving raw label identity.
 // Code spans consume opaque raw payloads before Text decoding, normalize physical
@@ -98,7 +98,9 @@ type ParseResult struct {
 // ending ranges; terminal block endings and decoded characters create no breaks.
 // Angle URI/email autolinks consume literal interiors, with distinct source-backed
 // labels/destinations and synthetic email prefixes. Invalid forms resume ordinary
-// interpretation; possible inline HTML remains pending. Bare forms stay Text.
+// interpretation. Inline HTML follows the pinned raw grammar, consuming opaque
+// original Content with confirmed-comment opening/closing markers. Malformed
+// HTML resumes ordinary interpretation. Bare autolink forms stay Text.
 // Definition-only input with known semantics completes vacuous inline work.
 // ListItems retain marker/prefix facts and ordered nested block children, with
 // tab-aware continuation, blank boundaries, sibling ownership and closure. They

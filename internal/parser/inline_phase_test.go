@@ -3,6 +3,7 @@ package parser
 import (
 	"context"
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -246,6 +247,71 @@ func TestAutolinkInterruptionPreservesBlockTree(t *testing.T) {
 		state, err := parseInlines(context.Background(), r.Document, PhaseComplete)
 		if err != nil || state != PhaseComplete || len(before.Children()[0].Children()) != 0 {
 			t.Fatal("autolink changed borrowed block snapshot", state, err)
+		}
+	}
+}
+
+func TestInlineHTMLInterruptionPreservesBlockTree(t *testing.T) {
+	for _, input := range []string{
+		"before <!--" + strings.Repeat("x", 10000) + "--> after",
+		"before " + strings.Repeat("<?bad <!--open <![CDATA[", 400),
+		"before <a " + strings.Repeat("attribute='long value' ", 400) + "> after",
+		"> - before <!--é\x00\n>   " + strings.Repeat("x", 10000) + " --> after",
+	} {
+		r := Parse(context.Background(), NewSource([]byte(input)))
+		if r.Status != Complete {
+			t.Fatal(r)
+		}
+		for _, deadline := range []bool{false, true} {
+			if _, err := parseBlocks(context.Background(), r.Document); err != nil {
+				t.Fatal(err)
+			}
+			before := r.Document.Root()
+			observed := 0
+			for checkpoint := 1; checkpoint < 200; checkpoint++ {
+				ctx := &quoteCheckpoint{checkpointContext: checkpointContext{Context: context.Background(), remaining: checkpoint}, deadline: deadline}
+				state, err := parseInlines(ctx, r.Document, PhaseComplete)
+				if state != Interrupted {
+					break
+				}
+				observed++
+				want := Cancelled
+				if deadline {
+					want = DeadlineExceeded
+				}
+				if err != nil || interruption(ctx) != want || !reflect.DeepEqual(before, r.Document.Root()) {
+					t.Fatal("partial HTML publication", state, err)
+				}
+				bad := Parse(ctx, NewSource([]byte("x <!--\xff-->")))
+				if bad.Failure == nil || bad.Failure.Code != InvalidUTF8 || bad.Failure.Location.Start() != 6 || bad.Interruption != "" {
+					t.Fatal("HTML encoding precedence", bad)
+				}
+			}
+			if observed < 10 {
+				t.Fatal("missing HTML indexing/recognition/mapping checkpoints", observed)
+			}
+			if state, err := parseInlines(context.Background(), r.Document, PhaseComplete); err != nil || state != PhaseComplete || before.Children()[0].Kind() == Paragraph && len(before.Children()[0].Children()) != 0 {
+				t.Fatal("borrowed HTML block tree changed", state, err)
+			}
+		}
+	}
+}
+
+func TestInlineHTMLLogicalWhitespaceGrammar(t *testing.T) {
+	// Exercise productions directly where block-first parsing can cut the
+	// paragraph before a newline followed by '>' or a blank physical line.
+	for _, tt := range []struct {
+		raw   string
+		valid bool
+	}{
+		{"</a\n>", true}, {"</a\r\n>", true}, {"<a\r b\n=\r\n'v'\n/>", true},
+		{"<a\n\nb>", false}, {"</a\n\n>", false}, {"<a x\r\n\r\n=v>", false},
+		{"<a x=\n\nv>", false}, {"<a\f>", false}, {"<a x=unquoted\fvalue>", true},
+	} {
+		s := inlineScanner{ctx: context.Background(), text: tt.raw}
+		end, _ := s.inlineHTMLEnd(0)
+		if tt.valid && end != len(tt.raw) || !tt.valid && end != 0 {
+			t.Fatal("Raw HTML whitespace production", strconv.Quote(tt.raw), end, tt.valid)
 		}
 	}
 }

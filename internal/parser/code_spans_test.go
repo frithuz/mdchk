@@ -43,7 +43,7 @@ func checkInlineNodes(t *testing.T, source parser.Source, nodes []*parser.Node, 
 	for i, w := range wants {
 		n := nodes[i]
 		literal := parser.Some(w.literal)
-		if w.kind == parser.SoftBreak || w.kind == parser.HardBreak {
+		if w.kind == parser.SoftBreak || w.kind == parser.HardBreak || w.kind == parser.InlineHTML {
 			literal = parser.Optional[string]{}
 		}
 		if n.Kind() != w.kind || n.Span().Start() != w.span.start || n.Span().End() != w.span.end || n.Properties().Literal != literal || len(n.Children()) != 0 {
@@ -57,6 +57,8 @@ func checkInlineNodes(t *testing.T, source parser.Source, nodes []*parser.Node, 
 			}
 		} else if w.kind == parser.SoftBreak || w.kind == parser.HardBreak {
 			checkBreakProperties(t, source, n, w.origin, w.opening)
+		} else if w.kind == parser.InlineHTML {
+			checkInlineHTMLProvenance(t, source, n)
 		} else if n.Properties().Delimiter != nil || len(n.Markers()) != 0 {
 			t.Fatal("Text acquired code markers")
 		}
@@ -143,16 +145,12 @@ func TestCodeSpanUpstreamAcceptanceAndNewPasses(t *testing.T) {
 		t.Run(strconv.Itoa(e.Example), func(t *testing.T) {
 			source := parser.NewSource([]byte(e.Markdown))
 			r := parser.Parse(context.Background(), source)
-			checkStagedTextOutcome(t, r, e.Example != 344)
+			checkStagedTextOutcome(t, r, true)
 			if w, ok := wants[e.Example]; ok {
 				checkInlineNodes(t, source, r.Document.Root().Children()[0].Children(), w)
 			}
 			out := conformance.Evaluate(r)
-			if e.Example == 344 {
-				if out.Status != "pending" || out.HTML != "" {
-					t.Fatal("outside provider falsely complete", out)
-				}
-			} else if out.Status != "rendered" || out.HTML != e.HTML {
+			if out.Status != "rendered" || out.HTML != e.HTML {
 				t.Fatal(out, e.HTML)
 			}
 			if string(source.Bytes()) != e.Markdown {

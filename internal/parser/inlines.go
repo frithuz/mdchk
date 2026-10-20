@@ -27,7 +27,7 @@ type inlineScanner struct {
 	backticks    map[int][]int // raw run starts by width, even after a backslash
 	backtickNext map[int]int   // monotonic next-closer cursor per width
 	markers      [2]bool
-	angleClose   int
+	htmlEnds     map[string][]int // original logical terminators/quotes, indexed once
 	pending      bool
 }
 
@@ -114,8 +114,6 @@ func (s *inlineScanner) dispatch(offset int) int {
 		return offset + width // generated characters never enter syntax dispatch
 	}
 	switch c := s.text[offset]; c {
-	case '<':
-		s.pending = s.pending || s.possibleInlineHTML(offset) // #23 owns HTML interpretation
 	case '[', ']':
 		if c == '[' {
 			s.brackets = append(s.brackets, inlineBracket{offset: offset, image: offset > 0 && s.text[offset-1] == '!'})
@@ -144,10 +142,9 @@ func (s *inlineScanner) dispatch(offset int) int {
 }
 
 // Index maximal raw backtick runs once, including runs after a backslash: code
-// closers ignore ordinary-text escapes. The angle ending remains a conservative
-// availability guard for #23, not recognition of inline HTML syntax.
+// closers ignore ordinary-text escapes. HTML terminators are indexed lazily by
+// the HTML recognizer, independently of these raw backtick runs.
 func (s *inlineScanner) opaqueCandidates() {
-	s.angleClose = strings.LastIndexByte(s.text, '>')
 	for offset, checkpoint := 0, 0; offset < len(s.text); {
 		if offset >= checkpoint {
 			if interruption(s.ctx) != "" {

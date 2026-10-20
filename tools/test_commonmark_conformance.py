@@ -139,7 +139,7 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 355, "fail": 0, "error": 0, "pending": 297})
+                self.assertEqual(report["counts"], {"pass": 383, "fail": 0, "error": 0, "pending": 269})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
                 supported = {
                     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 18, 19, 21, 31, 36,
@@ -181,6 +181,10 @@ class ExecutableBoundary(unittest.TestCase):
                 self.assertEqual(len(autolinks), 24)
                 self.assertFalse(supported & autolinks)
                 supported.update(autolinks)
+                html = {187, 344, 475, 476, 477, 524, 536, 642, 643, *range(613, 633)} - {618}
+                self.assertEqual(len(html), 28)
+                self.assertFalse(supported & html)
+                supported.update(html)
                 self.assertEqual(set(ledger["supported_html_examples"]), supported)
                 owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
                 for outcome in report["outcomes"]:
@@ -191,21 +195,21 @@ class ExecutableBoundary(unittest.TestCase):
                         self.assertEqual(outcome["status"], "pending")
                         self.assertEqual(outcome["reason"], "syntax-unimplemented")
                         self.assertEqual(outcome["owners"], owners[outcome["example"]])
-                self.assertFalse(any(set(providers) & {17, 18, 19, 20, 21, 22} for providers in owners.values()))
+                self.assertFalse(any(set(providers) & {17, 18, 19, 20, 21, 22, 23} for providers in owners.values()))
                 for example in breaks:
                     self.assertNotIn(example, owners)
                     self.assertEqual(report["outcomes"][example-1]["status"], "pass")
                 for example in [638, 639]:
                     self.assertEqual(owners[example], [24, 25])
                 for example in [642, 643]:
-                    self.assertEqual(owners[example], [23])
+                    self.assertNotIn(example, owners)
                 for example in [65, 76, 102]:
                     self.assertNotIn(example, owners)
                     self.assertEqual(report["outcomes"][example-1]["status"], "pass")
                 self.assertEqual(owners[66], [24, 25])
                 for example in [327, 121]:
                     self.assertNotIn(example, owners)
-                self.assertEqual(owners[344], [23])
+                self.assertNotIn(344, owners)
                 self.assertNotIn(346, owners)
                 for example in [214, 218]:
                     self.assertEqual(owners[example], [27])
@@ -228,19 +232,19 @@ class ExecutableBoundary(unittest.TestCase):
         self.assertIn("diff", report["outcomes"][0])
 
     def test_pinned_upstream_helper_reports_unsupported_as_error(self):
-        case = self.cases[343]
-        self.assertEqual(case["example"], 344)
+        case = self.cases[637]
+        self.assertEqual(case["example"], 638)
         for mode in [[], ["--no-normalize"]]:
             result = subprocess.run([sys.executable, "-E", "-s", "-B",
                                      str(runner.corpus.CORPUS / "upstream/test/spec_tests.py"),
                                      "--spec", str(runner.corpus.CORPUS / "upstream/spec.txt"),
-                                     "--program", str(self.adapter), "--number", "344", *mode], capture_output=True)
+                                     "--program", str(self.adapter), "--number", "638", *mode], capture_output=True)
             self.assertEqual(result.returncode, 1)
             self.assertIn(b"0 passed, 0 failed, 1 errored, 651 skipped", result.stdout)
             self.assertIn(b'"status":"pending"', result.stdout)
 
     def test_pinned_upstream_helper_recognized_definition_and_external_break(self):
-        for example in [207, 334]:
+        for example in [207, 334, 344]:
             for mode in [[], ["--no-normalize"]]:
                 with self.subTest(example=example, mode=mode):
                     result = subprocess.run([sys.executable, "-E", "-s", "-B",

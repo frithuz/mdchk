@@ -146,6 +146,18 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 				offset = end
 				continue
 			}
+			if end, closing := s.inlineHTMLEnd(offset); end != 0 {
+				if err := appendText(offset, 0); err != nil || interruption(s.ctx) != "" {
+					return nil, err
+				}
+				node, err := scanInlineHTML(&cursor, offset, end, closing)
+				if err != nil || interruption(s.ctx) != "" {
+					return nil, err
+				}
+				children = append(children, node)
+				offset = end
+				continue
+			}
 		}
 		if s.text[offset] != '`' {
 			offset = s.dispatch(offset)
