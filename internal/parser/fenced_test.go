@@ -34,7 +34,7 @@ func TestFencedUpstreamTargets(t *testing.T) {
 		19:  {fencedWant(byteRange{0, 13}, byteRange{0, 3}, byteRange{9, 12}, '~', "\\[\\]\n", "", byteRange{}, nil, byteRange{4, 8}, byteRange{8, 9})},
 		119: {fencedWant(byteRange{0, 13}, byteRange{0, 3}, byteRange{9, 12}, '`', "<\n >\n", "", byteRange{}, nil, byteRange{4, 5}, byteRange{5, 6}, byteRange{6, 8}, byteRange{8, 9})},
 		120: {fencedWant(byteRange{0, 13}, byteRange{0, 3}, byteRange{9, 12}, '~', "<\n >\n", "", byteRange{}, nil, byteRange{4, 5}, byteRange{5, 6}, byteRange{6, 8}, byteRange{8, 9})},
-		121: {atxParagraphWant(byteRange{0, 10}, "``\nfoo\n``", byteRange{0, 3}, byteRange{3, 7}, byteRange{7, 9})},
+		121: {withInlines(atxParagraphWant(byteRange{0, 10}, "``\nfoo\n``", byteRange{0, 3}, byteRange{3, 7}, byteRange{7, 9}), codeWant(0, 2, 7, 9, "foo", byteRange{2, 3}, byteRange{3, 7}))},
 		122: {fencedWant(byteRange{0, 16}, byteRange{0, 3}, byteRange{12, 15}, '`', "aaa\n~~~\n", "", byteRange{}, nil, byteRange{4, 7}, byteRange{7, 8}, byteRange{8, 11}, byteRange{11, 12})},
 		123: {fencedWant(byteRange{0, 16}, byteRange{0, 3}, byteRange{12, 15}, '~', "aaa\n```\n", "", byteRange{}, nil, byteRange{4, 7}, byteRange{7, 8}, byteRange{8, 11}, byteRange{11, 12})},
 		124: {fencedWant(byteRange{0, 20}, byteRange{0, 4}, byteRange{13, 19}, '`', "aaa\n```\n", "", byteRange{}, nil, byteRange{5, 8}, byteRange{8, 9}, byteRange{9, 12}, byteRange{12, 13})},
@@ -51,14 +51,14 @@ func TestFencedUpstreamTargets(t *testing.T) {
 		135: {fencedWant(byteRange{0, 14}, byteRange{0, 3}, byteRange{10, 13}, '`', "aaa\n", "", byteRange{}, nil, byteRange{4, 7}, byteRange{7, 8})},
 		136: {fencedWant(byteRange{0, 17}, byteRange{3, 6}, byteRange{13, 16}, '`', "aaa\n", "", byteRange{}, nil, byteRange{7, 10}, byteRange{10, 11})},
 		137: {fencedWant(byteRange{0, 16}, byteRange{0, 3}, byteRange{}, '`', "aaa\n    ```\n", "", byteRange{}, nil, byteRange{4, 7}, byteRange{7, 8}, byteRange{8, 15}, byteRange{15, 16})},
-		138: {atxParagraphWant(byteRange{0, 12}, "``` ```\naaa", byteRange{0, 8}, byteRange{8, 11})},
+		138: {withInlines(atxParagraphWant(byteRange{0, 12}, "``` ```\naaa", byteRange{0, 8}, byteRange{8, 11}), codeWant(0, 3, 4, 7, " ", byteRange{3, 4}), textWant(7, 11, "\naaa"))},
 		139: {fencedWant(byteRange{0, 18}, byteRange{0, 6}, byteRange{}, '~', "aaa\n~~~ ~~\n", "", byteRange{}, nil, byteRange{7, 10}, byteRange{10, 11}, byteRange{11, 17}, byteRange{17, 18})},
 		140: {atxParagraphWant(byteRange{0, 4}, "foo", byteRange{0, 3}), fencedWant(byteRange{4, 16}, byteRange{4, 7}, byteRange{12, 15}, '`', "bar\n", "", byteRange{}, nil, byteRange{8, 11}, byteRange{11, 12}), atxParagraphWant(byteRange{16, 20}, "baz", byteRange{16, 19})},
 		141: {setextWant(2, byteRange{0, 8}, byteRange{4, 7}, "foo", byteRange{0, 3}), fencedWant(byteRange{8, 20}, byteRange{8, 11}, byteRange{16, 19}, '~', "bar\n", "", byteRange{}, nil, byteRange{12, 15}, byteRange{15, 16}), atxHeadingWant(1, byteRange{20, 26}, byteRange{20, 21}, byteRange{22, 25}, byteRange{}, "baz")},
 		142: {fencedWant(byteRange{0, 38}, byteRange{0, 3}, byteRange{34, 37}, '`', "def foo(x)\n  return 3\nend\n", "ruby", byteRange{3, 7}, nil, byteRange{8, 18}, byteRange{18, 19}, byteRange{19, 29}, byteRange{29, 30}, byteRange{30, 33}, byteRange{33, 34})},
 		143: {fencedWant(byteRange{0, 65}, byteRange{0, 4}, byteRange{57, 64}, '~', "def foo(x)\n  return 3\nend\n", "ruby startline=3 $%@#$", byteRange{8, 30}, nil, byteRange{31, 41}, byteRange{41, 42}, byteRange{42, 52}, byteRange{52, 53}, byteRange{53, 56}, byteRange{56, 57})},
 		144: {fencedWant(byteRange{0, 11}, byteRange{0, 4}, byteRange{6, 10}, '`', "", ";", byteRange{4, 5}, nil)},
-		145: {atxParagraphWant(byteRange{0, 15}, "``` aa ```\nfoo", byteRange{0, 11}, byteRange{11, 14})},
+		145: {withInlines(atxParagraphWant(byteRange{0, 15}, "``` aa ```\nfoo", byteRange{0, 11}, byteRange{11, 14}), codeWant(0, 3, 7, 10, "aa", byteRange{3, 7}), textWant(10, 14, "\nfoo"))},
 		146: {fencedWant(byteRange{0, 23}, byteRange{0, 3}, byteRange{19, 22}, '~', "foo\n", "aa ``` ~~~", byteRange{4, 14}, nil, byteRange{15, 18}, byteRange{18, 19})},
 		147: {fencedWant(byteRange{0, 16}, byteRange{0, 3}, byteRange{12, 15}, '`', "``` aaa\n", "", byteRange{}, nil, byteRange{4, 11}, byteRange{11, 12})},
 	}
@@ -88,7 +88,7 @@ func TestFencedUpstreamTargets(t *testing.T) {
 		}
 		seen[e.ID] = true
 		t.Run(strconv.Itoa(e.ID), func(t *testing.T) {
-			complete := e.ID != 121 && e.ID != 128 && e.ID != 138 && e.ID != 140 && e.ID != 141 && e.ID != 145
+			complete := e.ID != 128 && e.ID != 138 && e.ID != 140 && e.ID != 141 && e.ID != 145
 			r := checkATX(t, e.Markdown, complete, want)
 			if complete && conformance.Evaluate(r).HTML != e.HTML {
 				t.Fatal("actual parser differs from original upstream HTML")

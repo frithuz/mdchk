@@ -20,14 +20,15 @@ type inlineBracket struct {
 }
 
 type inlineScanner struct {
-	ctx        context.Context
-	text       string
-	delimiters []inlineDelimiter
-	brackets   []inlineBracket
-	backticks  map[int]int // last raw run start by width, even after a backslash
-	markers    [2]bool
-	angleClose int
-	pending    bool
+	ctx          context.Context
+	text         string
+	delimiters   []inlineDelimiter
+	brackets     []inlineBracket
+	backticks    map[int][]int // raw run starts by width, even after a backslash
+	backtickNext map[int]int   // monotonic next-closer cursor per width
+	markers      [2]bool
+	angleClose   int
+	pending      bool
 }
 
 func parseInlines(ctx context.Context, document *Document, blocks PhaseState) (PhaseState, error) {
@@ -76,16 +77,9 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState) (*Node, erro
 		}
 		scanner := inlineScanner{ctx: ctx, text: text.String()}
 		scanner.opaqueCandidates()
-		for offset := 0; offset < len(scanner.text); {
-			if interruption(ctx) != "" {
-				return node, nil
-			}
-			// Bound ordinary-run work between cancellation checkpoints. Hooks
-			// consume a complete punctuation run, with their own checkpoints.
-			end := min(len(scanner.text), offset+256)
-			for offset < end {
-				offset = scanner.dispatch(offset)
-			}
+		children, err := scanner.scan(spec.Content)
+		if err != nil {
+			return nil, err
 		}
 		if interruption(ctx) != "" {
 			return node, nil
@@ -93,21 +87,7 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState) (*Node, erro
 		if scanner.pending {
 			*state = Pending
 		}
-		decoded := decodeValue(ctx, spec.Content, false)
-		if interruption(ctx) != "" {
-			return node, nil
-		}
-		spec.Children = nil
-		if len(spec.Content) != 0 {
-			first, last := spec.Content[0].Source, spec.Content[len(spec.Content)-1].Source
-			envelope := Span{source: first.source, start: first.start, end: last.end, present: true}
-			child, err := NewNode(NodeSpec{Kind: Text, Envelope: envelope, Content: decoded.Segments,
-				Properties: Properties{Literal: decoded.Semantic}})
-			if err != nil {
-				return nil, err
-			}
-			spec.Children = []*Node{child}
-		}
+		spec.Children = children
 	case DocumentKind, BlockQuote, List, ListItem:
 		spec.Children = make([]*Node, len(node.spec.Children))
 		for i, child := range node.spec.Children {
@@ -149,7 +129,7 @@ func (s *inlineScanner) dispatch(offset int) int {
 			s.pending = true // #26–#28 own bracket precedence and resolution
 			s.brackets = s.brackets[:len(s.brackets)-1]
 		}
-	case '`', '*', '_':
+	case '*', '_':
 		end := offset + 1
 		for end < len(s.text) && s.text[end] == c {
 			if (end-offset)%256 == 0 && interruption(s.ctx) != "" {
@@ -158,31 +138,28 @@ func (s *inlineScanner) dispatch(offset int) int {
 			end++
 		}
 		s.delimiters = append(s.delimiters, inlineDelimiter{marker: c, offset: offset, width: end - offset})
-		if c == '`' {
-			last, exists := s.backticks[end-offset]
-			s.pending = s.pending || exists && last >= end // #20: raw equal-width closer
-		} else {
-			index := 0
-			if c == '_' {
-				index = 1
-			}
-			s.pending = s.pending || s.markers[index] // #24/#25 settle actual flanking
-			s.markers[index] = true
+		index := 0
+		if c == '_' {
+			index = 1
 		}
+		s.pending = s.pending || s.markers[index] // #24/#25 settle actual flanking
+		s.markers[index] = true
 		return end
 	}
 	return offset + 1
 }
 
-// Code spans and angle-delimited contexts do not honor ordinary text escapes.
-// Index raw candidate endings once so a skipped escaped closer cannot turn an
-// undelivered opaque construct into a false complete literal result. This is a
-// conservative provider guard, not code-span/autolink/inline-HTML recognition.
+// Index maximal raw backtick runs once, including runs after a backslash: code
+// closers ignore ordinary-text escapes. The angle ending remains a conservative
+// availability guard for #22/#23, not recognition of angle-delimited syntax.
 func (s *inlineScanner) opaqueCandidates() {
 	s.angleClose = strings.LastIndexByte(s.text, '>')
-	for offset := 0; offset < len(s.text); {
-		if offset%256 == 0 && interruption(s.ctx) != "" {
-			return
+	for offset, checkpoint := 0, 0; offset < len(s.text); {
+		if offset >= checkpoint {
+			if interruption(s.ctx) != "" {
+				return
+			}
+			checkpoint = offset + 256
 		}
 		if s.text[offset] != '`' {
 			offset++
@@ -196,9 +173,10 @@ func (s *inlineScanner) opaqueCandidates() {
 			offset++
 		}
 		if s.backticks == nil {
-			s.backticks = make(map[int]int)
+			s.backticks = make(map[int][]int)
+			s.backtickNext = make(map[int]int)
 		}
-		s.backticks[offset-start] = start
+		s.backticks[offset-start] = append(s.backticks[offset-start], start)
 	}
 }
 

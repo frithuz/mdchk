@@ -73,35 +73,41 @@ explicit Escape/Entity spans; definition destinations/titles and fence info also
 have known decoded values. Raw reference labels and first-definition lookup remain
 unchanged. Code and raw HTML payloads stay opaque.
 
-Equal-width raw backtick candidates, delimiter/bracket pairs and angle-delimited
-candidates remain honestly pending for later handlers. Conservative checks can
-defer invalid candidates; they do not recognize those constructs. Raw opaque
-candidate endings are checked independently of ordinary-text escapes, preventing
-an escaped closer from falsely completing code/autolink input. Multiline text
-retains original ending/segment mapping while #21 owns semantic breaks. Unsupported
-interpretation retains whole-document uncertainty and cannot render. Empty,
-definition-only and other inline-free inputs retain their affirmative completion
-guards; constructed trees cannot manufacture the private block handoff.
+Code spans match maximal equal-width raw backtick runs with the first closer,
+consume opaque payloads before Text decoding and retain original payload ranges,
+delimiter width and markers separately from normalized Literal. Each internal
+physical ending becomes one space; exactly one ASCII edge space is removed only
+when both edges qualify and the result is not all spaces. Container prefixes stay
+outside payload, and trimmed source bytes retain explicit transformation provenance.
+Per-block raw-run indexes and monotonic source cursors avoid repeated suffix or
+segment-prefix searches. Private trees publish only after successful inline work.
+
+Delimiter/bracket pairs and angle-delimited candidates remain honestly pending
+for later handlers. Conservative checks can defer invalid candidates; they do
+not recognize those constructs. External physical endings remain #21, while
+endings consumed inside code are handled here. Unsupported interpretation retains
+whole-document uncertainty and cannot render. Empty, definition-only and other
+inline-free inputs retain their affirmative completion guards; constructed trees
+cannot manufacture the private block handoff.
 
 The [model contract](../internal/parser/model.md) defines exact outcomes,
 byte envelopes, raw/semantic mappings, reference ownership and property meanings.
 Retained upstream block tests independently assert paragraph/heading/container
-structure, markers and original ranges. Their text-bearing leaf checks now also
-assert Text literals and segments. `TestInlineUpstreamTargets` checks unchanged
-650–652 and unmatched punctuation cases directly; 327 remains pending for #20.
-`TestInlineSegmentedSourceAndDetachedAccessors` covers nested/lazy mappings, both
-heading styles, NUL/Unicode and LF/CRLF/CR/EOF. Opaque-block, mixed-provider,
-reference-phase, immutable ownership and deterministic inline interruption tests
-protect downstream consumers. `FuzzInlineTextProvenance` checks immutable Source,
-repeatability and semantic reconstruction from original-byte contributions.
+structure, markers and original ranges, with Text/CodeSpan checks where applicable.
+`TestCodeSpanUpstreamAcceptanceAndNewPasses` checks unchanged 327–349 and newly
+unlocked cases with independent node/literal/marker/payload assertions. Outside
+providers remain explicit: 334 needs #21, 344 needs #23 and 346 needs #22.
+Nested/lazy mappings, both heading styles, NUL/Unicode, LF/CRLF/CR/EOF, opaque blocks,
+mixed decoding, immutable accessors and block/call isolation have focused checks.
+Deterministic cancellation/deadline sweeps protect unfinished inline publication;
+strict invalid UTF-8 retains precedence. `FuzzInlineTextProvenance` reconstructs
+Text and CodeSpan semantics independently from original-byte contributions.
 
-All 652 unchanged cases remain in the ledger: **254 pass, 398 pending**, retaining
-all 239 previous passes and adding 15 from decoding. These are staged results,
-not full
-CommonMark or extension conformance. The baseline includes newly available plain
-paragraphs/headings and nested text as well as code/HTML/inline-free documents.
-Coverage owners are downstream completion providers, never reverse blockers on
-this scanner increment. Full work/depth-budget hardening remains #31.
+All 652 unchanged cases remain in the ledger: **279 pass, 373 pending**, retaining
+all 254 previous passes and adding 25 from code spans. These are staged results,
+not full CommonMark or extension conformance. Coverage owners are downstream
+completion providers, never reverse blockers on this increment. Full work/depth-
+budget hardening remains #31.
 
 Keep filesystem loading, configuration, rules, CLI/MCP, reporting, rendering and
 writes outside the production parser. The HTML adapter is test infrastructure.
@@ -201,14 +207,14 @@ Inputs and paths are resolved from the script, so invocation by absolute script
 path also works from another directory. The checks work offline; use the local
 toolchain/module environment above to forbid automatic downloads explicitly.
 
-Every unfiltered run currently reports **254 pass, 0 fail, 0 error, 398
+Every unfiltered run currently reports **279 pass, 0 fail, 0 error, 373
 pending**. The separately maintained `foundation.json` lists every supported ID
-and remaining provider exactly once. Decoding adds 15 passes while retaining
-all 239 established IDs, including unchanged 650–652. Newly passing IDs are
-12, 24, 26, 27, 29, 30, 34, 38–40, 65, 76, 102, 563 and 592. Example 327 remains
-pending for #20. Break cases retain #21;
-inline HTML #23, emphasis #24/#25, links #26/#27, images
-#28 and autolinks #22 remain with their providers. Conservative pending checks may
+and remaining provider exactly once. Code spans add 25 passes while retaining
+all 254 established IDs. Newly passing IDs are 17, 35, 121, 327–333, 335–343,
+345, 349, 525, 537 and 640–641. Examples 334/344/346 retain their outside break,
+inline HTML and autolink providers respectively. Other break cases retain #21;
+inline HTML #23, emphasis #24/#25, links #26/#27, images #28 and autolinks #22
+remain with their providers. Conservative pending checks may
 also defer malformed candidates until their handler proves literal fallback.
 No pending case is counted as a conformance pass. Final completion still requires
 all 652 cases without exemptions. These coverage owners are not reverse native
@@ -246,7 +252,7 @@ regexes and empty selections are errors. A filtered run validates the full ledge
 first, reports its smaller scope and never writes or weakens the baseline.
 
 `foundation.json` is mdchk's separately reviewed pass/pending ledger. It
-accounts for all 652 IDs exactly once. Its supported list records the 254
+accounts for all 652 IDs exactly once. Its supported list records the 279
 passes above. A supported case becoming fail/error/pending is a regression;
 missing/duplicate IDs invalidate the ledger. A newly passing case also fails
 the gate until its ID moves from pending to `supported_html_examples` in a
@@ -270,7 +276,7 @@ rm -r "$adapter_dir"
 
 The last comparison now exits 0: example 207 is a recognized definition-only
 document with legitimately empty HTML. The unchanged upstream helper still has no
-pending category; use `--number 327` to observe an unsupported case as an error. The adapter's default protocol
+pending category; use `--number 334` to observe an unsupported case as an error. The adapter's default protocol
 emits HTML alone on stdout only for complete rendered input. Pending input exits 2
 with an outcome on stderr, errors exit 1, and interruptions exit 3. Upstream maps
 all nonzero exits to error, including pending; use mdchk's runner for staged

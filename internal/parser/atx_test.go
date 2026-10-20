@@ -28,6 +28,7 @@ type atxBlockWant struct {
 	htmlForm int
 	list     *parser.ListProperties
 	children []atxBlockWant
+	inlines  []inlineWant
 }
 type markerWant struct {
 	role string
@@ -178,7 +179,11 @@ func checkATX(t *testing.T, input string, complete bool, want []atxBlockWant) pa
 				t.Fatalf("block %d content %q, want %q", i, text, w.text)
 			}
 			if n.Kind() == parser.Paragraph || n.Kind() == parser.Heading {
-				checkInlineText(t, r, n, w.text, w.content)
+				if w.inlines != nil {
+					checkInlineNodes(t, source, n.Children(), w.inlines)
+				} else {
+					checkInlineText(t, r, n, w.text, w.content)
+				}
 			} else {
 				checkNodes(ungroupedChildren(n), w.children)
 			}

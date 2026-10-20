@@ -89,9 +89,11 @@ type ParseResult struct {
 // and whole-document
 // uncertainty. Leading definitions are collected in source order before inline
 // work, with raw-label Unicode folding and first-definition lookup. Ordinary
-// text-bearing blocks acquire source-preserving Text children; missing inline
+// text-bearing blocks acquire source-preserving Text and CodeSpan children; missing inline
 // handlers retain pending interpretation. Text, definition destination/title and
 // fence-info values decode escapes/entities once, preserving raw label identity.
+// Code spans consume opaque raw payloads before Text decoding, normalize physical
+// endings and conditional ASCII edge spaces, retaining original payload/markers.
 // Definition-only input with known semantics completes vacuous inline work.
 // ListItems retain marker/prefix facts and ordered nested block children, with
 // tab-aware continuation, blank boundaries, sibling ownership and closure. They

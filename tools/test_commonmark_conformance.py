@@ -114,6 +114,7 @@ class ExecutableBoundary(unittest.TestCase):
                 (b"", 0, "rendered", b""), (b" \t\r\n", 0, "rendered", b""),
                 (b"***\n", 0, "rendered", b"<hr />\n"),
                 (b"hello\n", 0, "rendered", b"<p>hello</p>\n"),
+                (b"`hi`lo`\n", 0, "rendered", b"<p><code>hi</code>lo`</p>\n"),
                 (b"Foo\n***\nbar\n", 0, "rendered", b"<p>Foo</p>\n<hr />\n<p>bar</p>\n"),
                 (b"[foo]: /url\n", 0, "rendered", b""),
                 (b"\xff", 1, "error", b"")]:
@@ -138,7 +139,7 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 254, "fail": 0, "error": 0, "pending": 398})
+                self.assertEqual(report["counts"], {"pass": 279, "fail": 0, "error": 0, "pending": 373})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
                 supported = {
                     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 18, 19, 21, 31, 36,
@@ -165,6 +166,9 @@ class ExecutableBoundary(unittest.TestCase):
                 }
                 supported.update({12, 24, 26, 27, 29, 30, 34, 38, 39, 40,
                                   65, 76, 102, 563, 592})
+                supported.update({17, 35, 121, 327, 328, 329, 330, 331, 332, 333,
+                                  335, 336, 337, 338, 339, 340, 341, 342, 343,
+                                  345, 349, 525, 537, 640, 641})
                 self.assertEqual(set(ledger["supported_html_examples"]), supported)
                 owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
                 for outcome in report["outcomes"]:
@@ -175,17 +179,19 @@ class ExecutableBoundary(unittest.TestCase):
                         self.assertEqual(outcome["status"], "pending")
                         self.assertEqual(outcome["reason"], "syntax-unimplemented")
                         self.assertEqual(outcome["owners"], owners[outcome["example"]])
-                self.assertFalse(any(set(providers) & {17, 18, 19} for providers in owners.values()))
+                self.assertFalse(any(set(providers) & {17, 18, 19, 20} for providers in owners.values()))
                 for example in [49, 70, 87, 88, 93, 95, 104, 105, 113, 220, 226, 243, 304, 312, 648, 649]:
                     self.assertEqual(owners[example], [21])
                 for example in [65, 76, 102]:
                     self.assertNotIn(example, owners)
                     self.assertEqual(report["outcomes"][example-1]["status"], "pass")
                 self.assertEqual(owners[66], [24, 25])
-                self.assertEqual(owners[327], [20])
-                self.assertEqual(owners[121], [20])
-                for example in [138, 145]:
-                    self.assertEqual(owners[example], [20, 21])
+                for example in [327, 121]:
+                    self.assertNotIn(example, owners)
+                for example in [138, 145, 334]:
+                    self.assertEqual(owners[example], [21])
+                self.assertEqual(owners[344], [23])
+                self.assertEqual(owners[346], [22])
                 for example in [214, 218]:
                     self.assertEqual(owners[example], [27])
                 for example in [650, 651, 652, 347, 348, 611, 612, 644, 645, 646, 647]:
@@ -207,13 +213,13 @@ class ExecutableBoundary(unittest.TestCase):
         self.assertIn("diff", report["outcomes"][0])
 
     def test_pinned_upstream_helper_reports_unsupported_as_error(self):
-        case = self.cases[326]
-        self.assertEqual(case["example"], 327)
+        case = self.cases[333]
+        self.assertEqual(case["example"], 334)
         for mode in [[], ["--no-normalize"]]:
             result = subprocess.run([sys.executable, "-E", "-s", "-B",
                                      str(runner.corpus.CORPUS / "upstream/test/spec_tests.py"),
                                      "--spec", str(runner.corpus.CORPUS / "upstream/spec.txt"),
-                                     "--program", str(self.adapter), "--number", "327", *mode], capture_output=True)
+                                     "--program", str(self.adapter), "--number", "334", *mode], capture_output=True)
             self.assertEqual(result.returncode, 1)
             self.assertIn(b"0 passed, 0 failed, 1 errored, 651 skipped", result.stdout)
             self.assertIn(b'"status":"pending"', result.stdout)

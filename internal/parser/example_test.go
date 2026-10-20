@@ -39,3 +39,17 @@ func ExampleParse_decoding() {
 	// [2,7) entity "&amp;" -> "&"
 	// [7,9) exact "β" -> "β"
 }
+
+func ExampleParse_codeSpan() {
+	result := parser.Parse(context.Background(), parser.NewSource([]byte("` a\r\nb `")))
+	code := result.Document.Root().Children()[0].Children()[0]
+	fmt.Println(result.Status, code.Kind(), code.Properties().Literal.Value)
+	for _, part := range code.Content() {
+		raw, _ := result.Source.Text(part.Source)
+		fmt.Printf("[%d,%d) %s %q -> %q\n", part.Source.Start(), part.Source.End(), part.Transformation, raw, part.Semantic.Value)
+	}
+	// Output:
+	// complete code-span a b
+	// [1,5) normalized " a\r\n" -> "a "
+	// [5,7) normalized "b " -> "b"
+}
