@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -31,6 +32,25 @@ var emphasisMarks = map[int][]emphasisMark{
 	452: {{4, 2, 8}}, 453: {{4, 2, 7}}, 454: {{1, 1, 5}}, 455: {{0, 1, 4}}, 456: {{1, 2, 6}}, 457: {{3, 1, 7}},
 	458: {{0, 2, 5}}, 459: {{0, 1, 4}}, 460: {{0, 2, 5}}, 462: {{0, 2, 5}}, 469: {{0, 1, 9}}, 471: {{6, 2, 15}}, 472: {{5, 1, 13}},
 	478: {{0, 1, 6}}, 479: {{0, 1, 6}},
+	369: {{0, 1, 8}, {2, 1, 6}}, 373: {{0, 1, 8}, {2, 1, 6}},
+	389: {{0, 2, 19}, {7, 2, 12}}, 393: {{0, 1, 10}, {2, 2, 7}},
+	394: {{0, 2, 72}, {16, 1, 41}, {49, 1, 70}}, 395: {{0, 2, 17}, {7, 1, 11}},
+	399: {{0, 1, 10}, {2, 2, 7}}, 406: {{0, 1, 16}, {5, 2, 10}},
+	407: {{0, 1, 14}, {5, 1, 9}}, 408: {{0, 1, 10}, {1, 1, 5}},
+	409: {{0, 1, 10}, {5, 1, 9}}, 410: {{0, 1, 16}, {5, 2, 10}},
+	411: {{0, 1, 14}, {4, 2, 9}}, 413: {{0, 1, 12}, {1, 2, 6}},
+	414: {{0, 1, 12}, {5, 2, 10}}, 415: {{0, 1, 11}, {4, 2, 9}},
+	416: {{3, 1, 11}, {4, 2, 9}}, 417: {{3, 2, 16}, {5, 2, 14}, {7, 2, 12}},
+	418: {{0, 1, 26}, {5, 2, 20}, {11, 1, 15}},
+	424: {{0, 2, 15}, {6, 1, 10}}, 425: {{0, 2, 17}, {6, 2, 11}},
+	426: {{0, 2, 13}, {2, 2, 7}}, 427: {{0, 2, 13}, {6, 2, 11}},
+	428: {{0, 2, 15}, {6, 1, 10}}, 429: {{0, 2, 13}, {5, 1, 9}},
+	430: {{0, 2, 11}, {2, 1, 6}}, 431: {{0, 2, 11}, {6, 1, 10}},
+	432: {{0, 2, 27}, {6, 1, 22}, {11, 2, 16}},
+	461: {{0, 1, 6}, {1, 1, 5}}, 463: {{0, 1, 6}, {1, 1, 5}},
+	464: {{0, 2, 9}, {2, 2, 7}}, 465: {{0, 2, 9}, {2, 2, 7}},
+	466: {{0, 2, 13}, {2, 2, 11}, {4, 2, 9}}, 467: {{0, 1, 8}, {1, 2, 6}},
+	468: {{0, 1, 12}, {1, 2, 10}, {3, 2, 8}}, 470: {{0, 1, 25}, {5, 2, 19}},
 }
 var requiredEmphasis = []int{
 	350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363,
@@ -108,7 +128,7 @@ func TestEmphasisApprovedPartitionAndUpstream(t *testing.T) {
 			source := parser.NewSource([]byte(e.Markdown))
 			r := parser.Parse(context.Background(), source)
 			out := conformance.Evaluate(r)
-			if owner != "required" {
+			if owner == "links" {
 				if r.Status != parser.Incomplete || out.Status != "pending" || out.HTML != "" {
 					t.Fatal("deferred interpretation became reliable", r, out)
 				}
@@ -227,8 +247,8 @@ func checkEmphasisProvenance(t *testing.T, source parser.Source, n *parser.Node)
 	}
 	previous = m[0].Source.End()
 	for _, child := range n.Children() {
-		if child.Span().Start() < previous || child.Span().End() > m[1].Source.Start() || child.Kind() == parser.Emphasis || child.Kind() == parser.Strong {
-			t.Fatal("single-level child order", child)
+		if child.Span().Start() < previous || child.Span().End() > m[1].Source.Start() {
+			t.Fatal("nested child order", child)
 		}
 		// Reconstruct raw logical payload, including opaque delimiters and break markers,
 		// by intersecting the parent's independently source-backed Content ranges.
@@ -249,6 +269,8 @@ func checkEmphasisProvenance(t *testing.T, source parser.Source, n *parser.Node)
 			}
 		}
 		switch child.Kind() {
+		case parser.Emphasis, parser.Strong:
+			checkEmphasisProvenance(t, source, child)
 		case parser.Text:
 			checkEmphasisText(t, source, child)
 		case parser.CodeSpan:
@@ -294,7 +316,7 @@ func fixturePairWants(t *testing.T, source parser.Source, wants []inlineWant) []
 		}
 	}
 	var out []inlineWant
-	remaining := wants
+	remaining := append([]inlineWant(nil), wants...)
 	take := func(end int) []inlineWant {
 		var result []inlineWant
 		for len(remaining) > 0 {
@@ -338,21 +360,63 @@ func fixturePairWants(t *testing.T, source parser.Source, wants []inlineWant) []
 		}
 		return result
 	}
-	for _, m := range marks {
-		if m.open < wants[0].span.start || m.close+m.width > wants[len(wants)-1].span.end {
-			continue
+	var rawRanges []byteRange
+	for _, w := range wants {
+		rawRanges = append(rawRanges, w.payload...)
+		for _, r := range []byteRange{w.opening, w.closing} {
+			if r.start < r.end {
+				rawRanges = append(rawRanges, r)
+			}
 		}
-		out = append(out, take(m.open)...)
-		take(m.open + m.width)
-		children := take(m.close)
-		take(m.close + m.width)
-		kind := parser.Emphasis
-		if m.width == 2 {
-			kind = parser.Strong
-		}
-		raw := string(source.Bytes()[m.open+m.width : m.close])
-		out = append(out, inlineWant{kind: kind, span: byteRange{m.open, m.close + m.width}, opening: byteRange{m.open, m.open + m.width}, closing: byteRange{m.close, m.close + m.width}, literal: strings.ReplaceAll(raw, "\x00", "\ufffd"), payload: []byteRange{{m.open + m.width, m.close}}, children: children})
 	}
+	sort.Slice(rawRanges, func(i, j int) bool { return rawRanges[i].start < rawRanges[j].start })
+	var logical []byteRange
+	for _, r := range rawRanges {
+		if len(logical) > 0 && r.start <= logical[len(logical)-1].end {
+			logical[len(logical)-1].end = max(logical[len(logical)-1].end, r.end)
+		} else {
+			logical = append(logical, r)
+		}
+	}
+	var selected []emphasisMark
+	for _, m := range marks {
+		if m.open >= wants[0].span.start && m.close+m.width <= wants[len(wants)-1].span.end {
+			selected = append(selected, m)
+		}
+	}
+	// The independent marker table is pre-order. Recursion consumes just the
+	// known fixture intervals; it performs no classification or pair selection.
+	index := 0
+	var build func(int) []inlineWant
+	build = func(end int) []inlineWant {
+		var result []inlineWant
+		for index < len(selected) && selected[index].open < end {
+			m := selected[index]
+			index++
+			result = append(result, take(m.open)...)
+			take(m.open + m.width)
+			children := build(m.close)
+			take(m.close + m.width)
+			kind := parser.Emphasis
+			if m.width == 2 {
+				kind = parser.Strong
+			}
+			var payload []byteRange
+			var raw strings.Builder
+			for _, r := range logical {
+				a, b := max(m.open+m.width, r.start), min(m.close, r.end)
+				if a < b {
+					payload = append(payload, byteRange{a, b})
+					raw.Write(source.Bytes()[a:b])
+				}
+			}
+			result = append(result, inlineWant{kind: kind, span: byteRange{m.open, m.close + m.width},
+				opening: byteRange{m.open, m.open + m.width}, closing: byteRange{m.close, m.close + m.width},
+				literal: strings.ReplaceAll(raw.String(), "\x00", "\ufffd"), payload: payload, children: children})
+		}
+		return append(result, take(end)...)
+	}
+	out = build(wants[len(wants)-1].span.end)
 	return append(out, remaining...)
 }
 

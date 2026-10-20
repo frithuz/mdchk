@@ -82,7 +82,8 @@ outside payload, and trimmed source bytes retain explicit transformation provena
 Per-block raw-run indexes and monotonic source cursors avoid repeated suffix or
 segment-prefix searches. Private trees publish only after successful inline work.
 
-Nested emphasis and bracket pairs remain honestly pending for later handlers.
+Nested emphasis/strong trees now complete; bracket pairs remain honestly pending
+for later handlers.
 Inline HTML is now recognized atomically; malformed HTML resumes ordinary interpretation.
 External physical endings produce semantic break
 nodes, while endings consumed inside code remain code normalization. Unsupported interpretation retains
@@ -109,8 +110,8 @@ Text, CodeSpan, break, InlineHTML and autolink semantics independently from
 original-byte
 contributions.
 
-All 652 unchanged cases remain in the ledger: **477 pass, 175 pending**, retaining
-all 383 previous passes and adding 94 from delimiter classification/pairing.
+All 652 unchanged cases remain in the ledger: **513 pass, 139 pending**, retaining
+all 477 previous passes and adding the 36 specified nested-emphasis cases.
 These are staged results, not full CommonMark or extension conformance. Coverage owners are downstream
 completion providers, never reverse blockers on this increment. Full work/depth-
 budget hardening remains #31.
@@ -231,41 +232,46 @@ go test ./internal/parser -run 'InlineHTML|HTML|Inline'
 python3 -B tools/commonmark_conformance.py --strict --section '^Raw HTML$'
 ```
 
-### Single-level emphasis
+### Nested emphasis
 
 The delimiter pass classifies original star/underscore runs using the pinned
-Unicode whitespace/punctuation rules, underscore intraword restrictions and
-modulo-three eligibility. A linked stack with partitioned failed-search floors
-keeps opener searches bounded. Advancing raw Content and flat-node cursors retain
-original consumed/leftover markers without copying the accumulated child list.
-Emphasis/Strong Content is raw logical payload; exact opening/closing markers and
-ordered children are distinct from decoded Text semantics. Opaque interiors and
-escape/entity-generated markers never become new delimiters.
+Unicode whitespace/punctuation rules, intraword restrictions and modulo-three
+eligibility. A linked stack with partitioned failed-search floors bounds opener
+searches. Scoped stack-bottom calls preserve earlier delimiters and retire only
+the processed suffix; direct tests cover repeated calls and empty boundaries.
 
-The fixed acceptance partition requires 90 of the 132 emphasis examples: 14 old
-passes and 76 new passes, including single-level leftovers, competing openers,
-multiline pairs and code adjacency. Thirty-six nested cases await #25; six inline
-link cases await #26, with #25 also needed for 419/433. Invalid/unmatched runs
-complete as Text; actual nesting/bracket interpretation stays honestly pending.
-All 383 prior corpus passes remain and 94 new passes bring the baseline to 477.
-The 18 cross-section additions are 15, 37, 55, 56, 66, 80–82, 148, 152, 155,
-167–168, 176–177, 188 and 638–639.
+Pairs form a private forest, then explicit frames build nested Emphasis/Strong
+without recursive construction calls or copying accumulated child prefixes.
+Indexed raw Content and an advancing flat-node cursor retain consumed/leftover
+markers. Parent Content includes inner syntax bytes; exact child markers, payload
+and decoded Text semantics remain distinct. Opaque interiors and generated
+markers never enter delimiter dispatch. Detached accessors and original snapshots
+remain immutable; nested work inherits cancellation/deadline checkpoints.
 
-TestEmphasisApprovedPartitionAndUpstream fixes the partition and independently
-counted original marker ranges, comparing actual Parse/Evaluate with unchanged
-upstream HTML. Mapped container/heading, NUL/Unicode, ending/EOF, opaque-content,
-local-state and detached-accessor fixtures supplement deterministic cancellation
-and deadline sweeps. Existing structural helpers and inline/list fuzz consumers
-retain their source oracles and validate emphasis containers. Focused commands:
+The fixed partition requires 126 of 132 emphasis examples: preserve 90 established
+passes and add all 36 specified nested cases. Six inline-link cases remain #26.
+All 477 prior corpus passes remain; the full baseline becomes 513 pass/139 pending.
+No additional cross-section examples unlock. Remaining joint cases 419/433/516
+still need #26; 530 still needs #27. Delivered #25 ownership is removed without
+inventing a reverse prerequisite.
+
+TestEmphasisApprovedPartitionAndUpstream compares actual Parse/Evaluate with
+unchanged upstream HTML and independently counted opening/closing ranges.
+Recursive provenance checks reconstruct raw parent Content from child source
+coverage. Separate mapped nested fixtures cover headings, nested/lazy containers,
+NUL/Unicode, LF/CRLF/CR/EOF, partial tabs, opacity, long runs and detached handles.
+Scoped-boundary and deterministic interruption tests verify the private handoff
+and unfinished-tree publication. Inline/list fuzz consumers retain source oracles
+and add nested seeds. Focused commands:
 
 ```sh
 go test ./internal/parser -run 'Emphasis|Inline|CodeSpan|Break'
 python3 -B tools/commonmark_conformance.py --section '^Emphasis and strong emphasis$'
 ```
 
-This is staged single-level support, not full CommonMark conformance. Numeric
-work/depth hardening stays #31; optional performance measurements do not replace
-correctness/source assertions or introduce a machine-specific threshold.
+This remains staged support, not full CommonMark conformance. Numeric work/depth
+hardening stays #31. Optional measurements should distinguish unavoidable nested
+payload output from redundant copying; no machine-specific threshold is imposed.
 
 ## Regenerate and verify the CommonMark corpus
 
@@ -314,15 +320,14 @@ Inputs and paths are resolved from the script, so invocation by absolute script
 path also works from another directory. The checks work offline; use the local
 toolchain/module environment above to forbid automatic downloads explicitly.
 
-Every unfiltered run currently reports **477 pass, 0 fail, 0 error, 175
+Every unfiltered run currently reports **513 pass, 0 fail, 0 error, 139
 pending**. The separately maintained `foundation.json` lists every supported ID
 and remaining provider exactly once. Angle autolinks add 24 passes while retaining
 all 331 established IDs: 20, 346, 480–481, 526, 538, 594–610 and literal HTML
 fallback 618. All 19 Autolinks examples 594–612 now complete; bare 611–612 remain
 ordinary Text. Examples 638–639 now complete through single-level emphasis;
 344/642/643 pass with opaque inline HTML, and 640–641 retain code opacity.
-Remaining providers are #25 nested emphasis,
-#26/#27 links and #28 images. Conservative pending checks may
+Remaining providers are #26/#27 links and #28 images. Conservative pending checks may
 also defer malformed candidates until their handler proves literal fallback.
 No pending case is counted as a conformance pass. Final completion still requires
 all 652 cases without exemptions. These coverage owners are not reverse native
@@ -360,7 +365,7 @@ regexes and empty selections are errors. A filtered run validates the full ledge
 first, reports its smaller scope and never writes or weakens the baseline.
 
 `foundation.json` is mdchk's separately reviewed pass/pending ledger. It
-accounts for all 652 IDs exactly once. Its supported list records the 477
+accounts for all 652 IDs exactly once. Its supported list records the 513
 passes above. A supported case becoming fail/error/pending is a regression;
 missing/duplicate IDs invalidate the ledger. A newly passing case also fails
 the gate until its ID moves from pending to `supported_html_examples` in a
@@ -384,8 +389,8 @@ rm -r "$adapter_dir"
 
 The last comparison now exits 0: example 207 is a recognized definition-only
 document with legitimately empty HTML. The unchanged upstream helper still has no
-pending category; use `--number 467` to observe unsupported nested emphasis as
-an error.
+pending category; `--number 467` now succeeds through nested emphasis. Use
+`--number 419` to observe a genuinely pending inline-link provider as an error.
 Example 344 now succeeds through actual inline HTML recognition. Example 334 now
 passes with an external soft break. The adapter's default protocol
 emits HTML alone on stdout only for complete rendered input. Pending input exits 2

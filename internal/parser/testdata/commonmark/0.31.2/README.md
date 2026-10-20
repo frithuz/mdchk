@@ -56,9 +56,9 @@ and a missing helper. CI runs these tests and the read-only drift check.
 ## Foundation coverage accounting
 
 `foundation.json` is mdchk's separately reviewed pass/pending inventory. Every
-original upstream ID occurs exactly once: **477 supported HTML cases and 175
-pending**, preserving all 383 previous passes and adding 94 from delimiter
-classification/pairing.
+original upstream ID occurs exactly once: **513 supported HTML cases and 139
+pending**, preserving all 477 previous passes and adding the 36 specified
+nested-emphasis cases.
 The parser recognizes the block structure described in the
 [model contract](../../../model.md), collects document-wide definitions, and
 constructs source-preserving Text/CodeSpan/break/InlineHTML/autolink/Emphasis/Strong children in paragraphs and headings after the
@@ -138,23 +138,28 @@ LF/CRLF/CR/EOF, immutable ownership and deterministic interruption. Shared
 inline/list fuzz consumers validate InlineHTML without weakening prior checks.
 Pinned upstream input and expected output bytes are unchanged.
 
-Single-level emphasis adds 94 passes while preserving all 383 previous passes.
-The approved partition of 350–481 is fixed in
-TestEmphasisApprovedPartitionAndUpstream: 90 required (14 established plus 76 new),
-36 nested cases deferred to #25 and six inline-link cases deferred to #26;
-419/433 additionally require #25. Cases 412, 442–447, 454–459, 469 and 471–472
-establish literal interior markers, partial-run leftovers and competing flat
-pairings. Break/code adjacency 405/423/478/479 is supported. The 18 new
-cross-section cases are 15, 37, 55, 56, 66, 80–82, 148, 152, 155, 167–168,
-176–177, 188 and 638–639. Independent node/marker/payload assertions accompany
-actual Parse/Evaluate for the required cases. Original expected HTML is unchanged.
+Single-level emphasis added 94 passes while preserving 383 previous passes.
+Nested construction now adds the 36 specified cases while preserving all 477
+established results. TestEmphasisApprovedPartitionAndUpstream retains the fixed
+350–481 partition: 90 established plus 36 nested required passes, and six genuinely
+inline-link cases deferred to #26. Parent raw Content retains nested syntax bytes;
+recursive source assertions check independently counted consumed markers, original
+envelopes, child order/coverage and leftovers alongside actual Parse/Evaluate HTML.
+The original 18 single-level cross-section additions remain supported; this nested
+increment unlocks no additional cross-section case.
 
-The ledger no longer lists #17–#24 as undelivered providers. Remaining scopes are
-#25 nested emphasis, #26/#27 links and #28 images, as applicable to each case. Conservative coverage owners are not reverse
-native prerequisites or conformance passes. Thematic 55 now completes through
-literal delimiter classification; 56–61 also pass. Refer to the
-per-ID ledger rather than inferring support from a section name. Source-only
-structural progress is not a complete HTML pass.
+Separate tests cover repeated/scoped stack-bottom processing and suffix cleanup,
+nested/lazy source gaps, headings, NUL/Unicode, physical endings/EOF, partial tabs,
+opaque interiors, detached nested handles, adversarial long runs and deterministic
+interruption. Inline/list fuzz consumers retain their source oracles and nested
+seeds. No pinned upstream source or expected HTML bytes change.
+
+The ledger no longer lists #17–#25 as undelivered providers. Remaining scopes are
+#26/#27 links and #28 images. Joint cases 419/433/516 retain #26; 530 retains #27.
+Coverage owners are not reverse native prerequisites or conformance passes.
+Thematic 55 completes through literal delimiter classification; 56–61 also pass.
+Refer to the per-ID ledger rather than inferring support from a section name.
+Source-only structural progress is not a complete HTML pass.
 
 Every unchanged 192–218 definition, 219–227 paragraph, 62–79 ATX, 80–106 Setext,
 43–61 thematic, 107–118 indented, 119–147 fenced, 148–191 HTML, 228–252 quote,
@@ -197,9 +202,10 @@ See [contributor instructions](../../../../../docs/contributing.md#run-commonmar
 for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
 
 The default staged regression gate allows explicitly pending cases: currently
-477 pass, 0 fail, 0 error, 175 pending, with `syntax-unimplemented` and the
-remaining owners above. All 383 earlier passes remain; delimiter classification/
-pairing adds 94 passes. Synthetic empty/ASCII-blank documents also complete and render empty HTML. It is not a
+513 pass, 0 fail, 0 error, 139 pending, with `syntax-unimplemented` and the
+remaining owners above. All 477 earlier passes remain; nested construction adds
+the 36 specified passes. Synthetic empty/ASCII-blank documents also complete and
+render empty HTML. It is not a
 conformance-completion claim. `--require-complete` fails on pending; final
 completion needs all 652 passes in an unfiltered run. The retained upstream
 helper has no pending status and counts the adapter's nonzero pending exit as

@@ -15,6 +15,7 @@ type inlineDelimiter struct {
 	offset, width, original int
 	canOpen, canClose       bool
 	previous, next          int
+	retired                 bool
 }
 
 type inlineBracket struct {
@@ -23,14 +24,16 @@ type inlineBracket struct {
 }
 
 type inlineScanner struct {
-	ctx          context.Context
-	text         string
-	delimiters   []inlineDelimiter
-	brackets     []inlineBracket
-	backticks    map[int][]int    // raw run starts by width, even after a backslash
-	backtickNext map[int]int      // monotonic next-closer cursor per width
-	htmlEnds     map[string][]int // original logical terminators/quotes, indexed once
-	pending      bool
+	ctx              context.Context
+	text             string
+	delimiters       []inlineDelimiter
+	delimitersLinked bool
+	delimiterHead    int
+	brackets         []inlineBracket
+	backticks        map[int][]int    // raw run starts by width, even after a backslash
+	backtickNext     map[int]int      // monotonic next-closer cursor per width
+	htmlEnds         map[string][]int // original logical terminators/quotes, indexed once
+	pending          bool
 }
 
 func parseInlines(ctx context.Context, document *Document, blocks PhaseState) (PhaseState, error) {

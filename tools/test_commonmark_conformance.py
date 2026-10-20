@@ -139,7 +139,7 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 477, "fail": 0, "error": 0, "pending": 175})
+                self.assertEqual(report["counts"], {"pass": 513, "fail": 0, "error": 0, "pending": 139})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
                 supported = {
                     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 18, 19, 21, 31, 36,
@@ -199,8 +199,19 @@ class ExecutableBoundary(unittest.TestCase):
                 self.assertEqual(len(emphasis), 94)
                 self.assertFalse(supported & emphasis)
                 supported.update(emphasis)
+                nested = {
+                    369, 373, 389, 393, 394, 395, 399, 406, 407, 408, 409, 410,
+                    411, 413, 414, 415, 416, 417, 418, 424, 425, 426, 427, 428,
+                    429, 430, 431, 432, 461, 463, 464, 465, 466, 467, 468, 470,
+                }
+                self.assertEqual(len(nested), 36)
+                self.assertFalse(supported & nested)
+                supported.update(nested)
                 self.assertEqual(set(ledger["supported_html_examples"]), supported)
                 owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
+                self.assertTrue(all(25 not in group["owners"] for group in ledger["pending"]))
+                self.assertEqual({i: owners[i] for i in [419, 433, 516, 530]},
+                                 {419: [26], 433: [26], 516: [26], 530: [27]})
                 for outcome in report["outcomes"]:
                     if outcome["example"] in supported:
                         self.assertEqual(outcome["status"], "pass")
@@ -209,7 +220,7 @@ class ExecutableBoundary(unittest.TestCase):
                         self.assertEqual(outcome["status"], "pending")
                         self.assertEqual(outcome["reason"], "syntax-unimplemented")
                         self.assertEqual(outcome["owners"], owners[outcome["example"]])
-                self.assertFalse(any(set(providers) & {17, 18, 19, 20, 21, 22, 23, 24} for providers in owners.values()))
+                self.assertFalse(any(set(providers) & {17, 18, 19, 20, 21, 22, 23, 24, 25} for providers in owners.values()))
                 for example in breaks:
                     self.assertNotIn(example, owners)
                     self.assertEqual(report["outcomes"][example-1]["status"], "pass")
@@ -246,19 +257,19 @@ class ExecutableBoundary(unittest.TestCase):
         self.assertIn("diff", report["outcomes"][0])
 
     def test_pinned_upstream_helper_reports_unsupported_as_error(self):
-        case = self.cases[466]
-        self.assertEqual(case["example"], 467)
+        case = self.cases[418]
+        self.assertEqual(case["example"], 419)
         for mode in [[], ["--no-normalize"]]:
             result = subprocess.run([sys.executable, "-E", "-s", "-B",
                                      str(runner.corpus.CORPUS / "upstream/test/spec_tests.py"),
                                      "--spec", str(runner.corpus.CORPUS / "upstream/spec.txt"),
-                                     "--program", str(self.adapter), "--number", "467", *mode], capture_output=True)
+                                     "--program", str(self.adapter), "--number", "419", *mode], capture_output=True)
             self.assertEqual(result.returncode, 1)
             self.assertIn(b"0 passed, 0 failed, 1 errored, 651 skipped", result.stdout)
             self.assertIn(b'"status":"pending"', result.stdout)
 
-    def test_pinned_upstream_helper_recognized_definition_and_external_break(self):
-        for example in [207, 334, 344]:
+    def test_pinned_upstream_helper_recognized_definition_break_html_and_nesting(self):
+        for example in [207, 334, 344, 467]:
             for mode in [[], ["--no-normalize"]]:
                 with self.subTest(example=example, mode=mode):
                     result = subprocess.run([sys.executable, "-E", "-s", "-B",

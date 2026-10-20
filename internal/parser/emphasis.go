@@ -1,6 +1,9 @@
 package parser
 
-import "strings"
+import (
+	"sort"
+	"strings"
+)
 
 // delimiterFlanking uses CommonMark's character classes, not unicode.IsSpace.
 // Callers supply logical source neighbors, before ordinary text decoding.
@@ -30,35 +33,53 @@ type emphasisPair struct {
 // remain valid search floors even when records are removed from the linked stack.
 // Each failed-search class retires its searched prefix. Successful searches remove
 // intervening records, so repeated incompatible candidates cannot rescan a suffix.
-// Nested matches are detected, not constructed: #25 owns nested publication.
-func (s *inlineScanner) emphasisPairs() []emphasisPair {
+// bottom is a live delimiter index, or -1 for the whole stack. Processing and
+// cleanup affect only its suffix. Retired records are never resurrected on a
+// subsequent scoped call over the same completed scan.
+func (s *inlineScanner) emphasisPairs(bottom int) ([]emphasisPair, error) {
 	d := s.delimiters
-	for i := range d {
-		if interruption(s.ctx) != "" {
-			return nil
+	if !s.delimitersLinked {
+		for i := range d {
+			if interruption(s.ctx) != "" {
+				return nil, nil
+			}
+			d[i].previous, d[i].next = i-1, i+1
 		}
-		d[i].previous, d[i].next = i-1, i+1
+		s.delimiterHead = 0
+		s.delimitersLinked = true
+	}
+	if bottom < -1 || bottom >= len(d) || bottom >= 0 && d[bottom].retired {
+		return nil, ErrModel
 	}
 	var floors [2][3][2]int
 	for m := range floors {
 		for r := range floors[m] {
 			for o := range floors[m][r] {
-				floors[m][r][o] = -1
+				floors[m][r][o] = bottom
 			}
 		}
 	}
 	remove := func(i int) {
+		d[i].retired = true
 		if d[i].previous >= 0 {
 			d[d[i].previous].next = d[i].next
+		} else {
+			s.delimiterHead = d[i].next
 		}
 		if d[i].next < len(d) {
 			d[d[i].next].previous = d[i].previous
 		}
 	}
+	start := func() int {
+		if bottom >= 0 {
+			return d[bottom].next
+		}
+		return s.delimiterHead
+	}
 	var pairs []emphasisPair
-	for current := 0; current < len(d); {
+	for current := start(); current < len(d); {
 		if interruption(s.ctx) != "" {
-			return nil
+			return nil, nil
 		}
 		closer := &d[current]
 		if !closer.canClose {
@@ -76,7 +97,7 @@ func (s *inlineScanner) emphasisPairs() []emphasisPair {
 		opener := closer.previous
 		for opener > *floor {
 			if interruption(s.ctx) != "" {
-				return nil
+				return nil, nil
 			}
 			if delimitersMatch(d[opener], *closer) {
 				break
@@ -98,14 +119,10 @@ func (s *inlineScanner) emphasisPairs() []emphasisPair {
 			width = 2
 		}
 		pair := emphasisPair{opening: open.offset + open.width - width, closing: closer.offset, width: width, marker: open.marker}
-		if len(pairs) != 0 && pair.opening < pairs[len(pairs)-1].closing+pairs[len(pairs)-1].width {
-			s.pending = true
-			return nil // retain the original provisional flat children
-		}
 		pairs = append(pairs, pair)
 		for i := open.next; i != current; {
 			if interruption(s.ctx) != "" {
-				return nil
+				return nil, nil
 			}
 			next := d[i].next
 			remove(i)
@@ -123,7 +140,15 @@ func (s *inlineScanner) emphasisPairs() []emphasisPair {
 			current = next
 		}
 	}
-	return pairs
+	for i := start(); i < len(d); {
+		if interruption(s.ctx) != "" {
+			return nil, nil
+		}
+		next := d[i].next
+		remove(i)
+		i = next
+	}
+	return pairs, nil
 }
 
 // inlineNodes consumes immutable flat nodes in source order. A split only copies
@@ -196,66 +221,155 @@ func (c *inlineNodes) take(end int) ([]*Node, error) {
 	return out, nil
 }
 
-func (s *inlineScanner) emphasis(parts []Segment, flat []*Node) ([]*Node, error) {
-	pairs := s.emphasisPairs()
-	if len(pairs) == 0 || interruption(s.ctx) != "" {
-		return flat, nil
+// emphasisContent indexes the borrowed raw logical segments once. Each payload
+// copies only its own output segments, without splitting it at nested markers or
+// rescanning earlier source. Overlapping parent/child payloads remain explicit.
+type emphasisContent struct {
+	scanner *inlineScanner
+	parts   []Segment
+	starts  []int
+}
+
+func (c emphasisContent) slice(start, end int) ([]Segment, error) {
+	i := sort.Search(len(c.parts), func(i int) bool { return c.starts[i+1] > start })
+	var out []Segment
+	for start < end {
+		if interruption(c.scanner.ctx) != "" {
+			return nil, nil
+		}
+		if i >= len(c.parts) {
+			return nil, ErrModel
+		}
+		part := c.parts[i]
+		a, b := start-c.starts[i], min(end, c.starts[i+1])-c.starts[i]
+		if part.Transformation == Exact {
+			part.Source.start += a
+			part.Source.end = part.Source.start + b - a
+			part.Semantic = Some(part.Semantic.Value[a:b])
+		} else if a != 0 || b != len(part.Semantic.Value) {
+			return nil, ErrModel
+		}
+		out = append(out, part)
+		start = c.starts[i] + b
+		i++
 	}
-	raw := inlineContent{ctx: s.ctx, parts: parts}
-	nodes := inlineNodes{scanner: s, nodes: flat}
-	var out []*Node
+	return out, nil
+}
+
+func (s *inlineScanner) emphasis(parts []Segment, flat []*Node) ([]*Node, error) {
+	pairs, err := s.emphasisPairs(-1)
+	if err != nil || len(pairs) == 0 || interruption(s.ctx) != "" {
+		return flat, err
+	}
+	// Pairing emits children before their parents, in closing-source order.
+	// Each new parent takes a suffix of the current forest exactly once. Copy
+	// those direct child indexes before reusing the forest's mutable storage.
+	type group struct {
+		pair     emphasisPair
+		children []int
+	}
+	groups := make([]group, 0, len(pairs))
+	var forest []int
 	for _, pair := range pairs {
 		if interruption(s.ctx) != "" {
 			return nil, nil
 		}
-		if _, err := raw.take(pair.opening); err != nil {
-			return nil, err
+		first := len(forest)
+		for first > 0 && groups[forest[first-1]].pair.opening > pair.opening {
+			if interruption(s.ctx) != "" {
+				return nil, nil
+			}
+			first--
 		}
-		opening, err := raw.take(pair.opening + pair.width)
-		if err != nil || interruption(s.ctx) != "" {
-			return nil, err
-		}
-		payload, err := raw.take(pair.closing)
-		if err != nil || interruption(s.ctx) != "" {
-			return nil, err
-		}
-		closing, err := raw.take(pair.closing + pair.width)
-		if err != nil || interruption(s.ctx) != "" {
-			return nil, err
-		}
-		op, cl := contentEnvelope(opening), contentEnvelope(closing)
-		before, err := nodes.take(op.start)
-		if err != nil {
-			return nil, err
-		}
-		out = append(out, before...)
-		if _, err := nodes.take(op.end); err != nil {
-			return nil, err
-		}
-		children, err := nodes.take(cl.start)
-		if err != nil {
-			return nil, err
-		}
-		if _, err := nodes.take(cl.end); err != nil {
-			return nil, err
-		}
+		groups = append(groups, group{pair: pair, children: append([]int(nil), forest[first:]...)})
+		forest = append(forest[:first], len(groups)-1)
+	}
+	content := emphasisContent{scanner: s, parts: parts, starts: make([]int, len(parts)+1)}
+	for i, part := range parts {
 		if interruption(s.ctx) != "" {
 			return nil, nil
+		}
+		content.starts[i+1] = content.starts[i] + len(part.Semantic.Value)
+	}
+	// Build privately with explicit frames, so nesting does not consume the Go
+	// call stack. The flat-node cursor advances once over original source order;
+	// completed children are appended once, never copied with an accumulated prefix.
+	type frame struct {
+		index, next int
+		children    []*Node
+		opening     Span
+	}
+	stack := []frame{{index: -1}}
+	nodes := inlineNodes{scanner: s, nodes: flat}
+	for len(stack) != 0 {
+		if interruption(s.ctx) != "" {
+			return nil, nil
+		}
+		top := &stack[len(stack)-1]
+		children := forest
+		if top.index >= 0 {
+			children = groups[top.index].children
+		}
+		if top.next < len(children) {
+			index := children[top.next]
+			top.next++
+			pair := groups[index].pair
+			opening, err := content.slice(pair.opening, pair.opening+pair.width)
+			if err != nil || interruption(s.ctx) != "" {
+				return nil, err
+			}
+			op := contentEnvelope(opening)
+			before, err := nodes.take(op.start)
+			if err != nil || interruption(s.ctx) != "" {
+				return nil, err
+			}
+			top.children = append(top.children, before...)
+			if _, err := nodes.take(op.end); err != nil || interruption(s.ctx) != "" {
+				return nil, err
+			}
+			stack = append(stack, frame{index: index, opening: op})
+			continue
+		}
+		if top.index < 0 {
+			rest, err := nodes.take(contentEnvelope(parts).end)
+			if err != nil || interruption(s.ctx) != "" {
+				return nil, err
+			}
+			return append(top.children, rest...), nil
+		}
+		pair := groups[top.index].pair
+		closing, err := content.slice(pair.closing, pair.closing+pair.width)
+		if err != nil || interruption(s.ctx) != "" {
+			return nil, err
+		}
+		cl := contentEnvelope(closing)
+		rest, err := nodes.take(cl.start)
+		if err != nil || interruption(s.ctx) != "" {
+			return nil, err
+		}
+		top.children = append(top.children, rest...)
+		if _, err := nodes.take(cl.end); err != nil || interruption(s.ctx) != "" {
+			return nil, err
+		}
+		payload, err := content.slice(pair.opening+pair.width, pair.closing)
+		if err != nil || interruption(s.ctx) != "" {
+			return nil, err
 		}
 		kind := Emphasis
 		if pair.width == 2 {
 			kind = Strong
 		}
-		envelope := op
+		envelope := top.opening
 		envelope.end = cl.end
-		n, err := NewNode(NodeSpec{Kind: kind, Envelope: envelope, Content: payload, Children: children,
-			Markers:    []Marker{{Role: "opening", Source: op}, {Role: "closing", Source: cl}},
+		n, err := NewNode(NodeSpec{Kind: kind, Envelope: envelope, Content: payload, Children: top.children,
+			Markers:    []Marker{{Role: "opening", Source: top.opening}, {Role: "closing", Source: cl}},
 			Properties: Properties{Delimiter: &DelimiterProperties{Marker: pair.marker, Width: pair.width}}})
 		if err != nil {
 			return nil, err
 		}
-		out = append(out, n)
+		stack = stack[:len(stack)-1]
+		parent := &stack[len(stack)-1]
+		parent.children = append(parent.children, n)
 	}
-	remaining, err := nodes.take(contentEnvelope(parts).end)
-	return append(out, remaining...), err
+	return nil, ErrModel
 }

@@ -136,7 +136,7 @@ func TestDecodingOnePassStructureAndOpaqueBoundaries(t *testing.T) {
 			}
 		})
 	}
-	for _, input := range []string{"\\\\***emphasis***", "[x](/a&amp;b)"} {
+	for _, input := range []string{"[x](/a&amp;b)"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 		if r.Status != parser.Incomplete || r.Phases.Inlines != parser.Pending || len(r.Uncertainty) != 1 || conformance.Evaluate(r).Status != "pending" {
 			t.Fatal("undelivered provider became complete", input, r)
