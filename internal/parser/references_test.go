@@ -17,7 +17,6 @@ type referenceWant struct {
 	raw, label, destination string
 	title                   *string
 	key                     string
-	unknown                 bool
 }
 
 func refWant(raw, label, destination, key string, title ...string) referenceWant {
@@ -79,11 +78,8 @@ func checkReferenceRecords(t *testing.T, r parser.ParseResult, input string, wan
 				t.Fatalf("marker %d = %+v want %+v", j, got, m)
 			}
 		}
-		if !w.unknown && !p.Destination.Semantic.Present {
-			t.Fatal("plain destination semantics unavailable")
-		}
-		if w.unknown && p.Destination.Semantic.Present {
-			t.Fatal("undelivered decoding fabricated semantics")
+		if p.Destination.Semantic != parser.Some(oracleText(w.destination, entityOracle(t))) {
+			t.Fatal("destination decoding differs from independent oracle", p.Destination)
 		}
 		// Component ranges are independently located in the original fixture,
 		// rather than inferred from the recognizer's returned markers.
@@ -91,7 +87,7 @@ func checkReferenceRecords(t *testing.T, r parser.ParseResult, input string, wan
 		if w.destination == "" {
 			destination = start + strings.Index(w.raw, "<>") + 1
 		}
-		if len(p.Destination.Segments) != 1 || p.Destination.Segments[0].Source.Start() != destination || p.Destination.Segments[0].Source.End() != destination+len(w.destination) {
+		if len(p.Destination.Segments) == 0 || p.Destination.Segments[0].Source.Start() != destination || p.Destination.Segments[len(p.Destination.Segments)-1].Source.End() != destination+len(w.destination) {
 			t.Fatal("destination source range", i, p.Destination)
 		}
 		if w.title != nil {
@@ -125,7 +121,7 @@ func TestReferenceUpstreamTargets(t *testing.T) {
 		197: nil,
 		198: {refWant("[foo]:\n/url\n", "foo", "/url", "foo")}, 199: nil,
 		200: {refWant("[foo]: <>\n", "foo", "", "foo")}, 201: nil,
-		202: {{raw: "[foo]: /url\\bar\\*baz \"foo\\\"bar\\baz\"\n", label: "foo", destination: "/url\\bar\\*baz", key: "foo", title: stringPointer("foo\\\"bar\\baz"), unknown: true}},
+		202: {{raw: "[foo]: /url\\bar\\*baz \"foo\\\"bar\\baz\"\n", label: "foo", destination: "/url\\bar\\*baz", key: "foo", title: stringPointer("foo\\\"bar\\baz")}},
 		203: {refWant("[foo]: url\n", "foo", "url", "foo")},
 		204: {refWant("[foo]: first\n", "foo", "first", "foo"), refWant("[foo]: second\n", "foo", "second", "foo")},
 		205: {refWant("[FOO]: /url\n", "FOO", "/url", "foo")},

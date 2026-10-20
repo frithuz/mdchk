@@ -67,9 +67,9 @@ func (r *referenceParagraph) position(offset int) int {
 }
 
 // value selects original components across stripped container prefixes. A
-// present empty component has an explicit zero-width source range. Decoding
-// belongs to #19; unknown semantic values and mappings are withheld together.
-func (r *referenceParagraph) value(index LineIndex, start, end int, decode bool) Value {
+// present empty component has an explicit zero-width source range. Labels keep
+// this raw spelling; destinations and titles pass through the shared decoder.
+func (r *referenceParagraph) value(index LineIndex, start, end int) Value {
 	var value Value
 	var semantic strings.Builder
 	first := sort.Search(len(r.parts), func(i int) bool { return r.parts[i].start > start }) - 1
@@ -93,13 +93,6 @@ func (r *referenceParagraph) value(index LineIndex, start, end int, decode bool)
 		}
 	}
 	value.Semantic = Some(semantic.String())
-	if decode && fenceInfoNeedsDecoder(r.text.String()[start:end]) {
-		value.Semantic = Optional[string]{}
-		for i := range value.Segments {
-			value.Segments[i].Transformation = MappingUnavailable
-			value.Segments[i].Semantic = Optional[string]{}
-		}
-	}
 	return value
 }
 
@@ -315,13 +308,13 @@ func resumeReferenceTitle(ctx context.Context, s string, pending *referenceTitle
 	return result
 }
 
-func (r *referenceParagraph) definition(index LineIndex, syntax referenceSyntax) (*ReferenceDefinition, error) {
+func (r *referenceParagraph) definition(ctx context.Context, index LineIndex, syntax referenceSyntax) (*ReferenceDefinition, error) {
 	span := func(a, b int) Span { return index.span(r.position(a), r.position(b)) }
 	first := sort.Search(len(r.parts), func(i int) bool { return r.parts[i].start >= syntax.start })
 	spec := ReferenceSpec{
 		Envelope:        index.span(r.parts[first].line.start, r.position(syntax.end-1)+1),
-		Label:           r.value(index, syntax.start+1, syntax.labelEnd, false),
-		Destination:     r.value(index, syntax.destinationStart, syntax.destinationEnd, true),
+		Label:           r.value(index, syntax.start+1, syntax.labelEnd),
+		Destination:     decodeValue(ctx, r.value(index, syntax.destinationStart, syntax.destinationEnd).Segments, true),
 		NormalizedLabel: Some(normalizeReferenceLabel(r.text.String()[syntax.start+1 : syntax.labelEnd])),
 		Markers: []Marker{
 			{Role: "label-open", Source: span(syntax.start, syntax.start+1)},
@@ -333,7 +326,7 @@ func (r *referenceParagraph) definition(index LineIndex, syntax referenceSyntax)
 		spec.Markers = append(spec.Markers, Marker{"destination-open", span(syntax.destinationStart-1, syntax.destinationStart)}, Marker{"destination-close", span(syntax.destinationEnd, syntax.destinationEnd+1)})
 	}
 	if syntax.title {
-		v := r.value(index, syntax.titleStart, syntax.titleEnd, true)
+		v := decodeValue(ctx, r.value(index, syntax.titleStart, syntax.titleEnd).Segments, true)
 		spec.Title = &v
 		spec.Markers = append(spec.Markers, Marker{"title-open", span(syntax.titleStart-1, syntax.titleStart)}, Marker{"title-close", span(syntax.titleEnd, syntax.titleEnd+1)})
 	}
@@ -363,7 +356,7 @@ func (p *blockParser) stripReferences() error {
 			// make an outside line disappear into definition metadata.
 			break
 		}
-		definition, err := r.definition(p.index, syntax)
+		definition, err := r.definition(p.ctx, p.index, syntax)
 		if err != nil {
 			return err
 		}

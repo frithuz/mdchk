@@ -159,17 +159,24 @@ func TestFencedInfoAvailability(t *testing.T) {
 	for _, info := range []string{"\\*", "&amp;", "&#65;", "&#x41;", "&NotEqualTilde;", "&unknown;", "a \\&amp;"} {
 		input := "~~~ " + info + "\ncontent\n~~~\n"
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-		if r.Status != parser.Incomplete || r.Phases.Blocks != parser.Pending || r.Phases.Inlines != parser.NotStarted || r.Document.References().LookupAvailability != parser.Available || conformance.Evaluate(r).Status != "pending" {
-			t.Fatal("missing info provider falsely completed", info, r)
+		if r.Status != parser.Complete || r.Phases.Blocks != parser.PhaseComplete || r.Phases.Inlines != parser.PhaseComplete || r.Document.References().LookupAvailability != parser.Available || conformance.Evaluate(r).Status != "rendered" {
+			t.Fatal("decoded info did not complete", info, r)
 		}
 		n := r.Document.Root().Children()[0]
 		v := n.Properties().Code.Info
-		if v == nil || v.Semantic.Present || len(v.Segments) != 1 || v.Segments[0].Semantic.Present || v.Segments[0].Transformation != parser.MappingUnavailable || n.Properties().Literal != parser.Some("content\n") {
-			t.Fatal("guessed semantic info or lost literal", info, v)
+		if v == nil || v.Semantic != parser.Some(oracleText(info, entityOracle(t))) || n.Properties().Literal != parser.Some("content\n") {
+			t.Fatal("decoded info or literal payload", info, v)
 		}
-		raw, err := r.Source.Text(v.Segments[0].Source)
-		if err != nil || raw != info || v.Segments[0].Source.Start() != 4 || v.Segments[0].Source.End() != 4+len(info) {
-			t.Fatal("raw info lost", raw, err)
+		var raw strings.Builder
+		for _, part := range v.Segments {
+			text, err := r.Source.Text(part.Source)
+			if err != nil {
+				t.Fatal(err)
+			}
+			raw.WriteString(text)
+		}
+		if raw.String() != info || v.Segments[0].Source.Start() != 4 || v.Segments[len(v.Segments)-1].Source.End() != 4+len(info) {
+			t.Fatal("raw info lost", raw.String())
 		}
 	}
 }

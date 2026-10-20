@@ -33,11 +33,7 @@ func (p *blockParser) fenceOpening(line blockLine) *fencedCode {
 	for endInfo > startInfo && (text[endInfo-1] == ' ' || text[endInfo-1] == '\t') {
 		endInfo--
 	}
-	info := p.index.semanticText(startInfo, endInfo)
-	if fenceInfoNeedsDecoder(text[startInfo:endInfo]) {
-		// Keep raw spelling, explicitly withholding interpretation until #19.
-		info = Value{Segments: []Segment{{Source: p.index.span(startInfo, endInfo), Transformation: MappingUnavailable}}}
-	}
+	info := decodeValue(p.ctx, p.index.semanticText(startInfo, endInfo).Segments, false)
 	return &fencedCode{
 		start: line.start, end: line.next, indent: line.indent,
 		character: line.first, width: end - line.contentStart, info: info,
@@ -112,43 +108,4 @@ func (p *blockParser) closeFence() error {
 	p.attach(node)
 	p.fence = nil
 	return nil
-}
-
-// This is a conservative availability guard, not the #19 decoder. Literal
-// backslashes and ampersands remain known; punctuation escapes and syntactically
-// plausible semicolon-terminated references await the named/numeric provider.
-func fenceInfoNeedsDecoder(info string) bool {
-	for i := 0; i < len(info); i++ {
-		if info[i] == '\\' && i+1 < len(info) && IsASCIIPunctuation(rune(info[i+1])) {
-			return true
-		}
-		if info[i] != '&' {
-			continue
-		}
-		start := i + 1
-		if start < len(info) && info[start] == '#' {
-			start++
-			limit, hex := 7, false
-			if start < len(info) && (info[start] == 'x' || info[start] == 'X') {
-				start++
-				limit, hex = 6, true
-			}
-			end := start
-			for end < len(info) && end-start < limit && (info[end] >= '0' && info[end] <= '9' || hex && (info[end] >= 'a' && info[end] <= 'f' || info[end] >= 'A' && info[end] <= 'F')) {
-				end++
-			}
-			if end > start && end < len(info) && info[end] == ';' {
-				return true
-			}
-		} else if start < len(info) && (info[start] >= 'a' && info[start] <= 'z' || info[start] >= 'A' && info[start] <= 'Z') {
-			end := start + 1
-			for end < len(info) && end-start < 32 && (info[end] >= 'a' && info[end] <= 'z' || info[end] >= 'A' && info[end] <= 'Z' || info[end] >= '0' && info[end] <= '9') {
-				end++
-			}
-			if end-start >= 2 && end < len(info) && info[end] == ';' {
-				return true
-			}
-		}
-	}
-	return false
 }

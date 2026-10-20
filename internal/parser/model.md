@@ -32,7 +32,7 @@ to callers.
 | Supported plain-text core blocks | `Complete` / `Available` | Text children preserve segmented original bytes and semantic Literal; both phases complete |
 | Text needing undelivered inline handlers | `Incomplete` / `Partial` | Source-bound blocks and available reference records/lookup; Blocks complete, Inlines pending; whole-document `SyntaxUnimplemented` uncertainty |
 | Definition-only input with established destination/title semantics (including inside otherwise inline-free containers) | `Complete` / `Available` | All records retained, first-definition lookup available; no definition block children; both phases complete |
-| Definition destination/title or fence info needs #19 decoding | `Incomplete` / `Partial` | Raw components and available reference records/lookup; absent affected semantics, Blocks pending, Inlines not started; whole-document uncertainty |
+| Definition destination/title or fence info contains escapes/entities, with no other missing syntax | `Complete` / `Available` | Known decoded values and explicit raw transformations, available reference lookup and complete phases |
 | Invalid UTF-8 | `Failed` / `Unavailable` | Original Source, typed `Failure` with `InvalidUTF8` code and snapshot-bound byte location, nil Document, neither phase started |
 | Cancellation/deadline on otherwise valid source | `Incomplete` / `Partial` | Original Source and partial root with any already-closed prefix blocks, affected region with `Cancelled`/`DeadlineExceeded`, separate Interruption, nil Failure; unfinished work interrupted |
 | Other operational failure | `Failed` / `Unavailable` | Retained Source, typed stable failure code, nil Document; InternalFailure if block-model construction violates invariants |
@@ -73,9 +73,9 @@ until the block phase and effective reference lookup are complete. The block pas
 publishes the complete source-ordered registry and first-selection lookup only
 following a successful whole-document scan/finalization. Ordinary paragraphs and nonempty headings finish their block structure before
 inline scanning. Supported text completes; missing inline handlers keep Inlines
-pending and whole-document uncertainty. Missing destination/title/fence-info
-semantics leave Blocks pending and Inlines not started, while the recognized
-registry is still available. A finished definition-only/inline-free document with
+pending and whole-document uncertainty. Definition destination/title and fence-info
+semantics are now supplied by the shared decoder; interruption still prevents a
+completed block/inline handoff. A finished definition-only/inline-free document with
 known semantics has both phases complete. Constructed nodes or supplied registry
 data cannot establish the private block-recognition handoff.
 
@@ -196,8 +196,9 @@ Heading Level and Style (`atx`) use the existing property catalog. The envelope
 retains the complete original physical line, indentation and LF/CRLF/CR ending or
 EOF. The `opening` marker selects just the initial hash run. An optional `closing`
 marker selects a terminal hash run preceded by ASCII space/tab and followed only
-by ASCII space/tab. Escaped/nonclosing hash sequences remain raw content for #19;
-block classification does not perform semantic escape decoding. Missing closers
+by ASCII space/tab. Escaped/nonclosing hash sequences remain raw block content;
+the inline decoder interprets eligible escapes after classification. Block
+classification does not perform semantic escape decoding. Missing closers
 are absent, not synthetic zero-width markers. Leading/trailing ASCII space/tab
 and valid closing runs are excluded from logical content but remain in Source.
 Unicode whitespace is not trimmed. Content has original-byte Exact segments,
@@ -346,7 +347,7 @@ reverse blockers on this syntax stage. Separate fixtures cover grammar near miss
 case/EOF/fixed-form boundaries, code and paragraph precedence, opaque payload,
 LF/CRLF/CR/NUL/Unicode/tab provenance, immutable accessors, encoding precedence and
 deterministic interruption, including at EOF finalization. Actual full-corpus
-normalized/strict gates now record 239 pass and 413 pending, preserving all 87
+normalized/strict gates now record 254 pass and 398 pending, preserving all 239
 earlier passes; full conformance remains false.
 
 ## Indented code and literal handoff
@@ -424,16 +425,13 @@ CR/CRLF normalize semantically with original provenance. An unterminated payload
 line gains a Synthetic LF anchored at EOF. Source never changes. One private
 builder accumulates source-backed segments and assembles Literal/finalizes once.
 
-Info retains ASCII-trimmed raw source segments separately from optional semantic
-text; empty info is known empty. Ordinary info and NUL normalization are available.
-ASCII punctuation escapes and syntactically plausible semicolon-terminated
-named/numeric references retain a MappingUnavailable raw segment and no semantic
-value pending #19, including names whose recognition is not yet established.
-Literal backslashes and ampersands without such candidates remain available.
-No escape/entity decoder or fabricated raw-as-decoded value is supplied here.
-Unestablished info keeps blocks/whole-document parsing incomplete; the adapter
-reports pending rather than guessing a language. Supported fence-only documents
-can complete empty references and vacuous inline work; mixed unknown syntax stays
+Info retains ASCII-trimmed raw source segments separately from known semantic
+text; empty info is known empty. The shared decoder supplies NUL normalization,
+ASCII punctuation escapes and strict named/numeric references with explicit
+Escape/Entity source contributions. Unknown/malformed references stay literal;
+generated characters are never decoded a second time. Payload remains literal.
+Supported fence-only documents complete empty references and vacuous inline work;
+mixed input needing another syntax provider stays
 partial. Cancellation/deadline discards an unfinished fence, including at EOF
 finalization, while preserving closed prefix blocks and separate interruption.
 Full metering/checkpoint hardening remains #31.
@@ -442,7 +440,7 @@ Full metering/checkpoint hardening remains #31.
 opening/closing/indentation spans, physical envelopes, payload and info for every
 unchanged 119–147 input plus newly passing cross-feature 19. Twenty-six fenced
 section cases pass actual Parse/Evaluate, including surrounding supported text.
-Case 121 needs #20; 138/145 additionally need #21. Info decoding remains #19.
+Case 121 needs #20; 138/145 additionally need #21. Info decoding is available.
 Extra fixtures cover empty/unclosed/blank/EOF, malformed openers/closers, literal
 payload and test-renderer escaping, semantic-info availability, original
 LF/CRLF/CR, synthetic LF, tabs/NUL/Unicode, ownership and interrupted prefixes.
@@ -580,8 +578,8 @@ tightness. Constructed renderer tests separately check mixed inner/outer tightne
 and quoted paragraphs; they do not establish recognition. Complete actual-Parse
 source assertions and HTML checks promote Tabs 7 and empty item 284, preserving all
 84 previous passes at that increment. Definition-only 207 now adds a pass,
-at that increment. Current text scanning preserves all 87 earlier passes and
-raises the baseline to 239 pass, 413 pending. Boundary fixtures cover blank ownership,
+at that increment. Current decoding preserves all 239 earlier passes and
+raises the baseline to 254 pass, 398 pending. Boundary fixtures cover blank ownership,
 opaque trailing blanks, empty-item gaps in quotes, all endings/EOF and
 nested reference definitions. FuzzListGroupingBoundaries independently generates
 marker changes, sibling counts and blank boundaries. Full grammar/budgets/rules
@@ -595,8 +593,9 @@ cannot establish this proof. With complete blocks and effective reference lookup
 the inline pass traverses document/quote/list/item children and consumes logical
 paragraph/heading Content. Code and raw HTML are returned unchanged.
 
-One Text run retains the block's ordered Content segments and a semantic Literal
-assembled from their established contributions. Its envelope starts at the first
+One Text run refines the block's ordered Content into raw Exact/Normalized/
+PartialTab contributions and explicit Escape/Entity transformations. Its semantic
+Literal is assembled without changing block Content or source bytes. Its envelope starts at the first
 content byte and ends at the last, omitting boundary prefixes/markers. Interior
 stripped prefixes remain gaps between source segments, never logical text. NUL's
 one source byte contributes semantic U+FFFD without changing later byte positions.
@@ -606,9 +605,12 @@ built privately and published once after scanning, with cancellation checkpoints
 at nodes, contributions and bounded byte/punctuation runs.
 
 Dispatch retains per-block delimiter-run and bracket/image-opener state. Equal-width
-backtick pairs, repeated star/underscore runs, paired brackets, angle pairs,
-plausible entities, punctuation escapes and interior endings defer to their later
-providers. These are conservative availability guards, not recognized syntax:
+backtick pairs, repeated star/underscore runs, paired brackets, angle pairs and
+physical interior endings defer to their later providers. Valid escapes/entities
+consume original spelling atomically and do not enter punctuation dispatch. Raw
+backtick/angle candidate endings are indexed independently of those escapes; code
+and autolinks do not honor ordinary-text backslash rules. These are conservative
+availability guards, not recognized syntax:
 invalid candidates can also stay pending. Single unmatched runs/brackets and
 ordinary text can complete. States never cross paragraphs/headings or calls.
 
@@ -616,7 +618,7 @@ Pending blocks still receive provisional Text mapping, including original CRLF/C
 or unsupported punctuation spelling. Those children do not establish reliable
 syntax: whole-document uncertainty remains authoritative and Evaluate returns
 pending. No SoftBreak, HardBreak, CodeSpan, Emphasis, Link or InlineHTML is invented.
-#19–#28 own those interpretations. The adapter's completion checks are unchanged.
+#20–#28 own those interpretations. The adapter's completion checks are unchanged.
 The complete conformance gate remains all 652 cases without exemptions.
 
 Independent retained block/source tests now also check Text; targeted 327/650–652
@@ -755,7 +757,34 @@ or unavailable/synthetic provenance. The same rule applies to node Literal/Conte
 For `&amp;`, `[0,5)` selects five source bytes even when semantic text is `&`.
 Never infer offsets from semantic lengths or reconstruct Markdown to locate edits.
 Scanner helpers populate partial-tab/NUL mappings; inline Text preserves their
-original-byte provenance. Escape/entity decoding remains #19.
+original-byte provenance. The shared decoder adds Escape/Entity contributions
+without converting semantic lengths into original positions.
+
+## Escape and character-reference interpretation
+
+The shared source-backed decoder is used by inline Text, definition destinations/
+titles and fence info. It reads parser-owned segments, accumulates private output
+and returns detached segments for immutable publication. It splits ordinary runs
+around each transformation, preserving NUL, physical endings, partial tabs and
+omitted-prefix gaps. It checks caller context at contributions and bounded runs;
+interruption withholds the unfinished value and cannot publish a completed phase.
+
+ASCII punctuation escapes consume two original bytes once. Strict named references
+require exact case-sensitive semicolon names from the 2125-entry generated map;
+its authoritative source, license and offline regeneration are retained in
+[testdata/html5](testdata/html5/README.md). Decimal references accept 1–7 digits;
+hexadecimal references accept x/X and 1–6 digits. Zero, surrogates and values above
+U+10FFFF become U+FFFD; other Unicode scalars are preserved without HTML browser
+numeric remapping. Unknown/missing-semicolon/overlong references remain literal.
+Lookahead is bounded by that grammar and the longest authoritative name.
+
+Neither generated punctuation nor generated whitespace is redispatched as syntax.
+Escaped ampersands and decoded ampersands do not initiate another decoding pass;
+raw reference-label identity is unchanged. Code/raw HTML payloads are opaque;
+unsupported inline contexts retain pending interpretation. Physical escaped line
+endings remain #21. Complete table/numeric tests, independent actual Parse/source/
+phase assertions, deterministic interruption and the inline provenance fuzz oracle
+verify these boundaries separately from HTML comparisons.
 
 ## Core kind and property catalog
 
@@ -811,8 +840,10 @@ license and offline table verification live in [the Unicode provenance directory
 
 Values retain component segments with source-backed NUL/newline normalization.
 Absent titles differ from present empty titles; empty angle destinations retain
-zero-width ranges. Escapes/plausible entities in destinations/titles withhold
-semantic values and use MappingUnavailable until #19. Source bytes never change.
+zero-width ranges. Destination/title values decode ASCII punctuation escapes and
+strict named/numeric references once, retaining original spans and explicit
+transformations. Physical CR/CRLF normalizes to LF; entity-produced endings remain
+semantic characters and are not normalized again. Source bytes never change.
 Definition envelopes start after container prefixes (including remaining leaf
 indentation) and end after the final consumed physical line ending or at EOF;
 component segments exclude container prefixes inside multiline records.
@@ -834,11 +865,12 @@ normalization. Partial lookup may contain only known first selections; unavailab
 lookup has no entries. Mutable collection copies cannot change the document.
 
 [`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly
-accounts for all 652 upstream IDs: 239 supported HTML cases and 413 pending.
-Text scanning adds 152 demonstrated passes while preserving the prior 87, including
-650–652 and newly available paragraph/heading/container cases. 327 remains #20;
+accounts for all 652 upstream IDs: 254 supported HTML cases and 398 pending.
+Decoding adds 15 demonstrated passes while preserving the prior 239, including
+650–652. Newly passing IDs are 12, 24, 26, 27, 29, 30, 34, 38–40, 65, 76, 102,
+563 and 592. 327 remains #20;
 multiline paragraph/list/quote work remains #21. Other cases retain their actual
-#19–#28 providers, with no undelivered #18 or #17 ownership. Dispatch may defer
+#20–#28 providers, with no undelivered #17/#18/#19 ownership. Dispatch may defer
 potential invalid candidates conservatively until a provider proves fallback.
 These coverage scopes are not reverse native prerequisites on this increment.
 The test-only adapter/runner remains in internal/conformance and

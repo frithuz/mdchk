@@ -138,7 +138,7 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 239, "fail": 0, "error": 0, "pending": 413})
+                self.assertEqual(report["counts"], {"pass": 254, "fail": 0, "error": 0, "pending": 398})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
                 supported = {
                     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 18, 19, 21, 31, 36,
@@ -163,6 +163,8 @@ class ExecutableBoundary(unittest.TestCase):
                     435, 436, 439, 448, 451, 611, 612, 644, 645, 646, 647,
                     650, 651, 652
                 }
+                supported.update({12, 24, 26, 27, 29, 30, 34, 38, 39, 40,
+                                  65, 76, 102, 563, 592})
                 self.assertEqual(set(ledger["supported_html_examples"]), supported)
                 owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
                 for outcome in report["outcomes"]:
@@ -173,12 +175,13 @@ class ExecutableBoundary(unittest.TestCase):
                         self.assertEqual(outcome["status"], "pending")
                         self.assertEqual(outcome["reason"], "syntax-unimplemented")
                         self.assertEqual(outcome["owners"], owners[outcome["example"]])
-                self.assertFalse(any(18 in providers or 17 in providers for providers in owners.values()))
+                self.assertFalse(any(set(providers) & {17, 18, 19} for providers in owners.values()))
                 for example in [49, 70, 87, 88, 93, 95, 104, 105, 113, 220, 226, 243, 304, 312, 648, 649]:
                     self.assertEqual(owners[example], [21])
                 for example in [65, 76, 102]:
-                    self.assertEqual(owners[example], [19])
-                self.assertEqual(owners[66], [19, 24, 25])
+                    self.assertNotIn(example, owners)
+                    self.assertEqual(report["outcomes"][example-1]["status"], "pass")
+                self.assertEqual(owners[66], [24, 25])
                 self.assertEqual(owners[327], [20])
                 self.assertEqual(owners[121], [20])
                 for example in [138, 145]:

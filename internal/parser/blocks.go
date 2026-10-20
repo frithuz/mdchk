@@ -181,7 +181,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 			p.fence = fence
 			if !fence.info.Semantic.Present {
-				state = Pending // #19 supplies escape/entity info decoding.
+				state = Pending // interrupted info decoding cannot establish semantics.
 			}
 			continue
 		}

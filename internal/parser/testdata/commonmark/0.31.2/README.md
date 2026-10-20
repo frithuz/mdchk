@@ -56,12 +56,22 @@ and a missing helper. CI runs these tests and the read-only drift check.
 ## Foundation coverage accounting
 
 `foundation.json` is mdchk's separately reviewed pass/pending inventory. Every
-original upstream ID occurs exactly once: **239 supported HTML cases and 413
-pending**, preserving all 87 previous passes and adding 152 from inline text.
+original upstream ID occurs exactly once: **254 supported HTML cases and 398
+pending**, preserving all 239 previous passes and adding 15 from decoding.
 The parser recognizes the block structure described in the
 [model contract](../../../model.md), collects document-wide definitions, and
 constructs source-preserving Text children in paragraphs and headings after the
 block/reference handoff. Code and raw HTML payloads stay opaque.
+
+Decoding supplies known semantic Text, reference destination/title and fence-info
+values with separate Escape/Entity provenance. New complete passes are 12, 24, 26,
+27, 29, 30, 34, 38–40, 65, 76, 102, 563 and 592. Unchanged examples 12–41 have
+independent decoder/AST/source checks, including malformed-literal and one-pass
+structure scenarios. Complete authoritative named-entity coverage is independently
+checked against the pinned [WHATWG dataset](../../html5/README.md).
+Code/raw HTML stay opaque; backslash escapes cannot hide raw candidate closers
+for undelivered code-span/autolink providers. Entity-produced tabs/newlines remain
+Text and do not create blocks or breaks. Physical line endings remain #21.
 
 The unchanged 650–652 cases now pass actual Parse/Evaluate. Example 327 remains
 pending for #20; unmatched backticks in 347/348 are literal. Independent inline
@@ -79,8 +89,8 @@ alone never establish syntax support; conservative checks also defer some invali
 candidates until their actual handlers can prove fallback. Multiline mapping
 preserves exact source endings while semantic breaks remain #21.
 
-The ledger no longer lists #18 as an undelivered provider. Remaining scopes are
-#19 decoding, #20 code spans, #21 breaks, #22 autolinks, #23 inline HTML, #24/#25
+The ledger no longer lists #17/#18/#19 as undelivered providers. Remaining scopes
+are #20 code spans, #21 breaks, #22 autolinks, #23 inline HTML, #24/#25
 emphasis, #26/#27 links and #28 images, as applicable to each case. Auxiliary
 coverage owners can be conservative when a later code/HTML handler may prove
 content opaque; they are not reverse native prerequisites or conformance passes.
@@ -119,7 +129,7 @@ LF/CRLF/CR/EOF, prefixes/tabs, immutability, literal code/HTML and interruption.
 Definition-only 207 has one actual definition, no paragraph, complete phases and
 empty HTML. List 317 retains all three items, its non-rendered definition and loose
 outer list. #17 ownership is removed; remaining 192–218 cases identify actual
-#19/#21/#23/#27 providers in the ledger. No forward resolution is claimed.
+#21/#23/#27 providers in the ledger. No forward resolution is claimed.
 
 ## Executable comparisons and passing baseline
 
@@ -129,8 +139,9 @@ See [contributor instructions](../../../../../docs/contributing.md#run-commonmar
 for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
 
 The default staged regression gate allows explicitly pending cases: currently
-239 pass, 0 fail, 0 error, 413 pending, with `syntax-unimplemented` and the
-remaining owners above. All 87 earlier passes remain; text scanning adds 152 passes. Synthetic
+254 pass, 0 fail, 0 error, 398 pending, with `syntax-unimplemented` and the
+remaining owners above. All 239 earlier passes remain; decoding adds 15 passes.
+Synthetic
 empty/ASCII-blank documents also complete and render empty HTML. It is not a
 conformance-completion claim. `--require-complete` fails on pending; final
 completion needs all 652 passes in an unfiltered run. The retained upstream

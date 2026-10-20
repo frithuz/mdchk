@@ -20,8 +20,8 @@ func TestReferencePhaseAndSemanticAvailability(t *testing.T) {
 	}{
 		{"[a]: /url\n", PhaseComplete, PhaseComplete, Complete, true},
 		{"text\n\n[a]: /url\n", PhaseComplete, PhaseComplete, Complete, true},
-		{"[a]: /url\\*\n", Pending, NotStarted, Incomplete, false},
-		{"[a]: /url \"&amp;\"\n", Pending, NotStarted, Incomplete, true},
+		{"[a]: /url\\*\n", PhaseComplete, PhaseComplete, Complete, true},
+		{"[a]: /url \"&amp;\"\n", PhaseComplete, PhaseComplete, Complete, true},
 	} {
 		r := Parse(context.Background(), NewSource([]byte(tt.input)))
 		refs := r.Document.References()
@@ -29,10 +29,10 @@ func TestReferencePhaseAndSemanticAvailability(t *testing.T) {
 			t.Fatalf("%q: %+v %+v", tt.input, r, refs)
 		}
 	}
-	// Unknown semantic title data must not become a known empty string.
+	// Decoded title data is known and distinct from an empty destination.
 	r := Parse(context.Background(), NewSource([]byte("[a]: <> \"&amp;\"\n")))
 	definition := r.Document.References().Definitions[0].Properties()
-	if definition.Destination.Semantic != Some("") || definition.Title == nil || definition.Title.Semantic.Present || definition.Title.Segments[0].Transformation != MappingUnavailable {
+	if definition.Destination.Semantic != Some("") || definition.Title == nil || definition.Title.Semantic != Some("&") || definition.Title.Segments[0].Transformation != Entity {
 		t.Fatal(definition)
 	}
 }

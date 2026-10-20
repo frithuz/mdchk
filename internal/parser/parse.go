@@ -84,13 +84,14 @@ type ParseResult struct {
 // paragraphs may continue lazily. Logical leaf segments exclude prefixes on the
 // original Source.
 // Eligible paragraphs promote to Setext headings with distinct raw content and
-// underline ranges. Fenced payload is literal; info requiring escape/entity
-// decoding stays partial. Other input retains staged blocks and whole-document
+// underline ranges. Fenced payload is literal; info has decoded escape/entity
+// semantics with original source contributions. Other input retains staged blocks
+// and whole-document
 // uncertainty. Leading definitions are collected in source order before inline
 // work, with raw-label Unicode folding and first-definition lookup. Ordinary
 // text-bearing blocks acquire source-preserving Text children; missing inline
-// handlers retain pending interpretation. Missing destination/title or
-// fence-info decoding keeps Blocks pending with the raw registry available.
+// handlers retain pending interpretation. Text, definition destination/title and
+// fence-info values decode escapes/entities once, preserving raw label identity.
 // Definition-only input with known semantics completes vacuous inline work.
 // ListItems retain marker/prefix facts and ordered nested block children, with
 // tab-aware continuation, blank boundaries, sibling ownership and closure. They

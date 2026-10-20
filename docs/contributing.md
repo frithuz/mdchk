@@ -66,16 +66,22 @@ Normalized provenance; no semantic offset is used as an original byte offset.
 Code and raw HTML payloads remain opaque. Model constructors/accessors freeze or
 detach every mutable layer, including returned Text handles and segment slices.
 
-Supported plain text and proved unmatched punctuation complete. Potential escapes,
-entities, equal-width backtick pairs, delimiter/bracket pairs and angle-delimited
-candidates remain honestly pending for their later handlers. These conservative
-checks can defer invalid candidates too; they do not recognize those constructs.
-Multiline text retains original ending/segment mapping while #21 owns semantic
-breaks. Any unsupported interpretation keeps whole-document uncertainty and
-prevents the test adapter from rendering. Definition/fence semantics needing #19
-leave Blocks pending and Inlines not started. Empty, definition-only and other
-inline-free inputs retain their affirmative completion guards. Constructed trees
-cannot manufacture the private block-recognition handoff.
+Supported text now includes one-pass ASCII punctuation escapes, all 2125
+semicolon-terminated HTML5 named entities and strict numeric references. Decoded
+characters remain semantic text rather than new Markdown structure. Text carries
+explicit Escape/Entity spans; definition destinations/titles and fence info also
+have known decoded values. Raw reference labels and first-definition lookup remain
+unchanged. Code and raw HTML payloads stay opaque.
+
+Equal-width raw backtick candidates, delimiter/bracket pairs and angle-delimited
+candidates remain honestly pending for later handlers. Conservative checks can
+defer invalid candidates; they do not recognize those constructs. Raw opaque
+candidate endings are checked independently of ordinary-text escapes, preventing
+an escaped closer from falsely completing code/autolink input. Multiline text
+retains original ending/segment mapping while #21 owns semantic breaks. Unsupported
+interpretation retains whole-document uncertainty and cannot render. Empty,
+definition-only and other inline-free inputs retain their affirmative completion
+guards; constructed trees cannot manufacture the private block handoff.
 
 The [model contract](../internal/parser/model.md) defines exact outcomes,
 byte envelopes, raw/semantic mappings, reference ownership and property meanings.
@@ -89,8 +95,9 @@ reference-phase, immutable ownership and deterministic inline interruption tests
 protect downstream consumers. `FuzzInlineTextProvenance` checks immutable Source,
 repeatability and semantic reconstruction from original-byte contributions.
 
-All 652 unchanged cases remain in the ledger: **239 pass, 413 pending**, retaining
-all 87 previous passes and adding 152. These are staged results, not full
+All 652 unchanged cases remain in the ledger: **254 pass, 398 pending**, retaining
+all 239 previous passes and adding 15 from decoding. These are staged results,
+not full
 CommonMark or extension conformance. The baseline includes newly available plain
 paragraphs/headings and nested text as well as code/HTML/inline-free documents.
 Coverage owners are downstream completion providers, never reverse blockers on
@@ -194,12 +201,13 @@ Inputs and paths are resolved from the script, so invocation by absolute script
 path also works from another directory. The checks work offline; use the local
 toolchain/module environment above to forbid automatic downloads explicitly.
 
-Every unfiltered run currently reports **239 pass, 0 fail, 0 error, 413
+Every unfiltered run currently reports **254 pass, 0 fail, 0 error, 398
 pending**. The separately maintained `foundation.json` lists every supported ID
-and remaining provider exactly once. Text scanning adds 152 passes while retaining
-all 87 established IDs, including newly unlocked block/container cases and
-unchanged 650–652. Example 327 remains pending for #20. Break cases retain #21;
-escapes/entities #19, inline HTML #23, emphasis #24/#25, links #26/#27, images
+and remaining provider exactly once. Decoding adds 15 passes while retaining
+all 239 established IDs, including unchanged 650–652. Newly passing IDs are
+12, 24, 26, 27, 29, 30, 34, 38–40, 65, 76, 102, 563 and 592. Example 327 remains
+pending for #20. Break cases retain #21;
+inline HTML #23, emphasis #24/#25, links #26/#27, images
 #28 and autolinks #22 remain with their providers. Conservative pending checks may
 also defer malformed candidates until their handler proves literal fallback.
 No pending case is counted as a conformance pass. Final completion still requires
@@ -238,7 +246,7 @@ regexes and empty selections are errors. A filtered run validates the full ledge
 first, reports its smaller scope and never writes or weakens the baseline.
 
 `foundation.json` is mdchk's separately reviewed pass/pending ledger. It
-accounts for all 652 IDs exactly once. Its supported list records the 239
+accounts for all 652 IDs exactly once. Its supported list records the 254
 passes above. A supported case becoming fail/error/pending is a regression;
 missing/duplicate IDs invalidate the ledger. A newly passing case also fails
 the gate until its ID moves from pending to `supported_html_examples` in a
@@ -281,6 +289,32 @@ retained-helper success and execution-error paths, both comparison modes, case
 are separate from the immutable upstream corpus.
 
 
+### Escapes and character references
+
+The shared decoder supplies inline Text, reference destination/title Values and
+fence info while retaining original source spans and existing NUL/newline/partial-
+tab contributions. It never reinterprets generated characters as syntax or decodes
+them twice. Numeric references require decimal 1–7 or hexadecimal 1–6 digits and
+semicolons; zero and invalid Unicode scalars become U+FFFD. Other valid scalars,
+including controls, are preserved without browser numeric remapping. Unknown or
+malformed references remain literal. Physical backslash-newline remains #21.
+
+[WHATWG entity provenance and license](../internal/parser/testdata/html5/README.md)
+cover the complete case-sensitive named set and offline regeneration. Run:
+
+```sh
+python3 -B tools/html_entities.py --check
+go test ./internal/parser -run 'NamedEntities|Decoding'
+```
+
+`TestNamedEntitiesAgainstAuthoritativeData` reads every name/value from the pinned
+JSON independently of the generated production table and checks actual Parse spans.
+`TestDecodingUpstreamAcceptanceAndNewPasses` consumes unchanged upstream inputs;
+other decoding tests assert one-pass structure, exact nested source contributions,
+opaque boundaries, reference phases/identity, ownership and deterministic context
+interruption. The inline fuzz oracle uses retained JSON and independent regexp/
+strconv interpretation of raw contributions, rather than the production decoder.
+
 ### Reference definitions and Unicode folding
 
 Leading definitions are collected document-wide before inline resolution, outside
@@ -290,8 +324,8 @@ remainders retain their paragraph/Setext/container structure. Actual Parse tests
 exercise every unchanged definition example 192–218, plus list 317 and independent
 boundary/source, full-fold, ownership and deterministic interruption fixtures.
 Definition-only 207 completes, and literal remnants 208/210 now render with Text.
-Remaining definition cases retain their actual link/decoding/break providers in
-`foundation.json`, without #17/#18 or a blanket exemption.
+Remaining definition cases retain their actual link/HTML/break providers in
+`foundation.json`, without #17/#18/#19 or a blanket exemption.
 
 Unicode matching uses the pinned Unicode 17.0.0 full default folding table with
 standard-library-only runtime code. No host locale/Python database or runtime

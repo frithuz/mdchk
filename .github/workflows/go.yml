@@ -31,6 +31,8 @@ jobs:
         run: python3 -B tools/commonmark_corpus.py --check
       - name: Check pinned Unicode folding table
         run: python3 -B tools/unicode_casefold.py --check
+      - name: Check pinned HTML entity table
+        run: python3 -B tools/html_entities.py --check
       - name: Test CommonMark corpus tooling
         run: python3 -B -m unittest discover -s tools -p 'test_commonmark_corpus.py' -v
       - name: Run staged CommonMark regression gate

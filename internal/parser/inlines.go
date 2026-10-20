@@ -24,9 +24,9 @@ type inlineScanner struct {
 	text       string
 	delimiters []inlineDelimiter
 	brackets   []inlineBracket
-	backticks  map[int]bool
+	backticks  map[int]int // last raw run start by width, even after a backslash
 	markers    [2]bool
-	angle      bool
+	angleClose int
 	pending    bool
 }
 
@@ -75,6 +75,7 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState) (*Node, erro
 			text.WriteString(part.Semantic.Value)
 		}
 		scanner := inlineScanner{ctx: ctx, text: text.String()}
+		scanner.opaqueCandidates()
 		for offset := 0; offset < len(scanner.text); {
 			if interruption(ctx) != "" {
 				return node, nil
@@ -92,12 +93,16 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState) (*Node, erro
 		if scanner.pending {
 			*state = Pending
 		}
+		decoded := decodeValue(ctx, spec.Content, false)
+		if interruption(ctx) != "" {
+			return node, nil
+		}
 		spec.Children = nil
 		if len(spec.Content) != 0 {
 			first, last := spec.Content[0].Source, spec.Content[len(spec.Content)-1].Source
 			envelope := Span{source: first.source, start: first.start, end: last.end, present: true}
-			child, err := NewNode(NodeSpec{Kind: Text, Envelope: envelope, Content: spec.Content,
-				Properties: Properties{Literal: Some(scanner.text)}})
+			child, err := NewNode(NodeSpec{Kind: Text, Envelope: envelope, Content: decoded.Segments,
+				Properties: Properties{Literal: decoded.Semantic}})
 			if err != nil {
 				return nil, err
 			}
@@ -121,25 +126,22 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState) (*Node, erro
 	return NewNode(spec)
 }
 
-// Dispatch only establishes text or conservatively defers to a missing provider.
+// Dispatch consumes known text escapes/entities or defers to a missing provider.
 // A potential pair is not recognized syntax: false-positive deferral is allowed,
 // but unavailable syntax must never be advertised as complete literal text.
 func (s *inlineScanner) dispatch(offset int) int {
+	if _, width, _ := decodeToken(s.text[offset:]); width != 0 {
+		return offset + width // generated characters never enter syntax dispatch
+	}
 	switch c := s.text[offset]; c {
 	case '\r', '\n':
 		s.pending = true // #21 owns semantic hard/soft breaks
 	case '\\':
-		if offset+1 < len(s.text) && (IsASCIIPunctuation(rune(s.text[offset+1])) || referenceEnding(s.text[offset+1])) {
-			s.pending = true // #19/#21; do not decode or remove raw spelling
-		}
-	case '&':
-		if offset+1 < len(s.text) && (asciiLetter(s.text[offset+1]) || s.text[offset+1] == '#') {
-			s.pending = true // #19 resolves named/numeric character references
+		if offset+1 < len(s.text) && referenceEnding(s.text[offset+1]) {
+			s.pending = true // #21 owns actual escaped physical endings
 		}
 	case '<':
-		s.angle = true
-	case '>':
-		s.pending = s.pending || s.angle // #22/#23 settle angle-delimited candidates
+		s.pending = s.pending || s.angleClose > offset // #22/#23 ignore interior escapes
 	case '[', ']':
 		if c == '[' {
 			s.brackets = append(s.brackets, inlineBracket{offset: offset, image: offset > 0 && s.text[offset-1] == '!'})
@@ -157,11 +159,8 @@ func (s *inlineScanner) dispatch(offset int) int {
 		}
 		s.delimiters = append(s.delimiters, inlineDelimiter{marker: c, offset: offset, width: end - offset})
 		if c == '`' {
-			if s.backticks == nil {
-				s.backticks = make(map[int]bool)
-			}
-			s.pending = s.pending || s.backticks[end-offset] // #20: equal-width pair
-			s.backticks[end-offset] = true
+			last, exists := s.backticks[end-offset]
+			s.pending = s.pending || exists && last >= end // #20: raw equal-width closer
 		} else {
 			index := 0
 			if c == '_' {
@@ -173,6 +172,34 @@ func (s *inlineScanner) dispatch(offset int) int {
 		return end
 	}
 	return offset + 1
+}
+
+// Code spans and angle-delimited contexts do not honor ordinary text escapes.
+// Index raw candidate endings once so a skipped escaped closer cannot turn an
+// undelivered opaque construct into a false complete literal result. This is a
+// conservative provider guard, not code-span/autolink/inline-HTML recognition.
+func (s *inlineScanner) opaqueCandidates() {
+	s.angleClose = strings.LastIndexByte(s.text, '>')
+	for offset := 0; offset < len(s.text); {
+		if offset%256 == 0 && interruption(s.ctx) != "" {
+			return
+		}
+		if s.text[offset] != '`' {
+			offset++
+			continue
+		}
+		start := offset
+		for offset < len(s.text) && s.text[offset] == '`' {
+			if (offset-start)%256 == 0 && interruption(s.ctx) != "" {
+				return
+			}
+			offset++
+		}
+		if s.backticks == nil {
+			s.backticks = make(map[int]int)
+		}
+		s.backticks[offset-start] = start
+	}
 }
 
 func asciiLetter(c byte) bool { return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' }

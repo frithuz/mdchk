@@ -43,24 +43,14 @@ func checkInlineText(t *testing.T, r parser.ParseResult, block *parser.Node, lit
 		}
 		return
 	}
-	if len(children) != 1 || children[0].Kind() != parser.Text || children[0].Properties().Literal != parser.Some(literal) || len(children[0].Children()) != 0 {
+	if len(children) != 1 || children[0].Kind() != parser.Text || children[0].Properties().Literal != parser.Some(oracleText(literal, entityOracle(t))) || len(children[0].Children()) != 0 {
 		t.Fatal("incorrect Text semantics", literal, children)
 	}
 	text := children[0]
 	if text.Span().Start() != ranges[0].start || text.Span().End() != ranges[len(ranges)-1].end {
 		t.Fatal("Text envelope includes omitted boundary bytes", text.Span(), ranges)
 	}
-	if !reflect.DeepEqual(text.Content(), block.Content()) {
-		t.Fatal("Text lost block's segmented provenance")
-	}
-	for j, part := range text.Content() {
-		if part.Source.Start() != ranges[j].start || part.Source.End() != ranges[j].end {
-			t.Fatal("Text original byte range", part, ranges[j])
-		}
-		if _, err := r.Source.Text(part.Source); err != nil {
-			t.Fatal(err)
-		}
-	}
+	assertDecodedParts(t, r.Source, text.Content(), ranges, entityOracle(t))
 }
 
 func checkCorpusTextOutcome(t *testing.T, id int, html string, r parser.ParseResult) {
@@ -101,7 +91,7 @@ func TestInlineLiteralAndProviderBoundaries(t *testing.T) {
 			t.Fatal(text, children)
 		}
 	}
-	for _, text := range []string{"`hi`lo`", "*a*", "a_b_c", "**a**", "[a](b)", "[a]", "![a](b)", "<a@b.c>", "<123@a.b>", "<https://a>", "<em>x</em>", "a\\*b", "&amp;", "&#65;", "a\nb", "a\r\nb", "plain\n\n`code`"} {
+	for _, text := range []string{"`hi`lo`", "*a*", "a_b_c", "**a**", "[a](b)", "[a]", "![a](b)", "<a@b.c>", "<123@a.b>", "<https://a>", "<em>x</em>", "a\nb", "a\r\nb", "plain\n\n`code`"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(text)))
 		if r.Status != parser.Incomplete || r.Phases.Inlines != parser.Pending || len(r.Uncertainty) != 1 || conformance.Evaluate(r).Status != "pending" {
 			t.Fatal("missing provider became complete", text, r)
@@ -261,7 +251,8 @@ func TestInlineOpaqueBlocksAndLocalState(t *testing.T) {
 }
 
 func FuzzInlineTextProvenance(f *testing.F) {
-	for _, input := range []string{"hello", "> a\r\n> b", "# é\x00 #\n", "[a](b)", "`unmatched", "*a*", "&amp;"} {
+	entities := entityOracle(f)
+	for _, input := range []string{"hello", "> a\r\n> b", "# é\x00 #\n", "[a](b)", "`unmatched", "*a*", "&amp;", "é&amp;β", `\&ouml;`, "&NotEqualTilde;", "&#0;", "&#128;", "&#xD800;"} {
 		f.Add(input)
 	}
 	f.Fuzz(func(t *testing.T, input string) {
@@ -292,6 +283,8 @@ func FuzzInlineTextProvenance(f *testing.F) {
 				want := raw
 				if part.Transformation == parser.Normalized {
 					want = strings.ReplaceAll(raw, "\x00", "\ufffd")
+				} else if part.Transformation == parser.Escape || part.Transformation == parser.Entity {
+					want = oracleText(raw, entities)
 				} else if part.Transformation != parser.Exact {
 					t.Fatal("invented transform", part)
 				}
