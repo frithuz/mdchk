@@ -4,6 +4,8 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: "23 4 * * 1"
 
 permissions:
   contents: read
@@ -39,3 +41,69 @@ jobs:
         run: python3 -B tools/commonmark_conformance.py --require-complete
       - name: Test CommonMark transport, ratchet, and full upstream conformance
         run: python3 -B -m unittest discover -s tools -p 'test_commonmark_conformance.py' -v
+
+  race:
+    # Go's race detector requires a supported OS/architecture, a C compiler and
+    # CGO. This Ubuntu amd64 runner supplies GCC; unsupported hosts must report
+    # race checks as unavailable rather than counting an ordinary test as a pass.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GOTOOLCHAIN: local
+      GOWORK: "off"
+      GOFLAGS: -mod=readonly
+      CGO_ENABLED: "1"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Test with race detector
+        run: go test -race ./...
+
+  fuzz:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - FuzzParse
+          - FuzzInlineTextProvenance
+          - FuzzReferenceRegistry
+          - FuzzListMarkerSourceFacts
+          - FuzzListContinuationOwnership
+          - FuzzListGroupingBoundaries
+    env:
+      GOTOOLCHAIN: local
+      GOWORK: "off"
+      GOFLAGS: -mod=readonly
+      FUZZ_TARGET: ${{ matrix.target }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Bounded parser fuzz smoke or scheduled campaign
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          budget=10s
+          if [ "$EVENT_NAME" = schedule ]; then
+            budget=5m
+          fi
+          go test ./internal/parser -run '^$' -fuzz "^${FUZZ_TARGET}$" -fuzztime="$budget" -parallel=2 -timeout=12m
+      - name: Retain minimized failures
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fuzz-failures-${{ matrix.target }}-${{ github.run_id }}
+          path: internal/parser/testdata/fuzz/
+          if-no-files-found: ignore
+          retention-days: 30

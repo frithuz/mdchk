@@ -5,14 +5,17 @@ package parser
 // openers cannot repeatedly scan the same suffix. Scheme lookahead is bounded;
 // unbounded URI/local-part scans retain caller interruption checkpoints.
 func (s *inlineScanner) autolinkEnd(start int) (end int, email bool) {
+	meterWork(s.ctx, 1)
 	text := s.text
 	i := start + 1
 	if i < len(text) && asciiLetter(text[i]) {
 		for i < len(text) && i-start <= 32 && (asciiLetter(text[i]) || asciiDigit(text[i]) || text[i] == '+' || text[i] == '.' || text[i] == '-') {
+			meterWork(s.ctx, 1)
 			i++
 		}
 		if width := i - start - 1; width >= 2 && width <= 32 && i < len(text) && text[i] == ':' {
 			for i++; i < len(text); i++ {
+				meterWork(s.ctx, 1)
 				if (i-start)%256 == 0 && interruption(s.ctx) != "" {
 					return 0, false
 				}
@@ -28,6 +31,7 @@ func (s *inlineScanner) autolinkEnd(start int) (end int, email bool) {
 	}
 	i = start + 1
 	for i < len(text) && emailLocal(text[i]) {
+		meterWork(s.ctx, 1)
 		if (i-start)%256 == 0 && interruption(s.ctx) != "" {
 			return 0, false
 		}
@@ -37,6 +41,7 @@ func (s *inlineScanner) autolinkEnd(start int) (end int, email bool) {
 		return 0, false
 	}
 	for {
+		meterWork(s.ctx, 1)
 		if interruption(s.ctx) != "" {
 			return 0, false
 		}
@@ -46,6 +51,7 @@ func (s *inlineScanner) autolinkEnd(start int) (end int, email bool) {
 			return 0, false
 		}
 		for i < len(text) && (asciiAlphanumeric(text[i]) || text[i] == '-') {
+			meterWork(s.ctx, 1)
 			if (i-start)%256 == 0 && interruption(s.ctx) != "" {
 				return 0, false
 			}
@@ -84,6 +90,7 @@ func emailLocal(c byte) bool {
 // slices at publication; Label/Content/child source facts may safely share the
 // borrowed immutable contributions. Destination alone owns a synthetic prefix.
 func scanAutolink(cursor *inlineContent, start, end int, literal string, email bool) (*Node, error) {
+	meterWork(cursor.ctx, 1)
 	opening, err := cursor.take(start + 1)
 	if err != nil || interruption(cursor.ctx) != "" {
 		return nil, err
@@ -99,15 +106,15 @@ func scanAutolink(cursor *inlineContent, start, end int, literal string, email b
 	label := Value{Segments: payload, Semantic: Some(literal)}
 	destination := label
 	if email {
-		destination = Value{Segments: append([]Segment{{Transformation: Synthetic, Semantic: Some("mailto:")}}, payload...), Semantic: Some("mailto:" + literal)}
+		destination = Value{Segments: meteredAppend(cursor.ctx, []Segment{{Transformation: Synthetic, Semantic: Some("mailto:")}}, payload...), Semantic: Some(meteredConcat(cursor.ctx, "mailto:", literal))}
 	}
-	child, err := NewNode(NodeSpec{Kind: Text, Envelope: contentEnvelope(payload), Content: payload, Properties: Properties{Literal: label.Semantic}})
+	child, err := meteredNode(cursor.ctx, NodeSpec{Kind: Text, Envelope: contentEnvelope(payload), Content: payload, Properties: Properties{Literal: label.Semantic}})
 	if err != nil || interruption(cursor.ctx) != "" {
 		return nil, err
 	}
 	envelope := contentEnvelope(opening)
 	envelope.end = contentEnvelope(closing).end
-	return NewNode(NodeSpec{Kind: Link, Envelope: envelope, Content: payload,
+	return meteredNode(cursor.ctx, NodeSpec{Kind: Link, Envelope: envelope, Content: payload,
 		Markers:    []Marker{{Role: "destination-open", Source: contentEnvelope(opening)}, {Role: "destination-close", Source: contentEnvelope(closing)}},
 		Properties: Properties{Link: &LinkProperties{Origin: "autolink", Label: label, Destination: destination, Resolution: Available}}, Children: []*Node{child}})
 }

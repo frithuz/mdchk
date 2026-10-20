@@ -163,17 +163,23 @@ func referenceProjection(v Value) bool {
 }
 
 func validateReferenceLinks(ctx context.Context, root *Node, references ReferenceCollection) error {
+	meterWork(ctx, 1)
 	stack := []*Node{root}
 	for len(stack) != 0 {
+		meterWork(ctx, 1)
 		if interruption(ctx) != "" {
 			return nil // the parser withholds publication on interruption
 		}
 		n := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
-		stack = append(stack, n.spec.Children...)
+		stack = meteredAppend(ctx, stack, n.spec.Children...)
 		p := n.spec.Properties.Link
 		if (n.spec.Kind != Link && n.spec.Kind != Image) || p == nil || !referenceOrigin(p.Origin) || p.Resolution != Available {
 			continue
+		}
+		meterWork(ctx, len(p.NormalizedLabel.Value)+len(p.Destination.Semantic.Value))
+		if p.Title != nil {
+			meterWork(ctx, len(p.Title.Semantic.Value))
 		}
 		i, found := references.Lookup[p.NormalizedLabel.Value]
 		if references.Availability != Available || references.LookupAvailability != Available || !p.NormalizedLabel.Present || !found || i < 0 || i >= len(references.Definitions) {

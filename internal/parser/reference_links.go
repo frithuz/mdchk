@@ -12,8 +12,10 @@ type referenceLinkSyntax struct {
 // grammar/counting as definitions. Escaped punctuation remains two characters;
 // CRLF is one preprocessed ending while all offsets still address original bytes.
 func (s *inlineScanner) referenceLabelEnd(start int) (int, bool) {
+	meterWork(s.ctx, 1)
 	characters, nonblank := 0, false
 	for i := start; i < len(s.text); {
+		meterWork(s.ctx, 1)
 		if interruption(s.ctx) != "" || s.text[i] == '[' {
 			return 0, false
 		}
@@ -41,6 +43,7 @@ func (s *inlineScanner) referenceLabelEnd(start int) (int, bool) {
 }
 
 func (s *inlineScanner) referenceLink(open, close int) (referenceLinkSyntax, bool) {
+	meterWork(s.ctx, 1)
 	r := referenceLinkSyntax{close: close, end: close + 1, origin: "shortcut", keyStart: open + 1, keyEnd: close}
 	if s.references == nil || s.references.LookupAvailability != Available || len(s.references.Lookup) == 0 {
 		return r, false
@@ -62,10 +65,11 @@ func (s *inlineScanner) referenceLink(open, close int) (referenceLinkSyntax, boo
 	if interruption(s.ctx) != "" {
 		return r, false
 	}
-	r.normalized = normalizeReferenceLabel(s.text[r.keyStart:r.keyEnd])
+	r.normalized = normalizeReferenceLabelContext(s.ctx, s.text[r.keyStart:r.keyEnd])
 	if interruption(s.ctx) != "" {
 		return r, false
 	}
+	meterWork(s.ctx, len(r.normalized))
 	i, found := s.references.Lookup[r.normalized]
 	if !found {
 		return r, false
@@ -79,6 +83,7 @@ func projectReference(v Value) Value {
 }
 
 func (s *inlineScanner) buildReferenceLink(content emphasisContent, bracket inlineBracket, syntax referenceLinkSyntax, flat []*Node) ([]*Node, *Node, error) {
+	meterWork(s.ctx, 1)
 	label, err := content.linkValue(bracket.offset+1, syntax.close, false)
 	if err != nil || interruption(s.ctx) != "" {
 		return nil, nil, err
@@ -99,7 +104,7 @@ func (s *inlineScanner) buildReferenceLink(content emphasisContent, bracket inli
 			return nil, nil, err
 		}
 		p.ReferenceLabel = &key
-		positions = append(positions, struct {
+		positions = meteredAppend(s.ctx, positions, struct {
 			role string
 			at   int
 		}{"reference-open", syntax.close + 1}, struct {
@@ -107,13 +112,16 @@ func (s *inlineScanner) buildReferenceLink(content emphasisContent, bracket inli
 			at   int
 		}{"reference-close", syntax.end - 1})
 	}
-	markers := make([]Marker, 0, len(positions))
+	markers := meteredSlice[Marker](s.ctx,
+
+		0, len(positions))
 	for _, position := range positions {
+		meterWork(s.ctx, 1)
 		parts, err := content.slice(position.at, position.at+1)
 		if err != nil || interruption(s.ctx) != "" {
 			return nil, nil, err
 		}
-		markers = append(markers, Marker{Role: position.role, Source: contentEnvelope(parts)})
+		markers = meteredAppend(s.ctx, markers, Marker{Role: position.role, Source: contentEnvelope(parts)})
 	}
 	return s.finishLink(bracket, label, p, markers, flat)
 }

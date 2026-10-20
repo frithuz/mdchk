@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"context"
 	"errors"
 	"sort"
 	"unicode/utf8"
@@ -22,17 +23,28 @@ type PhysicalLine struct{ Content, Ending Span }
 // Arbitrary bytes can be indexed; decoding-dependent operations require strict
 // UTF-8. A terminal ending creates a coordinate endpoint, not a content line.
 type LineIndex struct {
+	ctx     context.Context
 	source  Source
 	lines   []physicalLine
 	invalid Optional[int]
 }
 
 func NewLineIndex(source Source) LineIndex {
-	index := LineIndex{source: source}
+	return newLineIndex(nil, source)
+}
+
+func newLineIndex(ctx context.Context, source Source) LineIndex {
+	meterWork(ctx, 1)
+	index := LineIndex{source: source, ctx: ctx}
 	text := source.content
+	meterWork(ctx, len(text)) // reserve the complete physical-line byte scan
 	for start := 0; start < len(text); {
+		meterWork(ctx, 1)
 		end := start
 		for end < len(text) && text[end] != '\r' && text[end] != '\n' {
+			if end > start && (end-start)&255 == 0 && scannerInterrupted(ctx) {
+				return index
+			}
 			end++
 		}
 		next := end
@@ -42,23 +54,24 @@ func NewLineIndex(source Source) LineIndex {
 				next++
 			}
 		}
-		index.lines = append(index.lines, physicalLine{start, end, next})
+		index.lines = meteredAppend(ctx, index.lines, physicalLine{start, end, next})
 		start = next
 	}
-	if offset := invalidUTF8Offset(text); offset >= 0 {
+	if offset := invalidUTF8OffsetContext(ctx, text); offset >= 0 {
 		index.invalid = Some(offset)
 	}
 	return index
 }
 
-func (index LineIndex) Source() Source { return index.source }
+func (index LineIndex) Source() Source { meterWork(index.ctx, 1); return index.source }
 
 // LineCount counts selectable content lines, including actual empty lines.
 // Empty input has none; an ending at EOF adds no extra selectable line.
-func (index LineIndex) LineCount() int { return len(index.lines) }
+func (index LineIndex) LineCount() int { meterWork(index.ctx, 1); return len(index.lines) }
 
 // Line returns one-based physical-line spans, even for malformed UTF-8.
 func (index LineIndex) Line(number int) (PhysicalLine, error) {
+	meterWork(index.ctx, 1)
 	if number <= 0 || number > len(index.lines) {
 		return PhysicalLine{}, ErrPosition
 	}
@@ -70,12 +83,14 @@ func (index LineIndex) Line(number int) (PhysicalLine, error) {
 }
 
 func (index LineIndex) span(start, end int) Span {
+	meterWork(index.ctx, 1)
 	return Span{source: index.source, start: start, end: end, present: true}
 }
 
 // EncodingFailure returns a fresh typed failure at the first invalid scalar's
 // original leading byte, or nil. Mutating the result cannot alter the index.
 func (index LineIndex) EncodingFailure() *Failure {
+	meterWork(index.ctx, 1)
 	if !index.invalid.Present {
 		return nil
 	}
@@ -87,6 +102,7 @@ func (index LineIndex) EncodingFailure() *Failure {
 // from the valid prefix. It does not make whole-document text mapping available.
 // A valid source has no encoding failure and returns ErrPosition.
 func (index LineIndex) FailurePosition() (Position, error) {
+	meterWork(index.ctx, 1)
 	if !index.invalid.Present {
 		return Position{}, ErrPosition
 	}
@@ -98,6 +114,7 @@ func (index LineIndex) FailurePosition() (Position, error) {
 // end; terminator end is next-line column 1, including virtual EOF after a final
 // ending. Lookup costs O(log L + B), where B is the line-prefix byte count.
 func (index LineIndex) Position(offset int) (Position, error) {
+	meterWork(index.ctx, 1)
 	if failure := index.EncodingFailure(); failure != nil {
 		return Position{}, failure
 	}
@@ -105,6 +122,7 @@ func (index LineIndex) Position(offset int) (Position, error) {
 }
 
 func (index LineIndex) positionAt(offset int) (Position, error) {
+	meterWork(index.ctx, 1)
 	text := index.source.content
 	if offset < 0 || offset > len(text) {
 		return Position{}, ErrPosition
@@ -122,7 +140,7 @@ func (index LineIndex) positionAt(offset int) (Position, error) {
 	if offset == len(text) && last.next > last.end {
 		return Position{Line: len(index.lines) + 1, Column: 1}, nil
 	}
-	n := sort.Search(len(index.lines), func(i int) bool { return index.lines[i].start > offset }) - 1
+	n := sort.Search(len(index.lines), func(i int) bool { meterWork(index.ctx, 1); return index.lines[i].start > offset }) - 1
 	line := index.lines[n]
 	return Position{Line: n + 1, Column: utf8.RuneCountInString(text[line.start:offset]) + 1}, nil
 }
@@ -132,6 +150,7 @@ func (index LineIndex) positionAt(offset int) (Position, error) {
 // Nonexistent requests are rejected, never clamped or aliased. Lookup decodes
 // at most the selected line prefix: O(B) time, O(1) additional storage.
 func (index LineIndex) Offset(position Position) (int, error) {
+	meterWork(index.ctx, 1)
 	if failure := index.EncodingFailure(); failure != nil {
 		return 0, failure
 	}
@@ -149,6 +168,7 @@ func (index LineIndex) Offset(position Position) (int, error) {
 	line := index.lines[position.Line-1]
 	offset := line.start
 	for column := 1; column < position.Column; column++ {
+		meterWork(index.ctx, 1)
 		if offset == line.end {
 			return 0, ErrPosition
 		}

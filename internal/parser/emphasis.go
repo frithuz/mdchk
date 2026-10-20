@@ -37,9 +37,11 @@ type emphasisPair struct {
 // cleanup affect only its suffix. Retired records are never resurrected on a
 // subsequent scoped call over the same completed scan.
 func (s *inlineScanner) emphasisPairs(bottom int) ([]emphasisPair, error) {
+	meterWork(s.ctx, 1)
 	d := s.delimiters
 	if !s.delimitersLinked {
 		for i := range d {
+			meterWork(s.ctx, 1)
 			if interruption(s.ctx) != "" {
 				return nil, nil
 			}
@@ -54,8 +56,11 @@ func (s *inlineScanner) emphasisPairs(bottom int) ([]emphasisPair, error) {
 	}
 	var floors [2][3][2]int
 	for m := range floors {
+		meterWork(s.ctx, 1)
 		for r := range floors[m] {
+			meterWork(s.ctx, 1)
 			for o := range floors[m][r] {
+				meterWork(s.ctx, 1)
 				floors[m][r][o] = bottom
 			}
 		}
@@ -81,6 +86,7 @@ func (s *inlineScanner) emphasisPairs(bottom int) ([]emphasisPair, error) {
 	}
 	var pairs []emphasisPair
 	for current := start(); current < len(d); {
+		meterWork(s.ctx, 1)
 		if interruption(s.ctx) != "" {
 			return nil, nil
 		}
@@ -99,6 +105,7 @@ func (s *inlineScanner) emphasisPairs(bottom int) ([]emphasisPair, error) {
 		floor := &floors[marker][closer.original%3][dual]
 		opener := closer.previous
 		for opener > *floor {
+			meterWork(s.ctx, 1)
 			if interruption(s.ctx) != "" {
 				return nil, nil
 			}
@@ -122,8 +129,9 @@ func (s *inlineScanner) emphasisPairs(bottom int) ([]emphasisPair, error) {
 			width = 2
 		}
 		pair := emphasisPair{opening: open.offset + open.width - width, closing: closer.offset, width: width, marker: open.marker}
-		pairs = append(pairs, pair)
+		pairs = meteredAppend(s.ctx, pairs, pair)
 		for i := open.next; i != current; {
+			meterWork(s.ctx, 1)
 			if interruption(s.ctx) != "" {
 				return nil, nil
 			}
@@ -144,6 +152,7 @@ func (s *inlineScanner) emphasisPairs(bottom int) ([]emphasisPair, error) {
 		}
 	}
 	for i := start(); i < len(d); {
+		meterWork(s.ctx, 1)
 		if interruption(s.ctx) != "" {
 			return nil, nil
 		}
@@ -164,8 +173,10 @@ type inlineNodes struct {
 }
 
 func (c *inlineNodes) take(end int) ([]*Node, error) {
+	meterWork(c.scanner.ctx, 1)
 	var out []*Node
 	for c.index < len(c.nodes) {
+		meterWork(c.scanner.ctx, 1)
 		if interruption(c.scanner.ctx) != "" {
 			return nil, nil
 		}
@@ -177,13 +188,14 @@ func (c *inlineNodes) take(end int) ([]*Node, error) {
 			if n.Span().End() > end {
 				return nil, ErrModel
 			}
-			out = append(out, n)
+			out = meteredAppend(c.scanner.ctx, out, n)
 			c.index++
 			continue
 		}
 		var parts []Segment
 		var literal strings.Builder
 		for c.part < len(n.spec.Content) {
+			meterWork(c.scanner.ctx, 1)
 			if interruption(c.scanner.ctx) != "" {
 				return nil, nil
 			}
@@ -200,8 +212,8 @@ func (c *inlineNodes) take(end int) ([]*Node, error) {
 				part.Semantic = Some(part.Semantic.Value[c.within : c.within+stop-start])
 				part.Source.start, part.Source.end = start, stop
 			}
-			parts = append(parts, part)
-			literal.WriteString(part.Semantic.Value)
+			parts = meteredAppend(c.scanner.ctx, parts, part)
+			meteredWriteString(c.scanner.ctx, &literal, part.Semantic.Value)
 			c.within += stop - start
 			if stop == n.spec.Content[c.part].Source.end {
 				c.part++
@@ -209,11 +221,11 @@ func (c *inlineNodes) take(end int) ([]*Node, error) {
 			}
 		}
 		if len(parts) != 0 {
-			text, err := NewNode(NodeSpec{Kind: Text, Envelope: contentEnvelope(parts), Content: parts, Properties: Properties{Literal: Some(literal.String())}})
+			text, err := meteredNode(c.scanner.ctx, NodeSpec{Kind: Text, Envelope: contentEnvelope(parts), Content: parts, Properties: Properties{Literal: Some(literal.String())}})
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, text)
+			out = meteredAppend(c.scanner.ctx, out, text)
 		}
 		if c.part != len(n.spec.Content) {
 			break
@@ -234,9 +246,11 @@ type emphasisContent struct {
 }
 
 func (c emphasisContent) slice(start, end int) ([]Segment, error) {
-	i := sort.Search(len(c.parts), func(i int) bool { return c.starts[i+1] > start })
+	meterWork(c.scanner.ctx, 1)
+	i := sort.Search(len(c.parts), func(i int) bool { meterWork(c.scanner.ctx, 1); return c.starts[i+1] > start })
 	var out []Segment
 	for start < end {
+		meterWork(c.scanner.ctx, 1)
 		if interruption(c.scanner.ctx) != "" {
 			return nil, nil
 		}
@@ -252,7 +266,7 @@ func (c emphasisContent) slice(start, end int) ([]Segment, error) {
 		} else if a != 0 || b != len(part.Semantic.Value) {
 			return nil, ErrModel
 		}
-		out = append(out, part)
+		out = meteredAppend(c.scanner.ctx, out, part)
 		start = c.starts[i] + b
 		i++
 	}
@@ -260,10 +274,12 @@ func (c emphasisContent) slice(start, end int) ([]Segment, error) {
 }
 
 func (s *inlineScanner) emphasis(parts []Segment, flat []*Node) ([]*Node, error) {
+	meterWork(s.ctx, 1)
 	return s.emphasisAbove(parts, flat, -1, 0)
 }
 
 func (s *inlineScanner) emphasisAbove(parts []Segment, flat []*Node, bottom, start int) ([]*Node, error) {
+	meterWork(s.ctx, 1)
 	pairs, err := s.emphasisPairs(bottom)
 	if err != nil || len(pairs) == 0 || interruption(s.ctx) != "" {
 		return flat, err
@@ -275,25 +291,33 @@ func (s *inlineScanner) emphasisAbove(parts []Segment, flat []*Node, bottom, sta
 		pair     emphasisPair
 		children []int
 	}
-	groups := make([]group, 0, len(pairs))
+	meterRecords(s.ctx, len(pairs)) // retained pair forest records, before capacity allocation
+	groups := meteredSlice[group](s.ctx,
+
+		0, len(pairs))
 	var forest []int
 	for _, pair := range pairs {
+		meterWork(s.ctx, 1)
 		if interruption(s.ctx) != "" {
 			return nil, nil
 		}
 		first := len(forest)
 		for first > 0 && groups[forest[first-1]].pair.opening > pair.opening {
+			meterWork(s.ctx, 1)
 			if interruption(s.ctx) != "" {
 				return nil, nil
 			}
 			first--
 		}
-		groups = append(groups, group{pair: pair, children: append([]int(nil), forest[first:]...)})
-		forest = append(forest[:first], len(groups)-1)
+		groups = meteredAppend(s.ctx, groups, group{pair: pair, children: meteredAppend(s.ctx, []int(nil), forest[first:]...)})
+		forest = meteredAppend(s.ctx, forest[:first], len(groups)-1)
 	}
-	content := emphasisContent{scanner: s, parts: parts, starts: make([]int, len(parts)+1)}
+	content := emphasisContent{scanner: s, parts: parts, starts: meteredSlice[int](s.ctx,
+
+		len(parts)+1)}
 	content.starts[0] = start
 	for i, part := range parts {
+		meterWork(s.ctx, 1)
 		if interruption(s.ctx) != "" {
 			return nil, nil
 		}
@@ -310,6 +334,7 @@ func (s *inlineScanner) emphasisAbove(parts []Segment, flat []*Node, bottom, sta
 	stack := []frame{{index: -1}}
 	nodes := inlineNodes{scanner: s, nodes: flat}
 	for len(stack) != 0 {
+		meterWork(s.ctx, 1)
 		if interruption(s.ctx) != "" {
 			return nil, nil
 		}
@@ -319,6 +344,9 @@ func (s *inlineScanner) emphasisAbove(parts []Segment, flat []*Node, bottom, sta
 			children = groups[top.index].children
 		}
 		if top.next < len(children) {
+			// The synthetic root frame adds no construct. Every actual frame
+			// adds one beneath the enclosing block/inline ancestor context.
+			checkDepth(s.ctx, ancestorDepth(s.ctx)+len(stack))
 			index := children[top.next]
 			top.next++
 			pair := groups[index].pair
@@ -331,11 +359,11 @@ func (s *inlineScanner) emphasisAbove(parts []Segment, flat []*Node, bottom, sta
 			if err != nil || interruption(s.ctx) != "" {
 				return nil, err
 			}
-			top.children = append(top.children, before...)
+			top.children = meteredAppend(s.ctx, top.children, before...)
 			if _, err := nodes.take(op.end); err != nil || interruption(s.ctx) != "" {
 				return nil, err
 			}
-			stack = append(stack, frame{index: index, opening: op})
+			stack = meteredAppend(s.ctx, stack, frame{index: index, opening: op})
 			continue
 		}
 		if top.index < 0 {
@@ -343,7 +371,7 @@ func (s *inlineScanner) emphasisAbove(parts []Segment, flat []*Node, bottom, sta
 			if err != nil || interruption(s.ctx) != "" {
 				return nil, err
 			}
-			return append(top.children, rest...), nil
+			return meteredAppend(s.ctx, top.children, rest...), nil
 		}
 		pair := groups[top.index].pair
 		closing, err := content.slice(pair.closing, pair.closing+pair.width)
@@ -355,7 +383,7 @@ func (s *inlineScanner) emphasisAbove(parts []Segment, flat []*Node, bottom, sta
 		if err != nil || interruption(s.ctx) != "" {
 			return nil, err
 		}
-		top.children = append(top.children, rest...)
+		top.children = meteredAppend(s.ctx, top.children, rest...)
 		if _, err := nodes.take(cl.end); err != nil || interruption(s.ctx) != "" {
 			return nil, err
 		}
@@ -369,7 +397,7 @@ func (s *inlineScanner) emphasisAbove(parts []Segment, flat []*Node, bottom, sta
 		}
 		envelope := top.opening
 		envelope.end = cl.end
-		n, err := NewNode(NodeSpec{Kind: kind, Envelope: envelope, Content: payload, Children: top.children,
+		n, err := meteredNode(s.ctx, NodeSpec{Kind: kind, Envelope: envelope, Content: payload, Children: top.children,
 			Markers:    []Marker{{Role: "opening", Source: top.opening}, {Role: "closing", Source: cl}},
 			Properties: Properties{Delimiter: &DelimiterProperties{Marker: pair.marker, Width: pair.width}}})
 		if err != nil {
@@ -377,7 +405,7 @@ func (s *inlineScanner) emphasisAbove(parts []Segment, flat []*Node, bottom, sta
 		}
 		stack = stack[:len(stack)-1]
 		parent := &stack[len(stack)-1]
-		parent.children = append(parent.children, n)
+		parent.children = meteredAppend(s.ctx, parent.children, n)
 	}
 	return nil, ErrModel
 }

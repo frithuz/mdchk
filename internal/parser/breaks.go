@@ -5,6 +5,7 @@ package parser
 // continuation indentation. Content owns only the ending; the optional hard-break
 // marker owns its complete original spelling, never a decoded character.
 func scanBreak(cursor *inlineContent, ending, end int, origin string) (*Node, error) {
+	meterWork(cursor.ctx, 1)
 	var markers []Marker
 	kind := SoftBreak
 	if origin != "line-ending" {
@@ -23,6 +24,6 @@ func scanBreak(cursor *inlineContent, ending, end int, origin string) (*Node, er
 	if len(markers) != 0 {
 		envelope.start = markers[0].Source.start
 	}
-	return NewNode(NodeSpec{Kind: kind, Envelope: envelope, Content: content, Markers: markers,
+	return meteredNode(cursor.ctx, NodeSpec{Kind: kind, Envelope: envelope, Content: content, Markers: markers,
 		Properties: Properties{Break: &BreakProperties{Origin: origin}}})
 }

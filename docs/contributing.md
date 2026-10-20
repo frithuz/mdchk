@@ -114,8 +114,8 @@ All 652 unchanged cases remain in the ledger: **652 pass, 0 pending**, retaining
 all 629 previous passes and adding the 23 image-dependent cases with independent
 AST/source assertions.
 The unchanged CommonMark corpus passes in full; extension conformance is separate. Coverage owners are downstream
-completion providers, never reverse blockers on this increment. Full work/depth-
-budget hardening remains #31.
+completion providers, never reverse blockers on this increment. Full parser work/depth budget hardening is implemented; see
+[parser accounting](engineering/parser-limits.md).
 
 `TestBreakUpstreamAcceptance` checks unchanged 633–649 and preserves actual
 single-level emphasis and genuine remaining providers.
@@ -268,8 +268,8 @@ go test ./internal/parser -run 'Emphasis|Inline|CodeSpan|Break'
 python3 -B tools/commonmark_conformance.py --section '^Emphasis and strong emphasis$'
 ```
 
-The full unchanged CommonMark corpus now passes. Numeric work/depth hardening
-stays #31. Optional measurements should distinguish unavoidable nested
+The full unchanged CommonMark corpus now passes. Numeric work/depth accounting is documented in
+[parser accounting](engineering/parser-limits.md). Optional measurements should distinguish unavoidable nested
 payload output from redundant copying; no machine-specific threshold is imposed.
 
 ### Inline links
@@ -315,7 +315,7 @@ GOMAXPROCS=2 go test ./internal/parser -run '^$' -bench '^BenchmarkInlineLinkFai
 ```
 
 The full contributor checks and bounded inline/list fuzz commands above still
-apply. Comprehensive numeric work/depth hardening remains #31; cumulative
+apply. Comprehensive numeric work/depth hardening is implemented; cumulative
 bracket/candidate measurements are optional, with no machine-specific threshold.
 
 ### Reference links
@@ -348,8 +348,7 @@ python3 -B tools/commonmark_conformance.py --strict --section '^(Links|Link refe
 
 The contributor checks and bounded inline/list provenance fuzz commands above
 remain required for changes to those consumers. Optional reference-use/definition
-scaling measurements introduce no machine-specific threshold; general hardening
-remains #31.
+scaling measurements introduce no machine-specific threshold; general hardening is documented in [parser accounting](engineering/parser-limits.md).
 
 ### Images
 
@@ -594,7 +593,8 @@ machine-specific numeric gate is implied.
 
 The check validates pinned source bytes and regenerated Go bytes; Go tests compare
 all C/F mappings directly with the retained source, including default versus
-Turkic behavior. #31 retains comprehensive parser-budget hardening.
+Turkic behavior. The [parser accounting specification](engineering/parser-limits.md) defines
+shared finite parser budgets and interruption semantics.
 
 ## Activate the commit message hook
 
@@ -659,3 +659,58 @@ the hook, and commands that do not run `commit-msg` (such as `git commit-tree`)
 can bypass it. Existing commits are not rewritten. The prohibition still
 applies when the hook is bypassed; this local hook alone cannot enforce it
 across all contributors or commits received by a remote repository.
+
+
+## Parser resource, race and fuzz verification
+
+`Parse` uses the accepted finite defaults. Use one validated `OperationBudget`
+with `ParseWithBudget` across an operation's documents/reparses and `ChargeWork`
+for adapter work; only document counters reset. See [parser accounting](engineering/parser-limits.md)
+for exact scope, depth, implementation bounds, typed outcomes and admission
+precedence. Source/model constructors and accessors outside Parse are not an
+operation-metered loading API.
+
+The race job uses Ubuntu 24.04 amd64, GCC and `CGO_ENABLED=1`. Local race checks
+require a Go-supported race OS/architecture, cgo and a working C compiler; the
+verified local host is Darwin arm64 with its installed developer toolchain.
+Report an unsupported race host as unavailable; an ordinary test pass does not
+substitute for race verification. Independent concurrent parses and serialized
+shared-operation parses are exercised by the race suite.
+
+```sh
+go build ./...
+go test ./...
+go vet ./...
+CGO_ENABLED=1 go test -race ./...
+(
+  for target in FuzzParse FuzzInlineTextProvenance FuzzReferenceRegistry FuzzListMarkerSourceFacts FuzzListContinuationOwnership FuzzListGroupingBoundaries; do
+    go test ./internal/parser -run '^$' -fuzz "^${target}$" -fuzztime=30s -parallel=2 -timeout=2m || exit $?
+  done
+)
+GOMAXPROCS=1 go test -bench=. -run '^$' -benchmem ./internal/parser
+```
+
+`FuzzParse` directly adds all 652 retained upstream Markdown examples and focused
+adversarial inputs. It bounds input to 64 KiB, checks deterministic semantic
+outcomes, immutable snapshot/input bytes and every AST/Value/reference source
+range, and asserts explicit resource interruption rather than accepting internal
+failure. Existing specialized targets retain their independent source oracles;
+the arbitrary-input ones distinguish explicit budget interruption before checking
+unavailable syntax. The full corpus gates still run all unchanged examples under
+default limits, independently of fuzz size bounds.
+
+CI runs six independent 10-second smoke targets for pushes/PRs and six explicit
+5-minute campaigns each Monday at 04:23 UTC (two workers per target, 12-minute
+Go timeout, 15-minute job timeout). Native minimized failures are retained as
+30-day CI artifacts from `internal/parser/testdata/fuzz/`. Download and preserve
+`testdata/fuzz/<Target>/<hash>` under that directory, then replay:
+
+```sh
+go test ./internal/parser -run '^<Target>/<hash>$'
+```
+
+Fix the regression and commit the minimized input as a permanent native Go fuzz
+corpus entry. Do not delete a failing corpus entry to make CI pass. Longer local
+campaigns use the same command with an explicit `-fuzztime=5m` or longer chosen
+budget. See [recorded timing/allocation baselines](engineering/parser-performance.md)
+for fixture sizes, host, measurement limits and profiling investigation.

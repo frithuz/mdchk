@@ -15,8 +15,10 @@ type inlineContent struct {
 }
 
 func (c *inlineContent) take(end int) ([]Segment, error) {
+	meterWork(c.ctx, 1)
 	var out []Segment
 	for c.offset < end {
+		meterWork(c.ctx, 1)
 		if interruption(c.ctx) != "" {
 			return nil, nil
 		}
@@ -32,7 +34,7 @@ func (c *inlineContent) take(end int) ([]Segment, error) {
 		} else if c.within != 0 || width != len(part.Semantic.Value) {
 			return nil, ErrModel
 		}
-		out = append(out, part)
+		out = meteredAppend(c.ctx, out, part)
 		c.offset += width
 		c.within += width
 		if c.within == len(c.parts[c.index].Semantic.Value) {
@@ -49,9 +51,13 @@ func contentEnvelope(parts []Segment) Span {
 }
 
 func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
+	meterWork(s.ctx, 1)
 	cursor := inlineContent{ctx: s.ctx, parts: parts}
-	content := emphasisContent{scanner: s, parts: parts, starts: make([]int, len(parts)+1)}
+	content := emphasisContent{scanner: s, parts: parts, starts: meteredSlice[int](s.ctx,
+
+		len(parts)+1)}
 	for i, part := range parts {
+		meterWork(s.ctx, 1)
 		if interruption(s.ctx) != "" {
 			return nil, nil
 		}
@@ -75,23 +81,25 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 				return err
 			}
 			for i := range spaces {
+				meterWork(s.ctx, 1)
 				spaces[i].Transformation = Normalized
 				spaces[i].Semantic = Some("")
 			}
-			raw = append(raw, spaces...)
-			value.Segments = append(value.Segments, spaces...)
+			raw = meteredAppend(s.ctx, raw, spaces...)
+			value.Segments = meteredAppend(s.ctx, value.Segments, spaces...)
 		}
 		if interruption(s.ctx) != "" {
 			return nil
 		}
-		node, err := NewNode(NodeSpec{Kind: Text, Envelope: contentEnvelope(raw), Content: value.Segments,
+		node, err := meteredNode(s.ctx, NodeSpec{Kind: Text, Envelope: contentEnvelope(raw), Content: value.Segments,
 			Properties: Properties{Literal: value.Semantic}})
 		if err == nil {
-			children = append(children, node)
+			children = meteredAppend(s.ctx, children, node)
 		}
 		return err
 	}
 	for offset, checkpoint := 0, 0; offset < len(s.text); {
+		meterWork(s.ctx, 1)
 		if offset >= checkpoint {
 			if interruption(s.ctx) != "" {
 				return nil, nil
@@ -102,6 +110,7 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 		switch s.text[offset] {
 		case ' ':
 			for ending < len(s.text) && s.text[ending] == ' ' {
+				meterWork(s.ctx, 1)
 				if (ending-start)%256 == 0 && interruption(s.ctx) != "" {
 					return nil, nil
 				}
@@ -132,7 +141,7 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 			if err != nil || interruption(s.ctx) != "" {
 				return nil, err
 			}
-			children = append(children, node)
+			children = meteredAppend(s.ctx, children, node)
 			offset = end
 			continue
 		}
@@ -149,7 +158,7 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 				if err != nil || interruption(s.ctx) != "" {
 					return nil, err
 				}
-				children = append(children, node)
+				children = meteredAppend(s.ctx, children, node)
 				s.deactivateLinks(offset)
 				offset = end
 				continue
@@ -162,7 +171,7 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 				if err != nil || interruption(s.ctx) != "" {
 					return nil, err
 				}
-				children = append(children, node)
+				children = meteredAppend(s.ctx, children, node)
 				offset = end
 				continue
 			}
@@ -188,8 +197,8 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 					if err != nil || interruption(s.ctx) != "" {
 						return nil, err
 					}
-					children = append(children[:bracket.node], before...)
-					children = append(children, link)
+					children = meteredAppend(s.ctx, children[:bracket.node], before...)
+					children = meteredAppend(s.ctx, children, link)
 					if _, err := cursor.take(syntax.end); err != nil || interruption(s.ctx) != "" {
 						return nil, err
 					}
@@ -207,8 +216,8 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 					if err != nil || interruption(s.ctx) != "" {
 						return nil, err
 					}
-					children = append(children[:bracket.node], before...)
-					children = append(children, link)
+					children = meteredAppend(s.ctx, children[:bracket.node], before...)
+					children = meteredAppend(s.ctx, children, link)
 					if _, err := cursor.take(syntax.end); err != nil || interruption(s.ctx) != "" {
 						return nil, err
 					}
@@ -228,6 +237,7 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 		}
 		end := offset + 1
 		for end < len(s.text) && s.text[end] == '`' {
+			meterWork(s.ctx, 1)
 			if (end-offset)%256 == 0 && interruption(s.ctx) != "" {
 				return nil, nil
 			}
@@ -237,6 +247,7 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 		runs := s.backticks[width]
 		next := s.backtickNext[width]
 		for next < len(runs) && runs[next] < end {
+			meterWork(s.ctx, 1)
 			if next%256 == 0 && interruption(s.ctx) != "" {
 				return nil, nil
 			}
@@ -271,13 +282,13 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 		}
 		envelope := contentEnvelope(opening)
 		envelope.end = contentEnvelope(closing).end
-		node, err := NewNode(NodeSpec{Kind: CodeSpan, Envelope: envelope, Content: value.Segments,
+		node, err := meteredNode(s.ctx, NodeSpec{Kind: CodeSpan, Envelope: envelope, Content: value.Segments,
 			Markers:    []Marker{{Role: "opening", Source: contentEnvelope(opening)}, {Role: "closing", Source: contentEnvelope(closing)}},
 			Properties: Properties{Literal: value.Semantic, Delimiter: &DelimiterProperties{Marker: '`', Width: width}}})
 		if err != nil {
 			return nil, err
 		}
-		children = append(children, node)
+		children = meteredAppend(s.ctx, children, node)
 		offset = close + width
 	}
 	if err := appendText(len(s.text), 0); err != nil {
@@ -290,8 +301,10 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 // trimmed bytes, survive; only their semantic contributions change. Existing NUL
 // and partial-tab provenance comes from the block scanner, never text decoding.
 func normalizeCodeSpan(ctx context.Context, parts []Segment) Value {
+	meterWork(ctx, 1)
 	var whole strings.Builder
 	for i := range parts {
+		meterWork(ctx, 1)
 		if interruption(ctx) != "" {
 			return Value{}
 		}
@@ -299,6 +312,7 @@ func normalizeCodeSpan(ctx context.Context, parts []Segment) Value {
 		text := part.Semantic.Value
 		var normalized strings.Builder
 		for offset, checkpoint := 0, 0; offset < len(text); offset++ {
+			meterWork(ctx, 1)
 			if offset >= checkpoint {
 				if interruption(ctx) != "" {
 					return Value{}
@@ -314,18 +328,19 @@ func normalizeCodeSpan(ctx context.Context, parts []Segment) Value {
 			} else if c == '\n' {
 				c = ' '
 			}
-			normalized.WriteByte(c)
+			meteredWriteByte(ctx, &normalized, c)
 		}
 		value := normalized.String()
 		if value != text {
 			part.Transformation = Normalized
 			part.Semantic = Some(value)
 		}
-		whole.WriteString(value)
+		meteredWriteString(ctx, &whole, value)
 	}
 	literal := whole.String()
 	allSpaces := true
 	for offset := 0; offset < len(literal); offset++ {
+		meterWork(ctx, 1)
 		if offset%256 == 0 && interruption(ctx) != "" {
 			return Value{}
 		}
@@ -338,7 +353,9 @@ func normalizeCodeSpan(ctx context.Context, parts []Segment) Value {
 		// Each boundary is one ASCII semantic byte; keep its entire original
 		// source range even when it contributes an empty string after trimming.
 		for _, first := range []bool{true, false} {
+			meterWork(ctx, 1)
 			for j := 0; j < len(parts); j++ {
+				meterWork(ctx, 1)
 				if j%256 == 0 && interruption(ctx) != "" {
 					return Value{}
 				}

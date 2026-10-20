@@ -33,8 +33,14 @@ to callers.
 | Definition-only input with established destination/title semantics (including inside otherwise inline-free containers) | `Complete` / `Available` | All records retained, first-definition lookup available; no definition block children; both phases complete |
 | Definition destination/title or fence info contains escapes/entities, with no other missing syntax | `Complete` / `Available` | Known decoded values and explicit raw transformations, available reference lookup and complete phases |
 | Invalid UTF-8 | `Failed` / `Unavailable` | Original Source, typed `Failure` with `InvalidUTF8` code and snapshot-bound byte location, nil Document, neither phase started |
+| Resource budget exhausted | `Incomplete` / `Partial` | Copied `EffectiveLimits`, detached typed `Limit` (`Name`, `Observed`, `Allowed`), whole-source `limit-exceeded` uncertainty and interruption; unfinished phase interrupted, reference availability withheld |
 | Cancellation/deadline on otherwise valid source | `Incomplete` / `Partial` | Original Source and partial root with any already-closed prefix blocks, affected region with `Cancelled`/`DeadlineExceeded`, separate Interruption, nil Failure; unfinished work interrupted |
 | Other operational failure | `Failed` / `Unavailable` | Retained Source, typed stable failure code, nil Document; InternalFailure if block-model construction violates invariants |
+
+The complete rows require admitted size and sufficient runtime budgets; an
+oversized malformed snapshot reports document-size admission first. See the
+[accounting specification](../../docs/engineering/parser-limits.md) for
+validation-budget and interruption precedence.
 
 All core inline handlers are delivered. Disabled extensions/frontmatter follow
 ordinary core syntax and do not become errors. ASCII-blank input
@@ -83,7 +89,8 @@ indexed block lines/EOF, during reference recognition (bounded labels and long
 components), and during bounded inline scanning. Interrupted collection invalidates global registry availability and
 discards unfinished containers rather than finalizing them as normal EOF. Already
 closed root prefixes survive. Strict UTF-8 failure still precedes interruption.
-#31 retains full work metering, index/UTF-8 scan checkpoints and budget enforcement.
+Full work metering, index/UTF-8 checkpoints and budget enforcement are defined
+in [parser accounting](../../docs/engineering/parser-limits.md).
 
 ## Staged paragraph lifecycle
 
@@ -290,7 +297,8 @@ with known semantics. Supported text/nonempty headings now complete, including
 all core inline handlers and known info/definition semantics. Interruption
 discards unfinished nested containers rather than finalizing them as normal EOF;
 already-closed root children survive. Strict encoding failure still takes precedence.
-Full depth/node/work limits and cancellation hardening remain #31.
+Finite default depth/node/work/time budgets, shared-operation accounting and
+scanner checkpoints are implemented; see the [accounting specification](../../docs/engineering/parser-limits.md).
 
 `TestQuoteUpstreamTargets` asserts actual trees, child order, envelopes, markers and
 content ranges for all unchanged 228–252 independently of HTML. Cases 236/239/240
@@ -380,7 +388,8 @@ reference-free/inline-free document. Reference-looking content inside code canno
 define references. Nonempty paragraphs/headings, unknown suffixes and interrupted
 open code do not acquire that handoff. An interruption discards the unfinished
 code builder and its deferred blanks while retaining already-closed prefix nodes.
-Full work metering/checkpoint hardening remains #31.
+Full work metering/checkpoint hardening is defined in
+[parser accounting](../../docs/engineering/parser-limits.md).
 
 `TestIndentedUpstreamTargets` reads unchanged 107–118 and independently asserts
 node ordering, raw envelopes/content/indentation ranges and semantic values.
@@ -432,7 +441,8 @@ Supported fence-only documents complete empty references and vacuous inline work
 mixed input needing another syntax provider stays
 partial. Cancellation/deadline discards an unfinished fence, including at EOF
 finalization, while preserving closed prefix blocks and separate interruption.
-Full metering/checkpoint hardening remains #31.
+Full metering/checkpoint hardening is defined in
+[parser accounting](../../docs/engineering/parser-limits.md).
 
 `TestFencedUpstreamTargets` independently asserts actual Parse kinds/order,
 opening/closing/indentation spans, physical envelopes, payload and info for every
@@ -658,7 +668,8 @@ ownership tests cover both heading styles, nested/lazy containers, all endings,
 NUL, original offsets, immutable accessors and repeat parsing. Deterministic
 cancellation/deadline sweeps withhold unfinished trees. The inline/list fuzz
 consumers independently verify autolink grammar and provenance alongside prior
-Text/code/break assertions; broad numeric work/depth budgets remain #31.
+Text/code/break assertions; broad numeric work/depth budgets follow
+[parser accounting](../../docs/engineering/parser-limits.md).
 
 Independent upstream 327–349 and newly unlocked 17/35/121/525/537/640/641 checks
 assert raw payload, markers, literal and node kinds alongside original HTML.
@@ -669,7 +680,8 @@ source consumers. Partial-tab logical-content preservation has a separate model
 fixture; paragraph producers still strip their leading indentation. Deterministic
 inline cancellation/deadline sweeps withhold unfinished trees and preserve encoding
 precedence. FuzzInlineTextProvenance independently reconstructs Text, code, break and autolink
-semantics from original contributions. Full numeric work/depth budgets remain #31.
+semantics from original contributions. Full numeric work/depth budgets follow
+[parser accounting](../../docs/engineering/parser-limits.md).
 
 ## Emphasis and strong emphasis
 
@@ -709,7 +721,8 @@ change. Opaque interiors and decoded markers are never redispatched.
 New scans, matching, forest construction, mapping and frame traversal retain caller
 cancellation/deadline checkpoints, private completed-tree publication and strict
 encoding precedence. Nested construction uses explicit frames instead of recursive
-Go calls. Comprehensive numeric work/depth budgeting still belongs to #31.
+Go calls. Comprehensive numeric work/depth budgeting follows
+[parser accounting](../../docs/engineering/parser-limits.md).
 
 The fixed acceptance partition covers all 132 emphasis examples: preserve the 90
 single-level passes, add the specified 36 nested cases, and six inline-link
@@ -745,7 +758,8 @@ and overlapping candidates query their endpoints directly. Unbalanced candidates
 do not rescan growing EOF suffixes or skip later valid constructs. This adds linear
 per-block index storage while preserving escaped parentheses, arbitrarily nested
 balanced destinations and existing interruption/publication behavior. It does not
-introduce a syntax limit or the comprehensive budgets deferred to #31.
+introduce an independent grammar limit; the shared finite resource budgets
+are specified in [parser accounting](../../docs/engineering/parser-limits.md).
 
 Each bracket saves the last live delimiter before its opening. Successful labels
 process emphasis strictly above that boundary, retiring only the suffix. Subsequent
@@ -786,7 +800,7 @@ have focused checks. Deterministic failed-destination/recovery checks at doubled
 input sizes reject quadratic cumulative rescanning while independently verifying
 literal and recovered-link source facts. A repeated benchmark records timing and
 allocation tradeoffs without a machine-specific threshold. Full numeric work/depth
-hardening remains #31; cumulative
+hardening is implemented; cumulative
 bracket/candidate measurements are optional and no performance guarantee is claimed.
 
 ## Reference links and definition identity
@@ -841,7 +855,8 @@ retained Unicode-source folding oracle. Raw-identity/999–1000-character, mappe
 heading/container/endings, immutability, bad binding/projection and interruption
 checks supplement those upstream cases. Images add 517/520/531 and 572–591,
 bringing the ledger to 652 pass / 0 pending. No rule, CLI/MCP, production rendering
-or comprehensive #31 resource-budget implementation is added.
+or independent resource-budget policy is added. Shared parser budgets follow
+[parser accounting](../../docs/engineering/parser-limits.md).
 
 ## Images and semantic descriptions
 
@@ -868,7 +883,8 @@ independent image counts, envelopes, brackets, components, forms and nested AST
 shapes. Mapping, semantic-alt, malformed/escaped syntax, definition folding and
 first-selection tests supplement these cases. Shared fuzz provenance oracles and
 deterministic interruption sweeps include images. The corpus is 652 pass/0 pending;
-comprehensive work/depth hardening remains #31.
+comprehensive work/depth hardening follows
+[parser accounting](../../docs/engineering/parser-limits.md).
 
 ## Snapshots, spans and ownership
 
@@ -1136,7 +1152,8 @@ Terminator and quote positions are lazily indexed once per logical inline block;
 lookups use ordered indexes rather than repeated failed suffix searches. State
 does not cross blocks or calls. Indexing, grammar scanning and source mapping
 retain caller-context checkpoints and private publication. Full resource budgets
-remain #31. This is no general performance or whole-parser conformance claim.
+follow [parser accounting](../../docs/engineering/parser-limits.md). This is no
+general performance claim.
 
 `TestInlineHTMLUpstreamAcceptanceAndNewPasses` consumes unchanged 613–632 and
 all 28 newly available cases with independent original HTML-node envelopes,

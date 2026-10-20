@@ -514,7 +514,7 @@ func FuzzListMarkerSourceFacts(f *testing.F) {
 	f.Fuzz(func(t *testing.T, input string) {
 		if len(input) > 4096 {
 			return
-		} // A bounded smoke target, not full work metering.
+		} // Bound fuzz-oracle work independently of production parse budgets.
 		source := parser.NewSource([]byte(input))
 		r := parser.Parse(context.Background(), source)
 		if string(r.Source.Bytes()) != input || !reflect.DeepEqual(r, parser.Parse(context.Background(), source)) {
@@ -524,6 +524,9 @@ func FuzzListMarkerSourceFacts(f *testing.F) {
 			if r.Failure.Code != parser.InvalidUTF8 {
 				t.Fatal("valid source violated model invariant", r.Failure)
 			}
+			return
+		}
+		if fuzzLimitOutcome(t, r) {
 			return
 		}
 		if r.Status == parser.Complete && (r.AST != parser.Available || len(r.Uncertainty) != 0 || conformance.Evaluate(r).Status != "rendered") {

@@ -41,6 +41,7 @@ type inlineScanner struct {
 }
 
 func parseInlines(ctx context.Context, document *Document, blocks PhaseState) (PhaseState, error) {
+	meterWork(ctx, 1)
 	if blocks != PhaseComplete || document.references.LookupAvailability != Available {
 		return NotStarted, nil
 	}
@@ -74,23 +75,28 @@ func parseInlines(ctx context.Context, document *Document, blocks PhaseState) (P
 }
 
 func inlineTree(ctx context.Context, node *Node, state *PhaseState, references *ReferenceCollection) (*Node, error) {
+	meterWork(ctx, 1)
 	if interruption(ctx) != "" {
 		return node, nil
 	}
+	checkDepth(ctx, ancestorDepth(ctx))
 	spec := node.spec // borrow immutable blocks; NewNode freezes changed children
 	switch spec.Kind {
 	case Paragraph, Heading:
 		var text strings.Builder
 		for _, part := range spec.Content {
+			meterWork(ctx, 1)
 			if interruption(ctx) != "" {
 				return node, nil
 			}
 			if !part.Source.Present() || !part.Semantic.Present {
 				return nil, ErrModel // recognized block payloads have exact mappings
 			}
-			text.WriteString(part.Semantic.Value)
+			meteredWriteString(ctx, &text, part.Semantic.Value)
 		}
-		scanner := inlineScanner{ctx: ctx, text: text.String(), references: references}
+		scannerContext := withAncestor(ctx, ancestorDepth(ctx)+1)
+		checkDepth(scannerContext, ancestorDepth(scannerContext))
+		scanner := inlineScanner{ctx: scannerContext, text: text.String(), references: references}
 		scanner.opaqueCandidates()
 		children, err := scanner.scan(spec.Content)
 		if err == nil && interruption(ctx) == "" {
@@ -107,13 +113,21 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState, references *
 		}
 		spec.Children = children
 	case DocumentKind, BlockQuote, List, ListItem:
-		spec.Children = make([]*Node, len(node.spec.Children))
+		spec.Children = meteredSlice[*Node](ctx,
+
+			len(node.spec.Children))
 		for i, child := range node.spec.Children {
+			meterWork(ctx, 1)
 			if interruption(ctx) != "" {
 				return node, nil
 			}
 			var err error
-			spec.Children[i], err = inlineTree(ctx, child, state, references)
+			childContext := ctx
+			if spec.Kind != DocumentKind {
+				childContext = withAncestor(ctx, ancestorDepth(ctx)+1)
+			}
+			checkDepth(childContext, ancestorDepth(childContext))
+			spec.Children[i], err = inlineTree(childContext, child, state, references)
 			if err != nil {
 				return nil, err
 			}
@@ -121,20 +135,22 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState, references *
 	default:
 		return node, nil // code and raw HTML are opaque, including in containers
 	}
-	return NewNode(spec)
+	return meteredNode(ctx, spec)
 }
 
 // Dispatch consumes known text escapes/entities and classifies emphasis runs.
 // Delimiters are classified here, after opaque constructs and decoding tokens
 // have been consumed. Pairing happens at successful label boundaries and block end.
 func (s *inlineScanner) dispatch(offset int) int {
-	if _, width, _ := decodeToken(s.text[offset:]); width != 0 {
+	meterWork(s.ctx, 1)
+	if _, width, _ := decodeTokenContext(s.ctx, s.text[offset:]); width != 0 {
 		return offset + width // generated characters never enter syntax dispatch
 	}
 	switch c := s.text[offset]; c {
 	case '*', '_':
 		end := offset + 1
 		for end < len(s.text) && s.text[end] == c {
+			meterWork(s.ctx, 1)
 			if (end-offset)%256 == 0 && interruption(s.ctx) != "" {
 				return len(s.text)
 			}
@@ -157,6 +173,7 @@ func (s *inlineScanner) dispatch(offset int) int {
 // Scoped label processing can retire a suffix before scanning the next run.
 // Append to the remaining live prefix without relinking or reviving old records.
 func (s *inlineScanner) appendDelimiter(d inlineDelimiter) {
+	meterWork(s.ctx, 1)
 	i := len(s.delimiters)
 	if s.delimitersLinked {
 		d.previous, d.next = s.delimiterTail, i+1
@@ -167,14 +184,16 @@ func (s *inlineScanner) appendDelimiter(d inlineDelimiter) {
 		}
 		s.delimiterTail = i
 	}
-	s.delimiters = append(s.delimiters, d)
+	s.delimiters = meteredAppend(s.ctx, s.delimiters, d)
 }
 
 // Index maximal raw backtick runs once, including runs after a backslash: code
 // closers ignore ordinary-text escapes. HTML terminators are indexed lazily by
 // the HTML recognizer, independently of these raw backtick runs.
 func (s *inlineScanner) opaqueCandidates() {
+	meterWork(s.ctx, 1)
 	for offset, checkpoint := 0, 0; offset < len(s.text); {
+		meterWork(s.ctx, 1)
 		if offset >= checkpoint {
 			if interruption(s.ctx) != "" {
 				return
@@ -187,6 +206,7 @@ func (s *inlineScanner) opaqueCandidates() {
 		}
 		start := offset
 		for offset < len(s.text) && s.text[offset] == '`' {
+			meterWork(s.ctx, 1)
 			if (offset-start)%256 == 0 && interruption(s.ctx) != "" {
 				return
 			}
@@ -196,7 +216,7 @@ func (s *inlineScanner) opaqueCandidates() {
 			s.backticks = make(map[int][]int)
 			s.backtickNext = make(map[int]int)
 		}
-		s.backticks[offset-start] = append(s.backticks[offset-start], start)
+		s.backticks[offset-start] = meteredAppend(s.ctx, s.backticks[offset-start], start)
 	}
 }
 

@@ -150,6 +150,10 @@ func FuzzReferenceRegistry(f *testing.F) {
 			}
 			return
 		}
+		if r.Limit != nil {
+			requireLimit(t, r, r.Limit.Name)
+			return
+		}
 		refs := r.Document.References()
 		first := map[string]int{}
 		previous := -1

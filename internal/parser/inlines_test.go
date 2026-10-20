@@ -280,6 +280,9 @@ func FuzzInlineTextProvenance(f *testing.F) {
 			}
 			return
 		}
+		if fuzzLimitOutcome(t, r) {
+			return
+		}
 		parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
 			if n.Kind() == parser.Paragraph || n.Kind() == parser.Heading {
 				checkInlineSourceCoverage(t, n)

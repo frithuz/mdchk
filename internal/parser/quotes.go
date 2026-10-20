@@ -3,10 +3,12 @@ package parser
 // Containers and the current paragraph are private builders over the original
 // snapshot. Leaves are frozen once, then attached to their actual parent.
 func (p *blockParser) paragraphOpen() bool {
+	meterWork(p.ctx, 1)
 	return p.stack[len(p.stack)-1].kind == Paragraph
 }
 
 func (p *blockParser) containerDepth() int {
+	meterWork(p.ctx, 1)
 	if p.paragraphOpen() {
 		return len(p.stack) - 1
 	}
@@ -14,22 +16,25 @@ func (p *blockParser) containerDepth() int {
 }
 
 func (p *blockParser) attach(node *Node) {
+	meterWork(p.ctx, 1)
 	p.attachBlock(parsedBlock{node: node})
 }
 
 func (p *blockParser) attachBlock(block parsedBlock) {
+	meterWork(p.ctx, 1)
 	if p.referenceInterrupted {
 		return
 	}
 	if len(p.stack) == 1 {
-		p.closed = append(p.closed, block)
+		p.closed = meteredAppend(p.ctx, p.closed, block)
 		return
 	}
 	parent := &p.stack[len(p.stack)-1]
-	parent.children = append(parent.children, block)
+	parent.children = meteredAppend(p.ctx, parent.children, block)
 }
 
 func (p *blockParser) closeLeaves() error {
+	meterWork(p.ctx, 1)
 	if err := p.closeHTML(); err != nil {
 		return err
 	}
@@ -43,6 +48,7 @@ func (p *blockParser) closeLeaves() error {
 // partially consumed by that delimiter is shared with the residual content's
 // PartialTab span; no original byte is split or synthesized.
 func (p *blockParser) quotePrefix(cursor Indentation) (Indentation, Span, bool) {
+	meterWork(p.ctx, 1)
 	c := cursor
 	_, _ = c.Consume(3)
 	if c.tabRemaining != 0 || c.offset == c.end || p.index.source.content[c.offset] != '>' {
@@ -58,6 +64,7 @@ func (p *blockParser) quotePrefix(cursor Indentation) (Indentation, Span, bool) 
 }
 
 func (p *blockParser) interruptsParagraph(line blockLine) bool {
+	meterWork(p.ctx, 1)
 	if line.indent >= 4 {
 		return false
 	}
@@ -76,9 +83,11 @@ func (p *blockParser) interruptsParagraph(line blockLine) bool {
 // keeps unchanged top-level HTML contiguous without copying/rescanning its prefix
 // on every line, and leaves stripped quote prefixes out of logical content.
 func (p *blockParser) appendRawLine(content []Segment, line blockLine) []Segment {
+	meterWork(p.ctx, 1)
 	cursor := line.cursor
 	cursor.end = line.next
 	for _, segment := range cursor.Remaining().Segments {
+		meterWork(p.ctx, 1)
 		if len(content) != 0 {
 			last := &content[len(content)-1]
 			if last.Transformation == Exact && segment.Transformation == Exact && last.Source.End() == segment.Source.Start() {
@@ -87,7 +96,7 @@ func (p *blockParser) appendRawLine(content []Segment, line blockLine) []Segment
 				continue
 			}
 		}
-		content = append(content, segment)
+		content = meteredAppend(p.ctx, content, segment)
 	}
 	return content
 }

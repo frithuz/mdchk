@@ -16,6 +16,9 @@ type listStart struct {
 // scans original bytes without materializing the content suffix or full padding.
 // Setext and thematic-break precedence belongs to the caller.
 func classifyListStart(line blockLine, paragraphOpen bool) (listStart, bool) {
+	meterWork(line.cursor.index.
+		ctx, 1)
+
 	if line.indent >= 4 {
 		return listStart{}, false
 	}
@@ -25,6 +28,9 @@ func classifyListStart(line blockLine, paragraphOpen bool) (listStart, bool) {
 	previous := byte(0)
 	// logicalLine has already counted at most three leading columns here.
 	for c.offset < line.contentStart {
+		meterWork(line.cursor.index.
+			ctx, 1)
+
 		if text[c.offset] != ' ' || previous != ' ' {
 			prefixSegments++
 		}
@@ -40,6 +46,9 @@ func classifyListStart(line blockLine, paragraphOpen bool) (listStart, bool) {
 	default:
 		start, digits := 0, 0
 		for c.offset < c.end && text[c.offset] >= '0' && text[c.offset] <= '9' {
+			meterWork(line.cursor.index.
+				ctx, 1)
+
 			digits++
 			if digits > 9 {
 				return listStart{}, false
@@ -60,6 +69,9 @@ func classifyListStart(line blockLine, paragraphOpen bool) (listStart, bool) {
 	paddingSegments := 0
 	previous = 0
 	for content.offset < content.end && (text[content.offset] == ' ' || text[content.offset] == '\t') {
+		meterWork(line.cursor.index.
+			ctx, 1)
+
 		if text[content.offset] != ' ' || previous != ' ' {
 			paddingSegments++
 		}
@@ -94,6 +106,7 @@ func classifyListStart(line blockLine, paragraphOpen bool) (listStart, bool) {
 // advanceListSpace consumes one original whitespace byte without allocating
 // semantic text. A pending tab contributes only its unconsumed columns.
 func advanceListSpace(c *Indentation) {
+	meterWork(c.index.ctx, 1)
 	if c.index.source.content[c.offset] == '\t' {
 		if c.tabRemaining != 0 {
 			c.column += c.tabRemaining
@@ -110,11 +123,17 @@ func advanceListSpace(c *Indentation) {
 // openItem opens a private item builder. Prefix facts survive closure; payload
 // is dispatched as blocks, never copied into a stripped replacement source.
 func (s listStart) openItem() (openBlock, error) {
+	meterWork(s.line.cursor.index.
+		ctx, 1)
+
 	c := s.line.cursor
 	// Classification already counted the accepted prefix contributions. Build
 	// them once in exact private storage, without a second padding Segment buffer
 	// or Consume's unused aggregate padding string. NewNode still snapshots them.
-	prefix := Value{Segments: make([]Segment, 0, s.prefixSegments)}
+	prefix := Value{Segments: meteredSlice[Segment](s.line.cursor.index.
+		ctx,
+
+		0, s.prefixSegments)}
 	var text strings.Builder
 	text.Grow(s.content.column - c.column)
 	if err := appendListPrefixIndentation(&prefix, &text, &c, s.marker.column); err != nil {
@@ -122,9 +141,11 @@ func (s listStart) openItem() (openBlock, error) {
 	}
 	markerSpan := c.index.span(s.marker.offset, s.after.offset)
 	markerText := c.index.source.content[markerSpan.start:markerSpan.end]
-	prefix.Segments = append(prefix.Segments, Segment{Source: markerSpan, Transformation: Exact,
+	prefix.Segments = meteredAppend(s.line.cursor.index.
+		ctx, prefix.Segments, Segment{Source: markerSpan, Transformation: Exact,
 		Semantic: Some(markerText)})
-	text.WriteString(markerText)
+	meteredWriteString(s.line.cursor.index.
+		ctx, &text, markerText)
 	c = s.after
 	if err := appendListPrefixIndentation(&prefix, &text, &c, s.content.column); err != nil {
 		return openBlock{}, err
@@ -147,11 +168,12 @@ func (s listStart) openItem() (openBlock, error) {
 // item. Markers preserve per-line indentation/blank evidence for grouping and
 // tightness at closure. Lazy lines never acquire invented prefixes.
 func (p *blockParser) matchContainer(depth int, physical physicalLine, cursor Indentation) (Indentation, bool) {
+	meterWork(p.ctx, 1)
 	block := &p.stack[depth]
 	if block.kind == BlockQuote {
 		next, prefix, ok := p.quotePrefix(cursor)
 		if ok {
-			block.markers = append(block.markers, Marker{Role: "quote-prefix", Source: prefix})
+			block.markers = meteredAppend(p.ctx, block.markers, Marker{Role: "quote-prefix", Source: prefix})
 		}
 		return next, ok
 	}
@@ -167,10 +189,10 @@ func (p *blockParser) matchContainer(depth int, physical physicalLine, cursor In
 	}
 	if len(consumed.Content.Segments) != 0 {
 		end := consumed.Content.Segments[len(consumed.Content.Segments)-1].Source.End()
-		block.markers = append(block.markers, Marker{Role: "item-indent", Source: p.index.span(cursor.offset, end)})
+		block.markers = meteredAppend(p.ctx, block.markers, Marker{Role: "item-indent", Source: p.index.span(cursor.offset, end)})
 	}
 	if blank {
-		block.markers = append(block.markers, Marker{Role: "item-blank", Source: p.index.span(cursor.offset, physical.next)})
+		block.markers = meteredAppend(p.ctx, block.markers, Marker{Role: "item-blank", Source: p.index.span(cursor.offset, physical.next)})
 	} else {
 		block.empty = false
 	}
@@ -182,6 +204,7 @@ func (p *blockParser) matchContainer(depth int, physical physicalLine, cursor In
 // list types still obey paragraph interruption restrictions. Empty compatible
 // siblings likewise end the prior item without interrupting ordinary prose.
 func (p *blockParser) siblingItem(depth int, line blockLine) bool {
+	meterWork(p.ctx, 1)
 	block := &p.stack[depth]
 	if block.kind != ListItem {
 		return false
@@ -198,12 +221,15 @@ func (p *blockParser) siblingItem(depth int, line blockLine) bool {
 // into the private prefix. Space runs borrow Source; tab contributions borrow
 // static spaces. A partly consumed tab retains its original one-byte span.
 func appendListPrefixIndentation(prefix *Value, text *strings.Builder, c *Indentation, endColumn int) error {
+	meterWork(c.index.ctx, 1)
 	for c.column < endColumn && c.offset < c.end {
+		meterWork(c.index.ctx, 1)
 		start := c.offset
 		segment := Segment{}
 		switch c.index.source.content[start] {
 		case ' ':
 			for c.column < endColumn && c.offset < c.end && c.index.source.content[c.offset] == ' ' {
+				meterWork(c.index.ctx, 1)
 				c.offset++
 				c.column++
 			}
@@ -224,8 +250,10 @@ func appendListPrefixIndentation(prefix *Value, text *strings.Builder, c *Indent
 		default:
 			return ErrIndentation
 		}
-		prefix.Segments = append(prefix.Segments, segment)
-		text.WriteString(segment.Semantic.Value)
+		prefix.Segments = meteredAppend(c.index.ctx, prefix.Segments, segment)
+		meteredWriteString(c.index.ctx, text,
+
+			segment.Semantic.Value)
 	}
 	if c.column != endColumn {
 		return ErrIndentation

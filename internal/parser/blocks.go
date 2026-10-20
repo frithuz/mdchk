@@ -3,7 +3,6 @@ package parser
 import (
 	"context"
 	"sort"
-	"strings"
 )
 
 // blockLine is a borrowed view of one indexed physical line. Indent is capped
@@ -56,19 +55,22 @@ type blockParser struct {
 }
 
 func parseBlocks(ctx context.Context, document *Document) (PhaseState, error) {
+	meterWork(ctx, 1)
 	return parseBlockLifecycle(ctx, document, nil)
 }
 
 func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockStartHook) (PhaseState, error) {
+	meterWork(ctx, 1)
 	document.references = ReferenceCollection{Availability: Unavailable, LookupAvailability: Unavailable}
 	document.inlineFree = false
 	document.blocksRecognized = false
 	if interruption(ctx) != "" {
 		return Interrupted, nil
 	}
-	p := blockParser{index: NewLineIndex(document.Source()), stack: []openBlock{{kind: DocumentKind}}, hooks: hooks, ctx: ctx}
+	p := blockParser{index: newLineIndex(ctx, document.Source()), stack: []openBlock{{kind: DocumentKind}}, hooks: hooks, ctx: ctx}
 	state := PhaseComplete
 	for _, physical := range p.index.lines {
+		meterWork(ctx, 1)
 		if interruption(ctx) != "" {
 			state = Interrupted
 			break
@@ -76,6 +78,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		cursor := Indentation{index: p.index, offset: physical.start, end: physical.end}
 		matched := 1
 		for matched < p.containerDepth() {
+			meterWork(ctx, 1)
 			next, ok := p.matchContainer(matched, physical, cursor)
 			if !ok {
 				break
@@ -90,6 +93,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			// particular an unmarked equals underline cannot promote a lazy paragraph.
 			if p.paragraphOpen() && line.contentStart != line.end && !p.siblingItem(matched, line) && !p.interruptsParagraph(line) && p.paragraphAllowsLazy(physical) {
 				for i := 1; i < p.containerDepth(); i++ {
+					meterWork(ctx, 1)
 					p.stack[i].end = physical.next
 				}
 				line.lazy = true
@@ -104,6 +108,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 		}
 		for i := 1; i < p.containerDepth(); i++ {
+			meterWork(ctx, 1)
 			p.stack[i].end = physical.next
 		}
 		if p.html != nil {
@@ -120,7 +125,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		}
 		if p.fence != nil {
 			if closing := p.fenceClosing(line); closing.Present() {
-				p.fence.markers = append(p.fence.markers, Marker{Role: "closing", Source: closing})
+				p.fence.markers = meteredAppend(ctx, p.fence.markers, Marker{Role: "closing", Source: closing})
 				p.fence.end = line.next
 				if err := p.closeFence(); err != nil {
 					return Pending, err
@@ -132,11 +137,12 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		}
 		if p.code != nil {
 			if line.contentStart == line.end {
-				p.code.blanks = append(p.code.blanks, line)
+				p.code.blanks = meteredAppend(ctx, p.code.blanks, line)
 				continue
 			}
 			if line.indent >= 4 {
 				for _, blank := range p.code.blanks {
+					meterWork(ctx, 1)
 					p.appendCodeLine(blank)
 				}
 				p.code.blanks = nil
@@ -151,6 +157,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		// Continuing leaves have already consumed this line. A dedented code
 		// line is reprocessed here too, so it can open a new quote container.
 		for {
+			meterWork(ctx, 1)
 			next, prefix, ok := p.quotePrefix(cursor)
 			if !ok {
 				break
@@ -158,7 +165,8 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			if err := p.closeTo(p.containerDepth()); err != nil {
 				return Pending, err
 			}
-			p.stack = append(p.stack, openBlock{kind: BlockQuote, start: cursor.Offset(), end: physical.next,
+			checkDepth(ctx, p.syntaxDepth()+1)
+			p.stack = meteredAppend(ctx, p.stack, openBlock{kind: BlockQuote, start: cursor.Offset(), end: physical.next,
 				markers: []Marker{{Role: "quote-prefix", Source: prefix}}})
 			cursor = next
 		}
@@ -170,7 +178,11 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 			continue
 		}
+		// Nonempty dispatch necessarily opens or continues a leaf/definition.
+		// Check its combined container depth before allocating leaf metadata.
+		checkDepth(p.ctx, p.containerSyntaxDepth()+1)
 		if line.indent >= 4 && !p.paragraphOpen() {
+			checkDepth(p.ctx, p.syntaxDepth()+1)
 			p.code = &indentedCode{start: line.start}
 			p.appendCodeLine(line)
 			continue
@@ -179,6 +191,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			if err := p.closeTo(depth); err != nil {
 				return Pending, err
 			}
+			checkDepth(p.ctx, p.syntaxDepth()+1)
 			p.fence = fence
 			if !fence.info.Semantic.Present {
 				state = Pending // interrupted info decoding cannot establish semantics.
@@ -189,6 +202,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			if err := p.closeTo(depth); err != nil {
 				return Pending, err
 			}
+			checkDepth(p.ctx, p.syntaxDepth()+1)
 			p.html = &htmlBlock{start: line.start, form: form}
 			if err := p.appendHTMLLine(line); err != nil {
 				return Pending, err
@@ -215,7 +229,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			if err := p.closeTo(depth); err != nil {
 				return Pending, err
 			}
-			node, err := NewNode(NodeSpec{Kind: ThematicBreak, Envelope: p.index.span(line.start, line.next), Markers: markers})
+			node, err := meteredNode(p.ctx, NodeSpec{Kind: ThematicBreak, Envelope: p.index.span(line.start, line.next), Markers: markers})
 			if err != nil {
 				return Pending, err
 			}
@@ -240,11 +254,12 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			if err := p.closeTo(depth); err != nil {
 				return Pending, err
 			}
+			checkDepth(p.ctx, p.syntaxDepth()+2)
 			item, err := start.openItem()
 			if err != nil {
 				return Pending, err
 			}
-			p.stack = append(p.stack, item)
+			p.stack = meteredAppend(ctx, p.stack, item)
 			cursor = start.content
 			// The first payload can itself open another item/quote, or any leaf.
 			// Completed siblings are grouped once when their parent closes.
@@ -252,6 +267,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		}
 		deferred := false
 		for _, hook := range p.hooks {
+			meterWork(ctx, 1)
 			if hook(line, p.paragraphOpen()) {
 				deferred = true
 				break
@@ -264,6 +280,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			// established quote prefixes/closed children, but discard an open paragraph.
 			p.stack = p.stack[:depth]
 			for i := range p.stack {
+				meterWork(ctx, 1)
 				p.stack[i].partial = true
 			}
 			break
@@ -295,18 +312,21 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 	if err != nil {
 		return Pending, err
 	}
-	root, err := NewNode(NodeSpec{Kind: DocumentKind, Envelope: p.index.span(0, p.index.source.Len()), Children: blockNodes(children)})
+	root, err := meteredNode(p.ctx, NodeSpec{Kind: DocumentKind, Envelope: p.index.span(0, p.index.source.Len()), Children: blockNodesContext(p.ctx, children)})
 	if err != nil {
 		return Pending, err
 	}
 	document.root = root
 	if state != Interrupted && !p.deferred {
 		sort.SliceStable(p.definitions, func(i, j int) bool {
+			meterWork(p.ctx, 1)
 			return p.definitions[i].spec.Envelope.Start() < p.definitions[j].spec.Envelope.Start()
 		})
 		lookup := make(map[string]int)
 		for i, definition := range p.definitions {
+			meterWork(ctx, 1)
 			label := definition.spec.NormalizedLabel.Value
+			meterWork(p.ctx, len(label)*2)
 			if _, exists := lookup[label]; !exists {
 				lookup[label] = i
 			}
@@ -322,12 +342,14 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 // Closing hashes are block syntax; their escaped/nonclosing spellings remain
 // raw content for the later inline decoder. All trimming is ASCII space/tab.
 func (p *blockParser) atxHeading(line blockLine) (*Node, error) {
+	meterWork(p.ctx, 1)
 	if line.indent >= 4 || line.first != '#' {
 		return nil, nil
 	}
 	text := p.index.source.content
 	openingEnd := line.contentStart
 	for openingEnd < line.end && text[openingEnd] == '#' {
+		meterWork(p.ctx, 1)
 		openingEnd++
 		if openingEnd-line.contentStart > 6 {
 			return nil, nil
@@ -338,25 +360,29 @@ func (p *blockParser) atxHeading(line blockLine) (*Node, error) {
 	}
 	start := openingEnd
 	for start < line.end && (text[start] == ' ' || text[start] == '\t') {
+		meterWork(p.ctx, 1)
 		start++
 	}
 	end := line.end
 	for end > start && (text[end-1] == ' ' || text[end-1] == '\t') {
+		meterWork(p.ctx, 1)
 		end--
 	}
 	markers := []Marker{{Role: "opening", Source: p.index.span(line.contentStart, openingEnd)}}
 	closingStart := end
 	for closingStart > start && text[closingStart-1] == '#' {
+		meterWork(p.ctx, 1)
 		closingStart--
 	}
 	if closingStart < end && (text[closingStart-1] == ' ' || text[closingStart-1] == '\t') {
-		markers = append(markers, Marker{Role: "closing", Source: p.index.span(closingStart, end)})
+		markers = meteredAppend(p.ctx, markers, Marker{Role: "closing", Source: p.index.span(closingStart, end)})
 		end = closingStart
 		for end > start && (text[end-1] == ' ' || text[end-1] == '\t') {
+			meterWork(p.ctx, 1)
 			end--
 		}
 	}
-	return NewNode(NodeSpec{
+	return meteredNode(p.ctx, NodeSpec{
 		Kind: Heading, Envelope: p.index.span(line.start, line.next), Markers: markers,
 		Content:    p.index.semanticText(start, end).Segments,
 		Properties: Properties{Heading: &HeadingProperties{Level: openingEnd - line.contentStart, Style: "atx"}},
@@ -367,6 +393,7 @@ func (p *blockParser) atxHeading(line blockLine) (*Node, error) {
 // paragraph. Its delayed last line contributes content without its ending;
 // the envelope, unlike content and marker, retains both physical line endings.
 func (p *blockParser) setextHeading(line blockLine) (*Node, error) {
+	meterWork(p.ctx, 1)
 	if !p.paragraphOpen() {
 		return nil, nil
 	}
@@ -381,7 +408,7 @@ func (p *blockParser) setextHeading(line blockLine) (*Node, error) {
 		return nil, nil
 	}
 	paragraph := p.stack[len(p.stack)-1]
-	return NewNode(NodeSpec{
+	return meteredNode(p.ctx, NodeSpec{
 		Kind: Heading, Envelope: p.index.span(paragraph.start, line.next),
 		Content:    p.paragraphContent(paragraph),
 		Markers:    []Marker{{Role: "underline", Source: p.index.span(line.contentStart, end)}},
@@ -392,15 +419,18 @@ func (p *blockParser) setextHeading(line blockLine) (*Node, error) {
 // Classification is shared with read-only reference lookahead. Unlike heading
 // promotion, it does not extract definitions or mutate the open paragraph.
 func (p *blockParser) setextUnderline(line blockLine) (end, level int) {
+	meterWork(p.ctx, 1)
 	if line.indent >= 4 || line.first != '=' && line.first != '-' {
 		return 0, 0
 	}
 	text := p.index.source.content
 	end = line.contentStart
 	for end < line.end && text[end] == line.first {
+		meterWork(p.ctx, 1)
 		end++
 	}
 	for i := end; i < line.end; i++ {
+		meterWork(p.ctx, 1)
 		if text[i] != ' ' && text[i] != '\t' {
 			return 0, 0
 		}
@@ -417,12 +447,14 @@ func (p *blockParser) setextUnderline(line blockLine) (end, level int) {
 // tabs and endings remain in the envelope, never in a marker. A single dash run
 // could instead underline an open paragraph, handled before this recognizer.
 func (p *blockParser) thematicMarkers(line blockLine) (markers []Marker) {
-	if line.indent >= 4 || !strings.ContainsRune("*-_", rune(line.first)) {
+	meterWork(p.ctx, 1)
+	if line.indent >= 4 || !meteredContainsRune(p.ctx, "*-_", rune(line.first)) {
 		return nil
 	}
 	text := p.index.source.content
 	count, last := 0, line.contentStart
 	for i := line.contentStart; i < line.end; i++ {
+		meterWork(p.ctx, 1)
 		switch text[i] {
 		case line.first:
 			count++
@@ -436,15 +468,17 @@ func (p *blockParser) thematicMarkers(line blockLine) (markers []Marker) {
 		return nil
 	}
 	for i := line.contentStart; i <= last; {
+		meterWork(p.ctx, 1)
 		if text[i] != line.first {
 			i++
 			continue
 		}
 		start := i
 		for i <= last && text[i] == line.first {
+			meterWork(p.ctx, 1)
 			i++
 		}
-		markers = append(markers, Marker{Role: "thematic-marker", Source: p.index.span(start, i)})
+		markers = meteredAppend(p.ctx, markers, Marker{Role: "thematic-marker", Source: p.index.span(start, i)})
 	}
 	return markers
 }
@@ -452,11 +486,13 @@ func (p *blockParser) thematicMarkers(line blockLine) (markers []Marker) {
 // Classify without acquiring semantic suffixes at every quote depth. The cursor
 // retains physical tab-column phase; indent is relative to the current container.
 func (p *blockParser) logicalLine(physical physicalLine, cursor Indentation) blockLine {
+	meterWork(p.ctx, 1)
 	physical.start = cursor.Offset()
 	line := blockLine{physicalLine: physical, cursor: cursor}
 	c := cursor
 	text := p.index.source.content
 	for c.offset < c.end {
+		meterWork(p.ctx, 1)
 		switch text[c.offset] {
 		case ' ':
 			c.column++
@@ -479,13 +515,15 @@ func (p *blockParser) logicalLine(physical physicalLine, cursor Indentation) blo
 }
 
 func (p *blockParser) appendParagraph(line blockLine) {
+	meterWork(p.ctx, 1)
 	if !p.paragraphOpen() {
+		checkDepth(p.ctx, p.syntaxDepth()+1)
 		block := openBlock{kind: Paragraph, start: line.start, last: line}
 		if line.first == '[' {
 			block.reference = &referenceParagraph{}
 			block.reference.append(p.index.source, line)
 		}
-		p.stack = append(p.stack, block)
+		p.stack = meteredAppend(p.ctx, p.stack, block)
 		return
 	}
 	paragraph := &p.stack[len(p.stack)-1]
@@ -494,12 +532,14 @@ func (p *blockParser) appendParagraph(line blockLine) {
 	}
 	// Keep interior trailing spaces and the complete original ending. Delay the
 	// final line's contribution so closure can trim only paragraph-final bytes.
-	paragraph.content = append(paragraph.content, p.index.semanticText(paragraph.last.contentStart, paragraph.last.next).Segments...)
+	paragraph.content = meteredAppend(p.ctx, paragraph.content, p.index.semanticText(paragraph.last.contentStart, paragraph.last.next).Segments...)
 	paragraph.last = line
 }
 
 func (p *blockParser) closeTo(depth int) error {
+	meterWork(p.ctx, 1)
 	for len(p.stack) > depth {
+		meterWork(p.ctx, 1)
 		if p.paragraphOpen() {
 			if err := p.stripReferences(); err != nil {
 				return err
@@ -517,7 +557,7 @@ func (p *blockParser) closeTo(depth int) error {
 		if err != nil {
 			return err
 		}
-		spec := NodeSpec{Kind: block.kind, Envelope: p.index.span(block.start, block.end), Markers: block.markers, Children: blockNodes(children)}
+		spec := NodeSpec{Kind: block.kind, Envelope: p.index.span(block.start, block.end), Markers: block.markers, Children: blockNodesContext(p.ctx, children)}
 		if block.list != nil {
 			spec.Properties.List = block.list
 		}
@@ -526,14 +566,14 @@ func (p *blockParser) closeTo(depth int) error {
 			spec.Envelope = p.index.span(block.start, block.last.next)
 			spec.Content = p.paragraphContent(block)
 		}
-		node, err := NewNode(spec)
+		node, err := meteredNode(p.ctx, spec)
 		if err != nil {
 			return err
 		}
 		p.stack = p.stack[:len(p.stack)-1]
 		closed := parsedBlock{node: node, partial: block.partial}
 		if block.kind == ListItem {
-			closed.loose, closed.trailingBlank = itemBlankBoundaries(block, children)
+			closed.loose, closed.trailingBlank = itemBlankBoundariesContext(p.ctx, block, children)
 		}
 		p.attachBlock(closed)
 	}
@@ -543,10 +583,35 @@ func (p *blockParser) closeTo(depth int) error {
 // The private builder owns the segment backing storage until NewNode freezes it.
 // This is called once on closure/promotion, never for each continuation line.
 func (p *blockParser) paragraphContent(paragraph openBlock) []Segment {
+	meterWork(p.ctx, 1)
 	end := paragraph.last.end
 	text := p.index.source.content
 	for end > paragraph.last.contentStart && (text[end-1] == ' ' || text[end-1] == '\t') {
+		meterWork(p.ctx, 1)
 		end--
 	}
-	return append(paragraph.content, p.index.semanticText(paragraph.last.contentStart, end).Segments...)
+	return meteredAppend(p.ctx, paragraph.content, p.index.semanticText(paragraph.last.contentStart, end).Segments...)
+}
+
+// List grouping contributes an explicit List ancestor around every open item.
+func (p *blockParser) syntaxDepth() int {
+	depth := 0
+	for _, b := range p.stack {
+		meterWork(p.ctx, 1)
+		if b.kind != DocumentKind {
+			depth++
+		}
+		if b.kind == ListItem {
+			depth++
+		}
+	}
+	return depth
+}
+
+func (p *blockParser) containerSyntaxDepth() int {
+	depth := p.syntaxDepth()
+	if p.paragraphOpen() {
+		depth--
+	}
+	return depth
 }

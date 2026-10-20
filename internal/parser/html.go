@@ -1,6 +1,9 @@
 package parser
 
-import "strings"
+import (
+	"context"
+	"strings"
+)
 
 // The active form is fixed at opening. Only the current line is searched for a
 // terminator. Logical lines acquire original-source segments without prefixes;
@@ -12,39 +15,41 @@ type htmlBlock struct {
 }
 
 func (p *blockParser) htmlOpening(line blockLine, paragraphOpen bool) int {
+	meterWork(p.ctx, 1)
 	if line.indent >= 4 || line.first != '<' {
 		return 0
 	}
 	s := p.index.source.content[line.contentStart:line.end]
-	nameEnd := htmlTagNameEnd(s, 1)
-	if nameEnd > 1 && htmlRawTag(s[1:nameEnd]) && (nameEnd == len(s) || htmlSpace(s[nameEnd]) || s[nameEnd] == '>') {
+	nameEnd := htmlTagNameEndContext(p.ctx, s, 1)
+	if nameEnd > 1 && htmlRawTag(meteredString(p.ctx, s[1:nameEnd])) && (nameEnd == len(s) || htmlSpace(s[nameEnd]) || s[nameEnd] == '>') {
 		return 1
 	}
 	switch {
-	case strings.HasPrefix(s, "<!--"):
+	case meteredHasPrefix(p.ctx, s, "<!--"):
 		return 2
-	case strings.HasPrefix(s, "<?"):
+	case meteredHasPrefix(p.ctx, s, "<?"):
 		return 3
 	case len(s) > 2 && s[1] == '!' && htmlLetter(s[2]):
 		return 4
-	case strings.HasPrefix(s, "<![CDATA["):
+	case meteredHasPrefix(p.ctx, s, "<![CDATA["):
 		return 5
 	}
 	start := 1
 	if len(s) > 1 && s[1] == '/' {
 		start++
 	}
-	end := htmlTagNameEnd(s, start)
-	if end > start && htmlBlockTag(s[start:end]) && (end == len(s) || htmlSpace(s[end]) || s[end] == '>' || strings.HasPrefix(s[end:], "/>")) {
+	end := htmlTagNameEndContext(p.ctx, s, start)
+	if end > start && htmlBlockTag(meteredString(p.ctx, s[start:end])) && (end == len(s) || htmlSpace(s[end]) || s[end] == '>' || meteredHasPrefix(p.ctx, s[end:], "/>")) {
 		return 6
 	}
-	if !paragraphOpen && completeHTMLTag(s) {
+	if !paragraphOpen && completeHTMLTagContext(p.ctx, s) {
 		return 7
 	}
 	return 0
 }
 
 func (p *blockParser) appendHTMLLine(line blockLine) error {
+	meterWork(p.ctx, 1)
 	p.html.end = line.next
 	p.html.content = p.appendRawLine(p.html.content, line)
 	s := p.index.source.content[line.start:line.end]
@@ -53,22 +58,24 @@ func (p *blockParser) appendHTMLLine(line blockLine) error {
 	case 1:
 		// Any of these closers terminates form 1, regardless of its opener.
 		for i := 0; i < len(s); i++ {
+			meterWork(p.ctx, 1)
 			if s[i] == '<' {
 				for _, tag := range []string{"</pre>", "</script>", "</style>", "</textarea>"} {
-					if len(s)-i >= len(tag) && strings.EqualFold(s[i:i+len(tag)], tag) {
+					meterWork(p.ctx, 1)
+					if len(s)-i >= len(tag) && meteredEqualFold(p.ctx, s[i:i+len(tag)], tag) {
 						closed = true
 					}
 				}
 			}
 		}
 	case 2:
-		closed = strings.Contains(s, "-->")
+		closed = meteredContains(p.ctx, s, "-->")
 	case 3:
-		closed = strings.Contains(s, "?>")
+		closed = meteredContains(p.ctx, s, "?>")
 	case 4:
-		closed = strings.Contains(s, ">")
+		closed = meteredContains(p.ctx, s, ">")
 	case 5:
-		closed = strings.Contains(s, "]]>")
+		closed = meteredContains(p.ctx, s, "]]>")
 	}
 	if closed {
 		return p.closeHTML()
@@ -77,11 +84,12 @@ func (p *blockParser) appendHTMLLine(line blockLine) error {
 }
 
 func (p *blockParser) closeHTML() error {
+	meterWork(p.ctx, 1)
 	h := p.html
 	if h == nil {
 		return nil
 	}
-	node, err := NewNode(NodeSpec{
+	node, err := meteredNode(p.ctx, NodeSpec{
 		Kind: HTMLBlock, Envelope: p.index.span(h.start, h.end),
 		Content:    h.content,
 		Properties: Properties{HTML: &HTMLProperties{BlockForm: Some(h.form)}},
@@ -97,12 +105,14 @@ func (p *blockParser) closeHTML() error {
 func htmlLetter(c byte) bool { return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' }
 func htmlSpace(c byte) bool  { return c == ' ' || c == '\t' }
 
-func htmlTagNameEnd(s string, start int) int {
+func htmlTagNameEndContext(ctx context.Context, s string, start int) int {
+	meterWork(ctx, 1)
 	if start >= len(s) || !htmlLetter(s[start]) {
 		return start
 	}
 	i := start + 1
 	for i < len(s) && (htmlLetter(s[i]) || s[i] >= '0' && s[i] <= '9' || s[i] == '-') {
+		meterWork(ctx, 1)
 		i++
 	}
 	return i
@@ -123,20 +133,23 @@ func htmlBlockTag(s string) bool {
 // Form 7 requires a complete tag on this physical line, with only space/tab
 // afterward. Attribute parsing advances once through the candidate, without
 // backtracking or accepting the more permissive grammar of a browser HTML parser.
-func completeHTMLTag(s string) bool {
+func completeHTMLTagContext(ctx context.Context, s string) bool {
+	meterWork(ctx, 1)
 	i := 1
 	closing := i < len(s) && s[i] == '/'
 	if closing {
 		i++
 	}
 	start := i
-	i = htmlTagNameEnd(s, i)
+	i = htmlTagNameEndContext(ctx, s, i)
 	if i == start || !closing && htmlRawTag(s[start:i]) {
 		return false
 	}
 	for i < len(s) {
+		meterWork(ctx, 1)
 		beforeSpace := i
 		for i < len(s) && htmlSpace(s[i]) {
+			meterWork(ctx, 1)
 			i++
 		}
 		if !closing && i < len(s) && s[i] == '/' {
@@ -150,12 +163,14 @@ func completeHTMLTag(s string) bool {
 			return false
 		}
 		i++
-		for i < len(s) && (htmlLetter(s[i]) || s[i] >= '0' && s[i] <= '9' || strings.ContainsRune("_.:-", rune(s[i]))) {
+		for i < len(s) && (htmlLetter(s[i]) || s[i] >= '0' && s[i] <= '9' || meteredContainsRune(ctx, "_.:-", rune(s[i]))) {
+			meterWork(ctx, 1)
 			i++
 		}
 		// Whitespace belongs to a value only when an equals sign follows it.
 		endName := i
 		for i < len(s) && htmlSpace(s[i]) {
+			meterWork(ctx, 1)
 			i++
 		}
 		if i == len(s) || s[i] != '=' {
@@ -164,6 +179,7 @@ func completeHTMLTag(s string) bool {
 		}
 		i++
 		for i < len(s) && htmlSpace(s[i]) {
+			meterWork(ctx, 1)
 			i++
 		}
 		if i == len(s) {
@@ -173,6 +189,7 @@ func completeHTMLTag(s string) bool {
 			quote := s[i]
 			i++
 			for i < len(s) && s[i] != quote {
+				meterWork(ctx, 1)
 				i++
 			}
 			if i == len(s) {
@@ -181,7 +198,8 @@ func completeHTMLTag(s string) bool {
 			i++
 		} else {
 			startValue := i
-			for i < len(s) && !htmlSpace(s[i]) && !strings.ContainsRune("\"'=<>`", rune(s[i])) {
+			for i < len(s) && !htmlSpace(s[i]) && !meteredContainsRune(ctx, "\"'=<>`", rune(s[i])) {
+				meterWork(ctx, 1)
 				i++
 			}
 			if i == startValue {
@@ -194,7 +212,12 @@ func completeHTMLTag(s string) bool {
 	}
 	i++
 	for i < len(s) && htmlSpace(s[i]) {
+		meterWork(ctx, 1)
 		i++
 	}
 	return i == len(s)
 }
+
+func htmlTagNameEnd(s string, start int) int { return htmlTagNameEndContext(nil, s, start) }
+
+func completeHTMLTag(s string) bool { return completeHTMLTagContext(nil, s) }

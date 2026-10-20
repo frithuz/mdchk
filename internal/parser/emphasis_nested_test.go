@@ -83,7 +83,15 @@ func TestNestedEmphasisMappedOwnershipAndOpacity(t *testing.T) {
 func TestNestedEmphasisLongRunsAndIndependentMarkers(t *testing.T) {
 	for _, depth := range []int{1, 32, 512} {
 		input := strings.Repeat("*", depth*2) + "x" + strings.Repeat("*", depth*2)
-		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
+		// Preserve the original 512-layer source/AST oracle under an explicit
+		// finite operator profile; default-depth boundaries have separate tests.
+		limits := parser.DefaultLimits()
+		limits.SyntaxDepth = 1024
+		budget, err := parser.NewOperationBudget(limits)
+		if err != nil {
+			t.Fatal(err)
+		}
+		r := parser.ParseWithBudget(context.Background(), parser.NewSource([]byte(input)), budget)
 		checkStagedTextOutcome(t, r, true)
 		nodes := r.Document.Root().Children()[0].Children()
 		for level := 0; level < depth; level++ {

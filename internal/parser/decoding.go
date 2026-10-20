@@ -9,7 +9,8 @@ import (
 // decodeToken consumes original ASCII spelling once. In particular, neither an
 // escaped ampersand nor entity-produced punctuation is rescanned as Markdown.
 // Lookahead is bounded by the numeric grammar or the longest retained name.
-func decodeToken(text string) (string, int, Transformation) {
+func decodeTokenContext(ctx context.Context, text string) (string, int, Transformation) {
+	meterWork(ctx, 1)
 	if len(text) >= 2 && text[0] == '\\' && IsASCIIPunctuation(rune(text[1])) {
 		return text[1:2], 2, Escape
 	}
@@ -23,6 +24,7 @@ func decodeToken(text string) (string, int, Transformation) {
 		}
 		start, value := i, rune(0)
 		for i < len(text) && i-start < limit {
+			meterWork(ctx, 1)
 			c := text[i]
 			digit := -1
 			switch {
@@ -48,6 +50,7 @@ func decodeToken(text string) (string, int, Transformation) {
 		return string(value), i + 1, Entity
 	}
 	for i := 1; i < len(text) && i < maxEntityToken; i++ {
+		meterWork(ctx, 1)
 		if text[i] == ';' {
 			if value, ok := namedEntities[text[:i+1]]; ok {
 				return value, i + 1, Entity
@@ -68,35 +71,38 @@ func decodeToken(text string) (string, int, Transformation) {
 // offset inferred from semantic length. References also normalize physical CRs.
 // An interrupted value is withheld; callers discard their unfinished phase.
 func decodeValue(ctx context.Context, parts []Segment, normalizeEndings bool) Value {
+	meterWork(ctx, 1)
 	var out Value
 	var semantic strings.Builder
 	for _, part := range parts {
+		meterWork(ctx, 1)
 		if interruption(ctx) != "" {
 			return Value{}
 		}
 		if part.Transformation == PartialTab {
-			out.Segments = append(out.Segments, part)
-			semantic.WriteString(part.Semantic.Value)
+			out.Segments = meteredAppend(ctx, out.Segments, part)
+			meteredWriteString(ctx, &semantic, part.Semantic.Value)
 			continue
 		}
 		span := part.Source
 		raw := span.source.content[span.start:span.end]
 		appendPart := func(a, b int, kind Transformation, text string) {
-			out.Segments = append(out.Segments, Segment{
+			out.Segments = meteredAppend(ctx, out.Segments, Segment{
 				Source:         Span{source: span.source, start: span.start + a, end: span.start + b, present: true},
 				Transformation: kind, Semantic: Some(text),
 			})
-			semantic.WriteString(text)
+			meteredWriteString(ctx, &semantic, text)
 		}
 		run := 0
 		for offset, checkpoint := 0, 0; offset < len(raw); {
+			meterWork(ctx, 1)
 			if offset >= checkpoint {
 				if interruption(ctx) != "" {
 					return Value{}
 				}
 				checkpoint = offset + 256
 			}
-			text, width, kind := decodeToken(raw[offset:])
+			text, width, kind := decodeTokenContext(ctx, raw[offset:])
 			if raw[offset] == 0 {
 				text, width, kind = "\ufffd", 1, Normalized
 			} else if normalizeEndings && raw[offset] == '\r' {
@@ -123,3 +129,5 @@ func decodeValue(ctx context.Context, parts []Segment, normalizeEndings bool) Va
 	out.Semantic = Some(semantic.String())
 	return out
 }
+
+func decodeToken(text string) (string, int, Transformation) { return decodeTokenContext(nil, text) }

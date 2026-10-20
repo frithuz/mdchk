@@ -22,11 +22,15 @@ type inlineLinkSyntax struct {
 // Each token is visited twice and each closer is pushed/popped at most once. No
 // nesting limit or speculative skip of later candidates is needed.
 func (s *inlineScanner) bareLinkEnd(start int) (int, bool) {
+	meterWork(s.ctx, 1)
 	if s.bareLinkEnds == nil {
 		text := s.text
-		ends := make([]int, len(text)+1)
+		ends := meteredSlice[int](s.ctx,
+
+			len(text)+1)
 		ends[len(text)] = len(text)
 		for i := 0; i < len(text); {
+			meterWork(s.ctx, 1)
 			if interruption(s.ctx) != "" {
 				return 0, false
 			}
@@ -39,6 +43,7 @@ func (s *inlineScanner) bareLinkEnd(start int) (int, bool) {
 		}
 		var closers []int
 		for i := len(text) - 1; i >= 0; i-- {
+			meterWork(s.ctx, 1)
 			if interruption(s.ctx) != "" {
 				return 0, false
 			}
@@ -55,7 +60,7 @@ func (s *inlineScanner) bareLinkEnd(start int) (int, bool) {
 				closers = closers[:0]
 			case c == ')':
 				ends[i] = i
-				closers = append(closers, i)
+				closers = meteredAppend(s.ctx, closers, i)
 			case c == '(':
 				ends[i] = -1
 				if len(closers) != 0 {
@@ -77,8 +82,10 @@ func (s *inlineScanner) bareLinkEnd(start int) (int, bool) {
 // Components permit spaces/tabs and at most one physical ending between them.
 // Advancing by two for CRLF must not skip interruption checkpoints.
 func (s *inlineScanner) linkWhitespace(i int) int {
+	meterWork(s.ctx, 1)
 	ending := false
 	for i < len(s.text) {
+		meterWork(s.ctx, 1)
 		if interruption(s.ctx) != "" {
 			return len(s.text)
 		}
@@ -95,6 +102,7 @@ func (s *inlineScanner) linkWhitespace(i int) int {
 }
 
 func (s *inlineScanner) inlineLink(close int) (inlineLinkSyntax, bool) {
+	meterWork(s.ctx, 1)
 	r := inlineLinkSyntax{close: close}
 	text := s.text
 	if close+1 >= len(text) || text[close+1] != '(' {
@@ -111,6 +119,7 @@ func (s *inlineScanner) inlineLink(close int) (inlineLinkSyntax, bool) {
 	r.destinationStart = i
 	if r.angle {
 		for i < len(text) {
+			meterWork(s.ctx, 1)
 			if interruption(s.ctx) != "" {
 				return r, false
 			}
@@ -149,6 +158,7 @@ func (s *inlineScanner) inlineLink(close int) (inlineLinkSyntax, bool) {
 		r.title, r.titleStart = true, i+1
 		blank := false
 		for i++; i < len(text) && text[i] != closeTitle; {
+			meterWork(s.ctx, 1)
 			if interruption(s.ctx) != "" {
 				return r, false
 			}
@@ -187,23 +197,26 @@ func (s *inlineScanner) inlineLink(close int) (inlineLinkSyntax, bool) {
 }
 
 func (s *inlineScanner) openBracket(offset, node int, image bool) {
+	meterWork(s.ctx, 1)
 	bottom := len(s.delimiters) - 1
 	if s.delimitersLinked {
 		bottom = s.delimiterTail
 	}
-	s.brackets = append(s.brackets, inlineBracket{offset: offset, node: node, bottom: bottom, image: image})
+	s.brackets = meteredAppend(s.ctx, s.brackets, inlineBracket{offset: offset, node: node, bottom: bottom, image: image})
 }
 
 // Successful inline links/autolinks invalidate earlier link openers. A monotonic
 // source boundary avoids repeatedly revisiting an already inactive prefix. Image
 // openers ignore this boundary and image success never advances it.
 func (s *inlineScanner) deactivateLinks(offset int) {
+	meterWork(s.ctx, 1)
 	s.inactiveBefore = max(s.inactiveBefore, offset)
 }
 
 // Empty components retain an exact zero-width range at the following delimiter.
 // Indexed logical slicing never uses a decoded semantic offset as a source byte.
 func (c emphasisContent) linkValue(start, end int, decode bool) (Value, error) {
+	meterWork(c.scanner.ctx, 1)
 	stop := end
 	if start == end {
 		stop++
@@ -221,15 +234,17 @@ func (c emphasisContent) linkValue(start, end int, decode bool) (Value, error) {
 	}
 	var text strings.Builder
 	for _, part := range parts {
+		meterWork(c.scanner.ctx, 1)
 		if interruption(c.scanner.ctx) != "" {
 			return Value{}, nil
 		}
-		text.WriteString(part.Semantic.Value)
+		meteredWriteString(c.scanner.ctx, &text, part.Semantic.Value)
 	}
 	return Value{Segments: parts, Semantic: Some(text.String())}, nil
 }
 
 func (s *inlineScanner) buildLink(content emphasisContent, bracket inlineBracket, syntax inlineLinkSyntax, flat []*Node) (before []*Node, link *Node, err error) {
+	meterWork(s.ctx, 1)
 	marker := func(role string, offset int) (Marker, error) {
 		parts, err := content.slice(offset, offset+1)
 		if err != nil || interruption(s.ctx) != "" {
@@ -242,22 +257,24 @@ func (s *inlineScanner) buildLink(content emphasisContent, bracket inlineBracket
 		role   string
 		offset int
 	}{{"label-open", bracket.offset}, {"label-close", syntax.close}, {"link-open", syntax.close + 1}} {
+		meterWork(s.ctx, 1)
 		m, err := marker(m.role, m.offset)
 		if err != nil || interruption(s.ctx) != "" {
 			return nil, nil, err
 		}
-		markers = append(markers, m)
+		markers = meteredAppend(s.ctx, markers, m)
 	}
 	if syntax.angle {
 		for _, m := range []struct {
 			role   string
 			offset int
 		}{{"destination-open", syntax.destinationStart - 1}, {"destination-close", syntax.destinationEnd}} {
+			meterWork(s.ctx, 1)
 			m, err := marker(m.role, m.offset)
 			if err != nil || interruption(s.ctx) != "" {
 				return nil, nil, err
 			}
-			markers = append(markers, m)
+			markers = meteredAppend(s.ctx, markers, m)
 		}
 	}
 	label, err := content.linkValue(bracket.offset+1, syntax.close, false)
@@ -279,24 +296,26 @@ func (s *inlineScanner) buildLink(content emphasisContent, bracket inlineBracket
 			role   string
 			offset int
 		}{{"title-open", syntax.titleStart - 1}, {"title-close", syntax.titleEnd}} {
+			meterWork(s.ctx, 1)
 			m, err := marker(m.role, m.offset)
 			if err != nil || interruption(s.ctx) != "" {
 				return nil, nil, err
 			}
-			markers = append(markers, m)
+			markers = meteredAppend(s.ctx, markers, m)
 		}
 	}
 	closing, err := marker("link-close", syntax.end-1)
 	if err != nil || interruption(s.ctx) != "" {
 		return nil, nil, err
 	}
-	markers = append(markers, closing)
+	markers = meteredAppend(s.ctx, markers, closing)
 	return s.finishLink(bracket, label, properties, markers, flat)
 }
 
 // Links and images in all forms share the label/emphasis boundary and immutable
 // source construction. Definition provenance never enters this use-site envelope.
 func (s *inlineScanner) finishLink(bracket inlineBracket, label Value, properties *LinkProperties, markers []Marker, flat []*Node) (before []*Node, link *Node, err error) {
+	meterWork(s.ctx, 1)
 	cursor := inlineNodes{scanner: s, nodes: flat}
 	start := markers[0].Source.start
 	if bracket.image {
@@ -325,8 +344,8 @@ func (s *inlineScanner) finishLink(bracket inlineBracket, label Value, propertie
 		envelope.start = start
 		imageMarker := envelope
 		imageMarker.end = start + 1
-		markers = append([]Marker{{Role: "image-marker", Source: imageMarker}}, markers...)
+		markers = meteredAppend(s.ctx, []Marker{{Role: "image-marker", Source: imageMarker}}, markers...)
 	}
-	link, err = NewNode(NodeSpec{Kind: kind, Envelope: envelope, Content: label.Segments, Markers: markers, Properties: Properties{Link: properties}, Children: children})
+	link, err = meteredNode(s.ctx, NodeSpec{Kind: kind, Envelope: envelope, Content: label.Segments, Markers: markers, Properties: Properties{Link: properties}, Children: children})
 	return before, link, err
 }

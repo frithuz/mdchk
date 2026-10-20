@@ -10,25 +10,27 @@ import (
 // normalizeReferenceLabel matches raw label spelling, without its brackets.
 // Shared by definition collection and full/collapsed/shortcut use resolution.
 // Unicode default full folding is independent of locale and semantic decoding.
-func normalizeReferenceLabel(raw string) string {
+func normalizeReferenceLabelContext(ctx context.Context, raw string) string {
+	meterWork(ctx, 1)
 	var out strings.Builder
 	space := false
 	for _, r := range raw {
+		meterWork(ctx, 1+utf8.RuneLen(r))
 		if r == ' ' || r == '\t' || r == '\r' || r == '\n' {
 			space = out.Len() != 0
 			continue
 		}
 		if space {
-			out.WriteByte(' ')
+			meteredWriteByte(ctx, &out, ' ')
 			space = false
 		}
 		if r == 0 {
 			r = '\ufffd'
 		}
 		if folded, ok := fullCaseFold[r]; ok {
-			out.WriteString(folded)
+			meteredWriteString(ctx, &out, folded)
 		} else {
-			out.WriteRune(r)
+			meteredWriteRune(ctx, &out, r)
 		}
 	}
 	return out.String()
@@ -39,6 +41,7 @@ func normalizeReferenceLabel(raw string) string {
 // indentation. The builder grows once; extraction advances offsets without
 // rematerializing each suffix. Original coordinates always come from parts.
 type referenceParagraph struct {
+	ctx          context.Context
 	text         strings.Builder
 	parts        []referencePart
 	lazyOrdinary bool // a proved ordinary remainder stays ordinary on append
@@ -53,15 +56,22 @@ type referencePart struct {
 var referenceSemanticText = strings.NewReplacer("\r\n", "\n", "\r", "\n", "\x00", "\ufffd")
 
 func (r *referenceParagraph) append(source Source, line blockLine) {
+	r.ctx = line.cursor.index.ctx
+	meterWork(line.cursor.index.
+		ctx, 1)
+
 	if line.lazy && !r.firstLazy.Present {
 		r.firstLazy = Some(r.text.Len())
 	}
-	r.parts = append(r.parts, referencePart{r.text.Len(), line})
-	r.text.WriteString(source.content[line.contentStart:line.next])
+	r.parts = meteredAppend(line.cursor.index.
+		ctx, r.parts, referencePart{r.text.Len(), line})
+	meteredWriteString(line.cursor.index.
+		ctx, &r.text, source.content[line.contentStart:line.next])
 }
 
 func (r *referenceParagraph) position(offset int) int {
-	i := sort.Search(len(r.parts), func(i int) bool { return r.parts[i].start > offset }) - 1
+	meterWork(r.ctx, 1)
+	i := sort.Search(len(r.parts), func(i int) bool { meterWork(r.ctx, 1); return r.parts[i].start > offset }) - 1
 	part := r.parts[max(i, 0)]
 	return part.line.contentStart + offset - part.start
 }
@@ -70,10 +80,12 @@ func (r *referenceParagraph) position(offset int) int {
 // present empty component has an explicit zero-width source range. Labels keep
 // this raw spelling; destinations and titles pass through the shared decoder.
 func (r *referenceParagraph) value(index LineIndex, start, end int) Value {
+	meterWork(index.ctx, 1)
 	var value Value
 	var semantic strings.Builder
-	first := sort.Search(len(r.parts), func(i int) bool { return r.parts[i].start > start }) - 1
+	first := sort.Search(len(r.parts), func(i int) bool { meterWork(index.ctx, 1); return r.parts[i].start > start }) - 1
 	for i := max(first, 0); i < len(r.parts); i++ {
+		meterWork(index.ctx, 1)
 		part := r.parts[i]
 		a, b := max(start, part.start), min(end, part.start+part.line.next-part.line.contentStart)
 		if a > b || a == b && start != end {
@@ -81,13 +93,13 @@ func (r *referenceParagraph) value(index LineIndex, start, end int) Value {
 		}
 		span := index.span(part.line.contentStart+a-part.start, part.line.contentStart+b-part.start)
 		raw := index.source.content[span.start:span.end]
-		text := referenceSemanticText.Replace(raw)
+		text := referenceSemanticText.Replace(meteredExpandedString(index.ctx, raw))
 		kind := Exact
 		if text != raw {
 			kind = Normalized
 		}
-		value.Segments = append(value.Segments, Segment{Source: span, Transformation: kind, Semantic: Some(text)})
-		semantic.WriteString(text)
+		value.Segments = meteredAppend(index.ctx, value.Segments, Segment{Source: span, Transformation: kind, Semantic: Some(text)})
+		meteredWriteString(index.ctx, &semantic, text)
 		if b == end {
 			break
 		}
@@ -119,17 +131,20 @@ func skipReferenceEnding(s string, i int) int {
 	return i
 }
 
-func skipReferenceSpaces(s string, i int) int {
+func skipReferenceSpacesContext(ctx context.Context, s string, i int) int {
+	meterWork(ctx, 1)
 	for i < len(s) && referenceSpace(s[i]) {
+		meterWork(ctx, 1)
 		i++
 	}
 	return i
 }
 
-func referenceWhitespace(s string, i int) int {
-	i = skipReferenceSpaces(s, i)
+func referenceWhitespaceContext(ctx context.Context, s string, i int) int {
+	meterWork(ctx, 1)
+	i = skipReferenceSpacesContext(ctx, s, i)
 	if i < len(s) && referenceEnding(s[i]) {
-		i = skipReferenceSpaces(s, skipReferenceEnding(s, i))
+		i = skipReferenceSpacesContext(ctx, s, skipReferenceEnding(s, i))
 	}
 	return i
 }
@@ -142,6 +157,7 @@ func escapedReferenceByte(s string, i int) bool {
 // on a subsequent line rolls back to the destination line; same-line failure
 // invalidates the definition. Scanning is iterative and checks long components.
 func scanReference(ctx context.Context, s string, start int) (referenceSyntax, bool) {
+	meterWork(ctx, 1)
 	result := probeReference(ctx, s, start)
 	return result.syntax, result.valid
 }
@@ -162,12 +178,14 @@ type referenceTitleScan struct {
 }
 
 func probeReference(ctx context.Context, s string, start int) referenceScan {
+	meterWork(ctx, 1)
 	r := referenceSyntax{start: start}
 	if start >= len(s) || s[start] != '[' {
 		return referenceScan{}
 	}
 	i, characters, nonblank := start+1, 0, false
 	for i < len(s) && s[i] != ']' {
+		meterWork(ctx, 1)
 		if s[i] == '[' || interruption(ctx) != "" {
 			return referenceScan{}
 		}
@@ -197,7 +215,7 @@ func probeReference(ctx context.Context, s string, start int) referenceScan {
 		return referenceScan{}
 	}
 	r.labelEnd = i
-	i = referenceWhitespace(s, i+2)
+	i = referenceWhitespaceContext(ctx, s, i+2)
 	if i >= len(s) {
 		return referenceScan{more: true}
 	}
@@ -211,6 +229,7 @@ func probeReference(ctx context.Context, s string, start int) referenceScan {
 	r.destinationStart = i
 	depth := 0
 	for i < len(s) {
+		meterWork(ctx, 1)
 		if i%256 == 0 && interruption(ctx) != "" {
 			return referenceScan{}
 		}
@@ -251,10 +270,10 @@ func probeReference(ctx context.Context, s string, start int) referenceScan {
 		return referenceScan{}
 	}
 	destinationEnd := i
-	lineEnd := skipReferenceSpaces(s, i)
+	lineEnd := skipReferenceSpacesContext(ctx, s, i)
 	destinationOnly := lineEnd == len(s) || referenceEnding(s[lineEnd])
 	fallback := skipReferenceEnding(s, lineEnd)
-	i = referenceWhitespace(s, i)
+	i = referenceWhitespaceContext(ctx, s, i)
 	if i > destinationEnd && i < len(s) && (s[i] == '\'' || s[i] == '"' || s[i] == '(') {
 		open, close := s[i], s[i]
 		if close == '(' {
@@ -274,9 +293,11 @@ func probeReference(ctx context.Context, s string, start int) referenceScan {
 // punctuation is consumed as a pair within a line, so an escape cannot straddle
 // a resume boundary. No growing multiline title is scanned from its opener twice.
 func resumeReferenceTitle(ctx context.Context, s string, pending *referenceTitleScan) referenceScan {
+	meterWork(ctx, 1)
 	r := pending.syntax
 	i := pending.offset
 	for i < len(s) && s[i] != pending.close {
+		meterWork(ctx, 1)
 		if i%256 == 0 && interruption(ctx) != "" {
 			return referenceScan{}
 		}
@@ -290,7 +311,7 @@ func resumeReferenceTitle(ctx context.Context, s string, pending *referenceTitle
 	}
 	if i < len(s) && s[i] == pending.close {
 		r.titleEnd = i
-		end := skipReferenceSpaces(s, i+1)
+		end := skipReferenceSpacesContext(ctx, s, i+1)
 		if end == len(s) || referenceEnding(s[end]) {
 			r.title, r.end = true, skipReferenceEnding(s, end)
 			return referenceScan{syntax: r, valid: true}
@@ -309,13 +330,14 @@ func resumeReferenceTitle(ctx context.Context, s string, pending *referenceTitle
 }
 
 func (r *referenceParagraph) definition(ctx context.Context, index LineIndex, syntax referenceSyntax) (*ReferenceDefinition, error) {
+	meterWork(ctx, 1)
 	span := func(a, b int) Span { return index.span(r.position(a), r.position(b)) }
-	first := sort.Search(len(r.parts), func(i int) bool { return r.parts[i].start >= syntax.start })
+	first := sort.Search(len(r.parts), func(i int) bool { meterWork(ctx, 1); return r.parts[i].start >= syntax.start })
 	spec := ReferenceSpec{
 		Envelope:        index.span(r.parts[first].line.start, r.position(syntax.end-1)+1),
 		Label:           r.value(index, syntax.start+1, syntax.labelEnd),
 		Destination:     decodeValue(ctx, r.value(index, syntax.destinationStart, syntax.destinationEnd).Segments, true),
-		NormalizedLabel: Some(normalizeReferenceLabel(r.text.String()[syntax.start+1 : syntax.labelEnd])),
+		NormalizedLabel: Some(normalizeReferenceLabelContext(ctx, r.text.String()[syntax.start+1:syntax.labelEnd])),
 		Markers: []Marker{
 			{Role: "label-open", Source: span(syntax.start, syntax.start+1)},
 			{Role: "label-close", Source: span(syntax.labelEnd, syntax.labelEnd+1)},
@@ -323,19 +345,20 @@ func (r *referenceParagraph) definition(ctx context.Context, index LineIndex, sy
 		},
 	}
 	if syntax.angle {
-		spec.Markers = append(spec.Markers, Marker{"destination-open", span(syntax.destinationStart-1, syntax.destinationStart)}, Marker{"destination-close", span(syntax.destinationEnd, syntax.destinationEnd+1)})
+		spec.Markers = meteredAppend(ctx, spec.Markers, Marker{"destination-open", span(syntax.destinationStart-1, syntax.destinationStart)}, Marker{"destination-close", span(syntax.destinationEnd, syntax.destinationEnd+1)})
 	}
 	if syntax.title {
 		v := decodeValue(ctx, r.value(index, syntax.titleStart, syntax.titleEnd).Segments, true)
 		spec.Title = &v
-		spec.Markers = append(spec.Markers, Marker{"title-open", span(syntax.titleStart-1, syntax.titleStart)}, Marker{"title-close", span(syntax.titleEnd, syntax.titleEnd+1)})
+		spec.Markers = meteredAppend(ctx, spec.Markers, Marker{"title-open", span(syntax.titleStart-1, syntax.titleStart)}, Marker{"title-close", span(syntax.titleEnd, syntax.titleEnd+1)})
 	}
-	return NewReferenceDefinition(spec)
+	return meteredReference(ctx, spec)
 }
 
 // stripReferences runs only at closure/promotion. Mutable registry and boundary
 // accumulation stay private until the entire block scan succeeds.
 func (p *blockParser) stripReferences() error {
+	meterWork(p.ctx, 1)
 	block := &p.stack[len(p.stack)-1]
 	r := block.reference
 	if r == nil {
@@ -343,6 +366,7 @@ func (p *blockParser) stripReferences() error {
 	}
 	s, offset := r.text.String(), 0
 	for offset < len(s) {
+		meterWork(p.ctx, 1)
 		if interruption(p.ctx) != "" {
 			p.referenceInterrupted = true
 			return nil
@@ -360,13 +384,13 @@ func (p *blockParser) stripReferences() error {
 		if err != nil {
 			return err
 		}
-		p.definitions = append(p.definitions, definition)
+		p.definitions = meteredAppend(p.ctx, p.definitions, definition)
 		if !definition.spec.Destination.Semantic.Present || definition.spec.Title != nil && !definition.spec.Title.Semantic.Present {
 			p.referenceSemanticsPending = true
 		}
 		if len(p.stack) > 1 && p.stack[len(p.stack)-2].kind == ListItem {
 			parent := &p.stack[len(p.stack)-2]
-			parent.definitions = append(parent.definitions, definition.spec.Envelope)
+			parent.definitions = meteredAppend(p.ctx, parent.definitions, definition.spec.Envelope)
 		}
 		offset = syntax.end
 	}
@@ -382,12 +406,13 @@ func (p *blockParser) stripReferences() error {
 		p.stack = p.stack[:len(p.stack)-1]
 		return nil
 	}
-	first := sort.Search(len(r.parts), func(i int) bool { return r.parts[i].start >= offset })
+	first := sort.Search(len(r.parts), func(i int) bool { meterWork(p.ctx, 1); return r.parts[i].start >= offset })
 	block.start = r.parts[first].line.start
 	block.content = nil
 	for i := first; i+1 < len(r.parts); i++ {
+		meterWork(p.ctx, 1)
 		line := r.parts[i].line
-		block.content = append(block.content, p.index.semanticText(line.contentStart, line.next).Segments...)
+		block.content = meteredAppend(p.ctx, block.content, p.index.semanticText(line.contentStart, line.next).Segments...)
 	}
 	return nil
 }
@@ -399,12 +424,13 @@ func (p *blockParser) stripReferences() error {
 // The decision is cached once proved ordinary, and no lookahead nodes, markers,
 // container ends or registry entries are published.
 func (p *blockParser) paragraphAllowsLazy(physical physicalLine) bool {
+	meterWork(p.ctx, 1)
 	paragraph := p.stack[len(p.stack)-1].reference
 	if paragraph == nil || paragraph.lazyOrdinary {
 		return true
 	}
 	var text strings.Builder
-	text.WriteString(paragraph.text.String())
+	meteredWriteString(p.ctx, &text, paragraph.text.String())
 	boundary := text.Len()
 	offset := 0
 	var title *referenceTitleScan
@@ -413,6 +439,7 @@ func (p *blockParser) paragraphAllowsLazy(physical physicalLine) bool {
 	// would consume a missing container prefix, which is also forbidden.
 	settle := func() (bool, bool) {
 		for {
+			meterWork(p.ctx, 1)
 			if interruption(p.ctx) != "" {
 				p.referenceInterrupted = true
 				return true, false
@@ -441,8 +468,9 @@ func (p *blockParser) paragraphAllowsLazy(physical physicalLine) bool {
 		paragraph.lazyOrdinary = allow
 		return allow
 	}
-	first := sort.Search(len(p.index.lines), func(i int) bool { return p.index.lines[i].start >= physical.start })
+	first := sort.Search(len(p.index.lines), func(i int) bool { meterWork(p.ctx, 1); return p.index.lines[i].start >= physical.start })
 	for _, next := range p.index.lines[first:] {
+		meterWork(p.ctx, 1)
 		if interruption(p.ctx) != "" {
 			p.referenceInterrupted = true
 			return false
@@ -451,7 +479,7 @@ func (p *blockParser) paragraphAllowsLazy(physical physicalLine) bool {
 		if !continues {
 			break
 		}
-		text.WriteString(p.index.source.content[line.contentStart:line.next])
+		meteredWriteString(p.ctx, &text, p.index.source.content[line.contentStart:line.next])
 		if decided, allow := settle(); decided {
 			paragraph.lazyOrdinary = allow
 			return allow
@@ -466,9 +494,11 @@ func (p *blockParser) paragraphAllowsLazy(physical physicalLine) bool {
 // referenceContinuationLine mirrors container-prefix matching without changing
 // the live builders. Blank lines and real block/Setext boundaries end lookahead.
 func (p *blockParser) referenceContinuationLine(physical physicalLine) (blockLine, bool) {
+	meterWork(p.ctx, 1)
 	cursor := Indentation{index: p.index, offset: physical.start, end: physical.end}
 	depth, matched := p.containerDepth(), 1
 	for matched < depth {
+		meterWork(p.ctx, 1)
 		block := p.stack[matched]
 		if block.kind == BlockQuote {
 			next, _, ok := p.quotePrefix(cursor)
@@ -497,3 +527,9 @@ func (p *blockParser) referenceContinuationLine(physical physicalLine) (blockLin
 	}
 	return line, true
 }
+
+func normalizeReferenceLabel(raw string) string { return normalizeReferenceLabelContext(nil, raw) }
+
+func skipReferenceSpaces(s string, i int) int { return skipReferenceSpacesContext(nil, s, i) }
+
+func referenceWhitespace(s string, i int) int { return referenceWhitespaceContext(nil, s, i) }
