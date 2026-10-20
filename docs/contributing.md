@@ -409,8 +409,8 @@ not claim parser or correction conformance.
 From the repository root, with Go and Python 3.9 or newer installed:
 
 ```sh
-python3 -B tools/commonmark_conformance.py
-python3 -B tools/commonmark_conformance.py --strict
+python3 -B tools/commonmark_conformance.py --require-complete
+python3 -B tools/commonmark_conformance.py --strict --require-complete
 python3 -B tools/commonmark_conformance.py --example 207 --json
 python3 -B tools/commonmark_conformance.py --section '^Tabs$'
 python3 -B -m unittest discover -s tools -p 'test_commonmark_conformance.py' -v
@@ -475,22 +475,33 @@ the gate until its ID moves from pending to `supported_html_examples` in a
 reviewed syntax delivery with independent AST/source-span tests. Keep existing
 supported IDs and inspect any proposed ledger change for weakening. The runner
 never updates it automatically or edits generated expectations. CI runs the
-full gate and tests synthetic pass baselines to detect lost passes and
-unrecorded new passes independently of the real corpus counts.
+unfiltered `--require-complete` gate and tests synthetic pass baselines to detect
+lost passes and unrecorded new passes independently of the real corpus counts.
 
 To reuse a compiled executable, build outside the checkout and pass its path:
 
 ```sh
 adapter_dir=$(mktemp -d)
 go build -o "$adapter_dir/specadapter" ./internal/conformance/cmd/specadapter
-python3 -B tools/commonmark_conformance.py --adapter "$adapter_dir/specadapter"
+python3 -B tools/commonmark_conformance.py --adapter "$adapter_dir/specadapter" --require-complete
 python3 -B internal/parser/testdata/commonmark/0.31.2/upstream/test/spec_tests.py \
   --spec internal/parser/testdata/commonmark/0.31.2/upstream/spec.txt \
-  --program "$adapter_dir/specadapter" --number 207
+  --program "$adapter_dir/specadapter"
+python3 -B internal/parser/testdata/commonmark/0.31.2/upstream/test/spec_tests.py \
+  --spec internal/parser/testdata/commonmark/0.31.2/upstream/spec.txt \
+  --program "$adapter_dir/specadapter" --no-normalize
 rm -r "$adapter_dir"
 ```
 
-The last comparison now exits 0: example 207 is a recognized definition-only
+Both upstream comparisons must exit 0 and report exactly `652 passed, 0 failed,
+0 errored, 0 skipped`. The conformance tooling tests run these unfiltered commands
+against a freshly built adapter in CI and assert both exit status and the entire
+summary; upstream exit status alone allows skipped cases. The
+[pinned corpus provenance](../internal/parser/testdata/commonmark/0.31.2/README.md)
+records source commit `9103e341a973013013bb1a80e13567007c5cef6f` and spec SHA-256
+`257c41ad946f7a1414a499aca402a1aa8fdac3678532266611348c1cf54f4b80`.
+
+For focused diagnostics, add `--number 207`: it is a recognized definition-only
 document with legitimately empty HTML. The unchanged upstream helper still has no
 pending category; `--number 467` now succeeds through nested emphasis. Use
 `--number 531` to check a reference link containing an image.

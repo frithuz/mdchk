@@ -220,7 +220,8 @@ supplement the corpus. No pinned input or generated expectation was edited.
 
 ## Executable comparisons and passing baseline
 
-Run `python3 -B tools/commonmark_conformance.py` from the repository root, or pass
+Run `python3 -B tools/commonmark_conformance.py --require-complete` from the
+repository root, or pass
 `--strict` for exact HTML rather than retained-upstream-normalized comparison.
 See [contributor instructions](../../../../../docs/contributing.md#run-commonmark-regression-checks)
 for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
@@ -237,7 +238,12 @@ regressions including pass-to-pending, and requires newly passing IDs to be reco
 in `supported_html_examples`. Move those IDs out of pending groups in reviewed
 syntax deliveries; retain prior passes and independent AST/source-span assertions.
 No command automatically rewrites this ledger or generated upstream expectations.
-CI checks the gate, and independent synthetic baselines verify that it rejects
+CI requires the unfiltered complete gate. The tooling suite also invokes the
+unchanged upstream `spec_tests.py` against a freshly built adapter in normalized
+and strict modes, requiring exit 0 and exactly `652 passed, 0 failed, 0 errored,
+0 skipped` in each mode. The contributor instructions provide reproducible
+commands. Independent synthetic baselines verify that the complete gate rejects
+pending cases even when the staged ledger is valid, and that the ratchet rejects
 regressions independently of the real parser's supported-case count.
 
 ## Attribution and licenses

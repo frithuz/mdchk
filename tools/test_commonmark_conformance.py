@@ -67,6 +67,18 @@ class Decisions(unittest.TestCase):
         with self.assertRaises(ValueError):
             runner.run_cases(cases, cases[:1], ledger, None, None)
 
+    def test_complete_gate_rejects_valid_staged_pending_ledger(self):
+        cases, ledger = small_cases(), small_ledger()
+        outcomes = [{"status": "rendered", "html": "<p>x</p>\n"},
+                    {"status": "pending", "reason": "syntax-unimplemented"}]
+        for complete in [False, True]:
+            with self.subTest(require_complete=complete), patch.object(runner, "invoke", side_effect=outcomes):
+                report = runner.run_cases(cases, cases, ledger, None, None, complete)
+                self.assertEqual(report["gate_passed"], not complete)
+                self.assertFalse(report["full_conformance"])
+                self.assertEqual(report["counts"], {"pass": 1, "fail": 0, "error": 0, "pending": 1})
+                self.assertEqual(report["regressions"], [])
+
     def test_filters_and_empty_selection(self):
         cases = small_cases()
         self.assertEqual(runner.select(cases, [2], "heading"), cases[1:])
@@ -280,6 +292,18 @@ class ExecutableBoundary(unittest.TestCase):
             report = runner.run_cases(cases, cases[:1], small_ledger(), self.adapter, None)
         self.assertEqual((report["outcomes"][0]["example"], report["outcomes"][0]["start_line"]), (1, 10))
         self.assertIn("diff", report["outcomes"][0])
+
+    def test_pinned_upstream_helper_passes_all_652_without_skips(self):
+        # The upstream exit code ignores skipped cases. Require the exact full
+        # summary as well, with no selection or tracking arguments.
+        for mode in [[], ["--no-normalize"]]:
+            with self.subTest(mode=mode):
+                result = subprocess.run([sys.executable, "-E", "-s", "-B",
+                                         str(runner.corpus.CORPUS / "upstream/test/spec_tests.py"),
+                                         "--spec", str(runner.corpus.CORPUS / "upstream/spec.txt"),
+                                         "--program", str(self.adapter), *mode], capture_output=True)
+                self.assertEqual(result.returncode, 0, (result.stdout, result.stderr))
+                self.assertEqual(result.stdout, b"652 passed, 0 failed, 0 errored, 0 skipped\n")
 
     def test_pinned_upstream_helper_reports_images_as_pass(self):
         case = self.cases[530]
