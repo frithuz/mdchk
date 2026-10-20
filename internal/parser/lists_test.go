@@ -540,6 +540,8 @@ func FuzzListMarkerSourceFacts(f *testing.F) {
 						if !child.Properties().Literal.Present {
 							t.Fatal("completed inline lacks literal semantics")
 						}
+					case parser.Link:
+						checkAutolinkProvenance(t, source, child)
 					case parser.SoftBreak, parser.HardBreak:
 						checkBreakProperties(t, source, child, child.Properties().Break.Origin,
 							byteRange{child.Span().Start(), child.Content()[0].Source.Start()})

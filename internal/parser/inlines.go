@@ -115,7 +115,7 @@ func (s *inlineScanner) dispatch(offset int) int {
 	}
 	switch c := s.text[offset]; c {
 	case '<':
-		s.pending = s.pending || s.angleClose > offset // #22/#23 ignore interior escapes
+		s.pending = s.pending || s.possibleInlineHTML(offset) // #23 owns HTML interpretation
 	case '[', ']':
 		if c == '[' {
 			s.brackets = append(s.brackets, inlineBracket{offset: offset, image: offset > 0 && s.text[offset-1] == '!'})
@@ -145,7 +145,7 @@ func (s *inlineScanner) dispatch(offset int) int {
 
 // Index maximal raw backtick runs once, including runs after a backslash: code
 // closers ignore ordinary-text escapes. The angle ending remains a conservative
-// availability guard for #22/#23, not recognition of angle-delimited syntax.
+// availability guard for #23, not recognition of inline HTML syntax.
 func (s *inlineScanner) opaqueCandidates() {
 	s.angleClose = strings.LastIndexByte(s.text, '>')
 	for offset, checkpoint := 0, 0; offset < len(s.text); {

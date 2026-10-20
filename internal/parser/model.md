@@ -5,11 +5,11 @@ paragraph/block lifecycle with indented/fenced-code, HTML-block, thematic-break,
 ATX, Setext, mixed block-quote/list-item recognition and continuation. It completes documents accounted
 for by code with established info semantics, opaque HTML blocks, thematic breaks,
 empty ATX headings and ASCII blanks, including empty/inline-free quotes and lists. It retains
-paragraph/heading source content and constructs source-preserving Text/CodeSpan/break children. ListItems retain
+paragraph/heading source content and constructs source-preserving Text/CodeSpan/break/autolink children. ListItems retain
 first-line metadata, nested block children, continuation and closure. Compatible
 siblings acquire List parents and independently derived tightness.
 Leading reference definitions are recognized and normalized document-wide; inline
-text and code spans are recognized; reference-use resolution remains pending. The model
+text, code spans, breaks and angle autolinks are recognized; reference-use resolution remains pending. The model
 catalog also supports constructed fixtures; it does not promise recognition of
 every listed kind.
 
@@ -29,7 +29,7 @@ to callers.
 | Nil or zero-length source | `Complete` / `Available` | Root `[0,0)`, no children, available empty reference records/lookup, both phases complete |
 | ASCII-blank source (space/tab/LF/CR only) | `Complete` / `Available` | Root `[0,N)`, no children, established empty references/lookup, both phases complete |
 | Indented/fenced code with known info semantics, HTML blocks, thematic breaks, empty ATX headings and ASCII blanks, including quotes and lists of empty items or established inline-free blocks, nested in either kind of container | `Complete` / `Available` | Root `[0,N)` with source-bound blocks, established empty references/lookup, both phases complete, no uncertainty |
-| Supported Text/CodeSpan/break core blocks | `Complete` / `Available` | Text/CodeSpan preserve raw contributions and semantic Literal; breaks retain origin, original ending and hard-break markers; both phases complete |
+| Supported Text/CodeSpan/break/autolink core blocks | `Complete` / `Available` | Text/CodeSpan preserve raw contributions and semantic Literal; breaks retain origin, original ending and hard-break markers; autolinks retain resolved label/destination provenance; both phases complete |
 | Text needing undelivered inline handlers | `Incomplete` / `Partial` | Source-bound blocks and available reference records/lookup; Blocks complete, Inlines pending; whole-document `SyntaxUnimplemented` uncertainty |
 | Definition-only input with established destination/title semantics (including inside otherwise inline-free containers) | `Complete` / `Available` | All records retained, first-definition lookup available; no definition block children; both phases complete |
 | Definition destination/title or fence info contains escapes/entities, with no other missing syntax | `Complete` / `Available` | Known decoded values and explicit raw transformations, available reference lookup and complete phases |
@@ -347,8 +347,8 @@ reverse blockers on this syntax stage. Separate fixtures cover grammar near miss
 case/EOF/fixed-form boundaries, code and paragraph precedence, opaque payload,
 LF/CRLF/CR/NUL/Unicode/tab provenance, immutable accessors, encoding precedence and
 deterministic interruption, including at EOF finalization. Actual full-corpus
-normalized/strict gates now record 331 pass and 321 pending, preserving all 279
-earlier passes; full conformance remains false.
+normalized/strict gates now record 355 pass and 297 pending, preserving all 331
+passes established before autolinks; full conformance remains false.
 
 ## Indented code and literal handoff
 
@@ -581,7 +581,8 @@ and quoted paragraphs; they do not establish recognition. Complete actual-Parse
 source assertions and HTML checks promote Tabs 7 and empty item 284, preserving all
 84 previous passes at that increment. Definition-only 207 now adds a pass,
 at that increment. Code spans raised the baseline from 254 to 279 passes;
-physical breaks preserve those passes and raise it to 331 pass, 321 pending. Boundary fixtures cover blank ownership,
+physical breaks raised it to 331 passes; angle autolinks now retain those passes
+and raise it to 355 pass, 297 pending. Boundary fixtures cover blank ownership,
 opaque trailing blanks, empty-item gaps in quotes, all endings/EOF and
 nested reference definitions. FuzzListGroupingBoundaries independently generates
 marker changes, sibling counts and blank boundaries. Full grammar/budgets/rules
@@ -595,7 +596,7 @@ cannot establish this proof. With complete blocks and effective reference lookup
 the inline pass traverses document/quote/list/item children and consumes logical
 paragraph/heading Content. Code and raw HTML are returned unchanged.
 
-Text runs around recognized code and breaks refine the block's ordered Content into raw Exact/Normalized/
+Text runs around recognized code, breaks and autolinks refine the block's ordered Content into raw Exact/Normalized/
 PartialTab contributions and explicit Escape/Entity transformations. Its semantic
 Literal is assembled without changing block Content or source bytes. Its envelope starts at the first
 content byte and ends at the last, omitting boundary prefixes/markers. Interior
@@ -619,22 +620,50 @@ all spaces. Explicit Normalized contributions account for changed semantics;
 Exact identity validation remains intact. No generic whitespace trimming, entity
 or backslash decoding occurs inside code. Block/reference Content is unchanged.
 
-Dispatch retains per-block delimiter-run and bracket/image-opener state. Repeated
-star/underscore runs, paired brackets and angle pairs defer to later providers.
-Valid escapes/entities consume original spelling
-atomically and do not become new syntax. Raw angle candidate endings are indexed
-independently of ordinary-text escapes. These are conservative availability guards,
-not angle/bracket/emphasis recognition; invalid candidates can also stay pending.
-States never cross paragraphs/headings or calls.
+Angle autolinks are recognized atomically before ordinary Text decoding or
+interior delimiter dispatch. URI recognition uses the pinned 2–32-character ASCII
+scheme grammar, not URL registration/validation. Email recognition uses the pinned
+local-part/domain grammar. Raw backslashes, entity spellings and punctuation stay
+literal inside accepted links. Generated/escaped opening angles never create links;
+code spans and opaque blocks take precedence when opened first. Invalid autolinks
+resume ordinary interpretation. A conservative HTML-opener guard keeps possible
+inline HTML pending for #23; it does not claim HTML recognition. Unmatched angles
+and provably non-HTML rejected forms can complete as ordinary text.
 
-Pending blocks receive provisional Text/CodeSpan/break mapping but retain authoritative
-whole-document uncertainty and pending Evaluate outcomes. No Emphasis, Link or
-InlineHTML is invented; #22–#28 own those interpretations. The
-adapter's affirmative completion checks are unchanged. Final conformance requires
-all 652 cases without exemptions. In Code spans, 334 now completes with an outside
-soft break; 344 needs inline HTML (#23), and 346 needs an autolink (#22). Endings
-and punctuation
-inside recognized code do not introduce reverse prerequisites.
+Autolinks use resolved Link origin `autolink`, Available resolution, Label and
+Destination Values, and one literal Text label child. Content and Label retain the
+original interior ranges and NUL provenance. `destination-open` and
+`destination-close` markers select the exact `<` and `>` bytes; the Link envelope
+includes both delimiters. URI destinations preserve label semantics. Email
+Destination prepends a source-absent Synthetic `mailto:` contribution to the same
+address facts; neither label nor source acquires that prefix. Stored destinations
+remain unencoded. Only the test adapter URL-encodes and then HTML-escapes them,
+independently of label escaping. The advancing Content cursor preserves offsets
+through surrounding Unicode/NUL and stripped container prefixes. Grammar scans
+stop at forbidden bytes or nested openers; new loops retain cancellation checks.
+Bare URI/email forms remain ordinary core Text, with no GFM extension enabled.
+
+Dispatch retains per-block delimiter-run and bracket/image-opener state. Repeated
+star/underscore runs and paired brackets defer to later providers. Valid ordinary
+escapes/entities consume original spelling atomically without becoming new syntax.
+States never cross paragraphs/headings or calls. Pending blocks may contain
+provisional Text/CodeSpan/break/autolink mappings but retain whole-document
+uncertainty and pending Evaluate outcomes. No Emphasis or InlineHTML is invented;
+#23–#28 own remaining interpretation. The adapter's affirmative completion checks
+are unchanged. Code-span 334 completes with its outside soft break; 346 completes
+with its opaque autolink; 344 still needs #23. No interior punctuation introduces
+reverse prerequisites. Final conformance requires all 652 without exemptions.
+
+`TestAutolinkUpstreamAcceptanceAndNewPasses` consumes unchanged 594–612 and newly
+unlocked cross-feature cases, pairing actual Parse/Evaluate HTML with independent
+node, label/destination, synthetic prefix, marker and payload assertions. Invalid
+HTML fallback 618 is explicitly checked as text. Grammar tests cover scheme/email
+bounds, controls/space, Unicode, empty URI payloads and malformed forms. Source and
+ownership tests cover both heading styles, nested/lazy containers, all endings,
+NUL, original offsets, immutable accessors and repeat parsing. Deterministic
+cancellation/deadline sweeps withhold unfinished trees. The inline/list fuzz
+consumers independently verify autolink grammar and provenance alongside prior
+Text/code/break assertions; broad numeric work/depth budgets remain #31.
 
 Independent upstream 327–349 and newly unlocked 17/35/121/525/537/640/641 checks
 assert raw payload, markers, literal and node kinds alongside original HTML.
@@ -644,7 +673,7 @@ non-ASCII whitespace, mixed decoding, ownership and local-state fixtures protect
 source consumers. Partial-tab logical-content preservation has a separate model
 fixture; paragraph producers still strip their leading indentation. Deterministic
 inline cancellation/deadline sweeps withhold unfinished trees and preserve encoding
-precedence. FuzzInlineTextProvenance independently reconstructs Text, code and break
+precedence. FuzzInlineTextProvenance independently reconstructs Text, code, break and autolink
 semantics from original contributions. Full numeric work/depth budgets remain #31.
 
 ## Snapshots, spans and ownership
@@ -918,11 +947,10 @@ normalization. Partial lookup may contain only known first selections; unavailab
 lookup has no entries. Mutable collection copies cannot change the document.
 
 [`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly
-accounts for all 652 upstream IDs: 331 supported HTML cases and 321 pending.
-Break recognition adds 52 demonstrated passes while preserving all prior 279.
-New passes span escapes/entities, paragraph/heading/list/quote continuations,
-code-span case 334 and breaks 633–637/648–649. Other cases retain their
-actual #22–#28 providers, with no undelivered #17–#21 ownership. Dispatch may defer
+accounts for all 652 upstream IDs: 355 supported HTML cases and 297 pending.
+Autolinks add 24 demonstrated passes while preserving all prior 331: 20, 346,
+480–481, 526, 538, 594–610 and 618. Other cases retain their
+actual #23–#28 providers, with no undelivered #17–#22 ownership. Dispatch may defer
 potential invalid candidates conservatively until a provider proves fallback.
 These coverage scopes are not reverse native prerequisites on this increment.
 The test-only adapter/runner remains in internal/conformance and

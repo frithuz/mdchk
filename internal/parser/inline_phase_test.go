@@ -201,3 +201,51 @@ func TestCodeSpanNormalizationCheckpointsAcrossCRLF(t *testing.T) {
 		t.Fatal("missed normalization interruption", ctx.remaining)
 	}
 }
+
+func TestAutolinkInterruptionPreservesBlockTree(t *testing.T) {
+	for _, input := range []string{
+		"before <ab:" + strings.Repeat("x", 10000) + "> after",
+		"before <" + strings.Repeat("x", 10000) + "@b> after",
+		"before <a@" + strings.Repeat("x.", 5000) + "b> after",
+		"before " + strings.Repeat("<ab:é\x00><a@b> ", 200),
+		"before " + strings.Repeat("<invalid", 1000),
+	} {
+		r := Parse(context.Background(), NewSource([]byte(input)))
+		if _, err := parseBlocks(context.Background(), r.Document); err != nil {
+			t.Fatal(err)
+		}
+		before := r.Document.Root()
+		for _, deadline := range []bool{false, true} {
+			if _, err := parseBlocks(context.Background(), r.Document); err != nil {
+				t.Fatal(err)
+			}
+			observed := 0
+			for checkpoint := 1; checkpoint < 200; checkpoint++ {
+				ctx := &quoteCheckpoint{checkpointContext: checkpointContext{Context: context.Background(), remaining: checkpoint}, deadline: deadline}
+				state, err := parseInlines(ctx, r.Document, PhaseComplete)
+				if state != Interrupted {
+					break
+				}
+				observed++
+				want := Cancelled
+				if deadline {
+					want = DeadlineExceeded
+				}
+				if err != nil || interruption(ctx) != want || !reflect.DeepEqual(before, r.Document.Root()) {
+					t.Fatal("partial autolink publication", state, err)
+				}
+				bad := Parse(ctx, NewSource([]byte("<ab:é\xff>")))
+				if bad.Failure == nil || bad.Failure.Code != InvalidUTF8 || bad.Failure.Location.Start() != 6 || bad.Interruption != "" {
+					t.Fatal("autolink encoding precedence", bad)
+				}
+			}
+			if observed < 10 {
+				t.Fatal("missing autolink checkpoints", observed)
+			}
+		}
+		state, err := parseInlines(context.Background(), r.Document, PhaseComplete)
+		if err != nil || state != PhaseComplete || len(before.Children()[0].Children()) != 0 {
+			t.Fatal("autolink changed borrowed block snapshot", state, err)
+		}
+	}
+}

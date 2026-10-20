@@ -136,7 +136,7 @@ func TestDecodingOnePassStructureAndOpaqueBoundaries(t *testing.T) {
 			}
 		})
 	}
-	for _, input := range []string{"\\\\*emphasis*", "<https://example.com/\\[\\>", "text <i title='\\>'>", "[x](/a&amp;b)", "<https://e.test/?a&amp;b>"} {
+	for _, input := range []string{"\\\\*emphasis*", "text <i title='\\>'>", "[x](/a&amp;b)"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 		if r.Status != parser.Incomplete || r.Phases.Inlines != parser.Pending || len(r.Uncertainty) != 1 || conformance.Evaluate(r).Status != "pending" {
 			t.Fatal("undelivered provider became complete", input, r)
@@ -281,7 +281,12 @@ func TestDecodingUpstreamAcceptanceAndNewPasses(t *testing.T) {
 			r := parser.Parse(context.Background(), parser.NewSource([]byte(e.Markdown)))
 			checkCorpusTextOutcome(t, e.Example, e.HTML, r)
 			leafIndex := 0
+			opaque := make(map[int]bool)
 			parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
+				if n.Kind() == parser.Link {
+					checkAutolinkProvenance(t, r.Source, n)
+					opaque[n.Children()[0].Span().Start()] = true
+				}
 				if newPasses[e.Example] && (n.Kind() == parser.Text || n.Kind() == parser.CodeBlock) {
 					if leafIndex >= len(leaves[e.Example]) {
 						t.Fatal("extra upstream leaf")
@@ -297,7 +302,7 @@ func TestDecodingUpstreamAcceptanceAndNewPasses(t *testing.T) {
 					}
 					assertDecodedParts(t, r.Source, value.Segments, []byteRange{{want.a, want.b}}, entityOracle(t))
 				}
-				if n.Kind() == parser.Text {
+				if n.Kind() == parser.Text && !opaque[n.Span().Start()] {
 					// Raw block payloads independently precede decoded children.
 					var raw strings.Builder
 					for _, part := range n.Content() {

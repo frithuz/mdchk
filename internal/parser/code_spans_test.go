@@ -143,12 +143,12 @@ func TestCodeSpanUpstreamAcceptanceAndNewPasses(t *testing.T) {
 		t.Run(strconv.Itoa(e.Example), func(t *testing.T) {
 			source := parser.NewSource([]byte(e.Markdown))
 			r := parser.Parse(context.Background(), source)
-			checkStagedTextOutcome(t, r, e.Example != 344 && e.Example != 346)
+			checkStagedTextOutcome(t, r, e.Example != 344)
 			if w, ok := wants[e.Example]; ok {
 				checkInlineNodes(t, source, r.Document.Root().Children()[0].Children(), w)
 			}
 			out := conformance.Evaluate(r)
-			if e.Example == 344 || e.Example == 346 {
+			if e.Example == 344 {
 				if out.Status != "pending" || out.HTML != "" {
 					t.Fatal("outside provider falsely complete", out)
 				}

@@ -139,7 +139,7 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 331, "fail": 0, "error": 0, "pending": 321})
+                self.assertEqual(report["counts"], {"pass": 355, "fail": 0, "error": 0, "pending": 297})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
                 supported = {
                     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 18, 19, 21, 31, 36,
@@ -177,6 +177,10 @@ class ExecutableBoundary(unittest.TestCase):
                 self.assertEqual(len(breaks), 52)
                 self.assertFalse(supported & breaks)
                 supported.update(breaks)
+                autolinks = {20, 346, 480, 481, 526, 538, 618, *range(594, 611)}
+                self.assertEqual(len(autolinks), 24)
+                self.assertFalse(supported & autolinks)
+                supported.update(autolinks)
                 self.assertEqual(set(ledger["supported_html_examples"]), supported)
                 owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
                 for outcome in report["outcomes"]:
@@ -187,7 +191,7 @@ class ExecutableBoundary(unittest.TestCase):
                         self.assertEqual(outcome["status"], "pending")
                         self.assertEqual(outcome["reason"], "syntax-unimplemented")
                         self.assertEqual(outcome["owners"], owners[outcome["example"]])
-                self.assertFalse(any(set(providers) & {17, 18, 19, 20, 21} for providers in owners.values()))
+                self.assertFalse(any(set(providers) & {17, 18, 19, 20, 21, 22} for providers in owners.values()))
                 for example in breaks:
                     self.assertNotIn(example, owners)
                     self.assertEqual(report["outcomes"][example-1]["status"], "pass")
@@ -202,7 +206,7 @@ class ExecutableBoundary(unittest.TestCase):
                 for example in [327, 121]:
                     self.assertNotIn(example, owners)
                 self.assertEqual(owners[344], [23])
-                self.assertEqual(owners[346], [22])
+                self.assertNotIn(346, owners)
                 for example in [214, 218]:
                     self.assertEqual(owners[example], [27])
                 for example in [650, 651, 652, 347, 348, 611, 612, 644, 645, 646, 647]:

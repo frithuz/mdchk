@@ -7,7 +7,7 @@ import (
 
 // inlineContent borrows immutable logical Content. Its cursor moves forward
 // through each original segment once, splitting only identity contributions.
-// Nonidentity contributions (NUL/partial tabs) cannot contain a backtick boundary.
+// Nonidentity contributions (NUL/partial tabs) cannot contain syntax boundaries.
 type inlineContent struct {
 	ctx                   context.Context
 	parts                 []Segment
@@ -132,6 +132,20 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 		if s.text[offset] == ' ' {
 			offset = ending // inspect each ordinary whitespace run only once
 			continue
+		}
+		if s.text[offset] == '<' {
+			if end, email := s.autolinkEnd(offset); end != 0 {
+				if err := appendText(offset, 0); err != nil || interruption(s.ctx) != "" {
+					return nil, err
+				}
+				node, err := scanAutolink(&cursor, offset, end, s.text[offset+1:end-1], email)
+				if err != nil || interruption(s.ctx) != "" {
+					return nil, err
+				}
+				children = append(children, node)
+				offset = end
+				continue
+			}
 		}
 		if s.text[offset] != '`' {
 			offset = s.dispatch(offset)

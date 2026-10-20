@@ -56,11 +56,11 @@ and a missing helper. CI runs these tests and the read-only drift check.
 ## Foundation coverage accounting
 
 `foundation.json` is mdchk's separately reviewed pass/pending inventory. Every
-original upstream ID occurs exactly once: **331 supported HTML cases and 321
-pending**, preserving all 279 previous passes and adding 52 from physical breaks.
+original upstream ID occurs exactly once: **355 supported HTML cases and 297
+pending**, preserving all 331 previous passes and adding 24 from angle autolinks.
 The parser recognizes the block structure described in the
 [model contract](../../../model.md), collects document-wide definitions, and
-constructs source-preserving Text/CodeSpan/break children in paragraphs and headings after the
+constructs source-preserving Text/CodeSpan/break/autolink children in paragraphs and headings after the
 block/reference handoff. Code and raw HTML payloads stay opaque.
 
 Decoding supplies known semantic Text, reference destination/title and fence-info
@@ -98,7 +98,7 @@ nested/lazy containers, headings, NUL/Unicode, mixed Text decoding, ownership an
 isolation. The normalizer retains trimmed source bytes and explicit transformation
 provenance; semantic offsets never become source coordinates. Code endings are
 normalized internally; 334 now completes with its external soft break, while 344
-needs inline HTML (#23) and 346 needs an autolink (#22).
+needs inline HTML (#23) and 346 now completes with its opaque autolink.
 
 `TestBreakUpstreamAcceptance` checks all unchanged Hard/Soft line break inputs
 633–649, with independent kind/origin/marker/ending/Text assertions. Newly supported
@@ -112,10 +112,22 @@ boundaries, nested/lazy containers, opaque contexts, immutable accessors and
 interruption without publishing unfinished children. A soft break's one discarded
 space is retained as Normalized empty Text; hard markers retain their entire raw
 spelling separately from ending Content. Shared fixture/provenance oracles keep
-old block assertions and accept ordered Text/CodeSpan/break children.
+old block assertions and accept ordered Text/CodeSpan/break/autolink children.
 
-The ledger no longer lists #17–#21 as undelivered providers. Remaining scopes are
-#22 autolinks, #23 inline HTML, #24/#25 emphasis, #26/#27 links and #28
+Angle autolinks add 24 actual passes: 20, 346, 480–481, 526, 538, 594–610 and
+literal HTML fallback 618. All 19 unchanged Autolinks cases 594–612 now pass;
+bare 611–612 remain ordinary Text. `TestAutolinkUpstreamAcceptanceAndNewPasses`
+independently checks node kinds, raw label/destination semantics, Synthetic email
+prefix provenance, exact angle markers/ranges and opaque label children alongside
+actual Parse/Evaluate HTML. Additional grammar/source fixtures cover boundary
+lengths, controls/space, Unicode/NUL, escaped/generated angles, code precedence,
+invalid fallback and genuine pending HTML, containers/headings, all endings,
+immutable ownership and interruption. Existing inline/list fuzz consumers preserve
+their previous assertions and independently check autolink grammar/provenance.
+No upstream input, helper, normalizer or expected output changes.
+
+The ledger no longer lists #17–#22 as undelivered providers. Remaining scopes are
+#23 inline HTML, #24/#25 emphasis, #26/#27 links and #28
 images, as applicable to each case. Conservative coverage owners are not reverse
 native prerequisites or conformance passes. Thematic 55 remains pending for
 conservative delimiter classification (#24/#25), while 57–61 pass. Refer to the
@@ -163,7 +175,7 @@ See [contributor instructions](../../../../../docs/contributing.md#run-commonmar
 for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
 
 The default staged regression gate allows explicitly pending cases: currently
-331 pass, 0 fail, 0 error, 321 pending, with `syntax-unimplemented` and the
+355 pass, 0 fail, 0 error, 297 pending, with `syntax-unimplemented` and the
 remaining owners above. All 279 earlier passes remain; breaks add 52 passes.
 Synthetic
 empty/ASCII-blank documents also complete and render empty HTML. It is not a

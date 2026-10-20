@@ -82,7 +82,7 @@ outside payload, and trimmed source bytes retain explicit transformation provena
 Per-block raw-run indexes and monotonic source cursors avoid repeated suffix or
 segment-prefix searches. Private trees publish only after successful inline work.
 
-Delimiter/bracket pairs and angle-delimited candidates remain honestly pending
+Delimiter/bracket pairs and possible inline HTML remain honestly pending
 for later handlers. Conservative checks can defer invalid candidates; they do
 not recognize those constructs. External physical endings produce semantic break
 nodes, while endings consumed inside code remain code normalization. Unsupported interpretation retains
@@ -93,20 +93,22 @@ cannot manufacture the private block handoff.
 The [model contract](../internal/parser/model.md) defines exact outcomes,
 byte envelopes, raw/semantic mappings, reference ownership and property meanings.
 Retained upstream block tests independently assert paragraph/heading/container
-structure, markers and original ranges, with Text/CodeSpan/break checks where applicable.
+structure, markers and original ranges, with Text/CodeSpan/break/autolink checks
+where applicable.
 `TestCodeSpanUpstreamAcceptanceAndNewPasses` checks unchanged 327–349 and newly
 unlocked cases with independent node/literal/marker/payload assertions. Outside
-providers remain explicit: 334 now completes with a soft break, 344 needs #23
-and 346 needs #22.
+providers remain explicit: 334 completes with a soft break, 344 needs #23,
+and 346 completes through its opaque autolink.
 Nested/lazy mappings, both heading styles, NUL/Unicode, LF/CRLF/CR/EOF, opaque blocks,
 mixed decoding, immutable accessors and block/call isolation have focused checks.
 Deterministic cancellation/deadline sweeps protect unfinished inline publication;
 strict invalid UTF-8 retains precedence. `FuzzInlineTextProvenance` reconstructs
-Text, CodeSpan and break semantics independently from original-byte contributions.
+Text, CodeSpan, break and autolink semantics independently from original-byte
+contributions.
 
-All 652 unchanged cases remain in the ledger: **331 pass, 321 pending**, retaining
-all 279 previous passes and adding 52 from physical break recognition. These are staged results,
-not full CommonMark or extension conformance. Coverage owners are downstream
+All 652 unchanged cases remain in the ledger: **355 pass, 297 pending**, retaining
+all 331 previous passes and adding 24 from angle autolinks and their fallback.
+These are staged results, not full CommonMark or extension conformance. Coverage owners are downstream
 completion providers, never reverse blockers on this increment. Full work/depth-
 budget hardening remains #31.
 
@@ -177,6 +179,29 @@ checking identity, section and exact input fidelity. It adds no HTML passes:
 example 11's supported HTML comes from actual thematic recognition. Other scanner
 targets now all pass actual HTML, independently of these scanner-only assertions.
 
+### Angle URI and email autolinks
+
+Autolinks use the pinned CommonMark scheme/email grammar and consume valid raw
+interiors before ordinary escape/entity or delimiter processing. Labels retain
+literal backslashes/entities and original angle/address spans; email destinations
+add a source-absent Synthetic `mailto:` prefix. URI semantics are unencoded, with
+URL/HTML escaping performed only by the test adapter. Failed autolinks resume
+ordinary text interpretation while possible inline HTML remains pending. Bare
+URI/email forms stay Text. See the [model contract](../internal/parser/model.md#inline-text-and-staged-providers)
+for marker roles, source ownership and stage boundaries.
+
+`TestAutolinkUpstreamAcceptanceAndNewPasses` pairs unchanged 594–612 and all newly
+unlocked cross-feature cases with independent AST/source facts and actual
+Parse/Evaluate output. Grammar, opacity, mapped container/heading source,
+Unicode/NUL, ownership and cancellation/deadline fixtures supplement the corpus.
+The existing inline/list fuzz consumers retain independent grammar/provenance
+checks for Links as well as their previous source assertions. Focused checks:
+
+```sh
+go test ./internal/parser -run 'Autolink|Inline|CodeSpan|Decoding'
+python3 -B tools/commonmark_conformance.py --strict --section '^Autolinks$'
+```
+
 ## Regenerate and verify the CommonMark corpus
 
 Use Python 3.9 or newer, with only its standard library. From the repository root:
@@ -224,16 +249,14 @@ Inputs and paths are resolved from the script, so invocation by absolute script
 path also works from another directory. The checks work offline; use the local
 toolchain/module environment above to forbid automatic downloads explicitly.
 
-Every unfiltered run currently reports **331 pass, 0 fail, 0 error, 321
+Every unfiltered run currently reports **355 pass, 0 fail, 0 error, 297
 pending**. The separately maintained `foundation.json` lists every supported ID
-and remaining provider exactly once. Breaks add 52 passes while retaining all 279
-established IDs. New passes include 14, 16, 25, 28, 46, 49, 70, 87–88, 93, 95,
-104–106, 113, 138, 145, 220, 222–224, 226, 228–230, 232–233, 238, 243, 247,
-250–251, 253–254, 285–288, 290–293, 304, 312, 334, 633–637 and 648–649.
-Examples 638–639 retain emphasis and 642–643 inline HTML #23; 640–641 retain code
-opacity. Code-span 334 now completes; 344/346 still need inline HTML/autolinks.
-Remaining providers are #22 autolinks, #23 inline HTML, #24/#25 emphasis,
-#26/#27 links and #28 images. Conservative pending checks may
+and remaining provider exactly once. Angle autolinks add 24 passes while retaining
+all 331 established IDs: 20, 346, 480–481, 526, 538, 594–610 and literal HTML
+fallback 618. All 19 Autolinks examples 594–612 now complete; bare 611–612 remain
+ordinary Text. Examples 638–639 retain emphasis, 344/642/643 retain inline HTML
+#23, and 640–641 retain code opacity. Remaining providers are #23 inline HTML,
+#24/#25 emphasis, #26/#27 links and #28 images. Conservative pending checks may
 also defer malformed candidates until their handler proves literal fallback.
 No pending case is counted as a conformance pass. Final completion still requires
 all 652 cases without exemptions. These coverage owners are not reverse native
@@ -271,7 +294,7 @@ regexes and empty selections are errors. A filtered run validates the full ledge
 first, reports its smaller scope and never writes or weakens the baseline.
 
 `foundation.json` is mdchk's separately reviewed pass/pending ledger. It
-accounts for all 652 IDs exactly once. Its supported list records the 331
+accounts for all 652 IDs exactly once. Its supported list records the 355
 passes above. A supported case becoming fail/error/pending is a regression;
 missing/duplicate IDs invalidate the ledger. A newly passing case also fails
 the gate until its ID moves from pending to `supported_html_examples` in a
