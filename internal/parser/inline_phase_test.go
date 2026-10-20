@@ -109,6 +109,51 @@ func TestCodeSpanInterruptionPreservesBlockTree(t *testing.T) {
 	}
 }
 
+func TestBreakInterruptionPreservesBlockTree(t *testing.T) {
+	for _, input := range []string{
+		strings.Repeat("a  \r\nb\\\nc \rd\n", 200),
+		"before" + strings.Repeat(" ", 8192) + "\nafter",
+	} {
+		r := Parse(context.Background(), NewSource([]byte(input)))
+		if _, err := parseBlocks(context.Background(), r.Document); err != nil {
+			t.Fatal(err)
+		}
+		before := r.Document.Root()
+		for _, deadline := range []bool{false, true} {
+			if _, err := parseBlocks(context.Background(), r.Document); err != nil {
+				t.Fatal(err)
+			}
+			observed := 0
+			for checkpoint := 1; checkpoint < 200; checkpoint++ {
+				ctx := &quoteCheckpoint{checkpointContext: checkpointContext{Context: context.Background(), remaining: checkpoint}, deadline: deadline}
+				state, err := parseInlines(ctx, r.Document, PhaseComplete)
+				if state != Interrupted {
+					break
+				}
+				observed++
+				want := Cancelled
+				if deadline {
+					want = DeadlineExceeded
+				}
+				if err != nil || interruption(ctx) != want || !reflect.DeepEqual(before, r.Document.Root()) {
+					t.Fatal("partial break publication", state, err)
+				}
+				bad := Parse(ctx, NewSource([]byte("a  \n\xff")))
+				if bad.Failure == nil || bad.Failure.Code != InvalidUTF8 || bad.Failure.Location.Start() != 4 || bad.Interruption != "" {
+					t.Fatal("break scanning changed encoding precedence", bad)
+				}
+			}
+			if observed < 10 {
+				t.Fatal("missing break/mapping/whitespace checkpoints", observed)
+			}
+		}
+		state, err := parseInlines(context.Background(), r.Document, PhaseComplete)
+		if err != nil || state != PhaseComplete || len(before.Children()[0].Children()) != 0 {
+			t.Fatal("break scan changed borrowed block tree", state, err)
+		}
+	}
+}
+
 func TestCodeSpanPartialTabLogicalContent(t *testing.T) {
 	// Exercise the established logical-segment contract directly. Paragraph
 	// production currently strips leading indentation; this is source-model

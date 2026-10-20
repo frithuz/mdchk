@@ -89,7 +89,7 @@ func assertDecodedParts(t *testing.T, source parser.Source, parts []parser.Segme
 		want := raw
 		switch part.Transformation {
 		case parser.Normalized:
-			want = strings.ReplaceAll(raw, "\x00", "\ufffd")
+			want = oracleNormalizedText(t, source, part)
 		case parser.Escape, parser.Entity:
 			want = oracleText(raw, entities)
 		case parser.Exact:
@@ -136,7 +136,7 @@ func TestDecodingOnePassStructureAndOpaqueBoundaries(t *testing.T) {
 			}
 		})
 	}
-	for _, input := range []string{"\\\\*emphasis*", "<https://example.com/\\[\\>", "text <i title='\\>'>", "x\\\ny", "x\\\r\ny", "[x](/a&amp;b)", "<https://e.test/?a&amp;b>"} {
+	for _, input := range []string{"\\\\*emphasis*", "<https://example.com/\\[\\>", "text <i title='\\>'>", "[x](/a&amp;b)", "<https://e.test/?a&amp;b>"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 		if r.Status != parser.Incomplete || r.Phases.Inlines != parser.Pending || len(r.Uncertainty) != 1 || conformance.Evaluate(r).Status != "pending" {
 			t.Fatal("undelivered provider became complete", input, r)
@@ -158,22 +158,28 @@ func TestDecodingIndependentSpansAndConsumerPhases(t *testing.T) {
 			source := parser.NewSource([]byte(input))
 			r := parser.Parse(context.Background(), source)
 			var text *parser.Node
+			var parts []parser.Segment
+			var semantic strings.Builder
 			parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
 				if n.Kind() == parser.Text {
 					text = n
+					parts = append(parts, n.Content()...)
+					semantic.WriteString(n.Properties().Literal.Value)
+				} else if n.Kind() == parser.SoftBreak {
+					parts = append(parts, n.Content()...)
+					semantic.WriteString(ending)
 				}
 				return true
 			})
-			if text == nil || text.Properties().Literal != parser.Some("é&β"+ending+"*\ufffd") {
+			if text == nil || semantic.String() != "é&β"+ending+"*\ufffd" {
 				t.Fatal("segmented semantics", r, text)
 			}
-			parts := text.Content()
 			wants := []struct {
 				a, b     int
 				kind     parser.Transformation
 				semantic string
 			}{
-				{4, 6, parser.Exact, "é"}, {6, 11, parser.Entity, "&"}, {11, 13 + len(ending), parser.Exact, "β" + ending},
+				{4, 6, parser.Exact, "é"}, {6, 11, parser.Entity, "&"}, {11, 13, parser.Exact, "β"}, {13, 13 + len(ending), parser.Exact, ending},
 				{17 + len(ending), 19 + len(ending), parser.Escape, "*"}, {19 + len(ending), 20 + len(ending), parser.Normalized, "\ufffd"},
 			}
 			if len(parts) != len(wants) {

@@ -56,11 +56,11 @@ and a missing helper. CI runs these tests and the read-only drift check.
 ## Foundation coverage accounting
 
 `foundation.json` is mdchk's separately reviewed pass/pending inventory. Every
-original upstream ID occurs exactly once: **279 supported HTML cases and 373
-pending**, preserving all 254 previous passes and adding 25 from code spans.
+original upstream ID occurs exactly once: **331 supported HTML cases and 321
+pending**, preserving all 279 previous passes and adding 52 from physical breaks.
 The parser recognizes the block structure described in the
 [model contract](../../../model.md), collects document-wide definitions, and
-constructs source-preserving Text/CodeSpan children in paragraphs and headings after the
+constructs source-preserving Text/CodeSpan/break children in paragraphs and headings after the
 block/reference handoff. Code and raw HTML payloads stay opaque.
 
 Decoding supplies known semantic Text, reference destination/title and fence-info
@@ -71,7 +71,8 @@ structure scenarios. Complete authoritative named-entity coverage is independent
 checked against the pinned [WHATWG dataset](../../html5/README.md).
 Code/raw HTML blocks stay opaque. Code spans also consume literal escapes/entities;
 raw code closers ignore backslashes. Entity-produced punctuation/tabs/newlines
-remain Text and do not create syntax. Physical endings outside code remain #21.
+remain Text and do not create syntax. Physical endings outside code now produce
+source-preserving SoftBreak/HardBreak nodes when eligible.
 
 The unchanged 650–652 and 327 cases pass actual Parse/Evaluate; unmatched backticks
 in 347/348 remain literal. Independent inline
@@ -87,7 +88,7 @@ Unicode/NUL provenance and immutable Text accessors. Matched syntax whose provid
 is undelivered remains pending, even beside supported text. Dispatch/state hooks
 alone never establish syntax support; conservative checks also defer some invalid
 candidates until their actual handlers can prove fallback. Multiline mapping
-preserves exact source endings while semantic breaks remain #21.
+preserves exact source endings and separate semantic break nodes.
 
 Code spans add passes 17, 35, 121, 327–333, 335–343, 345, 349, 525, 537 and
 640–641. `TestCodeSpanUpstreamAcceptanceAndNewPasses` asserts independent node,
@@ -96,12 +97,25 @@ cover ASCII-only edge trimming, all-space/tab/NBSP content, all physical endings
 nested/lazy containers, headings, NUL/Unicode, mixed Text decoding, ownership and
 isolation. The normalizer retains trimmed source bytes and explicit transformation
 provenance; semantic offsets never become source coordinates. Code endings are
-normalized internally; 334 still needs its external break provider (#21), 344
-needs inline HTML (#23), and 346 needs an autolink (#22), correcting their former
-conservative #27 attribution.
+normalized internally; 334 now completes with its external soft break, while 344
+needs inline HTML (#23) and 346 needs an autolink (#22).
 
-The ledger no longer lists #17–#20 as undelivered providers. Remaining scopes are
-#21 breaks, #22 autolinks, #23 inline HTML, #24/#25 emphasis, #26/#27 links and #28
+`TestBreakUpstreamAcceptance` checks all unchanged Hard/Soft line break inputs
+633–649, with independent kind/origin/marker/ending/Text assertions. Newly supported
+633–637 and 648–649 join already-supported terminal cases 644–647; code exclusions
+640–641 remain supported. Emphasis 638–639 remains pending, and inline HTML
+642–643 retains #23 instead of stale #27 attribution. Full-corpus evaluation adds
+52 passes across paragraph/heading/list/quote continuations, escapes/entities and
+code-span 334. Exact per-ID support is in the ledger. Independent fixtures cover
+original LF/CRLF/CR and Unicode/NUL coordinates, whitespace and generated-character
+boundaries, nested/lazy containers, opaque contexts, immutable accessors and
+interruption without publishing unfinished children. A soft break's one discarded
+space is retained as Normalized empty Text; hard markers retain their entire raw
+spelling separately from ending Content. Shared fixture/provenance oracles keep
+old block assertions and accept ordered Text/CodeSpan/break children.
+
+The ledger no longer lists #17–#21 as undelivered providers. Remaining scopes are
+#22 autolinks, #23 inline HTML, #24/#25 emphasis, #26/#27 links and #28
 images, as applicable to each case. Conservative coverage owners are not reverse
 native prerequisites or conformance passes. Thematic 55 remains pending for
 conservative delimiter classification (#24/#25), while 57–61 pass. Refer to the
@@ -139,7 +153,7 @@ LF/CRLF/CR/EOF, prefixes/tabs, immutability, literal code/HTML and interruption.
 Definition-only 207 has one actual definition, no paragraph, complete phases and
 empty HTML. List 317 retains all three items, its non-rendered definition and loose
 outer list. #17 ownership is removed; remaining 192–218 cases identify actual
-#21/#23/#27 providers in the ledger. No forward resolution is claimed.
+#23/#27 providers in the ledger. No forward resolution is claimed.
 
 ## Executable comparisons and passing baseline
 
@@ -149,8 +163,8 @@ See [contributor instructions](../../../../../docs/contributing.md#run-commonmar
 for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
 
 The default staged regression gate allows explicitly pending cases: currently
-279 pass, 0 fail, 0 error, 373 pending, with `syntax-unimplemented` and the
-remaining owners above. All 254 earlier passes remain; code spans add 25 passes.
+331 pass, 0 fail, 0 error, 321 pending, with `syntax-unimplemented` and the
+remaining owners above. All 279 earlier passes remain; breaks add 52 passes.
 Synthetic
 empty/ASCII-blank documents also complete and render empty HTML. It is not a
 conformance-completion claim. `--require-complete` fails on pending; final

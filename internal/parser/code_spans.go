@@ -51,15 +51,29 @@ func contentEnvelope(parts []Segment) Span {
 func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 	cursor := inlineContent{ctx: s.ctx, parts: parts}
 	var children []*Node
-	appendText := func(end int) error {
+	appendText := func(end, trim int) error {
 		if end == cursor.offset {
 			return nil
 		}
-		raw, err := cursor.take(end)
+		raw, err := cursor.take(end - trim)
 		if err != nil || interruption(s.ctx) != "" {
 			return err
 		}
 		value := decodeValue(s.ctx, raw, false)
+		if trim != 0 {
+			// Retain the soft break's discarded original space as an explicit
+			// empty semantic contribution, separate from escape/entity tokens.
+			spaces, err := cursor.take(end)
+			if err != nil {
+				return err
+			}
+			for i := range spaces {
+				spaces[i].Transformation = Normalized
+				spaces[i].Semantic = Some("")
+			}
+			raw = append(raw, spaces...)
+			value.Segments = append(value.Segments, spaces...)
+		}
 		if interruption(s.ctx) != "" {
 			return nil
 		}
@@ -76,6 +90,48 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 				return nil, nil
 			}
 			checkpoint = offset + 256
+		}
+		start, ending, origin, trim := offset, offset, "line-ending", 0
+		switch s.text[offset] {
+		case ' ':
+			for ending < len(s.text) && s.text[ending] == ' ' {
+				if (ending-start)%256 == 0 && interruption(s.ctx) != "" {
+					return nil, nil
+				}
+				ending++
+			}
+			if ending-start >= 2 {
+				origin = "spaces"
+			} else {
+				trim = 1
+			}
+		case '\\':
+			ending++
+			origin = "backslash"
+		}
+		if ending < len(s.text) && referenceEnding(s.text[ending]) {
+			textEnd := start
+			if trim != 0 {
+				textEnd = ending
+			}
+			if err := appendText(textEnd, trim); err != nil || interruption(s.ctx) != "" {
+				return nil, err
+			}
+			end := ending + 1
+			if s.text[ending] == '\r' && end < len(s.text) && s.text[end] == '\n' {
+				end++
+			}
+			node, err := scanBreak(&cursor, ending, end, origin)
+			if err != nil || interruption(s.ctx) != "" {
+				return nil, err
+			}
+			children = append(children, node)
+			offset = end
+			continue
+		}
+		if s.text[offset] == ' ' {
+			offset = ending // inspect each ordinary whitespace run only once
+			continue
 		}
 		if s.text[offset] != '`' {
 			offset = s.dispatch(offset)
@@ -105,7 +161,7 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 			continue
 		}
 		close := runs[next]
-		if err := appendText(offset); err != nil || interruption(s.ctx) != "" {
+		if err := appendText(offset, 0); err != nil || interruption(s.ctx) != "" {
 			return nil, err
 		}
 		opening, err := cursor.take(end)
@@ -135,7 +191,7 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 		children = append(children, node)
 		offset = close + width
 	}
-	if err := appendText(len(s.text)); err != nil {
+	if err := appendText(len(s.text), 0); err != nil {
 		return nil, err
 	}
 	return children, nil

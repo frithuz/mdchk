@@ -139,7 +139,7 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 279, "fail": 0, "error": 0, "pending": 373})
+                self.assertEqual(report["counts"], {"pass": 331, "fail": 0, "error": 0, "pending": 321})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
                 supported = {
                     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 18, 19, 21, 31, 36,
@@ -169,6 +169,14 @@ class ExecutableBoundary(unittest.TestCase):
                 supported.update({17, 35, 121, 327, 328, 329, 330, 331, 332, 333,
                                   335, 336, 337, 338, 339, 340, 341, 342, 343,
                                   345, 349, 525, 537, 640, 641})
+                breaks = {14, 16, 25, 28, 46, 49, 70, 87, 88, 93, 95,
+                          104, 105, 106, 113, 138, 145, 220, 222, 223, 224, 226,
+                          228, 229, 230, 232, 233, 238, 243, 247, 250, 251,
+                          253, 254, 285, 286, 287, 288, 290, 291, 292, 293,
+                          304, 312, 334, 633, 634, 635, 636, 637, 648, 649}
+                self.assertEqual(len(breaks), 52)
+                self.assertFalse(supported & breaks)
+                supported.update(breaks)
                 self.assertEqual(set(ledger["supported_html_examples"]), supported)
                 owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
                 for outcome in report["outcomes"]:
@@ -179,17 +187,20 @@ class ExecutableBoundary(unittest.TestCase):
                         self.assertEqual(outcome["status"], "pending")
                         self.assertEqual(outcome["reason"], "syntax-unimplemented")
                         self.assertEqual(outcome["owners"], owners[outcome["example"]])
-                self.assertFalse(any(set(providers) & {17, 18, 19, 20} for providers in owners.values()))
-                for example in [49, 70, 87, 88, 93, 95, 104, 105, 113, 220, 226, 243, 304, 312, 648, 649]:
-                    self.assertEqual(owners[example], [21])
+                self.assertFalse(any(set(providers) & {17, 18, 19, 20, 21} for providers in owners.values()))
+                for example in breaks:
+                    self.assertNotIn(example, owners)
+                    self.assertEqual(report["outcomes"][example-1]["status"], "pass")
+                for example in [638, 639]:
+                    self.assertEqual(owners[example], [24, 25])
+                for example in [642, 643]:
+                    self.assertEqual(owners[example], [23])
                 for example in [65, 76, 102]:
                     self.assertNotIn(example, owners)
                     self.assertEqual(report["outcomes"][example-1]["status"], "pass")
                 self.assertEqual(owners[66], [24, 25])
                 for example in [327, 121]:
                     self.assertNotIn(example, owners)
-                for example in [138, 145, 334]:
-                    self.assertEqual(owners[example], [21])
                 self.assertEqual(owners[344], [23])
                 self.assertEqual(owners[346], [22])
                 for example in [214, 218]:
@@ -213,25 +224,27 @@ class ExecutableBoundary(unittest.TestCase):
         self.assertIn("diff", report["outcomes"][0])
 
     def test_pinned_upstream_helper_reports_unsupported_as_error(self):
-        case = self.cases[333]
-        self.assertEqual(case["example"], 334)
+        case = self.cases[343]
+        self.assertEqual(case["example"], 344)
         for mode in [[], ["--no-normalize"]]:
             result = subprocess.run([sys.executable, "-E", "-s", "-B",
                                      str(runner.corpus.CORPUS / "upstream/test/spec_tests.py"),
                                      "--spec", str(runner.corpus.CORPUS / "upstream/spec.txt"),
-                                     "--program", str(self.adapter), "--number", "334", *mode], capture_output=True)
+                                     "--program", str(self.adapter), "--number", "344", *mode], capture_output=True)
             self.assertEqual(result.returncode, 1)
             self.assertIn(b"0 passed, 0 failed, 1 errored, 651 skipped", result.stdout)
             self.assertIn(b'"status":"pending"', result.stdout)
 
-    def test_pinned_upstream_helper_recognized_definition_only(self):
-        for mode in [[], ["--no-normalize"]]:
-            result = subprocess.run([sys.executable, "-E", "-s", "-B",
-                                     str(runner.corpus.CORPUS / "upstream/test/spec_tests.py"),
-                                     "--spec", str(runner.corpus.CORPUS / "upstream/spec.txt"),
-                                     "--program", str(self.adapter), "--number", "207", *mode], capture_output=True)
-            self.assertEqual(result.returncode, 0)
-            self.assertIn(b"1 passed, 0 failed, 0 errored, 651 skipped", result.stdout)
+    def test_pinned_upstream_helper_recognized_definition_and_external_break(self):
+        for example in [207, 334]:
+            for mode in [[], ["--no-normalize"]]:
+                with self.subTest(example=example, mode=mode):
+                    result = subprocess.run([sys.executable, "-E", "-s", "-B",
+                                             str(runner.corpus.CORPUS / "upstream/test/spec_tests.py"),
+                                             "--spec", str(runner.corpus.CORPUS / "upstream/spec.txt"),
+                                             "--program", str(self.adapter), "--number", str(example), *mode], capture_output=True)
+                    self.assertEqual(result.returncode, 0)
+                    self.assertIn(b"1 passed, 0 failed, 0 errored, 651 skipped", result.stdout)
 
     def test_pinned_upstream_helper_complete_empty_transport_and_execution_failure(self):
         # A separate synthetic spec drives the real retained helper's pass path.

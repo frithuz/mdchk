@@ -531,8 +531,21 @@ func FuzzListMarkerSourceFacts(f *testing.F) {
 		}
 		parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
 			if r.Status == parser.Complete && (n.Kind() == parser.Paragraph || n.Kind() == parser.Heading) && len(n.Content()) != 0 {
-				if len(n.Children()) != 1 || n.Children()[0].Kind() != parser.Text || !n.Children()[0].Properties().Literal.Present {
-					t.Fatal("completed inline work lacks Text semantics")
+				if len(n.Children()) == 0 {
+					t.Fatal("completed inline work lacks children")
+				}
+				for _, child := range n.Children() {
+					switch child.Kind() {
+					case parser.Text, parser.CodeSpan:
+						if !child.Properties().Literal.Present {
+							t.Fatal("completed inline lacks literal semantics")
+						}
+					case parser.SoftBreak, parser.HardBreak:
+						checkBreakProperties(t, source, child, child.Properties().Break.Origin,
+							byteRange{child.Span().Start(), child.Content()[0].Source.Start()})
+					default:
+						t.Fatal("unknown completed inline", child.Kind())
+					}
 				}
 			}
 			if n.Kind() != parser.ListItem {

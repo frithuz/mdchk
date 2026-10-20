@@ -391,7 +391,7 @@ func TestListContinuationParagraphEndings(t *testing.T) {
 			input := "- é" + ending + "  β\x00" + terminal
 			source := parser.NewSource([]byte(input))
 			r := parser.Parse(context.Background(), source)
-			if r.Failure != nil || r.Status != parser.Incomplete {
+			if r.Failure != nil || r.Status != parser.Complete {
 				t.Fatal(r)
 			}
 			item := ungroupedChildren(r.Document.Root())[0]

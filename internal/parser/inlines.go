@@ -114,12 +114,6 @@ func (s *inlineScanner) dispatch(offset int) int {
 		return offset + width // generated characters never enter syntax dispatch
 	}
 	switch c := s.text[offset]; c {
-	case '\r', '\n':
-		s.pending = true // #21 owns semantic hard/soft breaks
-	case '\\':
-		if offset+1 < len(s.text) && referenceEnding(s.text[offset+1]) {
-			s.pending = true // #21 owns actual escaped physical endings
-		}
 	case '<':
 		s.pending = s.pending || s.angleClose > offset // #22/#23 ignore interior escapes
 	case '[', ']':

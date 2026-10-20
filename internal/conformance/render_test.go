@@ -271,7 +271,8 @@ func TestActualParseOutcomeBoundary(t *testing.T) {
 		{"", "rendered", "", ""}, {"[foo]: /url\n", "rendered", "", ""},
 		{" \t\r\n", "rendered", "", ""}, {"\xff", "error", "invalid-utf8", ""},
 		{"hello\n", "rendered", "", "<p>hello</p>\n"},
-		{"aaa     \nbbb     \n", "pending", "syntax-unimplemented", ""},
+		{"aaa     \nbbb     \n", "rendered", "", "<p>aaa<br />\nbbb</p>\n"},
+		{"*aaa*", "pending", "syntax-unimplemented", ""},
 	} {
 		got := Evaluate(parser.Parse(context.Background(), parser.NewSource([]byte(tt.input))))
 		if got.Status != tt.status || got.Reason != tt.reason || got.HTML != tt.html {

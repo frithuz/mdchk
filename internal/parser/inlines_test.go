@@ -43,14 +43,21 @@ func checkInlineText(t *testing.T, r parser.ParseResult, block *parser.Node, lit
 		}
 		return
 	}
-	if len(children) != 1 || children[0].Kind() != parser.Text || children[0].Properties().Literal != parser.Some(oracleText(literal, entityOracle(t))) || len(children[0].Children()) != 0 {
-		t.Fatal("incorrect Text semantics", literal, children)
+	var raw strings.Builder
+	bytes := r.Source.Bytes()
+	for _, bounds := range ranges {
+		raw.Write(bytes[bounds.start:bounds.end])
 	}
-	text := children[0]
-	if text.Span().Start() != ranges[0].start || text.Span().End() != ranges[len(ranges)-1].end {
-		t.Fatal("Text envelope includes omitted boundary bytes", text.Span(), ranges)
+	if oracleText(raw.String(), entityOracle(t)) != oracleText(literal, entityOracle(t)) {
+		t.Fatal("block fixture logical bytes differ", raw.String(), literal)
 	}
-	assertDecodedParts(t, r.Source, text.Content(), ranges, entityOracle(t))
+	wants := fixtureBreakInlines(t, r.Source, ranges)
+	checkInlineNodes(t, r.Source, children, wants)
+	for i, want := range wants {
+		if want.kind == parser.Text {
+			assertDecodedParts(t, r.Source, children[i].Content(), want.payload, entityOracle(t))
+		}
+	}
 }
 
 func checkCorpusTextOutcome(t *testing.T, id int, html string, r parser.ParseResult) {
@@ -91,7 +98,7 @@ func TestInlineLiteralAndProviderBoundaries(t *testing.T) {
 			t.Fatal(text, children)
 		}
 	}
-	for _, text := range []string{"*a*", "a_b_c", "**a**", "[a](b)", "[a]", "![a](b)", "<a@b.c>", "<123@a.b>", "<https://a>", "<em>x</em>", "a\nb", "a\r\nb"} {
+	for _, text := range []string{"*a*", "a_b_c", "**a**", "[a](b)", "[a]", "![a](b)", "<a@b.c>", "<123@a.b>", "<https://a>", "<em>x</em>"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(text)))
 		if r.Status != parser.Incomplete || r.Phases.Inlines != parser.Pending || len(r.Uncertainty) != 1 || conformance.Evaluate(r).Status != "pending" {
 			t.Fatal("missing provider became complete", text, r)
@@ -136,8 +143,8 @@ func TestInlineSegmentedSourceAndDetachedAccessors(t *testing.T) {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 		paragraph := r.Document.Root().Children()[0].Children()[0]
 		checkInlineText(t, r, paragraph, "a"+ending+"b", []byteRange{{2, 3 + len(ending)}, {5 + len(ending), 6 + len(ending)}})
-		if r.Status != parser.Incomplete {
-			t.Fatal("break provider falsely delivered")
+		if r.Status != parser.Complete {
+			t.Fatal("break provider did not complete")
 		}
 	}
 }
@@ -248,7 +255,7 @@ func TestInlineOpaqueBlocksAndLocalState(t *testing.T) {
 
 func FuzzInlineTextProvenance(f *testing.F) {
 	entities := entityOracle(f)
-	for _, input := range []string{"hello", "> a\r\n> b", "# é\x00 #\n", "[a](b)", "`unmatched", "*a*", "&amp;", "é&amp;β", `\&ouml;`, "&NotEqualTilde;", "&#0;", "&#128;", "&#xD800;", "` x `", "a`&amp;\\*`b", "> - `a\r\n>   b`", "`foo``bar``", "`é\x00`"} {
+	for _, input := range []string{"hello", "> a\r\n> b", "# é\x00 #\n", "[a](b)", "`unmatched", "*a*", "&amp;", "é&amp;β", `\&ouml;`, "&NotEqualTilde;", "&#0;", "&#128;", "&#xD800;", "` x `", "a`&amp;\\*`b", "> - `a\r\n>   b`", "`foo``bar``", "`é\x00`", "a  \nb", "a \r\nb", "a\\\rb", "> - é\x00  \r\n>   β", "&#10;\n&#92;"} {
 		f.Add(input)
 	}
 	f.Fuzz(func(t *testing.T, input string) {
@@ -271,6 +278,11 @@ func FuzzInlineTextProvenance(f *testing.F) {
 				checkCodeProvenance(t, source, n)
 				return true
 			}
+			if n.Kind() == parser.SoftBreak || n.Kind() == parser.HardBreak {
+				marker := byteRange{n.Span().Start(), n.Content()[0].Source.Start()}
+				checkBreakProperties(t, source, n, n.Properties().Break.Origin, marker)
+				return true
+			}
 			if n.Kind() != parser.Text {
 				return true
 			}
@@ -282,7 +294,7 @@ func FuzzInlineTextProvenance(f *testing.F) {
 				}
 				want := raw
 				if part.Transformation == parser.Normalized {
-					want = strings.ReplaceAll(raw, "\x00", "\ufffd")
+					want = oracleNormalizedText(t, source, part)
 				} else if part.Transformation == parser.Escape || part.Transformation == parser.Entity {
 					want = oracleText(raw, entities)
 				} else if part.Transformation != parser.Exact {

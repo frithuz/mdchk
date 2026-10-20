@@ -18,10 +18,11 @@ type inlineWant struct {
 	span, opening, closing byteRange
 	literal                string
 	payload                []byteRange
+	origin                 string
 }
 
 func codeWant(start, openEnd, closeStart, end int, literal string, payload ...byteRange) inlineWant {
-	return inlineWant{parser.CodeSpan, byteRange{start, end}, byteRange{start, openEnd}, byteRange{closeStart, end}, literal, payload}
+	return inlineWant{kind: parser.CodeSpan, span: byteRange{start, end}, opening: byteRange{start, openEnd}, closing: byteRange{closeStart, end}, literal: literal, payload: payload}
 }
 func textWant(start, end int, literal string) inlineWant {
 	return inlineWant{kind: parser.Text, span: byteRange{start, end}, literal: literal, payload: []byteRange{{start, end}}}
@@ -41,7 +42,11 @@ func checkInlineNodes(t *testing.T, source parser.Source, nodes []*parser.Node, 
 	}
 	for i, w := range wants {
 		n := nodes[i]
-		if n.Kind() != w.kind || n.Span().Start() != w.span.start || n.Span().End() != w.span.end || n.Properties().Literal != parser.Some(w.literal) || len(n.Children()) != 0 {
+		literal := parser.Some(w.literal)
+		if w.kind == parser.SoftBreak || w.kind == parser.HardBreak {
+			literal = parser.Optional[string]{}
+		}
+		if n.Kind() != w.kind || n.Span().Start() != w.span.start || n.Span().End() != w.span.end || n.Properties().Literal != literal || len(n.Children()) != 0 {
 			t.Fatalf("inline %d: kind=%s span=%v literal=%+v want %+v", i, n.Kind(), n.Span(), n.Properties().Literal, w)
 		}
 		if w.kind == parser.CodeSpan {
@@ -50,6 +55,8 @@ func checkInlineNodes(t *testing.T, source parser.Source, nodes []*parser.Node, 
 			if p == nil || p.Marker != '`' || p.Width != w.opening.end-w.opening.start || len(m) != 2 || m[0].Role != "opening" || m[1].Role != "closing" || m[0].Source.Start() != w.opening.start || m[0].Source.End() != w.opening.end || m[1].Source.Start() != w.closing.start || m[1].Source.End() != w.closing.end {
 				t.Fatal("delimiter provenance", p, m, w)
 			}
+		} else if w.kind == parser.SoftBreak || w.kind == parser.HardBreak {
+			checkBreakProperties(t, source, n, w.origin, w.opening)
 		} else if n.Properties().Delimiter != nil || len(n.Markers()) != 0 {
 			t.Fatal("Text acquired code markers")
 		}
@@ -98,7 +105,7 @@ func TestCodeSpanUpstreamAcceptanceAndNewPasses(t *testing.T) {
 		331: {codeWant(0, 1, 7, 8, " `` ", byteRange{1, 7})},
 		332: {codeWant(0, 1, 3, 4, " a", byteRange{1, 3})},
 		333: {codeWant(0, 1, 6, 7, "\u00a0b\u00a0", byteRange{1, 6})},
-		334: {codeWant(0, 1, 3, 4, "\u00a0", byteRange{1, 3}), textWant(4, 5, "\n"), codeWant(5, 6, 8, 9, "  ", byteRange{6, 8})},
+		334: {codeWant(0, 1, 3, 4, "\u00a0", byteRange{1, 3}), breakWant(4, 4, 5, "line-ending", "\n"), codeWant(5, 6, 8, 9, "  ", byteRange{6, 8})},
 		335: {codeWant(0, 2, 17, 19, "foo bar   baz", byteRange{2, 3}, byteRange{3, 7}, byteRange{7, 13}, byteRange{13, 17})},
 		336: {codeWant(0, 2, 8, 10, "foo ", byteRange{2, 3}, byteRange{3, 8})},
 		337: {codeWant(0, 1, 15, 16, "foo   bar  baz", byteRange{1, 12}, byteRange{12, 15})},
@@ -136,12 +143,12 @@ func TestCodeSpanUpstreamAcceptanceAndNewPasses(t *testing.T) {
 		t.Run(strconv.Itoa(e.Example), func(t *testing.T) {
 			source := parser.NewSource([]byte(e.Markdown))
 			r := parser.Parse(context.Background(), source)
-			checkStagedTextOutcome(t, r, e.Example != 334 && e.Example != 344 && e.Example != 346)
+			checkStagedTextOutcome(t, r, e.Example != 344 && e.Example != 346)
 			if w, ok := wants[e.Example]; ok {
 				checkInlineNodes(t, source, r.Document.Root().Children()[0].Children(), w)
 			}
 			out := conformance.Evaluate(r)
-			if e.Example == 334 || e.Example == 344 || e.Example == 346 {
+			if e.Example == 344 || e.Example == 346 {
 				if out.Status != "pending" || out.HTML != "" {
 					t.Fatal("outside provider falsely complete", out)
 				}

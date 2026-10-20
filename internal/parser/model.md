@@ -5,7 +5,7 @@ paragraph/block lifecycle with indented/fenced-code, HTML-block, thematic-break,
 ATX, Setext, mixed block-quote/list-item recognition and continuation. It completes documents accounted
 for by code with established info semantics, opaque HTML blocks, thematic breaks,
 empty ATX headings and ASCII blanks, including empty/inline-free quotes and lists. It retains
-paragraph/heading source content and constructs source-preserving Text/CodeSpan children. ListItems retain
+paragraph/heading source content and constructs source-preserving Text/CodeSpan/break children. ListItems retain
 first-line metadata, nested block children, continuation and closure. Compatible
 siblings acquire List parents and independently derived tightness.
 Leading reference definitions are recognized and normalized document-wide; inline
@@ -29,7 +29,7 @@ to callers.
 | Nil or zero-length source | `Complete` / `Available` | Root `[0,0)`, no children, available empty reference records/lookup, both phases complete |
 | ASCII-blank source (space/tab/LF/CR only) | `Complete` / `Available` | Root `[0,N)`, no children, established empty references/lookup, both phases complete |
 | Indented/fenced code with known info semantics, HTML blocks, thematic breaks, empty ATX headings and ASCII blanks, including quotes and lists of empty items or established inline-free blocks, nested in either kind of container | `Complete` / `Available` | Root `[0,N)` with source-bound blocks, established empty references/lookup, both phases complete, no uncertainty |
-| Supported Text/CodeSpan core blocks | `Complete` / `Available` | Text/CodeSpan children preserve segmented original bytes and semantic Literal; code retains independent delimiter markers; both phases complete |
+| Supported Text/CodeSpan/break core blocks | `Complete` / `Available` | Text/CodeSpan preserve raw contributions and semantic Literal; breaks retain origin, original ending and hard-break markers; both phases complete |
 | Text needing undelivered inline handlers | `Incomplete` / `Partial` | Source-bound blocks and available reference records/lookup; Blocks complete, Inlines pending; whole-document `SyntaxUnimplemented` uncertainty |
 | Definition-only input with established destination/title semantics (including inside otherwise inline-free containers) | `Complete` / `Available` | All records retained, first-definition lookup available; no definition block children; both phases complete |
 | Definition destination/title or fence info contains escapes/entities, with no other missing syntax | `Complete` / `Available` | Known decoded values and explicit raw transformations, available reference lookup and complete phases |
@@ -148,7 +148,7 @@ independent expected grouping, byte envelopes and content segments. Examples
 225 retains its code and following paragraph with independent source expectations.
 Example 227 now retains both its
 paragraph and ATX heading, with independent source expectations shared with
-the ATX targets. Cases 219/221/225/227 now pass HTML; multiline cases retain #21.
+the ATX targets. All paragraph cases 219–227 now pass HTML, including multiline breaks.
 Focused Parse fixtures cover blank/EOF closure, LF/CRLF/CR, Unicode/NUL/tab
 provenance, immutable ownership and repeatability. Private transition tests
 cover hook precedence and interrupted open work.
@@ -174,8 +174,8 @@ grammar rather than manufacturing nested breaks.
 
 `TestThematicUpstreamTargets` checks original examples 43–61 plus newly supported
 11/98 with independent node order, envelopes and exact marker ranges. Actual
-Parse/Evaluate now also renders text-bearing 44/45 and 57–61. Cases 46/49
-retain #21; 55 remains conservatively pending for delimiter classification and 56
+Parse/Evaluate now also renders text-bearing 44–46, 49 and 57–61. Case 55
+remains conservatively pending for delimiter classification and 56
 needs emphasis (#24/#25). Code/break-only passes remain intact.
 Negative cases never acquire break nodes or false completeness. Independent
 fixtures cover tabs, indentation boundaries, Unicode/NUL/extra characters,
@@ -296,8 +296,8 @@ Full depth/node/work limits and cancellation hardening remain #31.
 `TestQuoteUpstreamTargets` asserts actual trees, child order, envelopes, markers and
 content ranges for all unchanged 228–252 independently of HTML. Cases 236/239/240
 newly pass HTML; existing literal-code case 231 remains supported. List case 235 now renders its quoted item and outside sibling. Other supported
-single-line quote paragraphs/headings also render; multiline quote cases retain
-#21. `TestQuotePartialTabUpstream6` independently verifies original tab/code
+single-line and multiline quote paragraphs/headings also render when their other
+inline providers are available. `TestQuotePartialTabUpstream6` independently verifies original tab/code
 provenance. Reference cases 214/218 remain pending for #27.
 Boundary fixtures cover all seven HTML forms, prefix-free payload, marked Setext,
 code transitions, partial tabs, Unicode/NUL/endings/EOF, immutable ownership and
@@ -341,13 +341,13 @@ HTML nodes cannot manufacture the private recognition/handoff proof.
 TestHTMLUpstreamTargets independently asserts form, node order, physical envelopes
 and content ranges for all unchanged 148–191 inputs plus cross-feature passes 21/31.
 Thirty-five HTML-section cases now pass actual Parse/Evaluate, including text
-around opaque blocks. Remaining mixed cases need breaks (#21), inline HTML (#23)
+around opaque blocks. Remaining mixed cases need inline HTML (#23)
 or emphasis (#24/#25), as recorded in foundation.json. Coverage owners are not
 reverse blockers on this syntax stage. Separate fixtures cover grammar near misses,
 case/EOF/fixed-form boundaries, code and paragraph precedence, opaque payload,
 LF/CRLF/CR/NUL/Unicode/tab provenance, immutable accessors, encoding precedence and
 deterministic interruption, including at EOF finalization. Actual full-corpus
-normalized/strict gates now record 279 pass and 373 pending, preserving all 254
+normalized/strict gates now record 331 pass and 321 pending, preserving all 279
 earlier passes; full conformance remains false.
 
 ## Indented code and literal handoff
@@ -388,7 +388,7 @@ Full work metering/checkpoint hardening remains #31.
 node ordering, raw envelopes/content/indentation ranges and semantic values.
 107, 110–112 and 116–118 match actual Parse/Evaluate HTML; list cases 108/109
 now render their actual item paragraphs/nested items with Text; 114/115 also
-render. Multiline 113 retains #21.
+render, including multiline 113 with its soft break.
 Cross-feature tests now retain actual code in 48, 69, 85, 100 and 225. Additional
 upstream fixtures verify newly rendered 1–3, 8, 18, 36, 134, 231 and 289 without
 claiming their named section's syntax providers are generally implemented.
@@ -438,10 +438,10 @@ Full metering/checkpoint hardening remains #31.
 
 `TestFencedUpstreamTargets` independently asserts actual Parse kinds/order,
 opening/closing/indentation spans, physical envelopes, payload and info for every
-unchanged 119–147 input plus newly passing cross-feature 19. Twenty-six fenced
+unchanged 119–147 input plus newly passing cross-feature 19. All 29 fenced
 section cases pass actual Parse/Evaluate, including surrounding supported text.
-Case 121 now passes through code-span recognition; 138/145 retain external #21
-breaks. Info decoding is available.
+Cases 121, 138 and 145 now pass through code-span and external-break recognition.
+Info decoding is available.
 Extra fixtures cover empty/unclosed/blank/EOF, malformed openers/closers, literal
 payload and test-renderer escaping, semantic-info availability, original
 LF/CRLF/CR, synthetic LF, tabs/NUL/Unicode, ownership and interrupted prefixes.
@@ -554,9 +554,9 @@ completion/coverage owners, not reverse prerequisites on this structural increme
 
 | Cases | Current recognition and remaining full-case work |
 | --- | --- |
-| 253, 285 | Paragraph/code/quote introduction or noninterrupting empty markers; #21 breaks |
+| 253, 285 | Paragraph/code/quote introduction or noninterrupting empty markers; supported breaks |
 | 261, 266, 269, 272, 275 | Ordinary nonmarkers or paragraph/code examples; supported HTML |
-| 254, 286–288, 290–293 | Established items with multiline/code/quote children and lazy ownership; #21 |
+| 254, 286–288, 290–293 | Established items with multiline/code/quote children and lazy ownership; supported breaks |
 | 255–260, 262–265, 267–268, 270–271, 273–274, 276–283, 294–300 | Established item/nested/sibling/outside ownership and leaf content; supported HTML |
 | 284 | Complete empty item in a tight List; supported HTML |
 | 289 | Existing complete indented code; unchanged HTML pass |
@@ -572,15 +572,16 @@ ordinary paragraph structure where the former conservative hook stopped.
 
 `TestListGroupingUpstreamTargets` independently asserts the complete available
 List/item/block hierarchy, exact envelopes/segments, original marker ranges and
-per-list properties for every unchanged Lists input 301–326. All now render except multiline 304/312, which retain #21. Cases 307/319 distinguish
+per-list properties for every unchanged Lists input 301–326. All now render,
+including multiline 304/312. Cases 307/319 distinguish
 loose inner lists from tight parents, 318 protects code blanks, 320/321 cover quote
 and consecutive-block context, and 324–326 distinguish direct separation and nested
 tightness. Constructed renderer tests separately check mixed inner/outer tightness
 and quoted paragraphs; they do not establish recognition. Complete actual-Parse
 source assertions and HTML checks promote Tabs 7 and empty item 284, preserving all
 84 previous passes at that increment. Definition-only 207 now adds a pass,
-at that increment. Current code-span recognition preserves all 254 earlier passes
-and raises the baseline to 279 pass, 373 pending. Boundary fixtures cover blank ownership,
+at that increment. Code spans raised the baseline from 254 to 279 passes;
+physical breaks preserve those passes and raise it to 331 pass, 321 pending. Boundary fixtures cover blank ownership,
 opaque trailing blanks, empty-item gaps in quotes, all endings/EOF and
 nested reference definitions. FuzzListGroupingBoundaries independently generates
 marker changes, sibling counts and blank boundaries. Full grammar/budgets/rules
@@ -594,7 +595,7 @@ cannot establish this proof. With complete blocks and effective reference lookup
 the inline pass traverses document/quote/list/item children and consumes logical
 paragraph/heading Content. Code and raw HTML are returned unchanged.
 
-Text runs around recognized code refine the block's ordered Content into raw Exact/Normalized/
+Text runs around recognized code and breaks refine the block's ordered Content into raw Exact/Normalized/
 PartialTab contributions and explicit Escape/Entity transformations. Its semantic
 Literal is assembled without changing block Content or source bytes. Its envelope starts at the first
 content byte and ends at the last, omitting boundary prefixes/markers. Interior
@@ -619,19 +620,20 @@ Exact identity validation remains intact. No generic whitespace trimming, entity
 or backslash decoding occurs inside code. Block/reference Content is unchanged.
 
 Dispatch retains per-block delimiter-run and bracket/image-opener state. Repeated
-star/underscore runs, paired brackets, angle pairs and physical endings outside
-code defer to later providers. Valid escapes/entities consume original spelling
+star/underscore runs, paired brackets and angle pairs defer to later providers.
+Valid escapes/entities consume original spelling
 atomically and do not become new syntax. Raw angle candidate endings are indexed
 independently of ordinary-text escapes. These are conservative availability guards,
 not angle/bracket/emphasis recognition; invalid candidates can also stay pending.
 States never cross paragraphs/headings or calls.
 
-Pending blocks receive provisional Text/CodeSpan mapping but retain authoritative
-whole-document uncertainty and pending Evaluate outcomes. No SoftBreak, HardBreak,
-Emphasis, Link or InlineHTML is invented; #21–#28 own those interpretations. The
+Pending blocks receive provisional Text/CodeSpan/break mapping but retain authoritative
+whole-document uncertainty and pending Evaluate outcomes. No Emphasis, Link or
+InlineHTML is invented; #22–#28 own those interpretations. The
 adapter's affirmative completion checks are unchanged. Final conformance requires
-all 652 cases without exemptions. In Code spans, 334 needs an outside break (#21),
-344 needs inline HTML (#23), and 346 needs an autolink (#22); endings and punctuation
+all 652 cases without exemptions. In Code spans, 334 now completes with an outside
+soft break; 344 needs inline HTML (#23), and 346 needs an autolink (#22). Endings
+and punctuation
 inside recognized code do not introduce reverse prerequisites.
 
 Independent upstream 327–349 and newly unlocked 17/35/121/525/537/640/641 checks
@@ -642,7 +644,7 @@ non-ASCII whitespace, mixed decoding, ownership and local-state fixtures protect
 source consumers. Partial-tab logical-content preservation has a separate model
 fixture; paragraph producers still strip their leading indentation. Deterministic
 inline cancellation/deadline sweeps withhold unfinished trees and preserve encoding
-precedence. FuzzInlineTextProvenance independently reconstructs both Text and code
+precedence. FuzzInlineTextProvenance independently reconstructs Text, code and break
 semantics from original contributions. Full numeric work/depth budgets remain #31.
 
 ## Snapshots, spans and ownership
@@ -800,9 +802,42 @@ Neither generated punctuation nor generated whitespace is redispatched as syntax
 Escaped ampersands and decoded ampersands do not initiate another decoding pass;
 raw reference-label identity is unchanged. Code/raw HTML payloads are opaque;
 unsupported inline contexts retain pending interpretation. Physical escaped line
-endings remain #21. Complete table/numeric tests, independent actual Parse/source/
+endings are consumed by the break handler before ordinary Text decoding. Complete table/numeric tests, independent actual Parse/source/
 phase assertions, deterministic interruption and the inline provenance fuzz oracle
 verify these boundaries separately from HTML comparisons.
+
+## Hard and soft line breaks
+
+After block/reference completion, eligible physical endings produce SoftBreak
+(origin `line-ending`) or HardBreak (origin `spaces` or `backslash`). Two or more
+original ASCII spaces or an unescaped original backslash immediately before the
+ending form the complete `hard-break-marker`; Content contains only the original
+LF, CRLF or CR ending. The envelope covers marker plus ending for hard breaks and
+only the ending for soft breaks. Break nodes have no Literal or inline children.
+The shared advancing Content cursor preserves exact source ranges, container gaps
+and original ownership without using semantic lengths as physical offsets.
+
+The one trailing ASCII space before a soft break stays in the preceding Text's
+Content with Normalized empty semantics. It is not an Escape/Entity contribution
+or a hard-break marker. Next-line indentation and terminal block endings/whitespace
+are already omitted from logical Content by block recognition; no terminal break
+is fabricated. All original bytes remain in Source and block envelopes/content.
+Code spans consume their internal endings opaquely, while raw code/HTML blocks are
+unchanged. Original escapes/entities are consumed atomically; generated endings,
+spaces and backslashes never enter break dispatch. Unsupported inline HTML and
+other providers retain whole-document uncertainty even beside provisional breaks.
+
+`TestBreakUpstreamAcceptance` consumes unchanged 633–649 with independent kind,
+origin, marker, ending and Text assertions as well as actual Parse/Evaluate. Cases
+633–637 and 644–649 render; 640–641 retain code opacity, 638–639 await emphasis and
+642–643 await inline HTML (#23), correcting stale link ownership. Case 334 now
+renders with its external soft break. Independent fixtures cover LF/CRLF/CR,
+Unicode/NUL/scalar coordinates, zero/one/many spaces, mixed tabs, escaped
+backslashes, generated characters, nested/lazy containers, both heading styles,
+EOF and opaque payloads. Detached-accessor and deterministic checkpoint sweeps
+protect immutable publication and encoding/interruption precedence. Existing block
+oracles retain original envelopes, markers and segments while accepting mixed
+inline children; affected inline/list fuzz consumers check those new kinds.
 
 ## Core kind and property catalog
 
@@ -883,11 +918,11 @@ normalization. Partial lookup may contain only known first selections; unavailab
 lookup has no entries. Mutable collection copies cannot change the document.
 
 [`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly
-accounts for all 652 upstream IDs: 279 supported HTML cases and 373 pending.
-Code spans add 25 demonstrated passes while preserving all prior 254. Newly passing
-IDs are 17, 35, 121, 327–333, 335–343, 345, 349, 525, 537 and 640–641. Multiline
-paragraph/list/quote endings outside code remain #21. Other cases retain their
-actual #21–#28 providers, with no undelivered #17–#20 ownership. Dispatch may defer
+accounts for all 652 upstream IDs: 331 supported HTML cases and 321 pending.
+Break recognition adds 52 demonstrated passes while preserving all prior 279.
+New passes span escapes/entities, paragraph/heading/list/quote continuations,
+code-span case 334 and breaks 633–637/648–649. Other cases retain their
+actual #22–#28 providers, with no undelivered #17–#21 ownership. Dispatch may defer
 potential invalid candidates conservatively until a provider proves fallback.
 These coverage scopes are not reverse native prerequisites on this increment.
 The test-only adapter/runner remains in internal/conformance and
