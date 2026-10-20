@@ -278,7 +278,7 @@ func TestAutolinkOpacitySourceAndOwnership(t *testing.T) {
 			return true
 		})
 	}
-	for _, input := range []string{"*a* <ab:x>", "[a](b) <ab:x>"} {
+	for _, input := range []string{"***a*** <ab:x>", "[a](b) <ab:x>"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 		if r.Status != parser.Incomplete || conformance.Evaluate(r).Status != "pending" {
 			t.Fatal("lost remaining provider", input, r)

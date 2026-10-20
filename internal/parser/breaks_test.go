@@ -232,14 +232,9 @@ func TestBreakUpstreamAcceptance(t *testing.T) {
 		seen++
 		t.Run(strconv.Itoa(e.Example), func(t *testing.T) {
 			r := parser.Parse(context.Background(), parser.NewSource([]byte(e.Markdown)))
-			pending := e.Example == 638 || e.Example == 639
-			checkStagedTextOutcome(t, r, !pending)
+			checkStagedTextOutcome(t, r, true)
 			out := conformance.Evaluate(r)
-			if pending {
-				if r.Status != parser.Incomplete || out.Status != "pending" || out.HTML != "" {
-					t.Fatal("missing emphasis provider became complete", out)
-				}
-			} else if out.Status != "rendered" || out.HTML != e.HTML {
+			if out.Status != "rendered" || out.HTML != e.HTML {
 				t.Fatal("upstream output", out, e.HTML)
 			}
 			if w, ok := wants[e.Example]; ok {

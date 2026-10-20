@@ -82,8 +82,8 @@ outside payload, and trimmed source bytes retain explicit transformation provena
 Per-block raw-run indexes and monotonic source cursors avoid repeated suffix or
 segment-prefix searches. Private trees publish only after successful inline work.
 
-Delimiter/bracket pairs remain honestly pending for later handlers. Inline HTML
-is now recognized atomically; malformed HTML resumes ordinary interpretation.
+Nested emphasis and bracket pairs remain honestly pending for later handlers.
+Inline HTML is now recognized atomically; malformed HTML resumes ordinary interpretation.
 External physical endings produce semantic break
 nodes, while endings consumed inside code remain code normalization. Unsupported interpretation retains
 whole-document uncertainty and cannot render. Empty, definition-only and other
@@ -109,14 +109,15 @@ Text, CodeSpan, break, InlineHTML and autolink semantics independently from
 original-byte
 contributions.
 
-All 652 unchanged cases remain in the ledger: **383 pass, 269 pending**, retaining
-all 355 previous passes and adding 28 from inline HTML and ordinary fallback.
+All 652 unchanged cases remain in the ledger: **477 pass, 175 pending**, retaining
+all 383 previous passes and adding 94 from delimiter classification/pairing.
 These are staged results, not full CommonMark or extension conformance. Coverage owners are downstream
 completion providers, never reverse blockers on this increment. Full work/depth-
 budget hardening remains #31.
 
 `TestBreakUpstreamAcceptance` checks unchanged 633–649 and preserves actual
-pending emphasis providers. `TestBreakOriginsMappingAndCoordinates` and
+single-level emphasis and genuine remaining providers.
+`TestBreakOriginsMappingAndCoordinates` and
 `TestBreakBlockBoundariesAndOpaqueContexts` independently assert kinds/origins,
 complete physical endings and markers, LF/CRLF/CR scalar positions, tabs/spaces,
 escaped backslashes, entity-generated characters, heading/paragraph termination,
@@ -230,6 +231,42 @@ go test ./internal/parser -run 'InlineHTML|HTML|Inline'
 python3 -B tools/commonmark_conformance.py --strict --section '^Raw HTML$'
 ```
 
+### Single-level emphasis
+
+The delimiter pass classifies original star/underscore runs using the pinned
+Unicode whitespace/punctuation rules, underscore intraword restrictions and
+modulo-three eligibility. A linked stack with partitioned failed-search floors
+keeps opener searches bounded. Advancing raw Content and flat-node cursors retain
+original consumed/leftover markers without copying the accumulated child list.
+Emphasis/Strong Content is raw logical payload; exact opening/closing markers and
+ordered children are distinct from decoded Text semantics. Opaque interiors and
+escape/entity-generated markers never become new delimiters.
+
+The fixed acceptance partition requires 90 of the 132 emphasis examples: 14 old
+passes and 76 new passes, including single-level leftovers, competing openers,
+multiline pairs and code adjacency. Thirty-six nested cases await #25; six inline
+link cases await #26, with #25 also needed for 419/433. Invalid/unmatched runs
+complete as Text; actual nesting/bracket interpretation stays honestly pending.
+All 383 prior corpus passes remain and 94 new passes bring the baseline to 477.
+The 18 cross-section additions are 15, 37, 55, 56, 66, 80–82, 148, 152, 155,
+167–168, 176–177, 188 and 638–639.
+
+TestEmphasisApprovedPartitionAndUpstream fixes the partition and independently
+counted original marker ranges, comparing actual Parse/Evaluate with unchanged
+upstream HTML. Mapped container/heading, NUL/Unicode, ending/EOF, opaque-content,
+local-state and detached-accessor fixtures supplement deterministic cancellation
+and deadline sweeps. Existing structural helpers and inline/list fuzz consumers
+retain their source oracles and validate emphasis containers. Focused commands:
+
+```sh
+go test ./internal/parser -run 'Emphasis|Inline|CodeSpan|Break'
+python3 -B tools/commonmark_conformance.py --section '^Emphasis and strong emphasis$'
+```
+
+This is staged single-level support, not full CommonMark conformance. Numeric
+work/depth hardening stays #31; optional performance measurements do not replace
+correctness/source assertions or introduce a machine-specific threshold.
+
 ## Regenerate and verify the CommonMark corpus
 
 Use Python 3.9 or newer, with only its standard library. From the repository root:
@@ -277,14 +314,14 @@ Inputs and paths are resolved from the script, so invocation by absolute script
 path also works from another directory. The checks work offline; use the local
 toolchain/module environment above to forbid automatic downloads explicitly.
 
-Every unfiltered run currently reports **383 pass, 0 fail, 0 error, 269
+Every unfiltered run currently reports **477 pass, 0 fail, 0 error, 175
 pending**. The separately maintained `foundation.json` lists every supported ID
 and remaining provider exactly once. Angle autolinks add 24 passes while retaining
 all 331 established IDs: 20, 346, 480–481, 526, 538, 594–610 and literal HTML
 fallback 618. All 19 Autolinks examples 594–612 now complete; bare 611–612 remain
-ordinary Text. Examples 638–639 retain emphasis; 344/642/643 now pass with opaque
-inline HTML,
-and 640–641 retain code opacity. Remaining providers are #24/#25 emphasis,
+ordinary Text. Examples 638–639 now complete through single-level emphasis;
+344/642/643 pass with opaque inline HTML, and 640–641 retain code opacity.
+Remaining providers are #25 nested emphasis,
 #26/#27 links and #28 images. Conservative pending checks may
 also defer malformed candidates until their handler proves literal fallback.
 No pending case is counted as a conformance pass. Final completion still requires
@@ -323,7 +360,7 @@ regexes and empty selections are errors. A filtered run validates the full ledge
 first, reports its smaller scope and never writes or weakens the baseline.
 
 `foundation.json` is mdchk's separately reviewed pass/pending ledger. It
-accounts for all 652 IDs exactly once. Its supported list records the 383
+accounts for all 652 IDs exactly once. Its supported list records the 477
 passes above. A supported case becoming fail/error/pending is a regression;
 missing/duplicate IDs invalidate the ledger. A newly passing case also fails
 the gate until its ID moves from pending to `supported_html_examples` in a
@@ -347,7 +384,8 @@ rm -r "$adapter_dir"
 
 The last comparison now exits 0: example 207 is a recognized definition-only
 document with legitimately empty HTML. The unchanged upstream helper still has no
-pending category; use `--number 638` to observe unsupported emphasis as an error.
+pending category; use `--number 467` to observe unsupported nested emphasis as
+an error.
 Example 344 now succeeds through actual inline HTML recognition. Example 334 now
 passes with an external soft break. The adapter's default protocol
 emits HTML alone on stdout only for complete rendered input. Pending input exits 2

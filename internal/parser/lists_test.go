@@ -508,7 +508,7 @@ func TestListMarkerBytesEndingsAndUnavailableSuffix(t *testing.T) {
 }
 
 func FuzzListMarkerSourceFacts(f *testing.F) {
-	for _, input := range []string{"- x <i>text</i>\n", "> - x <!-->\n", "- item\n", "003.\tfoo\n", "-\t\tfoo\n", " >\t-\tfoo\n", "foo\n1.\n", "1234567890. x\n", "*\t \t\n", "- é\x00\r\n", "\xff"} {
+	for _, input := range []string{"- *x* **y**\n", "> - ***left**\r\n", "- ***nested***\n", "- x <i>text</i>\n", "> - x <!-->\n", "- item\n", "003.\tfoo\n", "-\t\tfoo\n", " >\t-\tfoo\n", "foo\n1.\n", "1234567890. x\n", "*\t \t\n", "- é\x00\r\n", "\xff"} {
 		f.Add(input)
 	}
 	f.Fuzz(func(t *testing.T, input string) {
@@ -534,12 +534,15 @@ func FuzzListMarkerSourceFacts(f *testing.F) {
 				if len(n.Children()) == 0 {
 					t.Fatal("completed inline work lacks children")
 				}
+				checkInlineSourceCoverage(t, n)
 				for _, child := range n.Children() {
 					switch child.Kind() {
 					case parser.Text, parser.CodeSpan:
 						if !child.Properties().Literal.Present {
 							t.Fatal("completed inline lacks literal semantics")
 						}
+					case parser.Emphasis, parser.Strong:
+						checkEmphasisProvenance(t, source, child)
 					case parser.InlineHTML:
 						checkInlineHTMLProvenance(t, source, child)
 					case parser.Link:

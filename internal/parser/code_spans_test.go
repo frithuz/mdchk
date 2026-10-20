@@ -19,6 +19,7 @@ type inlineWant struct {
 	literal                string
 	payload                []byteRange
 	origin                 string
+	children               []inlineWant
 }
 
 func codeWant(start, openEnd, closeStart, end int, literal string, payload ...byteRange) inlineWant {
@@ -37,19 +38,26 @@ func withInlines(w atxBlockWant, inlines ...inlineWant) atxBlockWant {
 // include a prefix/delimiter, decode opaque code or invent a source contribution.
 func checkInlineNodes(t *testing.T, source parser.Source, nodes []*parser.Node, wants []inlineWant) {
 	t.Helper()
+	wants = fixturePairWants(t, source, wants)
 	if len(nodes) != len(wants) {
 		t.Fatalf("inline count %d want %d", len(nodes), len(wants))
 	}
 	for i, w := range wants {
 		n := nodes[i]
 		literal := parser.Some(w.literal)
-		if w.kind == parser.SoftBreak || w.kind == parser.HardBreak || w.kind == parser.InlineHTML {
+		if w.kind == parser.SoftBreak || w.kind == parser.HardBreak || w.kind == parser.InlineHTML || w.kind == parser.Emphasis || w.kind == parser.Strong {
 			literal = parser.Optional[string]{}
 		}
-		if n.Kind() != w.kind || n.Span().Start() != w.span.start || n.Span().End() != w.span.end || n.Properties().Literal != literal || len(n.Children()) != 0 {
+		if n.Kind() != w.kind || n.Span().Start() != w.span.start || n.Span().End() != w.span.end || n.Properties().Literal != literal || len(n.Children()) != len(w.children) {
 			t.Fatalf("inline %d: kind=%s span=%v literal=%+v want %+v", i, n.Kind(), n.Span(), n.Properties().Literal, w)
 		}
-		if w.kind == parser.CodeSpan {
+		if w.kind == parser.Emphasis || w.kind == parser.Strong {
+			checkEmphasisProvenance(t, source, n)
+			if n.Markers()[0].Source.Start() != w.opening.start || n.Markers()[0].Source.End() != w.opening.end || n.Markers()[1].Source.Start() != w.closing.start || n.Markers()[1].Source.End() != w.closing.end {
+				t.Fatal("fixture markers", n, w)
+			}
+			checkInlineNodes(t, source, n.Children(), w.children)
+		} else if w.kind == parser.CodeSpan {
 			p := n.Properties().Delimiter
 			m := n.Markers()
 			if p == nil || p.Marker != '`' || p.Width != w.opening.end-w.opening.start || len(m) != 2 || m[0].Role != "opening" || m[1].Role != "closing" || m[0].Source.Start() != w.opening.start || m[0].Source.End() != w.opening.end || m[1].Source.Start() != w.closing.start || m[1].Source.End() != w.closing.end {

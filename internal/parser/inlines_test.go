@@ -51,7 +51,7 @@ func checkInlineText(t *testing.T, r parser.ParseResult, block *parser.Node, lit
 	if oracleText(raw.String(), entityOracle(t)) != oracleText(literal, entityOracle(t)) {
 		t.Fatal("block fixture logical bytes differ", raw.String(), literal)
 	}
-	wants := fixtureBreakInlines(t, r.Source, ranges)
+	wants := fixturePairWants(t, r.Source, fixtureBreakInlines(t, r.Source, ranges))
 	checkInlineNodes(t, r.Source, children, wants)
 	for i, want := range wants {
 		if want.kind == parser.Text {
@@ -87,7 +87,7 @@ func checkCorpusTextOutcome(t *testing.T, id int, html string, r parser.ParseRes
 }
 
 func TestInlineLiteralAndProviderBoundaries(t *testing.T) {
-	for _, text := range []string{"hello", "Foo χρῆν", "Multiple     spaces", "a * b", "a _ b", "a ` b", "a [ b", "a ] b", "a < b", "a & b", "a \\b", "~~strike~~", "é\x00"} {
+	for _, text := range []string{"hello", "Foo χρῆν", "Multiple     spaces", "a * b", "a _ b", "a ` b", "a [ b", "a ] b", "a < b", "a & b", "a \\b", "~~strike~~", "é\x00", "a_b_c"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(text)))
 		checkStagedTextOutcome(t, r, true)
 		literal := text
@@ -98,7 +98,7 @@ func TestInlineLiteralAndProviderBoundaries(t *testing.T) {
 			t.Fatal(text, children)
 		}
 	}
-	for _, text := range []string{"*a*", "a_b_c", "**a**", "[a](b)", "[a]", "![a](b)"} {
+	for _, text := range []string{"***a***", "[a](b)", "[a]", "![a](b)"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(text)))
 		if r.Status != parser.Incomplete || r.Phases.Inlines != parser.Pending || len(r.Uncertainty) != 1 || conformance.Evaluate(r).Status != "pending" {
 			t.Fatal("missing provider became complete", text, r)
@@ -266,7 +266,7 @@ func TestInlineOpaqueBlocksAndLocalState(t *testing.T) {
 
 func FuzzInlineTextProvenance(f *testing.F) {
 	entities := entityOracle(f)
-	for _, input := range []string{"hello", "> a\r\n> b", "# é\x00 #\n", "[a](b)", "`unmatched", "*a*", "&amp;", "é&amp;β", `\&ouml;`, "&NotEqualTilde;", "&#0;", "&#128;", "&#xD800;", "` x `", "a`&amp;\\*`b", "> - `a\r\n>   b`", "`foo``bar``", "`é\x00`", "a  \nb", "a \r\nb", "a\\\rb", "> - é\x00  \r\n>   β", "&#10;\n&#92;", "x <!--> tail", "x <a title=\"<!-- no -->\">", "> - x <!--é\x00\r\n>   end -->", "x <?bad <?bad", "x <![CDATA[>&<]]>", "x <a /bar>", "<ab:x>", "<a@b>", "<ab:&amp;\\[]>", "> - <ab:é\x00>"} {
+	for _, input := range []string{"**flat** *pairs*", "***nested***", "***left**", "*foo _bar* baz_", "> - *é\x00\r\n>   β*", "hello", "> a\r\n> b", "# é\x00 #\n", "[a](b)", "`unmatched", "*a*", "&amp;", "é&amp;β", `\&ouml;`, "&NotEqualTilde;", "&#0;", "&#128;", "&#xD800;", "` x `", "a`&amp;\\*`b", "> - `a\r\n>   b`", "`foo``bar``", "`é\x00`", "a  \nb", "a \r\nb", "a\\\rb", "> - é\x00  \r\n>   β", "&#10;\n&#92;", "x <!--> tail", "x <a title=\"<!-- no -->\">", "> - x <!--é\x00\r\n>   end -->", "x <?bad <?bad", "x <![CDATA[>&<]]>", "x <a /bar>", "<ab:x>", "<a@b>", "<ab:&amp;\\[]>", "> - <ab:é\x00>"} {
 		f.Add(input)
 	}
 	f.Fuzz(func(t *testing.T, input string) {
@@ -285,6 +285,13 @@ func FuzzInlineTextProvenance(f *testing.F) {
 			return
 		}
 		parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
+			if n.Kind() == parser.Paragraph || n.Kind() == parser.Heading {
+				checkInlineSourceCoverage(t, n)
+			}
+			if n.Kind() == parser.Emphasis || n.Kind() == parser.Strong {
+				checkEmphasisProvenance(t, source, n)
+				return true
+			}
 			if n.Kind() == parser.InlineHTML {
 				checkInlineHTMLProvenance(t, source, n)
 				return true

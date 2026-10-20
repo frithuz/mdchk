@@ -3,6 +3,7 @@ package parser
 import (
 	"context"
 	"strings"
+	"unicode/utf8"
 )
 
 // Inline state belongs to one logical paragraph/heading, never to a document or
@@ -10,8 +11,10 @@ import (
 // Later providers consume this dispatch/state boundary; they must map any split
 // back through Content rather than treating logical offsets as source offsets.
 type inlineDelimiter struct {
-	marker        byte
-	offset, width int
+	marker                  byte
+	offset, width, original int
+	canOpen, canClose       bool
+	previous, next          int
 }
 
 type inlineBracket struct {
@@ -24,9 +27,8 @@ type inlineScanner struct {
 	text         string
 	delimiters   []inlineDelimiter
 	brackets     []inlineBracket
-	backticks    map[int][]int // raw run starts by width, even after a backslash
-	backtickNext map[int]int   // monotonic next-closer cursor per width
-	markers      [2]bool
+	backticks    map[int][]int    // raw run starts by width, even after a backslash
+	backtickNext map[int]int      // monotonic next-closer cursor per width
 	htmlEnds     map[string][]int // original logical terminators/quotes, indexed once
 	pending      bool
 }
@@ -78,6 +80,9 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState) (*Node, erro
 		scanner := inlineScanner{ctx: ctx, text: text.String()}
 		scanner.opaqueCandidates()
 		children, err := scanner.scan(spec.Content)
+		if err == nil && interruption(ctx) == "" {
+			children, err = scanner.emphasis(spec.Content, children)
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -107,8 +112,8 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState) (*Node, erro
 }
 
 // Dispatch consumes known text escapes/entities or defers to a missing provider.
-// A potential pair is not recognized syntax: false-positive deferral is allowed,
-// but unavailable syntax must never be advertised as complete literal text.
+// Delimiters are classified here, after opaque constructs and decoding tokens
+// have been consumed. Pairing happens after the complete logical block scan.
 func (s *inlineScanner) dispatch(offset int) int {
 	if _, width, _ := decodeToken(s.text[offset:]); width != 0 {
 		return offset + width // generated characters never enter syntax dispatch
@@ -129,13 +134,15 @@ func (s *inlineScanner) dispatch(offset int) int {
 			}
 			end++
 		}
-		s.delimiters = append(s.delimiters, inlineDelimiter{marker: c, offset: offset, width: end - offset})
-		index := 0
-		if c == '_' {
-			index = 1
+		before, after := rune(' '), rune(' ')
+		if offset > 0 {
+			before, _ = utf8.DecodeLastRuneInString(s.text[:offset])
 		}
-		s.pending = s.pending || s.markers[index] // #24/#25 settle actual flanking
-		s.markers[index] = true
+		if end < len(s.text) {
+			after, _ = utf8.DecodeRuneInString(s.text[end:])
+		}
+		open, close := delimiterFlanking(c, before, after)
+		s.delimiters = append(s.delimiters, inlineDelimiter{marker: c, offset: offset, width: end - offset, original: end - offset, canOpen: open, canClose: close})
 		return end
 	}
 	return offset + 1
