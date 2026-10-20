@@ -140,7 +140,7 @@ func TestDecodingOnePassStructureAndOpaqueBoundaries(t *testing.T) {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 		checkStagedTextOutcome(t, r, true)
 		link := r.Document.Root().Children()[0].Children()[0]
-		checkLinkProvenance(t, r.Source, link)
+		checkLinkProvenance(t, r.Source, link, r.Document.Root())
 		if link.Properties().Link.Destination.Semantic != parser.Some("/a&b") {
 			t.Fatal("inline destination decoding", link)
 		}
@@ -287,7 +287,7 @@ func TestDecodingUpstreamAcceptanceAndNewPasses(t *testing.T) {
 			opaque := make(map[int]bool)
 			parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
 				if n.Kind() == parser.Link || n.Kind() == parser.Image {
-					checkLinkProvenance(t, r.Source, n)
+					checkLinkProvenance(t, r.Source, n, r.Document.Root())
 					if n.Properties().Link.Origin == "autolink" {
 						opaque[n.Children()[0].Span().Start()] = true
 					}

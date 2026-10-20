@@ -296,7 +296,7 @@ func FuzzInlineTextProvenance(f *testing.F) {
 				return true
 			}
 			if n.Kind() == parser.Link || n.Kind() == parser.Image {
-				checkLinkProvenance(t, source, n)
+				checkLinkProvenance(t, source, n, r.Document.Root())
 				return true
 			}
 			if n.Kind() == parser.CodeSpan {

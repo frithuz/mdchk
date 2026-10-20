@@ -89,10 +89,10 @@ func TestImageUpstreamAcceptance(t *testing.T) {
 			parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
 				if n.Kind() == parser.Image {
 					images = append(images, n)
-					checkLinkProvenance(t, r.Source, n)
+					checkLinkProvenance(t, r.Source, n, r.Document.Root())
 				}
 				if n.Kind() == parser.Link {
-					checkLinkProvenance(t, r.Source, n)
+					checkLinkProvenance(t, r.Source, n, r.Document.Root())
 				}
 				if n.Kind() == parser.Emphasis || n.Kind() == parser.Strong {
 					checkEmphasisProvenance(t, r.Source, n)
@@ -191,11 +191,11 @@ func TestImageSemanticAltAndActivation(t *testing.T) {
 			parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
 				if n.Kind() == parser.Image {
 					images++
-					checkLinkProvenance(t, r.Source, n)
+					checkLinkProvenance(t, r.Source, n, r.Document.Root())
 				}
 				if n.Kind() == parser.Link {
 					links++
-					checkLinkProvenance(t, r.Source, n)
+					checkLinkProvenance(t, r.Source, n, r.Document.Root())
 				}
 				return true
 			})
@@ -224,7 +224,7 @@ func TestImageMappedSourceAndOwnership(t *testing.T) {
 					switch n.Kind() {
 					case parser.Image:
 						count++
-						checkLinkProvenance(t, r.Source, n)
+						checkLinkProvenance(t, r.Source, n, r.Document.Root())
 						before := n.Properties()
 						p := n.Properties()
 						p.Link.Label.Segments[0].Semantic = parser.Some("changed")

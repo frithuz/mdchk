@@ -97,7 +97,7 @@ func TestReferenceLinkApprovedPartitionAndUpstream(t *testing.T) {
 			var uses []*parser.Node
 			parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
 				if n.Kind() == parser.Link {
-					checkLinkProvenance(t, r.Source, n)
+					checkLinkProvenance(t, r.Source, n, r.Document.Root())
 					if n.Properties().Link.Origin != "inline" && n.Properties().Link.Origin != "autolink" {
 						uses = append(uses, n)
 					}
@@ -218,7 +218,7 @@ func checkReferenceRawValue(t *testing.T, source parser.Source, n *parser.Node, 
 	return logical.String()
 }
 
-func checkReferenceLinkProvenance(t *testing.T, source parser.Source, n *parser.Node) {
+func checkReferenceLinkProvenance(t *testing.T, source parser.Source, n, enclosing *parser.Node) {
 	t.Helper()
 	p := n.Properties().Link
 	if p == nil || p.Resolution != parser.Available || !p.NormalizedLabel.Present || !reflect.DeepEqual(n.Content(), p.Label.Segments) {
@@ -257,9 +257,7 @@ func checkReferenceLinkProvenance(t *testing.T, source parser.Source, n *parser.
 		t.Fatal("reference envelope", n)
 	}
 	raw := checkReferenceRawValue(t, source, n, p.Label)
-	if p.Label.Segments[0].Source.Start() != markers[0].Source.End() || p.Label.Segments[len(p.Label.Segments)-1].Source.End() != markers[1].Source.Start() {
-		t.Fatal("reference label boundaries")
-	}
+	checkBracketValueCoverage(t, enclosing, n, p.Label, markers[0].Source, markers[1].Source)
 	if p.Origin == "shortcut" {
 		if p.ReferenceLabel != nil {
 			t.Fatal("invented shortcut identifier")
@@ -269,9 +267,7 @@ func checkReferenceLinkProvenance(t *testing.T, source parser.Source, n *parser.
 			t.Fatal("missing/separated identifier")
 		}
 		key := checkReferenceRawValue(t, source, n, *p.ReferenceLabel)
-		if p.ReferenceLabel.Segments[0].Source.Start() != markers[2].Source.End() || p.ReferenceLabel.Segments[len(p.ReferenceLabel.Segments)-1].Source.End() != markers[3].Source.Start() {
-			t.Fatal("reference key boundaries")
-		}
+		checkBracketValueCoverage(t, enclosing, n, *p.ReferenceLabel, markers[2].Source, markers[3].Source)
 		if p.Origin == "full" {
 			raw = key
 		} else if p.Origin != "collapsed" || key != "" {
@@ -359,7 +355,7 @@ func TestReferenceLinkRawIdentityAndLimits(t *testing.T) {
 				parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
 					if n.Kind() == parser.Link {
 						count++
-						checkLinkProvenance(t, r.Source, n)
+						checkLinkProvenance(t, r.Source, n, r.Document.Root())
 						if n.Properties().Link.Origin != origin {
 							t.Fatal("wrong form", n.Properties())
 						}
@@ -408,7 +404,7 @@ func TestReferenceLinkMappedOwnershipAndIsolation(t *testing.T) {
 						return true
 					}
 					count++
-					checkLinkProvenance(t, source, n)
+					checkLinkProvenance(t, source, n, r.Document.Root())
 					p := n.Properties().Link
 					refs := r.Document.References()
 					d := refs.Definitions[refs.Lookup[p.NormalizedLabel.Value]].Properties()
@@ -478,7 +474,7 @@ func TestReferenceLinkIdenticalDuplicateDefinitions(t *testing.T) {
 		parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
 			if n.Kind() == parser.Link {
 				count++
-				checkLinkProvenance(t, r.Source, n)
+				checkLinkProvenance(t, r.Source, n, r.Document.Root())
 				p := n.Properties().Link
 				d := refs.Definitions[refs.Lookup[p.NormalizedLabel.Value]].Properties()
 				if d.Destination.Segments[0].Source.Start() != strings.Index(input, "/same") || p.Destination.Semantic != parser.Some("/same") {

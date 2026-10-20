@@ -117,7 +117,7 @@ func TestInlineLinkApprovedPartitionAndUpstream(t *testing.T) {
 			parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
 				switch n.Kind() {
 				case parser.Link:
-					checkLinkProvenance(t, r.Source, n)
+					checkLinkProvenance(t, r.Source, n, r.Document.Root())
 					links = append(links, n)
 				case parser.Text:
 					checkEmphasisText(t, r.Source, n)
@@ -235,9 +235,9 @@ func checkInlineLinkFixture(t *testing.T, source parser.Source, n *parser.Node, 
 	}
 }
 
-func checkLinkProvenance(t *testing.T, source parser.Source, n *parser.Node) {
+func checkLinkProvenance(t *testing.T, source parser.Source, n, enclosing *parser.Node) {
 	if origin := n.Properties().Link.Origin; origin == "full" || origin == "collapsed" || origin == "shortcut" {
-		checkReferenceLinkProvenance(t, source, n)
+		checkReferenceLinkProvenance(t, source, n, enclosing)
 		return
 	}
 	t.Helper()
@@ -307,9 +307,8 @@ func checkLinkProvenance(t *testing.T, source parser.Source, n *parser.Node) {
 	}
 	value(p.Label, false)
 	dest := value(p.Destination, true)
-	if p.Label.Segments[0].Source.Start() != m["label-open"].End() || p.Label.Segments[len(p.Label.Segments)-1].Source.End() != m["label-close"].Start() {
-		t.Fatal("label boundary/empty provenance")
-	}
+	checkBracketValueCoverage(t, enclosing, n, p.Label, m["label-open"], m["label-close"])
+
 	if m["destination-open"].Present() {
 		for role, want := range map[string]string{"destination-open": "<", "destination-close": ">"} {
 			raw, err := source.Text(m[role])
@@ -396,7 +395,7 @@ func TestInlineLinkMappingOwnershipAndOpacity(t *testing.T) {
 				parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
 					if n.Kind() == parser.Link {
 						count++
-						checkLinkProvenance(t, source, n)
+						checkLinkProvenance(t, source, n, r.Document.Root())
 						if strings.Count(input, "[") == 1 {
 							if n.Span().Start() != strings.Index(input, "[") || n.Span().End() != strings.LastIndex(input, ")")+1 || n.Markers()[1].Source.Start() != strings.Index(input, "]") {
 								t.Fatal("independently located mapped envelope/brackets", n.Span())
@@ -445,7 +444,7 @@ func TestInlineLinkMappingOwnershipAndOpacity(t *testing.T) {
 		}
 		parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
 			if n.Kind() == parser.Link {
-				checkLinkProvenance(t, r.Source, n)
+				checkLinkProvenance(t, r.Source, n, r.Document.Root())
 			}
 			return true
 		})
@@ -458,6 +457,66 @@ func TestInlineLinkMappingOwnershipAndOpacity(t *testing.T) {
 		input := "[a](b" + string(r) + "c)"
 		parsed := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 		checkStagedTextOutcome(t, parsed, true)
-		checkLinkProvenance(t, parsed.Source, parsed.Document.Root().Children()[0].Children()[0])
+		checkLinkProvenance(t, parsed.Source, parsed.Document.Root().Children()[0].Children()[0], parsed.Document.Root())
 	}
+}
+
+// Labels select the enclosing logical source contributions between brackets.
+// The closing bracket may follow stripped continuation indentation/container
+// prefixes, so physical adjacency alone is not the boundary contract. Check
+// every contributing byte, not just the first/last label offsets.
+func checkBracketValueCoverage(t *testing.T, enclosing, n *parser.Node, value parser.Value, opening, closing parser.Span) {
+	t.Helper()
+	var parts []parser.Segment
+	if enclosing.Kind() == parser.Emphasis || enclosing.Kind() == parser.Strong || enclosing.Kind() == parser.Link || enclosing.Kind() == parser.Image {
+		parts = enclosing.Content()
+	} else {
+		matches := 0
+		parser.Walk(enclosing, func(candidate *parser.Node) bool {
+			if (candidate.Kind() == parser.Paragraph || candidate.Kind() == parser.Heading) && candidate.Span().Start() <= n.Span().Start() && candidate.Span().End() >= n.Span().End() {
+				parts = candidate.Content()
+				matches++
+				return false // no need to revisit every inline descendant per label
+			}
+			return true
+		})
+		if matches != 1 {
+			t.Fatal("missing enclosing inline payload", matches)
+		}
+	}
+	if !bracketValueCoversPayload(parts, value, opening, closing) {
+		t.Fatal("label does not cover exact enclosing logical source/empty point", value, opening, closing)
+	}
+}
+
+func bracketValueCoversPayload(parts []parser.Segment, value parser.Value, opening, closing parser.Span) bool {
+	contains := func(offset int) bool {
+		for _, part := range parts {
+			if part.Source.Present() && part.Source.Start() <= offset && offset < part.Source.End() {
+				return true
+			}
+		}
+		return false
+	}
+	if !opening.Present() || !closing.Present() || opening.End() > closing.Start() || !contains(opening.Start()) || !contains(closing.Start()) {
+		return false
+	}
+	var want, got []int
+	for _, part := range parts {
+		for offset := max(part.Source.Start(), opening.End()); offset < min(part.Source.End(), closing.Start()); offset++ {
+			want = append(want, offset)
+		}
+	}
+	for _, part := range value.Segments {
+		if !part.Source.Present() {
+			return false
+		}
+		for offset := part.Source.Start(); offset < part.Source.End(); offset++ {
+			got = append(got, offset)
+		}
+	}
+	if len(want) == 0 {
+		return len(value.Segments) == 1 && value.Segments[0].Source.Start() == closing.Start() && value.Segments[0].Source.End() == closing.Start() && value.Segments[0].Transformation == parser.Exact && value.Segments[0].Semantic == parser.Some("") && value.Semantic == parser.Some("")
+	}
+	return reflect.DeepEqual(got, want)
 }

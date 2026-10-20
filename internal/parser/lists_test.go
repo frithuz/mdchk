@@ -549,7 +549,7 @@ func FuzzListMarkerSourceFacts(f *testing.F) {
 					case parser.InlineHTML:
 						checkInlineHTMLProvenance(t, source, child)
 					case parser.Link, parser.Image:
-						checkLinkProvenance(t, source, child)
+						checkLinkProvenance(t, source, child, n)
 					case parser.SoftBreak, parser.HardBreak:
 						checkBreakProperties(t, source, child, child.Properties().Break.Origin,
 							byteRange{child.Span().Start(), child.Content()[0].Source.Start()})

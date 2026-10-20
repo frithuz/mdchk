@@ -151,7 +151,7 @@ func TestEmphasisApprovedPartitionAndUpstream(t *testing.T) {
 				case parser.InlineHTML:
 					checkInlineHTMLProvenance(t, source, n)
 				case parser.Link, parser.Image:
-					checkLinkProvenance(t, source, n)
+					checkLinkProvenance(t, source, n, r.Document.Root())
 				case parser.HardBreak, parser.SoftBreak:
 					checkBreakProperties(t, source, n, n.Properties().Break.Origin, byteRange{n.Span().Start(), n.Content()[0].Source.Start()})
 				}
@@ -275,7 +275,7 @@ func checkEmphasisProvenance(t *testing.T, source parser.Source, n *parser.Node)
 		case parser.InlineHTML:
 			checkInlineHTMLProvenance(t, source, child)
 		case parser.Link, parser.Image:
-			checkLinkProvenance(t, source, child)
+			checkLinkProvenance(t, source, child, n)
 		case parser.HardBreak, parser.SoftBreak:
 			checkBreakProperties(t, source, child, child.Properties().Break.Origin, byteRange{child.Span().Start(), child.Content()[0].Source.Start()})
 		default:

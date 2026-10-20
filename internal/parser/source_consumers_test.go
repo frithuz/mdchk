@@ -256,7 +256,7 @@ func TestSourceConsumerMixedDocuments(t *testing.T) {
 							if w.Title != "" && (link.Title == nil || link.Title.Semantic != parser.Some(w.Title)) {
 								t.Fatal("effective title")
 							}
-							checkLinkProvenance(t, source, n)
+							checkLinkProvenance(t, source, n, result.Document.Root())
 						}
 						if n.Kind() == parser.CodeSpan {
 							var ranges []byteRange
