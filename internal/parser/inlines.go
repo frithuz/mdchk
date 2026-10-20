@@ -19,8 +19,8 @@ type inlineDelimiter struct {
 }
 
 type inlineBracket struct {
-	offset int
-	image  bool
+	offset, node, bottom int
+	image                bool
 }
 
 type inlineScanner struct {
@@ -29,7 +29,11 @@ type inlineScanner struct {
 	delimiters       []inlineDelimiter
 	delimitersLinked bool
 	delimiterHead    int
+	delimiterTail    int
 	brackets         []inlineBracket
+	inactiveBefore   int              // original logical offsets below this cannot open links
+	references       bool             // reference uses remain a missing provider when definitions exist
+	bareLinkEnds     []int            // lazily indexed raw destination endpoints; -1 means unbalanced
 	backticks        map[int][]int    // raw run starts by width, even after a backslash
 	backtickNext     map[int]int      // monotonic next-closer cursor per width
 	htmlEnds         map[string][]int // original logical terminators/quotes, indexed once
@@ -50,7 +54,7 @@ func parseInlines(ctx context.Context, document *Document, blocks PhaseState) (P
 		return PhaseComplete, nil
 	}
 	state := PhaseComplete
-	root, err := inlineTree(ctx, document.root, &state)
+	root, err := inlineTree(ctx, document.root, &state, len(document.references.Definitions) != 0)
 	if err != nil {
 		return Pending, err
 	}
@@ -63,7 +67,7 @@ func parseInlines(ctx context.Context, document *Document, blocks PhaseState) (P
 	return state, nil
 }
 
-func inlineTree(ctx context.Context, node *Node, state *PhaseState) (*Node, error) {
+func inlineTree(ctx context.Context, node *Node, state *PhaseState, references bool) (*Node, error) {
 	if interruption(ctx) != "" {
 		return node, nil
 	}
@@ -80,7 +84,7 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState) (*Node, erro
 			}
 			text.WriteString(part.Semantic.Value)
 		}
-		scanner := inlineScanner{ctx: ctx, text: text.String()}
+		scanner := inlineScanner{ctx: ctx, text: text.String(), references: references}
 		scanner.opaqueCandidates()
 		children, err := scanner.scan(spec.Content)
 		if err == nil && interruption(ctx) == "" {
@@ -103,7 +107,7 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState) (*Node, erro
 				return node, nil
 			}
 			var err error
-			spec.Children[i], err = inlineTree(ctx, child, state)
+			spec.Children[i], err = inlineTree(ctx, child, state, references)
 			if err != nil {
 				return nil, err
 			}
@@ -114,21 +118,14 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState) (*Node, erro
 	return NewNode(spec)
 }
 
-// Dispatch consumes known text escapes/entities or defers to a missing provider.
+// Dispatch consumes known text escapes/entities and classifies emphasis runs.
 // Delimiters are classified here, after opaque constructs and decoding tokens
-// have been consumed. Pairing happens after the complete logical block scan.
+// have been consumed. Pairing happens at successful label boundaries and block end.
 func (s *inlineScanner) dispatch(offset int) int {
 	if _, width, _ := decodeToken(s.text[offset:]); width != 0 {
 		return offset + width // generated characters never enter syntax dispatch
 	}
 	switch c := s.text[offset]; c {
-	case '[', ']':
-		if c == '[' {
-			s.brackets = append(s.brackets, inlineBracket{offset: offset, image: offset > 0 && s.text[offset-1] == '!'})
-		} else if len(s.brackets) != 0 {
-			s.pending = true // #26–#28 own bracket precedence and resolution
-			s.brackets = s.brackets[:len(s.brackets)-1]
-		}
 	case '*', '_':
 		end := offset + 1
 		for end < len(s.text) && s.text[end] == c {
@@ -145,10 +142,26 @@ func (s *inlineScanner) dispatch(offset int) int {
 			after, _ = utf8.DecodeRuneInString(s.text[end:])
 		}
 		open, close := delimiterFlanking(c, before, after)
-		s.delimiters = append(s.delimiters, inlineDelimiter{marker: c, offset: offset, width: end - offset, original: end - offset, canOpen: open, canClose: close})
+		s.appendDelimiter(inlineDelimiter{marker: c, offset: offset, width: end - offset, original: end - offset, canOpen: open, canClose: close})
 		return end
 	}
 	return offset + 1
+}
+
+// Scoped label processing can retire a suffix before scanning the next run.
+// Append to the remaining live prefix without relinking or reviving old records.
+func (s *inlineScanner) appendDelimiter(d inlineDelimiter) {
+	i := len(s.delimiters)
+	if s.delimitersLinked {
+		d.previous, d.next = s.delimiterTail, i+1
+		if s.delimiterTail >= 0 {
+			s.delimiters[s.delimiterTail].next = i
+		} else {
+			s.delimiterHead = i
+		}
+		s.delimiterTail = i
+	}
+	s.delimiters = append(s.delimiters, d)
 }
 
 // Index maximal raw backtick runs once, including runs after a backslash: code

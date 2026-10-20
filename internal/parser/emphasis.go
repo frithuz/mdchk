@@ -46,6 +46,7 @@ func (s *inlineScanner) emphasisPairs(bottom int) ([]emphasisPair, error) {
 			d[i].previous, d[i].next = i-1, i+1
 		}
 		s.delimiterHead = 0
+		s.delimiterTail = len(d) - 1
 		s.delimitersLinked = true
 	}
 	if bottom < -1 || bottom >= len(d) || bottom >= 0 && d[bottom].retired {
@@ -68,6 +69,8 @@ func (s *inlineScanner) emphasisPairs(bottom int) ([]emphasisPair, error) {
 		}
 		if d[i].next < len(d) {
 			d[d[i].next].previous = d[i].previous
+		} else {
+			s.delimiterTail = d[i].previous
 		}
 	}
 	start := func() int {
@@ -257,7 +260,11 @@ func (c emphasisContent) slice(start, end int) ([]Segment, error) {
 }
 
 func (s *inlineScanner) emphasis(parts []Segment, flat []*Node) ([]*Node, error) {
-	pairs, err := s.emphasisPairs(-1)
+	return s.emphasisAbove(parts, flat, -1, 0)
+}
+
+func (s *inlineScanner) emphasisAbove(parts []Segment, flat []*Node, bottom, start int) ([]*Node, error) {
+	pairs, err := s.emphasisPairs(bottom)
 	if err != nil || len(pairs) == 0 || interruption(s.ctx) != "" {
 		return flat, err
 	}
@@ -285,6 +292,7 @@ func (s *inlineScanner) emphasis(parts []Segment, flat []*Node) ([]*Node, error)
 		forest = append(forest[:first], len(groups)-1)
 	}
 	content := emphasisContent{scanner: s, parts: parts, starts: make([]int, len(parts)+1)}
+	content.starts[0] = start
 	for i, part := range parts {
 		if interruption(s.ctx) != "" {
 			return nil, nil

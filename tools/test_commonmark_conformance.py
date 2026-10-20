@@ -139,7 +139,7 @@ class ExecutableBoundary(unittest.TestCase):
                 report = runner.run_cases(self.cases, self.cases, ledger, self.adapter, normalize)
                 self.assertTrue(report["gate_passed"])
                 self.assertFalse(report["full_conformance"])
-                self.assertEqual(report["counts"], {"pass": 513, "fail": 0, "error": 0, "pending": 139})
+                self.assertEqual(report["counts"], {"pass": 575, "fail": 0, "error": 0, "pending": 77})
                 self.assertEqual([r["example"] for r in report["outcomes"]], list(range(1, 653)))
                 supported = {
                     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 18, 19, 21, 31, 36,
@@ -207,11 +207,22 @@ class ExecutableBoundary(unittest.TestCase):
                 self.assertEqual(len(nested), 36)
                 self.assertFalse(supported & nested)
                 supported.update(nested)
+                links = {
+                    22, 32, 41, 404, 419, 422, 433, 473, 474,
+                    *range(482, 511), *range(512, 517), 518, 519, 521, 522, 567,
+                    197, 199, 201, 209, 211, 212, 213, 511, 523, 546, 547, 548, 551, 552,
+                }
+                self.assertEqual(len(links), 62)
+                self.assertFalse(supported & links)
+                supported.update(links)
                 self.assertEqual(set(ledger["supported_html_examples"]), supported)
                 owners = {i: group["owners"] for group in ledger["pending"] for i in group["examples"]}
                 self.assertTrue(all(25 not in group["owners"] for group in ledger["pending"]))
-                self.assertEqual({i: owners[i] for i in [419, 433, 516, 530]},
-                                 {419: [26], 433: [26], 516: [26], 530: [27]})
+                self.assertTrue(all(26 not in group["owners"] for group in ledger["pending"]))
+                for example in links:
+                    self.assertNotIn(example, owners)
+                self.assertEqual({i: owners[i] for i in [530, 532, 568, 517, 520]},
+                                 {530: [27], 532: [27], 568: [27], 517: [28], 520: [28]})
                 for outcome in report["outcomes"]:
                     if outcome["example"] in supported:
                         self.assertEqual(outcome["status"], "pass")
@@ -257,19 +268,19 @@ class ExecutableBoundary(unittest.TestCase):
         self.assertIn("diff", report["outcomes"][0])
 
     def test_pinned_upstream_helper_reports_unsupported_as_error(self):
-        case = self.cases[418]
-        self.assertEqual(case["example"], 419)
+        case = self.cases[529]
+        self.assertEqual(case["example"], 530)
         for mode in [[], ["--no-normalize"]]:
             result = subprocess.run([sys.executable, "-E", "-s", "-B",
                                      str(runner.corpus.CORPUS / "upstream/test/spec_tests.py"),
                                      "--spec", str(runner.corpus.CORPUS / "upstream/spec.txt"),
-                                     "--program", str(self.adapter), "--number", "419", *mode], capture_output=True)
+                                     "--program", str(self.adapter), "--number", "530", *mode], capture_output=True)
             self.assertEqual(result.returncode, 1)
             self.assertIn(b"0 passed, 0 failed, 1 errored, 651 skipped", result.stdout)
             self.assertIn(b'"status":"pending"', result.stdout)
 
     def test_pinned_upstream_helper_recognized_definition_break_html_and_nesting(self):
-        for example in [207, 334, 344, 467]:
+        for example in [207, 334, 344, 467, 419, 516, 567]:
             for mode in [[], ["--no-normalize"]]:
                 with self.subTest(example=example, mode=mode):
                     result = subprocess.run([sys.executable, "-E", "-s", "-B",

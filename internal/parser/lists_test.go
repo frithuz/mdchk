@@ -508,7 +508,7 @@ func TestListMarkerBytesEndingsAndUnavailableSuffix(t *testing.T) {
 }
 
 func FuzzListMarkerSourceFacts(f *testing.F) {
-	for _, input := range []string{"- _a **b *c* d** e_\n", "> - ***é\x00\r\n>   β***", "- *x* **y**\n", "> - ***left**\r\n", "- ***nested***\n", "- x <i>text</i>\n", "> - x <!-->\n", "- item\n", "003.\tfoo\n", "-\t\tfoo\n", " >\t-\tfoo\n", "foo\n1.\n", "1234567890. x\n", "*\t \t\n", "- é\x00\r\n", "\xff"} {
+	for _, input := range []string{"- [a *b*](uri)\n", "> - [é\x00\r\n>   **β**](<> '')", "- [bad](a b) [good](ok)\n", "- _a **b *c* d** e_\n", "> - ***é\x00\r\n>   β***", "- *x* **y**\n", "> - ***left**\r\n", "- ***nested***\n", "- x <i>text</i>\n", "> - x <!-->\n", "- item\n", "003.\tfoo\n", "-\t\tfoo\n", " >\t-\tfoo\n", "foo\n1.\n", "1234567890. x\n", "*\t \t\n", "- é\x00\r\n", "\xff"} {
 		f.Add(input)
 	}
 	f.Fuzz(func(t *testing.T, input string) {
@@ -546,7 +546,7 @@ func FuzzListMarkerSourceFacts(f *testing.F) {
 					case parser.InlineHTML:
 						checkInlineHTMLProvenance(t, source, child)
 					case parser.Link:
-						checkAutolinkProvenance(t, source, child)
+						checkLinkProvenance(t, source, child)
 					case parser.SoftBreak, parser.HardBreak:
 						checkBreakProperties(t, source, child, child.Properties().Break.Origin,
 							byteRange{child.Span().Start(), child.Content()[0].Source.Start()})

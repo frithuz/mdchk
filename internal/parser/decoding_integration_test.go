@@ -138,8 +138,11 @@ func TestDecodingOnePassStructureAndOpaqueBoundaries(t *testing.T) {
 	}
 	for _, input := range []string{"[x](/a&amp;b)"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-		if r.Status != parser.Incomplete || r.Phases.Inlines != parser.Pending || len(r.Uncertainty) != 1 || conformance.Evaluate(r).Status != "pending" {
-			t.Fatal("undelivered provider became complete", input, r)
+		checkStagedTextOutcome(t, r, true)
+		link := r.Document.Root().Children()[0].Children()[0]
+		checkLinkProvenance(t, r.Source, link)
+		if link.Properties().Link.Destination.Semantic != parser.Some("/a&b") {
+			t.Fatal("inline destination decoding", link)
 		}
 	}
 	input := "~~~ &amp;\n\\* &amp;\n~~~\n\n<!-- \\* &amp; -->\n"
@@ -284,8 +287,10 @@ func TestDecodingUpstreamAcceptanceAndNewPasses(t *testing.T) {
 			opaque := make(map[int]bool)
 			parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
 				if n.Kind() == parser.Link {
-					checkAutolinkProvenance(t, r.Source, n)
-					opaque[n.Children()[0].Span().Start()] = true
+					checkLinkProvenance(t, r.Source, n)
+					if n.Properties().Link.Origin == "autolink" {
+						opaque[n.Children()[0].Span().Start()] = true
+					}
 				}
 				if newPasses[e.Example] && (n.Kind() == parser.Text || n.Kind() == parser.CodeBlock) {
 					if leafIndex >= len(leaves[e.Example]) {

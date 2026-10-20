@@ -56,12 +56,12 @@ and a missing helper. CI runs these tests and the read-only drift check.
 ## Foundation coverage accounting
 
 `foundation.json` is mdchk's separately reviewed pass/pending inventory. Every
-original upstream ID occurs exactly once: **513 supported HTML cases and 139
-pending**, preserving all 477 previous passes and adding the 36 specified
-nested-emphasis cases.
+original upstream ID occurs exactly once: **575 supported HTML cases and 77
+pending**, preserving all 513 previous passes and adding 48 required inline-link
+cases plus 14 proven literal fallbacks.
 The parser recognizes the block structure described in the
 [model contract](../../../model.md), collects document-wide definitions, and
-constructs source-preserving Text/CodeSpan/break/InlineHTML/autolink/Emphasis/Strong children in paragraphs and headings after the
+constructs source-preserving Text/CodeSpan/break/InlineHTML/Link/Emphasis/Strong children in paragraphs and headings after the
 block/reference handoff. Code and raw HTML payloads stay opaque.
 
 Decoding supplies known semantic Text, reference destination/title and fence-info
@@ -113,7 +113,7 @@ boundaries, nested/lazy containers, opaque contexts, immutable accessors and
 interruption without publishing unfinished children. A soft break's one discarded
 space is retained as Normalized empty Text; hard markers retain their entire raw
 spelling separately from ending Content. Shared fixture/provenance oracles keep
-old block assertions and accept ordered Text/CodeSpan/break/InlineHTML/autolink/Emphasis/Strong children.
+old block assertions and accept ordered Text/CodeSpan/break/InlineHTML/Link/Emphasis/Strong children.
 
 Angle autolinks add 24 actual passes: 20, 346, 480–481, 526, 538, 594–610 and
 literal HTML fallback 618. All 19 unchanged Autolinks cases 594–612 now pass;
@@ -141,8 +141,8 @@ Pinned upstream input and expected output bytes are unchanged.
 Single-level emphasis added 94 passes while preserving 383 previous passes.
 Nested construction now adds the 36 specified cases while preserving all 477
 established results. TestEmphasisApprovedPartitionAndUpstream retains the fixed
-350–481 partition: 90 established plus 36 nested required passes, and six genuinely
-inline-link cases deferred to #26. Parent raw Content retains nested syntax bytes;
+350–481 partition: 90 established plus 36 nested passes, and six inline-link
+cases now completed by #26. Parent raw Content retains nested syntax bytes;
 recursive source assertions check independently counted consumed markers, original
 envelopes, child order/coverage and leftovers alongside actual Parse/Evaluate HTML.
 The original 18 single-level cross-section additions remain supported; this nested
@@ -154,8 +154,9 @@ opaque interiors, detached nested handles, adversarial long runs and determinist
 interruption. Inline/list fuzz consumers retain their source oracles and nested
 seeds. No pinned upstream source or expected HTML bytes change.
 
-The ledger no longer lists #17–#25 as undelivered providers. Remaining scopes are
-#26/#27 links and #28 images. Joint cases 419/433/516 retain #26; 530 retains #27.
+The ledger no longer lists #17–#26 as undelivered providers. Remaining scopes are
+#27 reference links and #28 images. Cases 419/433/516/567 complete; 530/532/568
+retain #27, and 517/520 retain #28.
 Coverage owners are not reverse native prerequisites or conformance passes.
 Thematic 55 completes through literal delimiter classification; 56–61 also pass.
 Refer to the per-ID ledger rather than inferring support from a section name.
@@ -181,6 +182,17 @@ HTML, rejects lost passes and unrecorded new passes, and never rewrites this
 ledger or generated expectations. Regeneration still writes only examples.json.
 Final completion requires all 652 cases without skips or exemptions.
 
+Inline-link delivery adds all 47 sole-#26 cases plus empty-inline precedence
+567. Full-corpus inspection also promotes 197/199/201/209/211/212/213/511/523/
+546/547/548/551/552 as literal fallback with a completed empty definition inventory.
+`TestInlineLinkApprovedPartitionAndUpstream` uses unchanged inputs/HTML plus
+independent component/marker/envelope fixtures for all 62 promotions. Origin-aware
+source oracles, mapped containers/headings, Unicode/NUL, empty values, physical
+endings, opacity, nested-link/emphasis boundaries, ownership and deterministic
+interruption cover the actual parser. No reference-use or image construction is
+claimed; possible reference uses with definitions and image interpretation remain
+pending. Existing supported IDs and immutable upstream expectations are preserved.
+
 ## Reference-definition recognition
 
 Every unchanged 192–218 input has independent actual Parse record/source checks.
@@ -202,9 +214,9 @@ See [contributor instructions](../../../../../docs/contributing.md#run-commonmar
 for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
 
 The default staged regression gate allows explicitly pending cases: currently
-513 pass, 0 fail, 0 error, 139 pending, with `syntax-unimplemented` and the
-remaining owners above. All 477 earlier passes remain; nested construction adds
-the 36 specified passes. Synthetic empty/ASCII-blank documents also complete and
+575 pass, 0 fail, 0 error, 77 pending, with `syntax-unimplemented` and the
+remaining owners above. All 513 earlier passes remain; inline links add 48
+required cases and 14 proven literal cases. Synthetic empty/ASCII-blank documents also complete and
 render empty HTML. It is not a
 conformance-completion claim. `--require-complete` fails on pending; final
 completion needs all 652 passes in an unfiltered run. The retained upstream

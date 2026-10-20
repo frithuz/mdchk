@@ -90,7 +90,7 @@ type ParseResult struct {
 // uncertainty. Leading definitions are collected in source order before inline
 // work, with raw-label Unicode folding and first-definition lookup. Ordinary
 // text-bearing blocks acquire source-preserving Text, CodeSpan, break, raw
-// InlineHTML, resolved autolink and nested Emphasis/Strong children. Missing
+// InlineHTML, resolved inline/autolink and nested Emphasis/Strong children. Missing
 // inline handlers retain pending interpretation. Text, definition destination/title and
 // fence-info values decode escapes/entities once, preserving raw label identity.
 // Code spans consume opaque raw payloads before Text decoding, normalize physical
@@ -104,7 +104,10 @@ type ParseResult struct {
 // HTML resumes ordinary interpretation. Bare autolink forms stay Text.
 // Unicode-aware delimiter pairing and iterative nested construction retain exact
 // consumed/leftover markers and raw parent/child Content. Scoped stack boundaries
-// preserve earlier delimiter state for later bracket resolution, which is pending.
+// preserve earlier delimiter state while resolving inline-link labels. Active
+// bracket openers prevent nested links; destinations/titles decode once with exact
+// component ranges. Possible reference uses with definitions and images remain
+// pending; a completed empty definition inventory proves reference fallback absent.
 // Definition-only input with known semantics completes vacuous inline work.
 // ListItems retain marker/prefix facts and ordered nested block children, with
 // tab-aware continuation, blank boundaries, sibling ownership and closure. They

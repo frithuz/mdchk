@@ -20,6 +20,8 @@ type emphasisMark struct{ open, width, close int }
 // Independently counted original-byte opening/closing positions. Empty entries
 // in requiredEmphasis are literal/opaque cases, never omitted acceptance cases.
 var emphasisMarks = map[int][]emphasisMark{
+	404: {{0, 1, 16}}, 419: {{0, 1, 18}, {6, 1, 10}},
+	422: {{0, 2, 17}}, 433: {{0, 2, 19}, {7, 1, 11}},
 	15: {{2, 1, 11}}, 37: {{14, 1, 18}}, 56: {{1, 1, 3}}, 66: {{6, 1, 10}},
 	80: {{4, 1, 8}, {25, 1, 29}}, 81: {{4, 1, 12}}, 82: {{6, 1, 14}},
 	148: {{34, 1, 40}}, 152: {{19, 1, 28}}, 155: {{13, 1, 17}}, 167: {{7, 1, 11}}, 168: {{5, 1, 9}},
@@ -119,7 +121,7 @@ func TestEmphasisApprovedPartitionAndUpstream(t *testing.T) {
 	}
 	seen := 0
 	for _, e := range cases {
-		owner, ok := ownership[e.ID]
+		_, ok := ownership[e.ID]
 		if !ok {
 			continue
 		}
@@ -128,12 +130,7 @@ func TestEmphasisApprovedPartitionAndUpstream(t *testing.T) {
 			source := parser.NewSource([]byte(e.Markdown))
 			r := parser.Parse(context.Background(), source)
 			out := conformance.Evaluate(r)
-			if owner == "links" {
-				if r.Status != parser.Incomplete || out.Status != "pending" || out.HTML != "" {
-					t.Fatal("deferred interpretation became reliable", r, out)
-				}
-				return
-			}
+
 			checkStagedTextOutcome(t, r, true)
 			if out.Status != "rendered" || out.HTML != e.HTML {
 				t.Fatal("unchanged upstream HTML", out, e.HTML)
@@ -154,7 +151,7 @@ func TestEmphasisApprovedPartitionAndUpstream(t *testing.T) {
 				case parser.InlineHTML:
 					checkInlineHTMLProvenance(t, source, n)
 				case parser.Link:
-					checkAutolinkProvenance(t, source, n)
+					checkLinkProvenance(t, source, n)
 				case parser.HardBreak, parser.SoftBreak:
 					checkBreakProperties(t, source, n, n.Properties().Break.Origin, byteRange{n.Span().Start(), n.Content()[0].Source.Start()})
 				}
@@ -278,7 +275,7 @@ func checkEmphasisProvenance(t *testing.T, source parser.Source, n *parser.Node)
 		case parser.InlineHTML:
 			checkInlineHTMLProvenance(t, source, child)
 		case parser.Link:
-			checkAutolinkProvenance(t, source, child)
+			checkLinkProvenance(t, source, child)
 		case parser.HardBreak, parser.SoftBreak:
 			checkBreakProperties(t, source, child, child.Properties().Break.Origin, byteRange{child.Span().Start(), child.Content()[0].Source.Start()})
 		default:

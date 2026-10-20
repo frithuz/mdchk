@@ -50,6 +50,13 @@ func contentEnvelope(parts []Segment) Span {
 
 func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 	cursor := inlineContent{ctx: s.ctx, parts: parts}
+	content := emphasisContent{scanner: s, parts: parts, starts: make([]int, len(parts)+1)}
+	for i, part := range parts {
+		if interruption(s.ctx) != "" {
+			return nil, nil
+		}
+		content.starts[i+1] = content.starts[i] + len(part.Semantic.Value)
+	}
 	var children []*Node
 	appendText := func(end, trim int) error {
 		if end == cursor.offset {
@@ -143,6 +150,7 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 					return nil, err
 				}
 				children = append(children, node)
+				s.deactivateLinks(offset)
 				offset = end
 				continue
 			}
@@ -158,6 +166,46 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 				offset = end
 				continue
 			}
+		}
+		if s.text[offset] == '[' || s.text[offset] == '!' && offset+1 < len(s.text) && s.text[offset+1] == '[' {
+			image := s.text[offset] == '!'
+			if image {
+				offset++
+			}
+			s.openBracket(offset, len(children), image)
+			offset++
+			continue
+		}
+		if s.text[offset] == ']' && len(s.brackets) != 0 {
+			bracket := s.brackets[len(s.brackets)-1]
+			s.brackets = s.brackets[:len(s.brackets)-1]
+			if bracket.image {
+				s.pending = true // #28 still owns image recognition
+			} else if bracket.offset >= s.inactiveBefore {
+				if syntax, valid := s.inlineLink(offset); valid {
+					if err := appendText(offset, 0); err != nil || interruption(s.ctx) != "" {
+						return nil, err
+					}
+					before, link, err := s.buildLink(content, bracket, syntax, children[bracket.node:])
+					if err != nil || interruption(s.ctx) != "" {
+						return nil, err
+					}
+					children = append(children[:bracket.node], before...)
+					children = append(children, link)
+					if _, err := cursor.take(syntax.end); err != nil || interruption(s.ctx) != "" {
+						return nil, err
+					}
+					s.deactivateLinks(bracket.offset)
+					offset = syntax.end
+					continue
+				}
+				// A completed empty definition inventory proves reference fallback
+				// absent. With definitions, #27 must interpret possible reference
+				// uses; this delivery never constructs a reference Link.
+				s.pending = s.pending || s.references
+			}
+			offset++
+			continue
 		}
 		if s.text[offset] != '`' {
 			offset = s.dispatch(offset)

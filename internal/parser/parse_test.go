@@ -30,7 +30,7 @@ func TestParseStageOutcomes(t *testing.T) {
 		{name: "invalid after heading", input: []byte("#\n\xff"), status: parser.Failed, ast: parser.Unavailable, failure: parser.InvalidUTF8},
 		{name: "thematic only", input: []byte("***\r\n___"), status: parser.Complete, ast: parser.Available},
 		{name: "nested emphasis", input: []byte("***nested***"), status: parser.Complete, ast: parser.Available},
-		{name: "unsupported core syntax", input: []byte("[a](b)"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
+		{name: "unsupported image syntax", input: []byte("![a](b)"), status: parser.Incomplete, ast: parser.Partial, reason: parser.SyntaxUnimplemented},
 		{name: "extension looking", input: []byte("~~strike~~"), status: parser.Complete, ast: parser.Available},
 		{name: "frontmatter looking", input: []byte("---\nx: y\n---\n"), status: parser.Complete, ast: parser.Available},
 		{name: "valid replacement and NUL", input: []byte("\ufffd\x00"), status: parser.Complete, ast: parser.Available},
