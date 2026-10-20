@@ -2,6 +2,7 @@ package parser
 
 import (
 	"context"
+	"errors"
 	"reflect"
 	"strings"
 	"testing"
@@ -215,7 +216,7 @@ func TestEmphasisScopedStackAndSuffixRetirement(t *testing.T) {
 	if pairs, err = s.emphasisPairs(-1); err != nil || len(pairs) != 0 || s.delimiterHead != len(s.delimiters) {
 		t.Fatal("whole-stack cleanup resurrected delimiters", pairs, err)
 	}
-	if _, err = s.emphasisPairs(3); err != ErrModel {
+	if _, err = s.emphasisPairs(3); !errors.Is(err, ErrModel) {
 		t.Fatal("retired boundary accepted", err)
 	}
 	for _, input := range []string{"*a b* _c_ ***d***", "a***b***c", "_a b_ *c*"} {

@@ -68,7 +68,7 @@ func oracleText(text string, entities map[string]string) string {
 		if err != nil {
 			panic(err)
 		}
-		if n == 0 || !utf8.ValidRune(rune(n)) {
+		if n == 0 || n > utf8.MaxRune || !utf8.ValidRune(rune(n)) {
 			return "\ufffd"
 		}
 		return string(rune(n))

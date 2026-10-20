@@ -195,10 +195,9 @@ func ParseWithBudget(ctx context.Context, source Source, budget *OperationBudget
 	return r
 }
 
-// invalidUTF8Offset identifies the first scalar that cannot be consumed, at its
+// invalidUTF8OffsetContext identifies the first scalar that cannot be consumed, at its
 // leading byte. DecodeRuneInString's size distinguishes malformed input from a
 // valid literal U+FFFD. No decoded/replacement text is stored or substituted.
-func invalidUTF8Offset(content string) int { return invalidUTF8OffsetContext(nil, content) }
 func invalidUTF8OffsetContext(ctx context.Context, content string) int {
 	// Precharge the complete validation pass before the optimized library scan.
 	meterWork(ctx, len(content))

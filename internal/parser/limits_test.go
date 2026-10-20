@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -75,7 +76,7 @@ func TestDocumentBytesAdmissionAndEncodingPrecedence(t *testing.T) {
 	l := DefaultLimits()
 	l.DocumentBytes = 3
 	for _, n := range []int{2, 3, 4} {
-		t.Run(string(rune('0'+n)), func(t *testing.T) {
+		t.Run(strconv.Itoa(n), func(t *testing.T) {
 			b := budgetFor(t, l)
 			r := ParseWithBudget(context.Background(), NewSource([]byte(strings.Repeat("x", n))), b)
 			if n <= 3 {
@@ -122,7 +123,7 @@ func TestSyntaxDepthBoundaries(t *testing.T) {
 			"images":   strings.Repeat("![", depth-1) + "x" + strings.Repeat("](u)", depth-1),
 			"mixed":    strings.Repeat("> ", 128) + strings.Repeat("![", depth-129) + "x" + strings.Repeat("](u)", depth-129),
 		} {
-			t.Run(name+string(rune(depth)), func(t *testing.T) {
+			t.Run(name+strconv.Itoa(depth), func(t *testing.T) {
 				r := Parse(context.Background(), NewSource([]byte(input)))
 				if depth <= 256 {
 					if r.Status != Complete || r.Document.root.depth != depth {
@@ -294,7 +295,7 @@ func TestGrowthCopyWorkPrecedesAllocation(t *testing.T) {
 			l.WorkUnits = 8
 			op := budgetFor(t, l)
 			ctx := &parserContext{Context: context.Background(), budget: &parseBudget{operation: op}}
-			original := make([]int, 8, 8)
+			original := make([]int, 8)
 			var builder strings.Builder
 			builder.WriteString("12345678")
 			stopped := false
@@ -316,7 +317,7 @@ func TestGrowthCopyWorkPrecedesAllocation(t *testing.T) {
 				if kind == "slice" {
 					_ = meteredAppend(ctx, original, 1)
 				} else {
-					_, _ = meteredWriteString(ctx, &builder, "x")
+					meteredWriteString(ctx, &builder, "x")
 				}
 			}()
 			if !stopped || len(original) != 8 || builder.String() != "12345678" {

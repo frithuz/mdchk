@@ -43,7 +43,7 @@ func checkInlineNodes(t *testing.T, source parser.Source, nodes []*parser.Node, 
 		t.Fatalf("inline count %d want %d", len(nodes), len(wants))
 	}
 	for i, w := range wants {
-		n := nodes[i]
+		n := nodes[i] //nolint:gosec // G602: equal node/fixture lengths are checked above.
 		literal := parser.Some(w.literal)
 		if w.kind == parser.SoftBreak || w.kind == parser.HardBreak || w.kind == parser.InlineHTML || w.kind == parser.Emphasis || w.kind == parser.Strong {
 			literal = parser.Optional[string]{}

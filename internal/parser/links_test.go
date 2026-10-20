@@ -131,6 +131,8 @@ func TestInlineLinkApprovedPartitionAndUpstream(t *testing.T) {
 					checkInlineHTMLProvenance(t, r.Source, n)
 				case parser.HardBreak, parser.SoftBreak:
 					checkBreakProperties(t, r.Source, n, n.Properties().Break.Origin, byteRange{n.Span().Start(), n.Content()[0].Source.Start()})
+				default:
+					// Other node kinds are irrelevant to this focused visitor.
 				}
 				return true
 			})

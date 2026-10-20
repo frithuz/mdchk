@@ -217,7 +217,3 @@ func completeHTMLTagContext(ctx context.Context, s string) bool {
 	}
 	return i == len(s)
 }
-
-func htmlTagNameEnd(s string, start int) int { return htmlTagNameEndContext(nil, s, start) }
-
-func completeHTMLTag(s string) bool { return completeHTMLTagContext(nil, s) }

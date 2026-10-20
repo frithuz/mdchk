@@ -32,7 +32,7 @@ func checkParagraphs(t *testing.T, source parser.Source, want []paragraphWant) p
 		t.Fatalf("got %d paragraph nodes, want %d", len(nodes), len(want))
 	}
 	for i, node := range nodes {
-		w := want[i]
+		w := want[i] //nolint:gosec // G602: equal node/fixture lengths are checked above.
 		if node.Kind() != parser.Paragraph || node.Span().Start() != w.envelope.start || node.Span().End() != w.envelope.end || node.Properties().Literal.Present {
 			t.Fatalf("paragraph %d has wrong envelope or invented inlines: %+v", i, node)
 		}

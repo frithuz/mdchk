@@ -3,6 +3,7 @@ package conformance
 import (
 	"context"
 	"reflect"
+	"strconv"
 	"testing"
 	"time"
 
@@ -228,7 +229,7 @@ func TestRawHTMLNULNormalizationPreservesOriginalSource(t *testing.T) {
 			{{Source: e, Transformation: parser.Exact}},
 			normalized.Segments,
 		} {
-			t.Run(string(kind)+"/"+string(segments[0].Transformation)+"/"+string(rune(len(segments)+'0')), func(t *testing.T) {
+			t.Run(string(kind)+"/"+string(segments[0].Transformation)+"/"+strconv.Itoa(len(segments)), func(t *testing.T) {
 				n, err := parser.NewNode(parser.NodeSpec{Kind: kind, Envelope: e, Content: segments})
 				if err != nil {
 					t.Fatal(err)

@@ -142,6 +142,8 @@ func TestInlineHTMLUpstreamAcceptanceAndNewPasses(t *testing.T) {
 					}
 				case parser.CodeSpan, parser.Link, parser.Emphasis, parser.Strong, parser.Image, parser.HardBreak:
 					t.Fatal("raw interior was redispatched", n.Kind())
+				default:
+					// Other node kinds are irrelevant to this focused visitor.
 				}
 				return true
 			})

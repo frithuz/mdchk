@@ -1,0 +1,92 @@
+version: "2"
+
+run:
+  timeout: 5m
+  relative-path-mode: cfg
+
+linters:
+  default: none
+  enable:
+    - govet
+    - staticcheck
+    - unused
+    - ineffassign
+    - errcheck
+    - errorlint
+    - exhaustive
+    - nolintlint
+    - depguard
+    - forbidigo
+    - gosec
+  settings:
+    staticcheck:
+      # Quick-fix style suggestions are outside this correctness gate.
+      checks: [all, '-QF*']
+    exhaustive:
+      # Visitors may explicitly handle unsupported/irrelevant kinds in default.
+      default-signifies-exhaustive: true
+    depguard:
+      rules:
+        approved-dependencies:
+          list-mode: strict
+          allow:
+            - $gostd
+            - github.com/frithuz/mdchk/
+            - github.com/goccy/go-yaml$
+            - github.com/goccy/go-yaml/
+            - github.com/modelcontextprotocol/go-sdk/
+        parser-standard-library:
+          files:
+            - '${base-path}/internal/parser/*.go'
+            - '${base-path}/internal/parser/**/*.go'
+            - '!$test'
+          list-mode: strict
+          allow:
+            - $gostd
+        configuration-adapter:
+          files:
+            - '!${base-path}/internal/config/**'
+          deny:
+            - pkg: github.com/goccy/go-yaml
+              desc: keep YAML decoding behind internal/config
+        mcp-adapter:
+          files:
+            - '!${base-path}/internal/mcp/**'
+          deny:
+            - pkg: github.com/modelcontextprotocol/go-sdk
+              desc: keep the MCP SDK behind internal/mcp
+        test-only-renderer:
+          files:
+            - '!$test'
+            - '!${base-path}/internal/conformance/**'
+          deny:
+            - pkg: github.com/frithuz/mdchk/internal/conformance
+              desc: the conformance renderer is test infrastructure
+    forbidigo:
+      analyze-types: true
+      exclude-godoc-examples: false
+      forbid:
+        - pattern: '^os.Exit$'
+          msg: return errors or exit codes to the process entry point
+        - pattern: '^log\.(Fatal|Fatalf|Fatalln|Logger\.(Fatal|Fatalf|Fatalln))$'
+          msg: return errors to the process entry point
+    gosec:
+      config:
+        global:
+          # Require reviewed, linter-specific nolint comments instead of #nosec.
+          nosec: true
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+      allow-unused: false
+  exclusions:
+    # No default false-positive presets: suppress only individually reviewed cases.
+    presets: []
+    rules:
+      - path: '^(cmd/mdchk/main\.go|internal/conformance/cmd/specadapter/main\.go)$'
+        linters:
+          - forbidigo
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

@@ -528,8 +528,6 @@ func (p *blockParser) referenceContinuationLine(physical physicalLine) (blockLin
 	return line, true
 }
 
-func normalizeReferenceLabel(raw string) string { return normalizeReferenceLabelContext(nil, raw) }
-
-func skipReferenceSpaces(s string, i int) int { return skipReferenceSpacesContext(nil, s, i) }
-
-func referenceWhitespace(s string, i int) int { return referenceWhitespaceContext(nil, s, i) }
+func normalizeReferenceLabel(raw string) string {
+	return normalizeReferenceLabelContext(context.Background(), raw)
+}

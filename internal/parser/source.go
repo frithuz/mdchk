@@ -21,7 +21,7 @@ type Source struct {
 
 // Nonzero size ensures independent snapshots have distinct pointer identities.
 // Identity is private ownership metadata, never an output or serialization ID.
-type sourceIdentity struct{ marker byte }
+type sourceIdentity struct{ _ byte }
 
 // NewSource copies content into a Source. Callers may reuse or modify content
 // after NewSource returns without changing the retained bytes.

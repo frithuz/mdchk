@@ -37,6 +37,8 @@ func TestNestedEmphasisMappedOwnershipAndOpacity(t *testing.T) {
 					case parser.Emphasis, parser.Strong:
 						checkEmphasisProvenance(t, source, n)
 						nested = append(nested, n)
+					default:
+						// Other node kinds are irrelevant to this focused visitor.
 					}
 					return true
 				})

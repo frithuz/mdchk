@@ -578,7 +578,7 @@ func FuzzListMarkerSourceFacts(f *testing.F) {
 			}
 			if p.Ordered {
 				value, err := strconv.ParseUint(raw[:len(raw)-1], 10, 32)
-				if err != nil || uint64(p.Start.Value) != value || raw[len(raw)-1] != p.Delimiter.Value {
+				if err != nil || p.Start.Value < 0 || uint64(p.Start.Value) != value || raw[len(raw)-1] != p.Delimiter.Value {
 					t.Fatal("ordinal differs from original spelling", raw, p)
 				}
 			} else if len(raw) != 1 || raw[0] != p.Bullet.Value {

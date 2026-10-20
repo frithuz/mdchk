@@ -64,7 +64,7 @@ type consumerFixture struct {
 
 func TestSourceConsumerMixedDocuments(t *testing.T) {
 	for _, name := range []string{"mixed", "references"} {
-		data, err := os.ReadFile("testdata/source_consumers/" + name + ".json")
+		data, err := os.ReadFile("testdata/source_consumers/" + name + ".json") //nolint:gosec // G304: names are fixed test fixture literals above.
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -106,8 +106,7 @@ func TestSourceConsumerMixedDocuments(t *testing.T) {
 							t.Fatalf("foreign/outside owner span %+v within %+v: %v", s, owner, err)
 						}
 					}
-					var segments func([]parser.Segment, parser.Span)
-					segments = func(parts []parser.Segment, owner parser.Span) {
+					segments := func(parts []parser.Segment, owner parser.Span) {
 						t.Helper()
 						previous := owner.Start()
 						for _, part := range parts {

@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -20,32 +21,32 @@ func run(args []string, input io.Reader, output, diagnostics io.Writer) int {
 	flags.SetOutput(diagnostics)
 	machine := flags.Bool("json", false, "emit test outcome JSON instead of upstream HTML")
 	if err := flags.Parse(args); err != nil {
-		if err == flag.ErrHelp {
+		if errors.Is(err, flag.ErrHelp) {
 			return 0
 		}
 		return 1
 	}
 	if flags.NArg() != 0 {
-		fmt.Fprintln(diagnostics, "specadapter accepts Markdown on stdin, not positional arguments")
+		_, _ = fmt.Fprintln(diagnostics, "specadapter accepts Markdown on stdin, not positional arguments")
 		return 1
 	}
 	content, err := io.ReadAll(input)
 	if err != nil {
-		fmt.Fprintln(diagnostics, "read input:", err)
+		_, _ = fmt.Fprintln(diagnostics, "read input:", err)
 		return 1
 	}
 	result := conformance.Evaluate(parser.Parse(context.Background(), parser.NewSource(content)))
 	if *machine {
 		// Protocol success does not mean a conformance pass: Status is required.
 		if err := json.NewEncoder(output).Encode(result); err != nil {
-			fmt.Fprintln(diagnostics, err)
+			_, _ = fmt.Fprintln(diagnostics, err)
 			return 1
 		}
 		return 0
 	}
 	if result.Status == "rendered" {
 		if _, err := io.WriteString(output, result.HTML); err != nil {
-			fmt.Fprintln(diagnostics, err)
+			_, _ = fmt.Fprintln(diagnostics, err)
 			return 1
 		}
 		return 0

@@ -40,6 +40,80 @@ IDs; module caching is disabled while there are no external dependencies. Go
 package builds provide no production command-line executable; the conformance
 adapter below is a separate test command.
 
+### Static analysis
+
+Run the same pinned gate as CI from the checkout root (POSIX shell, including
+Git Bash on Windows):
+
+```sh
+sh tools/lint.sh
+sh tools/lint.sh --self-test
+```
+
+The script installs **golangci-lint v2.15.0** into a private temporary directory,
+verifies [the checked-in configuration](../.golangci.yml), then checks all Go
+packages including tests. It uses the installed Go toolchain with
+`GOTOOLCHAIN=local`, disables workspaces, and runs analysis with
+`GOFLAGS=-mod=readonly`. A missing toolchain, download failure, invalid
+configuration, or finding fails the command. It never selects a golangci-lint
+binary from `PATH`. The first install needs network access to the configured Go
+module proxy and checksum database; subsequent installs reuse Go's module and
+build caches. Go 1.27.2 and this exact linter version were verified together.
+The older v2.13.2 binary cannot decode Go 1.27.2's export data.
+
+The explicit analyzer set is govet, staticcheck (excluding optional QF style
+suggestions), unused, ineffassign, errcheck, errorlint, exhaustive, nolintlint,
+depguard, forbidigo, and gosec. Exhaustive accepts explicit default branches for
+visitors that deliberately handle only a subset of node kinds; switches without
+such a branch must cover the enum. Gosec remains enabled for filesystem and
+service work as those packages arrive, as well as existing code and tests.
+
+Depguard enforces the adopted boundaries: production parser code uses only the
+standard library; production packages cannot import the conformance renderer;
+YAML imports stay behind `internal/config` and MCP SDK imports behind
+`internal/mcp`. The approved external import families are the selected
+`github.com/goccy/go-yaml` and `github.com/modelcontextprotocol/go-sdk` modules.
+Their accepted versions remain v1.19.2 and v1.8.0, respectively, to be pinned in
+`go.mod` when implemented. Depguard checks import paths, not module versions;
+review changes to module pins against the accepted contracts. Suggested future
+package layout does not impose an additional dependency graph.
+
+Forbidigo restricts `os.Exit` and standard `log.Fatal*` functions/methods to
+`cmd/mdchk/main.go` and the test adapter's
+`internal/conformance/cmd/specadapter/main.go`, including renamed imports.
+Other packages return errors or exit codes to their entry point.
+
+Suppress only a reviewed false positive at the narrowest line with a named
+analyzer and an explanation, for example `//nolint:gosec // G304: ...` with
+the specific security rule and evidence. Nolintlint rejects blanket, unexplained,
+and unused suppressions. Gosec's `#nosec` bypass is disabled. The existing G602
+test suppressions cite prior equal-length assertions; G304 suppressions cover
+committed fixture paths. There are no global security-rule exclusions.
+One SA1012 suppression preserves the line index's intentional nil context and
+its documented empty zero value.
+
+`--self-test` creates and removes a disposable Go module. It verifies that all
+eleven analyzers and each import boundary reject representative violations,
+that legitimate adapter imports and entry points pass, and that configuration
+errors fail. Local replacement modules exercise approved and unapproved imports
+without downloading runtime dependencies or altering the checkout.
+
+The tool is a development dependency only: version-qualified `go install` uses
+the upstream module graph outside mdchk's module. It does not modify `go.mod`,
+create a root `go.sum`, or link tool dependencies into mdchk. Its capability is
+the maintained analyzer integration and configuration schema, which would be
+costly to reimplement internally. Provenance and the full transitive dependency
+graph are recorded in the pinned upstream
+[go.mod](https://github.com/golangci/golangci-lint/blob/v2.15.0/go.mod) and
+[go.sum](https://github.com/golangci/golangci-lint/blob/v2.15.0/go.sum).
+The tool is [GPL-3.0 licensed](https://github.com/golangci/golangci-lint/blob/v2.15.0/LICENSE);
+its analyzer dependencies retain their own licenses. Source installation is
+isolated and was validated here; upstream generally
+[recommends binary installation](https://golangci-lint.run/docs/welcome/install/local/).
+When upgrading the pin, review its transitive graph and licenses, Go export-data
+compatibility, configuration changes, and both gate commands. Never independently
+upgrade the tool's transitive dependencies or use an unpinned `latest` install.
+
 ### Package boundaries and current capability
 
 `internal/parser` provides immutable source snapshots, physical-line/source

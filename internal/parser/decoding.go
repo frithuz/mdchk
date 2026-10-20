@@ -130,4 +130,6 @@ func decodeValue(ctx context.Context, parts []Segment, normalizeEndings bool) Va
 	return out
 }
 
-func decodeToken(text string) (string, int, Transformation) { return decodeTokenContext(nil, text) }
+func decodeToken(text string) (string, int, Transformation) {
+	return decodeTokenContext(context.Background(), text)
+}

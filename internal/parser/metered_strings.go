@@ -11,10 +11,6 @@ func meteredContains(ctx context.Context, s, sub string) bool {
 	meterWork(ctx, len(s)+len(sub))
 	return strings.Contains(s, sub)
 }
-func meteredIndex(ctx context.Context, s, sub string) int {
-	meterWork(ctx, len(s)+len(sub))
-	return strings.Index(s, sub)
-}
 func meteredEqualFold(ctx context.Context, a, b string) bool {
 	meterWork(ctx, len(a)+len(b))
 	return strings.EqualFold(a, b)
@@ -54,17 +50,17 @@ func meterBuilderGrowth(ctx context.Context, b *strings.Builder, n int) {
 		meterWork(ctx, b.Len())
 	}
 }
-func meteredWriteString(ctx context.Context, b *strings.Builder, s string) (int, error) {
+func meteredWriteString(ctx context.Context, b *strings.Builder, s string) {
 	meterBuilderGrowth(ctx, b, len(s))
-	return b.WriteString(s)
+	_, _ = b.WriteString(s) // strings.Builder writes always succeed.
 }
-func meteredWriteByte(ctx context.Context, b *strings.Builder, c byte) error {
+func meteredWriteByte(ctx context.Context, b *strings.Builder, c byte) {
 	meterBuilderGrowth(ctx, b, 1)
-	return b.WriteByte(c)
+	_ = b.WriteByte(c) // strings.Builder writes always succeed.
 }
-func meteredWriteRune(ctx context.Context, b *strings.Builder, r rune) (int, error) {
+func meteredWriteRune(ctx context.Context, b *strings.Builder, r rune) {
 	meterBuilderGrowth(ctx, b, 4)
-	return b.WriteRune(r)
+	_, _ = b.WriteRune(r) // strings.Builder writes always succeed.
 }
 
 // Concatenation copies both operands; charge their complete output before Go

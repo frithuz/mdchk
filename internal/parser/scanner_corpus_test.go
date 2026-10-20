@@ -23,7 +23,7 @@ func TestScannerCorpusTargets(t *testing.T) {
 	}
 	read := func(path string, value any) {
 		t.Helper()
-		data, err := os.ReadFile(base + path)
+		data, err := os.ReadFile(base + path) //nolint:gosec // G304: path comes from the committed corpus manifest, not user input.
 		if err != nil {
 			t.Fatal(err)
 		}

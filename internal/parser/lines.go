@@ -30,7 +30,7 @@ type LineIndex struct {
 }
 
 func NewLineIndex(source Source) LineIndex {
-	return newLineIndex(nil, source)
+	return newLineIndex(nil, source) //nolint:staticcheck // SA1012: nil marks an unmetered index and preserves its empty zero value.
 }
 
 func newLineIndex(ctx context.Context, source Source) LineIndex {

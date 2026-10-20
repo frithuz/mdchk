@@ -154,6 +154,8 @@ func TestEmphasisApprovedPartitionAndUpstream(t *testing.T) {
 					checkLinkProvenance(t, source, n, r.Document.Root())
 				case parser.HardBreak, parser.SoftBreak:
 					checkBreakProperties(t, source, n, n.Properties().Break.Origin, byteRange{n.Span().Start(), n.Content()[0].Source.Start()})
+				default:
+					// Other node kinds are irrelevant to this focused visitor.
 				}
 				return true
 			})

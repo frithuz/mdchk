@@ -15,7 +15,6 @@ type parsedBlock struct {
 	partial       bool
 }
 
-func blockNodes(blocks []parsedBlock) []*Node { return blockNodesContext(nil, blocks) }
 func blockNodesContext(ctx context.Context, blocks []parsedBlock) []*Node {
 	if len(blocks) == 0 {
 		return nil
@@ -98,9 +97,6 @@ func (p *blockParser) blankItemGap(end, start int) bool {
 // final boundary, never its loose status. Leading/trailing blanks alone do not
 // separate direct blocks; the trailing summary is consulted only if another
 // sibling item (or a following direct block) actually exists.
-func itemBlankBoundaries(item openBlock, children []parsedBlock) (loose, trailing bool) {
-	return itemBlankBoundariesContext(nil, item, children)
-}
 func itemBlankBoundariesContext(ctx context.Context, item openBlock, children []parsedBlock) (loose, trailing bool) {
 	type boundary struct {
 		span         Span
