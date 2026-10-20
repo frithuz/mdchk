@@ -8,7 +8,7 @@ import (
 )
 
 // normalizeReferenceLabel matches raw label spelling, without its brackets.
-// Shared by definition collection and the future use-site resolver (#27).
+// Shared by definition collection and full/collapsed/shortcut use resolution.
 // Unicode default full folding is independent of locale and semantic decoding.
 func normalizeReferenceLabel(raw string) string {
 	var out strings.Builder

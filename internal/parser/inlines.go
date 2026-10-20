@@ -31,12 +31,12 @@ type inlineScanner struct {
 	delimiterHead    int
 	delimiterTail    int
 	brackets         []inlineBracket
-	inactiveBefore   int              // original logical offsets below this cannot open links
-	references       bool             // reference uses remain a missing provider when definitions exist
-	bareLinkEnds     []int            // lazily indexed raw destination endpoints; -1 means unbalanced
-	backticks        map[int][]int    // raw run starts by width, even after a backslash
-	backtickNext     map[int]int      // monotonic next-closer cursor per width
-	htmlEnds         map[string][]int // original logical terminators/quotes, indexed once
+	inactiveBefore   int                  // original logical offsets below this cannot open links
+	references       *ReferenceCollection // borrowed immutable completed document registry
+	bareLinkEnds     []int                // lazily indexed raw destination endpoints; -1 means unbalanced
+	backticks        map[int][]int        // raw run starts by width, even after a backslash
+	backtickNext     map[int]int          // monotonic next-closer cursor per width
+	htmlEnds         map[string][]int     // original logical terminators/quotes, indexed once
 	pending          bool
 }
 
@@ -54,8 +54,14 @@ func parseInlines(ctx context.Context, document *Document, blocks PhaseState) (P
 		return PhaseComplete, nil
 	}
 	state := PhaseComplete
-	root, err := inlineTree(ctx, document.root, &state, len(document.references.Definitions) != 0)
+	root, err := inlineTree(ctx, document.root, &state, &document.references)
 	if err != nil {
+		return Pending, err
+	}
+	if interruption(ctx) != "" {
+		return Interrupted, nil
+	}
+	if err := validateReferenceLinks(ctx, root, document.references); err != nil {
 		return Pending, err
 	}
 	if interruption(ctx) != "" {
@@ -67,7 +73,7 @@ func parseInlines(ctx context.Context, document *Document, blocks PhaseState) (P
 	return state, nil
 }
 
-func inlineTree(ctx context.Context, node *Node, state *PhaseState, references bool) (*Node, error) {
+func inlineTree(ctx context.Context, node *Node, state *PhaseState, references *ReferenceCollection) (*Node, error) {
 	if interruption(ctx) != "" {
 		return node, nil
 	}

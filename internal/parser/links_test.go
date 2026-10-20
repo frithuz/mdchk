@@ -226,6 +226,10 @@ func checkInlineLinkFixture(t *testing.T, source parser.Source, n *parser.Node, 
 }
 
 func checkLinkProvenance(t *testing.T, source parser.Source, n *parser.Node) {
+	if origin := n.Properties().Link.Origin; origin == "full" || origin == "collapsed" || origin == "shortcut" {
+		checkReferenceLinkProvenance(t, source, n)
+		return
+	}
 	t.Helper()
 	if n.Properties().Link.Origin == "autolink" {
 		checkAutolinkProvenance(t, source, n)
@@ -431,7 +435,7 @@ func TestInlineLinkMappingOwnershipAndOpacity(t *testing.T) {
 			return true
 		})
 	}
-	for _, input := range []string{"[a]\n\n[a]: /uri", "[a](bad title)\n\n[a]: /uri", "![a](b)", "[![a](b)](c)"} {
+	for _, input := range []string{"![a](b)", "[![a](b)](c)"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
 		if r.Status != parser.Incomplete || conformance.Evaluate(r).Status != "pending" {
 			t.Fatal("remaining reference/image interpretation falsely complete", input)

@@ -82,8 +82,8 @@ outside payload, and trimmed source bytes retain explicit transformation provena
 Per-block raw-run indexes and monotonic source cursors avoid repeated suffix or
 segment-prefix searches. Private trees publish only after successful inline work.
 
-Nested emphasis/strong and inline links now complete; possible reference uses
-with definitions and images remain pending for their later handlers.
+Nested emphasis/strong, inline links and full/collapsed/shortcut references now
+complete; image interpretation remains pending for its later handler.
 Inline HTML is now recognized atomically; malformed HTML resumes ordinary interpretation.
 External physical endings produce semantic break
 nodes, while endings consumed inside code remain code normalization. Unsupported interpretation retains
@@ -110,9 +110,9 @@ Text, CodeSpan, break, InlineHTML and autolink semantics independently from
 original-byte
 contributions.
 
-All 652 unchanged cases remain in the ledger: **575 pass, 77 pending**, retaining
-all 513 previous passes and adding 48 required inline-link cases plus 14 proved
-literal-fallback cases.
+All 652 unchanged cases remain in the ledger: **629 pass, 23 pending**, retaining
+all 575 previous passes and adding 53 required reference cases plus escaped-marker
+593 with independent AST/source assertions.
 These are staged results, not full CommonMark or extension conformance. Coverage owners are downstream
 completion providers, never reverse blockers on this increment. Full work/depth-
 budget hardening remains #31.
@@ -252,7 +252,7 @@ remain immutable; nested work inherits cancellation/deadline checkpoints.
 The original nested-emphasis partition required 126 of 132 examples: 90
 established and 36 nested passes. Inline-link delivery completes the other six
 404/419/422/433/473/474, so all 132 emphasis examples now pass. Case 516 also
-completes; 530 still needs #27. No delivered #25/#26 ownership remains.
+completes, as does reference case 530. No delivered #25–#27 ownership remains.
 
 TestEmphasisApprovedPartitionAndUpstream compares actual Parse/Evaluate with
 unchanged upstream HTML and independently counted opening/closing ranges.
@@ -286,9 +286,8 @@ unencoded; only the test adapter encodes and escapes them.
 The 47 sole-#26 cases plus inline-precedence 567 are required independently of
 implementation success. The full run also proves 14 literal cases:
 197/199/201/209/211/212/213/511/523/546/547/548/551/552. All 513 prior passes
-remain; the staged gate is 575 pass/77 pending. An empty completed definition
-inventory proves reference fallback absent; with definitions, possible reference
-uses still require #27. Images remain #28. No reference Link or Image is constructed.
+remain; reference uses now advance the staged gate to 629 pass/23 pending.
+A completed inventory settles reference matches and literal misses. Images remain #28.
 
 `TestInlineLinkApprovedPartitionAndUpstream` pairs actual Parse/Evaluate over all
 62 promoted examples with independently supplied raw component fixtures and source
@@ -318,6 +317,39 @@ GOMAXPROCS=2 go test ./internal/parser -run '^$' -bench '^BenchmarkInlineLinkFai
 The full contributor checks and bounded inline/list fuzz commands above still
 apply. Comprehensive numeric work/depth hardening remains #31; cumulative
 bracket/candidate measurements are optional, with no machine-specific threshold.
+
+### Reference links
+
+Full/collapsed/shortcut forms borrow the completed private registry and share raw
+Unicode label normalization, first-definition selection, bracket activation and
+scoped emphasis. Literal misses with unrelated definitions complete normally;
+valid inline 567 retains priority, and 568–571 verify failed-inline/subsequent-label
+consumption. No URL is dereferenced.
+
+Links retain exact use-site syntax, separate visible Label and optional raw
+ReferenceLabel, and a NormalizedLabel association to the owning document's first
+selected record. Destination/title semantics are spanless Synthetic projections;
+the authoritative source ranges remain on that definition. See the [model
+contract](../internal/parser/model.md#reference-links-and-definition-identity)
+for marker roles, absent/empty values, local binding validation and ownership.
+
+The fixed 53 sole-#27 cases plus escaped-marker 593 pass unchanged upstream HTML
+with independent AST/component/marker ranges and definition-selection assertions.
+Raw spelling, pinned full folding, 999/1000-character bounds, mapped headings and
+containers, all physical endings, duplicate definitions, detached accessors, foreign
+snapshots, projection mismatch and deterministic interruption have focused tests.
+Inline/list fuzz seeds exercise all three origins with independent provenance
+oracles. All 575 previous passes remain; only 23 image cases are pending.
+
+```sh
+go test ./internal/parser -run 'ReferenceLink|InlineLink|Reference|FullCaseFold'
+python3 -B tools/commonmark_conformance.py --strict --section '^(Links|Link reference definitions)$'
+```
+
+The contributor checks and bounded inline/list provenance fuzz commands above
+remain required for changes to those consumers. Optional reference-use/definition
+scaling measurements introduce no machine-specific threshold; general hardening
+remains #31.
 
 ## Regenerate and verify the CommonMark corpus
 
@@ -366,15 +398,15 @@ Inputs and paths are resolved from the script, so invocation by absolute script
 path also works from another directory. The checks work offline; use the local
 toolchain/module environment above to forbid automatic downloads explicitly.
 
-Every unfiltered run currently reports **575 pass, 0 fail, 0 error, 77
+Every unfiltered run currently reports **629 pass, 0 fail, 0 error, 23
 pending**. The separately maintained `foundation.json` lists every supported ID
 and remaining provider exactly once. Angle autolinks add 24 passes while retaining
 all 331 established IDs: 20, 346, 480–481, 526, 538, 594–610 and literal HTML
 fallback 618. All 19 Autolinks examples 594–612 now complete; bare 611–612 remain
 ordinary Text. Examples 638–639 now complete through single-level emphasis;
 344/642/643 pass with opaque inline HTML, and 640–641 retain code opacity.
-Remaining providers are #27 reference links and #28 images. Conservative pending checks may
-also defer malformed candidates until their handler proves literal fallback.
+The remaining provider is #28 images (517/520/531 and 572–591). Reference uses
+now settle both matching links and literal fallback, including escaped-marker 593.
 No pending case is counted as a conformance pass. Final completion still requires
 all 652 cases without exemptions. These coverage owners are not reverse native
 prerequisites for staged delivery. Independent constructed AST
@@ -411,7 +443,7 @@ regexes and empty selections are errors. A filtered run validates the full ledge
 first, reports its smaller scope and never writes or weakens the baseline.
 
 `foundation.json` is mdchk's separately reviewed pass/pending ledger. It
-accounts for all 652 IDs exactly once. Its supported list records the 575
+accounts for all 652 IDs exactly once. Its supported list records the 629
 passes above. A supported case becoming fail/error/pending is a regression;
 missing/duplicate IDs invalidate the ledger. A newly passing case also fails
 the gate until its ID moves from pending to `supported_html_examples` in a
@@ -436,7 +468,8 @@ rm -r "$adapter_dir"
 The last comparison now exits 0: example 207 is a recognized definition-only
 document with legitimately empty HTML. The unchanged upstream helper still has no
 pending category; `--number 467` now succeeds through nested emphasis. Use
-`--number 530` to observe a genuinely pending reference-link provider as an error.
+`--number 531` to observe a genuinely pending image provider as an error.
+Reference case 530 now succeeds.
 Examples 419/516/567 now succeed through actual inline-link recognition.
 Example 344 now succeeds through actual inline HTML recognition. Example 334 now
 passes with an external soft break. The adapter's default protocol
@@ -494,8 +527,9 @@ remainders retain their paragraph/Setext/container structure. Actual Parse tests
 exercise every unchanged definition example 192–218, plus list 317 and independent
 boundary/source, full-fold, ownership and deterministic interruption fixtures.
 Definition-only 207 completes, and literal remnants 208/210 now render with Text.
-Remaining definition cases retain their actual link/HTML/break providers in
-`foundation.json`, without #17/#18/#19 or a blanket exemption.
+All definition examples 192–218 now render through actual Parse/Evaluate.
+Forward references resolve against the completed document-wide registry; no
+blanket exemption or delivered provider remains in `foundation.json`.
 
 Unicode matching uses the pinned Unicode 17.0.0 full default folding table with
 standard-library-only runtime code. No host locale/Python database or runtime

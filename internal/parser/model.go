@@ -95,9 +95,17 @@ type DelimiterProperties struct {
 	Width  int
 }
 type BreakProperties struct{ Origin string }
+
+// LinkProperties keeps visible use syntax separate from reference identifiers.
+// For resolved reference origins, Destination/Title are spanless semantic
+// projections; NormalizedLabel selects authoritative provenance in the owning
+// document's first-definition lookup. See model.md for exact source/marker roles.
 type LinkProperties struct {
-	Origin          string
-	Label           Value
+	Origin string
+	Label  Value
+	// ReferenceLabel preserves the second bracket interior: present for full
+	// and collapsed references (known empty for collapsed), nil otherwise.
+	ReferenceLabel  *Value
 	Destination     Value
 	Title           *Value
 	NormalizedLabel Optional[string]
@@ -415,6 +423,29 @@ func validateProperties(k Kind, e Span, p Properties) error {
 		if err := validateValue(e, p.Link.Label); err != nil {
 			return err
 		}
+		if p.Link.ReferenceLabel != nil {
+			if err := validateValue(e, *p.Link.ReferenceLabel); err != nil {
+				return err
+			}
+		}
+		if k == Link {
+			l := p.Link
+			switch l.Origin {
+			case "full", "collapsed":
+				if l.ReferenceLabel == nil || !referenceIdentifier(*l.ReferenceLabel, l.Origin == "collapsed") {
+					return ErrModel
+				}
+			default:
+				if l.ReferenceLabel != nil {
+					return ErrModel
+				}
+			}
+			if referenceOrigin(l.Origin) && l.Resolution == Available {
+				if !l.NormalizedLabel.Present || l.NormalizedLabel.Value == "" || !referenceProjection(l.Destination) || l.Title != nil && !referenceProjection(*l.Title) {
+					return ErrModel
+				}
+			}
+		}
 		if err := validateValue(e, p.Link.Destination); err != nil {
 			return err
 		}
@@ -461,6 +492,7 @@ func cloneProperties(p Properties) Properties {
 	}
 	if p.Link != nil {
 		p.Link.Label = cloneValue(p.Link.Label)
+		p.Link.ReferenceLabel = cloneValuePointer(p.Link.ReferenceLabel)
 		p.Link.Destination = cloneValue(p.Link.Destination)
 		p.Link.Title = cloneValuePointer(p.Link.Title)
 	}

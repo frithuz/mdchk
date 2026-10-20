@@ -290,6 +290,12 @@ func (s *inlineScanner) buildLink(content emphasisContent, bracket inlineBracket
 		return nil, nil, err
 	}
 	markers = append(markers, closing)
+	return s.finishLink(bracket, label, properties, markers, flat)
+}
+
+// Both link forms share the same label/emphasis boundary and immutable source
+// construction. Definition provenance never enters this use-site envelope.
+func (s *inlineScanner) finishLink(bracket inlineBracket, label Value, properties *LinkProperties, markers []Marker, flat []*Node) (before []*Node, link *Node, err error) {
 	cursor := inlineNodes{scanner: s, nodes: flat}
 	before, err = cursor.take(markers[0].Source.start)
 	if err != nil || interruption(s.ctx) != "" {
@@ -307,7 +313,7 @@ func (s *inlineScanner) buildLink(content emphasisContent, bracket inlineBracket
 		return nil, nil, err
 	}
 	envelope := markers[0].Source
-	envelope.end = closing.Source.end
+	envelope.end = markers[len(markers)-1].Source.end
 	link, err = NewNode(NodeSpec{Kind: Link, Envelope: envelope, Content: label.Segments, Markers: markers, Properties: Properties{Link: properties}, Children: children})
 	return before, link, err
 }

@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"context"
 	"maps"
 	"slices"
 )
@@ -86,7 +87,8 @@ type Document struct {
 }
 
 // NewDocument binds a complete source envelope to records. It validates supplied
-// normalized-label selection, but neither recognizes nor normalizes definitions.
+// normalized-label selection and resolved reference-Link bindings/projections,
+// but neither recognizes syntax nor normalizes labels.
 func NewDocument(root *Node, references ReferenceCollection) (*Document, error) {
 	if root == nil || root.Kind() != DocumentKind || !root.Span().Present() {
 		return nil, ErrModel
@@ -130,7 +132,62 @@ func NewDocument(root *Node, references ReferenceCollection) (*Document, error) 
 	if references.LookupAvailability == Available && !maps.Equal(first, references.Lookup) {
 		return nil, ErrModel
 	}
+	if err := validateReferenceLinks(context.Background(), root, references); err != nil {
+		return nil, err
+	}
 	return &Document{root: cloneNode(root), references: cloneReferences(references)}, nil
+}
+
+func referenceOrigin(origin string) bool {
+	return origin == "full" || origin == "collapsed" || origin == "shortcut"
+}
+
+func referenceIdentifier(v Value, collapsed bool) bool {
+	if !v.Semantic.Present || len(v.Segments) == 0 || (v.Semantic.Value == "") != collapsed {
+		return false
+	}
+	for _, s := range v.Segments {
+		if !s.Source.Present() || s.Transformation != Exact && s.Transformation != Normalized && s.Transformation != PartialTab {
+			return false
+		}
+	}
+	return !collapsed || len(v.Segments) == 1 && v.Segments[0].Source.Start() == v.Segments[0].Source.End() && v.Segments[0].Transformation == Exact
+}
+
+// A projection is semantic data at a use site, never editable source spelling.
+// The owning document's first-definition record retains its original provenance.
+func referenceProjection(v Value) bool {
+	return v.Semantic.Present && len(v.Segments) == 1 &&
+		!v.Segments[0].Source.Present() && v.Segments[0].Transformation == Synthetic &&
+		v.Segments[0].Semantic == v.Semantic
+}
+
+func validateReferenceLinks(ctx context.Context, root *Node, references ReferenceCollection) error {
+	stack := []*Node{root}
+	for len(stack) != 0 {
+		if interruption(ctx) != "" {
+			return nil // the parser withholds publication on interruption
+		}
+		n := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		stack = append(stack, n.spec.Children...)
+		p := n.spec.Properties.Link
+		if n.spec.Kind != Link || p == nil || !referenceOrigin(p.Origin) || p.Resolution != Available {
+			continue
+		}
+		i, found := references.Lookup[p.NormalizedLabel.Value]
+		if references.Availability != Available || references.LookupAvailability != Available || !p.NormalizedLabel.Present || !found || i < 0 || i >= len(references.Definitions) {
+			return ErrModel
+		}
+		d := references.Definitions[i]
+		if d == nil || !contains(root.Span(), d.spec.Envelope) || p.Destination.Semantic != d.spec.Destination.Semantic || !referenceProjection(p.Destination) || (p.Title == nil) != (d.spec.Title == nil) {
+			return ErrModel
+		}
+		if p.Title != nil && (!referenceProjection(*p.Title) || p.Title.Semantic != d.spec.Title.Semantic) {
+			return ErrModel
+		}
+	}
+	return nil
 }
 
 func cloneReferences(r ReferenceCollection) ReferenceCollection {

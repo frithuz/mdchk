@@ -199,10 +199,23 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 					offset = syntax.end
 					continue
 				}
-				// A completed empty definition inventory proves reference fallback
-				// absent. With definitions, #27 must interpret possible reference
-				// uses; this delivery never constructs a reference Link.
-				s.pending = s.pending || s.references
+				if syntax, valid := s.referenceLink(bracket.offset, offset); valid {
+					if err := appendText(offset, 0); err != nil || interruption(s.ctx) != "" {
+						return nil, err
+					}
+					before, link, err := s.buildReferenceLink(content, bracket, syntax, children[bracket.node:])
+					if err != nil || interruption(s.ctx) != "" {
+						return nil, err
+					}
+					children = append(children[:bracket.node], before...)
+					children = append(children, link)
+					if _, err := cursor.take(syntax.end); err != nil || interruption(s.ctx) != "" {
+						return nil, err
+					}
+					s.deactivateLinks(bracket.offset)
+					offset = syntax.end
+					continue
+				}
 			}
 			offset++
 			continue

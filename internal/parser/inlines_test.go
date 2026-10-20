@@ -98,7 +98,7 @@ func TestInlineLiteralAndProviderBoundaries(t *testing.T) {
 			t.Fatal(text, children)
 		}
 	}
-	for _, text := range []string{"[a]\n\n[a]: b", "![a](b)"} {
+	for _, text := range []string{"![a](b)"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(text)))
 		if r.Status != parser.Incomplete || r.Phases.Inlines != parser.Pending || len(r.Uncertainty) != 1 || conformance.Evaluate(r).Status != "pending" {
 			t.Fatal("missing provider became complete", text, r)
@@ -266,7 +266,7 @@ func TestInlineOpaqueBlocksAndLocalState(t *testing.T) {
 
 func FuzzInlineTextProvenance(f *testing.F) {
 	entities := entityOracle(f)
-	for _, input := range []string{"[a *b*](c) [**d**](e)", "[é\x00](<> '')", "> - [a\r\n>   b](c \"d\")", "[bad](a b) [good](ok)", "[a <ab:x>](b)", "**flat** *pairs*", "***nested***", "_a **b *c* d** e_", "> - ***é\x00\r\n>   β***", "***left**", "*foo _bar* baz_", "> - *é\x00\r\n>   β*", "hello", "> a\r\n> b", "# é\x00 #\n", "[a](b)", "`unmatched", "*a*", "&amp;", "é&amp;β", `\&ouml;`, "&NotEqualTilde;", "&#0;", "&#128;", "&#xD800;", "` x `", "a`&amp;\\*`b", "> - `a\r\n>   b`", "`foo``bar``", "`é\x00`", "a  \nb", "a \r\nb", "a\\\rb", "> - é\x00  \r\n>   β", "&#10;\n&#92;", "x <!--> tail", "x <a title=\"<!-- no -->\">", "> - x <!--é\x00\r\n>   end -->", "x <?bad <?bad", "x <![CDATA[>&<]]>", "x <a /bar>", "<ab:x>", "<a@b>", "<ab:&amp;\\[]>", "> - <ab:é\x00>"} {
+	for _, input := range []string{"[a][K] [k][] [K]\n\n[k]: /a&amp;b \"title\"\n", "[a *b*](c) [**d**](e)", "[é\x00](<> '')", "> - [a\r\n>   b](c \"d\")", "[bad](a b) [good](ok)", "[a <ab:x>](b)", "**flat** *pairs*", "***nested***", "_a **b *c* d** e_", "> - ***é\x00\r\n>   β***", "***left**", "*foo _bar* baz_", "> - *é\x00\r\n>   β*", "hello", "> a\r\n> b", "# é\x00 #\n", "[a](b)", "`unmatched", "*a*", "&amp;", "é&amp;β", `\&ouml;`, "&NotEqualTilde;", "&#0;", "&#128;", "&#xD800;", "` x `", "a`&amp;\\*`b", "> - `a\r\n>   b`", "`foo``bar``", "`é\x00`", "a  \nb", "a \r\nb", "a\\\rb", "> - é\x00  \r\n>   β", "&#10;\n&#92;", "x <!--> tail", "x <a title=\"<!-- no -->\">", "> - x <!--é\x00\r\n>   end -->", "x <?bad <?bad", "x <![CDATA[>&<]]>", "x <a /bar>", "<ab:x>", "<a@b>", "<ab:&amp;\\[]>", "> - <ab:é\x00>"} {
 		f.Add(input)
 	}
 	f.Fuzz(func(t *testing.T, input string) {

@@ -11,8 +11,8 @@ first-line metadata, nested block children, continuation and closure. Compatible
 siblings acquire List parents and independently derived tightness.
 Leading reference definitions are recognized and normalized document-wide; inline
 text, code spans, breaks, raw inline HTML, angle autolinks and nested
-emphasis/strong are recognized;
-reference-use resolution remains pending. The model
+emphasis/strong and inline/full/collapsed/shortcut links are recognized;
+image interpretation remains pending. The model
 catalog also supports constructed fixtures; it does not promise recognition of
 every listed kind.
 
@@ -302,7 +302,7 @@ content ranges for all unchanged 228–252 independently of HTML. Cases 236/239/
 newly pass HTML; existing literal-code case 231 remains supported. List case 235 now renders its quoted item and outside sibling. Other supported
 single-line and multiline quote paragraphs/headings also render when their other
 inline providers are available. `TestQuotePartialTabUpstream6` independently verifies original tab/code
-provenance. Reference cases 214/218 remain pending for #27.
+provenance. Reference cases 214/218 now complete through document-wide use resolution.
 Boundary fixtures cover all seven HTML forms, prefix-free payload, marked Setext,
 code transitions, partial tabs, Unicode/NUL/endings/EOF, immutable ownership and
 deterministic interruption with closed-prefix retention. These are staged
@@ -350,7 +350,7 @@ Coverage owners are not reverse blockers on this syntax stage. Separate fixtures
 case/EOF/fixed-form boundaries, code and paragraph precedence, opaque payload,
 LF/CRLF/CR/NUL/Unicode/tab provenance, immutable accessors, encoding precedence and
 deterministic interruption, including at EOF finalization. Actual full-corpus
-normalized/strict gates now record 575 pass and 77 pending, preserving all 355
+normalized/strict gates now record 629 pass and 23 pending, preserving all 355
 passes established before inline HTML; full conformance remains false.
 
 ## Indented code and literal handoff
@@ -585,7 +585,7 @@ source assertions and HTML checks promote Tabs 7 and empty item 284, preserving 
 84 previous passes at that increment. Definition-only 207 now adds a pass,
 at that increment. Code spans raised the baseline from 254 to 279 passes;
 physical breaks raised it to 331 passes; angle autolinks now retain those passes
-and now coexist with inline HTML, nested emphasis and inline links at 575 pass, 77
+and now coexist with inline HTML, nested emphasis and inline/reference links at 629 pass, 23
 pending. Boundary fixtures cover
 blank ownership,
 opaque trailing blanks, empty-item gaps in quotes, all endings/EOF and
@@ -652,8 +652,8 @@ Dispatch records source-backed delimiter runs and bracket/image-openers per bloc
 Unicode flanking and bounded pairing settle stars/underscores after
 opaque code/HTML/autolinks and atomic escapes/entities have been scanned. Proven
 invalid/unmatched pairs become Complete Text. Nested matches construct complete
-Emphasis/Strong trees and inline Links. Reference uses with definitions and images
-remain pending for #27/#28. States never cross paragraphs/headings or calls; the
+Emphasis/Strong trees and inline/reference Links. Only image interpretation
+remains pending for #28. States never cross paragraphs/headings or calls; the
 adapter's affirmative completion checks remain unchanged.
 
 `TestAutolinkUpstreamAcceptanceAndNewPasses` consumes unchanged 594–612 and newly
@@ -728,9 +728,9 @@ Unicode/NUL, partial tabs, physical endings/EOF, opacity, detached nested handle
 long runs and deterministic interruption. Both inline/list fuzz consumers retain
 their independent source assertions with nested trees.
 
-Nested construction originally raised 477 passes to 513; inline links now raise
-the ledger to 575 pass / 77 pending. Cases 419/433/516 now complete; 530 remains
-reference-dependent. Delivered #25/#26 ownership is removed. Full conformance
+Nested construction raised 477 passes to 513, inline links to 575, and reference
+uses to 629 pass / 23 pending. Cases 419/433/516/530 now complete.
+Delivered #25–#27 ownership is removed. Full conformance
 still requires all 652 cases.
 
 ## Inline links and bracket boundaries
@@ -741,9 +741,8 @@ A monotonic source boundary represents deactivation without revisiting the inact
 prefix. Code/HTML/autolinks consume opaque interiors; escapes/entities are atomic
 and generated brackets never dispatch. A failed candidate retains ordinary text
 and later constructs. Without definitions, a completed reference inventory proves
-all reference fallback absent. With definitions, possible reference uses remain
-pending for #27; image pairs remain pending for #28. No reference Link or Image
-is constructed here.
+all reference fallback absent. With definitions, the reference resolver below
+settles matching uses and literal misses. Image pairs remain pending for #28.
 
 Bare-destination lookahead builds a private lexical endpoint index lazily on the
 first bare candidate. One forward pass marks original escape tokens; one backward
@@ -796,6 +795,60 @@ literal and recovered-link source facts. A repeated benchmark records timing and
 allocation tradeoffs without a machine-specific threshold. Full numeric work/depth
 hardening remains #31; cumulative
 bracket/candidate measurements are optional and no performance guarantee is claimed.
+
+## Reference links and definition identity
+
+Full, collapsed and shortcut Links resolve only after the immutable document-wide
+registry completes. Inline scanners borrow that private registry across blocks;
+no detached public collection copy, rebuild or definition scan occurs per use.
+The shared raw-label normalizer retains full pinned Unicode folding and the
+999-character pre-fold eligibility bound, with only space/tab/ending collapse.
+Escapes/entities do not become matching characters. A valid explicit second label
+precludes shortcut fallback even if its lookup misses. Failed inline recognition,
+including 568, can fall back to references; valid inline 567 still takes priority.
+Resolved references share scoped emphasis and earlier-opener deactivation with
+inline links. Misses in a completed registry become ordinary interpreted content;
+images still require their own provider.
+
+A reference Link's Envelope contains only its use syntax. Content and Label select
+the visible first-bracket interior before inline escape/entity interpretation;
+children carry the displayed semantics. Optional `ReferenceLabel` separately maps
+the second-bracket interior: raw key for `full`, a present-empty Value with one
+Exact zero-width segment at the second closing bracket for `collapsed`, nil for
+`shortcut` (and for inline/autolink). Source-backed components use the existing
+NUL/tab/container/physical-ending mappings and stay inside the use envelope.
+`label-open`/`label-close` mark the first pair, `reference-open`/`reference-close`
+the immediately adjacent second pair for full/collapsed. No destination/title
+marker is invented at a reference use.
+
+`NormalizedLabel` binds through the owning document's completed Lookup to its
+first source-ordered Definition. Snapshot and record index establish identity,
+even when duplicate records have identical destinations. The definition retains
+all original destination/title spans and transformations. The Link's effective
+Destination and present Title each project only the selected semantic string,
+using one spanless Synthetic segment with matching semantic contribution. Synthetic
+here means a use-site projection, not invented destination spelling. Provenance
+consumers follow the association to the authoritative record; projections are never
+editable use-site text. Known-empty destinations, absent titles and present-empty
+titles remain distinct.
+
+NewNode validates identifier shape/containment and resolved projection shape;
+NewDocument also validates available local lookup and matching selected semantics
+and title presence. Foreign-source definitions and unavailable/missing bindings
+are rejected. General containment, inline/autolink behavior and immutable detached
+accessors remain unchanged. The parser checks binding before privately publishing
+the completed inline tree, with cancellation/deadline checkpoints. Constructors
+still cannot manufacture recognized phases or full CommonMark support.
+
+`TestReferenceLinkApprovedPartitionAndUpstream` couples all 53 fixed sole-#27 cases
+and escaped-marker 593 to original HTML plus independent use/component/marker
+ranges, origins and definition indices. Shared inline/list/emphasis/decoding
+oracles verify reference syntax and definition provenance independently, with a
+retained Unicode-source folding oracle. Raw-identity/999–1000-character, mapped
+heading/container/endings, immutability, bad binding/projection and interruption
+checks supplement those upstream cases. The ledger is 629 pass / 23 image-pending;
+517/520/531 and 572–591 retain #28. No image, rule, CLI/MCP, production rendering or
+comprehensive #31 resource-budget implementation is added.
 
 ## Snapshots, spans and ownership
 
@@ -1012,7 +1065,7 @@ Roles in Markers identify source spellings; each marker has its exact source spa
 | `SoftBreak`, `HardBreak` | Original line-ending Content; optional Break.Origin (`line-ending`, `spaces`, `backslash`) and `hard-break-marker` as applicable. |
 | `CodeSpan` | Delimiter.Marker/backtick Width; `opening`/`closing` markers, raw Content and separately normalized Literal. |
 | `Emphasis`, `Strong` | Delimiter.Marker/Width, `opening`/`closing` ranges and ordered inline children. |
-| `Link`, `Image` | Link.Origin `inline`/`full`/`collapsed`/`shortcut`/`autolink`; Label/Destination/optional Title Values, optional NormalizedLabel and explicit Resolution availability. `label-open`, `label-close`, `link-open`, `link-close`, `destination-open`, `destination-close`, `title-open`, `title-close`, `image-marker` roles as applicable; label children. |
+| `Link`, `Image` | Link.Origin `inline`/`full`/`collapsed`/`shortcut`/`autolink`; Label/Destination/optional Title Values, optional ReferenceLabel and NormalizedLabel, and explicit Resolution availability. `label-open`, `label-close`, `link-open`, `link-close`, `destination-open`, `destination-close`, `title-open`, `title-close`, `reference-open`, `reference-close`, `image-marker` roles as applicable; label children. |
 
 Property constructors enforce recognized kinds, property-family applicability,
 basic supplied heading/fence/HTML/delimiter/origin values and all source ranges.
@@ -1062,8 +1115,8 @@ Grammar, malformed-fallback, quoted-content, block-boundary, container/heading,
 Unicode/NUL, physical-ending, immutability and deterministic interruption checks
 supplement the corpus. Shared inline/list fuzz consumers independently validate
 InlineHTML source facts alongside their established checks. The ledger now has
-575 passes and 77 pending; all prior 383 passes remain. Remaining interpretation
-belongs to links and images, not inline HTML. No production
+629 passes and 23 pending; all prior 383 passes remain. Remaining interpretation
+belongs to images, not inline HTML or reference links. No production
 renderer,
 directive processor, fix or extension is added.
 
@@ -1074,7 +1127,8 @@ optional Title Values and optional NormalizedLabel. Keep all definitions, includ
 duplicates and unused definitions, in `Document.References().Definitions` source
 order. Markers use the label/destination/title roles above and `definition-colon`.
 These are not rendered block children. Raw spellings and semantic values remain
-separate. Parse recognizes and normalizes definitions; #27 later resolves uses.
+separate. Parse recognizes and normalizes definitions, then resolves uses against the
+completed registry.
 
 Recognition uses a private logical paragraph view with an advancing byte cursor
 and original-line mappings; each definition is frozen once. It handles multiline
@@ -1086,7 +1140,8 @@ Labels retain raw escapes/entities. Matching uses full default Unicode 17.0.0 fo
 (C + F, excluding Turkic T), trims/collapses only space/tab/CR/LF, and counts the
 999-character bound before folding in Unicode scalars, not bytes. Empty/whitespace
 labels and unescaped nested brackets are invalid. The shared private normalizer is
-ready for #27; no visible-inline decoding enters its identity. Pinned source,
+shared with reference-use resolution; no visible-inline decoding enters its
+identity. Pinned source,
 license and offline table verification live in [the Unicode provenance directory](testdata/unicode/17.0.0/README.md).
 
 Values retain component segments with source-backed NUL/newline normalization.
@@ -1116,12 +1171,14 @@ normalization. Partial lookup may contain only known first selections; unavailab
 lookup has no entries. Mutable collection copies cannot change the document.
 
 [`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly
-accounts for all 652 upstream IDs: 575 supported HTML cases and 77 pending.
+accounts for all 652 upstream IDs: 629 supported HTML cases and 23 pending.
 Delimiter classification/pairing added 94 passes while preserving 383; nested
 construction added 36 cases; inline links add 48 required and 14 proven literal
-cases while preserving all 513 previous passes.
-All Raw HTML 613–632 pass (618 was already established literal fallback). Other
-cases retain their actual #27/#28 providers, with no undelivered #17–#26 ownership.
+cases while preserving all 513 previous passes. Reference resolution adds 53
+required cases and escaped-marker 593, retaining all 575 established passes.
+All Raw HTML 613–632 pass (618 was already established literal fallback). The
+23 remaining cases retain only their #28 image provider; no delivered #17–#27
+ownership remains.
 Dispatch may defer
 potential invalid candidates conservatively until a provider proves fallback.
 These coverage scopes are not reverse native prerequisites on this increment.

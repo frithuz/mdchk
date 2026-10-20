@@ -56,9 +56,9 @@ and a missing helper. CI runs these tests and the read-only drift check.
 ## Foundation coverage accounting
 
 `foundation.json` is mdchk's separately reviewed pass/pending inventory. Every
-original upstream ID occurs exactly once: **575 supported HTML cases and 77
-pending**, preserving all 513 previous passes and adding 48 required inline-link
-cases plus 14 proven literal fallbacks.
+original upstream ID occurs exactly once: **629 supported HTML cases and 23
+pending**, preserving all 575 previous passes and adding 53 required reference
+cases plus escaped-marker 593.
 The parser recognizes the block structure described in the
 [model contract](../../../model.md), collects document-wide definitions, and
 constructs source-preserving Text/CodeSpan/break/InlineHTML/Link/Emphasis/Strong children in paragraphs and headings after the
@@ -154,9 +154,8 @@ opaque interiors, detached nested handles, adversarial long runs and determinist
 interruption. Inline/list fuzz consumers retain their source oracles and nested
 seeds. No pinned upstream source or expected HTML bytes change.
 
-The ledger no longer lists #17–#26 as undelivered providers. Remaining scopes are
-#27 reference links and #28 images. Cases 419/433/516/567 complete; 530/532/568
-retain #27, and 517/520 retain #28.
+The ledger no longer lists #17–#27 as undelivered providers. Only #28 images
+remain (517/520/531 and 572–591). Cases 419/433/516/567/530/532/568/593 complete.
 Coverage owners are not reverse native prerequisites or conformance passes.
 Thematic 55 completes through literal delimiter classification; 56–61 also pass.
 Refer to the per-ID ledger rather than inferring support from a section name.
@@ -203,8 +202,25 @@ raw escape/entity identity, duplicate first selection, empty/absent components,
 LF/CRLF/CR/EOF, prefixes/tabs, immutability, literal code/HTML and interruption.
 Definition-only 207 has one actual definition, no paragraph, complete phases and
 empty HTML. List 317 retains all three items, its non-rendered definition and loose
-outer list. #17 ownership is removed; remaining 192–218 cases identify actual
-#27 providers in the ledger. No forward resolution is claimed.
+outer list. #17 ownership is removed; all 192–218 cases now render through actual Parse
+and the completed document-wide reference resolver. Forward uses and duplicate
+first-selection have independent identity/source assertions.
+
+## Reference-use resolution
+
+The 53 fixed sole-#27 examples and escaped-marker 593 now complete with unchanged
+HTML and independent AST/use/identifier/marker/source assertions and selected
+first-definition indices. Full/collapsed/shortcut forms preserve separate visible
+text and raw keys, exact use envelopes and authoritative definition provenance.
+Projected destination/title semantics are explicitly spanless; the document-local
+normalized-key lookup recovers the original definition. Negative binding, folding,
+scalar limits, mapping, detached ownership and interruption tests supplement the
+corpus. Inline/list fuzz consumers retain independent provenance checks.
+
+All 575 prior passes remain. The total is 629 pass / 23 pending; only evidenced
+image providers 517/520/531 and 572–591 remain. Pending is never a conformance pass;
+no pinned input or generated expectation was edited. Full completion still requires
+all 652, without exemptions.
 
 ## Executable comparisons and passing baseline
 
@@ -214,9 +230,9 @@ See [contributor instructions](../../../../../docs/contributing.md#run-commonmar
 for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
 
 The default staged regression gate allows explicitly pending cases: currently
-575 pass, 0 fail, 0 error, 77 pending, with `syntax-unimplemented` and the
-remaining owners above. All 513 earlier passes remain; inline links add 48
-required cases and 14 proven literal cases. Synthetic empty/ASCII-blank documents also complete and
+629 pass, 0 fail, 0 error, 23 pending, with `syntax-unimplemented` and the
+remaining image owner above. All 575 earlier passes remain; reference resolution
+adds 53 required cases and escaped-marker 593. Synthetic empty/ASCII-blank documents also complete and
 render empty HTML. It is not a
 conformance-completion claim. `--require-complete` fails on pending; final
 completion needs all 652 passes in an unfiltered run. The retained upstream
