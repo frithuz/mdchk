@@ -122,6 +122,7 @@ func TestInlineLinkDestinationIndexInterruption(t *testing.T) {
 
 func TestInlineLinkInterruptionPreservesPublication(t *testing.T) {
 	for _, input := range []string{
+		"[![é **β**](<> \"\")](uri) ![é][K] ![K][] ![K]\n\n[k]: /a&amp;b \"title\"\n",
 		strings.Repeat("[display][key] [key][] [key] ", 3) + "\n\n[key]: /url \"title\"\n",
 		"> - [" + strings.Repeat("é", 40) + "\x00][" + strings.Repeat("SS", 40) + "]\r\n>\r\n> [" + strings.Repeat("ẞ", 40) + "]: <> \"\"\r\n",
 		strings.Repeat("["+strings.Repeat("a", 80)+"][missing] [ok] ", 3) + "\n\n[ok]: /uri\n",

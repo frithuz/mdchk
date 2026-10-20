@@ -56,12 +56,11 @@ and a missing helper. CI runs these tests and the read-only drift check.
 ## Foundation coverage accounting
 
 `foundation.json` is mdchk's separately reviewed pass/pending inventory. Every
-original upstream ID occurs exactly once: **629 supported HTML cases and 23
-pending**, preserving all 575 previous passes and adding 53 required reference
-cases plus escaped-marker 593.
+original upstream ID occurs exactly once: **652 supported HTML cases and 0
+pending**, preserving all 629 previous passes and adding the 23 image cases.
 The parser recognizes the block structure described in the
 [model contract](../../../model.md), collects document-wide definitions, and
-constructs source-preserving Text/CodeSpan/break/InlineHTML/Link/Emphasis/Strong children in paragraphs and headings after the
+constructs source-preserving Text/CodeSpan/break/InlineHTML/Link/Image/Emphasis/Strong children in paragraphs and headings after the
 block/reference handoff. Code and raw HTML payloads stay opaque.
 
 Decoding supplies known semantic Text, reference destination/title and fence-info
@@ -85,10 +84,8 @@ where applicable. Exact byte ranges are separate assertions from HTML comparison
 
 `TestInlineSegmentedSourceAndDetachedAccessors` verifies omitted prefixes, lazy
 continuation, nested quote/item text, both heading styles, original endings/EOF,
-Unicode/NUL provenance and immutable Text accessors. Matched syntax whose provider
-is undelivered remains pending, even beside supported text. Dispatch/state hooks
-alone never establish syntax support; conservative checks also defer some invalid
-candidates until their actual handlers can prove fallback. Multiline mapping
+Unicode/NUL provenance and immutable Text accessors. All core inline handlers are
+delivered; malformed candidates retain ordinary core interpretation. Multiline mapping
 preserves exact source endings and separate semantic break nodes.
 
 Code spans add passes 17, 35, 121, 327–333, 335–343, 345, 349, 525, 537 and
@@ -113,7 +110,7 @@ boundaries, nested/lazy containers, opaque contexts, immutable accessors and
 interruption without publishing unfinished children. A soft break's one discarded
 space is retained as Normalized empty Text; hard markers retain their entire raw
 spelling separately from ending Content. Shared fixture/provenance oracles keep
-old block assertions and accept ordered Text/CodeSpan/break/InlineHTML/Link/Emphasis/Strong children.
+old block assertions and accept ordered Text/CodeSpan/break/InlineHTML/Link/Image/Emphasis/Strong children.
 
 Angle autolinks add 24 actual passes: 20, 346, 480–481, 526, 538, 594–610 and
 literal HTML fallback 618. All 19 unchanged Autolinks cases 594–612 now pass;
@@ -154,8 +151,8 @@ opaque interiors, detached nested handles, adversarial long runs and determinist
 interruption. Inline/list fuzz consumers retain their source oracles and nested
 seeds. No pinned upstream source or expected HTML bytes change.
 
-The ledger no longer lists #17–#27 as undelivered providers. Only #28 images
-remain (517/520/531 and 572–591). Cases 419/433/516/567/530/532/568/593 complete.
+The ledger no longer lists #17–#28 as undelivered providers. Images complete
+517/520/531 and 572–591. Cases 419/433/516/567/530/532/568/593 complete.
 Coverage owners are not reverse native prerequisites or conformance passes.
 Thematic 55 completes through literal delimiter classification; 56–61 also pass.
 Refer to the per-ID ledger rather than inferring support from a section name.
@@ -188,9 +185,7 @@ Inline-link delivery adds all 47 sole-#26 cases plus empty-inline precedence
 independent component/marker/envelope fixtures for all 62 promotions. Origin-aware
 source oracles, mapped containers/headings, Unicode/NUL, empty values, physical
 endings, opacity, nested-link/emphasis boundaries, ownership and deterministic
-interruption cover the actual parser. No reference-use or image construction is
-claimed; possible reference uses with definitions and image interpretation remain
-pending. Existing supported IDs and immutable upstream expectations are preserved.
+interruption cover the actual parser. Reference uses and image construction are covered by the deliveries below. Existing supported IDs and immutable upstream expectations are preserved.
 
 ## Reference-definition recognition
 
@@ -217,10 +212,11 @@ normalized-key lookup recovers the original definition. Negative binding, foldin
 scalar limits, mapping, detached ownership and interruption tests supplement the
 corpus. Inline/list fuzz consumers retain independent provenance checks.
 
-All 575 prior passes remain. The total is 629 pass / 23 pending; only evidenced
-image providers 517/520/531 and 572–591 remain. Pending is never a conformance pass;
-no pinned input or generated expectation was edited. Full completion still requires
-all 652, without exemptions.
+All 629 prior passes remain. Images add 517/520/531 and 572–591 for 652 pass /
+0 pending. `TestImageUpstreamAcceptance` directly ingests 572–593 and the three
+image-dependent Links cases, with independent AST/source assertions. Nested semantic
+alt text, bracket activation, reference projections and model binding tests
+supplement the corpus. No pinned input or generated expectation was edited.
 
 ## Executable comparisons and passing baseline
 
@@ -229,15 +225,12 @@ Run `python3 -B tools/commonmark_conformance.py` from the repository root, or pa
 See [contributor instructions](../../../../../docs/contributing.md#run-commonmark-regression-checks)
 for build-once adapter commands, filters, JSON, exit codes and baseline maintenance.
 
-The default staged regression gate allows explicitly pending cases: currently
-629 pass, 0 fail, 0 error, 23 pending, with `syntax-unimplemented` and the
-remaining image owner above. All 575 earlier passes remain; reference resolution
-adds 53 required cases and escaped-marker 593. Synthetic empty/ASCII-blank documents also complete and
-render empty HTML. It is not a
-conformance-completion claim. `--require-complete` fails on pending; final
-completion needs all 652 passes in an unfiltered run. The retained upstream
-helper has no pending status and counts the adapter's nonzero pending exit as
-error. Keep that behavior distinct from mdchk's explicit pending report.
+The default staged regression gate currently reports 652 pass, 0 fail, 0 error,
+0 pending. Strict and normalized comparisons both pass the full unchanged corpus.
+Synthetic empty/ASCII-blank documents also complete and render empty HTML.
+`--require-complete` requires all selected cases to pass; an unfiltered run confirms
+all 652 without exemptions. The runner retains explicit pending semantics for
+synthetic protocol and regression tests; no real corpus case is pending.
 
 The runner validates all original IDs before selection, rejects supported-pass
 regressions including pass-to-pending, and requires newly passing IDs to be recorded

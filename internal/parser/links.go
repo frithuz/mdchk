@@ -195,7 +195,8 @@ func (s *inlineScanner) openBracket(offset, node int, image bool) {
 }
 
 // Successful inline links/autolinks invalidate earlier link openers. A monotonic
-// source boundary avoids repeatedly revisiting an already inactive prefix.
+// source boundary avoids repeatedly revisiting an already inactive prefix. Image
+// openers ignore this boundary and image success never advances it.
 func (s *inlineScanner) deactivateLinks(offset int) {
 	s.inactiveBefore = max(s.inactiveBefore, offset)
 }
@@ -293,11 +294,15 @@ func (s *inlineScanner) buildLink(content emphasisContent, bracket inlineBracket
 	return s.finishLink(bracket, label, properties, markers, flat)
 }
 
-// Both link forms share the same label/emphasis boundary and immutable source
-// construction. Definition provenance never enters this use-site envelope.
+// Links and images in all forms share the label/emphasis boundary and immutable
+// source construction. Definition provenance never enters this use-site envelope.
 func (s *inlineScanner) finishLink(bracket inlineBracket, label Value, properties *LinkProperties, markers []Marker, flat []*Node) (before []*Node, link *Node, err error) {
 	cursor := inlineNodes{scanner: s, nodes: flat}
-	before, err = cursor.take(markers[0].Source.start)
+	start := markers[0].Source.start
+	if bracket.image {
+		start-- // the image marker immediately precedes the label opener
+	}
+	before, err = cursor.take(start)
 	if err != nil || interruption(s.ctx) != "" {
 		return nil, nil, err
 	}
@@ -314,6 +319,14 @@ func (s *inlineScanner) finishLink(bracket inlineBracket, label Value, propertie
 	}
 	envelope := markers[0].Source
 	envelope.end = markers[len(markers)-1].Source.end
-	link, err = NewNode(NodeSpec{Kind: Link, Envelope: envelope, Content: label.Segments, Markers: markers, Properties: Properties{Link: properties}, Children: children})
+	kind := Link
+	if bracket.image {
+		kind = Image
+		envelope.start = start
+		imageMarker := envelope
+		imageMarker.end = start + 1
+		markers = append([]Marker{{Role: "image-marker", Source: imageMarker}}, markers...)
+	}
+	link, err = NewNode(NodeSpec{Kind: kind, Envelope: envelope, Content: label.Segments, Markers: markers, Properties: Properties{Link: properties}, Children: children})
 	return before, link, err
 }

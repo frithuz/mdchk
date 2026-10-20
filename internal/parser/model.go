@@ -428,22 +428,20 @@ func validateProperties(k Kind, e Span, p Properties) error {
 				return err
 			}
 		}
-		if k == Link {
-			l := p.Link
-			switch l.Origin {
-			case "full", "collapsed":
-				if l.ReferenceLabel == nil || !referenceIdentifier(*l.ReferenceLabel, l.Origin == "collapsed") {
-					return ErrModel
-				}
-			default:
-				if l.ReferenceLabel != nil {
-					return ErrModel
-				}
+		l := p.Link
+		switch l.Origin {
+		case "full", "collapsed":
+			if l.ReferenceLabel == nil || !referenceIdentifier(*l.ReferenceLabel, l.Origin == "collapsed") {
+				return ErrModel
 			}
-			if referenceOrigin(l.Origin) && l.Resolution == Available {
-				if !l.NormalizedLabel.Present || l.NormalizedLabel.Value == "" || !referenceProjection(l.Destination) || l.Title != nil && !referenceProjection(*l.Title) {
-					return ErrModel
-				}
+		default:
+			if l.ReferenceLabel != nil {
+				return ErrModel
+			}
+		}
+		if referenceOrigin(l.Origin) && l.Resolution == Available {
+			if !l.NormalizedLabel.Present || l.NormalizedLabel.Value == "" || !referenceProjection(l.Destination) || l.Title != nil && !referenceProjection(*l.Title) {
+				return ErrModel
 			}
 		}
 		if err := validateValue(e, p.Link.Destination); err != nil {

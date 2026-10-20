@@ -286,7 +286,7 @@ func TestDecodingUpstreamAcceptanceAndNewPasses(t *testing.T) {
 			leafIndex := 0
 			opaque := make(map[int]bool)
 			parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
-				if n.Kind() == parser.Link {
+				if n.Kind() == parser.Link || n.Kind() == parser.Image {
 					checkLinkProvenance(t, r.Source, n)
 					if n.Properties().Link.Origin == "autolink" {
 						opaque[n.Children()[0].Span().Start()] = true

@@ -280,9 +280,7 @@ func TestAutolinkOpacitySourceAndOwnership(t *testing.T) {
 	}
 	for _, input := range []string{"![a](b) <ab:x>"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-		if r.Status != parser.Incomplete || conformance.Evaluate(r).Status != "pending" {
-			t.Fatal("lost remaining provider", input, r)
-		}
+		checkStagedTextOutcome(t, r, true)
 	}
 	for _, input := range []string{"x <i><ab:x></i>", "x <!-- <ab:x> -->", "x <?pi> <ab:x>", "x <![CDATA[a]]> <ab:x>", "x </tag> <ab:x>", "x <<ab:x>>", "x <invalid<ab:x>>", "x <ab:unterminated", "x <ab:x>\n\nnext", "x <ab:x><a@b>"} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))

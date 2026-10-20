@@ -11,8 +11,7 @@ first-line metadata, nested block children, continuation and closure. Compatible
 siblings acquire List parents and independently derived tightness.
 Leading reference definitions are recognized and normalized document-wide; inline
 text, code spans, breaks, raw inline HTML, angle autolinks and nested
-emphasis/strong and inline/full/collapsed/shortcut links are recognized;
-image interpretation remains pending. The model
+emphasis/strong and inline/full/collapsed/shortcut links and images are recognized. The model
 catalog also supports constructed fixtures; it does not promise recognition of
 every listed kind.
 
@@ -33,15 +32,14 @@ to callers.
 | ASCII-blank source (space/tab/LF/CR only) | `Complete` / `Available` | Root `[0,N)`, no children, established empty references/lookup, both phases complete |
 | Indented/fenced code with known info semantics, HTML blocks, thematic breaks, empty ATX headings and ASCII blanks, including quotes and lists of empty items or established inline-free blocks, nested in either kind of container | `Complete` / `Available` | Root `[0,N)` with source-bound blocks, established empty references/lookup, both phases complete, no uncertainty |
 | Supported Text/CodeSpan/break/autolink core blocks | `Complete` / `Available` | Text/CodeSpan preserve raw contributions and semantic Literal; breaks retain origin, original ending and hard-break markers; autolinks retain resolved label/destination provenance; both phases complete |
-| Text needing undelivered inline handlers | `Incomplete` / `Partial` | Source-bound blocks and available reference records/lookup; Blocks complete, Inlines pending; whole-document `SyntaxUnimplemented` uncertainty |
 | Definition-only input with established destination/title semantics (including inside otherwise inline-free containers) | `Complete` / `Available` | All records retained, first-definition lookup available; no definition block children; both phases complete |
 | Definition destination/title or fence info contains escapes/entities, with no other missing syntax | `Complete` / `Available` | Known decoded values and explicit raw transformations, available reference lookup and complete phases |
 | Invalid UTF-8 | `Failed` / `Unavailable` | Original Source, typed `Failure` with `InvalidUTF8` code and snapshot-bound byte location, nil Document, neither phase started |
 | Cancellation/deadline on otherwise valid source | `Incomplete` / `Partial` | Original Source and partial root with any already-closed prefix blocks, affected region with `Cancelled`/`DeadlineExceeded`, separate Interruption, nil Failure; unfinished work interrupted |
 | Other operational failure | `Failed` / `Unavailable` | Retained Source, typed stable failure code, nil Document; InternalFailure if block-model construction violates invariants |
 
-Input needing undelivered core handlers retains pending interpretation; disabled
-extensions/frontmatter follow ordinary core syntax and do not become errors. ASCII-blank input
+All core inline handlers are delivered. Disabled extensions/frontmatter follow
+ordinary core syntax and do not become errors. ASCII-blank input
 is affirmatively established to contain no blocks or references. NBSP and other
 nonblank Unicode content are never discarded as blank lines.
 A source-only root proves document identity and envelope, never absent syntax.
@@ -290,9 +288,8 @@ Source identity and immutable accessor ownership remain unchanged.
 
 Empty quotes and quotes containing only established inline-free leaves complete
 with available references and vacuous inlines, including definition-only quotes
-with known semantics. Supported text/nonempty headings now complete; undelivered handlers retain
-pending inlines, while unknown
-required info/definition semantics keep block work pending. Interruption
+with known semantics. Supported text/nonempty headings now complete, including
+all core inline handlers and known info/definition semantics. Interruption
 discards unfinished nested containers rather than finalizing them as normal EOF;
 already-closed root children survive. Strict encoding failure still takes precedence.
 Full depth/node/work limits and cancellation hardening remain #31.
@@ -350,8 +347,8 @@ Coverage owners are not reverse blockers on this syntax stage. Separate fixtures
 case/EOF/fixed-form boundaries, code and paragraph precedence, opaque payload,
 LF/CRLF/CR/NUL/Unicode/tab provenance, immutable accessors, encoding precedence and
 deterministic interruption, including at EOF finalization. Actual full-corpus
-normalized/strict gates now record 629 pass and 23 pending, preserving all 355
-passes established before inline HTML; full conformance remains false.
+normalized/strict gates now record 652 pass and 0 pending, preserving all 355
+passes established before inline HTML.
 
 ## Indented code and literal handoff
 
@@ -511,8 +508,7 @@ construction of growing Lists or per-ancestor walk of all descendant subtrees.
 
 Lists of empty items, definition-only items with known semantics, or established
 inline-free blocks complete with available references and vacuous inline work.
-Supported text-bearing lists now complete; multiline or other undelivered inline
-interpretation retains pending inlines.
+Text-bearing lists now complete, including multiline core inline interpretation.
 Non-rendered definition spans contribute direct private item boundaries, so their
 removal does not erase blank separation or invent rendered children. Example 317
 has all three items, one document-wide definition and outer Tight=false. Empty
@@ -585,8 +581,8 @@ source assertions and HTML checks promote Tabs 7 and empty item 284, preserving 
 84 previous passes at that increment. Definition-only 207 now adds a pass,
 at that increment. Code spans raised the baseline from 254 to 279 passes;
 physical breaks raised it to 331 passes; angle autolinks now retain those passes
-and now coexist with inline HTML, nested emphasis and inline/reference links at 629 pass, 23
-pending. Boundary fixtures cover
+and now coexist with inline HTML, nested emphasis and inline/reference links and
+images at 652 pass, 0 pending. Boundary fixtures cover
 blank ownership,
 opaque trailing blanks, empty-item gaps in quotes, all endings/EOF and
 nested reference definitions. FuzzListGroupingBoundaries independently generates
@@ -652,8 +648,7 @@ Dispatch records source-backed delimiter runs and bracket/image-openers per bloc
 Unicode flanking and bounded pairing settle stars/underscores after
 opaque code/HTML/autolinks and atomic escapes/entities have been scanned. Proven
 invalid/unmatched pairs become Complete Text. Nested matches construct complete
-Emphasis/Strong trees and inline/reference Links. Only image interpretation
-remains pending for #28. States never cross paragraphs/headings or calls; the
+Emphasis/Strong trees and inline/reference Links and Images. States never cross paragraphs/headings or calls; the
 adapter's affirmative completion checks remain unchanged.
 
 `TestAutolinkUpstreamAcceptanceAndNewPasses` consumes unchanged 594–612 and newly
@@ -729,9 +724,9 @@ long runs and deterministic interruption. Both inline/list fuzz consumers retain
 their independent source assertions with nested trees.
 
 Nested construction raised 477 passes to 513, inline links to 575, and reference
-uses to 629 pass / 23 pending. Cases 419/433/516/530 now complete.
+uses to 629 passes, then images to 652 pass / 0 pending. Cases 419/433/516/530 now complete.
 Delivered #25–#27 ownership is removed. Full conformance
-still requires all 652 cases.
+now has all 652 cases passing.
 
 ## Inline links and bracket boundaries
 
@@ -742,7 +737,7 @@ prefix. Code/HTML/autolinks consume opaque interiors; escapes/entities are atomi
 and generated brackets never dispatch. A failed candidate retains ordinary text
 and later constructs. Without definitions, a completed reference inventory proves
 all reference fallback absent. With definitions, the reference resolver below
-settles matching uses and literal misses. Image pairs remain pending for #28.
+settles matching uses and literal misses, including image forms.
 
 Bare-destination lookahead builds a private lexical endpoint index lazily on the
 first bare candidate. One forward pass marks original escape tokens; one backward
@@ -807,8 +802,8 @@ Escapes/entities do not become matching characters. A valid explicit second labe
 precludes shortcut fallback even if its lookup misses. Failed inline recognition,
 including 568, can fall back to references; valid inline 567 still takes priority.
 Resolved references share scoped emphasis and earlier-opener deactivation with
-inline links. Misses in a completed registry become ordinary interpreted content;
-images still require their own provider.
+inline links. Misses in a completed registry become ordinary interpreted content.
+Images share this resolver and remain active independently of link openers.
 
 A reference Link's Envelope contains only its use syntax. Content and Label select
 the visible first-bracket interior before inline escape/entity interpretation;
@@ -846,9 +841,36 @@ ranges, origins and definition indices. Shared inline/list/emphasis/decoding
 oracles verify reference syntax and definition provenance independently, with a
 retained Unicode-source folding oracle. Raw-identity/999–1000-character, mapped
 heading/container/endings, immutability, bad binding/projection and interruption
-checks supplement those upstream cases. The ledger is 629 pass / 23 image-pending;
-517/520/531 and 572–591 retain #28. No image, rule, CLI/MCP, production rendering or
-comprehensive #31 resource-budget implementation is added.
+checks supplement those upstream cases. Images add 517/520/531 and 572–591,
+bringing the ledger to 652 pass / 0 pending. No rule, CLI/MCP, production rendering
+or comprehensive #31 resource-budget implementation is added.
+
+## Images and semantic descriptions
+
+Inline, full, collapsed and shortcut Images share the link builders and reference
+resolver. Their Envelope starts at `!`; a leading `image-marker` selects exactly
+that byte, followed by the existing label/component markers in source order.
+Content and Label select only the first-bracket interior. Children retain its
+inline structure rather than a pre-rendered alt string. Known-empty destinations,
+absent/present-empty titles, escaped/entity components and mapped source provenance
+follow the link contract. Reference Image projections and definition identity have
+the same NewNode/NewDocument validation as reference Links.
+
+Image opener activation is independent of the monotonic link-deactivation
+boundary. Successful links and autolinks do not disable an image opener. An image
+success does not deactivate earlier link openers. Link success still deactivates
+earlier link openers, preserving the prohibition on links within links.
+
+The test adapter derives alt text recursively from semantic Text/CodeSpan values,
+newlines for breaks, and children of formatting, links and images. Inline HTML
+contributes no alt text. Escaping happens after this flattening.
+
+`TestImageUpstreamAcceptance` ingests unchanged 572–593 and 517/520/531 and asserts
+independent image counts, envelopes, brackets, components, forms and nested AST
+shapes. Mapping, semantic-alt, malformed/escaped syntax, definition folding and
+first-selection tests supplement these cases. Shared fuzz provenance oracles and
+deterministic interruption sweeps include images. The corpus is 652 pass/0 pending;
+comprehensive work/depth hardening remains #31.
 
 ## Snapshots, spans and ownership
 
@@ -1115,8 +1137,7 @@ Grammar, malformed-fallback, quoted-content, block-boundary, container/heading,
 Unicode/NUL, physical-ending, immutability and deterministic interruption checks
 supplement the corpus. Shared inline/list fuzz consumers independently validate
 InlineHTML source facts alongside their established checks. The ledger now has
-629 passes and 23 pending; all prior 383 passes remain. Remaining interpretation
-belongs to images, not inline HTML or reference links. No production
+652 passes and 0 pending; all prior 383 passes remain. No production
 renderer,
 directive processor, fix or extension is added.
 
@@ -1171,21 +1192,17 @@ normalization. Partial lookup may contain only known first selections; unavailab
 lookup has no entries. Mutable collection copies cannot change the document.
 
 [`foundation.json`](testdata/commonmark/0.31.2/foundation.json) explicitly
-accounts for all 652 upstream IDs: 629 supported HTML cases and 23 pending.
+accounts for all 652 upstream IDs: 652 supported HTML cases and 0 pending.
 Delimiter classification/pairing added 94 passes while preserving 383; nested
 construction added 36 cases; inline links add 48 required and 14 proven literal
 cases while preserving all 513 previous passes. Reference resolution adds 53
 required cases and escaped-marker 593, retaining all 575 established passes.
 All Raw HTML 613–632 pass (618 was already established literal fallback). The
-23 remaining cases retain only their #28 image provider; no delivered #17–#27
-ownership remains.
-Dispatch may defer
-potential invalid candidates conservatively until a provider proves fallback.
-These coverage scopes are not reverse native prerequisites on this increment.
+23 image cases now pass too; no delivered #17–#28 ownership remains.
 The test-only adapter/runner remains in internal/conformance and
 tools/commonmark_conformance.py, without production rendering.
-These are foundational pending scopes, not a claim that each example uses
-every syntax feature. This inventory is maintained separately from unmodified
+All unchanged upstream cases pass; individual cases exercise different syntax
+features. This inventory is maintained separately from unmodified
 upstream data. `TestCoreCorpusAccounting` requires all IDs exactly once and
 confirms that actual retained inputs agree with supported versus uncertain
 outcomes. The runner independently compares actual HTML, validates this

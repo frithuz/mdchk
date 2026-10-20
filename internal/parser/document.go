@@ -87,7 +87,7 @@ type Document struct {
 }
 
 // NewDocument binds a complete source envelope to records. It validates supplied
-// normalized-label selection and resolved reference-Link bindings/projections,
+// normalized-label selection and resolved reference-Link/Image bindings/projections,
 // but neither recognizes syntax nor normalizes labels.
 func NewDocument(root *Node, references ReferenceCollection) (*Document, error) {
 	if root == nil || root.Kind() != DocumentKind || !root.Span().Present() {
@@ -172,7 +172,7 @@ func validateReferenceLinks(ctx context.Context, root *Node, references Referenc
 		stack = stack[:len(stack)-1]
 		stack = append(stack, n.spec.Children...)
 		p := n.spec.Properties.Link
-		if n.spec.Kind != Link || p == nil || !referenceOrigin(p.Origin) || p.Resolution != Available {
+		if (n.spec.Kind != Link && n.spec.Kind != Image) || p == nil || !referenceOrigin(p.Origin) || p.Resolution != Available {
 			continue
 		}
 		i, found := references.Lookup[p.NormalizedLabel.Value]

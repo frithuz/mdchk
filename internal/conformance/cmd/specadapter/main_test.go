@@ -15,7 +15,7 @@ func TestProtocolBoundary(t *testing.T) {
 	}{
 		{"", "rendered", "", 0}, {"[foo]: /url\n", "rendered", "", 0},
 		{"[foo]: /url\n[foo]\n", "rendered", "<p><a href=\"/url\">foo</a></p>\n", 0},
-		{"![foo](url)", "pending", "", 2}, {"\xff", "error", "", 1},
+		{"![foo](url)", "rendered", "<p><img src=\"url\" alt=\"foo\" /></p>\n", 0}, {"\xff", "error", "", 1},
 	} {
 		var stdout, stderr bytes.Buffer
 		if code := run(nil, bytes.NewBufferString(tt.input), &stdout, &stderr); code != tt.code || stdout.String() != tt.html {

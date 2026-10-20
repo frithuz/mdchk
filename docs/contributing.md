@@ -83,7 +83,7 @@ Per-block raw-run indexes and monotonic source cursors avoid repeated suffix or
 segment-prefix searches. Private trees publish only after successful inline work.
 
 Nested emphasis/strong, inline links and full/collapsed/shortcut references now
-complete; image interpretation remains pending for its later handler.
+complete, together with inline and reference images.
 Inline HTML is now recognized atomically; malformed HTML resumes ordinary interpretation.
 External physical endings produce semantic break
 nodes, while endings consumed inside code remain code normalization. Unsupported interpretation retains
@@ -110,10 +110,10 @@ Text, CodeSpan, break, InlineHTML and autolink semantics independently from
 original-byte
 contributions.
 
-All 652 unchanged cases remain in the ledger: **629 pass, 23 pending**, retaining
-all 575 previous passes and adding 53 required reference cases plus escaped-marker
-593 with independent AST/source assertions.
-These are staged results, not full CommonMark or extension conformance. Coverage owners are downstream
+All 652 unchanged cases remain in the ledger: **652 pass, 0 pending**, retaining
+all 629 previous passes and adding the 23 image-dependent cases with independent
+AST/source assertions.
+The unchanged CommonMark corpus passes in full; extension conformance is separate. Coverage owners are downstream
 completion providers, never reverse blockers on this increment. Full work/depth-
 budget hardening remains #31.
 
@@ -268,8 +268,8 @@ go test ./internal/parser -run 'Emphasis|Inline|CodeSpan|Break'
 python3 -B tools/commonmark_conformance.py --section '^Emphasis and strong emphasis$'
 ```
 
-This remains staged support, not full CommonMark conformance. Numeric work/depth
-hardening stays #31. Optional measurements should distinguish unavoidable nested
+The full unchanged CommonMark corpus now passes. Numeric work/depth hardening
+stays #31. Optional measurements should distinguish unavoidable nested
 payload output from redundant copying; no machine-specific threshold is imposed.
 
 ### Inline links
@@ -286,8 +286,8 @@ unencoded; only the test adapter encodes and escapes them.
 The 47 sole-#26 cases plus inline-precedence 567 are required independently of
 implementation success. The full run also proves 14 literal cases:
 197/199/201/209/211/212/213/511/523/546/547/548/551/552. All 513 prior passes
-remain; reference uses now advance the staged gate to 629 pass/23 pending.
-A completed inventory settles reference matches and literal misses. Images remain #28.
+remain; reference uses and images now advance the gate to 652 pass/0 pending.
+A completed inventory settles reference matches and literal misses.
 
 `TestInlineLinkApprovedPartitionAndUpstream` pairs actual Parse/Evaluate over all
 62 promoted examples with independently supplied raw component fixtures and source
@@ -339,7 +339,7 @@ Raw spelling, pinned full folding, 999/1000-character bounds, mapped headings an
 containers, all physical endings, duplicate definitions, detached accessors, foreign
 snapshots, projection mismatch and deterministic interruption have focused tests.
 Inline/list fuzz seeds exercise all three origins with independent provenance
-oracles. All 575 previous passes remain; only 23 image cases are pending.
+oracles. All previous passes remain; images complete the 652-case corpus.
 
 ```sh
 go test ./internal/parser -run 'ReferenceLink|InlineLink|Reference|FullCaseFold'
@@ -350,6 +350,32 @@ The contributor checks and bounded inline/list provenance fuzz commands above
 remain required for changes to those consumers. Optional reference-use/definition
 scaling measurements introduce no machine-specific threshold; general hardening
 remains #31.
+
+### Images
+
+Images use the same inline destination/title grammar and full/collapsed/shortcut
+reference resolver as links. Each Image envelope includes its `!` with a separate
+`image-marker`; label Content excludes that marker and the brackets. Children
+retain parsed formatting, nested images and links. Image openers stay active when
+a link succeeds inside their description; completing an image leaves earlier link
+openers active. Links still cannot contain links.
+
+Reference images share first-definition identity and spanless Synthetic projections
+with reference links. Both model and document constructors reject malformed or
+unbound resolved reference images. The test renderer flattens inline semantic
+children for alt text, including code and breaks, while omitting raw HTML tags.
+
+`TestImageUpstreamAcceptance` pairs unchanged 572–593 and 517/520/531 with
+independent AST, marker, component and source facts. Additional tests cover mapped
+headings/containers, physical endings, Unicode/NUL, empty components, full folding,
+duplicate definitions, missing explicit keys, escaped markers and immutable handles.
+The existing inline/list fuzz oracles now validate images; interruption sweeps
+include both inline and reference images.
+
+```sh
+go test ./internal/parser -run 'Image|ReferenceLink|InlineLink'
+python3 -B tools/commonmark_conformance.py --strict --require-complete
+```
 
 ## Regenerate and verify the CommonMark corpus
 
@@ -398,17 +424,16 @@ Inputs and paths are resolved from the script, so invocation by absolute script
 path also works from another directory. The checks work offline; use the local
 toolchain/module environment above to forbid automatic downloads explicitly.
 
-Every unfiltered run currently reports **629 pass, 0 fail, 0 error, 23
+Every unfiltered run currently reports **652 pass, 0 fail, 0 error, 0
 pending**. The separately maintained `foundation.json` lists every supported ID
 and remaining provider exactly once. Angle autolinks add 24 passes while retaining
 all 331 established IDs: 20, 346, 480–481, 526, 538, 594–610 and literal HTML
 fallback 618. All 19 Autolinks examples 594–612 now complete; bare 611–612 remain
 ordinary Text. Examples 638–639 now complete through single-level emphasis;
 344/642/643 pass with opaque inline HTML, and 640–641 retain code opacity.
-The remaining provider is #28 images (517/520/531 and 572–591). Reference uses
+Images complete 517/520/531 and 572–591. Reference uses
 now settle both matching links and literal fallback, including escaped-marker 593.
-No pending case is counted as a conformance pass. Final completion still requires
-all 652 cases without exemptions. These coverage owners are not reverse native
+No pending case is counted as a conformance pass. All 652 cases pass without exemptions. These coverage owners are not reverse native
 prerequisites for staged delivery. Independent constructed AST
 tests verify renderer output for the core model catalog, escaping/URL
 encoding, raw segments, lists and image labels without claiming that Parse
@@ -443,7 +468,7 @@ regexes and empty selections are errors. A filtered run validates the full ledge
 first, reports its smaller scope and never writes or weakens the baseline.
 
 `foundation.json` is mdchk's separately reviewed pass/pending ledger. It
-accounts for all 652 IDs exactly once. Its supported list records the 629
+accounts for all 652 IDs exactly once. Its supported list records the 652
 passes above. A supported case becoming fail/error/pending is a regression;
 missing/duplicate IDs invalidate the ledger. A newly passing case also fails
 the gate until its ID moves from pending to `supported_html_examples` in a
@@ -468,7 +493,7 @@ rm -r "$adapter_dir"
 The last comparison now exits 0: example 207 is a recognized definition-only
 document with legitimately empty HTML. The unchanged upstream helper still has no
 pending category; `--number 467` now succeeds through nested emphasis. Use
-`--number 531` to observe a genuinely pending image provider as an error.
+`--number 531` to check a reference link containing an image.
 Reference case 530 now succeeds.
 Examples 419/516/567 now succeed through actual inline-link recognition.
 Example 344 now succeeds through actual inline HTML recognition. Example 334 now

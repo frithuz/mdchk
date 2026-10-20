@@ -198,9 +198,7 @@ func TestInlineHTMLGrammarOpacityAndFallback(t *testing.T) {
 	}
 	for _, input := range []string{`![x](a) <!-->`, `![x](a) <?p?>`} {
 		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-		if r.Status != parser.Incomplete || conformance.Evaluate(r).Status != "pending" {
-			t.Fatal("outside unsupported provider falsely complete", input, r)
-		}
+		checkStagedTextOutcome(t, r, true)
 	}
 	// Failed lookahead must not skip earlier quote/terminator matches at a later
 	// candidate, and failed comments must not consume a subsequent valid tag.

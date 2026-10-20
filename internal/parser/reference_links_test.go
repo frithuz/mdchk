@@ -225,6 +225,12 @@ func checkReferenceLinkProvenance(t *testing.T, source parser.Source, n *parser.
 		t.Fatal("reference metadata", p)
 	}
 	markers := n.Markers()
+	start := n.Span().Start()
+	if n.Kind() == parser.Image {
+		checkImageMarker(t, source, n)
+		markers = markers[1:]
+		start++
+	}
 	count := 4
 	if p.Origin == "shortcut" {
 		count = 2
@@ -247,7 +253,7 @@ func checkReferenceLinkProvenance(t *testing.T, source parser.Source, n *parser.
 			t.Fatal("reference delimiter", m, raw)
 		}
 	}
-	if markers[0].Source.Start() != n.Span().Start() || markers[count-1].Source.End() != n.Span().End() {
+	if markers[0].Source.Start() != start || markers[count-1].Source.End() != n.Span().End() {
 		t.Fatal("reference envelope", n)
 	}
 	raw := checkReferenceRawValue(t, source, n, p.Label)

@@ -179,9 +179,7 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 		if s.text[offset] == ']' && len(s.brackets) != 0 {
 			bracket := s.brackets[len(s.brackets)-1]
 			s.brackets = s.brackets[:len(s.brackets)-1]
-			if bracket.image {
-				s.pending = true // #28 still owns image recognition
-			} else if bracket.offset >= s.inactiveBefore {
+			if bracket.image || bracket.offset >= s.inactiveBefore {
 				if syntax, valid := s.inlineLink(offset); valid {
 					if err := appendText(offset, 0); err != nil || interruption(s.ctx) != "" {
 						return nil, err
@@ -195,7 +193,9 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 					if _, err := cursor.take(syntax.end); err != nil || interruption(s.ctx) != "" {
 						return nil, err
 					}
-					s.deactivateLinks(bracket.offset)
+					if !bracket.image {
+						s.deactivateLinks(bracket.offset)
+					}
 					offset = syntax.end
 					continue
 				}
@@ -212,7 +212,9 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 					if _, err := cursor.take(syntax.end); err != nil || interruption(s.ctx) != "" {
 						return nil, err
 					}
-					s.deactivateLinks(bracket.offset)
+					if !bracket.image {
+						s.deactivateLinks(bracket.offset)
+					}
 					offset = syntax.end
 					continue
 				}

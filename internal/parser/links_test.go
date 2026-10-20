@@ -164,9 +164,16 @@ func TestInlineLinkApprovedPartitionAndUpstream(t *testing.T) {
 func checkInlineLinkFixture(t *testing.T, source parser.Source, n *parser.Node, input string, w inlineLinkWant) {
 	t.Helper()
 	raw := w.spelling()
+	if n.Kind() == parser.Image {
+		raw = "!" + raw
+	}
 	start := strings.Index(input, raw)
 	if start < 0 || n.Span().Start() != start || n.Span().End() != start+len(raw) {
 		t.Fatal("expected exact original link envelope", raw, n.Span())
+	}
+	bracketStart := start
+	if n.Kind() == parser.Image {
+		bracketStart++
 	}
 	p := n.Properties().Link
 	if p.Label.Semantic != parser.Some(w.label) || p.Destination.Semantic != parser.Some(oracleText(w.destination, entityOracle(t))) || (p.Title != nil) != (w.title != nil) {
@@ -188,8 +195,8 @@ func checkInlineLinkFixture(t *testing.T, source parser.Source, n *parser.Node, 
 			t.Fatal("original component bytes", original.String(), text)
 		}
 	}
-	component(p.Label, start+1, w.label)
-	dest := start + len(w.label) + 3 + len(w.leading)
+	component(p.Label, bracketStart+1, w.label)
+	dest := bracketStart + len(w.label) + 3 + len(w.leading)
 	if w.angle {
 		dest++
 	}
@@ -198,7 +205,7 @@ func checkInlineLinkFixture(t *testing.T, source parser.Source, n *parser.Node, 
 		role string
 		pos  int
 	}
-	marks := []mark{{"label-open", start}, {"label-close", start + 1 + len(w.label)}, {"link-open", start + 2 + len(w.label)}}
+	marks := []mark{{"label-open", bracketStart}, {"label-close", bracketStart + 1 + len(w.label)}, {"link-open", bracketStart + 2 + len(w.label)}}
 	if w.angle {
 		marks = append(marks, mark{"destination-open", dest - 1}, mark{"destination-close", dest + len(w.destination)})
 	}
@@ -214,6 +221,9 @@ func checkInlineLinkFixture(t *testing.T, source parser.Source, n *parser.Node, 
 		}
 	}
 	marks = append(marks, mark{"link-close", start + len(raw) - 1})
+	if n.Kind() == parser.Image {
+		marks = append([]mark{{"image-marker", start}}, marks...)
+	}
 	if len(n.Markers()) != len(marks) {
 		t.Fatal("independent marker count", n.Markers(), marks)
 	}
@@ -236,7 +246,7 @@ func checkLinkProvenance(t *testing.T, source parser.Source, n *parser.Node) {
 		return
 	}
 	p := n.Properties().Link
-	if n.Kind() != parser.Link || p.Origin != "inline" || p.Resolution != parser.Available || p.NormalizedLabel.Present || n.Properties().Literal.Present {
+	if (n.Kind() != parser.Link && n.Kind() != parser.Image) || p.Origin != "inline" || p.Resolution != parser.Available || p.NormalizedLabel.Present || n.Properties().Literal.Present {
 		t.Fatal("inline Link properties", p)
 	}
 	m := map[string]parser.Span{}
@@ -252,7 +262,12 @@ func checkLinkProvenance(t *testing.T, source parser.Source, n *parser.Node) {
 			t.Fatal("original link delimiter", role, raw, err)
 		}
 	}
-	if m["label-open"].Start() != n.Span().Start() || m["link-close"].End() != n.Span().End() || m["label-close"].End() != m["link-open"].Start() || !reflect.DeepEqual(n.Content(), p.Label.Segments) {
+	labelStart := n.Span().Start()
+	if n.Kind() == parser.Image {
+		checkImageMarker(t, source, n)
+		labelStart++
+	}
+	if m["label-open"].Start() != labelStart || m["link-close"].End() != n.Span().End() || m["label-close"].End() != m["link-open"].Start() || !reflect.DeepEqual(n.Content(), p.Label.Segments) {
 		t.Fatal("inline label/envelope contract")
 	}
 	value := func(v parser.Value, decoded bool) string {
@@ -352,7 +367,7 @@ func checkLinkProvenance(t *testing.T, source parser.Source, n *parser.Node) {
 	checkInlineSourceCoverage(t, n)
 	for _, child := range n.Children() {
 		parser.Walk(child, func(child *parser.Node) bool {
-			if child.Kind() == parser.Link {
+			if n.Kind() == parser.Link && child.Kind() == parser.Link {
 				t.Fatal("Link contains another Link")
 			}
 			return true
@@ -434,12 +449,6 @@ func TestInlineLinkMappingOwnershipAndOpacity(t *testing.T) {
 			}
 			return true
 		})
-	}
-	for _, input := range []string{"![a](b)", "[![a](b)](c)"} {
-		r := parser.Parse(context.Background(), parser.NewSource([]byte(input)))
-		if r.Status != parser.Incomplete || conformance.Evaluate(r).Status != "pending" {
-			t.Fatal("remaining reference/image interpretation falsely complete", input)
-		}
 	}
 	// ASCII whitespace is structural; other Unicode whitespace is destination data.
 	for _, r := range []rune{'\u00a0', '\u2003', '\u2028'} {
