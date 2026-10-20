@@ -46,8 +46,10 @@ adapter below is a separate test command.
 mapping, structural indentation helpers and a staged CommonMark 0.31.2 parser.
 `NewSource` copies input bytes; `Bytes` returns a copy. Half-open Source spans
 retain snapshot ownership and original Unicode, NUL, tabs and LF/CRLF/CR bytes.
-Strict UTF-8 validation precedes Markdown work; a typed InvalidUTF8 failure points
-to the first malformed scalar's original leading byte. Cancellation and deadline
+After size admission and work-budgeted validation, a typed InvalidUTF8 failure
+points to the first malformed scalar's original leading byte. Established encoding
+failure precedes cancellation/deadline; prior exhaustion can stop validation.
+See [parser accounting](engineering/parser-limits.md). Cancellation and deadline
 remain separate incomplete outcomes, with deterministic checkpoint tests.
 
 The block pass recognizes paragraphs, ATX/Setext headings, thematic breaks,
@@ -105,7 +107,8 @@ and 346 completes through its opaque autolink.
 Nested/lazy mappings, both heading styles, NUL/Unicode, LF/CRLF/CR/EOF, opaque blocks,
 mixed decoding, immutable accessors and block/call isolation have focused checks.
 Deterministic cancellation/deadline sweeps protect unfinished inline publication;
-strict invalid UTF-8 retains precedence. `FuzzInlineTextProvenance` reconstructs
+established invalid UTF-8 retains precedence over cancellation/deadline within
+the admission and validation budgets above. `FuzzInlineTextProvenance` reconstructs
 Text, CodeSpan, break, InlineHTML and autolink semantics independently from
 original-byte
 contributions.

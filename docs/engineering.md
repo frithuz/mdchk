@@ -45,15 +45,107 @@ Use [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/) as the shared core 
 
 Implement the parser in `internal/parser` using the Go standard library. Use the Markdown specifications as references for syntax behavior; do not depend on a third-party parser at runtime. Owning the parser also means owning its correctness, compatibility, and performance tests.
 
-Build in stages: first identify block structure, including paragraphs, ATX and Setext headings, fenced and indented code, block quotes, lists, thematic breaks, and HTML blocks; then recognize inline constructs needed to protect content and support rules, including code spans, escapes, links, images, emphasis, and hard breaks. Handle nested containers and continuation lines explicitly. Add the selected extensions with dedicated fixtures rather than treating them as incidental line patterns.
+### Delivered CommonMark core
 
-The initial parser should preserve source spans and syntax context needed for linting and fixing. It does not need an HTML renderer. Document implemented syntax and known gaps; only claim CommonMark conformance after the relevant specification examples pass. Where syntax is unsupported or ambiguous, mark the affected region as uncertain, skip rules that require a reliable interpretation there, and report reduced coverage. Never auto-fix a region whose interpretation is uncertain.
+`internal/parser` now implements the CommonMark 0.31.2 core. All **652/652**
+unchanged specification examples pass both normalized and strict HTML comparisons,
+with no exemptions. Direct runs of the pinned upstream test driver also report
+`652 passed, 0 failed, 0 errored, 0 skipped` in both modes. This verifies the core
+syntax; it does not establish rule coverage or extension conformance. The HTML
+adapter in `internal/conformance` is test infrastructure, not a production renderer.
 
-Keep original source bytes alongside the syntax tree. Rules should use syntax context and source spans, rather than matching every line with regular expressions. Apply targeted source edits rather than rendering the whole document back to Markdown.
+Acquire an immutable snapshot with `parser.NewSource(content)`, then call
+`parser.Parse(ctx, source)` with a non-nil context. `NewSource` copies input and
+`Source.Bytes` returns a copy. Parse has no flavor or frontmatter option: it
+recognizes core syntax with extensions/frontmatter disabled. Configuration-driven
+selection, GFM/Pandoc extensions, frontmatter, rules, CLI/MCP integration and
+production rendering remain separate deliveries. The configuration examples in
+the format guide describe those future adapters.
+
+The first phase identifies paragraphs, ATX/Setext headings, fenced/indented code,
+thematic breaks, all seven HTML-block forms and nested quotes/lists, and completes
+the document-wide reference-definition inventory. Only then does the inline phase
+process paragraph/heading payloads: escapes/entities, code spans, soft/hard breaks,
+inline HTML, angle autolinks, emphasis/strong, and inline/full/collapsed/shortcut
+links and images. Code and raw HTML payloads remain opaque. References retain
+source order and duplicates; lookup selects the first normalized definition.
+
+Consumers must inspect `Status`, `AST`, `Phases`, reference availability and
+`Uncertainty`. Neither nil `Failure` nor empty children/references proves a
+complete parse. Interrupted work yields explicit partial availability; unfinished
+inline work never replaces the completed block tree. Rules must skip unreliable
+syntax and fixes must not edit uncertain regions. The
+[model contract](../internal/parser/model.md) defines typed outcomes, immutable
+accessors, properties and reference ownership in detail.
+
+Spans are snapshot-owned, half-open original byte ranges. Node envelopes, syntax
+markers, logical `Content` and semantic `Value` are distinct: container-prefix gaps
+and trimmed bytes stay in Source. Explicit Exact, Escape, Entity, Normalized and
+PartialTab provenance connects values to original bytes. Synthetic contributions
+may be spanless or carry a source anchor, such as a zero-width EOF span for an
+inserted code-block LF. A partially consumed tab can back overlapping contributions,
+so provenance is not a set of disjoint edits. Semantic offsets are never edit
+offsets. Reference-use destinations/titles are spanless Synthetic projections; authoritative
+ranges belong to their selected definition. Original Unicode, NUL, LF/CRLF/CR and
+missing final newlines are retained. Diagnostic positions are one-based Unicode
+scalar columns (tabs count as one); structural indentation uses four-column tab
+stops. Apply targeted source edits rather than rendering Markdown back from AST.
+
+`Parse` starts a private default operation. For shared document/reparse accounting,
+use `DefaultLimits()`, `NewOperationBudget(limits)` and
+`ParseWithBudget(ctx, source, operation)`. Shared operations serialize parses and
+adapter `ChargeWork` calls; independent operations can run concurrently. The
+[parser accounting specification](engineering/parser-limits.md) defines finite
+byte/depth/construction/work/time limits, validated overrides, cumulative budgets
+and explicit limit-exceeded outcomes. Exhaustion reports `Incomplete`/`Partial`,
+nil `Failure`, `Interruption=LimitExceededReason` and a typed `Limit`, with
+whole-source uncertainty. Source acquisition must enforce admission before copying
+oversized input. Parse admits document size before scanning;
+UTF-8 validation is itself work-budgeted. Once malformed encoding is established,
+its typed original-byte failure precedes cancellation/deadline. Prior exhaustion
+or insufficient validation work can stop before encoding is established. MD094
+controls downstream attribution, never whether admitted bytes are validated.
+
+### Reproduce the core delivery
+
+From the checkout root, the following commands use retained pinned inputs without
+local external paths or runtime parser dependencies (Go 1.27.2+, Python 3.9+):
+
+```sh
+go build ./...
+go test ./...
+go vet ./...
+go test -race ./...
+python3 -B tools/commonmark_corpus.py
+python3 -B tools/commonmark_corpus.py --check
+python3 -B tools/unicode_casefold.py --check
+python3 -B tools/html_entities.py --check
+python3 -B -m unittest discover -s tools -p 'test_commonmark*.py' -v
+python3 -B tools/commonmark_conformance.py --require-complete
+python3 -B tools/commonmark_conformance.py --strict --require-complete
+```
+
+Corpus regeneration must leave tracked files unchanged. Both unfiltered harness
+runs must report 652 pass, zero fail/error/pending and full conformance. The Python
+suite also verifies direct upstream execution in both comparison modes, requiring
+exactly 652 passed and zero failed/errored/skipped. See the
+[contributor validation guide](contributing.md#regenerate-and-verify-the-commonmark-corpus)
+for individual commands, direct-driver reproduction and generated-table provenance,
+and [hardening checks](contributing.md#parser-resource-race-and-fuzz-verification)
+for fuzz and benchmark commands. Race checks require a supported host.
+
+The [corpus provenance](../internal/parser/testdata/commonmark/0.31.2/README.md)
+pins `commonmark/commonmark-spec` commit
+`9103e341a973013013bb1a80e13567007c5cef6f` and `spec.txt` SHA-256
+`257c41ad946f7a1414a499aca402a1aa8fdac3678532266611348c1cf54f4b80`.
+Independent AST/source assertions complement HTML comparisons. The
+[performance record](engineering/parser-performance.md) separates successful parses
+from explicit exhaustion and records measured accounting costs without claiming
+universal linear time or a machine-independent throughput target.
 
 For GFM, retain original table cell counts before semantic padding or truncation, task-marker spans and spelling, strikethrough delimiter spans, and bare versus angle-delimited autolink origins. Keep filtered raw HTML protected and preserve its source. The [extension source contract](engineering/gfm-compatibility.md#extension-source-contract) defines the information shared by lint, fix, inspect, and MCP.
 
-Make frontmatter recognition independently optional for every supported flavor. When enabled, treat recognized headers as opaque blocks, protected from Markdown style rules and directive interpretation. When disabled, parse the source using ordinary flavor rules. The [frontmatter contract](engineering/frontmatter.md) fixes disabled-by-default YAML/TOML recognition, delimiters, metadata semantics and malformed-header protection. Exclude code blocks, inline code, and raw HTML from generic style rules unless a rule explicitly targets those constructs. Preserve LF, CRLF and CR bytes using the [fix contract](engineering/fixes.md). Strict UTF-8 validation is unconditional; MD094 controls error attribution only, never whether bytes are validated.
+Make frontmatter recognition independently optional for every supported flavor. When enabled, treat recognized headers as opaque blocks, protected from Markdown style rules and directive interpretation. When disabled, parse the source using ordinary flavor rules. The [frontmatter contract](engineering/frontmatter.md) fixes disabled-by-default YAML/TOML recognition, delimiters, metadata semantics and malformed-header protection. Exclude code blocks, inline code, and raw HTML from generic style rules unless a rule explicitly targets those constructs. Preserve LF, CRLF and CR bytes using the [fix contract](engineering/fixes.md). For the delivered core, UTF-8 admission and budget precedence follow the parser contract above; MD094 attribution belongs to the future engine.
 
 ## Shared engine and package boundaries
 
@@ -167,7 +259,7 @@ Before the first release, publish rule documentation, install instructions, plat
 ## Remaining work and decisions
 
 1. Implement and verify the accepted contracts, syntax profiles and resource adapters.
-2. Select source-preserving metadata adapters, define exact work metering and the AST property catalog, and complete Git-ignore source discovery in their owning issues.
+2. Select source-preserving metadata adapters, extend parser accounting and the AST property catalog to those adapters, and complete Git-ignore source discovery in their owning issues.
 3. Verify native filesystem write adapters and independent MCP/HTTP interoperability and deployment tests before claiming support.
 4. Choose a supported Go toolchain and maintain exact dependency checksums and licenses for the approved SDK and adapters.
 5. Choose a project license, release platforms and installation channels in release planning; these are outside the audited implementation policy decisions.

@@ -20,9 +20,12 @@ a non-nil context. Both operations stay in memory. `Source` retains arbitrary
 bytes; Parse validates strict UTF-8 before any normal Markdown work. Malformed
 bytes remain available through `result.Source`, with no transcoding/replacement.
 Literal U+FFFD and U+0000 are valid encoding; scanner helpers replace NUL only in
-semantic contributions, never in Source. Encoding failure takes precedence over
-interruption. Rule/io attribution, CLI exits and result-schema adaptation belong
-to callers.
+semantic contributions, never in Source. Document-size admission precedes
+validation; validation itself is work-budgeted.
+Once established, encoding failure takes precedence over cancellation/deadline.
+Prior exhaustion or insufficient validation work can stop before encoding is
+established; see [parser accounting](../../docs/engineering/parser-limits.md).
+Rule/io attribution, CLI exits and result-schema adaptation belong to callers.
 
 | Input/outcome | Status / AST | Reliable data and phase progress |
 | --- | --- | --- |
@@ -77,8 +80,8 @@ The private block/reference phase precedes inline processing. Inlines cannot run
 until the block phase and effective reference lookup are complete. The block pass
 publishes the complete source-ordered registry and first-selection lookup only
 following a successful whole-document scan/finalization. Ordinary paragraphs and nonempty headings finish their block structure before
-inline scanning. Supported text completes; missing inline handlers keep Inlines
-pending and whole-document uncertainty. Definition destination/title and fence-info
+inline scanning. All core inline handlers now complete; historical staged providers described below
+are delivered. Runtime interruption still produces explicit uncertainty. Definition destination/title and fence-info
 semantics are now supplied by the shared decoder; interruption still prevents a
 completed block/inline handoff. A finished definition-only/inline-free document with
 known semantics has both phases complete. Constructed nodes or supplied registry
@@ -88,9 +91,15 @@ Both phases share the caller context. Checks occur at phase boundaries, before
 indexed block lines/EOF, during reference recognition (bounded labels and long
 components), and during bounded inline scanning. Interrupted collection invalidates global registry availability and
 discards unfinished containers rather than finalizing them as normal EOF. Already
-closed root prefixes survive. Strict UTF-8 failure still precedes interruption.
+closed root prefixes survive. Established UTF-8 failure precedes cancellation/deadline,
+subject to size admission and validation budgets above.
 Full work metering, index/UTF-8 checkpoints and budget enforcement are defined
 in [parser accounting](../../docs/engineering/parser-limits.md).
+
+The staged histories below retain intermediate fixture/provider terminology.
+References to missing handlers or pending syntax describe those earlier stages;
+all core block/inline providers are now delivered. Current partial outcomes arise
+from interruption, not missing CommonMark syntax.
 
 ## Staged paragraph lifecycle
 
@@ -195,8 +204,8 @@ retains an open paragraph; scanning resumes after the heading. Failed hash-start
 candidates follow ordinary paragraph handling when no other provider applies;
 there is no blanket hash-start deferral. Four-column starts open code without an
 existing paragraph,
-and deeply indented lines can continue paragraphs. Unsupported containers and
-other unsupported starts keep their conservative boundaries.
+and deeply indented lines can continue paragraphs. All core containers and start
+handlers are now delivered.
 
 Heading Level and Style (`atx`) use the existing property catalog. The envelope
 retains the complete original physical line, indentation and LF/CRLF/CR ending or
@@ -213,7 +222,7 @@ children or semantic Literal are invented.
 
 Empty content established by recognition can join supported breaks/blanks in a
 complete document; supported nonempty headings now complete with Text children.
-Missing handlers retain whole-document uncertainty and adapter-pending outcomes.
+All core handlers are now delivered; interrupted work retains uncertainty.
 Empty children alone never prove empty content or completion. Actual
 Parse/Evaluate renders unchanged example 79, including its empty heading with a
 closer. All 18 original examples 62–79 have independent actual Parse assertions:
@@ -341,8 +350,8 @@ bytes and their ownership never change. Payload stays opaque: no inline children
 reference definitions, directive interpretation, execution or resource acquisition.
 
 HTML-only documents and combinations of established inline-free blocks can complete
-with available empty references and vacuous inline phases. Surrounding unsupported
-syntax retains whole-document uncertainty and pending adapter output. Constructed
+with available empty references and vacuous inline phases. Surrounding core syntax
+is processed by the delivered block and inline handlers. Constructed
 HTML nodes cannot manufacture the private recognition/handoff proof.
 
 TestHTMLUpstreamTargets independently asserts form, node order, physical envelopes
@@ -1050,7 +1059,7 @@ Lookahead is bounded by that grammar and the longest authoritative name.
 Neither generated punctuation nor generated whitespace is redispatched as syntax.
 Escaped ampersands and decoded ampersands do not initiate another decoding pass;
 raw reference-label identity is unchanged. Code/raw HTML payloads are opaque;
-unsupported inline contexts retain pending interpretation. Physical escaped line
+all core inline contexts now have delivered handlers. Physical escaped line
 endings are consumed by the break handler before ordinary Text decoding. Complete table/numeric tests, independent actual Parse/source/
 phase assertions, deterministic interruption and the inline provenance fuzz oracle
 verify these boundaries separately from HTML comparisons.
