@@ -2,11 +2,9 @@
 
 `internal/parser` defines an in-memory CommonMark 0.31.2 model and a staged
 paragraph/block lifecycle with indented/fenced-code, HTML-block, thematic-break,
-ATX, Setext, mixed block-quote/list-item recognition and continuation. It completes documents accounted
-for by code with established info semantics, opaque HTML blocks, thematic breaks,
-empty ATX headings and ASCII blanks, including empty/inline-free quotes and lists. It retains
-paragraph/heading source content and constructs source-preserving
-Text/CodeSpan/break/InlineHTML/autolink/Emphasis/Strong children. ListItems retain
+ATX, Setext, mixed block-quote/list-item recognition and continuation. All core
+block and inline families are recognized, including links and images. It retains
+paragraph/heading source content and constructs source-preserving inline children. ListItems retain
 first-line metadata, nested block children, continuation and closure. Compatible
 siblings acquire List parents and independently derived tightness.
 Leading reference definitions are recognized and normalized document-wide; inline
@@ -1004,6 +1002,16 @@ Never infer offsets from semantic lengths or reconstruct Markdown to locate edit
 Scanner helpers populate partial-tab/NUL mappings; inline Text preserves their
 original-byte provenance. The shared decoder adds Escape/Entity contributions
 without converting semantic lengths into original positions.
+
+`TestSourceConsumerMixedDocuments` traverses independently authored mixed-document
+fixtures in `testdata/source_consumers`. Expected hierarchy, original envelopes,
+content/marker spellings and property/reference component ranges are retained
+separately from Parse output. The same fixtures exercise LF/CRLF/CR with and
+without final endings, scalar coordinates after Unicode and stripped prefixes,
+partial-tab overlap, opaque code/HTML payloads, forward references and duplicate
+first-selection. Inline HTML protects its raw tags; adjacent text still acquires
+ordinary inline syntax and decoding. Detached accessor mutation and repeat parsing
+must preserve both the retained tree and original bytes.
 
 ## Escape and character-reference interpretation
 

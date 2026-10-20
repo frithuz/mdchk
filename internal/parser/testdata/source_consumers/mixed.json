@@ -1,0 +1,497 @@
+{
+  "source": "# éé \\* &amp; \u0000 #\n\n> - **bold *em***  \n>   `raw [fake]: &amp;\n>   tail` <i title=\"*opaque*\">&amp;*live*</i>\\\n>   fin\n\nSetext\n------\n\n>\t\t[fake]: *raw* &amp;\n\n~~~ lang&amp;\n[fake]: *code* &amp;\n~~~\n\n<div>\n[fake]: *html* &amp;\n</div>\n\n***\n\n1. ordered\n\nlast\nline",
+  "nodes": [
+    {
+      "kind": "heading",
+      "span": [0, 21, "# éé \\* &amp; \u0000 #\n"],
+      "content": [
+        [2, 18, "éé \\* &amp; \u0000"]
+      ],
+      "markers": [
+        {
+          "role": "opening",
+          "span": [0, 1, "#"]
+        },
+        {
+          "role": "closing",
+          "span": [19, 20, "#"]
+        }
+      ],
+      "children": [
+        {
+          "kind": "text",
+          "span": [2, 18, "éé \\* &amp; \u0000"],
+          "content": [
+            [2, 18, "éé \\* &amp; \u0000"]
+          ],
+          "markers": [],
+          "children": [],
+          "literal": "éé * & �"
+        }
+      ],
+      "style": "atx"
+    },
+    {
+      "kind": "block-quote",
+      "span": [22, 120, "> - **bold *em***  \n>   `raw [fake]: &amp;\n>   tail` <i title=\"*opaque*\">&amp;*live*</i>\\\n>   fin\n"],
+      "content": [],
+      "markers": [
+        {
+          "role": "quote-prefix",
+          "span": [22, 24, "> "]
+        },
+        {
+          "role": "quote-prefix",
+          "span": [42, 44, "> "]
+        },
+        {
+          "role": "quote-prefix",
+          "span": [65, 67, "> "]
+        },
+        {
+          "role": "quote-prefix",
+          "span": [112, 114, "> "]
+        }
+      ],
+      "children": [
+        {
+          "kind": "list",
+          "span": [24, 120, "- **bold *em***  \n>   `raw [fake]: &amp;\n>   tail` <i title=\"*opaque*\">&amp;*live*</i>\\\n>   fin\n"],
+          "content": [],
+          "markers": [],
+          "children": [
+            {
+              "kind": "list-item",
+              "span": [24, 120, "- **bold *em***  \n>   `raw [fake]: &amp;\n>   tail` <i title=\"*opaque*\">&amp;*live*</i>\\\n>   fin\n"],
+              "content": [],
+              "markers": [
+                {
+                  "role": "item-prefix",
+                  "span": [24, 26, "- "]
+                },
+                {
+                  "role": "item-marker",
+                  "span": [24, 25, "-"]
+                },
+                {
+                  "role": "item-indent",
+                  "span": [44, 46, "  "]
+                },
+                {
+                  "role": "item-indent",
+                  "span": [67, 69, "  "]
+                },
+                {
+                  "role": "item-indent",
+                  "span": [114, 116, "  "]
+                }
+              ],
+              "children": [
+                {
+                  "kind": "paragraph",
+                  "span": [26, 120, "**bold *em***  \n>   `raw [fake]: &amp;\n>   tail` <i title=\"*opaque*\">&amp;*live*</i>\\\n>   fin\n"],
+                  "content": [
+                    [26, 42, "**bold *em***  \n"],
+                    [46, 65, "`raw [fake]: &amp;\n"],
+                    [69, 112, "tail` <i title=\"*opaque*\">&amp;*live*</i>\\\n"],
+                    [116, 119, "fin"]
+                  ],
+                  "markers": [],
+                  "children": [
+                    {
+                      "kind": "strong",
+                      "span": [26, 39, "**bold *em***"],
+                      "content": [
+                        [28, 37, "bold *em*"]
+                      ],
+                      "markers": [
+                        {
+                          "role": "opening",
+                          "span": [26, 28, "**"]
+                        },
+                        {
+                          "role": "closing",
+                          "span": [37, 39, "**"]
+                        }
+                      ],
+                      "children": [
+                        {
+                          "kind": "text",
+                          "span": [28, 33, "bold "],
+                          "content": [
+                            [28, 33, "bold "]
+                          ],
+                          "markers": [],
+                          "children": [],
+                          "literal": "bold "
+                        },
+                        {
+                          "kind": "emphasis",
+                          "span": [33, 37, "*em*"],
+                          "content": [
+                            [34, 36, "em"]
+                          ],
+                          "markers": [
+                            {
+                              "role": "opening",
+                              "span": [33, 34, "*"]
+                            },
+                            {
+                              "role": "closing",
+                              "span": [36, 37, "*"]
+                            }
+                          ],
+                          "children": [
+                            {
+                              "kind": "text",
+                              "span": [34, 36, "em"],
+                              "content": [
+                                [34, 36, "em"]
+                              ],
+                              "markers": [],
+                              "children": [],
+                              "literal": "em"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "hard-break",
+                      "span": [39, 42, "  \n"],
+                      "content": [
+                        [41, 42, "\n"]
+                      ],
+                      "markers": [
+                        {
+                          "role": "hard-break-marker",
+                          "span": [39, 41, "  "]
+                        }
+                      ],
+                      "children": []
+                    },
+                    {
+                      "kind": "code-span",
+                      "span": [46, 74, "`raw [fake]: &amp;\n>   tail`"],
+                      "content": [
+                        [47, 65, "raw [fake]: &amp;\n"],
+                        [69, 73, "tail"]
+                      ],
+                      "markers": [
+                        {
+                          "role": "opening",
+                          "span": [46, 47, "`"]
+                        },
+                        {
+                          "role": "closing",
+                          "span": [73, 74, "`"]
+                        }
+                      ],
+                      "children": [],
+                      "literal": "raw [fake]: &amp; tail"
+                    },
+                    {
+                      "kind": "text",
+                      "span": [74, 75, " "],
+                      "content": [
+                        [74, 75, " "]
+                      ],
+                      "markers": [],
+                      "children": [],
+                      "literal": " "
+                    },
+                    {
+                      "kind": "inline-html",
+                      "span": [75, 95, "<i title=\"*opaque*\">"],
+                      "content": [
+                        [75, 95, "<i title=\"*opaque*\">"]
+                      ],
+                      "markers": [],
+                      "children": []
+                    },
+                    {
+                      "kind": "text",
+                      "span": [95, 100, "&amp;"],
+                      "content": [
+                        [95, 100, "&amp;"]
+                      ],
+                      "markers": [],
+                      "children": [],
+                      "literal": "&"
+                    },
+                    {
+                      "kind": "emphasis",
+                      "span": [100, 106, "*live*"],
+                      "content": [
+                        [101, 105, "live"]
+                      ],
+                      "markers": [
+                        {
+                          "role": "opening",
+                          "span": [100, 101, "*"]
+                        },
+                        {
+                          "role": "closing",
+                          "span": [105, 106, "*"]
+                        }
+                      ],
+                      "children": [
+                        {
+                          "kind": "text",
+                          "span": [101, 105, "live"],
+                          "content": [
+                            [101, 105, "live"]
+                          ],
+                          "markers": [],
+                          "children": [],
+                          "literal": "live"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "inline-html",
+                      "span": [106, 110, "</i>"],
+                      "content": [
+                        [106, 110, "</i>"]
+                      ],
+                      "markers": [],
+                      "children": []
+                    },
+                    {
+                      "kind": "hard-break",
+                      "span": [110, 112, "\\\n"],
+                      "content": [
+                        [111, 112, "\n"]
+                      ],
+                      "markers": [
+                        {
+                          "role": "hard-break-marker",
+                          "span": [110, 111, "\\"]
+                        }
+                      ],
+                      "children": []
+                    },
+                    {
+                      "kind": "text",
+                      "span": [116, 119, "fin"],
+                      "content": [
+                        [116, 119, "fin"]
+                      ],
+                      "markers": [],
+                      "children": [],
+                      "literal": "fin"
+                    }
+                  ]
+                }
+              ],
+              "values": {
+                "prefix": [
+                  [24, 26, "- "]
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "span": [121, 135, "Setext\n------\n"],
+      "content": [
+        [121, 127, "Setext"]
+      ],
+      "markers": [
+        {
+          "role": "underline",
+          "span": [128, 134, "------"]
+        }
+      ],
+      "children": [
+        {
+          "kind": "text",
+          "span": [121, 127, "Setext"],
+          "content": [
+            [121, 127, "Setext"]
+          ],
+          "markers": [],
+          "children": [],
+          "literal": "Setext"
+        }
+      ],
+      "style": "setext"
+    },
+    {
+      "kind": "block-quote",
+      "span": [136, 159, ">\t\t[fake]: *raw* &amp;\n"],
+      "content": [],
+      "markers": [
+        {
+          "role": "quote-prefix",
+          "span": [136, 138, ">\t"]
+        }
+      ],
+      "children": [
+        {
+          "kind": "code-block",
+          "span": [137, 159, "\t\t[fake]: *raw* &amp;\n"],
+          "content": [
+            [138, 139, "\t"],
+            [139, 158, "[fake]: *raw* &amp;"],
+            [158, 159, "\n"]
+          ],
+          "markers": [
+            {
+              "role": "indent-prefix",
+              "span": [137, 139, "\t\t"]
+            }
+          ],
+          "children": [],
+          "literal": "  [fake]: *raw* &amp;\n",
+          "style": "indented"
+        }
+      ]
+    },
+    {
+      "kind": "code-block",
+      "span": [160, 199, "~~~ lang&amp;\n[fake]: *code* &amp;\n~~~\n"],
+      "content": [
+        [174, 195, "[fake]: *code* &amp;\n"]
+      ],
+      "markers": [
+        {
+          "role": "opening",
+          "span": [160, 163, "~~~"]
+        },
+        {
+          "role": "closing",
+          "span": [195, 198, "~~~"]
+        }
+      ],
+      "children": [],
+      "literal": "[fake]: *code* &amp;\n",
+      "style": "fenced",
+      "info": "lang&",
+      "values": {
+        "info": [
+          [164, 173, "lang&amp;"]
+        ]
+      }
+    },
+    {
+      "kind": "html-block",
+      "span": [200, 234, "<div>\n[fake]: *html* &amp;\n</div>\n"],
+      "content": [
+        [200, 234, "<div>\n[fake]: *html* &amp;\n</div>\n"]
+      ],
+      "markers": [],
+      "children": []
+    },
+    {
+      "kind": "thematic-break",
+      "span": [235, 239, "***\n"],
+      "content": [],
+      "markers": [
+        {
+          "role": "thematic-marker",
+          "span": [235, 238, "***"]
+        }
+      ],
+      "children": []
+    },
+    {
+      "kind": "list",
+      "span": [240, 252, "1. ordered\n\n"],
+      "content": [],
+      "markers": [],
+      "children": [
+        {
+          "kind": "list-item",
+          "span": [240, 252, "1. ordered\n\n"],
+          "content": [],
+          "markers": [
+            {
+              "role": "item-prefix",
+              "span": [240, 243, "1. "]
+            },
+            {
+              "role": "item-marker",
+              "span": [240, 242, "1."]
+            },
+            {
+              "role": "item-blank",
+              "span": [251, 252, "\n"]
+            }
+          ],
+          "children": [
+            {
+              "kind": "paragraph",
+              "span": [243, 251, "ordered\n"],
+              "content": [
+                [243, 250, "ordered"]
+              ],
+              "markers": [],
+              "children": [
+                {
+                  "kind": "text",
+                  "span": [243, 250, "ordered"],
+                  "content": [
+                    [243, 250, "ordered"]
+                  ],
+                  "markers": [],
+                  "children": [],
+                  "literal": "ordered"
+                }
+              ]
+            }
+          ],
+          "values": {
+            "prefix": [
+              [240, 243, "1. "]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "span": [252, 261, "last\nline"],
+      "content": [
+        [252, 257, "last\n"],
+        [257, 261, "line"]
+      ],
+      "markers": [],
+      "children": [
+        {
+          "kind": "text",
+          "span": [252, 256, "last"],
+          "content": [
+            [252, 256, "last"]
+          ],
+          "markers": [],
+          "children": [],
+          "literal": "last"
+        },
+        {
+          "kind": "soft-break",
+          "span": [256, 257, "\n"],
+          "content": [
+            [256, 257, "\n"]
+          ],
+          "markers": [],
+          "children": []
+        },
+        {
+          "kind": "text",
+          "span": [257, 261, "line"],
+          "content": [
+            [257, 261, "line"]
+          ],
+          "markers": [],
+          "children": [],
+          "literal": "line"
+        }
+      ]
+    }
+  ],
+  "references": []
+}

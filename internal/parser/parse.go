@@ -76,53 +76,30 @@ type ParseResult struct {
 	Interruption Reason // empty means no interruption
 }
 
-// Parse implements the core CommonMark foundation, with extensions/frontmatter
-// recognition disabled. Documents of blanks, indented/fenced code with known
-// info semantics, opaque HTML blocks, thematic breaks and empty ATX headings
-// and empty or inline-free nested block quotes and lists are fully parsed.
-// Item indentation and quote markers match before leaf continuation; only
-// paragraphs may continue lazily. Logical leaf segments exclude prefixes on the
-// original Source.
-// Eligible paragraphs promote to Setext headings with distinct raw content and
-// underline ranges. Fenced payload is literal; info has decoded escape/entity
-// semantics with original source contributions. Other input retains staged blocks
-// and whole-document
-// uncertainty. Leading definitions are collected in source order before inline
-// work, with raw-label Unicode folding and first-definition lookup. Ordinary
-// text-bearing blocks acquire source-preserving Text, CodeSpan, break, raw
-// InlineHTML, resolved inline/reference/autolink and nested Emphasis/Strong children. Missing
-// inline handlers retain pending interpretation. Text, definition destination/title and
-// fence-info values decode escapes/entities once, preserving raw label identity.
-// Code spans consume opaque raw payloads before Text decoding, normalize physical
-// endings and conditional ASCII edge spaces, retaining original payload/markers.
-// Eligible original endings produce SoftBreak/HardBreak with distinct marker and
-// ending ranges; terminal block endings and decoded characters create no breaks.
-// Angle URI/email autolinks consume literal interiors, with distinct source-backed
-// labels/destinations and synthetic email prefixes. Invalid forms resume ordinary
-// interpretation. Inline HTML follows the pinned raw grammar, consuming opaque
-// original Content with confirmed-comment opening/closing markers. Malformed
-// HTML resumes ordinary interpretation. Bare autolink forms stay Text.
-// Unicode-aware delimiter pairing and iterative nested construction retain exact
-// consumed/leftover markers and raw parent/child Content. Scoped stack boundaries
-// preserve earlier delimiter state while resolving inline-link labels. Active
-// bracket openers prevent nested links; destinations/titles decode once with exact
-// component ranges. Reference forms resolve against the completed first-definition
-// registry with raw-label folding, contained use syntax and spanless effective
-// value projections. Unresolved references are literal; images remain pending.
-// Definition-only input with known semantics completes vacuous inline work.
-// ListItems retain marker/prefix facts and ordered nested block children, with
-// tab-aware continuation, blank boundaries, sibling ownership and closure. They
-// acquire List parents, initial ordered starts and independently derived Tight
-// facts. Supported text and inline-free lists complete; interpretation needing
-// later providers retains its staged partial outcome. Non-rendered definitions
-// preserve private list boundaries without becoming child nodes.
+// Parse recognizes core CommonMark 0.31.2 with extensions/frontmatter disabled.
+// It retains original-byte envelopes, markers and logical Content separately
+// from decoded semantic values. Container prefixes are source gaps, not payload;
+// partial tabs retain explicit overlapping source provenance.
 //
-// The strict UTF-8 gate precedes Markdown work and retains malformed bytes without
-// substitution. Its failure takes precedence over context interruption. Callers
-// must pass a non-nil context. Cancellation is checked at phase boundaries and
-// before block lines, during reference recognition and bounded inline scanning.
-// Full work metering and index/UTF-8 checkpoints belong to #31. Phases must
-// later share the caller's operation budget across phases and candidate reparses.
+// Block recognition precedes inline work. All reference definitions, including
+// duplicates, retain original components in source order; normalized lookup uses
+// the first definition. Inline/reference links and images resolve only after that
+// document-wide inventory completes. Effective reference values are spanless
+// projections; the selected definition owns their original-byte provenance.
+// Text, destination/title and fence-info values decode escapes/entities once.
+// Code and raw HTML payloads remain opaque. Code spans normalize physical endings
+// and conditional edge spaces while retaining their original payload and markers.
+// Breaks retain original physical endings separately from hard-break markers.
+//
+// Complete results affirm both phases, AST and reference availability, even for
+// empty or definition-only input. A nil Failure or empty tree alone never proves
+// completion. The source snapshot remains available on every outcome. Strict
+// UTF-8 validation precedes Markdown work and context interruption; invalid bytes
+// retain a typed failure at the original byte offset without source substitution.
+// Callers must pass a non-nil context. Cancellation/deadline checks prevent
+// unfinished inline trees or reference inventories from becoming complete data.
+// Full work metering and index/UTF-8 checkpoints belong to #31.
+
 func Parse(ctx context.Context, source Source) ParseResult {
 	r := ParseResult{
 		Source: source, Status: Failed, AST: Unavailable,

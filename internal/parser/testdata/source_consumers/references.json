@@ -1,0 +1,719 @@
+{
+  "source": "> # [inline](<u&amp;> \"t\\*\") ![img](i)\n>\n> [full][ID] ![alt][ID]\n>\n> [id][] ![id][]\n>\n> [id] ![id]\n>\n> <https://e.test> <a@b.test>\n\n[id]: </first&amp;> \"T\\*\"\n[ID]: /ignored \"second\"",
+  "nodes": [
+    {
+      "kind": "block-quote",
+      "span": [0, 131, "> # [inline](<u&amp;> \"t\\*\") ![img](i)\n>\n> [full][ID] ![alt][ID]\n>\n> [id][] ![id][]\n>\n> [id] ![id]\n>\n> <https://e.test> <a@b.test>\n"],
+      "content": [],
+      "markers": [
+        {
+          "role": "quote-prefix",
+          "span": [0, 2, "> "]
+        },
+        {
+          "role": "quote-prefix",
+          "span": [39, 40, ">"]
+        },
+        {
+          "role": "quote-prefix",
+          "span": [41, 43, "> "]
+        },
+        {
+          "role": "quote-prefix",
+          "span": [65, 66, ">"]
+        },
+        {
+          "role": "quote-prefix",
+          "span": [67, 69, "> "]
+        },
+        {
+          "role": "quote-prefix",
+          "span": [84, 85, ">"]
+        },
+        {
+          "role": "quote-prefix",
+          "span": [86, 88, "> "]
+        },
+        {
+          "role": "quote-prefix",
+          "span": [99, 100, ">"]
+        },
+        {
+          "role": "quote-prefix",
+          "span": [101, 103, "> "]
+        }
+      ],
+      "children": [
+        {
+          "kind": "heading",
+          "span": [2, 39, "# [inline](<u&amp;> \"t\\*\") ![img](i)\n"],
+          "content": [
+            [4, 38, "[inline](<u&amp;> \"t\\*\") ![img](i)"]
+          ],
+          "markers": [
+            {
+              "role": "opening",
+              "span": [2, 3, "#"]
+            }
+          ],
+          "children": [
+            {
+              "kind": "link",
+              "span": [4, 28, "[inline](<u&amp;> \"t\\*\")"],
+              "content": [
+                [5, 11, "inline"]
+              ],
+              "markers": [
+                {
+                  "role": "label-open",
+                  "span": [4, 5, "["]
+                },
+                {
+                  "role": "label-close",
+                  "span": [11, 12, "]"]
+                },
+                {
+                  "role": "link-open",
+                  "span": [12, 13, "("]
+                },
+                {
+                  "role": "destination-open",
+                  "span": [13, 14, "<"]
+                },
+                {
+                  "role": "destination-close",
+                  "span": [20, 21, ">"]
+                },
+                {
+                  "role": "title-open",
+                  "span": [22, 23, "\""]
+                },
+                {
+                  "role": "title-close",
+                  "span": [26, 27, "\""]
+                },
+                {
+                  "role": "link-close",
+                  "span": [27, 28, ")"]
+                }
+              ],
+              "children": [
+                {
+                  "kind": "text",
+                  "span": [5, 11, "inline"],
+                  "content": [
+                    [5, 11, "inline"]
+                  ],
+                  "markers": [],
+                  "children": [],
+                  "literal": "inline"
+                }
+              ],
+              "origin": "inline",
+              "destination": "u&",
+              "title": "t*",
+              "values": {
+                "label": [
+                  [5, 11, "inline"]
+                ],
+                "destination": [
+                  [14, 20, "u&amp;"]
+                ],
+                "title": [
+                  [23, 26, "t\\*"]
+                ]
+              }
+            },
+            {
+              "kind": "text",
+              "span": [28, 29, " "],
+              "content": [
+                [28, 29, " "]
+              ],
+              "markers": [],
+              "children": [],
+              "literal": " "
+            },
+            {
+              "kind": "image",
+              "span": [29, 38, "![img](i)"],
+              "content": [
+                [31, 34, "img"]
+              ],
+              "markers": [
+                {
+                  "role": "image-marker",
+                  "span": [29, 30, "!"]
+                },
+                {
+                  "role": "label-open",
+                  "span": [30, 31, "["]
+                },
+                {
+                  "role": "label-close",
+                  "span": [34, 35, "]"]
+                },
+                {
+                  "role": "link-open",
+                  "span": [35, 36, "("]
+                },
+                {
+                  "role": "link-close",
+                  "span": [37, 38, ")"]
+                }
+              ],
+              "children": [
+                {
+                  "kind": "text",
+                  "span": [31, 34, "img"],
+                  "content": [
+                    [31, 34, "img"]
+                  ],
+                  "markers": [],
+                  "children": [],
+                  "literal": "img"
+                }
+              ],
+              "origin": "inline",
+              "destination": "i",
+              "title": "",
+              "values": {
+                "label": [
+                  [31, 34, "img"]
+                ],
+                "destination": [
+                  [36, 37, "i"]
+                ]
+              }
+            }
+          ],
+          "style": "atx"
+        },
+        {
+          "kind": "paragraph",
+          "span": [43, 65, "[full][ID] ![alt][ID]\n"],
+          "content": [
+            [43, 64, "[full][ID] ![alt][ID]"]
+          ],
+          "markers": [],
+          "children": [
+            {
+              "kind": "link",
+              "span": [43, 53, "[full][ID]"],
+              "content": [
+                [44, 48, "full"]
+              ],
+              "markers": [
+                {
+                  "role": "label-open",
+                  "span": [43, 44, "["]
+                },
+                {
+                  "role": "label-close",
+                  "span": [48, 49, "]"]
+                },
+                {
+                  "role": "reference-open",
+                  "span": [49, 50, "["]
+                },
+                {
+                  "role": "reference-close",
+                  "span": [52, 53, "]"]
+                }
+              ],
+              "children": [
+                {
+                  "kind": "text",
+                  "span": [44, 48, "full"],
+                  "content": [
+                    [44, 48, "full"]
+                  ],
+                  "markers": [],
+                  "children": [],
+                  "literal": "full"
+                }
+              ],
+              "origin": "full",
+              "destination": "/first&",
+              "title": "T*",
+              "values": {
+                "label": [
+                  [44, 48, "full"]
+                ],
+                "reference-label": [
+                  [50, 52, "ID"]
+                ]
+              }
+            },
+            {
+              "kind": "text",
+              "span": [53, 54, " "],
+              "content": [
+                [53, 54, " "]
+              ],
+              "markers": [],
+              "children": [],
+              "literal": " "
+            },
+            {
+              "kind": "image",
+              "span": [54, 64, "![alt][ID]"],
+              "content": [
+                [56, 59, "alt"]
+              ],
+              "markers": [
+                {
+                  "role": "image-marker",
+                  "span": [54, 55, "!"]
+                },
+                {
+                  "role": "label-open",
+                  "span": [55, 56, "["]
+                },
+                {
+                  "role": "label-close",
+                  "span": [59, 60, "]"]
+                },
+                {
+                  "role": "reference-open",
+                  "span": [60, 61, "["]
+                },
+                {
+                  "role": "reference-close",
+                  "span": [63, 64, "]"]
+                }
+              ],
+              "children": [
+                {
+                  "kind": "text",
+                  "span": [56, 59, "alt"],
+                  "content": [
+                    [56, 59, "alt"]
+                  ],
+                  "markers": [],
+                  "children": [],
+                  "literal": "alt"
+                }
+              ],
+              "origin": "full",
+              "destination": "/first&",
+              "title": "T*",
+              "values": {
+                "label": [
+                  [56, 59, "alt"]
+                ],
+                "reference-label": [
+                  [61, 63, "ID"]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "kind": "paragraph",
+          "span": [69, 84, "[id][] ![id][]\n"],
+          "content": [
+            [69, 83, "[id][] ![id][]"]
+          ],
+          "markers": [],
+          "children": [
+            {
+              "kind": "link",
+              "span": [69, 75, "[id][]"],
+              "content": [
+                [70, 72, "id"]
+              ],
+              "markers": [
+                {
+                  "role": "label-open",
+                  "span": [69, 70, "["]
+                },
+                {
+                  "role": "label-close",
+                  "span": [72, 73, "]"]
+                },
+                {
+                  "role": "reference-open",
+                  "span": [73, 74, "["]
+                },
+                {
+                  "role": "reference-close",
+                  "span": [74, 75, "]"]
+                }
+              ],
+              "children": [
+                {
+                  "kind": "text",
+                  "span": [70, 72, "id"],
+                  "content": [
+                    [70, 72, "id"]
+                  ],
+                  "markers": [],
+                  "children": [],
+                  "literal": "id"
+                }
+              ],
+              "origin": "collapsed",
+              "destination": "/first&",
+              "title": "T*",
+              "values": {
+                "label": [
+                  [70, 72, "id"]
+                ],
+                "reference-label": [
+                  [74, 74, ""]
+                ]
+              }
+            },
+            {
+              "kind": "text",
+              "span": [75, 76, " "],
+              "content": [
+                [75, 76, " "]
+              ],
+              "markers": [],
+              "children": [],
+              "literal": " "
+            },
+            {
+              "kind": "image",
+              "span": [76, 83, "![id][]"],
+              "content": [
+                [78, 80, "id"]
+              ],
+              "markers": [
+                {
+                  "role": "image-marker",
+                  "span": [76, 77, "!"]
+                },
+                {
+                  "role": "label-open",
+                  "span": [77, 78, "["]
+                },
+                {
+                  "role": "label-close",
+                  "span": [80, 81, "]"]
+                },
+                {
+                  "role": "reference-open",
+                  "span": [81, 82, "["]
+                },
+                {
+                  "role": "reference-close",
+                  "span": [82, 83, "]"]
+                }
+              ],
+              "children": [
+                {
+                  "kind": "text",
+                  "span": [78, 80, "id"],
+                  "content": [
+                    [78, 80, "id"]
+                  ],
+                  "markers": [],
+                  "children": [],
+                  "literal": "id"
+                }
+              ],
+              "origin": "collapsed",
+              "destination": "/first&",
+              "title": "T*",
+              "values": {
+                "label": [
+                  [78, 80, "id"]
+                ],
+                "reference-label": [
+                  [82, 82, ""]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "kind": "paragraph",
+          "span": [88, 99, "[id] ![id]\n"],
+          "content": [
+            [88, 98, "[id] ![id]"]
+          ],
+          "markers": [],
+          "children": [
+            {
+              "kind": "link",
+              "span": [88, 92, "[id]"],
+              "content": [
+                [89, 91, "id"]
+              ],
+              "markers": [
+                {
+                  "role": "label-open",
+                  "span": [88, 89, "["]
+                },
+                {
+                  "role": "label-close",
+                  "span": [91, 92, "]"]
+                }
+              ],
+              "children": [
+                {
+                  "kind": "text",
+                  "span": [89, 91, "id"],
+                  "content": [
+                    [89, 91, "id"]
+                  ],
+                  "markers": [],
+                  "children": [],
+                  "literal": "id"
+                }
+              ],
+              "origin": "shortcut",
+              "destination": "/first&",
+              "title": "T*",
+              "values": {
+                "label": [
+                  [89, 91, "id"]
+                ]
+              }
+            },
+            {
+              "kind": "text",
+              "span": [92, 93, " "],
+              "content": [
+                [92, 93, " "]
+              ],
+              "markers": [],
+              "children": [],
+              "literal": " "
+            },
+            {
+              "kind": "image",
+              "span": [93, 98, "![id]"],
+              "content": [
+                [95, 97, "id"]
+              ],
+              "markers": [
+                {
+                  "role": "image-marker",
+                  "span": [93, 94, "!"]
+                },
+                {
+                  "role": "label-open",
+                  "span": [94, 95, "["]
+                },
+                {
+                  "role": "label-close",
+                  "span": [97, 98, "]"]
+                }
+              ],
+              "children": [
+                {
+                  "kind": "text",
+                  "span": [95, 97, "id"],
+                  "content": [
+                    [95, 97, "id"]
+                  ],
+                  "markers": [],
+                  "children": [],
+                  "literal": "id"
+                }
+              ],
+              "origin": "shortcut",
+              "destination": "/first&",
+              "title": "T*",
+              "values": {
+                "label": [
+                  [95, 97, "id"]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "kind": "paragraph",
+          "span": [103, 131, "<https://e.test> <a@b.test>\n"],
+          "content": [
+            [103, 130, "<https://e.test> <a@b.test>"]
+          ],
+          "markers": [],
+          "children": [
+            {
+              "kind": "link",
+              "span": [103, 119, "<https://e.test>"],
+              "content": [
+                [104, 118, "https://e.test"]
+              ],
+              "markers": [
+                {
+                  "role": "destination-open",
+                  "span": [103, 104, "<"]
+                },
+                {
+                  "role": "destination-close",
+                  "span": [118, 119, ">"]
+                }
+              ],
+              "children": [
+                {
+                  "kind": "text",
+                  "span": [104, 118, "https://e.test"],
+                  "content": [
+                    [104, 118, "https://e.test"]
+                  ],
+                  "markers": [],
+                  "children": [],
+                  "literal": "https://e.test"
+                }
+              ],
+              "origin": "autolink",
+              "destination": "https://e.test",
+              "values": {
+                "label": [
+                  [104, 118, "https://e.test"]
+                ],
+                "destination": [
+                  [104, 118, "https://e.test"]
+                ]
+              }
+            },
+            {
+              "kind": "text",
+              "span": [119, 120, " "],
+              "content": [
+                [119, 120, " "]
+              ],
+              "markers": [],
+              "children": [],
+              "literal": " "
+            },
+            {
+              "kind": "link",
+              "span": [120, 130, "<a@b.test>"],
+              "content": [
+                [121, 129, "a@b.test"]
+              ],
+              "markers": [
+                {
+                  "role": "destination-open",
+                  "span": [120, 121, "<"]
+                },
+                {
+                  "role": "destination-close",
+                  "span": [129, 130, ">"]
+                }
+              ],
+              "children": [
+                {
+                  "kind": "text",
+                  "span": [121, 129, "a@b.test"],
+                  "content": [
+                    [121, 129, "a@b.test"]
+                  ],
+                  "markers": [],
+                  "children": [],
+                  "literal": "a@b.test"
+                }
+              ],
+              "origin": "autolink",
+              "destination": "mailto:a@b.test",
+              "values": {
+                "label": [
+                  [121, 129, "a@b.test"]
+                ],
+                "destination": [
+                  [121, 129, "a@b.test"]
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "references": [
+    {
+      "span": [132, 158, "[id]: </first&amp;> \"T\\*\"\n"],
+      "label": "id",
+      "destination": "/first&",
+      "title": "T*",
+      "markers": [
+        {
+          "role": "label-open",
+          "span": [132, 133, "["]
+        },
+        {
+          "role": "label-close",
+          "span": [135, 136, "]"]
+        },
+        {
+          "role": "definition-colon",
+          "span": [136, 137, ":"]
+        },
+        {
+          "role": "destination-open",
+          "span": [138, 139, "<"]
+        },
+        {
+          "role": "destination-close",
+          "span": [150, 151, ">"]
+        },
+        {
+          "role": "title-open",
+          "span": [152, 153, "\""]
+        },
+        {
+          "role": "title-close",
+          "span": [156, 157, "\""]
+        }
+      ],
+      "values": {
+        "label": [
+          [133, 135, "id"]
+        ],
+        "destination": [
+          [139, 150, "/first&amp;"]
+        ],
+        "title": [
+          [153, 156, "T\\*"]
+        ]
+      }
+    },
+    {
+      "span": [158, 181, "[ID]: /ignored \"second\""],
+      "label": "ID",
+      "destination": "/ignored",
+      "title": "second",
+      "markers": [
+        {
+          "role": "label-open",
+          "span": [158, 159, "["]
+        },
+        {
+          "role": "label-close",
+          "span": [161, 162, "]"]
+        },
+        {
+          "role": "definition-colon",
+          "span": [162, 163, ":"]
+        },
+        {
+          "role": "title-open",
+          "span": [173, 174, "\""]
+        },
+        {
+          "role": "title-close",
+          "span": [180, 181, "\""]
+        }
+      ],
+      "values": {
+        "label": [
+          [159, 161, "ID"]
+        ],
+        "destination": [
+          [164, 172, "/ignored"]
+        ],
+        "title": [
+          [174, 180, "second"]
+        ]
+      }
+    }
+  ]
+}
