@@ -31,7 +31,8 @@ scalar spelling retains original header/body bytes, including significant traili
 newlines, using immutable shared source storage across alias uses. Explicit YAML core tags determine scalar
 kind; tagged numbers and booleans still require decimal and true/false spelling.
 Unknown rule IDs, option schemas, domains, patterns and capabilities remain the
-responsibility of #218. Successful syntax decoding alone grants no availability.
+responsibility of semantic validation. Successful syntax decoding alone grants no
+availability.
 
 The adapter enforces the accepted default 1 MiB configuration byte limit and 64
 container levels, preflighting library tokens before recursive parsing and
@@ -58,10 +59,83 @@ and one optional chomping indicator, in either order, as YAML 1.2.2 specifies.
 
 `DecodeJSON` and explicit-file `Load` remain unavailable stubs: every call returns
 a nil definition and recognizable `ErrUnavailable`. `Load` performs no IO.
-Complete catalog metadata belongs to #215, semantic and capability validation to
-#218, exclusion matching to #220, and bounded discovery and ancestor policy
-resolution to #219. The YAML examples can now be decoded structurally; their
-semantic and integration outcomes remain future validation fixtures.
+Complete catalog metadata, semantic and capability validation, and exclusion
+matching are implemented independently of loading. Bounded discovery and
+ancestor policy resolution remain #219 work. The YAML examples can be decoded
+and validated in memory; filesystem integration remains pending.
+
+## Semantic validation API
+
+`DecodeObject(map[string]any)` supplies the same owned syntax boundary as YAML
+for already typed in-memory input. Its exact supported types are `bool`, `string`,
+`int`, finite `float64`, `[]string`, `[]any`, and `map[string]any`. Named types,
+null values (including nil maps/slices), invalid UTF-8, coercions, and cyclic
+containers are rejected. Empty nonnil mappings/sequences are supported. A JSON
+transport must preserve integer versus number kinds before calling this API;
+ordinary JSON decoding to float64 does not satisfy the integer schema. Mapping
+keys are sorted for deterministic object diagnostics. Object origins have
+property paths and no filename, textual position, or invented scalar spelling.
+Depth, syntax-node and expansion-work budgets bound traversal. Input maps and
+slices are borrowed only during decoding; the returned snapshot retains no
+mutable input collection. Callers must not mutate input concurrently with decode.
+Raw-byte `DecodeJSON` remains unavailable: duplicate names, raw UTF-8, and
+surrogate-pair checks belong to the future transport boundary.
+
+`ValidateDefinition(definition, registry, providers)` performs the entire schema
+and policy-domain check without admitting execution. Both decoders feed this
+same validator. It reconstructs supplied settings from `Definition.Syntax()`;
+mutating the passive fields or `Provenance` does not change validation. Manually
+constructed passive definitions without owned syntax are rejected. The registry
+must retain all accepted catalog IDs, option schemas and enablement defaults;
+use `engine.NewCatalogRegistry` with the build's actual registration subset.
+Synthetic partial or altered catalogs are rejected. Rule domain resolution uses
+`Registry.ResolveSettings` and its validation providers, including disabled-rule
+and ancestor-only hostname validation. Patterns use `CompilePatterns` for the
+entire exclusion and slide lists before returning a candidate.
+
+The returned `Validated` is an immutable schema-valid snapshot, suitable for an
+ancestor consulted only for policy. Unavailable ancestor flavors, rule
+implementations and optional contexts do not fail this layer. No settings become
+inherited. `Validated.Permissions(inherited)` snapshots inherited and own false
+values with all governing origins. Its zero-value input permits everything.
+Only directive and nested-exclusion denials combine; an explicit child true
+cannot reopen them. Discovery supplies the bounded ancestor order and rejects
+prohibited descendant exclusion additions; neither operation is performed here.
+
+`Validated.Admit(capabilities, inherited)` checks the selected definition against
+effective permissions and returns a fresh owned `Resolution`, or nil on any
+failure. Config validation uses this same admission for every selected definition;
+it does not run Markdown checks or report unavailable unmentioned default rules
+as coverage. Rule availability comes only from executable registrations and the
+existing MD094 core gate. GFM selected by omission still requires GFM support.
+Global directive processing is required unless an own or inherited global false
+is effective; per-rule permission denials do not substitute for that global gate.
+
+`Capabilities` is an explicit trusted assertion by the build adapter, independent
+of default settings. `Pandoc3121FullProfile` specifically asserts the complete
+pinned 3.12.1 profile, including all 37 enabled and 37 disabled extension states;
+generic Pandoc or partial extension support cannot set it. Separate dimensions
+cover CommonMark/GFM, directive processing, YAML and TOML recognition, metadata
+interpretation, Quarto recognition, slide annotation, index handling and each
+anchor style. An explicit index basename also requires the pure active-adapter
+`RepresentIndexFile` predicate. No capability flag implements those features or
+grants resource access. Explicit resource values equal to built-ins remain
+requests; an empty resource mapping requests neither field. Disabled recognition
+needs no format capability. A nonempty slide list requests annotation directly.
+Available enabled rules requesting `frontmatter_title: true` additionally require
+metadata interpretation. Context selection never enables rules or another context.
+
+`Resolution` owns effective settings/options, rule explicitness/availability,
+explicit-field origins, and separate own/effective permission denial origins.
+A missing origin denotes a built-in or catalog default, including omitted rule
+options; present values equal to defaults remain explicit. Compiled pattern
+matchers are immutable. Result collection mutations do not affect another
+admission or validation. `ValidationError` locates semantic/capability failures;
+`engine.SettingError` identifies rule, option and optional zero-based list element.
+Both preserve provider causes through `errors.Is`/`errors.As`. YAML diagnostics
+retain source positions, including alias use sites; object diagnostics retain
+only property paths. No validation step calls a parser, rule check, filesystem,
+reporter or write adapter, and failures return no partial usable resolution.
 
 ## Confirmed requirements
 

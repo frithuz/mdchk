@@ -135,8 +135,12 @@ func (s OptionSpec) validate(v any) error {
 	case Strings:
 		xs, ok := v.([]string)
 		valid = ok && len(xs) >= s.MinItems
-		for _, x := range xs {
-			valid = valid && (len(s.Choices) == 0 || slices.Contains(s.Choices, x))
+		if valid {
+			for i, x := range xs {
+				if len(s.Choices) > 0 && !slices.Contains(s.Choices, x) {
+					return &SettingError{Element: &i, Err: fmt.Errorf("value outside %s option domain", s.Kind)}
+				}
+			}
 		}
 	}
 	if !valid {
@@ -153,13 +157,13 @@ func (s OptionSpec) validate(v any) error {
 		}
 	}
 	if s.Domain == UnicodeScalarHex {
-		for _, x := range v.([]string) {
+		for i, x := range v.([]string) {
 			if x == "" || strings.IndexFunc(x, func(r rune) bool { return !(r >= '0' && r <= '9' || r >= 'a' && r <= 'f' || r >= 'A' && r <= 'F') }) >= 0 {
-				return fmt.Errorf("expected hexadecimal Unicode scalar")
+				return &SettingError{Element: &i, Err: fmt.Errorf("expected hexadecimal Unicode scalar")}
 			}
 			n, err := strconv.ParseUint(x, 16, 32)
 			if err != nil || n > utf8.MaxRune || n >= 0xD800 && n <= 0xDFFF {
-				return fmt.Errorf("expected hexadecimal Unicode scalar")
+				return &SettingError{Element: &i, Err: fmt.Errorf("expected hexadecimal Unicode scalar")}
 			}
 		}
 	}
@@ -173,10 +177,16 @@ func (s OptionSchema) resolve(o Options, providers ValidationProviders) (Options
 	for _, k := range sortedKeys(o) {
 		spec, ok := s[k]
 		if !ok {
-			return nil, fmt.Errorf("unknown option %q", k)
+			return nil, &SettingError{Option: k, Err: fmt.Errorf("unknown option %q", k)}
 		}
 		if err := spec.validate(o[k]); err != nil {
-			return nil, fmt.Errorf("option %q: %w", k, err)
+			var detail *SettingError
+			if errors.As(err, &detail) {
+				owned := *detail
+				owned.Option = k
+				return nil, &owned
+			}
+			return nil, &SettingError{Option: k, Err: err}
 		}
 		r[k] = cloneValue(o[k])
 	}
@@ -184,12 +194,12 @@ func (s OptionSchema) resolve(o Options, providers ValidationProviders) (Options
 		if s[k].Domain != DNSHostname {
 			continue
 		}
-		for _, host := range r[k].([]string) {
+		for i, host := range r[k].([]string) {
 			if providers.ValidateHostname == nil {
-				return nil, fmt.Errorf("option %q: %w", k, ErrHostnameValidationUnavailable)
+				return nil, &SettingError{Option: k, Element: &i, Err: ErrHostnameValidationUnavailable}
 			}
 			if err := providers.ValidateHostname(host); err != nil {
-				return nil, fmt.Errorf("option %q: %w", k, err)
+				return nil, &SettingError{Option: k, Element: &i, Err: err}
 			}
 		}
 	}

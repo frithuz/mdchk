@@ -1,6 +1,36 @@
 package engine
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+// SettingError identifies the rule, option, and optional zero-based list element
+// responsible for a settings failure. Empty fields identify broader failures.
+// Err retains the underlying validation error for errors.Is and errors.As.
+type SettingError struct {
+	RuleID  string
+	Option  string
+	Element *int
+	Err     error
+}
+
+func (e *SettingError) Error() string {
+	context := ""
+	if e.RuleID != "" {
+		context = e.RuleID + ": "
+	}
+	if e.Option != "" {
+		context += fmt.Sprintf("option %q", e.Option)
+		if e.Element != nil {
+			context += fmt.Sprintf("[%d]", *e.Element)
+		}
+		context += ": "
+	}
+	return context + e.Err.Error()
+}
+
+func (e *SettingError) Unwrap() error { return e.Err }
 
 // ResolvedRule exposes catalog defaults, explicit entry presence, executable
 // availability and permission independently. Dialect applicability requires
@@ -22,7 +52,7 @@ func (r *Registry) ResolveSettings(settings Settings, providers ValidationProvid
 	}
 	for _, id := range sortedKeys(settings) {
 		if _, ok := r.metadata[id]; !ok {
-			return nil, fmt.Errorf("unknown or reserved rule %q", id)
+			return nil, &SettingError{RuleID: id, Err: fmt.Errorf("unknown or reserved rule %q", id)}
 		}
 	}
 	states := make(map[string]ResolvedRule, len(r.ids))
@@ -38,19 +68,33 @@ func (r *Registry) ResolveSettings(settings Settings, providers ValidationProvid
 		}
 		resolved, err := m.Options.resolve(s.Options, providers)
 		if err != nil {
-			return nil, fmt.Errorf("%s: %w", id, err)
+			var detail *SettingError
+			if errors.As(err, &detail) {
+				owned := *detail
+				owned.RuleID = id
+				return nil, &owned
+			}
+			return nil, &SettingError{RuleID: id, Err: err}
 		}
 		if id == "MD073" {
 			// Synthetic metadata used by engine consumers need not declare TOC options.
 			min, hasMin := resolved["min_level"].(int)
 			max, hasMax := resolved["max_level"].(int)
 			if hasMin && hasMax && min > max {
-				return nil, fmt.Errorf("MD073: min_level exceeds max_level")
+				option := "min_level"
+				if _, explicit := s.Options[option]; !explicit {
+					option = "max_level"
+				}
+				return nil, &SettingError{RuleID: id, Option: option, Err: fmt.Errorf("min_level exceeds max_level")}
 			}
 			start, hasStart := resolved["start_marker"].(string)
 			end, hasEnd := resolved["end_marker"].(string)
 			if hasStart && hasEnd && start == end {
-				return nil, fmt.Errorf("MD073: markers must be distinct")
+				option := "end_marker"
+				if _, explicit := s.Options[option]; !explicit {
+					option = "start_marker"
+				}
+				return nil, &SettingError{RuleID: id, Option: option, Err: fmt.Errorf("markers must be distinct")}
 			}
 		}
 		states[id] = ResolvedRule{Enabled: enabled, AllowDirectives: directives, Explicit: explicit, Available: r.Available(id), Options: resolved}
@@ -72,7 +116,7 @@ func SettingFromMapping(mapping map[string]any) (RuleSetting, error) {
 		if key == "enabled" || key == "allow_directives" {
 			b, ok := value.(bool)
 			if !ok {
-				return RuleSetting{}, fmt.Errorf("%s must be boolean", key)
+				return RuleSetting{}, &SettingError{Option: key, Err: fmt.Errorf("%s must be boolean", key)}
 			}
 			if key == "enabled" {
 				setting.Enabled = &b

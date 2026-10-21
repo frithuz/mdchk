@@ -51,8 +51,8 @@ type Directives struct{ Enabled *bool }
 // RuleSetting separates permissions from engine rule options. Map membership in
 // Definition.Rules records an explicit entry, including an empty rule mapping.
 // Enabled nil retains catalog enablement; it never means enabled or disabled by
-// itself. Only canonical case-sensitive catalog IDs are accepted by the future
-// validator; aliases, reserved/unknown IDs and duplicate entries are errors.
+// itself. Only canonical case-sensitive catalog IDs are accepted by semantic
+// validation; aliases, reserved/unknown IDs and duplicate entries are errors.
 type RuleSetting = engine.RuleSetting
 
 // Origin identifies a field's source for diagnostics and restriction inspection.
@@ -60,7 +60,7 @@ type RuleSetting = engine.RuleSetting
 // for example). Path identifies a definition file, or is empty for a supplied
 // object. Position is nil when no textual location is available; otherwise it
 // uses one-based line and Unicode code-point columns. Alias values retain their
-// use-site origin. The future decoder must diagnose duplicates before map creation.
+// use-site origin. Decoders diagnose duplicates before map creation.
 type Origin struct {
 	Path         string
 	PropertyPath string
