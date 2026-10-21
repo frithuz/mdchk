@@ -2,9 +2,11 @@
 
 These cases specify inputs and expected outcomes for the approved
 [configuration contract](../configuration.md). They are examples for loader and
-integration fixtures; YAML syntax decoding is implemented, while semantic
-validation and filesystem loading remain pending. Use the complete known
-rule catalog in every case, independently of the executable implementations.
+integration fixtures. Strict YAML decoding, semantic validation, bounded
+filesystem discovery, ancestor permissions, and compiled lint integration are
+implemented. Use the complete known rule catalog in every case, independently
+of the executable implementations. Config validation, inspect, MCP, and fix
+commands remain future delivery; their cases below specify the accepted contract.
 
 Unless a case specifies otherwise, assume the selected flavor, directive
 processor, and applicable rules are implemented, no ancestor restricts the
@@ -75,7 +77,7 @@ rules:
 Expected even when MD013 has no implementation: validate its option types and
 range, retain the settings, and impose no coverage penalty for that disabled check.
 
-### CommonMark development settings
+### Usable early CommonMark settings
 
 ```yaml
 version: 1
@@ -84,12 +86,26 @@ directives:
   enabled: false
 ```
 
-Assume CommonMark exists, GFM and directives do not, and MD001 is the only applicable
-default-enabled rule missing an implementation. Expected: configuration succeeds;
-lint runs available checks, reports MD001 as `rule-unavailable`, sets
-`status: incomplete` and `complete: false`, and exits 15. A config validation scan
-does not execute MD001 and can succeed. Inspect can report the missing
-implementation while still exiting 0.
+This configuration works with the current production executable: CommonMark
+0.31.2 is available, while GFM, Pandoc, directive processing, and ordinary rule
+implementations are not yet available. Global directives must therefore be
+effectively false, either here or through an ancestor restriction. Lint parses
+selected valid UTF-8 sources, reports applicable missing default-enabled checks
+as `rule-unavailable`, sets `status: incomplete` and `complete: false`, and exits
+15. The complete 89-rule catalog remains intact: MD001 is default-enabled and
+contributes coverage; MD013 is default-disabled and does not. Explicitly enabling
+an unavailable rule instead fails configuration admission with exit 12 before
+target processing. Text and JSON retain the same coverage and outcome.
+
+For a hypothetical fixture with available ordinary checks except MD001, the same
+configuration reports only MD001 as unavailable and preserves any available
+findings. Test-only registrations exercise this behavior without changing
+production defaults or shipping placeholder checks. Disabling all ordinary
+checks can yield clean exit 0 for valid UTF-8; mandatory decoding still applies.
+
+The future config validation scan does not execute MD001 and can succeed. Future
+inspect can report the missing implementation while still exiting 0. These
+commands, MCP integration, and fix are not delivered by the current lint build.
 
 ## Invalid definitions
 
@@ -193,8 +209,10 @@ missing implicit default implementations, and completed inspect does not use 15.
 
 ## Patterns discovery and policies
 
-Use explicit fixture roots and an injected filesystem view so host case behavior
-does not change expectations.
+Use explicit fixture roots and case-independent names so host case behavior
+does not change expectations. The compiled lint acceptance suite uses real
+temporary project trees, including worktree markers and symlinks. Lower-level
+provider tests inject filesystem views for deterministic access failures.
 
 | Fixture | Expected outcome |
 | --- | --- |

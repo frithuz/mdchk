@@ -25,13 +25,11 @@ type lintInvocation struct {
 }
 
 func prepareLint(options lintOptions) (*lintInvocation, error) {
-	// No production rule callbacks are implemented yet. Preserve the complete
-	// catalog, including unavailable default rules, independently of that fact.
-	registry, err := engine.NewCatalogRegistry(nil)
+	registry, providers, capabilities, err := configuredProviders()
 	if err != nil {
 		return nil, err
 	}
-	return prepareLintWith(options, registry, engine.ValidationProviders{}, config.Capabilities{CommonMark: true})
+	return prepareLintWith(options, registry, providers, capabilities)
 }
 
 // prepareLintWith supplies real build providers explicitly. Tests can exercise
