@@ -48,6 +48,11 @@ func DecodeYAML(sourcePath string, content []byte) (*Definition, error) {
 	}
 	text := string(content)
 	tokens := lexer.Tokenize(text)
+	if len(tokens) > 250000 {
+		return nil, &DecodeError{Message: "document-nodes limit exceeded by YAML tokens", Origin: origin}
+	}
+	lineStarts := yamlLineStarts(text)
+	normalizeCommentLines(text, lineStarts, tokens)
 	// Preflight the library's tokens before its recursive syntax construction.
 	// Indentation levels and flow indicators come from the YAML lexer, not an
 	// independent YAML grammar. The complete AST walk checks actual containers.
@@ -65,9 +70,6 @@ func DecodeYAML(sourcePath string, content []byte) (*Definition, error) {
 			return nil, &DecodeError{Message: "structured-input-depth limit exceeded", Origin: tokenOrigin(sourcePath, "", t)}
 		}
 	}
-	if len(tokens) > 250000 {
-		return nil, &DecodeError{Message: "document-nodes limit exceeded by YAML tokens", Origin: origin}
-	}
 	tokens = normalizeEmptyBlocks(tokens)
 	file, err := yamlparser.Parse(tokens, 0, yamlparser.AllowDuplicateMapKey())
 	if err != nil {
@@ -80,7 +82,7 @@ func DecodeYAML(sourcePath string, content []byte) (*Definition, error) {
 		return nil, &DecodeError{Message: "expected a nonempty mapping document", Origin: origin}
 	}
 	b := yamlBuilder{path: sourcePath, content: text, anchors: map[string]ast.Node{}, bindings: map[*ast.AliasNode]ast.Node{}, active: map[ast.Node]bool{}, blocks: map[*ast.LiteralNode]blockScalar{}, conversions: map[ast.Node]*scalarConversion{}, tags: map[*ast.TagNode]bool{}, work: int64(len(text) + 2*len(tokens))}
-	b.lineStarts = yamlLineStarts(text)
+	b.lineStarts = lineStarts
 	root, err := b.value(file.Docs[0].Body, "", 0, 0, nil)
 	if err != nil {
 		return nil, err
@@ -676,6 +678,38 @@ func (b *yamlBuilder) finishScalar(n ast.Node, v LocatedValue) (LocatedValue, er
 	b.conversions[n] = c
 	v.node.conversion = c
 	return v, nil
+}
+
+// normalizeCommentLines adapts scanComment in the pinned v1.19.2 scanner:
+// an ordinary comment consumes CR, then the main scanner consumes the remaining
+// LF as another line. Header comments use scanMultiLineHeaderOption instead and
+// already consume CRLF together. Recognize only the ordinary token's CR suffix,
+// and verify its exact value and code-point column against that physical source
+// line's CRLF boundary before correcting subsequent token lines. Offsets are not
+// source coordinates for all token kinds (notably normalized block bodies).
+// Each recognized comment occupies one source line, so verification is linear
+// in source bytes plus tokens. Only Line changes; source and token links survive.
+func normalizeCommentLines(text string, starts []int, tokens token.Tokens) {
+	extra := 0
+	for _, tk := range tokens {
+		if tk.Position == nil {
+			continue
+		}
+		tk.Position.Line -= extra
+		line := tk.Position.Line
+		if tk.Type != token.CommentType || line < 1 || line >= len(starts) || !strings.HasSuffix(tk.Origin, "#"+tk.Value+"\r") {
+			continue
+		}
+		physical := text[starts[line-1]:starts[line]]
+		suffix := "#" + tk.Value + "\r\n"
+		if !strings.HasSuffix(physical, suffix) {
+			continue
+		}
+		prefix := physical[:len(physical)-len(suffix)]
+		if utf8.RuneCountInString(prefix)+1 == tk.Position.Column {
+			extra++
+		}
+	}
 }
 
 // normalizeEmptyBlocks adapts one pinned-lexer defect without parsing source
