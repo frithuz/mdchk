@@ -38,6 +38,7 @@ type InspectionTrace struct {
 	suppressed      []DirectiveSuppression
 	errors          []result.Error
 	interruption    error
+	failures        []error
 }
 
 func (t *InspectionTrace) Parsed() parser.ParseResult {
@@ -94,6 +95,10 @@ func (t *InspectionTrace) Interruption() error {
 	}
 	return t.interruption
 }
+
+// Failures retains actual callback causes for in-memory correction validation.
+func (t *InspectionTrace) Failures() []error { return slices.Clone(t.failures) }
+
 func (t *InspectionTrace) initialize(r *Registry) {
 	for _, id := range r.ids {
 		t.evaluations = append(t.evaluations, Evaluation{Rule: id, Active: "skipped", Observational: "not-requested", Reasons: []string{"context-unavailable"}, ActiveCoverage: []parser.Span{}, ObservationalCoverage: []parser.Span{}})
@@ -123,6 +128,9 @@ func (t *InspectionTrace) encoding(err *result.Error, source parser.Source) {
 func (t *InspectionTrace) skip(id, reason string) { e := t.entry(id); e.Reasons = []string{reason} }
 func (t *InspectionTrace) ran(id string, outcome RuleOutcome, observational bool, size int) {
 	e := t.entry(id)
+	if outcome.Err != nil {
+		t.failures = append(t.failures, outcome.Err)
+	}
 	status := "complete"
 	e.Reasons = []string{}
 	if outcome.IncompleteReason != "" {
@@ -241,4 +249,11 @@ func (t *InspectionTrace) invalid(id string, observational bool) {
 		e.ActiveCoverage = []parser.Span{}
 	}
 	e.Reasons = append(e.Reasons, "invalid-finding")
+}
+
+// InspectCandidate runs shared analysis with candidate snapshot identity on every
+// located observation. Settings, context and the residual budget remain unchanged.
+func (p *ExecutionPlan) InspectCandidate(ctx context.Context, in Input, options RunOptions) (result.Result, *InspectionTrace, error) {
+	options.candidate = true
+	return p.Inspect(ctx, in, options, InspectionOptions{})
 }

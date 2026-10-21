@@ -149,3 +149,44 @@ func (r DirectiveResult) CandidateSpans(ctx context.Context, budget *parser.Oper
 	}
 	return out, nil
 }
+
+// ReservePreservationViews charges defensive directive collections before their
+// construction by semantic correction consumers. Authority remains immutable.
+func (r DirectiveResult) ReservePreservationViews(ctx context.Context, budget *parser.OperationBudget) error {
+	if ctx == nil || budget == nil || !r.InOperation(budget) {
+		return errors.New("foreign preservation operation")
+	}
+	charge := func(work, nodes int64) error {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		if err := budget.ChargeWork(work); err != nil {
+			return err
+		}
+		return budget.ChargeNodes(nodes)
+	}
+	if err := charge(int64(len(r.candidates)+len(r.intervals))+1, int64(len(r.candidates))+1); err != nil {
+		return err
+	}
+	for _, c := range r.candidates {
+		if err := charge(int64(len(c.Raw)+len(c.Payload)+len(c.Named)+len(c.IDs)+len(c.Effects))+1, int64(len(c.Named)+len(c.IDs)+len(c.Effects))+1); err != nil {
+			return err
+		}
+		for _, e := range c.Effects {
+			if err := charge(int64(len(e.Restrictions))+1, int64(len(e.Restrictions))*2+1); err != nil {
+				return err
+			}
+			for _, o := range e.Restrictions {
+				if err := charge(int64(len(o.Path)+len(o.PropertyPath))+1, 0); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	for _, is := range r.intervals {
+		if err := charge(int64(len(is))+1, int64(len(is))+1); err != nil {
+			return err
+		}
+	}
+	return charge(0, 0)
+}

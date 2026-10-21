@@ -20,6 +20,7 @@ type RunOptions struct {
 	Budget     *parser.OperationBudget
 	Validation ValidationProviders
 	inspection *InspectionTrace
+	candidate  bool
 }
 
 // Lint preflights the complete supplied batch before entering validation. Its
@@ -95,6 +96,9 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 		}
 		out.CheckedFiles = append(out.CheckedFiles, in.path)
 		snap := snapshot(in.source)
+		if options.candidate {
+			snap.View = "candidate"
+		}
 		file.InputSnapshot = &snap
 		file.Analysis = "complete"
 		// Reserve indexing, decoding and snapshot hashing/copies. Diagnostic

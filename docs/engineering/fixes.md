@@ -2,8 +2,11 @@
 
 Status: accepted on 2026-10-15. Structural in-memory atomic proposal planning,
 original-source permission/precondition checks and provisional application are
-implemented in `internal/fix`. Combined semantic validation, convergence, fix
-producers, reporting and filesystem publication remain pending.
+implemented in `internal/fix`. Combined candidate semantic validation, mapped
+common protection/directive checks, shared reanalysis and bounded convergence
+with coupled rollback are implemented by its validated-stage API. Rule-specific
+trusted checkers remain required; no production correction is registered yet.
+Producers, reporting and filesystem publication remain pending.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
 

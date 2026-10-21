@@ -138,3 +138,31 @@ func (p *ExecutionPlan) NewSourceInput(path string, source parser.Source) (Input
 	in.source, in.plan = source, p
 	return in, nil
 }
+
+// UsesRegistry verifies executable/catalog authority without exposing it.
+func (p *ExecutionPlan) UsesRegistry(r *Registry) bool {
+	return p != nil && p.registry != nil && r != nil && r.identity != nil && p.registry.identity == r.identity
+}
+
+// Snapshot detaches opaque exported handles from subsequent caller assignment.
+// Private settings/catalog collections and immutable policy authority may be
+// shared. Policy implementations retain their documented immutability contract.
+func (p *ExecutionPlan) Snapshot() *ExecutionPlan {
+	if p == nil {
+		return nil
+	}
+	q := *p
+	if p.registry != nil {
+		r := *p.registry
+		q.registry = &r
+	}
+	return &q
+}
+
+// Context returns the admitted document context by value.
+func (p *ExecutionPlan) Context() DocumentContext {
+	if p == nil {
+		return DocumentContext{}
+	}
+	return p.documentContext
+}
