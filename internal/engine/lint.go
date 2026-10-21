@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"context"
 	"crypto/sha256"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"slices"
@@ -107,7 +108,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 		parsed := parser.ParseWithBudget(ctx, in.source, budget)
 		if parsed.Failure != nil {
 			out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "parser-failure", Scope: "operation", Path: in.path, Message: parsed.Failure.Error()})
-			out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Reason: "parser-uncertain", Message: "Parser context is unavailable."})
+			out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Reason: result.ParserUncertain, Message: "Parser context is unavailable."})
 			file.Analysis = "failed"
 			out.Files = append(out.Files, file)
 			continue
@@ -127,7 +128,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 		}
 		syntaxReliable := parsed.Status == parser.Complete && parsed.AST == parser.Available && len(parsed.Uncertainty) == 0 && in.documentContext.Flavor == "commonmark"
 		if !syntaxReliable {
-			out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Reason: "parser-uncertain", Message: "The requested syntax is not completely recognized."})
+			out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Reason: result.ParserUncertain, Message: "The requested syntax is not completely recognized."})
 		}
 		rc := RuleContext{input: in, index: index, document: parsed.Document, budget: budget}
 		projection := projector{ctx: ctx, budget: budget, reporting: reporting, source: in.source, index: index}
@@ -146,11 +147,11 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			}
 			check := r.checks[id]
 			if check == nil {
-				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: "rule-unavailable", Message: "No executable implementation is registered."})
+				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.RuleUnavailable, Message: "No executable implementation is registered."})
 				continue
 			}
 			if m.RequiresSyntax && !syntaxReliable {
-				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: "parser-uncertain", Message: "Rule requires reliable complete parser context."})
+				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ParserUncertain, Message: "Rule requires reliable complete parser context."})
 				continue
 			}
 			rc.options = state.Options
@@ -172,7 +173,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				}
 				if err != nil {
 					out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "invalid-finding", Scope: "operation", Path: in.path, Rule: id, Message: err.Error()})
-					out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: "context-unavailable", Message: "Rule returned an invalid finding."})
+					out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: "Rule returned an invalid finding."})
 					continue
 				}
 				out.Diagnostics = append(out.Diagnostics, diagnostic)
@@ -181,7 +182,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				stopped = recordInterruption(&out, in.path, "analysis", projection.stop)
 			}
 			if outcome.IncompleteReason != "" {
-				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: "context-unavailable", Message: outcome.IncompleteReason})
+				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: outcome.IncompleteReason})
 			}
 			if outcome.Err != nil {
 				if isInterruption(outcome.Err) {
@@ -191,7 +192,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 					break
 				}
 				out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "rule-failure", Scope: "operation", Path: in.path, Rule: id, Message: outcome.Err.Error()})
-				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: "context-unavailable", Message: "Rule did not complete."})
+				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: "Rule did not complete."})
 			}
 			if stopped != "" {
 				break
@@ -311,31 +312,36 @@ func finalize(out *result.Result) {
 		if c := cmp.Compare(a.Category, b.Category); c != 0 {
 			return c
 		}
-		return cmp.Compare(a.Message, b.Message)
-	})
-	slices.SortFunc(out.Coverage, func(a, b result.Coverage) int {
-		if c := cmp.Compare(a.Path, b.Path); c != 0 {
+		if c := cmp.Compare(a.Message, b.Message); c != 0 {
 			return c
 		}
-		if c := compareRange(a.Range, b.Range); c != 0 {
-			return c
-		}
-		if c := cmp.Compare(a.Rule, b.Rule); c != 0 {
-			return c
-		}
-		if c := cmp.Compare(a.Reason, b.Reason); c != 0 {
-			return c
-		}
-		return cmp.Compare(a.Message, b.Message)
+		a.ID, b.ID = "", ""
+		return cmp.Compare(errorKey(a), errorKey(b))
 	})
 	for i := range out.Diagnostics {
 		out.Diagnostics[i].ID = fmt.Sprintf("diagnostic-%d", i+1)
 	}
+	// Preserve explicit cause links while assigning canonical generated IDs.
+	causeIDs := make(map[string]string)
 	for i := range out.Errors {
-		out.Errors[i].ID = fmt.Sprintf("error-%d", i+1)
+		id := fmt.Sprintf("error-%d", i+1)
+		if old := out.Errors[i].ID; old != "" {
+			causeIDs[old] = id
+		}
+		out.Errors[i].ID = id
 	}
+	slices.SortFunc(out.Interruptions, func(a, b result.Interruption) int {
+		// All semantic fields participate, so equal path/reason interruptions
+		// cannot inherit callback order. ID is generated, not semantic.
+		a.ID, b.ID = "", ""
+		return cmp.Compare(interruptionKey(a), interruptionKey(b))
+	})
 	for i := range out.Interruptions {
-		out.Interruptions[i].ID = fmt.Sprintf("interruption-%d", i+1)
+		id := fmt.Sprintf("interruption-%d", i+1)
+		if old := out.Interruptions[i].ID; old != "" {
+			causeIDs[old] = id
+		}
+		out.Interruptions[i].ID = id
 	}
 	// Index once after canonical sorting/ID assignment. Linking is linear in
 	// records plus emitted references, rather than scanning every error and
@@ -362,7 +368,11 @@ func finalize(out *result.Result) {
 	}
 	for i := range out.Coverage {
 		c := &out.Coverage[i]
-		c.ID = fmt.Sprintf("coverage-%d", i+1)
+		for j, id := range c.CauseIDs {
+			if canonical, ok := causeIDs[id]; ok {
+				c.CauseIDs[j] = canonical
+			}
+		}
 		causes := errorsByRule[key{c.Path, c.Rule}]
 		if c.Reason == "decoding-failed" {
 			causes = mergeIndices(causes, decodeErrors[c.Path])
@@ -371,12 +381,21 @@ func finalize(out *result.Result) {
 			c.CauseIDs = append(c.CauseIDs, out.Errors[cause].ID)
 		}
 		c.CauseIDs = append(c.CauseIDs, stopsByReason[key{c.Path, c.Reason}]...)
-		coverageByPath[c.Path] = append(coverageByPath[c.Path], c.ID)
+	}
+	// Cause links are part of semantic identity. Link first, then canonicalize
+	// and deduplicate before assigning IDs or publishing file references.
+	out.CanonicalizeCoverage()
+	for i := range out.Coverage {
+		c := &out.Coverage[i]
+		id := fmt.Sprintf("coverage-%d", i+1)
+		c.ID = id
+		coverageByPath[c.Path] = append(coverageByPath[c.Path], id)
 	}
 	for i := range out.Files {
 		f := &out.Files[i]
-		f.ErrorIDs = append(f.ErrorIDs, errorsByPath[f.Path]...)
-		f.CoverageIDs = append(f.CoverageIDs, coverageByPath[f.Path]...)
+		// File references are derived from the retained canonical records.
+		f.ErrorIDs = append([]string{}, errorsByPath[f.Path]...)
+		f.CoverageIDs = append([]string{}, coverageByPath[f.Path]...)
 		if len(f.CoverageIDs) > 0 && f.Analysis == "complete" {
 			f.Analysis = "partial"
 		}
@@ -384,17 +403,7 @@ func finalize(out *result.Result) {
 			f.Analysis = "failed"
 		}
 	}
-	out.Complete = len(out.Coverage) == 0 && len(out.Interruptions) == 0 && len(out.Omissions) == 0
-	out.Status = "clean"
-	if len(out.Diagnostics) > 0 {
-		out.Status = "violations"
-	}
-	if !out.Complete {
-		out.Status = "incomplete"
-	}
-	if len(out.Errors) > 0 {
-		out.Status = "error"
-	}
+	out.FinalizeLintFixOutcome()
 }
 func compareRange(a, b *result.Range) int {
 	if a == nil {
@@ -445,4 +454,15 @@ func mergeIndices(a, b []int) []int {
 	out = append(out, a...)
 	out = append(out, b...)
 	return out
+}
+
+// These concrete records contain only JSON-marshalable scalar fields. The
+// encoded tie-break includes optional semantic fields without generated IDs.
+func errorKey(e result.Error) string {
+	b, _ := json.Marshal(e)
+	return string(b)
+}
+func interruptionKey(i result.Interruption) string {
+	b, _ := json.Marshal(i)
+	return string(b)
 }

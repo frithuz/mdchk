@@ -70,8 +70,7 @@ type Error struct {
 }
 
 // Coverage records unassessed work, never a successful empty check. The open
-// reason vocabulary and cause links are those of schema v1; #216 extends the
-// engine's structured coverage reporting on this same type.
+// reason vocabulary and cause links are those of schema v1.
 type Coverage struct {
 	ID       string    `json:"id"`
 	Reason   string    `json:"reason"`

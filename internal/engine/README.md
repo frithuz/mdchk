@@ -68,8 +68,10 @@ that parser context. Parser incompleteness, uncertainty or an unsupported
 requested flavor produces explicit coverage. Syntax-dependent callbacks run
 only with affirmative complete context. Source-only callbacks cannot access an
 uncertain tree. A rule that lacks another prerequisite returns an incomplete
-reason, optionally with findings whose conclusions remain justified. The richer
-structured coverage interface is #216; it extends this shared model.
+reason, optionally with findings whose conclusions remain justified. Coverage uses the shared `result.Coverage` record with required reason/message
+and optional catalog rule, path, public range, exact snapshot and cause links.
+Unavailable build-wide work needs no fabricated source attribution. Extension-like
+text in CommonMark follows ordinary CommonMark interpretation.
 
 One `parser.OperationBudget` covers all documents, parser work and rule/context
 providers. Supply the same budget when other operation work has already begun;
@@ -92,11 +94,19 @@ The result is the read-only subset of the accepted
 [shared v1 schema](../../docs/contracts/results/result.schema.json). All required
 top-level arrays are present, including reserved empty fix/inspection arrays.
 Each acquired file and diagnostic identifies original bytes by SHA-256 and byte
-count. Canonical sorting precedes deterministic record-ID assignment and cause
-linking. Path/rule/reason indexes link records in time proportional to records and
+count. Error/interruption IDs are assigned canonically before cause linking. Coverage
+then sorts by absent-first path/start, rule and reason, with remaining semantic
+fields as tie-breaks. `Result.CanonicalizeCoverage` treats cause references as a
+set and collapses identical observations independent of generated IDs, retaining
+distinct ranges, snapshots and causes. Coverage IDs and per-file links are
+assigned only after deduplication. Path/rule/reason indexes link records in time proportional to records and
 emitted references, without Cartesian scans over files, errors and coverage.
 File, diagnostic, error, coverage and interruption state is retained
-independently; adapters select exits and presentation. This engine implements
+independently; adapters select exits and presentation. The shared
+`Result.FinalizeLintFixOutcome` applies operational error > incomplete >
+violations > clean precedence only to lint/fix. Coverage, interruptions or
+omissions force `complete=false`; observations remain available with errors.
+Inspect and configuration validation retain operation-specific status handling. This engine implements
 no suppression, resource discovery, correction proposals, output delivery or CLI
 integration (#127). A fix metadata declaration alone never makes a finding
 eligible: `fix_available` also requires an implemented correction and a rule's
@@ -108,7 +118,8 @@ Run `go test ./...`, `go vet ./...` and `sh tools/lint.sh`. Contract tests cover
 registration/schema rejection, metadata and input isolation, exact coordinates,
 UTF-8 gating, interrupted partial results, unsupported parser coverage and
 independence from input/registration order. To validate actual clean, violation,
-invalid-UTF-8, interrupted and omitted-diagnostic producer envelopes against the normative schema
+invalid-UTF-8, interrupted, omitted-diagnostic and partial operational-error
+producer envelopes against the normative schema
 and its cross-record semantic validator:
 
 ```sh

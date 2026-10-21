@@ -1,9 +1,12 @@
 package engine
 
 import (
+	"encoding/json"
 	"fmt"
+	"slices"
 	"testing"
 
+	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -88,5 +91,113 @@ func TestIndexedFinalizationLinksOnlyMatchingCauses(t *testing.T) {
 		if len(f.CoverageIDs) != count {
 			t.Fatal("file coverage missing", f)
 		}
+	}
+}
+
+func TestCanonicalCoverageIDsAndLinksAcrossPermutations(t *testing.T) {
+	fixture := func(reverse bool) result.Result {
+		out := result.NewLint("cli")
+		out.Files = []result.File{{Path: "a", Analysis: "complete", ErrorIDs: []string{}, CoverageIDs: []string{}, ChangeIDs: []string{}}}
+		out.Errors = []result.Error{
+			{ID: "old-io", Path: "a", Category: result.IO, Scope: "operation", Code: "read-failed", Message: "failed"},
+			{ID: "old-rule", Path: "a", Rule: "MD001", Category: result.Internal, Scope: "operation", Code: "rule-failure", Message: "failed"},
+		}
+		out.Interruptions = []result.Interruption{
+			{ID: "old-stop-a", Path: "a", Reason: "cancelled", Phase: "analysis", Message: "cancelled"},
+			{ID: "old-stop-b", Path: "a", Reason: "deadline-exceeded", Phase: "analysis", Message: "deadline"},
+		}
+		out.Coverage = []result.Coverage{
+			{ID: "old-coverage-1", Path: "a", Rule: "MD001", Reason: result.ContextUnavailable, Message: "context", CauseIDs: []string{"old-io", "old-stop-b", "old-io"}},
+			{ID: "old-coverage-2", Path: "a", Rule: "MD001", Reason: result.ContextUnavailable, Message: "context", CauseIDs: []string{"old-stop-b", "old-io"}},
+			{Path: "a", Rule: "MD001", Reason: result.ContextUnavailable, Message: "context", CauseIDs: []string{"old-stop-a"}},
+			{Path: "a", Reason: "cancelled", Message: "remaining"},
+			{Rule: "MD003", Reason: result.RuleUnavailable, Message: "build-wide"},
+		}
+		if reverse {
+			slices.Reverse(out.Coverage)
+			slices.Reverse(out.Errors)
+			slices.Reverse(out.Interruptions)
+		}
+		finalize(&out)
+		return out
+	}
+	a, b := fixture(false), fixture(true)
+	first, err := json.Marshal(a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := json.Marshal(b)
+	if err != nil || string(first) != string(second) {
+		t.Fatalf("unstable full result/IDs: %s\n%s (%v)", first, second, err)
+	}
+	if len(a.Coverage) != 4 || len(a.Files[0].CoverageIDs) != 3 || a.Files[0].Analysis != "failed" {
+		t.Fatal(a)
+	}
+	causes := map[string]bool{}
+	for _, e := range a.Errors {
+		causes[e.ID] = true
+	}
+	for _, i := range a.Interruptions {
+		causes[i.ID] = true
+	}
+	coverage := map[string]bool{}
+	for _, c := range a.Coverage {
+		coverage[c.ID] = true
+		for _, id := range c.CauseIDs {
+			if !causes[id] {
+				t.Fatalf("dangling remapped cause %s: %+v", id, c)
+			}
+		}
+		if c.Rule == "MD001" && len(c.CauseIDs) < 2 {
+			t.Fatalf("lost explicit or automatic cause: %+v", c)
+		}
+	}
+	for _, id := range a.Files[0].CoverageIDs {
+		if !coverage[id] {
+			t.Fatalf("dangling file coverage %s", id)
+		}
+	}
+	finalize(&a)
+	again, err := json.Marshal(a)
+	if err != nil || string(again) != string(first) {
+		t.Fatalf("repeat finalization duplicated links: %s", again)
+	}
+}
+
+func TestLocatedCoverageRetainsDiagnosticCoordinatesAndSnapshot(t *testing.T) {
+	source := parser.NewSource([]byte("a\tπ\r\nβ"))
+	index := parser.NewLineIndex(source)
+	start, err := index.Position(2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	end, err := index.Position(8)
+	if err != nil {
+		t.Fatal(err)
+	}
+	snap := snapshot(source)
+	location := result.Range{Start: start, End: end}
+	out := result.NewLint("cli")
+	out.Files = append(out.Files, result.File{Path: "a", Analysis: "complete", InputSnapshot: &snap, ErrorIDs: []string{}, CoverageIDs: []string{}, ChangeIDs: []string{}})
+	out.Diagnostics = append(out.Diagnostics, result.Diagnostic{Path: "a", Rule: "MD001", Message: "observed", Range: location, ByteRange: result.ByteRange{Start: 2, End: 8}, Snapshot: snap})
+	out.Coverage = append(out.Coverage, result.Coverage{Path: "a", Rule: "MD003", Reason: result.ContextUnavailable, Message: "located context", Range: &location, Snapshot: &snap})
+	finalize(&out)
+	c, d := out.Coverage[0], out.Diagnostics[0]
+	if *c.Range != d.Range || *c.Snapshot != d.Snapshot || c.Range.Start != (result.Position{Line: 1, Column: 3}) || c.Range.End != (result.Position{Line: 2, Column: 2}) {
+		t.Fatal(c, d)
+	}
+	data, err := json.Marshal(c)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var wire struct {
+		Range    struct{ Start, End struct{ Line, Column int } }
+		Snapshot result.Snapshot
+	}
+	if err := json.Unmarshal(data, &wire); err != nil {
+		t.Fatal(err)
+	}
+	if wire.Range.Start.Line != 1 || wire.Range.Start.Column != 3 || wire.Range.End.Line != 2 || wire.Range.End.Column != 2 || wire.Snapshot != snap {
+		t.Fatalf("wire coordinates/snapshot changed: %s", data)
 	}
 }

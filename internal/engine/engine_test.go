@@ -305,7 +305,7 @@ func TestProducerSchema(t *testing.T) {
 		t.Fatal(err)
 	}
 	clean := registry(t, []engine.Metadata{metadata("MD001")}, engine.Registration{ID: "MD001", Check: func(context.Context, engine.RuleContext) engine.RuleOutcome { return engine.RuleOutcome{} }})
-	outcomes := []result.Result{lint(t, clean, input(t, "clean", nil, nil)), lint(t, r, input(t, "violation", []byte("π"), nil)), lint(t, r, input(t, "bad", []byte{0xff}, nil)), interrupted, denseProjection(t)}
+	outcomes := []result.Result{lint(t, clean, input(t, "clean", nil, nil)), lint(t, r, input(t, "violation", []byte("π"), nil)), lint(t, r, input(t, "bad", []byte{0xff}, nil)), interrupted, denseProjection(t), partialOperationalFailure(t)}
 	python := os.Getenv("MDCHK_RESULT_VALIDATOR_PYTHON")
 	dir := t.TempDir()
 	paths := []string{}
@@ -446,5 +446,64 @@ func TestDenseProjectionIsBoundedAndKeepsReliableFindings(t *testing.T) {
 	first, second := denseProjection(t), denseProjection(t)
 	if !reflect.DeepEqual(first, second) {
 		t.Fatal("budget-limited projection or IDs are nondeterministic")
+	}
+}
+
+func partialOperationalFailure(t *testing.T) result.Result {
+	t.Helper()
+	r := registry(t, []engine.Metadata{metadata("MD001")}, engine.Registration{ID: "MD001", Check: func(_ context.Context, c engine.RuleContext) engine.RuleOutcome {
+		span, err := c.Source().Span(6, 8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return engine.RuleOutcome{Findings: []engine.Finding{{Span: span, Message: "observed pi"}}, IncompleteReason: "Resource context could not be acquired.", Err: errors.New("resource acquisition failed")}
+	}})
+	out := lint(t, r, input(t, "partial.md", []byte("a\tπ\r\nπ"), nil))
+	if out.Status != "error" || out.Complete || len(out.Diagnostics) != 1 || len(out.Coverage) != 2 || len(out.Errors) != 1 || len(out.Interruptions) != 0 {
+		t.Fatal("lost partial callback observations", out)
+	}
+	d := out.Diagnostics[0]
+	if d.Range.Start != (result.Position{Line: 2, Column: 1}) || d.Range.End != (result.Position{Line: 2, Column: 2}) || d.ByteRange.Start != 6 || d.ByteRange.End != 8 || out.Files[0].InputSnapshot == nil || *out.Files[0].InputSnapshot != d.Snapshot {
+		t.Fatal("partial finding changed coordinates/snapshot", d)
+	}
+	for _, c := range out.Coverage {
+		if c.Reason != result.ContextUnavailable || c.Rule != "MD001" || len(c.CauseIDs) != 1 || c.CauseIDs[0] != out.Errors[0].ID {
+			t.Fatal("partial coverage lost cause", c)
+		}
+	}
+	if len(out.Files[0].CoverageIDs) != 2 || len(out.Files[0].ErrorIDs) != 1 {
+		t.Fatal(out.Files[0])
+	}
+	return out
+}
+
+func TestPartialCallbackPreservesFindingsCoverageAndOperationalError(t *testing.T) {
+	partialOperationalFailure(t)
+}
+
+func TestDeadlineIsIncompleteWithoutOperationalError(t *testing.T) {
+	r := registry(t, []engine.Metadata{metadata("MD001")}, engine.Registration{ID: "MD001", Check: func(context.Context, engine.RuleContext) engine.RuleOutcome {
+		return engine.RuleOutcome{Err: context.DeadlineExceeded}
+	}})
+	out := lint(t, r, input(t, "a", nil, nil))
+	if out.Status != "incomplete" || out.Complete || len(out.Errors) != 0 || len(out.Interruptions) != 1 || out.Interruptions[0].Reason != "deadline-exceeded" || len(out.Coverage) != 1 || len(out.Coverage[0].CauseIDs) != 1 {
+		t.Fatal(out)
+	}
+}
+
+func TestCommonMarkExtensionLikeTextUsesOrdinaryInterpretation(t *testing.T) {
+	m := metadata("MD001")
+	m.RequiresSyntax = true
+	calls := 0
+	r := registry(t, []engine.Metadata{m}, engine.Registration{ID: m.ID, Check: func(_ context.Context, c engine.RuleContext) engine.RuleOutcome {
+		calls++
+		if c.Document() == nil {
+			t.Fatal("ordinary CommonMark lost parser context")
+		}
+		return engine.RuleOutcome{}
+	}})
+	out := lint(t, r, input(t, "a", []byte("| a | b |\n| --- | --- |\n\n~~strike~~ [^note] {.class}\n\n::: custom\ntext\n:::\n"), nil))
+	if calls != 1 || !out.Complete || out.Status != "clean" || len(out.Coverage) != 0 {
+		t.Fatal(out)
 	}
 }
