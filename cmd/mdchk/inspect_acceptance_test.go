@@ -260,9 +260,54 @@ func TestCompiledInspectionBoundedOutput(t *testing.T) {
 		putConfigurationFile(t, root, ".mdchk.yaml", yaml)
 		putConfigurationFile(t, root, "doc.md", "bad\xff")
 		for _, deadline := range []string{"1ns", "1us"} {
-			got, _ := runInspection(t, binary, root, root, "inspect", "doc.md", "--format=json", "--limit=reporting-time="+deadline)
-			if got.Status != 15 || got.Result.Status != "incomplete" || len(got.Result.Errors) == 0 {
-				t.Fatal(got)
+			got, p := runInspection(t, binary, root, root, "inspect", "doc.md", "--format=json", "--limit=reporting-time="+deadline)
+			// A positive deadline permits a genuinely completed observation. In
+			// particular, this four-byte report can finish inside 1us on Linux.
+			switch got.Status {
+			case 0:
+				if deadline != "1us" || got.Result.Status != "inspected" || len(got.Result.Interruptions) != 0 {
+					t.Fatalf("deadline %s completed outcome: %+v", deadline, got)
+				}
+			case 15:
+				if got.Result.Status != "incomplete" || len(got.Result.Interruptions) != 1 || got.Result.Interruptions[0].Phase != "reporting" || got.Result.Interruptions[0].Reason != "deadline-exceeded" {
+					t.Fatalf("deadline %s interrupted outcome: %+v", deadline, got)
+				}
+			default:
+				t.Fatalf("deadline %s unexpected exit: %+v", deadline, got)
+			}
+			wantHash := sha256.Sum256([]byte("bad\xff"))
+			if got.Result.Complete || len(got.Result.Files) != 1 || got.Result.Files[0].InputSnapshot == nil || got.Result.Files[0].InputSnapshot.SHA256 != hex.EncodeToString(wantHash[:]) || got.Result.Files[0].InputSnapshot.SizeBytes != 4 || p.File.SHA256 != hex.EncodeToString(wantHash[:]) || p.File.SizeBytes != 4 || p.AST.Availability != "unavailable" || p.AST.Data != nil {
+				t.Fatalf("deadline %s lost identity/unavailable decoding: %+v, %+v", deadline, got, p)
+			}
+			categories := map[result.ErrorCategory]int{}
+			for _, e := range got.Result.Errors {
+				if e.Scope != "observation" {
+					t.Fatalf("deadline %s invented operation error: %+v", deadline, e)
+				}
+				categories[e.Category]++
+			}
+			wantCategories := map[result.ErrorCategory]int{result.IO: 1}
+			if yaml == "unknown: [" {
+				wantCategories[result.Configuration] = 1
+			}
+			if !reflect.DeepEqual(categories, wantCategories) {
+				t.Fatalf("deadline %s observation categories=%v, want %v", deadline, categories, wantCategories)
+			}
+			if got.Status == 0 {
+				wantAvailability := "available"
+				if yaml == "unknown: [" {
+					wantAvailability = "unavailable"
+					if got.Result.Errors[0].Code != "configuration-invalid" {
+						t.Fatalf("completed observation lost configuration detail: %+v", got)
+					}
+				}
+				if p.Configuration.Availability != wantAvailability {
+					t.Fatalf("completed configuration availability=%s, want %s", p.Configuration.Availability, wantAvailability)
+				}
+				last := got.Result.Errors[len(got.Result.Errors)-1]
+				if last.Code != "invalid-utf8" || last.ByteOffset == nil || *last.ByteOffset != 3 || last.Snapshot == nil || last.Snapshot.SHA256 != p.File.SHA256 || p.AST.Availability != "unavailable" {
+					t.Fatalf("completed observation lost UTF8 detail: %+v", got)
+				}
 			}
 		}
 	}

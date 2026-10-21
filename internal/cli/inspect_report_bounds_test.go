@@ -22,16 +22,28 @@ func inspectionReportFixture(t *testing.T, paragraphs int) (result.Result, *insp
 	root := validProject(t)
 	put(t, filepath.Join(root, "doc.md"), strings.Repeat("p\n\n", paragraphs))
 	var output, stderr bytes.Buffer
-	if status := Run([]string{"inspect", "doc.md", "--format=json"}, &output, &stderr, "test"); status != 0 {
-		t.Fatalf("fixture status=%d", status)
-	}
+	// Fixture construction includes a full report encoding, outside the measured
+	// report loop below. Give that setup a finite allowance under race/slow CI;
+	// leave analysis budgets and every measured reporting limit unchanged.
+	status := Run([]string{"inspect", "doc.md", "--format=json", "--limit=reporting-time=30s"}, &output, &stderr, "test")
 	var out result.Result
 	if err := json.Unmarshal(output.Bytes(), &out); err != nil {
 		t.Fatal(err)
 	}
+	if status != 0 || out.Status != "inspected" || len(out.Interruptions) != 0 || stderr.Len() != 0 {
+		t.Fatalf("fixture paragraphs=%d exit=%d status=%s interruptions=%+v errors=%+v omissions=%+v stderr=%q", paragraphs, status, out.Status, out.Interruptions, out.Errors, out.Omissions, stderr.String())
+	}
 	var p inspection.Projection
 	if err := json.Unmarshal(out.Inspection, &p); err != nil {
 		t.Fatal(err)
+	}
+	if p.AST.Availability != "available" || p.AST.Data == nil || len(p.AST.Data.Root.Children) != paragraphs || p.AST.Data.Root.ByteRange != (result.ByteRange{Start: 0, End: 3 * paragraphs}) || p.File.SizeBytes != int64(3*paragraphs) {
+		t.Fatalf("fixture paragraphs=%d lacks full AST/source: file=%+v AST availability=%s", paragraphs, p.File, p.AST.Availability)
+	}
+	for i, child := range p.AST.Data.Root.Children {
+		if child.Kind != "paragraph" || child.ByteRange.Start != 3*i || len(child.Children) != 1 {
+			t.Fatalf("fixture paragraph %d incomplete: %+v", i, child)
+		}
 	}
 	return out, &p
 }
