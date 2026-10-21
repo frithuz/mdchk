@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -505,5 +506,34 @@ func TestCommonMarkExtensionLikeTextUsesOrdinaryInterpretation(t *testing.T) {
 	out := lint(t, r, input(t, "a", []byte("| a | b |\n| --- | --- |\n\n~~strike~~ [^note] {.class}\n\n::: custom\ntext\n:::\n"), nil))
 	if calls != 1 || !out.Complete || out.Status != "clean" || len(out.Coverage) != 0 {
 		t.Fatal(out)
+	}
+}
+
+func TestAlreadyCancelledTargetsDoNotEnterEncodingGate(t *testing.T) {
+	for _, raw := range [][]byte{[]byte("valid 雪\r\n"), {0xff}} {
+		t.Run(fmt.Sprintf("%x", raw), func(t *testing.T) {
+			calls := 0
+			r := registry(t, []engine.Metadata{metadata("MD001"), metadata("MD094")}, engine.Registration{ID: "MD001", Check: func(context.Context, engine.RuleContext) engine.RuleOutcome {
+				calls++
+				return engine.RuleOutcome{}
+			}})
+			ctx, cancel := context.WithCancel(context.Background())
+			cancel()
+			out, err := r.Lint(ctx, []engine.Input{input(t, "b.md", []byte("later"), nil), input(t, "a.md", raw, nil)}, engine.RunOptions{})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if calls != 0 || len(out.CheckedFiles) != 0 || len(out.Errors) != 0 || len(out.Diagnostics) != 0 || len(out.Interruptions) != 1 || out.Interruptions[0].Reason != "cancelled" || out.Interruptions[0].Phase != "acquisition" || out.Complete || out.Status != "incomplete" {
+				t.Fatalf("pre-cancelled validation: %+v; callbacks=%d", out, calls)
+			}
+			if len(out.Files) != 2 || len(out.Coverage) != 2 {
+				t.Fatal(out)
+			}
+			for _, file := range out.Files {
+				if file.Analysis != "not-started" || file.InputSnapshot != nil || file.ResultSnapshot != nil || len(file.ErrorIDs) != 0 || len(file.CoverageIDs) != 1 {
+					t.Fatalf("unvisited target was processed: %+v", file)
+				}
+			}
+		})
 	}
 }

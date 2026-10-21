@@ -32,7 +32,7 @@ func BenchmarkFinalizeLinking(b *testing.B) {
 			b.ReportAllocs()
 			for b.Loop() {
 				out := linkingFixture(n)
-				finalize(&out)
+				FinalizeLintResult(&out)
 				if len(out.Files) != n {
 					b.Fatal("lost files")
 				}
@@ -46,7 +46,7 @@ func TestIndexedFinalizationLinksOnlyMatchingCauses(t *testing.T) {
 	out.Errors = append(out.Errors, result.Error{Path: "00000.md", Rule: "MD094", Category: result.IO, Code: "invalid-utf8", Scope: "operation", Message: "attributed decode"}, result.Error{Path: "00001.md", Rule: "MD003", Category: result.Internal, Code: "rule-failure", Scope: "operation", Message: "rule failed"})
 	out.Coverage = append(out.Coverage, result.Coverage{Path: "00000.md", Rule: "MD094", Reason: "decoding-failed", Message: "two matching families"}, result.Coverage{Path: "00002.md", Reason: "cancelled", Message: "interrupted"})
 	out.Interruptions = append(out.Interruptions, result.Interruption{Path: "00002.md", Reason: "cancelled", Phase: "analysis", Message: "stop"})
-	finalize(&out)
+	FinalizeLintResult(&out)
 	errorsByID := map[string]result.Error{}
 	for _, e := range out.Errors {
 		errorsByID[e.ID] = e
@@ -118,7 +118,7 @@ func TestCanonicalCoverageIDsAndLinksAcrossPermutations(t *testing.T) {
 			slices.Reverse(out.Errors)
 			slices.Reverse(out.Interruptions)
 		}
-		finalize(&out)
+		FinalizeLintResult(&out)
 		return out
 	}
 	a, b := fixture(false), fixture(true)
@@ -157,7 +157,7 @@ func TestCanonicalCoverageIDsAndLinksAcrossPermutations(t *testing.T) {
 			t.Fatalf("dangling file coverage %s", id)
 		}
 	}
-	finalize(&a)
+	FinalizeLintResult(&a)
 	again, err := json.Marshal(a)
 	if err != nil || string(again) != string(first) {
 		t.Fatalf("repeat finalization duplicated links: %s", again)
@@ -181,7 +181,7 @@ func TestLocatedCoverageRetainsDiagnosticCoordinatesAndSnapshot(t *testing.T) {
 	out.Files = append(out.Files, result.File{Path: "a", Analysis: "complete", InputSnapshot: &snap, ErrorIDs: []string{}, CoverageIDs: []string{}, ChangeIDs: []string{}})
 	out.Diagnostics = append(out.Diagnostics, result.Diagnostic{Path: "a", Rule: "MD001", Message: "observed", Range: location, ByteRange: result.ByteRange{Start: 2, End: 8}, Snapshot: snap})
 	out.Coverage = append(out.Coverage, result.Coverage{Path: "a", Rule: "MD003", Reason: result.ContextUnavailable, Message: "located context", Range: &location, Snapshot: &snap})
-	finalize(&out)
+	FinalizeLintResult(&out)
 	c, d := out.Coverage[0], out.Diagnostics[0]
 	if *c.Range != d.Range || *c.Snapshot != d.Snapshot || c.Range.Start != (result.Position{Line: 1, Column: 3}) || c.Range.End != (result.Position{Line: 2, Column: 2}) {
 		t.Fatal(c, d)

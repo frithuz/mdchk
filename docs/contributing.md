@@ -53,10 +53,14 @@ configuration failures return `12`, including unavailable default GFM when no
 configuration exists. A valid CommonMark configuration with effective global
 directives disabled completes preparation, selects targets and acquires immutable
 source snapshots. The mandatory UTF-8 gate reports malformed source as I/O (`13`),
-independently of rule enablement; successful empty selection returns `11`. Valid
-acquired sources still return `15` while Markdown analysis is pending. Acquisition
-uses document/aggregate byte limits and a shared work/time budget. Reporters and
-other commands remain pending; see [current implementation](index.md#current-implementation).
+independently of rule enablement; successful empty selection returns `11`. Acquired
+snapshots enter the shared parser and available registered checks. Missing
+enabled default implementations produce coverage deficits and return `15`;
+valid UTF-8 with all ordinary rules disabled can return clean `0`. Acquisition
+uses document/aggregate byte limits and shares its work/time budget and caller
+context with the engine. The executable propagates interrupts through
+`cli.RunContext`. Format-specific reporters and other commands remain pending;
+see [current implementation](index.md#current-implementation).
 The conformance adapter below remains a separate test command.
 
 ### Static analysis

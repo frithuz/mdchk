@@ -2,8 +2,9 @@
 
 `internal/files.Select` implements the reusable lint/fix selection provider.
 `Acquire` loads bounded immutable source snapshots, and compiled lint connects
-selection, acquisition and the shared mandatory UTF-8 gate after configuration
-preparation. Later tasks add ordinary Markdown analysis and reports.
+selection and acquisition to the admitted engine plan after configuration
+preparation. The plan owns mandatory UTF-8 validation, parsing and registered
+checks. Format-specific reports remain pending.
 Selection does not read document contents, label targets as checked, discover
 configuration, interpret Git ignores, access linked resources, or write files.
 
@@ -76,9 +77,11 @@ symlink and hard-link behavior, and unchanged source bytes.
 `Documents`, `Errors`, `PreflightErrors` and `Interruptions`. Each document owns a
 `parser.Source`; neither modifying returned byte copies nor rewriting its file
 changes the snapshot. Source acquisition does not validate encoding. The CLI
-then enters the same `engine.ValidateEncoding` gate used by the engine. A gate
-entry counts as checked; ordinary Markdown checks remain unavailable and return
-15. Invalid UTF-8 returns one IO error with the original snapshot identity and
+passes each snapshot to the admitted plan using the same operation budget and
+context; it performs no separate encoding scan. The engine gate counts as
+checked, then available enabled checks execute. Missing enabled implementations
+produce coverage deficits and return 15. Invalid UTF-8 returns one IO error with
+the original snapshot identity and
 leading-byte location. MD094 controls attribution only.
 
 Acquisition pins parent directories with `os.Root` from the target's filesystem
@@ -104,9 +107,14 @@ aggregate or the supported 1 GiB per-document implementation bound. A known
 oversized descriptor is a preflight failure; growth beyond a bound, aggregate
 exhaustion, cancellation, deadline and shared work exhaustion are runtime
 interruptions. Reads probe at most one extra byte to detect exhaustion and never
-retain it. Failed-read bytes count toward aggregate acquisition. Shared parser
-work charges byte reads/copies, and the CLI separately charges encoding indexing
-and snapshot projection. Context and shared deadline checkpoints surround reads;
-unresponsive OS calls are not promised preemption. No resource contents are
-loaded. Discovery counts, broader application limits and reporting limits remain
-pending; the command does not claim complete operation accounting.
+retain it. Failed-read bytes count toward aggregate acquisition. Acquisition
+charges byte reads and retained copies to the supplied `parser.OperationBudget`.
+The CLI passes that same budget to the admitted plan without another encoding
+reservation or scan. `engine.Lint` owns the mandatory gate's `4n+1` work charge
+for validation, line indexing and snapshot hashing/copies, where `n` is the
+original source byte length. Parsing, rule work and diagnostic coordinate
+projection continue against that shared execution budget under their own
+charges. Context and shared deadline checkpoints surround reads; unresponsive
+OS calls are not promised preemption. No resource contents are loaded. Discovery
+counts, broader application limits and reporting limits remain pending; the
+command does not claim complete operation accounting.

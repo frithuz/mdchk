@@ -2,6 +2,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"strings"
@@ -17,7 +18,7 @@ const (
 const generalHelp = `Usage: mdchk [global options] <command> [options] [paths...]
 
 Commands:
-  lint       Acquire lint targets and validate UTF-8 (analysis is pending)
+  lint       Check Markdown with available registered rules
 
 Global options:
   --help     Show general or selected command help
@@ -34,17 +35,32 @@ Options may appear before or after paths. Use -- for dash-prefixed paths.
 
 Configuration is loaded and validated before any target access.
 Unavailable configuration returns 12; target I/O or invalid UTF-8 returns 13.
-No selected files returns 11. Acquired valid UTF-8 still returns 15 because
-Markdown analysis and result reporters are not yet implemented.
+No selected files returns 11. Complete clean checks return 0, violations 10,
+and unavailable checks or interrupted analysis 15. Format names are accepted;
+full format-specific reporters are pending. Results currently use plain stderr.
 `
 
 // Run executes with supplied arguments (excluding argv[0]) and streams. Version
 // is supplied by the executable so tests and alternate launchers need no globals.
 func Run(args []string, stdout, stderr io.Writer, version string) int {
-	return run(args, stdout, stderr, version, prepareLint, acquireLint)
+	return RunContext(context.Background(), args, stdout, stderr, version)
+}
+
+// RunContext propagates caller cancellation through acquisition, parsing and
+// registered checks. Help, version and argument validation still precede IO.
+func RunContext(ctx context.Context, args []string, stdout, stderr io.Writer, version string) int {
+	return runContext(ctx, args, stdout, stderr, version, prepareLint, func(ctx context.Context, inv *lintInvocation, _ io.Writer, stderr io.Writer) int {
+		return acquireLintContext(ctx, inv, stderr)
+	})
 }
 
 func run(args []string, stdout, stderr io.Writer, version string, prepare func(lintOptions) (*lintInvocation, error), execute func(*lintInvocation, io.Writer, io.Writer) int) int {
+	return runContext(context.Background(), args, stdout, stderr, version, prepare, func(_ context.Context, inv *lintInvocation, stdout, stderr io.Writer) int {
+		return execute(inv, stdout, stderr)
+	})
+}
+
+func runContext(ctx context.Context, args []string, stdout, stderr io.Writer, version string, prepare func(lintOptions) (*lintInvocation, error), execute func(context.Context, *lintInvocation, io.Writer, io.Writer) int) int {
 	var global []string
 	for len(args) > 0 && (args[0] == "--help" || args[0] == "--version") {
 		global = append(global, args[0])
@@ -77,7 +93,7 @@ func run(args []string, stdout, stderr io.Writer, version string, prepare func(l
 		if err != nil {
 			return output(stderr, "mdchk: "+err.Error()+"\n", exitConfig)
 		}
-		return execute(invocation, stdout, stderr)
+		return execute(ctx, invocation, stdout, stderr)
 	default:
 		return output(stderr, fmt.Sprintf("mdchk: unknown command or global option %q; use --help\n", args[0]), exitUsage)
 	}

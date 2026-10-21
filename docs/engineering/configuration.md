@@ -1,6 +1,17 @@
 # Configuration engineering design
 
-The shared configuration loader implements the [configuration contract](../configuration.md) for CLI and MCP. `mdchk config validate` also scans a project for definitions and validates each eligible file independently. Its [command guide](../commands/config/validate.md) defines selection, exclusions, output, and exit behavior. The contracts below are approved. Shared decoding, semantic validation and bounded one-file policy resolution are implemented as described below; lint preparation is integrated, while target execution, other command adapters and the downward validation scan remain pending.
+The shared configuration loader implements the approved
+[configuration contract](../configuration.md) for lint preparation and target
+execution through the shared parser/rule engine. Shared decoding, semantic
+validation and bounded one-file policy resolution are implemented as described
+below. Missing enabled rule implementations produce genuine coverage deficits;
+format-specific reporters remain deferred.
+
+The contract also covers MCP and the planned `mdchk config validate` command,
+which scans a project for definitions and validates each eligible file
+independently. Its [command guide](../commands/config/validate.md) defines
+selection, exclusions, output and exit behavior. Other command adapters and the
+downward validation scan remain pending.
 
 ## Implemented configuration boundary
 
@@ -208,12 +219,14 @@ dialect-inapplicable checks do not reduce coverage. Catalog table rules apply to
 GFM and Pandoc; footnote rules apply to Pandoc. Missing optional resource or
 integration context never establishes dialect inapplicability.
 
-CLI preparation retains this plan. The CLI analysis connection remains #127;
-that connection must replace the current acquisition-only UTF-8 loop with the
-plan's engine gate, passing the acquisition budget to `Lint`. It must not run both
-gates or charge a second index/hash scan. The current CLI continues to report
-analysis as pending; plan availability does not imply production rule callbacks,
-GFM/Pandoc parsers, directives, optional contexts or reporters are implemented.
+CLI preparation retains this plan and execution passes acquired snapshots to it
+with the same acquisition budget and context. The engine owns the single UTF-8
+gate, parser and callback execution. Selection/acquisition observations merge
+through `engine.FinalizeLintResult`, which regenerates canonical IDs, cause links
+and per-file references before deriving the shared outcome. Public CLI paths
+are relative to the invocation directory; acquisition keeps native names private.
+Production rule callbacks, GFM/Pandoc parsers, directives, optional contexts and
+format-specific reporters remain separate deliveries.
 
 ## Confirmed requirements
 

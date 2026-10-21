@@ -101,7 +101,9 @@ time; it never resets per rule or target. If projection cannot finish in that
 reserve, the result retains projected whole records and an explicit `/diagnostics`
 omission with the exact unreturned count. Already observed findings are never
 unconditionally discarded merely because their callback exhausted execution.
-Known unvisited targets
+An already-cancelled external context is observed before a target enters
+validation, hashing or UTF-8 decoding. It creates no checked-file entry or
+snapshot for that target. Known unvisited targets
 have `analysis=not-started`, rather than invented successful empty checks.
 
 The result is the read-only subset of the accepted
@@ -115,14 +117,21 @@ set and collapses identical observations independent of generated IDs, retaining
 distinct ranges, snapshots and causes. Coverage IDs and per-file links are
 assigned only after deduplication. Path/rule/reason indexes link records in time proportional to records and
 emitted references, without Cartesian scans over files, errors and coverage.
+`FinalizeLintResult` is the authoritative finalizer for engine observations
+combined with adapter acquisition records. Adapters may remap paths and append
+records, then call it again to regenerate canonical IDs, cause links, per-file
+references and outcome. Explicit cause IDs must be unique across the combined
+errors and interruptions; new unreferenced records may have empty IDs. Checked
+paths, file outcomes and intentional skips also receive canonical ordering.
 File, diagnostic, error, coverage and interruption state is retained
 independently; adapters select exits and presentation. The shared
 `Result.FinalizeLintFixOutcome` applies operational error > incomplete >
 violations > clean precedence only to lint/fix. Coverage, interruptions or
 omissions force `complete=false`; observations remain available with errors.
 Inspect and configuration validation retain operation-specific status handling. This engine implements
-no suppression, resource discovery, correction proposals, output delivery or CLI
-integration (#127). A fix metadata declaration alone never makes a finding
+no suppression, resource discovery, correction proposals or output delivery.
+The CLI adapter owns argument handling, configuration, selection/acquisition,
+execution-plan dispatch, and presentation. A fix metadata declaration alone never makes a finding
 eligible: `fix_available` also requires an implemented correction and a rule's
 positive context-specific safety/permission assessment. Lint creates no edits.
 

@@ -59,8 +59,8 @@ Acquire an immutable snapshot with `parser.NewSource(content)`, then call
 `Source.Bytes` returns a copy. Parse has no flavor or frontmatter option: it
 recognizes core syntax with extensions/frontmatter disabled. Configuration-driven
 selection and bounded read-only acquisition are connected to CLI lint, including
-the shared mandatory UTF-8 gate. GFM/Pandoc extensions, frontmatter, production
-rules, CLI Markdown analysis/MCP integration and production rendering remain
+the shared mandatory UTF-8 gate, parser and registered-rule engine. GFM/Pandoc
+extensions, frontmatter, production rules, MCP integration and production rendering remain
 separate deliveries. The configuration examples in
 the format guide describe those future adapters.
 
@@ -222,10 +222,12 @@ The [configuration validation design](engineering/configuration.md) defines the 
 
 The [inspection design](engineering/inspect.md) defines processing instrumentation and directive attribution. The [directive processing design](engineering/directives.md) defines shared comment recognition, rule-state transitions, configuration permissions, and suppression for inspect, lint, fix, and MCP.
 
-## CLI bootstrap status
+## CLI execution status
 
-`cmd/mdchk` delegates to `internal/cli.Run`, with supplied arguments and output
-streams. Only main exits the process. Help and version perform no project I/O.
+`cmd/mdchk` delegates to `internal/cli.RunContext`, with its interrupt context,
+supplied arguments and output streams. `Run` remains a background-context
+convenience for other callers. Only main exits the process. Help and version
+perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
 assembly uses the complete catalog with no ordinary executable registrations
@@ -233,16 +235,21 @@ and asserts only CommonMark capability. No configuration still selects built-in
 GFM, which fails admission rather than falling back. Configuration and read
 failures return 12; output failures return 13.
 
-Preparation retains the full owned selection and resolution for later execution.
+Preparation retains the full owned selection, resolution and admitted execution
+plan.
 Its exclusion seam binds the selected compiled matcher to the configuration
 directory (or invocation directory without a file) and calls `Patterns.Excludes`
 for native explicit paths, including ancestor directories. Directory identity
 comes from the reusable [filesystem selection provider](engineering/file-selection.md),
-which implements portable traversal and structured skips/failures. Source loading
-and command integration remain pending. Successful preparation still returns
-incomplete/15 without target access and never reports a clean check. Pending reporter delivery in #128,
-errors use plain stderr even when a structured format was selected. No
-success-shaped result envelope is emitted.
+which implements portable traversal and structured skips/failures. Execution
+acquires immutable original-byte snapshots and passes them to the admitted plan
+with the same context and operation budget. The engine owns mandatory UTF-8
+validation, parsing and available registered checks. No production rule callbacks
+exist yet: missing enabled defaults produce genuine coverage deficits and return
+15. Valid UTF-8 with ordinary rules disabled can return clean 0; available checks
+can produce violations and retained partial findings. Pending reporter delivery
+in #128, findings, errors and an execution/coverage-count summary use plain stderr
+even when a structured format was selected. No JSON result envelope is emitted.
 
 ## CLI and result schema
 

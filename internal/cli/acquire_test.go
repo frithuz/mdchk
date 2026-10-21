@@ -11,7 +11,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/frithuz/mdchk/internal/config"
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/result"
 )
 
 func TestActualLintAcquisition(t *testing.T) {
@@ -43,7 +45,7 @@ func TestActualLintAcquisition(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if status := acquireLint(inv, io.Discard, io.Discard); status != tc.status || len(inv.encoding) != tc.count || inv.acquisition == nil || inv.targetSelection == nil || len(inv.checkedPaths) != tc.count {
+			if status := acquireLint(inv, io.Discard, io.Discard); status != tc.status || len(inv.result.CheckedFiles) != tc.count || inv.acquisition == nil || inv.targetSelection == nil {
 				t.Fatalf("state: status=%d inv=%+v", status, inv)
 			}
 		})
@@ -67,15 +69,21 @@ func TestActualLintInvalidUTF8AndSnapshots(t *testing.T) {
 		if status := acquireLint(inv, io.Discard, &stderr); status != 13 {
 			t.Fatalf("status=%d: %s", status, &stderr)
 		}
-		if len(inv.encoding) != 2 || len(inv.checkedPaths) != 2 || len(inv.acquisition.Documents) != 2 {
+		if len(inv.result.CheckedFiles) != 2 || len(inv.acquisition.Documents) != 2 {
 			t.Fatalf("independent good target lost: %+v", inv)
 		}
-		e := inv.encoding[0].validation.Error
+		var e *result.Error
+		for i := range inv.result.Errors {
+			if inv.result.Errors[i].Code == "invalid-utf8" {
+				e = &inv.result.Errors[i]
+				break
+			}
+		}
 		wantRule := ""
 		if enabled {
 			wantRule = "MD094"
 		}
-		if e == nil || e.Rule != wantRule || e.Code != "invalid-utf8" || e.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256(raw)) || e.Snapshot.SizeBytes != len(raw) || *e.ByteOffset != len(raw)-2 || e.Range.Start.Line != 2 || e.Range.Start.Column != 3 || inv.encoding[1].validation.Error != nil {
+		if e == nil || e.Rule != wantRule || e.Code != "invalid-utf8" || e.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256(raw)) || e.Snapshot.SizeBytes != len(raw) || *e.ByteOffset != len(raw)-2 || e.Range.Start.Line != 2 || e.Range.Start.Column != 3 || len(inv.result.Errors) != 1 {
 			t.Fatalf("wrong validation: %+v", e)
 		}
 		if string(inv.acquisition.Documents[0].Source.Bytes()) != string(raw) {
@@ -113,7 +121,7 @@ func TestLintAcquisitionLimitsAndCancellation(t *testing.T) {
 		if status := acquireLint(inv, io.Discard, io.Discard); status != tc.status {
 			t.Fatalf("status=%d", status)
 		}
-		if tc.stops && (len(inv.acquisition.Interruptions) == 0 || len(inv.checkedPaths) != 0) {
+		if tc.stops && (len(inv.acquisition.Interruptions) == 0 || len(inv.result.CheckedFiles) != 0) {
 			t.Fatalf("interruption lost: %+v", inv)
 		}
 	}
@@ -123,7 +131,7 @@ func TestLintAcquisitionLimitsAndCancellation(t *testing.T) {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	if status := acquireLintContext(ctx, inv, io.Discard); status != 15 || len(inv.acquisition.Interruptions) == 0 || len(inv.checkedPaths) != 0 {
+	if status := acquireLintContext(ctx, inv, io.Discard); status != 15 || len(inv.acquisition.Interruptions) == 0 || len(inv.result.CheckedFiles) != 0 {
 		t.Fatalf("cancelled=%d %+v", status, inv)
 	}
 	// IO remains stronger than a simultaneous interruption.
@@ -155,8 +163,64 @@ func TestMandatoryGateWithAllOrdinaryRulesDisabled(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if status := acquireLint(inv, io.Discard, io.Discard); status != 13 || len(inv.encoding) != 1 || inv.encoding[0].validation.Error == nil {
+		if status := acquireLint(inv, io.Discard, io.Discard); status != 13 || len(inv.result.CheckedFiles) != 1 || len(inv.result.Errors) != 1 || inv.result.Errors[0].Code != "invalid-utf8" {
 			t.Fatalf("gate bypassed: %d %+v", status, inv)
+		}
+	}
+}
+
+func TestActualLintCleanDisabledRulesAndFormats(t *testing.T) {
+	root := validProject(t)
+	put(t, filepath.Join(root, "doc.md"), "literal \ufffd\r\n")
+	var body strings.Builder
+	body.WriteString(availableConfig + "rules:\n")
+	for _, metadata := range engine.Catalog() {
+		fmt.Fprintf(&body, "  %s: {enabled: false}\n", metadata.ID)
+	}
+	put(t, filepath.Join(root, ".mdchk.yaml"), body.String())
+	for _, format := range []string{"text", "json", "vscode", "github"} {
+		var stderr bytes.Buffer
+		if status := Run([]string{"lint", "--format", format, "doc.md"}, io.Discard, &stderr, "dev"); status != 0 || !strings.Contains(stderr.String(), "0 coverage deficits; clean") {
+			t.Fatalf("format=%s status=%d stderr=%s", format, status, &stderr)
+		}
+	}
+}
+
+func TestLintOversizedPreflightStartsNoCallbacks(t *testing.T) {
+	root := validProject(t)
+	put(t, filepath.Join(root, "a.md"), "ok")
+	put(t, filepath.Join(root, "z.md"), "oversized")
+	calls := 0
+	registry := executionRegistry(t, map[string]engine.Check{"MD001": func(context.Context, engine.RuleContext) engine.RuleOutcome { calls++; return engine.RuleOutcome{} }}, false)
+	status, inv, stderr := executeFixture(t, context.Background(), registry, config.Capabilities{CommonMark: true}, "--limit", "document-bytes=4")
+	if status != 11 || calls != 0 || len(inv.result.CheckedFiles) != 0 || len(inv.result.Files) != 2 {
+		t.Fatalf("preflight status=%d calls=%d stderr=%s result=%+v", status, calls, stderr, inv.result)
+	}
+	assertReadOnlyResult(t, inv.result)
+}
+
+func TestLintExecutionPreservesAncestorAndSelectedConfig(t *testing.T) {
+	root := validProject(t)
+	ancestor := filepath.Join(root, config.Filename)
+	ancestorBody := "version: 1\ndirectives: {enabled: false}\nrules: {MD013: {length: 99}}\n"
+	put(t, ancestor, ancestorBody)
+	child := filepath.Join(root, "child")
+	selected := filepath.Join(child, config.Filename)
+	put(t, selected, "version: 1\nflavor: commonmark\n")
+	target := filepath.Join(child, "doc.md")
+	put(t, target, "# unchanged\r\n")
+	t.Chdir(child)
+	registry := executionRegistry(t, nil, false)
+	status, inv, stderr := executeFixture(t, context.Background(), registry, config.Capabilities{CommonMark: true}, "doc.md")
+	if status != 0 || len(inv.selection.AncestorPaths) != 1 {
+		t.Fatalf("status=%d stderr=%s selection=%+v", status, stderr, inv.selection)
+	}
+	assertReadOnlyResult(t, inv.result)
+	for path, want := range map[string]string{ancestor: ancestorBody, selected: "version: 1\nflavor: commonmark\n", target: "# unchanged\r\n"} {
+		//nolint:gosec // Read only test-owned original bytes to verify lint immutability.
+		got, err := os.ReadFile(path)
+		if err != nil || string(got) != want {
+			t.Fatalf("changed %s: %q %v", path, got, err)
 		}
 	}
 }

@@ -85,6 +85,13 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			out.Files = append(out.Files, file)
 			continue
 		}
+		// Observe an externally cancelled operation before entering validation or
+		// hashing/decoding an acquired target. Known targets remain not-started.
+		if err := ctx.Err(); err != nil {
+			stopped = recordInterruption(&out, in.path, "acquisition", err)
+			out.Files = append(out.Files, file)
+			continue
+		}
 		out.CheckedFiles = append(out.CheckedFiles, in.path)
 		snap := snapshot(in.source)
 		file.InputSnapshot = &snap
@@ -208,7 +215,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 		file.ResultSnapshot = &snap
 		out.Files = append(out.Files, file)
 	}
-	finalize(&out)
+	FinalizeLintResult(&out)
 	return out, nil
 }
 func snapshot(source parser.Source) result.Snapshot {
@@ -280,7 +287,26 @@ func effectiveLimits(l parser.Limits) []result.EffectiveLimit {
 	slices.SortFunc(out, func(a, b result.EffectiveLimit) int { return strings.Compare(a.Name, b.Name) })
 	return out
 }
-func finalize(out *result.Result) {
+
+// FinalizeLintResult assigns canonical IDs, cause links and per-file references
+// to the retained lint observations, then derives the shared lint/fix outcome.
+// Adapters may append acquisition records and remap logical paths before calling
+// it again. Explicit cause IDs must identify unique errors or interruptions
+// across the combined records; unreferenced new records may have empty IDs.
+// It mutates the supplied result and preserves observations and snapshots.
+func FinalizeLintResult(out *result.Result) {
+	slices.Sort(out.CheckedFiles)
+	out.CheckedFiles = slices.Compact(out.CheckedFiles)
+	slices.SortFunc(out.Files, func(a, b result.File) int { return cmp.Compare(a.Path, b.Path) })
+	slices.SortFunc(out.SkippedFiles, func(a, b result.SkippedFile) int {
+		if c := cmp.Compare(a.Path, b.Path); c != 0 {
+			return c
+		}
+		if c := cmp.Compare(a.Reason, b.Reason); c != 0 {
+			return c
+		}
+		return cmp.Compare(a.Message, b.Message)
+	})
 	slices.SortFunc(out.Diagnostics, func(a, b result.Diagnostic) int {
 		if c := cmp.Compare(a.Path, b.Path); c != 0 {
 			return c

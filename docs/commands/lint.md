@@ -9,8 +9,8 @@ mdchk lint [options] [paths...]
 ## Current implementation
 
 Build the executable with `go build -o mdchk ./cmd/mdchk`. Help, version, argument
-parsing, configuration preparation, source acquisition and mandatory UTF-8
-validation are available. Lint resolves its single
+parsing, configuration preparation, source acquisition, mandatory UTF-8
+validation, parsing and registered-rule execution are available. Lint resolves its single
 configuration from the working directory or `--config`, validates all settings
 and ancestor permissions, and checks selected capabilities before target access.
 Invalid or unreadable configuration returns `12`. Help and version need no
@@ -23,8 +23,7 @@ GFM and therefore return `12` when no configuration exists. A configuration with
 an inherited global directive denial also satisfies the directive requirement.
 Explicitly enabled unavailable rules fail preparation; unmentioned default rules
 remain in the complete catalog for coverage reporting. Preparation retains an
-immutable admitted execution plan for the shared engine; the actual CLI
-analysis connection remains pending.
+immutable admitted execution plan for the shared engine.
 
 After successful preparation, lint selects targets using the reusable
 [target selection provider](../engineering/file-selection.md), opens regular
@@ -37,10 +36,15 @@ UTF-8 validation is mandatory regardless of rule enablement; MD094 only controls
 error attribution. It reports the first invalid sequence's original byte offset
 and Unicode position, retaining the original size and SHA-256 snapshot identity.
 
-Valid source acquisition still returns `15`: Markdown analysis and production
-rule execution remain pending. This build never reports a clean lint success.
+The admitted plan runs the internal parser and available registered checks with
+the original source and validated options. No production rule callbacks are
+implemented yet: enabled missing defaults produce real coverage deficits and
+return `15`. Disabling all ordinary rules permits a clean `0` for valid UTF-8.
+Available registered checks can return violations (`10`); interruptions retain
+partial findings and known targets, with runtime precedence `14 > 13 > 15 > 10 > 0`.
 Reporters are deferred to #128: `--format` accepts the documented names but does
-not yet produce their reports or JSON envelopes. Errors use plain stderr text.
+not yet produce their reports or JSON envelopes. Execution currently prints findings, operational errors and a coverage-count
+summary as plain stderr text. Reporter availability does not reduce coverage.
 
 The remaining execution behavior on this page is the accepted target contract.
 
@@ -73,10 +77,10 @@ zero, overflow, and incoherent bounds are usage errors. Equivalent repeats are
 accepted. `fix-rounds` cannot exceed 10. The minimum report reserve is 65,536
 bytes. Acquisition enforces `document-bytes` (default 1 MiB) and
 `total-content-bytes` (default 8 MiB), sharing the operation work and elapsed-time
-budget with mandatory decoding. A known oversized file is a usage error (`11`);
+budget with mandatory decoding, parsing and registered checks. A known oversized file is a usage error (`11`);
 runtime growth, aggregate exhaustion, cancellation or deadline leaves work
 incomplete (`15`). I/O failures retain precedence (`13`). Broader traversal,
-analysis and reporting limit enforcement remains pending.
+and reporting limit enforcement remains pending.
 
 The [global options](../index.md#global-options) also apply. See [configuration](../configuration.md) for discovery and settings, and [result formats](../output-formats.md) for output examples.
 

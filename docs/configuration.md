@@ -2,7 +2,7 @@
 
 Use `.mdchk.yaml` to define your project's Markdown expectations. Lint and fix use the same rules and exclusions, whether you run them from the terminal or through the project's MCP server. Without a configuration file, mdchk uses its defaults.
 
-This is the approved configuration contract. Lint now loads and validates configuration before target access; target execution, other command integrations and rule implementations remain pending. See [initial capability handling](#initial-capability-handling) for how development builds must report unavailable behavior.
+This is the approved configuration contract. Lint loads and validates configuration before target access, then acquires source snapshots and executes the shared parser and available registered checks. Production rule implementations, other command integrations and format-specific reporters remain pending. Missing enabled defaults produce coverage deficits rather than clean results; valid UTF-8 with all ordinary rules disabled can return clean `0`. See [initial capability handling](#initial-capability-handling) for how development builds must report unavailable behavior.
 
 ## Define project expectations
 

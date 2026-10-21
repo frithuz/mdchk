@@ -8,6 +8,7 @@ import (
 	"github.com/frithuz/mdchk/internal/config"
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/files"
+	"github.com/frithuz/mdchk/internal/result"
 )
 
 // lintInvocation owns the complete preparation result for later target loading
@@ -20,24 +21,29 @@ type lintInvocation struct {
 	exclusions                      *config.Patterns
 	targetSelection                 *files.Selection
 	acquisition                     *files.Acquisition
-	encoding                        []targetEncoding
-	checkedPaths                    []string
+	result                          *result.Result
 }
 
 func prepareLint(options lintOptions) (*lintInvocation, error) {
-	cwd, err := os.Getwd()
-	if err != nil {
-		return nil, fmt.Errorf("working directory: %w", err)
-	}
 	// No production rule callbacks are implemented yet. Preserve the complete
 	// catalog, including unavailable default rules, independently of that fact.
 	registry, err := engine.NewCatalogRegistry(nil)
 	if err != nil {
 		return nil, err
 	}
+	return prepareLintWith(options, registry, engine.ValidationProviders{}, config.Capabilities{CommonMark: true})
+}
+
+// prepareLintWith supplies real build providers explicitly. Tests can exercise
+// future registered checks without mutable package globals or production stubs.
+func prepareLintWith(options lintOptions, registry *engine.Registry, providers engine.ValidationProviders, capabilities config.Capabilities) (*lintInvocation, error) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return nil, fmt.Errorf("working directory: %w", err)
+	}
 	selection, err := config.Resolve(config.SelectionOptions{
 		WorkingDirectory: cwd, ExplicitPath: options.config,
-	}, registry, engine.ValidationProviders{}, config.Capabilities{CommonMark: true})
+	}, registry, providers, capabilities)
 	if err != nil {
 		return nil, err
 	}

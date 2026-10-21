@@ -3,8 +3,11 @@
 Use this guide to understand which files an operation targets and why a path might be skipped. The command guides describe each operation's flags.
 
 The shared filesystem provider implements lint target selection and bounded,
-read-only source acquisition. Compiled lint enters mandatory UTF-8 validation;
-ordinary Markdown analysis and reporters remain pending. See the [provider boundary](engineering/file-selection.md)
+read-only source acquisition. Compiled lint passes snapshots to the admitted
+engine for mandatory UTF-8 validation, parsing and available registered checks.
+Missing enabled rule implementations produce coverage deficits; valid UTF-8
+with ordinary checks disabled can return clean `0`. Format-specific reporters
+remain pending. See the [provider boundary](engineering/file-selection.md)
 and [current lint status](commands/lint.md#current-implementation).
 
 ## Selection by operation
