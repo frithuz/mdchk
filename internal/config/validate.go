@@ -307,7 +307,7 @@ func (v *Validated) Admit(c Capabilities, inherited Permissions) (*Resolution, e
 			return fail("rules."+id, "explicitly enabled rule is unavailable")
 		}
 		if s.Enabled && s.Available {
-			if title, ok := s.Options["frontmatter_title"].(bool); ok && title && !c.MetadataInterpretation {
+			if !ruleOptionCapability("frontmatter_title", s.Options["frontmatter_title"], c) {
 				return fail("rules."+id+".frontmatter_title", "frontmatter metadata interpretation is unavailable")
 			}
 		}
@@ -368,4 +368,15 @@ func (r *Resolution) ExecutionPlan() *ExecutionPlan {
 		return nil
 	}
 	return r.plan
+}
+
+// ruleOptionCapability describes support for the selected option value, apart
+// from executable rule registration and enablement. Share this predicate with
+// pre-admission inspection so inactive settings retain truthful availability.
+func ruleOptionCapability(name string, value any, c Capabilities) bool {
+	if name == "frontmatter_title" {
+		title, _ := value.(bool)
+		return !title || c.MetadataInterpretation
+	}
+	return true
 }

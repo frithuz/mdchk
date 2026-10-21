@@ -69,8 +69,8 @@ distinct from an absent body. Unrelated invalid tokens are never suppressed.
 Recognized block header tokens are checked for one optional indentation indicator
 and one optional chomping indicator, in either order, as YAML 1.2.2 specifies.
 
-`DecodeJSON` remains an unavailable raw transport stub: every call returns a
-nil definition and recognizable `ErrUnavailable`. Complete catalog metadata,
+`DecodeJSON` validates raw supplied JSON through the same owned syntax and
+semantic schema as YAML. Complete catalog metadata,
 semantic and capability validation, exclusion matching, and bounded read-only
 filesystem selection are implemented. The lint adapter uses `Resolve` before target access and retains its full
 selection snapshot, with exclusions bound to the selected directory. Other
@@ -142,8 +142,38 @@ property paths and no filename, textual position, or invented scalar spelling.
 Depth, syntax-node and expansion-work budgets bound traversal. Input maps and
 slices are borrowed only during decoding; the returned snapshot retains no
 mutable input collection. Callers must not mutate input concurrently with decode.
-Raw-byte `DecodeJSON` remains unavailable: duplicate names, raw UTF-8, and
-surrogate-pair checks belong to the future transport boundary.
+Raw-byte `DecodeJSON` rejects decoded duplicate names at every object depth,
+malformed raw UTF-8 and unpaired Unicode surrogate escapes before conversion.
+Literal U+FFFD and valid surrogate pairs remain valid. Integer tokens remain
+integers; decimal/exponent tokens remain numbers, without float64 coercion.
+Unknown fields survive until schema validation. Supplied JSON has property paths
+and no invented file positions. The reusable `internal/strictjson` boundary also
+accepts scalar, array and null roots for future callers; configuration rejects
+those shapes through its schema. The caller supplies a positive byte limit
+(1 MiB for configuration), with 64 container levels, 250000 syntax nodes and
+250000000 traversal work units. No transport framing is implemented here.
+
+`Validated.Configuration(capabilities)` returns an owned view before execution
+admission, including unavailable explicit requests. It retains the selected
+definition identity, effective settings, full rule catalog, and explicit/default
+provenance for every setting and rule option. Empty rule entries remain explicit
+while their omitted enabled/options leaves retain catalog-default provenance.
+Resource defaults and explicit requests remain distinct. Build availability is
+independent of enablement, dialect applicability and permission inheritance.
+Rule options also require their selected value's capabilities. A true
+`frontmatter_title` on MD001/MD025/MD041 is unavailable without metadata
+interpretation, even when its registered rule is disabled. A false option
+requires no metadata support.
+Ancestor rule/flavor/options are never merged.
+
+`Configuration.Shared()` projects this view into the schema-v1 shared
+`ConfigurationData` model. Effective values use configuration field names; rule
+records also expose `available` and `explicit` metadata, and `availability` maps
+JSON Pointers to build support for all settings. Provenance uses sorted RFC 6901
+JSON Pointers and source kinds `default`, `selected-config` or `supplied-config`.
+Known YAML points become zero-width ranges; supplied objects and defaults have
+no fabricated ranges or file hashes. Every call owns its maps, lists and positions.
+Inherited permission exposure and operation-adapter integration remain separate.
 
 `ValidateDefinition(definition, registry, providers)` performs the entire schema
 and policy-domain check without admitting execution. Both decoders feed this

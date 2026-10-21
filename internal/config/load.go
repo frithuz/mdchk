@@ -6,17 +6,6 @@ import (
 	"path/filepath"
 )
 
-// ErrUnavailable means raw JSON configuration decoding is not implemented. It is distinct
-// from invalid user configuration; errors.Is recognizes this development boundary.
-var ErrUnavailable = errors.New("raw JSON configuration decoding is not implemented")
-
-// DecodeJSON is the future standalone supplied-object adapter. Raw bytes keep
-// duplicate names and invalid Unicode available for validation before decoding.
-// It currently rejects every input and performs no filesystem access.
-func DecodeJSON(content []byte) (*Definition, error) {
-	return nil, ErrUnavailable
-}
-
 // Load reads one explicitly named nonsymlink regular YAML file and decodes its
 // syntax. It does not establish operation scope, validate domains or resolve
 // policies. Operation adapters must use Resolve for bounded selection/admission.

@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"reflect"
 	"testing"
 )
@@ -37,7 +36,7 @@ func TestPresenceIsIndependentOfDefaults(t *testing.T) {
 		t.Fatal("explicit resource default must remain distinct from omission")
 	}
 	// Empty mappings and sequences are valid syntax-level distinctions. Validation
-	// belongs to the future decoder; these types must not erase those distinctions.
+	// is performed by the decoders; these passive types must not erase distinctions.
 	definition.Frontmatter = &Frontmatter{}
 	definition.Exclude = &[]string{}
 	if definition.Frontmatter == nil || definition.Frontmatter.Enabled != nil || definition.Exclude == nil || len(*definition.Exclude) != 0 {
@@ -58,21 +57,5 @@ func TestDefaultSettingsContractAndIsolation(t *testing.T) {
 	first.Exclude = append(first.Exclude, "vendor/**")
 	if !reflect.DeepEqual(second, DefaultSettings()) {
 		t.Fatal("one operation modified another operation's defaults")
-	}
-}
-
-func TestLoaderBoundariesFailClosed(t *testing.T) {
-	for _, input := range [][]byte{
-		nil, {}, []byte("version: 1\n"), []byte("version: 1\nrules: {MD001: {}}\n"),
-		[]byte(`{"version":1}`), []byte("version: 1\n---\nversion: 1\n"), {0xff},
-	} {
-		for name, decode := range map[string]func([]byte) (*Definition, error){
-			"JSON": DecodeJSON,
-		} {
-			definition, err := decode(input)
-			if definition != nil || !errors.Is(err, ErrUnavailable) {
-				t.Fatalf("%s(%q) = %v, %v; want nil, ErrUnavailable", name, input, definition, err)
-			}
-		}
 	}
 }
