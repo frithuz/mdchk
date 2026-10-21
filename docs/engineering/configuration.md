@@ -19,15 +19,49 @@ flavor explicitly into the engine rather than relying on its internal CommonMark
 fallback. Presence must survive validation, including explicit resource values
 equal to defaults and rule entries containing only permissions or options.
 
-The `DecodeYAML`, `DecodeJSON` and explicit-file `Load` entrypoints are unavailable
-stubs: every call returns a nil definition and the recognizable `ErrUnavailable`
-error. They never return defaults or a partially decoded definition. `Load` does
-not read files. No loader or capability validation is delivered by these stubs.
-Strict YAML decoding and its pinned dependency belong to #217; complete catalog
-metadata to #215, semantic and capability validation to #218, exclusion matching
-to #220, and bounded discovery and ancestor policy resolution to #219. The
-examples remain future decoder and integration fixtures, not currently accepted
-loader inputs.
+`DecodeYAML` implements the filesystem-independent, strict version-1 syntax
+adapter. It validates UTF-8, document count, the fixed structural schema, scalar
+kinds and spelling, duplicate keys at every depth, aliases, tags and nulls before
+returning a definition. `Definition.Syntax()` exposes an immutable owned tree for
+semantic validation, including original scalar spelling and nested locations;
+collection and origin accessors return defensive copies. Alias values are checked
+at every use with use-site provenance; each alias keeps the anchor binding from
+its original source occurrence even if that anchor name is reused later. Block
+scalar spelling retains original header/body bytes, including significant trailing
+newlines, using immutable shared source storage across alias uses. Explicit YAML core tags determine scalar
+kind; tagged numbers and booleans still require decimal and true/false spelling.
+Unknown rule IDs, option schemas, domains, patterns and capabilities remain the
+responsibility of #218. Successful syntax decoding alone grants no availability.
+
+The adapter enforces the accepted default 1 MiB configuration byte limit and 64
+container levels, preflighting library tokens before recursive parsing and
+checking actual AST containers (including alias uses). Source tokens and expanded
+syntax records are each bounded by the 250,000 document-node budget; alias
+traversal is capped at 256 and expansion work at 250,000,000 units. Each node visit
+charges its path and scalar token lengths, and constructing child paths charges
+their lengths before allocation. Source/index scanning, block extraction and
+explicit-tag lexical validation are charged on first inspection; immutable block
+spelling/text, successful tag validation and primitive numeric conversion results
+(including unrepresentable results) are reused without body-sized alias copies or
+repeated scans. Every fallback retains its own alias-use origin. Source indexing
+recognizes CR, LF and CRLF and validates parser-derived boundaries before slicing. These local bounds do not claim aggregate
+operation accounting or configurable operator limits, which belong to later
+application integration.
+
+The pinned lexer has a narrow empty/blank-block dedent defect. The adapter repairs
+only its recognized header/body/error token pattern, with matching source-position
+and following-token guards; original source bytes remain unchanged and the pinned
+parser still validates the remaining structure. Real blank-line content remains
+distinct from an absent body. Unrelated invalid tokens are never suppressed.
+Recognized block header tokens are checked for one optional indentation indicator
+and one optional chomping indicator, in either order, as YAML 1.2.2 specifies.
+
+`DecodeJSON` and explicit-file `Load` remain unavailable stubs: every call returns
+a nil definition and recognizable `ErrUnavailable`. `Load` performs no IO.
+Complete catalog metadata belongs to #215, semantic and capability validation to
+#218, exclusion matching to #220, and bounded discovery and ancestor policy
+resolution to #219. The YAML examples can now be decoded structurally; their
+semantic and integration outcomes remain future validation fixtures.
 
 ## Confirmed requirements
 
@@ -41,7 +75,7 @@ loader inputs.
 
 ## YAML dependency and decoding
 
-Use `github.com/goccy/go-yaml` v1.19.2 behind `internal/config`, pinned when the Go module is introduced. Its source revision is `92bc79cb5f685e999ad131473168fc45215d12d9`. It supplies general YAML parsing, syntax nodes, source positions, and duplicate-key diagnostics. The [pinned module](https://github.com/goccy/go-yaml/blob/v1.19.2/go.mod) declares no external module requirements, and its [license](https://github.com/goccy/go-yaml/blob/v1.19.2/LICENSE) is MIT.
+Use `github.com/goccy/go-yaml` v1.19.2 behind `internal/config`, pinned when the Go module is introduced. Its retained [MIT notice](../../third_party/go-yaml/README.md) records provenance. Its source revision is `92bc79cb5f685e999ad131473168fc45215d12d9`. It supplies general YAML parsing, syntax nodes, source positions, and duplicate-key diagnostics. The [pinned module](https://github.com/goccy/go-yaml/blob/v1.19.2/go.mod) declares no external module requirements, and its [license](https://github.com/goccy/go-yaml/blob/v1.19.2/LICENSE) is MIT.
 
 YAML's comments and readable mappings justify this one dependency for hand-edited configuration. Standard-library JSON was the dependency-free alternative. An internal YAML parser would create a separate syntax-compatibility burden unrelated to the internal Markdown parser. At the 2026-10-14 review, the YAML organization's maintained v4 line was still a release candidate, while v3 received security fixes only. Track the selected library's maintenance and releases, retain its license, and test the adapter when upgrading. This decision does not select a metadata rewriting library.
 

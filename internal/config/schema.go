@@ -19,6 +19,7 @@ const (
 // Ancestor definitions supply restrictions, never inherited rule/options/flavor
 // settings. No policy resolution is performed by these types.
 type Definition struct {
+	syntax              LocatedValue
 	Version             *int
 	Flavor              *string
 	Resources           *Resources

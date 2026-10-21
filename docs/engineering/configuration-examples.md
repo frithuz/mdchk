@@ -2,7 +2,8 @@
 
 These cases specify inputs and expected outcomes for the approved
 [configuration contract](../configuration.md). They are examples for loader and
-integration fixtures; the loader is not implemented yet. Use the complete known
+integration fixtures; YAML syntax decoding is implemented, while semantic
+validation and filesystem loading remain pending. Use the complete known
 rule catalog in every case, independently of the executable implementations.
 
 Unless a case specifies otherwise, assume the selected flavor, directive

@@ -6,13 +6,6 @@ import "errors"
 // from invalid user configuration; errors.Is recognizes this development boundary.
 var ErrUnavailable = errors.New("configuration loading is not implemented")
 
-// DecodeYAML is the future strict, single-document YAML adapter. It currently
-// rejects every input, including valid examples, and returns no partial result.
-// sourcePath is diagnostic identity, not permission to read another file.
-func DecodeYAML(sourcePath string, content []byte) (*Definition, error) {
-	return nil, ErrUnavailable
-}
-
 // DecodeJSON is the future standalone supplied-object adapter. Raw bytes keep
 // duplicate names and invalid Unicode available for validation before decoding.
 // It currently rejects every input and performs no filesystem access.

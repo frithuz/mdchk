@@ -67,7 +67,6 @@ func TestLoaderBoundariesFailClosed(t *testing.T) {
 		[]byte(`{"version":1}`), []byte("version: 1\n---\nversion: 1\n"), {0xff},
 	} {
 		for name, decode := range map[string]func([]byte) (*Definition, error){
-			"YAML": func(b []byte) (*Definition, error) { return DecodeYAML(".mdchk.yaml", b) },
 			"JSON": DecodeJSON,
 		} {
 			definition, err := decode(input)
