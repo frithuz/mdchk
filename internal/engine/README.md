@@ -166,8 +166,10 @@ Intervals control scheduling and missing-rule coverage before callback execution
 An enabled EOF-only interval requires coverage; disabled-throughout ordinary rules
 can skip execution. Callbacks retain full original document/context/options.
 Findings are validated first, then filtered by start anchor. Default file-wide
-findings must use source byte zero; EOF-specific findings must use a zero-width
-span at `Source.Len()`. Directive diagnostics cannot be disabled. Incomplete state
+findings must use source byte zero; missing EOF material uses a zero-width
+span at `Source.Len()`; surplus terminal material uses the smallest offending
+suffix after retaining the first ending. Directive diagnostics cannot be disabled.
+Incomplete state
 withholds ordinary callbacks and retains reliable observations and explicit
 interruptions/coverage.
 

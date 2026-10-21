@@ -12,8 +12,8 @@ registered-rule execution. Build it from a checkout with
 before target access; invalid or unavailable settings return `12`. This build's
 available flavor is CommonMark; unavailable default GFM is never substituted.
 After preparation, target I/O and invalid UTF-8 return `13`; successful empty
-selection returns `11`. No production rule callbacks exist yet, so missing
-enabled defaults return `15`. Valid UTF-8 with all ordinary rules disabled can
+selection returns `11`. MD047 terminating-newline analysis is implemented; missing
+enabled defaults for other rules still return `15`. Valid UTF-8 with all ordinary rules disabled can
 return clean `0`; available registered checks retain findings and coverage.
 See [lint's current implementation](commands/lint.md#current-implementation) for
 the available configuration and remaining execution work. Help and version do

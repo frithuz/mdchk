@@ -230,7 +230,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with no ordinary executable registrations
+assembly uses the complete catalog with the MD047 read-only callback
 and asserts CommonMark and shared directive-processing capabilities. No configuration still selects built-in
 GFM, which fails admission rather than falling back. Configuration and read
 failures return 12; output failures return 13.
@@ -244,8 +244,8 @@ comes from the reusable [filesystem selection provider](engineering/file-selecti
 which implements portable traversal and structured skips/failures. Execution
 acquires immutable original-byte snapshots and passes them to the admitted plan
 with the same context and operation budget. The engine owns mandatory UTF-8
-validation, parsing and available registered checks. No production rule callbacks
-exist yet: missing enabled defaults produce genuine coverage deficits and return
+validation, parsing and available registered checks. MD047 checks original physical terminal
+endings; other missing enabled defaults produce genuine coverage deficits and return
 15. Valid UTF-8 with ordinary rules disabled can return clean 0; available checks
 can produce violations and retained partial findings. Lint emits text by default
 or one schema-v1 JSON object on stdout, with execution logs on stderr. Ordinary

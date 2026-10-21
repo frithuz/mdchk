@@ -1,0 +1,220 @@
+[
+  {
+    "name": "empty",
+    "source": "",
+    "expected": null
+  },
+  {
+    "name": "missing",
+    "source": "x",
+    "expected": [
+      1,
+      1,
+      1,
+      2,
+      1,
+      2
+    ]
+  },
+  {
+    "name": "lf",
+    "source": "x\n",
+    "expected": null
+  },
+  {
+    "name": "crlf",
+    "source": "x\r\n",
+    "expected": null
+  },
+  {
+    "name": "cr",
+    "source": "x\r",
+    "expected": null
+  },
+  {
+    "name": "double-lf",
+    "source": "x\n\n",
+    "expected": [
+      2,
+      3,
+      2,
+      1,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "double-crlf",
+    "source": "x\r\n\r\n",
+    "expected": [
+      3,
+      5,
+      2,
+      1,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "double-cr",
+    "source": "x\r\r",
+    "expected": [
+      2,
+      3,
+      2,
+      1,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "mixed-crlf-lf",
+    "source": "x\r\n\n",
+    "expected": [
+      3,
+      4,
+      2,
+      1,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "mixed-lf-crlf",
+    "source": "x\n\r\n",
+    "expected": [
+      2,
+      4,
+      2,
+      1,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "mixed-cr-crlf",
+    "source": "x\r\r\n",
+    "expected": [
+      2,
+      4,
+      2,
+      1,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "mixed-lf-cr",
+    "source": "x\n\r",
+    "expected": [
+      2,
+      3,
+      2,
+      1,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "triple",
+    "source": "x\r\n\n\r",
+    "expected": [
+      3,
+      5,
+      2,
+      1,
+      4,
+      1
+    ]
+  },
+  {
+    "name": "blank-lf",
+    "source": "\n",
+    "expected": null
+  },
+  {
+    "name": "blank-crlf",
+    "source": "\r\n",
+    "expected": null
+  },
+  {
+    "name": "blank-cr",
+    "source": "\r",
+    "expected": null
+  },
+  {
+    "name": "blank-double",
+    "source": "\r\n\n",
+    "expected": [
+      2,
+      3,
+      2,
+      1,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "spaces",
+    "source": " \t",
+    "expected": [
+      2,
+      2,
+      1,
+      3,
+      1,
+      3
+    ]
+  },
+  {
+    "name": "trailing-space",
+    "source": "x\n ",
+    "expected": [
+      3,
+      3,
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  {
+    "name": "space-before-ending",
+    "source": "x\n \n",
+    "expected": null
+  },
+  {
+    "name": "internal-blank",
+    "source": "x\n\ny\n",
+    "expected": null
+  },
+  {
+    "name": "unicode-tab",
+    "source": "\tπé",
+    "expected": [
+      6,
+      6,
+      1,
+      5,
+      1,
+      5
+    ]
+  },
+  {
+    "name": "unicode-surplus",
+    "source": "> - π\r\n\r\n",
+    "expected": [
+      8,
+      10,
+      2,
+      1,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "hard-break",
+    "source": "x  \n",
+    "expected": null
+  }
+]

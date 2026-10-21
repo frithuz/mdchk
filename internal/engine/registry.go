@@ -40,10 +40,11 @@ type Registration struct {
 type Check func(context.Context, RuleContext) RuleOutcome
 
 // Finding spans must belong to the supplied original Source and end at scalar
-// boundaries. File-wide findings use a source-owned byte-zero span; EOF-specific
-// findings use a zero-width span at Source.Len(). Suppression uses the start
-// anchor after finding validation. FixEligible is a positive per-finding
-// assessment, not metadata.
+// boundaries. File-wide observations use a source-owned byte-zero span; missing
+// EOF material uses a zero-width span at Source.Len(). Surplus terminal material
+// uses its smallest offending suffix (MD047 retains the first ending).
+// Suppression uses the start anchor after finding validation. FixEligible is a
+// positive per-finding assessment, not metadata.
 type Finding struct {
 	Message     string
 	Span        parser.Span

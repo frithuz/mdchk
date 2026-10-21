@@ -45,7 +45,7 @@ func Catalog() []Metadata {
 		{ID: "MD044", Name: "Capitalization of configured names", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"names": list(), "code_blocks": boolean(false)}},
 		{ID: "MD045", Name: "Images without alternative text", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"allow_decorative": boolean(false)}},
 		{ID: "MD046", Name: "Indented versus fenced code", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "fenced", "indented")}},
-		{ID: "MD047", Name: "Exactly one terminating newline", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
+		{ID: "MD047", Name: "Exactly one terminating newline", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: false, Options: OptionSchema{}},
 		{ID: "MD048", Name: "Backtick versus tilde fences", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "backtick", "tilde")}},
 		{ID: "MD049", Name: "Italic delimiter style", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "asterisk", "underscore")}},
 		{ID: "MD050", Name: "Bold delimiter style", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "asterisk", "underscore")}},

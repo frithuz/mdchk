@@ -153,7 +153,7 @@ func TestCatalogDocumentedContracts(t *testing.T) {
 		if !reflect.DeepEqual(m.Options, want) {
 			t.Errorf("%s schema = %#v, want %#v", m.ID, m.Options, want)
 		}
-		if m.RequiresSyntax != (m.ID != "MD094") {
+		if m.RequiresSyntax != (m.ID != "MD094" && m.ID != "MD047") {
 			t.Errorf("%s wrong syntax prerequisite", m.ID)
 		}
 	}

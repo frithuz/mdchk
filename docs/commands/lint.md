@@ -36,8 +36,8 @@ error attribution. It reports the first invalid sequence's original byte offset
 and Unicode position, retaining the original size and SHA-256 snapshot identity.
 
 The admitted plan runs the internal parser and available registered checks with
-the original source and validated options. No production rule callbacks are
-implemented yet: enabled missing defaults produce real coverage deficits and
+the original source and validated options. MD047 terminating-newline analysis is
+implemented; other enabled missing defaults produce real coverage deficits and
 return `15`. Disabling all ordinary rules permits a clean `0` for valid UTF-8.
 Available registered checks can return violations (`10`); interruptions retain
 partial findings and known targets, with runtime precedence `14 > 13 > 15 > 10 > 0`.
@@ -51,8 +51,9 @@ project access. Reporter availability does not reduce analysis coverage.
 Directive state is resolved before scheduling checks. A configured-off rule can
 be enabled by a permitted comment with its original options. Checks receive the
 full original document; each valid finding is suppressed according to its start
-anchor. File-wide findings use byte zero, while EOF-specific findings use the
-zero-width EOF anchor. Missing implementations enabled in any applicable region,
+anchor. File-wide findings use byte zero, while missing EOF material uses the
+zero-width EOF anchor. Surplus terminal material uses its smallest offending
+suffix after retaining the first ending. Missing implementations enabled in any applicable region,
 including EOF, produce coverage rather than fabricated findings. Malformed
 commands produce non-disableable `directive` violations; blocked requests produce
 located notes identifying the governing permission fields. Global denial retains
@@ -92,13 +93,14 @@ printf '# Example\n' > "$mdchk_demo/example.md"
 ```
 
 The compiled binary reports `incomplete` and exits `15`: this configuration admits
-the current CommonMark parser, while the enabled ordinary defaults have no
-production implementations. The catalog contains 89 entries, with 59 enabled
+the current CommonMark parser, while many enabled ordinary defaults still lack
+production implementations. MD047 terminating-newline analysis is available. The catalog contains 89 entries, with 59 enabled
 and 30 disabled by default; the mandatory UTF-8 gate is available independently
 of ordinary checks. Explicitly requesting an unavailable rule returns `12`.
 Omitting configuration selects unavailable default GFM and also returns `12`.
 
-To obtain a clean `0` for valid UTF-8 today, disable every ordinary rule. The
+To obtain a clean `0` for valid UTF-8, disable unavailable ordinary rules and
+satisfy or disable MD047. To isolate the decoding gate, disable every ordinary rule. The
 compiled production fixture in
 [`cleanConfiguration`](../../cmd/mdchk/configuration_acceptance_test.go)
 generates that complete configuration from the actual catalog and verifies both

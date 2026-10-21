@@ -72,7 +72,8 @@ settings with global permission enabled.
 Callbacks receive full original context and options. A validated finding's start
 anchor selects its state; crossing the interval end does not change attribution.
 File-wide findings require a source span: use byte zero for default file-wide
-observations and the zero-width source end for EOF-specific findings. An enabled
+observations and the zero-width source end for missing EOF material. Surplus terminal
+material uses its smallest offending suffix after retaining the first ending. An enabled
 final EOF interval requires execution or truthful missing-rule coverage even if
 it has zero width. Disabled-throughout rules may skip ordinary lint execution.
 Incomplete processing retains reliable earlier diagnostics and observations but
