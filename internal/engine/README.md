@@ -27,6 +27,20 @@ shared boolean fields and rejects null rule mappings. Syntax adapters must first
 reject duplicate keys; the catalog boundary does not decode YAML. The config
 package aliases the engine's `RuleSetting` to preserve this shared contract.
 
+`SelectRules` retains the same validated option results and explicit membership
+in an immutable `RuleSelection`, bound to its registry. Its `Plan` applies
+admitted directive denials without synthesizing explicit entries. Plan-created
+inputs retain that selection, and `ExecutionPlan.Lint` delegates to the same
+registry execution and finalization; semantic providers are not re-run during
+Markdown analysis. Inputs from another plan or registry fail before analysis.
+Configuration adapters retain the complete admitted policy/context snapshot;
+mutable resolution views never become execution authority.
+
+The catalog proves table rules MD055/056/058/060/075 inapplicable to CommonMark,
+and footnote rules MD066/067/068 inapplicable to CommonMark/GFM. Unknown or absent
+dialect context stays conservative. Resource/integration context absence does
+not imply inapplicability: callbacks report unmet prerequisites as coverage.
+
 MD073 validates complete single-line comment markers, distinctness and ordered
 heading bounds. MD095 `allowed_hosts` carries the pinned Unicode 17.0.0 semantic
 domain. A nonempty list requires `ValidationProviders.ValidateHostname` with the

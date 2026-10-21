@@ -53,9 +53,18 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 		if int64(in.source.Len()) > budget.Limits().DocumentBytes {
 			return result.Result{}, fmt.Errorf("input %s exceeds document-bytes limit", in.path)
 		}
-		resolved, err := r.ResolveSettings(in.settings, options.Validation)
-		if err != nil {
-			return result.Result{}, fmt.Errorf("%s: %w", in.path, err)
+		var resolved map[string]ResolvedRule
+		if in.plan != nil {
+			if in.plan.registry != r {
+				return result.Result{}, fmt.Errorf("%s: execution plan belongs to another registry", in.path)
+			}
+			resolved = in.plan.rules
+		} else {
+			var err error
+			resolved, err = r.ResolveSettings(in.settings, options.Validation)
+			if err != nil {
+				return result.Result{}, fmt.Errorf("%s: %w", in.path, err)
+			}
 		}
 		for _, id := range r.ids {
 			state := resolved[id]

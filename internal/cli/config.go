@@ -15,6 +15,7 @@ import (
 type lintInvocation struct {
 	options                         lintOptions
 	selection                       *config.Selection
+	plan                            *config.ExecutionPlan
 	workingDirectory, exclusionBase string
 	exclusions                      *config.Patterns
 	targetSelection                 *files.Selection
@@ -45,7 +46,7 @@ func prepareLint(options lintOptions) (*lintInvocation, error) {
 		base = filepath.Dir(selection.SelectedPath)
 	}
 	return &lintInvocation{
-		options: options, selection: selection, workingDirectory: cwd,
+		options: options, selection: selection, plan: selection.Resolution.ExecutionPlan(), workingDirectory: cwd,
 		exclusionBase: base, exclusions: selection.Resolution.Exclude,
 	}, nil
 }

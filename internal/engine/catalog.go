@@ -53,27 +53,27 @@ func Catalog() []Metadata {
 		{ID: "MD052", Name: "References without definitions", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD053", Name: "Unneeded link and image definitions", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"ignored_labels": list()}},
 		{ID: "MD054", Name: "Link and image representation style", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"allowed_styles": {Kind: Strings, Default: []string{"inline", "full_reference", "collapsed_reference", "shortcut_reference", "autolink"}, Choices: []string{"inline", "full_reference", "collapsed_reference", "shortcut_reference", "autolink"}, MinItems: 1}}},
-		{ID: "MD055", Name: "Outer table pipe convention", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "leading_and_trailing", "none")}},
-		{ID: "MD056", Name: "Mismatched cell counts", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
+		{ID: "MD055", Name: "Outer table pipe convention", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, AppliesTo: pipeTablesApply, Options: OptionSchema{"style": choice("consistent", "leading_and_trailing", "none")}},
+		{ID: "MD056", Name: "Mismatched cell counts", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, AppliesTo: pipeTablesApply, Options: OptionSchema{}},
 		{ID: "MD057", Name: "Missing local link targets", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"check_images": boolean(true)}},
-		{ID: "MD058", Name: "Blank lines around tables", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
+		{ID: "MD058", Name: "Blank lines around tables", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, AppliesTo: pipeTablesApply, Options: OptionSchema{}},
 		{ID: "MD059", Name: "Uninformative link labels", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"phrases": list("click here", "here", "more", "read more")}},
-		{ID: "MD060", Name: "Table column layout", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("aligned", "compact", "tight")}},
+		{ID: "MD060", Name: "Table column layout", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, AppliesTo: pipeTablesApply, Options: OptionSchema{"style": choice("aligned", "compact", "tight")}},
 		{ID: "MD061", Name: "Configured prohibited vocabulary", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"terms": list(), "case_sensitive": boolean(false)}},
 		{ID: "MD062", Name: "Whitespace in destination URLs", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD063", Name: "Heading capitalization", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("sentence", "title"), "proper_names": list()}},
 		{ID: "MD064", Name: "Repeated spaces in prose", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"maximum": integer(1, 1)}},
 		{ID: "MD065", Name: "Blank lines around horizontal rules", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD066", Name: "Unmatched footnote references and definitions", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD067", Name: "Definition order versus reference order", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD068", Name: "Footnotes without content", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
+		{ID: "MD066", Name: "Unmatched footnote references and definitions", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, AppliesTo: footnotesApply, Options: OptionSchema{}},
+		{ID: "MD067", Name: "Definition order versus reference order", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, AppliesTo: footnotesApply, Options: OptionSchema{}},
+		{ID: "MD068", Name: "Footnotes without content", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, AppliesTo: footnotesApply, Options: OptionSchema{}},
 		{ID: "MD069", Name: "Repeated list markers", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD070", Name: "Outer fence length for nested examples", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD071", Name: "Blank line following metadata", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD072", Name: "Metadata key ordering", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"recursive": boolean(false), "case_sensitive": boolean(true)}},
 		{ID: "MD073", Name: "Table of contents versus headings", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"start_marker": {Kind: String, Default: "<!-- toc -->", Domain: HTMLComment}, "end_marker": {Kind: String, Default: "<!-- /toc -->", Domain: HTMLComment}, "min_level": headingLevel(1), "max_level": headingLevel(6)}},
 		{ID: "MD074", Name: "MkDocs navigation file targets", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"config_path": text("mkdocs.yml"), "check_omitted": boolean(false), "check_absolute": boolean(false)}},
-		{ID: "MD075", Name: "Pipe rows without a table header", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
+		{ID: "MD075", Name: "Pipe rows without a table header", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, AppliesTo: pipeTablesApply, Options: OptionSchema{}},
 		{ID: "MD076", Name: "Consistent spacing between list items", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "tight", "loose")}},
 		{ID: "MD077", Name: "Indentation of list continuation content", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD078", Name: "Missing executable Quarto chunk label", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"require_unique": boolean(true)}},
@@ -115,4 +115,15 @@ func choice(first string, rest ...string) OptionSpec {
 }
 func list(values ...string) OptionSpec {
 	return OptionSpec{Kind: Strings, Default: append([]string{}, values...)}
+}
+
+// Applicability excludes only formats whose accepted profile proves that the
+// syntax is absent. Missing or unrecognized context is not proof of absence;
+// execution admission and parser coverage handle unavailable dialect support.
+func pipeTablesApply(dc DocumentContext) bool {
+	return dc.Flavor != "commonmark"
+}
+
+func footnotesApply(dc DocumentContext) bool {
+	return dc.Flavor != "commonmark" && dc.Flavor != "gfm"
 }

@@ -176,7 +176,7 @@ func TestCatalogExecutableSubsetsPreserveMetadata(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !reflect.DeepEqual(r.Metadata(), engine.Catalog()) {
+		if !catalogMetadataEqual(r.Metadata(), engine.Catalog()) {
 			t.Fatalf("subset %v changed metadata", ids)
 		}
 		states, err := r.ResolveSettings(nil, engine.ValidationProviders{})
@@ -298,7 +298,7 @@ func TestCatalogDefensiveCopies(t *testing.T) {
 	}
 	mutate(catalog)
 	mutate(r.Metadata())
-	if !reflect.DeepEqual(r.Metadata(), engine.Catalog()) {
+	if !catalogMetadataEqual(r.Metadata(), engine.Catalog()) {
 		t.Fatal("metadata shares mutable input/output storage")
 	}
 	phrases := []string{"custom"}

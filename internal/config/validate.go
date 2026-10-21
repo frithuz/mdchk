@@ -64,6 +64,7 @@ func clonePermissions(p Permissions) Permissions {
 // Validated is an immutable schema-valid definition. It grants no execution
 // availability. Its private owned snapshot is independent of passive fields.
 type Validated struct {
+	selection       *engine.RuleSelection
 	definition      *Definition
 	rules           map[string]engine.ResolvedRule
 	settings        Builtins
@@ -75,6 +76,7 @@ type Validated struct {
 // explicit values; absence means a catalog/built-in default. No missing default
 // rule implementation becomes a validation coverage deficit.
 type Resolution struct {
+	plan                                 *ExecutionPlan
 	Settings                             Builtins
 	Rules                                map[string]engine.ResolvedRule
 	Origins                              map[string]Origin
@@ -201,7 +203,7 @@ func ValidateDefinition(input *Definition, registry *engine.Registry, providers 
 			}
 		}
 	}
-	states, err := registry.ResolveSettings(d.Rules, providers)
+	selection, err := registry.SelectRules(d.Rules, providers)
 	if err != nil {
 		var se *engine.SettingError
 		path := "rules"
@@ -216,7 +218,7 @@ func ValidateDefinition(input *Definition, registry *engine.Registry, providers 
 		}
 		return nil, at(path, err)
 	}
-	return &Validated{d, states, b, ex, slides}, nil
+	return &Validated{selection: selection, definition: d, rules: selection.Rules(), settings: b, exclude: ex, slides: slides}, nil
 }
 func validIndexFile(s string) bool {
 	return s != "" && s != "." && s != ".." && utf8.ValidString(s) && !strings.ContainsAny(s, "/\\*?[]#:") && strings.IndexFunc(s, unicode.IsControl) < 0
@@ -324,7 +326,19 @@ func (v *Validated) Admit(c Capabilities, inherited Permissions) (*Resolution, e
 	for k, o := range d.Provenance {
 		origins[k] = cloneOrigin(o)
 	}
-	return &Resolution{b, rules, origins, v.Permissions(Permissions{}), p, v.exclude, v.slides}, nil
+	denied := make(map[string]bool)
+	for id, rule := range rules {
+		if !rule.AllowDirectives {
+			denied[id] = true
+		}
+	}
+	plan, err := v.selection.Plan(engine.DocumentContext{Flavor: b.Flavor}, denied)
+	if err != nil {
+		return nil, located(d, "rules", err)
+	}
+	resolution := &Resolution{Settings: b, Rules: rules, Origins: origins, OwnPermissions: v.Permissions(Permissions{}), EffectivePermissions: p, Exclude: v.exclude, Slides: v.slides}
+	resolution.plan = &ExecutionPlan{engine: plan, configuration: cloneResolution(resolution)}
+	return resolution, nil
 }
 func cloneOptions(o engine.Options) engine.Options {
 	p := make(engine.Options, len(o))
@@ -344,4 +358,14 @@ func child(v LocatedValue, key string) LocatedValue {
 		}
 	}
 	return LocatedValue{}
+}
+
+// ExecutionPlan returns the immutable admitted execution bridge. Mutating this
+// Resolution's passive snapshots cannot alter it. A manually built Resolution
+// has no execution authority and returns nil.
+func (r *Resolution) ExecutionPlan() *ExecutionPlan {
+	if r == nil {
+		return nil
+	}
+	return r.plan
 }

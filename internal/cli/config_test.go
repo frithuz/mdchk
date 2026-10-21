@@ -101,6 +101,13 @@ func TestLintPreparationRetainsOwnedSelection(t *testing.T) {
 		if !inv.selection.Resolution.Rules["MD001"].Enabled || inv.selection.Resolution.Rules["MD001"].Available {
 			t.Fatal("default catalog/availability changed")
 		}
+		if inv.plan == nil || inv.plan != inv.selection.Resolution.ExecutionPlan() {
+			t.Fatal("preparation discarded the admitted execution plan")
+		}
+		inv.selection.Resolution.Rules["MD013"].Options["length"] = 99
+		if inv.plan.Rules()["MD013"].Options["length"] != 88 || inv.plan.Rules()["MD001"].Explicit {
+			t.Fatal("passive settings mutated execution or made defaults explicit")
+		}
 		return 15
 	})
 	if status != 15 || calls != 1 {

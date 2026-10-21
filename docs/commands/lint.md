@@ -22,7 +22,9 @@ GFM and therefore return `12` when no configuration exists. A configuration with
 `flavor: commonmark` and `directives: {enabled: false}` can complete preparation;
 an inherited global directive denial also satisfies the directive requirement.
 Explicitly enabled unavailable rules fail preparation; unmentioned default rules
-remain in the complete catalog for later coverage reporting.
+remain in the complete catalog for coverage reporting. Preparation retains an
+immutable admitted execution plan for the shared engine; the actual CLI
+analysis connection remains pending.
 
 After successful preparation, lint selects targets using the reusable
 [target selection provider](../engineering/file-selection.md), opens regular

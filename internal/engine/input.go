@@ -27,6 +27,7 @@ type Input struct {
 	source          parser.Source
 	settings        Settings
 	documentContext DocumentContext
+	plan            *ExecutionPlan
 }
 
 // NewInput acquires an immutable original snapshot and resolved settings. This
@@ -51,7 +52,7 @@ func NewInput(path string, content []byte, settings Settings, dc DocumentContext
 		}
 		copySettings[id] = s
 	}
-	return Input{path, parser.NewSource(content), copySettings, dc}, nil
+	return Input{path: path, source: parser.NewSource(content), settings: copySettings, documentContext: dc}, nil
 }
 func (in Input) Path() string          { return in.path }
 func (in Input) Source() parser.Source { return in.source }

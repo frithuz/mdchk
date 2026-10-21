@@ -189,6 +189,32 @@ retain source positions, including alias use sites; object diagnostics retain
 only property paths. No validation step calls a parser, rule check, filesystem,
 reporter or write adapter, and failures return no partial usable resolution.
 
+## Admitted lint execution
+
+`Resolution.ExecutionPlan()` returns the immutable admitted bridge to the shared
+engine. A passive or manually constructed resolution grants no execution
+capability. The plan retains the original executable registry, schema-validated
+provider results, selected flavor, options, explicit rule membership, effective
+permission denials and provenance. `Configuration()` returns a fresh owned view;
+mutating that view or the original resolution cannot change execution.
+
+Create target snapshots with `plan.NewInput(path, bytes)` and run `plan.Lint`
+with one shared operation budget. This delegates to `Registry.Lint` and its
+existing mandatory UTF-8 gate, parser, coverage collection and finalization.
+Resolved defaults are not converted into supplied settings: absent enabled
+implementations still produce `rule-unavailable`, while explicit enabled absent
+implementations fail admission before target access. Disabled and positively
+dialect-inapplicable checks do not reduce coverage. Catalog table rules apply to
+GFM and Pandoc; footnote rules apply to Pandoc. Missing optional resource or
+integration context never establishes dialect inapplicability.
+
+CLI preparation retains this plan. The CLI analysis connection remains #127;
+that connection must replace the current acquisition-only UTF-8 loop with the
+plan's engine gate, passing the acquisition budget to `Lint`. It must not run both
+gates or charge a second index/hash scan. The current CLI continues to report
+analysis as pending; plan availability does not imply production rule callbacks,
+GFM/Pandoc parsers, directives, optional contexts or reporters are implemented.
+
 ## Confirmed requirements
 
 - Provide validation under the `config` command group as `config validate`.
