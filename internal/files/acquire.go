@@ -247,7 +247,7 @@ func openTarget(target Target) (readHandle, error) {
 	}
 	for _, part := range chain[1 : len(chain)-1] {
 		name := filepath.Base(part.path)
-		if err := rejectGitAlias(root, name, part.info); err != nil {
+		if err := rejectGitAlias(root, name, part.info); err != nil && !target.inspection {
 			return nil, err
 		}
 		info, e := root.Lstat(name)
@@ -291,7 +291,7 @@ func openTarget(target Target) (readHandle, error) {
 	if !info.Mode().IsRegular() || !os.SameFile(info, chain[len(chain)-1].info) {
 		return nil, errors.New("selected file identity changed")
 	}
-	if err := rejectGitAlias(root, name, info); err != nil {
+	if err := rejectGitAlias(root, name, info); err != nil && !target.inspection {
 		return nil, err
 	}
 	file, err := root.OpenFile(name, os.O_RDONLY|acquireOpenFlags, 0)

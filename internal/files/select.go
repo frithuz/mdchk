@@ -30,6 +30,7 @@ type Options struct {
 type Target struct {
 	Path       string
 	identities []pathIdentity
+	inspection bool
 }
 type pathIdentity struct {
 	path string

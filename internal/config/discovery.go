@@ -37,6 +37,7 @@ type Selection struct {
 	validated     *Validated
 	inherited     Permissions
 	sources       []SourceSnapshot
+	exclusions    []ExclusionScope
 }
 
 // PolicyError identifies an exclusion addition and every earlier governing
@@ -82,6 +83,10 @@ func Resolve(options SelectionOptions, registry *engine.Registry, providers engi
 // schema/policy checks as Resolve, without admitting execution capabilities.
 // Any failure returns no usable partial selection.
 func ResolveValidated(options SelectionOptions, registry *engine.Registry, providers engine.ValidationProviders) (*Selection, error) {
+	return resolveValidated(options, registry, providers, nil)
+}
+
+func resolveValidated(options SelectionOptions, registry *engine.Registry, providers engine.ValidationProviders, bounded *DiscoveryBudget) (*Selection, error) {
 	cwd := options.WorkingDirectory
 	if cwd == "" {
 		var err error
@@ -149,7 +154,11 @@ func ResolveValidated(options SelectionOptions, registry *engine.Registry, provi
 		}
 		explicit = filepath.Join(canonicalCap, r)
 	}
-	return selectFS(access, canonicalStart, canonicalCap, explicit, registry, providers, rawExplicit)
+	var effects discoveryFS = access
+	if bounded != nil {
+		effects = &boundedDiscovery{access: access, options: bounded}
+	}
+	return selectFSBounded(effects, canonicalStart, canonicalCap, explicit, registry, providers, bounded, rawExplicit)
 }
 
 func resolveFS(access discoveryFS, start, cap, explicit string, registry *engine.Registry, providers engine.ValidationProviders, capabilities Capabilities, rawExplicit ...string) (*Selection, error) {
@@ -183,7 +192,20 @@ func (s *Selection) Admit(c Capabilities) (*Resolution, error) {
 }
 
 func selectFS(access discoveryFS, start, cap, explicit string, registry *engine.Registry, providers engine.ValidationProviders, rawExplicit ...string) (selection *Selection, resultErr error) {
+	return selectFSBounded(access, start, cap, explicit, registry, providers, nil, rawExplicit...)
+}
+
+func selectFSBounded(access discoveryFS, start, cap, explicit string, registry *engine.Registry, providers engine.ValidationProviders, bounded *DiscoveryBudget, rawExplicit ...string) (selection *Selection, resultErr error) {
 	var sources []SourceSnapshot
+	var exclusions []ExclusionScope
+	validate := func(path string, inherited Permissions) (*Validated, SourceSnapshot, error) {
+		if bounded != nil {
+			if err := bounded.charge(permissionWork(inherited)); err != nil {
+				return nil, SourceSnapshot{}, err
+			}
+		}
+		return validateFileBounded(access, path, registry, providers, inherited, bounded)
+	}
 	defer func() { resultErr = sourceError(resultErr, sources) }()
 	info, err := access.lstat(start)
 	if err != nil {
@@ -273,7 +295,7 @@ func selectFS(access discoveryFS, start, cap, explicit string, registry *engine.
 			if e != nil {
 				return nil, pathError(path, e)
 			}
-			v, source, e := validateFile(access, path, registry, providers, inherited)
+			v, source, e := validate(path, inherited)
 			if source.Path != "" {
 				sources = append(sources, source)
 			}
@@ -290,10 +312,10 @@ func selectFS(access discoveryFS, start, cap, explicit string, registry *engine.
 		if e != nil {
 			return nil, e
 		}
-		validated, err = ValidateDefinition(d, registry, providers)
+		validated, err = validateDefinitionBounded(d, registry, providers, bounded)
 	} else {
 		var source SourceSnapshot
-		validated, source, err = validateFile(access, selected, registry, providers, inherited)
+		validated, source, err = validate(selected, inherited)
 		if source.Path != "" {
 			sources = append(sources, source)
 		}
@@ -301,19 +323,32 @@ func selectFS(access discoveryFS, start, cap, explicit string, registry *engine.
 	if err != nil {
 		return nil, err
 	}
-	return &Selection{Boundary: boundary, SelectedPath: selected, AncestorPaths: ancestors, validated: validated, inherited: clonePermissions(inherited), sources: slices.Clone(sources)}, nil
+	if len(validated.settings.Exclude) > 0 {
+		exclusions = append(exclusions, ExclusionScope{cloneOrigin(validated.definition.Provenance["exclude"]), ownedPatterns(validated.exclude)})
+	}
+	return &Selection{exclusions: exclusions, Boundary: boundary, SelectedPath: selected, AncestorPaths: ancestors, validated: validated, inherited: clonePermissions(inherited), sources: slices.Clone(sources)}, nil
 }
-func validateFile(access discoveryFS, path string, registry *engine.Registry, providers engine.ValidationProviders, inherited Permissions) (*Validated, SourceSnapshot, error) {
+func validateFileBounded(access discoveryFS, path string, registry *engine.Registry, providers engine.ValidationProviders, inherited Permissions, bounded *DiscoveryBudget) (*Validated, SourceSnapshot, error) {
 	data, err := access.readRegular(path)
 	if err != nil {
 		return nil, SourceSnapshot{}, pathError(path, err)
 	}
+	if bounded != nil {
+		if err := bounded.charge(int64(len(data))*2 + 1); err != nil {
+			return nil, SourceSnapshot{}, err
+		}
+	}
 	source := snapshotSource(path, data)
-	d, err := DecodeYAML(path, data)
+	var d *Definition
+	if bounded == nil {
+		d, err = DecodeYAML(path, data)
+	} else {
+		d, err = DecodeYAMLProfile(bounded.Context, path, data, bounded.Budget, bounded.StructuredDepth)
+	}
 	if err != nil {
 		return nil, source, err
 	}
-	v, err := ValidateDefinition(d, registry, providers)
+	v, err := validateDefinitionBounded(d, registry, providers, bounded)
 	if err != nil {
 		return nil, source, err
 	}

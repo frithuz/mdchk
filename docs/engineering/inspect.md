@@ -57,3 +57,41 @@ A completed inspection uses status `inspected` and exits successfully even when 
 Test relative and absolute targets, explicit symlinks, empty files, Unicode, CRLF, checksum consistency, build version, excluded targets, target-relative configuration discovery, configured flavors, invalid configuration, line boundaries, multiline nodes, zero-width findings, contextual directives, overlapping transitions, multi-rule disabling, blocked directives, rule counts, parser uncertainty, and JSON stability. Verify lint and inspect agree on active findings and directive behavior for the same snapshot and configuration. Assert no writes and successful process status for completed inspections containing observations.
 
 The [result contract](results.md) and [schema/projection fixtures](../contracts/results/README.md) define exact section availability, snapshot identities and rule-state fields. Invalid UTF-8 can produce a completed byte-level inspection with unavailable parsed sections; runtime interruption uses incomplete status and exit 15 unless an operational error overrides it. `checked_files` always contains path strings; file metadata belongs in `inspection.file` and `files` snapshots.
+
+## Implemented snapshot foundation
+
+`internal/inspect.Acquire` implements the read-only snapshot and configuration
+foundation. AST/rule/directive projections, region filtering and command reports
+remain separate work. The caller supplies the build version (an empty version is
+reported as `development`), registry and implemented capabilities.
+
+Acquisition makes one attempt, follows the explicitly named target's symlinks,
+and then uses the shared pinned directory/regular-file reader. It checks file
+identity, size and modification time before and after reading and verifies the
+selected path again. A changing file or replaced component returns an acquisition
+error without retrying; no metadata combines separate target reads. These checks
+cannot detect an adversary rewriting and restoring identical metadata during the
+read; inspection does not promise an atomic filesystem transaction. Ordinary
+selection and MCP access keep their existing restrictions.
+
+The immutable source, physical-line index, size and both checksums describe the
+same acquired bytes, including malformed UTF-8. Returned configuration, source
+identity and exclusion-origin views are owned copies; later disk changes do not
+affect them. Configuration discovery begins at the canonical target parent;
+relative explicit configuration remains relative to the invocation directory.
+The existing repository/caller boundary and strict ancestor policy apply.
+
+`config.ResolveValidatedBounded` shares the operation's context, elapsed time,
+work and construction budget. Configuration source and aggregate byte caps are
+independent of the Markdown byte cap. Effects, expanded YAML semantics, provider
+callbacks, hashing, line indexing and initial owned views reserve work before
+construction. Runtime cancellation and limit exhaustion preserve typed causes.
+An invalid or unreadable definition remains a configuration observation with
+available target metadata and only successfully read configuration identities.
+It does not yield substituted defaults or a known-negative exclusion decision.
+Fully validated settings and permission provenance remain available when build
+capability admission fails; the admitted execution bridge is then unavailable.
+A normally excluded explicit target is still acquired. Normal lint/inspect
+exclusion status uses only the selected definition's patterns and defining
+directory; ancestor configurations contribute validation and inherited permission
+denials, without merging their exclusion patterns.

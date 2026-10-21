@@ -11,14 +11,47 @@ import (
 // the caller's shared budget before validation and provider callbacks. Expanded
 // alias values are visited individually, rather than estimating from file size.
 func (s PolicyState) ApplyAdmittedBounded(ctx context.Context, budget *parser.OperationBudget, d *Definition, registry *engine.Registry, providers engine.ValidationProviders, c Capabilities) (PolicyState, *Resolution, error) {
+	providers, err := reserveDefinition(ctx, budget, d, providers, 65536+8*s.SnapshotWork())
+	if err != nil {
+		return s, nil, err
+	}
 	charge := func(n int64) error {
 		if err := ctx.Err(); err != nil {
 			return err
 		}
 		return budget.ChargeWork(n)
 	}
-	if err := charge(65536 + 8*s.SnapshotWork()); err != nil {
+	if represent := c.RepresentIndexFile; represent != nil {
+		c.RepresentIndexFile = func(name string) error {
+			if err := charge(int64(len(name) + 1)); err != nil {
+				return err
+			}
+			err := represent(name)
+			if err != nil {
+				return err
+			}
+			return charge(0)
+		}
+	}
+	next, resolution, err := s.ApplyAdmitted(d, registry, providers, c)
+	if err != nil {
 		return s, nil, err
+	}
+	if err = charge(0); err != nil {
+		return s, nil, err
+	}
+	return next, resolution, nil
+}
+
+func reserveDefinition(ctx context.Context, budget *parser.OperationBudget, d *Definition, providers engine.ValidationProviders, overhead int64) (engine.ValidationProviders, error) {
+	charge := func(n int64) error {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		return budget.ChargeWork(n)
+	}
+	if err := charge(overhead); err != nil {
+		return providers, err
 	}
 	var reserve func(LocatedValue) error
 	reserve = func(v LocatedValue) error {
@@ -45,7 +78,7 @@ func (s PolicyState) ApplyAdmittedBounded(ctx context.Context, budget *parser.Op
 	}
 	if d != nil {
 		if err := reserve(d.Syntax()); err != nil {
-			return s, nil, err
+			return providers, err
 		}
 	}
 	if provider := providers.ValidateHostname; provider != nil {
@@ -60,24 +93,6 @@ func (s PolicyState) ApplyAdmittedBounded(ctx context.Context, budget *parser.Op
 			return charge(0)
 		}
 	}
-	if represent := c.RepresentIndexFile; represent != nil {
-		c.RepresentIndexFile = func(name string) error {
-			if err := charge(int64(len(name) + 1)); err != nil {
-				return err
-			}
-			err := represent(name)
-			if err != nil {
-				return err
-			}
-			return charge(0)
-		}
-	}
-	next, resolution, err := s.ApplyAdmitted(d, registry, providers, c)
-	if err != nil {
-		return s, nil, err
-	}
-	if err = charge(0); err != nil {
-		return s, nil, err
-	}
-	return next, resolution, nil
+
+	return providers, nil
 }
