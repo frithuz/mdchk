@@ -5,8 +5,10 @@ These cases specify inputs and expected outcomes for the approved
 integration fixtures. Strict YAML decoding, semantic validation, bounded
 filesystem discovery, ancestor permissions, and compiled lint integration are
 implemented. Use the complete known rule catalog in every case, independently
-of the executable implementations. Config validation, inspect, MCP, and fix
-commands remain future delivery; their cases below specify the accepted contract.
+of the executable implementations. Read-only project configuration validation
+and its compiled text/JSON workflow tests are also implemented. Inspect, MCP,
+fix, and VS Code/GitHub reporters remain future delivery; their cases below
+specify the accepted contract.
 
 Unless a case specifies otherwise, assume the selected flavor, directive
 processor, and applicable rules are implemented, no ancestor restricts the
@@ -100,9 +102,11 @@ findings. Test-only registrations exercise this behavior without changing
 production defaults or shipping placeholder checks. Disabling all ordinary
 checks can yield clean exit 0 for valid UTF-8; mandatory decoding still applies.
 
-The future config validation scan does not execute MD001 and can succeed. Future
-inspect can report the missing implementation while still exiting 0. These
-commands, MCP integration, and fix are not delivered by the current lint build.
+The implemented config validation scan does not execute MD001 and succeeds for
+this definition with exit 0. Its independent project scan checks every eligible
+definition rather than selecting the single definition used by lint. Future
+inspect can report the missing implementation while still exiting 0. Inspect,
+MCP integration, and fix are not delivered by the current build.
 
 ## Invalid definitions
 

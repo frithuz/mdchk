@@ -130,11 +130,17 @@ func runConfiguration(t *testing.T, binary, cwd, snapshotRoot string, args ...st
 // guard fixture bytes; metadata and permission tests need different guards.
 func runConfigurationProcess(t *testing.T, binary, cwd string, args ...string) configurationRun {
 	t.Helper()
+	return runConfigurationProcessEnv(t, binary, cwd, nil, args...)
+}
+
+func runConfigurationProcessEnv(t *testing.T, binary, cwd string, env []string, args ...string) configurationRun {
+	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	//nolint:gosec // Execute only our compiled binary with test-owned arguments and fixtures.
 	command := exec.CommandContext(ctx, binary, args...)
 	command.Dir = cwd
+	command.Env = env
 	var stdout, stderr bytes.Buffer
 	command.Stdout, command.Stderr = &stdout, &stderr
 	err := command.Run()
@@ -157,6 +163,11 @@ func runConfigurationProcess(t *testing.T, binary, cwd string, args ...string) c
 
 func validateConfigurationJSON(t *testing.T, data []byte) result.Result {
 	t.Helper()
+	return validateConfigurationOperationJSON(t, data, "lint")
+}
+
+func validateConfigurationOperationJSON(t *testing.T, data []byte, operation string) result.Result {
+	t.Helper()
 	dec := json.NewDecoder(bytes.NewReader(data))
 	var out result.Result
 	if err := dec.Decode(&out); err != nil {
@@ -166,7 +177,7 @@ func validateConfigurationJSON(t *testing.T, data []byte) result.Result {
 	if err := dec.Decode(&trailing); err != io.EOF {
 		t.Fatalf("report contains trailing JSON: %v", err)
 	}
-	if !bytes.HasSuffix(data, []byte("\n")) || out.SchemaVersion != 1 || out.Operation != "lint" {
+	if !bytes.HasSuffix(data, []byte("\n")) || out.SchemaVersion != 1 || out.Operation != operation {
 		t.Fatalf("invalid report envelope: %s", data)
 	}
 	var fields map[string]json.RawMessage

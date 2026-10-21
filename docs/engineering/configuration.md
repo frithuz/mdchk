@@ -307,8 +307,8 @@ and per-file references before deriving the shared outcome. Public CLI paths
 are relative to the invocation directory; acquisition keeps native names private.
 Lint text and JSON reporters present the canonical result without rereading
 configuration sources or target documents. Production rule callbacks, GFM/Pandoc
-parsers, directives, optional contexts and VS Code/GitHub reporters remain
-separate deliveries.
+parsers, optional contexts and VS Code/GitHub reporters remain separate
+deliveries. Directive recognition and shared suppression are implemented.
 
 ## Confirmed requirements
 
@@ -392,15 +392,31 @@ Git ignores and valid mdchk exclusions combine as exclusion sources; a path must
 
 ## Results and command handling
 
-Accept one optional project-directory argument and `--format text|json|vscode|github`, the shared repeatable `--limit name=value` option, plus global options. Reject unsupported flags such as `--config` and `--dry-run`. An existing directory with no eligible configuration files is a successful empty scan, distinct from lint or fix selecting no Markdown files.
+Accept one optional project-directory argument and implemented `--format text|json`, the shared repeatable `--limit name=value` option, plus global options. VS Code/GitHub output remains deferred and is rejected
+before project access. Reject unsupported flags such as `--config` and `--dry-run`. An existing directory with no eligible configuration files is a successful empty scan, distinct from lint or fix selecting no Markdown files.
 
 Use the shared result envelope with operation `config validate`, configuration paths in checked files, skip reasons, empty `diagnostics` and `coverage` lists, no changes, and categorized `errors`. Invalid definitions are configuration errors, not Markdown rule violations. A fully traversed scan can be complete even when definitions are invalid; unreadable files or directories and untrusted exclusions from invalid configs must be explained in the report. A valid config exclusion is intentional scope, not incomplete work.
 
-Include optional paths and source ranges in error records. Text reports validation counts; JSON retains structured errors; VS Code formats located errors as problem-matcher lines using stable identifiers such as `config-definition`; GitHub emits located error annotations. Location-free errors remain stderr messages in VS Code mode and annotations without source coordinates in GitHub mode. All formats preserve the command's error categories and exit precedence from the command guide.
+Include optional paths and source ranges in error records. Implemented text
+reports validation counts; JSON retains structured errors. The accepted future
+VS Code reporter will format located errors as problem-matcher lines using
+stable identifiers such as `config-definition`; the future GitHub reporter will
+emit located error annotations. Location-free errors will remain stderr messages
+in VS Code mode and annotations without source coordinates in GitHub mode.
+Reporters must preserve the command's error categories and exit precedence from
+the command guide.
 
 ## Verification
 
-Cover multiple valid and invalid definitions, duplicate keys, unknown rules, invalid options and globs, unreadable files and directories, nested scope, ancestor pruning, self-exclusion, invalid-config exclusions, inherited exclusion locks, descendant attempts to reopen permission, explicit-config selection under a lock, discovery boundaries, Git negation and tracked-file behavior, symlinks, empty scans, and all four reporters. Verify no filesystem writes and that lint, fix, inspect, and MCP use shared policy resolution without merging rule settings.
+Cover multiple valid and invalid definitions, duplicate keys, unknown rules, invalid options and globs, unreadable files and directories, nested scope, ancestor pruning, self-exclusion, invalid-config exclusions, inherited exclusion locks, descendant attempts to reopen permission, explicit-config selection under a lock, discovery boundaries, Git negation and tracked-file behavior, symlinks, empty scans, and implemented text/JSON reporters. Compiled acceptance
+tests exercise the production executable and shared result schema/semantic
+validator, including real permission-denial probes, tracked Git setup, source
+identity checks, finite quotas and reporting deadlines. Test environment Git
+settings are isolated, and fixture hashes verify no filesystem writes.
+
+Future VS Code/GitHub reporters require their own acceptance. Lint and config
+validate use shared policy resolution without merging rule settings; fix, inspect
+and MCP must preserve this behavior when implemented.
 
 Use the [configuration examples](configuration-examples.md) as fixture inputs and expected outcomes. Include coercion traps, multiple documents, aliases, disabled-rule validation, explicit versus implicit unavailable rules, inherited false versus explicit true, and excluded explicit descendants. Verify incomplete analysis uses the shared [coverage result](../output-formats.md#incomplete-analysis) and exit 15 without turning configuration validation or inspect into lint operations.
 

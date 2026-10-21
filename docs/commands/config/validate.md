@@ -60,7 +60,13 @@ See [configuration](../../configuration.md) for valid definitions and [exit code
 
 The command implements bounded discovery, independent validation, inherited
 policies, scoped exclusions and text/JSON reporting. It does not execute Markdown
-rules. The compiled workflow acceptance suite remains a separate delivery.
+rules. The compiled workflow acceptance suite verifies actual text/JSON process
+statuses, independent strict validation, source locations and hashes, scoped
+policy failures, Git negation and tracked files, skipped roots, symlinks, empty
+scans, runtime quotas, tiny reporting deadlines, and no source writes. Permission
+denial cases probe the OS first and skip only when the current user or platform
+can still access mode-000 paths. Git constructs the tracked fixture during tests;
+the command itself uses the internal matcher and does not invoke Git.
 
 The shared `config_validation` summary reports `scan_complete`, completed
 `definitions_checked`, `valid_definitions`, `invalid_definitions`, and known
