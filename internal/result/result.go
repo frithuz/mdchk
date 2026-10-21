@@ -129,11 +129,12 @@ type EffectiveLimit struct {
 	Source string `json:"source"`
 }
 
-// Result is the existing shared v1 envelope. Reserved collections are empty for
-// lint; their operation-specific Go record types will be supplied by their
-// owning fix/inspection adapters, against the same normative schema. RawMessage
+// Result is the existing shared v1 envelope. Lint populates notes and suppressed
+// diagnostics; correction and returned-document collections remain empty.
+// Operation-specific records must follow the same normative schema. RawMessage
 // here is not an extension bag: producers must validate against that schema.
 type Result struct {
+	analysis              []AnalysisRecord
 	SchemaVersion         int               `json:"schema_version"`
 	Operation             string            `json:"operation"`
 	Mode                  string            `json:"mode"`

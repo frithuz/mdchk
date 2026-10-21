@@ -82,14 +82,11 @@ range, retain the settings, and impose no coverage penalty for that disabled che
 ```yaml
 version: 1
 flavor: commonmark
-directives:
-  enabled: false
 ```
 
 This configuration works with the current production executable: CommonMark
-0.31.2 is available, while GFM, Pandoc, directive processing, and ordinary rule
-implementations are not yet available. Global directives must therefore be
-effectively false, either here or through an ancestor restriction. Lint parses
+0.31.2 and directive processing are available, while GFM, Pandoc and ordinary
+rule implementations are not yet available. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
 as `rule-unavailable`, sets `status: incomplete` and `complete: false`, and exits
 15. The complete 89-rule catalog remains intact: MD001 is default-enabled and
@@ -185,6 +182,8 @@ custom tags, alias cycles, unresolved aliases, and non-string mapping keys.
 ## Capability cases
 
 Schema validity alone does not imply this build can honor a selected definition.
+Production CommonMark lint now supplies the directive processor; the unavailable
+processor rows describe capability-bound adapter fixtures.
 
 | Definition or condition | Capability setup | Expected outcome |
 | --- | --- | --- |

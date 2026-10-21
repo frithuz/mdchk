@@ -150,13 +150,11 @@ An explicit entry such as `MD001: {}` still selects that rule's default enableme
 
 Lint, fix, and previews return exit `15` and status `incomplete` for reduced analysis coverage unless an operational error takes precedence. Available findings remain in the report. They must not claim a complete clean result or automatically fix uncertain regions. See [exit codes](exit-codes.md) and [structured coverage results](output-formats.md#incomplete-analysis).
 
-Unavailable dialects are configuration errors, including an omitted `flavor` resolving to unavailable default GFM. The loader never silently substitutes CommonMark. Until directive processing exists, the effective global directive permission must be false. An inherited false satisfies that requirement; per-rule permissions are still validated and retained. Selecting a supported CommonMark parser in an early development build therefore requires an explicit configuration such as:
+Unavailable dialects are configuration errors, including an omitted `flavor` resolving to unavailable default GFM. The loader never silently substitutes CommonMark. The CommonMark lint engine now processes directives with their inherited global and per-rule permissions. Selecting the supported parser requires an explicit configuration such as:
 
 ```yaml
 version: 1
 flavor: commonmark
-directives:
-  enabled: false
 ```
 
 This configuration still yields incomplete lint analysis if default-enabled applicable rules are unavailable. Enabled frontmatter or Quarto recognition requires the corresponding implementation; unsupported explicitly requested capabilities are configuration errors. Disabled recognition uses ordinary flavor parsing. Explicit enabled-rule options requiring unavailable metadata interpretation are also configuration errors.

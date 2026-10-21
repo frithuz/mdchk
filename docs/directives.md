@@ -43,7 +43,7 @@ Fix does not apply corrections for a rule disabled at the finding's location. It
 
 ## Control directives in configuration
 
-Directives are allowed by default once processing is available. Before that implementation exists, a run requires effective `directives.enabled: false`; allowing unavailable processing is a configuration error. To ignore all directive requests:
+Directives are allowed by default in the shared CommonMark lint engine. Their permissions are captured during configuration admission. To ignore all directive requests:
 
 ```yaml
 version: 1

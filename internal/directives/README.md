@@ -38,9 +38,13 @@ candidates and notes remain inspectable. Directive syntax diagnostics use the
 shared diagnostic structure with identifier `directive`; operation adapters must
 attach their path, source snapshot and final result IDs before transport.
 
-This package does not yet apply lint suppression, produce missing-rule coverage,
-activate the production directive capability, or implement commands, corrections,
-inspection/MCP transport or future parser flavors. Lint integration belongs to #133.
+The processor implementation belongs to the shared engine; this package retains
+its recognition/state facade. Lint applies finding-start suppression and dynamic
+scheduling/coverage before reporters run. Production CommonMark directive
+capability is available. Exact owned attribution is retained in shared internal
+analysis; lint wire notes and suppressed records stay within the existing schema
+without dangling directive IDs. Corrections, inspection/MCP transport, observational
+execution of disabled-throughout rules and future parser flavors remain downstream.
 
 Permission provenance has cached immutable work estimates including origin record
 counts, path/property byte sizes and optional positions. The processor reserves

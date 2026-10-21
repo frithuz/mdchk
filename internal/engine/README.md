@@ -129,7 +129,7 @@ independently; adapters select exits and presentation. The shared
 violations > clean precedence only to lint/fix. Coverage, interruptions or
 omissions force `complete=false`; observations remain available with errors.
 Inspect and configuration validation retain operation-specific status handling. This engine implements
-no suppression, resource discovery, correction proposals or output delivery.
+no resource discovery, correction proposals or output delivery.
 The CLI adapter owns argument handling, configuration, selection/acquisition,
 execution-plan dispatch, and presentation. A fix metadata declaration alone never makes a finding
 eligible: `fix_available` also requires an implemented correction and a rule's
@@ -153,3 +153,28 @@ MDCHK_RESULT_VALIDATOR_PYTHON=/tmp/mdchk-result-schema/bin/python \
 ```
 
 The Python validator is verification tooling, not an engine runtime dependency.
+
+## Directive execution
+
+`ProcessDirectives` consumes the completed parser handoff and the same operation
+budget. Configuration admission binds an immutable `DirectivePolicy` snapshot;
+the core imports no config decoder. The compatibility `internal/directives`
+facade invokes this same implementation. Direct `Registry.Lint` inputs use their
+owned resolved rule settings and global permission enabled.
+
+Intervals control scheduling and missing-rule coverage before callback execution.
+An enabled EOF-only interval requires coverage; disabled-throughout ordinary rules
+can skip execution. Callbacks retain full original document/context/options.
+Findings are validated first, then filtered by start anchor. Default file-wide
+findings must use source byte zero; EOF-specific findings must use a zero-width
+span at `Source.Len()`. Directive diagnostics cannot be disabled. Incomplete state
+withholds ordinary callbacks and retains reliable observations and explicit
+interruptions/coverage.
+
+`Result.AnalysisRecords` retains immutable `DirectiveAnalysis` values. Their
+source-local candidate/interval/suppression accessors preserve exact owner/token,
+raw source and all governing configuration origins. Serialized notes identify
+permission fields; suppressed lint records carry only declared attribution kind,
+with no dangling directive IDs. Report omission never destroys internal analysis.
+Inspection commands, observational disabled-rule evaluation, edit-span safety and
+MD087 counterfactual execution remain later consumers of these observations.

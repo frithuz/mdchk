@@ -6,7 +6,8 @@ mdchk checks Markdown against your project's expectations and applies safe corre
 
 The executable currently provides general help, lint help, version output, lint
 argument parsing, configuration preparation, bounded source acquisition,
-mandatory UTF-8 validation, parsing and registered-rule execution. Build it from a checkout with
+mandatory UTF-8 validation, parsing, inherited directive suppression and
+registered-rule execution. Build it from a checkout with
 `go build -o mdchk ./cmd/mdchk`. Lint loads and validates the selected configuration
 before target access; invalid or unavailable settings return `12`. This build's
 available flavor is CommonMark; unavailable default GFM is never substituted.

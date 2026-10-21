@@ -47,7 +47,6 @@ func TestLintConfigurationStopsBeforeTargets(t *testing.T) {
 		{"missing defaults", "", "", "flavor"},
 		{"invalid nearest", "version: 2\n", "", "version"},
 		{"missing explicit", availableConfig, "missing.yaml", "missing.yaml"},
-		{"unavailable directives", "version: 1\nflavor: commonmark\n", "", "directives"},
 		{"explicit unavailable rule", availableConfig + "rules: {MD013: {enabled: true}}\n", "", "MD013"},
 		{"invalid disabled options", availableConfig + "rules: {MD013: {enabled: false, length: -1}}\n", "", "length"},
 		{"unavailable GFM", "version: 1\n", "", "flavor"},

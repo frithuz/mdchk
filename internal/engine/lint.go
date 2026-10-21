@@ -140,12 +140,46 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 		if !syntaxReliable {
 			out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Reason: result.ParserUncertain, Message: "The requested syntax is not completely recognized."})
 		}
-		rc := RuleContext{input: in, index: index, document: parsed.Document, budget: budget}
 		projection := projector{ctx: ctx, budget: budget, reporting: reporting, source: in.source, index: index}
+		policy := DirectivePolicy(ruleDirectivePolicy{rules: settings[i]})
+		if in.plan != nil && in.plan.directivePolicy != nil {
+			policy = in.plan.directivePolicy
+		}
+		directives := ProcessDirectives(ctx, parsed, policy, budget)
+		analysis := DirectiveAnalysis{path: in.path, state: directives}
+		for _, diagnostic := range directives.Diagnostics() {
+			diagnostic.Path, diagnostic.Snapshot = in.path, snap
+			out.Diagnostics = append(out.Diagnostics, diagnostic)
+		}
+		directiveNotes := directives.Notes()
+		for noteIndex, note := range directiveNotes {
+			if err := appendDirectiveNote(&out, in.path, snap, &projection, note); err != nil {
+				count := len(directiveNotes) - noteIndex
+				out.Omissions = append(out.Omissions, result.Omission{Section: "/notes", Reason: "output-limit", Path: in.path, Count: &count, Message: err.Error()})
+				break
+			}
+		}
+		if !directives.Complete() || projection.stop != nil {
+			out.RetainAnalysis(analysis)
+			if projection.stop != nil {
+				stopped = recordInterruption(&out, in.path, "analysis", projection.stop)
+			} else if isInterruption(directives.Err()) {
+				stopped = recordInterruption(&out, in.path, "analysis", directives.Err())
+			} else {
+				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Reason: result.ContextUnavailable, Message: "Directive state is unresolved; ordinary rule analysis is withheld."})
+			}
+			file.Analysis = "partial"
+			file.ResultSnapshot = &snap
+			out.Files = append(out.Files, file)
+			continue
+		}
+		rc := RuleContext{input: in, index: index, document: parsed.Document, budget: budget}
+
 		for _, id := range r.ids {
 			state := settings[i][id]
 			m := r.metadata[id]
-			if !state.Enabled || id == "MD094" {
+			active := directives.EnabledSomewhere(id)
+			if !active || id == "MD094" {
 				continue
 			}
 			if m.AppliesTo != nil && !m.AppliesTo(in.documentContext) {
@@ -186,7 +220,17 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 					out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: "Rule returned an invalid finding."})
 					continue
 				}
-				out.Diagnostics = append(out.Diagnostics, diagnostic)
+				effective, stateErr := directives.StateAt(id, finding.Span.Start())
+				if stateErr != nil {
+					out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "directive-state", Scope: "operation", Path: in.path, Rule: id, Message: stateErr.Error()})
+					continue
+				}
+				if !effective.Enabled {
+					analysis.suppressed = append(analysis.suppressed, DirectiveSuppression{Diagnostic: diagnostic, Owner: effective.Owner, Token: effective.Token})
+					appendSuppressed(&out, diagnostic, effective.Owner)
+				} else {
+					out.Diagnostics = append(out.Diagnostics, diagnostic)
+				}
 			}
 			if projection.stop != nil {
 				stopped = recordInterruption(&out, in.path, "analysis", projection.stop)
@@ -212,6 +256,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				break
 			}
 		}
+		out.RetainAnalysis(analysis)
 		file.ResultSnapshot = &snap
 		out.Files = append(out.Files, file)
 	}
@@ -295,6 +340,7 @@ func effectiveLimits(l parser.Limits) []result.EffectiveLimit {
 // across the combined records; unreferenced new records may have empty IDs.
 // It mutates the supplied result and preserves observations and snapshots.
 func FinalizeLintResult(out *result.Result) {
+	finalizeDirectiveRecords(out)
 	slices.Sort(out.CheckedFiles)
 	out.CheckedFiles = slices.Compact(out.CheckedFiles)
 	slices.SortFunc(out.Files, func(a, b result.File) int { return cmp.Compare(a.Path, b.Path) })

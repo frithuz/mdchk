@@ -15,6 +15,7 @@ def require(ok,message):
 def semantic(x):
     if 'operation' not in x:return
     records=[r for key in ['diagnostics','coverage','changes','deferred_fixes','errors','notes','interruptions'] for r in x[key]]
+    records += [s['diagnostic'] for s in x['suppressed_diagnostics']]
     ids=[r['id'] for r in records]
     require(len(ids)==len(set(ids)),'duplicate record id')
     names=[f['path'] for f in x['files']]
@@ -30,6 +31,11 @@ def semantic(x):
         if f['write_status']=='written':
             require(x['operation']=='fix' and x['mode']!='standalone' and not x['dry_run'],'written file in read-only mode')
             require(any(c['path']==f['path'] and c['disposition']=='written' for c in x['changes']),'written file lacks confirmed change')
+    for suppressed in x['suppressed_diagnostics']:
+        diagnostic=suppressed['diagnostic'];path=diagnostic['path']
+        require(path in targets,'suppressed diagnostic lacks target')
+        require(diagnostic['snapshot']==targets[path].get('input_snapshot'),'suppressed snapshot mismatch')
+        if x['operation']=='lint':require('directive_id' not in suppressed['suppressed_by'],'lint lacks directive records for attribution ids')
     for key in ['coverage','deferred_fixes']:
         for item in x[key]:require(all(i in ids for i in item.get('cause_ids',[])),'unresolved cause reference')
     docs={d['path']:d for d in x['documents']}
@@ -101,5 +107,7 @@ b=json.loads((ROOT/'partial-project-writes.json').read_text());b['files'][0]['ch
 b=json.loads((ROOT/'fix-preview.json').read_text());b['changes'][0]['diff']['hunks'][0]['new_lines']=2;reject('invalid-diff-line-count',b)
 b=json.loads((ROOT/'inspection-invalid-utf8.json').read_text());b['inspection']['ast']['data']={};reject('unavailable-section-contains-data',b)
 b=json.loads((ROOT/'invalid-utf8-enabled.json').read_text());b['errors'][0]['range']['start']['column']=0;reject('zero-public-column',b)
+b=json.loads((ROOT/'violations-lint.json').read_text());b['suppressed_diagnostics']=[{'diagnostic':copy.deepcopy(b['diagnostics'][0]),'suppressed_by':{'kind':'directive'}}];reject('duplicate-suppressed-id',b)
+b['suppressed_diagnostics'][0]['diagnostic']['id']='hidden-1';b['suppressed_diagnostics'][0]['diagnostic']['byte_range']={'start':0,'end':100000000};reject('suppressed-source-range',b)
 result={'schema_valid':True,'positive_fixtures':len(fixtures),'negative_fixtures_rejected':len(negative),'negative_cases':negative,'validator':'jsonschema 4.25.1, JSON Schema 2020-12','scope':'Validates accepted serialization, representative cross-record invariants and expected fixture exits; does not test an mdchk implementation.'}
 print(json.dumps(result,indent=2))

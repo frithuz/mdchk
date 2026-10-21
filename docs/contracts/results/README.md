@@ -13,7 +13,7 @@ python3 -m venv /tmp/mdchk-contract-validation
 /tmp/mdchk-contract-validation/bin/python docs/contracts/results/validate.py
 ```
 
-Validation includes ten deliberately invalid mutations. It checks serialization
+Validation includes twelve deliberately invalid mutations. It checks serialization
 and representative semantic invariants; it does not execute mdchk or prove
 parser, fixer, transport, authentication, or platform conformance.
 
@@ -26,3 +26,11 @@ MDCHK_RESULT_VALIDATOR_PYTHON=/tmp/mdchk-contract-validation/bin/python go test 
 
 This checks the implemented lint envelope and error paths; the other operations
 and reporters retain their separate implementation and conformance requirements.
+
+Lint directive integration populates `notes` and `suppressed_diagnostics`. The
+semantic validator includes nested suppressed diagnostic IDs, source ranges and
+original file snapshots. Lint records omit `directive_id` because the operation
+has no serialized directive collection. Exact ownership and permission origins
+remain in immutable shared analysis observations; lint notes identify permission
+fields without exposing native configuration paths. Whole-record omissions in
+either collection make the result incomplete, with exact retained/omitted counts.

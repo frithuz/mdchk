@@ -226,6 +226,8 @@ func cloneReport(r result.Result) result.Result {
 	for i := range r.Coverage {
 		r.Coverage[i].CauseIDs = slices.Clone(r.Coverage[i].CauseIDs)
 	}
+	r.Notes = slices.Clone(r.Notes)
+	r.SuppressedDiagnostics = slices.Clone(r.SuppressedDiagnostics)
 	r.Errors = slices.Clone(r.Errors)
 	r.Interruptions = slices.Clone(r.Interruptions)
 	r.Omissions = slices.Clone(r.Omissions)
@@ -254,6 +256,29 @@ func renderText(ctx context.Context, w io.Writer, r result.Result) error {
 			fix = "fixable"
 		}
 		if err := line("%s:%d:%d %s: %s [%s]\n", textField(d.Path), d.Range.Start.Line, d.Range.Start.Column, textField(d.Rule), textField(d.Message), fix); err != nil {
+			return err
+		}
+	}
+	for _, raw := range r.Notes {
+		var n result.Note
+		if err := json.Unmarshal(raw, &n); err != nil {
+			return err
+		}
+		location := textField(n.Path)
+		if n.Range != nil {
+			location += fmt.Sprintf(":%d:%d", n.Range.Start.Line, n.Range.Start.Column)
+		}
+		if err := line("%s note %s %s: %s\n", location, textField(n.Code), textField(n.Rule), textField(n.Message)); err != nil {
+			return err
+		}
+	}
+	for _, raw := range r.SuppressedDiagnostics {
+		var s result.SuppressedDiagnostic
+		if err := json.Unmarshal(raw, &s); err != nil {
+			return err
+		}
+		d := s.Diagnostic
+		if err := line("%s:%d:%d suppressed %s (%s): %s\n", textField(d.Path), d.Range.Start.Line, d.Range.Start.Column, textField(d.Rule), textField(s.SuppressedBy.Kind), textField(d.Message)); err != nil {
 			return err
 		}
 	}

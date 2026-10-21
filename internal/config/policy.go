@@ -63,11 +63,7 @@ func (v *Validated) checkPolicy(inherited Permissions) error {
 // DirectiveDecision describes whether a requested rule effect may proceed. A
 // blocked decision retains every global and rule-specific governing origin.
 // It contains no directive parser or mutable rule-state transition.
-type DirectiveDecision struct {
-	Allowed      bool
-	Restrictions []Origin
-	Err          error
-}
+type DirectiveDecision = engine.DirectiveDecision
 
 // DirectivePermission uses the immutable effective permission snapshot, never
 // caller-mutated exported settings. Nil/unresolved views and unknown rules grant

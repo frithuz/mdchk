@@ -57,8 +57,7 @@ The version is `dev` for local source builds and uses Go module build metadata
 when a version is available. Help and version do not access the project. Lint
 parses arguments and loads and admits configuration before target access;
 configuration failures return `12`, including unavailable default GFM when no
-configuration exists. A valid CommonMark configuration with effective global
-directives disabled completes preparation, selects targets and acquires immutable
+configuration exists. A valid CommonMark configuration completes preparation, selects targets and acquires immutable
 source snapshots. The mandatory UTF-8 gate reports malformed source as I/O (`13`),
 independently of rule enablement; successful empty selection returns `11`. Acquired
 snapshots enter the shared parser and available registered checks. Missing

@@ -231,7 +231,7 @@ perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
 assembly uses the complete catalog with no ordinary executable registrations
-and asserts only CommonMark capability. No configuration still selects built-in
+and asserts CommonMark and shared directive-processing capabilities. No configuration still selects built-in
 GFM, which fails admission rather than falling back. Configuration and read
 failures return 12; output failures return 13.
 

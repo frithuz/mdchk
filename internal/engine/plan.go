@@ -48,6 +48,7 @@ type ExecutionPlan struct {
 	registry        *Registry
 	rules           map[string]ResolvedRule
 	documentContext DocumentContext
+	directivePolicy DirectivePolicy
 }
 
 // Plan preserves validated membership and options while applying effective
@@ -72,6 +73,17 @@ func (s *RuleSelection) Plan(dc DocumentContext, deniedDirectives map[string]boo
 		rules[id] = state
 	}
 	return &ExecutionPlan{registry: s.registry, rules: rules, documentContext: dc}, nil
+}
+
+// WithDirectivePolicy returns a derived plan bound to immutable configuration
+// authority. Policy implementations must not grant changes through writable views.
+func (p *ExecutionPlan) WithDirectivePolicy(policy DirectivePolicy) *ExecutionPlan {
+	if p == nil {
+		return nil
+	}
+	q := *p
+	q.directivePolicy = policy
+	return &q
 }
 
 // Rules returns independent effective settings without exposing plan authority.

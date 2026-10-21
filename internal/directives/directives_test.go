@@ -239,6 +239,10 @@ func TestUnresolvedAndPartialProofs(t *testing.T) {
 			t.Fatal(r)
 		}
 	}
+	nilPolicy := directives.Process(context.Background(), parsed, nil, budget)
+	if nilPolicy.Complete() || nilPolicy.Notes()[0].Code != "directive-policy-unresolved" {
+		t.Fatal(nilPolicy)
+	}
 	for _, view := range []*config.Configuration{nil, {}} {
 		r := directives.Process(context.Background(), parsed, view, budget)
 		if r.Complete() || r.Notes()[0].Code != "directive-policy-unresolved" {

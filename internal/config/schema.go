@@ -4,7 +4,7 @@ package config
 
 import (
 	"github.com/frithuz/mdchk/internal/engine"
-	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/result"
 )
 
 const (
@@ -61,11 +61,7 @@ type RuleSetting = engine.RuleSetting
 // object. Position is nil when no textual location is available; otherwise it
 // uses one-based line and Unicode code-point columns. Alias values retain their
 // use-site origin. Decoders diagnose duplicates before map creation.
-type Origin struct {
-	Path         string
-	PropertyPath string
-	Position     *parser.Position
-}
+type Origin = result.ConfigurationOrigin
 
 // Builtins describes non-rule defaults independently of field presence and
 // implementation availability. Rule defaults belong to the complete catalog.

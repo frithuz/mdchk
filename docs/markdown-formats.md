@@ -1,6 +1,6 @@
 # Supported Markdown formats
 
-mdchk's confirmed format scope is CommonMark, GitHub Flavored Markdown (GFM), and Pandoc Markdown, with independently optional frontmatter support. The internal CommonMark 0.31.2 core is delivered and verified: all **652/652** unchanged specification examples pass normalized and strict comparisons without exemptions. Direct upstream runs in both modes report 652 passed and zero failed, errored or skipped. GFM/Pandoc extensions, frontmatter, rules, CLI/MCP integration and production rendering remain separate deliveries.
+mdchk's confirmed format scope is CommonMark, GitHub Flavored Markdown (GFM), and Pandoc Markdown, with independently optional frontmatter support. The internal CommonMark 0.31.2 core is delivered and verified: all **652/652** unchanged specification examples pass normalized and strict comparisons without exemptions. Direct upstream runs in both modes report 652 passed and zero failed, errored or skipped. CLI lint integrates this core and directive suppression. GFM/Pandoc extensions, frontmatter, production rule callbacks, MCP integration and production rendering remain separate deliveries.
 
 The current Go `Parse` API has no flavor or configuration option. Configuration snippets below describe the accepted contract for future adapters, not available parser switches. See the [delivered core contract](engineering.md#delivered-commonmark-core) for APIs, source guarantees, UTF-8/resource outcomes and [reproduction commands](engineering.md#reproduce-the-core-delivery).
 
@@ -17,7 +17,7 @@ flavor: commonmark
 
 Omitted `flavor` selects `gfm`, preserving the existing configuration default.
 
-A build that cannot parse the selected dialect must reject it as unavailable before analysis, including when GFM was selected by omission. It must not silently fall back to CommonMark. Before directive processing is available, development runs also need effective `directives.enabled: false`; see [initial capability handling](configuration.md#initial-capability-handling).
+A build that cannot parse the selected dialect must reject it as unavailable before analysis, including when GFM was selected by omission. It must not silently fall back to CommonMark. CommonMark lint supports directive processing with inherited permissions; see [initial capability handling](configuration.md#initial-capability-handling).
 
 ## GitHub Flavored Markdown
 

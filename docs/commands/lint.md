@@ -16,11 +16,10 @@ and ancestor permissions, and checks selected capabilities before target access.
 Invalid or unreadable configuration returns `12`. Help and version need no
 project access.
 
-This build supports CommonMark configuration, but GFM, directives, optional
-contexts and resource handling remain unavailable. Built-in defaults still select
-GFM and therefore return `12` when no configuration exists. A configuration with
-`flavor: commonmark` and `directives: {enabled: false}` can complete preparation;
-an inherited global directive denial also satisfies the directive requirement.
+This build supports CommonMark configuration and directive processing. GFM,
+optional contexts and resource handling remain unavailable. Built-in defaults
+still select GFM and therefore return `12` when no configuration exists. A
+configuration with `flavor: commonmark` can complete preparation.
 Explicitly enabled unavailable rules fail preparation; unmentioned default rules
 remain in the complete catalog for coverage reporting. Preparation retains an
 immutable admitted execution plan for the shared engine.
@@ -49,6 +48,24 @@ and coverage reasons, partial file outcomes, interruptions and omissions.
 VS Code and GitHub reporters remain unavailable and return usage `11` before
 project access. Reporter availability does not reduce analysis coverage.
 
+Directive state is resolved before scheduling checks. A configured-off rule can
+be enabled by a permitted comment with its original options. Checks receive the
+full original document; each valid finding is suppressed according to its start
+anchor. File-wide findings use byte zero, while EOF-specific findings use the
+zero-width EOF anchor. Missing implementations enabled in any applicable region,
+including EOF, produce coverage rather than fabricated findings. Malformed
+commands produce non-disableable `directive` violations; blocked requests produce
+located notes identifying the governing permission fields. Global denial retains
+inactive candidates without interpreting syntax as violations.
+
+JSON retains suppressed findings separately with `suppressed_by.kind`, without
+`directive_id`: lint does not publish a directive-record collection. Text prints
+suppression and policy notes. Exact owner/token/raw candidate and every governing
+configuration origin remain in the owned shared analysis model for later
+inspection. Lint does not implement an inspect command or MD087 counterfactuals.
+Incomplete directive processing withholds ordinary callbacks and reports reduced
+coverage. All analysis shares the same parse, source snapshot and operation budget.
+
 The remaining execution behavior on this page is the accepted target contract.
 
 ## Run a disposable project
@@ -62,7 +79,6 @@ go build -o "$mdchk_demo/mdchk" ./cmd/mdchk
 cat > "$mdchk_demo/.mdchk.yaml" <<'YAML'
 version: 1
 flavor: commonmark
-directives: {enabled: false}
 YAML
 printf '# Example\n' > "$mdchk_demo/example.md"
 (
@@ -95,7 +111,7 @@ the requested reduced coverage, rather than full Markdown rule conformance.
 Capture `$?` immediately after the executable, as above. `go run` reports a
 wrapper status for nonzero program exits and cannot verify mdchk's semantic
 status. The current executable implements `lint`, help and version. `fix`, GFM,
-Pandoc, directive processing and VS Code/GitHub reporters remain deferred.
+Pandoc and VS Code/GitHub reporters remain deferred.
 
 ## Select files
 

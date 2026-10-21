@@ -241,9 +241,9 @@ resources:
 `resources.anchor_style: pandoc` is not an adopted option. The shared
 [resource contract](resources.md#shared-settings-and-anchor-consistency) owns
 anchor policy; MD051 and MD080 no longer have per-rule `anchor_style` options. Frontmatter settings remain
-rejected until their separate schema is approved. The existing directive
-capability checks still apply; early runs need effective directives disabled
-until implemented.
+rejected until their separate schema is approved. Directive processing must be available for the selected profile when effective
+global permission is enabled. CommonMark lint supplies that capability; this does
+not make the Pandoc profile available.
 
 Selecting an unavailable Pandoc profile fails capability validation before
 analysis, without fallback. The public capability must only be advertised once

@@ -16,7 +16,7 @@ func configuredProviders() (*engine.Registry, engine.ValidationProviders, config
 		{ID: "MD001", Check: configurationFixtureFinding},
 		{ID: "MD003", Check: configurationFixtureFailure},
 	})
-	return registry, engine.ValidationProviders{}, config.Capabilities{CommonMark: true}, err
+	return registry, engine.ValidationProviders{}, config.Capabilities{CommonMark: true, DirectiveProcessing: true}, err
 }
 
 func configurationFixtureFinding(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {

@@ -62,8 +62,30 @@ anchors, EOF ownership and incomplete outcomes. Parser collection rejects
 constructed or unfinished documents and uses the caller's existing operation
 budget. Block comment boundaries are separate from physical HTML-block envelopes.
 
-Production lint integration and directive capability admission remain pending
-#133. The shared foundation alone does not make `directives.enabled: true`
-operational in the CLI or claim suppression, unavailable-rule coverage, inspection,
-fix or MCP behavior. MD087 ownership records are available without implementing its
-counterfactual observations.
+The shared lint engine now processes these intervals before scheduling callbacks
+and calculating missing-rule coverage. The implementation lives in
+`internal/engine`; `internal/directives` retains the recognition/state facade.
+Configuration admission binds private immutable authority through the engine's
+consumer-owned policy interface. Direct registry inputs use their owned resolved
+settings with global permission enabled.
+
+Callbacks receive full original context and options. A validated finding's start
+anchor selects its state; crossing the interval end does not change attribution.
+File-wide findings require a source span: use byte zero for default file-wide
+observations and the zero-width source end for EOF-specific findings. An enabled
+final EOF interval requires execution or truthful missing-rule coverage even if
+it has zero width. Disabled-throughout rules may skip ordinary lint execution.
+Incomplete processing retains reliable earlier diagnostics and observations but
+withholds unresolved intervals and ordinary callbacks.
+
+The immutable shared `engine.DirectiveAnalysis` observation retains candidates,
+intervals, exact suppression owners/tokens and all configuration restriction
+origins. Accessors own their collection/position/option views. Mutating the
+serialized result cannot change those observations. Lint's schema-v1 notes name
+the governing permission fields and retain source coordinates; exact ancestor
+paths/points remain internal inspection data. Suppressed lint records use the
+declared `suppressed_by.kind` without a dangling `directive_id`. No directive
+collection, returned source documents or undeclared wire fields are fabricated.
+Both text and JSON reporters include these observations and count whole-record
+omissions under reporting limits. Inspection/fix/MCP commands, observational
+runs of disabled-throughout rules and MD087 counterfactuals remain downstream.
