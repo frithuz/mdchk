@@ -52,11 +52,7 @@ type Directives struct{ Enabled *bool }
 // Enabled nil retains catalog enablement; it never means enabled or disabled by
 // itself. Only canonical case-sensitive catalog IDs are accepted by the future
 // validator; aliases, reserved/unknown IDs and duplicate entries are errors.
-type RuleSetting struct {
-	Enabled         *bool
-	AllowDirectives *bool
-	Options         engine.Options
-}
+type RuleSetting = engine.RuleSetting
 
 // Origin identifies a field's source for diagnostics and restriction inspection.
 // Provenance keys and PropertyPath use dotted schema paths (rules.MD001.enabled,

@@ -16,8 +16,9 @@ type DocumentContext struct {
 	Project string
 }
 type RuleSetting struct {
-	Enabled *bool
-	Options Options
+	Enabled         *bool
+	AllowDirectives *bool
+	Options         Options
 }
 type Settings map[string]RuleSetting
 
@@ -43,6 +44,10 @@ func NewInput(path string, content []byte, settings Settings, dc DocumentContext
 		if s.Enabled != nil {
 			v := *s.Enabled
 			s.Enabled = &v
+		}
+		if s.AllowDirectives != nil {
+			v := *s.AllowDirectives
+			s.AllowDirectives = &v
 		}
 		copySettings[id] = s
 	}

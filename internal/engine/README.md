@@ -11,15 +11,37 @@ failures, unavailable implementations and interruption never become skips.
 map. Each canonical, nonreserved MDxxx ID has one metadata entry and at most
 one executable implementation. Adding a rule changes registration, without
 changing command dispatch. Metadata can describe unavailable implementations;
-it does not claim the complete catalog is delivered. The complete built-in
-catalog provider is #215. Options admit bool, int, string and copied string-list
-domains, validated defaults, integer bounds and string choices. Unknown options
-and invalid values fail even on disabled rules. Explicitly enabling an unavailable
-implementation fails preflight. Default-enabled unavailable rules produce coverage
+`Catalog` supplies all 89 known rules, preserving reserved gaps and the 59
+enabled / 30 disabled defaults. `NewCatalogRegistry` combines those contracts
+with only the supplied callbacks; planned corrections remain metadata. Tests and
+other trusted consumers may still provide a smaller metadata set to `NewRegistry`.
+Options admit bool, int, finite number, string and copied string-list domains,
+validated defaults, bounds, choices and named semantic domains. Unknown options
+and invalid values fail even on disabled rules.
+
+`ResolveSettings` returns owned defaults/options and records `Explicit` from
+rule-map membership, independently of `Enabled`, `AllowDirectives` (default true),
+and `Available`. An explicit empty mapping preserves the individual default:
+MD001 remains enabled and MD013 remains disabled. `SettingFromMapping` checks
+shared boolean fields and rejects null rule mappings. Syntax adapters must first
+reject duplicate keys; the catalog boundary does not decode YAML. The config
+package aliases the engine's `RuleSetting` to preserve this shared contract.
+
+MD073 validates complete single-line comment markers, distinctness and ordered
+heading bounds. MD095 `allowed_hosts` carries the pinned Unicode 17.0.0 semantic
+domain. A nonempty list requires `ValidationProviders.ValidateHostname` with the
+complete accepted nontransitional UTS #46 profile; no such provider is supplied
+by this catalog implementation. Without it resolution fails with
+`ErrHostnameValidationUnavailable`, including on disabled rules. Empty/default
+lists need no hostname processing. The catalog neither normalizes input nor
+substitutes a structural approximation for semantic validation.
+
+An explicitly configured, effectively enabled unavailable implementation fails
+lint preflight. Unmentioned default-enabled unavailable rules produce coverage
 rather than clean results. Disabled and affirmatively inapplicable rules do not
 produce rule coverage deficits. Applicability predicates and callbacks are trusted,
 pure program code; they must not infer inapplicability from unknown context.
-Configuration loading and the full configuration contract remain #124 and later.
+Operation-wide capability admission and decoding belong to the config adapters.
 
 Rules receive immutable `parser.Source`, `parser.LineIndex` and parser `Document`
 objects. Returned option values are copies. All findings reference the exact

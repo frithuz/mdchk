@@ -15,12 +15,9 @@ import (
 )
 
 type RunOptions struct {
-	Mode   string
-	Budget *parser.OperationBudget
-}
-type resolvedRule struct {
-	enabled bool
-	options Options
+	Mode       string
+	Budget     *parser.OperationBudget
+	Validation ValidationProviders
 }
 
 // Lint preflights the complete supplied batch before entering validation. Its
@@ -47,7 +44,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 	}
 	ordered := slices.Clone(inputs)
 	slices.SortFunc(ordered, func(a, b Input) int { return strings.Compare(a.path, b.path) })
-	settings := make([]map[string]resolvedRule, len(ordered))
+	settings := make([]map[string]ResolvedRule, len(ordered))
 	for i, in := range ordered {
 		if in.path == "" || i > 0 && ordered[i-1].path == in.path {
 			return result.Result{}, fmt.Errorf("invalid or duplicate input path %q", in.path)
@@ -55,9 +52,15 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 		if int64(in.source.Len()) > budget.Limits().DocumentBytes {
 			return result.Result{}, fmt.Errorf("input %s exceeds document-bytes limit", in.path)
 		}
-		resolved, err := r.resolve(in)
+		resolved, err := r.ResolveSettings(in.settings, options.Validation)
 		if err != nil {
 			return result.Result{}, fmt.Errorf("%s: %w", in.path, err)
+		}
+		for _, id := range r.ids {
+			state := resolved[id]
+			if state.Enabled && state.Explicit && !state.Available {
+				return result.Result{}, fmt.Errorf("%s: explicitly enabled rule %s is unavailable", in.path, id)
+			}
 		}
 		settings[i] = resolved
 	}
@@ -92,7 +95,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			position, _ := index.FailurePosition()
 			location := result.Range{Start: position, End: position}
 			rule := ""
-			if setting, ok := settings[i]["MD094"]; ok && setting.enabled {
+			if setting, ok := settings[i]["MD094"]; ok && setting.Enabled {
 				rule = "MD094"
 			}
 			out.Errors = append(out.Errors, result.Error{Category: result.IO, Code: "invalid-utf8", Scope: "operation", Message: fmt.Sprintf("Invalid UTF-8 at byte offset %d.", offset), Path: in.path, Rule: rule, ByteOffset: &offset, Range: &location, Snapshot: &snap})
@@ -131,7 +134,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 		for _, id := range r.ids {
 			state := settings[i][id]
 			m := r.metadata[id]
-			if !state.enabled || id == "MD094" {
+			if !state.Enabled || id == "MD094" {
 				continue
 			}
 			if m.AppliesTo != nil && !m.AppliesTo(in.documentContext) {
@@ -150,7 +153,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: "parser-uncertain", Message: "Rule requires reliable complete parser context."})
 				continue
 			}
-			rc.options = state.options
+			rc.options = state.Options
 			// A source-only callback cannot accidentally trust a partial syntax tree.
 			rc.document = parsed.Document
 			if !syntaxReliable {
@@ -203,31 +206,6 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 	}
 	finalize(&out)
 	return out, nil
-}
-func (r *Registry) resolve(in Input) (map[string]resolvedRule, error) {
-	states := make(map[string]resolvedRule, len(r.ids))
-	for _, id := range sortedKeys(in.settings) {
-		if _, ok := r.metadata[id]; !ok {
-			return nil, fmt.Errorf("unknown or reserved rule %q", id)
-		}
-	}
-	for _, id := range r.ids {
-		m := r.metadata[id]
-		s := in.settings[id]
-		enabled := m.DefaultEnabled
-		if s.Enabled != nil {
-			enabled = *s.Enabled
-		}
-		resolved, err := m.Options.resolve(s.Options)
-		if err != nil {
-			return nil, fmt.Errorf("%s: %w", id, err)
-		}
-		if enabled && s.Enabled != nil && !r.Available(id) {
-			return nil, fmt.Errorf("explicitly enabled rule %s is unavailable", id)
-		}
-		states[id] = resolvedRule{enabled, resolved}
-	}
-	return states, nil
 }
 func snapshot(source parser.Source) result.Snapshot {
 	return result.Snapshot{View: "original", SHA256: fmt.Sprintf("%x", sha256.Sum256(source.Bytes())), SizeBytes: source.Len()}

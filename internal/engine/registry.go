@@ -5,8 +5,8 @@ package engine
 import (
 	"context"
 	"fmt"
-	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/frithuz/mdchk/internal/parser"
@@ -61,10 +61,17 @@ type Registry struct {
 	ids      []string
 }
 
-var canonicalID = regexp.MustCompile(`^MD[0-9]{3}$`)
-
 func validID(id string) bool {
-	return canonicalID.MatchString(id) && id != "MD000" && !slices.Contains([]string{"MD002", "MD006", "MD008", "MD015", "MD016", "MD017"}, id)
+	if len(id) != 5 || id[:2] != "MD" {
+		return false
+	}
+	for _, c := range id[2:] {
+		if c < '0' || c > '9' {
+			return false
+		}
+	}
+	n, err := strconv.Atoi(id[2:])
+	return err == nil && n >= 1 && n <= 95 && !slices.Contains([]int{2, 6, 8, 15, 16, 17}, n)
 }
 
 // NewRegistry freezes catalog schemas and registration maps. No package-global
@@ -90,7 +97,7 @@ func NewRegistry(catalog []Metadata, implementations []Registration) (*Registry,
 			if s.Minimum != nil && s.Maximum != nil && *s.Minimum > *s.Maximum {
 				return nil, fmt.Errorf("invalid option bounds %s.%s", m.ID, k)
 			}
-			if (s.Minimum != nil || s.Maximum != nil) && s.Kind != Integer || len(s.Choices) > 0 && s.Kind != String {
+			if !s.validConstraints() {
 				return nil, fmt.Errorf("invalid option constraints %s.%s", m.ID, k)
 			}
 			if err := s.validate(s.Default); err != nil {
