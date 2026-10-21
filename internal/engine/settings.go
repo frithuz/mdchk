@@ -36,6 +36,7 @@ func (e *SettingError) Unwrap() error { return e.Err }
 // availability and permission independently. Dialect applicability requires
 // document context and is deliberately not inferred from these values.
 type ResolvedRule struct {
+	registry        *registryIdentity
 	Enabled         bool
 	AllowDirectives bool
 	Explicit        bool
@@ -97,7 +98,7 @@ func (r *Registry) ResolveSettings(settings Settings, providers ValidationProvid
 				return nil, &SettingError{RuleID: id, Option: option, Err: fmt.Errorf("markers must be distinct")}
 			}
 		}
-		states[id] = ResolvedRule{Enabled: enabled, AllowDirectives: directives, Explicit: explicit, Available: r.Available(id), Options: resolved}
+		states[id] = ResolvedRule{registry: r.identity, Enabled: enabled, AllowDirectives: directives, Explicit: explicit, Available: r.Available(id), Options: resolved}
 	}
 	return states, nil
 }

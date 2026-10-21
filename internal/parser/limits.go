@@ -68,6 +68,17 @@ func NewOperationBudget(l Limits) (*OperationBudget, error) {
 	}
 	return &OperationBudget{identity: &operationIdentity{}, limits: l, started: time.Now()}, nil
 }
+
+// OperationToken is immutable authority identifying one shared budget. Its zero
+// value never identifies an operation; callers cannot manufacture token contents.
+type OperationToken struct{ identity *operationIdentity }
+
+func (b *OperationBudget) Token() OperationToken {
+	if b == nil {
+		return OperationToken{}
+	}
+	return OperationToken{b.identity}
+}
 func (b *OperationBudget) Limits() Limits { return b.limits }
 func addBounded(a, n int64) int64 {
 	if n > math.MaxInt64-a {

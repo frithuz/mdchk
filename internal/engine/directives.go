@@ -77,6 +77,8 @@ type DirectiveState struct {
 // DirectiveResult owns its records and never exposes writable aliases. Incomplete results
 // withhold intervals entirely: unprocessed comments cannot imply stable state.
 type DirectiveResult struct {
+	operation   parser.OperationToken
+	catalogs    map[string]*registryIdentity
 	source      parser.Source
 	complete    bool
 	candidates  []DirectiveCandidate
@@ -169,7 +171,7 @@ func cloneDirectiveOrigins(in []result.ConfigurationOrigin) []result.Configurati
 // created/reset here. Configuration authority comes from private validated state,
 // independently of mutable inspection views and executable rule availability.
 func ProcessDirectives(ctx context.Context, parsed parser.ParseResult, configuration DirectivePolicy, budget *parser.OperationBudget) DirectiveResult {
-	r := DirectiveResult{source: parsed.Source, intervals: map[string][]DirectiveInterval{}}
+	r := DirectiveResult{operation: budget.Token(), source: parsed.Source, intervals: map[string][]DirectiveInterval{}}
 	stop := func(err error, code string) DirectiveResult {
 		r.complete = false
 		r.err = err
@@ -197,6 +199,19 @@ func ProcessDirectives(ctx context.Context, parsed parser.ParseResult, configura
 		return stop(err, "directive-policy-unresolved")
 	}
 	r.rules = rules
+	if err := check(int64(len(rules))); err != nil {
+		return stop(err, "directive-incomplete")
+	}
+	if err := budget.ChargeNodes(int64(len(rules))); err != nil {
+		return stop(err, "directive-incomplete")
+	}
+	r.catalogs = make(map[string]*registryIdentity, len(rules))
+	for id, rule := range rules {
+		if err := check(1); err != nil {
+			return stop(err, "directive-incomplete")
+		}
+		r.catalogs[id] = rule.registry
+	}
 	if parsed.Status != parser.Complete || parsed.AST != parser.Available || len(parsed.Uncertainty) != 0 || parsed.Document == nil || parsed.Document.Source() != parsed.Source {
 		return stop(errors.New("directive comment context is uncertain"), "parsing")
 	}

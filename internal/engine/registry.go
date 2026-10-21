@@ -59,7 +59,10 @@ type RuleOutcome struct {
 	Err              error
 }
 
+type registryIdentity struct{ _ byte }
+
 type Registry struct {
+	identity *registryIdentity
 	metadata map[string]Metadata
 	checks   map[string]Check
 	ids      []string
@@ -82,7 +85,7 @@ func validID(id string) bool {
 // mutable registry exists. Metadata returns defensive copies. MD094 is a gate
 // attribution entry and cannot have a normal executable implementation.
 func NewRegistry(catalog []Metadata, implementations []Registration) (*Registry, error) {
-	r := &Registry{metadata: make(map[string]Metadata), checks: make(map[string]Check)}
+	r := &Registry{identity: &registryIdentity{}, metadata: make(map[string]Metadata), checks: make(map[string]Check)}
 	for _, m := range catalog {
 		if !validID(m.ID) || strings.TrimSpace(m.Name) == "" {
 			return nil, fmt.Errorf("invalid rule metadata %q", m.ID)

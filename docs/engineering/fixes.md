@@ -1,6 +1,9 @@
 # Correction planning and filesystem contract
 
-Status: accepted on 2026-10-15; implementation and end-to-end verification remain pending.
+Status: accepted on 2026-10-15. Structural in-memory atomic proposal planning,
+original-source permission/precondition checks and provisional application are
+implemented in `internal/fix`. Combined semantic validation, convergence, fix
+producers, reporting and filesystem publication remain pending.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
 
