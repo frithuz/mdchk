@@ -336,7 +336,7 @@ func (v *Validated) Admit(c Capabilities, inherited Permissions) (*Resolution, e
 	if err != nil {
 		return nil, located(d, "rules", err)
 	}
-	resolution := &Resolution{Settings: b, Rules: rules, Origins: origins, OwnPermissions: v.Permissions(Permissions{}), EffectivePermissions: p, Exclude: v.exclude, Slides: v.slides}
+	resolution := &Resolution{Settings: b, Rules: rules, Origins: origins, OwnPermissions: v.Permissions(Permissions{}), EffectivePermissions: p, Exclude: ownedPatterns(v.exclude), Slides: ownedPatterns(v.slides)}
 	resolution.plan = &ExecutionPlan{engine: plan, configuration: cloneResolution(resolution)}
 	return resolution, nil
 }

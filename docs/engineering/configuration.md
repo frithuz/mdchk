@@ -173,7 +173,37 @@ JSON Pointers to build support for all settings. Provenance uses sorted RFC 6901
 JSON Pointers and source kinds `default`, `selected-config` or `supplied-config`.
 Known YAML points become zero-width ranges; supplied objects and defaults have
 no fabricated ranges or file hashes. Every call owns its maps, lists and positions.
-Inherited permission exposure and operation-adapter integration remain separate.
+`selected_permissions` maps permission JSON Pointers to selected values before
+inherited restrictions, preserving explicit child true alongside effective false.
+Inherited denials add `ancestor-config` sources and provenance records with
+`inherited: true`, including every governing path and its actual field point.
+Global denials retain `/directives/enabled`; they do not invent per-rule origins.
+
+`ResolveValidated(options, registry, providers)` reuses bounded normal selection
+and complete ancestor schema/policy validation without capability admission.
+`Selection.Configuration(capabilities)` exposes the effective inspection view;
+`Selection.Admit(capabilities)` admits its private retained snapshot with same-read
+source evidence on failures. Invalid or unreadable ancestors return no partial
+selection. Existing `Resolve` combines both steps for lint. Canonical-target
+adapters supply `StartDirectory`; project adapters supply their startup root as
+`BoundaryDirectory`. No inspect/MCP transport or command is introduced here.
+
+`Configuration.OwnPermissions` and `EffectivePermissions` are owned passive
+snapshots. `DirectivePermission(ruleID)` uses a private effective snapshot and
+returns all global and rule-specific denials. Mutating exported settings, origins,
+or returned decisions cannot grant permission. Nil/unresolved configurations and
+unknown rule IDs grant nothing. This decision does not parse comments or mutate
+directive rule-state intervals.
+
+`PolicyState` provides the top-down transition for later bounded scan walkers.
+Its zero value represents the explicit scan root and reads no ancestors.
+`Apply` validates the entire decoded definition and inherited exclusion policy
+before returning new state and an effective view. Any schema or policy error
+returns the unchanged inherited state and no view. A caller retains its previous
+state on decode/read errors as well. Only valid definitions activate immutable
+compiled exclusion scopes and additional denials. The walker remains responsible
+for bounds and pruning before reads; Git ignore discovery and scan commands are
+separate work.
 
 `ValidateDefinition(definition, registry, providers)` performs the entire schema
 and policy-domain check without admitting execution. Both decoders feed this

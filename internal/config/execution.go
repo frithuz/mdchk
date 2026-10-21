@@ -24,6 +24,8 @@ func cloneResolution(r *Resolution) *Resolution {
 	q.Settings.FrontmatterFormats = slices.Clone(r.Settings.FrontmatterFormats)
 	q.Settings.Exclude = slices.Clone(r.Settings.Exclude)
 	q.Settings.Slides = slices.Clone(r.Settings.Slides)
+	q.Exclude = ownedPatterns(r.Exclude)
+	q.Slides = ownedPatterns(r.Slides)
 	q.Rules = make(map[string]engine.ResolvedRule, len(r.Rules))
 	for id, rule := range r.Rules {
 		rule.Options = cloneOptions(rule.Options)
@@ -38,7 +40,7 @@ func cloneResolution(r *Resolution) *Resolution {
 	return &q
 }
 
-// Configuration returns a fresh owned view. Compiled patterns are immutable.
+// Configuration returns a fresh owned view, including matcher pointers.
 func (p *ExecutionPlan) Configuration() *Resolution {
 	if p == nil || p.configuration == nil {
 		return nil

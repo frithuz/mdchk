@@ -34,6 +34,9 @@ type Selection struct {
 	SelectedPath  string
 	AncestorPaths []string
 	Resolution    *Resolution
+	validated     *Validated
+	inherited     Permissions
+	sources       []SourceSnapshot
 }
 
 // PolicyError identifies an exclusion addition and every earlier governing
@@ -64,6 +67,21 @@ type discoveryFS interface {
 // admits only the selected operation. It never writes or invokes Git, Markdown
 // processing, target selection or reporters. Failure returns no partial result.
 func Resolve(options SelectionOptions, registry *engine.Registry, providers engine.ValidationProviders, capabilities Capabilities) (*Selection, error) {
+	selected, err := ResolveValidated(options, registry, providers)
+	if err != nil {
+		return nil, err
+	}
+	selected.Resolution, err = selected.Admit(capabilities)
+	if err != nil {
+		return nil, err
+	}
+	return selected, nil
+}
+
+// ResolveValidated performs the same bounded selection and complete ancestor
+// schema/policy checks as Resolve, without admitting execution capabilities.
+// Any failure returns no usable partial selection.
+func ResolveValidated(options SelectionOptions, registry *engine.Registry, providers engine.ValidationProviders) (*Selection, error) {
 	cwd := options.WorkingDirectory
 	if cwd == "" {
 		var err error
@@ -131,10 +149,40 @@ func Resolve(options SelectionOptions, registry *engine.Registry, providers engi
 		}
 		explicit = filepath.Join(canonicalCap, r)
 	}
-	return resolveFS(access, canonicalStart, canonicalCap, explicit, registry, providers, capabilities, rawExplicit)
+	return selectFS(access, canonicalStart, canonicalCap, explicit, registry, providers, rawExplicit)
 }
 
-func resolveFS(access discoveryFS, start, cap, explicit string, registry *engine.Registry, providers engine.ValidationProviders, capabilities Capabilities, rawExplicit ...string) (selection *Selection, resultErr error) {
+func resolveFS(access discoveryFS, start, cap, explicit string, registry *engine.Registry, providers engine.ValidationProviders, capabilities Capabilities, rawExplicit ...string) (*Selection, error) {
+	selected, err := selectFS(access, start, cap, explicit, registry, providers, rawExplicit...)
+	if err != nil {
+		return nil, err
+	}
+	selected.Resolution, err = selected.Admit(capabilities)
+	if err != nil {
+		return nil, err
+	}
+	return selected, nil
+}
+
+// Configuration returns an owned effective inspection view. Passive selection
+// fields cannot change the retained validated definition or inherited policy.
+func (s *Selection) Configuration(c Capabilities) *Configuration {
+	if s == nil || s.validated == nil {
+		return nil
+	}
+	return s.validated.configuration(c, s.inherited)
+}
+
+// Admit admits the retained validated selection, without rereading files.
+func (s *Selection) Admit(c Capabilities) (*Resolution, error) {
+	if s == nil || s.validated == nil {
+		return nil, errors.New("unresolved configuration selection")
+	}
+	r, err := s.validated.Admit(c, s.inherited)
+	return r, sourceError(err, s.sources)
+}
+
+func selectFS(access discoveryFS, start, cap, explicit string, registry *engine.Registry, providers engine.ValidationProviders, rawExplicit ...string) (selection *Selection, resultErr error) {
 	var sources []SourceSnapshot
 	defer func() { resultErr = sourceError(resultErr, sources) }()
 	info, err := access.lstat(start)
@@ -253,11 +301,7 @@ func resolveFS(access discoveryFS, start, cap, explicit string, registry *engine
 	if err != nil {
 		return nil, err
 	}
-	resolved, err := validated.Admit(capabilities, inherited)
-	if err != nil {
-		return nil, err
-	}
-	return &Selection{boundary, selected, ancestors, resolved}, nil
+	return &Selection{Boundary: boundary, SelectedPath: selected, AncestorPaths: ancestors, validated: validated, inherited: clonePermissions(inherited), sources: slices.Clone(sources)}, nil
 }
 func validateFile(access discoveryFS, path string, registry *engine.Registry, providers engine.ValidationProviders, inherited Permissions) (*Validated, SourceSnapshot, error) {
 	data, err := access.readRegular(path)
@@ -273,8 +317,8 @@ func validateFile(access discoveryFS, path string, registry *engine.Registry, pr
 	if err != nil {
 		return nil, source, err
 	}
-	if len(v.settings.Exclude) > 0 && len(inherited.NestedExcludes) > 0 {
-		return nil, source, &PolicyError{cloneOrigin(v.definition.Provenance["exclude"]), clonePermissions(inherited).NestedExcludes}
+	if err := v.checkPolicy(inherited); err != nil {
+		return nil, source, err
 	}
 	return v, source, nil
 }

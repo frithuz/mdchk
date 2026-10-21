@@ -16,6 +16,9 @@ type SettingProvenance struct {
 	Explicit  bool
 	Origin    Origin
 	Available bool
+	// Value retains the selected permission value before inherited restrictions.
+	// It is nil for settings other than permission booleans.
+	Value *bool
 }
 
 // Configuration is a fresh owned pre-admission view of one selected definition.
@@ -24,15 +27,23 @@ type SettingProvenance struct {
 // entry membership independently of each leaf's provenance (an empty rule entry
 // is explicit while its enabled/options leaves remain catalog defaults).
 type Configuration struct {
-	Selected   Origin
-	Settings   Builtins
-	Rules      map[string]engine.ResolvedRule
-	Provenance map[string]SettingProvenance
+	Selected                             Origin
+	Settings                             Builtins
+	Rules                                map[string]engine.ResolvedRule
+	Provenance                           map[string]SettingProvenance
+	OwnPermissions, EffectivePermissions Permissions
+	permissions                          Permissions
+	inherited                            Permissions
+	knownRules                           map[string]bool
 }
 
 // Configuration exposes fully validated settings even when Admit would reject
 // unavailable requested behavior. It performs no IO or capability admission.
 func (v *Validated) Configuration(c Capabilities) *Configuration {
+	return v.configuration(c, Permissions{})
+}
+
+func (v *Validated) configuration(c Capabilities, inherited Permissions) *Configuration {
 	if v == nil {
 		return nil
 	}
@@ -81,9 +92,36 @@ func (v *Validated) Configuration(c Capabilities) *Configuration {
 			parent := path[:strings.Index(path, "[")]
 			p, ok := view.Provenance[parent]
 			if ok {
-				view.Provenance[path] = SettingProvenance{true, cloneOrigin(o), p.Available}
+				view.Provenance[path] = SettingProvenance{Explicit: true, Origin: cloneOrigin(o), Available: p.Available}
 			}
 		}
+	}
+	for path, p := range view.Provenance {
+		var value bool
+		switch {
+		case path == "directives.enabled":
+			value = b.DirectivesEnabled
+		case path == "allow_nested_excludes":
+			value = b.AllowNestedExcludes
+		case strings.HasPrefix(path, "rules.") && strings.HasSuffix(path, ".allow_directives"):
+			value = view.Rules[strings.TrimSuffix(strings.TrimPrefix(path, "rules."), ".allow_directives")].AllowDirectives
+		default:
+			continue
+		}
+		p.Value = &value
+		view.Provenance[path] = p
+	}
+	view.OwnPermissions = v.Permissions(Permissions{})
+	view.inherited = clonePermissions(inherited)
+	view.permissions = v.Permissions(inherited)
+	view.EffectivePermissions = clonePermissions(view.permissions)
+	view.knownRules = map[string]bool{}
+	view.Settings.DirectivesEnabled = len(view.permissions.Directives) == 0
+	view.Settings.AllowNestedExcludes = len(view.permissions.NestedExcludes) == 0
+	for id, r := range view.Rules {
+		view.knownRules[id] = true
+		r.AllowDirectives = len(view.permissions.Directives) == 0 && len(view.permissions.RuleDirectives[id]) == 0
+		view.Rules[id] = r
 	}
 	return view
 }
@@ -108,12 +146,17 @@ func (c *Configuration) Shared() result.ConfigurationData {
 		rules[id] = rule
 	}
 	availability := map[string]bool{}
+	selectedPermissions := map[string]bool{}
 	for path, p := range c.Provenance {
 		availability[propertyPointer(path)] = p.Available
+		if p.Value != nil {
+			selectedPermissions[propertyPointer(path)] = *p.Value
+		}
 	}
 	effective := map[string]any{
-		"availability": availability,
-		"version":      Version, "flavor": b.Flavor,
+		"availability":         availability,
+		"selected_permissions": selectedPermissions,
+		"version":              Version, "flavor": b.Flavor,
 		"resources":    map[string]any{"index_file": b.IndexFile, "anchor_style": b.AnchorStyle},
 		"frontmatter":  map[string]any{"enabled": b.FrontmatterEnabled, "formats": slices.Clone(b.FrontmatterFormats)},
 		"integrations": map[string]any{"quarto": map[string]any{"enabled": b.QuartoEnabled}},
@@ -136,7 +179,36 @@ func (c *Configuration) Shared() result.ConfigurationData {
 		}
 		out.Provenance = append(out.Provenance, record)
 	}
-	slices.SortFunc(out.Provenance, func(a, b result.Provenance) int { return strings.Compare(a.Pointer, b.Pointer) })
+	seenSources := map[string]bool{}
+	addInherited := func(o Origin) {
+		if !seenSources[o.Path] {
+			out.Sources = append(out.Sources, result.ConfigurationSource{Kind: "ancestor-config", Path: o.Path})
+			seenSources[o.Path] = true
+		}
+		record := result.Provenance{Pointer: propertyPointer(o.PropertyPath), SourceKind: "ancestor-config", Path: o.Path, Inherited: true}
+		if o.Position != nil {
+			record.Range = &result.Range{Start: *o.Position, End: *o.Position}
+		}
+		out.Provenance = append(out.Provenance, record)
+	}
+	// Own origins are already represented by selected/default provenance.
+	for _, o := range c.inherited.Directives {
+		addInherited(o)
+	}
+	for _, o := range c.inherited.NestedExcludes {
+		addInherited(o)
+	}
+	ids := make([]string, 0, len(c.inherited.RuleDirectives))
+	for id := range c.inherited.RuleDirectives {
+		ids = append(ids, id)
+	}
+	slices.Sort(ids)
+	for _, id := range ids {
+		for _, o := range c.inherited.RuleDirectives[id] {
+			addInherited(o)
+		}
+	}
+	slices.SortStableFunc(out.Provenance, func(a, b result.Provenance) int { return strings.Compare(a.Pointer, b.Pointer) })
 	return out
 }
 
