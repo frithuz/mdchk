@@ -291,6 +291,9 @@
         },
         "fix_available": {
           "type": "boolean"
+        },
+        "extends_region": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -533,6 +536,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "relevance": {
+          "enum": [
+            "whole-document",
+            "intersects",
+            "context"
+          ]
         }
       },
       "required": [
@@ -1183,6 +1193,9 @@
           "items": {
             "$ref": "#/$defs/AstNode"
           }
+        },
+        "extends_region": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -1332,6 +1345,9 @@
             "observational"
           ],
           "additionalProperties": false
+        },
+        "selected_enabled": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -1471,6 +1487,9 @@
             "pattern": "^MD[0-9]{3}$"
           },
           "uniqueItems": true
+        },
+        "context_only": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -1615,6 +1634,27 @@
         },
         "normally_excluded_known": {
           "type": "boolean"
+        },
+        "physical_line_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "selected_region": {
+          "type": "object",
+          "properties": {
+            "byte_range": {
+              "$ref": "#/$defs/ByteRange"
+            },
+            "includes_eof": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "byte_range",
+            "includes_eof"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -2821,6 +2861,9 @@
         },
         "normalized_label": {
           "type": "string"
+        },
+        "context_only": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -2851,6 +2894,9 @@
         },
         "directive_id": {
           "type": "string"
+        },
+        "context_only": {
+          "type": "boolean"
         }
       },
       "required": [

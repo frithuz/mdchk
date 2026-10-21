@@ -15,6 +15,7 @@ func (r Result) AnalysisRecords() []AnalysisRecord     { return slices.Clone(r.a
 // exact ownership remains in its immutable analysis observations.
 type Note struct {
 	ID         string     `json:"id"`
+	Relevance  string     `json:"relevance,omitempty"`
 	Code       string     `json:"code"`
 	Message    string     `json:"message"`
 	Path       string     `json:"path,omitempty"`

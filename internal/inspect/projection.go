@@ -45,18 +45,21 @@ func notRequested[T any]() Section[T] {
 }
 
 type InspectionFile struct {
-	ResolvedPath          string `json:"resolved_path"`
-	BinaryVersion         string `json:"binary_version"`
-	SizeBytes             int64  `json:"size_bytes"`
-	SizeDisplay           string `json:"size_display"`
-	SHA1                  string `json:"sha1"`
-	SHA256                string `json:"sha256"`
-	NormallyExcluded      bool   `json:"normally_excluded"`
-	NormallyExcludedKnown bool   `json:"normally_excluded_known"`
+	ResolvedPath          string         `json:"resolved_path"`
+	BinaryVersion         string         `json:"binary_version"`
+	SizeBytes             int64          `json:"size_bytes"`
+	SizeDisplay           string         `json:"size_display"`
+	SHA1                  string         `json:"sha1"`
+	SHA256                string         `json:"sha256"`
+	NormallyExcluded      bool           `json:"normally_excluded"`
+	NormallyExcludedKnown bool           `json:"normally_excluded_known"`
+	SelectedLines         *LineSelection `json:"selected_lines,omitempty"`
+	PhysicalLineCount     int            `json:"physical_line_count"`
+	SelectedRegion        *Region        `json:"selected_region,omitempty"`
 }
 
-// Projection is version 1's typed inspection foundation. Filtering, counts and
-// resources are explicitly not requested here; downstream adapters own them.
+// Projection is version 1's typed inspection data. Analyze supplies full source
+// facts; Filter adds selected presentation and counts. Resources remain separate.
 type Projection struct {
 	ProjectionVersion int                               `json:"projection_version"`
 	File              InspectionFile                    `json:"file"`
@@ -84,6 +87,7 @@ type Node struct {
 	Range         result.Range      `json:"range"`
 	ByteRange     result.ByteRange  `json:"byte_range"`
 	ContextOnly   bool              `json:"context_only"`
+	ExtendsRegion bool              `json:"extends_region,omitempty"`
 	Properties    map[string]any    `json:"properties"`
 	RawAttributes []json.RawMessage `json:"raw_attributes"`
 	Children      []Node            `json:"children"`
@@ -109,6 +113,7 @@ type Reference struct {
 	Title           *Value           `json:"title,omitempty"`
 	NormalizedLabel *string          `json:"normalized_label,omitempty"`
 	Effective       bool             `json:"effective"`
+	ContextOnly     bool             `json:"context_only,omitempty"`
 }
 type Interval struct {
 	Range       result.Range     `json:"range"`
@@ -116,6 +121,7 @@ type Interval struct {
 	Enabled     bool             `json:"enabled"`
 	Origin      string           `json:"origin"`
 	DirectiveID string           `json:"directive_id,omitempty"`
+	ContextOnly bool             `json:"context_only,omitempty"`
 }
 type EvaluationCoverage struct {
 	Availability string             `json:"availability"`
@@ -128,6 +134,7 @@ type SourceCoverage struct {
 }
 type Rule struct {
 	Rule                    string         `json:"rule"`
+	SelectedEnabled         *bool          `json:"selected_enabled,omitempty"`
 	Implementation          string         `json:"implementation"`
 	ConfiguredEnabled       bool           `json:"configured_enabled"`
 	AllowDirectives         bool           `json:"allow_directives"`
@@ -148,6 +155,7 @@ type DirectiveEffect struct {
 }
 type Directive struct {
 	ID            string            `json:"id"`
+	ContextOnly   bool              `json:"context_only,omitempty"`
 	Raw           string            `json:"raw"`
 	Range         result.Range      `json:"range"`
 	ByteRange     result.ByteRange  `json:"byte_range"`
@@ -172,6 +180,7 @@ type RawCandidate struct {
 	RawBase64   string           `json:"raw_base64"`
 	Context     string           `json:"context"`
 	DirectiveID string           `json:"directive_id,omitempty"`
+	ContextOnly bool             `json:"context_only,omitempty"`
 }
 
 type AnalyzeOptions struct{ ObserveInactive bool }
@@ -179,8 +188,13 @@ type AnalyzeOptions struct{ ObserveInactive bool }
 // Analysis owns its returned projection and envelope. Mutating these data values
 // cannot alter the acquired snapshot, execution authority or subsequent analyses.
 type Analysis struct {
-	Projection Projection
-	Result     result.Result
+	Projection  Projection
+	Result      result.Result
+	snapshot    *Snapshot
+	wire        []byte
+	records     []result.AnalysisRecord
+	filterNodes int64
+	cause       error
 }
 
 // Analyze uses the acquisition's remaining operation budget. It reads no files,
@@ -192,13 +206,14 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 	}
 	f := s.file
 	snap := result.Snapshot{View: "original", SHA256: f.SHA256, SizeBytes: s.source.Len()}
-	p := Projection{ProjectionVersion: 1, File: InspectionFile{ResolvedPath: f.Path, BinaryVersion: f.Version, SizeBytes: f.SizeBytes, SizeDisplay: f.SizeDisplay, SHA1: f.SHA1, SHA256: f.SHA256, NormallyExcluded: s.exclusion.Excluded, NormallyExcludedKnown: s.exclusion.Known}, Configuration: unavailable[result.ConfigurationData]("configuration-invalid"), Flavor: unavailable[string]("configuration-invalid"), DocumentContext: notRequested[json.RawMessage](), AST: unavailable[AST]("context-unavailable"), Rules: unavailable[[]Rule]("context-unavailable"), RuleCounts: notRequested[json.RawMessage](), Directives: unavailable[[]Directive]("context-unavailable"), RawCandidates: unavailable[[]RawCandidate]("context-unavailable"), Resources: notRequested[json.RawMessage](), ParsingNotes: unavailable[[]result.Note]("context-unavailable")}
+	p := Projection{ProjectionVersion: 1, File: InspectionFile{ResolvedPath: f.Path, BinaryVersion: f.Version, SizeBytes: f.SizeBytes, SizeDisplay: f.SizeDisplay, SHA1: f.SHA1, SHA256: f.SHA256, NormallyExcluded: s.exclusion.Excluded, NormallyExcludedKnown: s.exclusion.Known, PhysicalLineCount: s.lines.LineCount()}, Configuration: unavailable[result.ConfigurationData]("configuration-invalid"), Flavor: unavailable[string]("configuration-invalid"), DocumentContext: notRequested[json.RawMessage](), AST: unavailable[AST]("context-unavailable"), Rules: unavailable[[]Rule]("context-unavailable"), RuleCounts: notRequested[json.RawMessage](), Directives: unavailable[[]Directive]("context-unavailable"), RawCandidates: unavailable[[]RawCandidate]("context-unavailable"), Resources: notRequested[json.RawMessage](), ParsingNotes: unavailable[[]result.Note]("context-unavailable")}
 	out := result.NewLint("cli")
 	out.Operation = "inspect"
 	out.CheckedFiles = []string{f.Path}
 	out.Files = []result.File{{Path: f.Path, Analysis: "not-started", WriteStatus: "not-requested", ReturnStatus: "not-requested", InputSnapshot: &snap, ErrorIDs: []string{}, CoverageIDs: []string{}, ChangeIDs: []string{}}}
 	build := builder{ctx: ctx, budget: s.budget, source: s.source, index: s.lines}
-	finish := func(cause error) (Analysis, error) {
+	var finish func(error) (Analysis, error)
+	finish = func(cause error) (Analysis, error) {
 		engine.FinalizeLintResult(&out)
 		ids := []string{}
 		for _, e := range out.Errors {
@@ -231,7 +246,45 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 		out.Complete = out.Complete && p.AST.Availability == "available" && p.Rules.Availability == "available" && p.Directives.Availability == "available"
 		raw, _ := json.Marshal(p)
 		out.Inspection = raw
-		return Analysis{p, out}, cause
+		analysis := Analysis{Projection: p, Result: out, snapshot: s, records: out.AnalysisRecords(), cause: cause}
+		if cause == nil {
+			// Reserve the independent authority image and its structural scan
+			// before encoding it. A stopped authority build retains completed
+			// public sections and a canonical interruption, never a reset meter.
+			work := 8*int64(len(raw)) + 65536
+			for _, d := range out.Diagnostics {
+				work += 8 * int64(len(d.Message)+len(d.Path)+512)
+			}
+			for _, d := range out.SuppressedDiagnostics {
+				work += 8 * int64(len(d))
+			}
+			for _, d := range out.Coverage {
+				work += 8 * int64(len(d.Message)+len(d.Path)+512)
+			}
+			for _, d := range out.Errors {
+				work += 8 * int64(len(d.Message)+len(d.Path)+512)
+			}
+			for _, d := range out.Notes {
+				work += 8 * int64(len(d))
+			}
+			if err := build.authority(&analysis, work); err != nil {
+				reason := "limit-exceeded"
+				if errors.Is(err, context.Canceled) {
+					reason = "cancelled"
+				}
+				if errors.Is(err, context.DeadlineExceeded) {
+					reason = "deadline-exceeded"
+				}
+				interruption := result.Interruption{Path: f.Path, Reason: reason, Phase: "analysis", Message: err.Error()}
+				var limit *parser.LimitExceeded
+				if errors.As(err, &limit) {
+					interruption.Limit = &result.LimitObservation{Name: limit.Name, Observed: limit.Observed, Allowed: limit.Allowed, Unit: result.LimitUnit(limit.Name)}
+				}
+				out.Interruptions = append(out.Interruptions, interruption)
+				return finish(err)
+			}
+		}
+		return analysis, cause
 	}
 	stop := func(err error) (Analysis, error) {
 		reason := "limit-exceeded"
@@ -349,7 +402,16 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 			}
 			p.AST = available(ast)
 		}
-		p.ParsingNotes = available([]result.Note{})
+		notes := []result.Note{}
+		for i, uncertainty := range parsed.Uncertainty {
+			span, err := build.rangeOf(uncertainty.Region.Start(), uncertainty.Region.End())
+			if err != nil {
+				return err
+			}
+			br := bytesOf(uncertainty.Region)
+			notes = append(notes, result.Note{ID: "parsing-note-" + strconv.Itoa(i+1), Code: string(uncertainty.Reason), Message: "Parser interpretation is incomplete in this original source region.", Path: f.Path, Range: &span, ByteRange: &br, Snapshot: &snap})
+		}
+		p.ParsingNotes = available(notes)
 		prepared = true
 		return nil
 	}
@@ -674,7 +736,7 @@ func (b *builder) ast(d *parser.Document, snap result.Snapshot) (AST, error) {
 			v, ok := refs.Lookup[p.NormalizedLabel.Value]
 			effective = ok && v == i
 		}
-		out.References = append(out.References, Reference{bytesOf(p.Envelope), markers(p.Markers), value(p.Label), value(p.Destination), valuePointer(p.Title), optional(p.NormalizedLabel), effective})
+		out.References = append(out.References, Reference{bytesOf(p.Envelope), markers(p.Markers), value(p.Label), value(p.Destination), valuePointer(p.Title), optional(p.NormalizedLabel), effective, false})
 	}
 	return out, nil
 }
@@ -881,4 +943,25 @@ func (b *builder) inventory() ([]RawCandidate, error) {
 		out = append(out, RawCandidate{ByteRange: result.ByteRange{Start: start, End: end}, RawBase64: base64.StdEncoding.EncodeToString([]byte(text[start:end])), Context: "unconfirmed"})
 	}
 	return out, nil
+}
+
+// authority reserves construction before encoding and observes context and the
+// same elapsed meter again before its image can be published as successful.
+func (b *builder) authority(analysis *Analysis, work int64) error {
+	if err := b.charge(work); err != nil {
+		return err
+	}
+	wireView := *analysis
+	wireView.Result.Inspection = nil // projection appears once in authority
+	wire, err := json.Marshal(wireView)
+	if err != nil {
+		return err
+	}
+	nodes := jsonStructures(wire)
+	if err := b.charge(0); err != nil {
+		return err
+	}
+	analysis.wire = wire
+	analysis.filterNodes = nodes
+	return nil
 }

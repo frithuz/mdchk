@@ -38,15 +38,16 @@ type ByteRange struct {
 	End   int `json:"end"`
 }
 type Diagnostic struct {
-	ID           string    `json:"id"`
-	Path         string    `json:"path"`
-	Rule         string    `json:"rule"`
-	Severity     string    `json:"severity"`
-	Message      string    `json:"message"`
-	Range        Range     `json:"range"`
-	ByteRange    ByteRange `json:"byte_range"`
-	Snapshot     Snapshot  `json:"snapshot"`
-	FixAvailable bool      `json:"fix_available"`
+	ID            string    `json:"id"`
+	Path          string    `json:"path"`
+	Rule          string    `json:"rule"`
+	Severity      string    `json:"severity"`
+	Message       string    `json:"message"`
+	Range         Range     `json:"range"`
+	ByteRange     ByteRange `json:"byte_range"`
+	Snapshot      Snapshot  `json:"snapshot"`
+	FixAvailable  bool      `json:"fix_available"`
+	ExtendsRegion bool      `json:"extends_region,omitempty"`
 }
 type ErrorCategory string
 

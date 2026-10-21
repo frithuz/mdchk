@@ -97,6 +97,17 @@ def inspection_semantic(x):
                 require(child['byte_range']['start']>=previous,'AST children out of source order');previous=child['byte_range']['start'];walk(child,n['byte_range'])
         walk(ast['root']);require(ast['root']['kind']=='document' and ast['root']['byte_range']=={'start':0,'end':size},'AST lacks full document root')
         for reference in ast.get('references',[]):bounded(reference['byte_range'])
+    selected_region=p['file'].get('selected_region')
+    if 'selected_lines' in p['file']:
+        selected=p['file']['selected_lines']
+        require(1<=selected['start']<=selected['end']<=p['file'].get('physical_line_count',selected['end']),'invalid selected physical lines')
+    def intersects(v):
+        q=selected_region['byte_range']
+        if v['start']==v['end']:return q['start']<=v['start'] and (v['start']<q['end'] or selected_region['includes_eof'] and v['start']==q['end'])
+        return v['start']<q['end'] and q['start']<v['end']
+    if selected_region:
+        bounded(selected_region['byte_range'])
+        require(not selected_region['includes_eof'] or selected_region['byte_range']['end']==size,'selection claims nonterminal EOF')
     rules=section('rules') or []
     require(len({r['rule'] for r in rules})==len(rules),'duplicate inspected rule')
     for r in rules:
@@ -114,6 +125,21 @@ def inspection_semantic(x):
                 for region in coverage['byte_ranges']:bounded(region)
                 if coverage['availability']=='complete':require(r[status]=='complete' and coverage['byte_ranges']==[{'start':0,'end':size}],'unproven complete rule source coverage')
                 else:require(not coverage['byte_ranges'] and not coverage['ranges'],'unknown coverage claims evaluated regions')
+    if selected_region:
+        counts=section('rule_counts')
+        resolved=all(r['effective_state']!='unresolved' for r in rules) and section('rules') is not None
+        if counts:
+            require(resolved,'counts claim unresolved effective state')
+            require(counts['known']==len(rules),'counts omit known catalog records')
+        active=0
+        for r in rules:
+            if r['effective_state']=='unresolved':require('selected_enabled' not in r,'selected enablement claims unresolved state');continue
+            enabled=any(i['enabled'] and intersects(i['byte_range']) for i in r['intervals'])
+            require(r.get('selected_enabled')==enabled,'selected rule enablement mismatch')
+            active+=enabled
+        if counts:require(counts['active']==active and counts['inactive']==len(rules)-active,'selected counts differ from intervals')
+        for d in x['diagnostics']+[h['diagnostic'] for h in x['suppressed_diagnostics']]:
+            require(intersects(d['byte_range']),'finding outside selected region')
     for candidate in section('raw_candidates') or []:
         bounded(candidate['byte_range'])
         if 'directive_id' in candidate:require(candidate['directive_id'] in by_id,'raw candidate has dangling directive id')

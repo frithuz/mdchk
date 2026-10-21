@@ -63,7 +63,8 @@ The [result contract](results.md) and [schema/projection fixtures](../contracts/
 `internal/inspect.Acquire` implements the read-only snapshot and configuration
 foundation. `Analyze` now supplies the stable AST, actual rule execution and
 shared directive projection described in [projection version 1](inspection-projection-v1.md).
-Region filtering, counts and command reports remain separate work. The caller supplies the build version (an empty version is
+`Filter` adds physical-line presentation and catalog counts while preserving the
+full analysis authority. Command reports remain separate work. The caller supplies the build version (an empty version is
 reported as `development`), registry and implemented capabilities.
 
 Acquisition makes one attempt, follows the explicitly named target's symlinks,

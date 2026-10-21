@@ -18,9 +18,8 @@ that section unavailable, with reasons and links to canonical causes. A section
 that is successfully constructed can remain available while dependent execution
 is incomplete. Observation errors remain separate from active findings.
 
-This foundation supplies full-document data. Line filtering, contextual ancestor
-selection, selected-region eligibility/counts and command reports belong to
-#140 and #141. Their sections are `not-requested` here. It implements neither
+Analyze supplies full-document data with counts `not-requested`. Filter adds
+contextual selection and counts as described below; command reports remain #141. It implements neither
 MD087 counterfactual conclusions nor additional rule implementations. Resource,
 frontmatter, slide, GFM and Pandoc processing retain their own admission gates;
 no CommonMark substitute or guessed document context is supplied.
@@ -130,3 +129,66 @@ reference records, named/resolved tokens, plural permission provenance, section
 old fixtures remain valid. `normally_excluded_known: false` distinguishes an
 unresolved exclusion decision from a known negative boolean. The same schema and
 semantic validator validate actual package envelopes and ordinary lint results.
+
+## Selected presentation and counts
+
+`Filter(ctx, snapshot, analysis, lines)` consumes the privately retained full
+`Analyze` authority. It never reopens a file, reparses a region, or reruns a
+callback. Public projection/envelope mutations cannot change later filters.
+An independently owned selected view can also be filtered again; every selection
+starts from the original full analysis. The caller must supply the same snapshot.
+
+`lines` is empty for the whole document or exactly positive decimal `N` or `N-M`,
+without leading zeroes, signs, whitespace or overflow. Bounds are inclusive
+physical content lines. Their byte selection contains each physical ending,
+including CRLF, and excludes the next line's start. A final real line additionally
+selects the EOF anchor, even when its public coordinate is after a terminal
+newline. Empty input has no selectable line; its unfiltered `[0,0)` selects EOF
+and retains configured enablement. `file.physical_line_count`, `selected_lines`
+and `selected_region` document the distinction between physical bounds, original
+byte positions and the EOF anchor.
+
+The document root remains `[0,size)`. Intersecting nodes keep original IDs,
+coordinates, properties, markers and segments. Other siblings disappear;
+necessary structural ancestors are `context_only`, and `extends_region` marks
+returned nodes and findings spanning beyond the selection. Zero-width findings
+are positions; nonempty findings use exclusive ends. Suppressed findings are
+selected by their complete finding span, while attribution remains the original
+start's last permitted directive owner. Selection never reinterprets suppression.
+
+Every catalog rule remains present. Optional `selected_enabled` means any
+selected source position is enabled. Available counts count every known rule
+once, independently of implementation, syntax applicability, findings or actual
+execution. Unknown shared effective state makes counts unavailable, even when
+configuration settings are known. Original full-source state intervals and
+proved execution coverage remain unchanged: selected eligibility cannot claim
+that a callback ran only on a region. Rule counts do not repair incompleteness.
+
+All original directives, raw candidates and source references remain as context
+facts, labeled `context_only` outside the selected span. Keeping this closure
+preserves every original interval owner, multi-rule/last-owner effect, source
+reference destination, literal distinction and cause even when outside selection.
+It deliberately permits extra labeled context rather than clipping intervals or
+renumbering facts. Whole-document parsing and processing notes remain visible;
+optional `relevance` is `intersects`, `context`, or `whole-document` for a
+location-free note or unfiltered view. Errors, coverage, omissions, interruptions,
+file outcomes and their IDs are retained without reinterpretation.
+
+Filter reserves JSON traversal/copy work by the retained authority's actual byte
+size and construction by three times its object/array count plus fixed selection records,
+covering decoding, typed restoration and replacement filtered collections, excluding quoted delimiters.
+The authority contains the projection once; its own encoding and structural scan
+are reserved before construction. Byte size is never charged as a count of
+syntax nodes. Acquisition, full analysis and filtering use one residual operation
+meter. On cancellation or exhaustion, Filter returns the original analysis and
+typed cause without publishing a partial selected view or zero counts. Callers
+must handle that error before reporting successful region selection. Filters can
+read the same full analysis concurrently; returned mutable graphs are separate. Canonical Go option/list and AST source
+property types survive filtering; restoration uses documented property types and
+defensive views of the same immutable configuration, without provider callbacks.
+
+These fields are optional additive version 1 extensions. Older fixtures remain
+valid. Actual filtered envelopes use the existing shared JSON Schema and semantic
+validator, including unchanged full-root, interval-owner and execution-coverage
+invariants and new selected-bound/count checks. The package API is implemented;
+inspection command reporting remains #141.

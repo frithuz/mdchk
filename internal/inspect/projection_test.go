@@ -321,6 +321,17 @@ if rules:
  try:m.validator.validate(bad);m.semantic(bad)
  except Exception:pass
  else:raise AssertionError('invalid source coverage accepted')
+if x['inspection']['file'].get('selected_region'):
+ if x['inspection']['rule_counts']['availability']=='available':
+  bad=copy.deepcopy(x);bad['inspection']['rule_counts']['data']['active']+=1;bad['inspection']['rule_counts']['data']['inactive']-=1
+  try:m.validator.validate(bad);m.semantic(bad)
+  except Exception:pass
+  else:raise AssertionError('incorrect selected counts accepted')
+ if 'selected_lines' in x['inspection']['file']:
+  bad=copy.deepcopy(x);bad['inspection']['file']['selected_lines']['end']=bad['inspection']['file']['physical_line_count']+1
+  try:m.validator.validate(bad);m.semantic(bad)
+  except Exception:pass
+  else:raise AssertionError('nonphysical selected line accepted')
 for hidden in x['suppressed_diagnostics']:
  if hidden['suppressed_by']['kind']=='directive':
   bad=copy.deepcopy(x);bad['suppressed_diagnostics'][0]['suppressed_by']['directive_id']='dangling'
