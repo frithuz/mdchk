@@ -274,3 +274,84 @@ func TestImageOpaqueAndGeneratedMarkers(t *testing.T) {
 		})
 	}
 }
+
+// Image descriptions may contain links (CommonMark 0.31.2, Images), while
+// actual links cannot contain other links. Collapsed and shortcut reference
+// labels cannot contain unescaped brackets, so autolinks exercise those forms.
+func TestReferenceImageDescriptionLinks(t *testing.T) {
+	for _, tt := range []struct {
+		name, use, definitions, origin, linkOrigin, alt string
+	}{
+		{"full-reference", "![[inner]][outer]", "[inner]: /link\n[outer]: /image", "full", "shortcut", "inner"},
+		{"full-inline", "![[inner](/link)][outer]", "[outer]: /image", "full", "inline", "inner"},
+		{"full-autolink", "![<ab:x>][outer]", "[outer]: /image", "full", "autolink", "ab:x"},
+		{"collapsed-autolink", "![<ab:x>][]", "[<ab:x>]: /image", "collapsed", "autolink", "ab:x"},
+		{"shortcut-autolink", "![<ab:x>]", "[<ab:x>]: /image", "shortcut", "autolink", "ab:x"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			r := parser.Parse(context.Background(), parser.NewSource([]byte(tt.use+"\n\n"+tt.definitions)))
+			checkStagedTextOutcome(t, r, true)
+			out := conformance.Evaluate(r)
+			wantHTML := "<p><img src=\"/image\" alt=\"" + tt.alt + "\" /></p>\n"
+			if out.Status != "rendered" || out.HTML != wantHTML {
+				t.Fatal(out, wantHTML)
+			}
+			nodes := r.Document.Root().Children()[0].Children()
+			if len(nodes) != 1 || nodes[0].Kind() != parser.Image {
+				t.Fatal("expected image", nodes)
+			}
+			image := nodes[0]
+			if image.Properties().Link.Origin != tt.origin || image.Properties().Link.Destination.Semantic != parser.Some("/image") {
+				t.Fatal("image reference identity", image.Properties())
+			}
+			children := image.Children()
+			if len(children) != 1 || children[0].Kind() != parser.Link || children[0].Properties().Link.Origin != tt.linkOrigin {
+				t.Fatal("expected description link", children)
+			}
+			checkLinkProvenance(t, r.Source, image, r.Document.Root())
+			checkLinkProvenance(t, r.Source, children[0], r.Document.Root())
+		})
+	}
+	// These nearly identical actual-link uses must keep their outer brackets
+	// literal. Explicit rendering and node counts prevent a vacuous traversal.
+	for _, tt := range []struct {
+		use, definitions, html string
+		links                  int
+	}{
+		{"[[inner]][outer]", "[inner]: /link\n[outer]: /image", "<p>[<a href=\"/link\">inner</a>]<a href=\"/image\">outer</a></p>\n", 2},
+		{"[[inner](/link)][outer]", "[outer]: /image", "<p>[<a href=\"/link\">inner</a>]<a href=\"/image\">outer</a></p>\n", 2},
+		{"[<ab:x>][outer]", "[outer]: /image", "<p>[<a href=\"ab:x\">ab:x</a>]<a href=\"/image\">outer</a></p>\n", 2},
+		{"[<ab:x>][]", "[<ab:x>]: /image", "<p>[<a href=\"ab:x\">ab:x</a>][]</p>\n", 1},
+		{"[<ab:x>]", "[<ab:x>]: /image", "<p>[<a href=\"ab:x\">ab:x</a>]</p>\n", 1},
+	} {
+		t.Run("link/"+tt.use, func(t *testing.T) {
+			r := parser.Parse(context.Background(), parser.NewSource([]byte(tt.use+"\n\n"+tt.definitions)))
+			checkStagedTextOutcome(t, r, true)
+			if out := conformance.Evaluate(r); out.Status != "rendered" || out.HTML != tt.html {
+				t.Fatal(out, tt.html)
+			}
+			links := 0
+			parser.Walk(r.Document.Root(), func(n *parser.Node) bool {
+				if n.Kind() == parser.Image {
+					t.Fatal("unexpected image")
+				}
+				if n.Kind() == parser.Link {
+					links++
+					checkLinkProvenance(t, r.Source, n, r.Document.Root())
+					for _, c := range n.Children() {
+						parser.Walk(c, func(c *parser.Node) bool {
+							if c.Kind() == parser.Link {
+								t.Fatal("actual link contains link")
+							}
+							return true
+						})
+					}
+				}
+				return true
+			})
+			if links != tt.links {
+				t.Fatal("actual link count", links, tt.links)
+			}
+		})
+	}
+}

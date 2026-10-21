@@ -318,13 +318,49 @@ func checkReferenceLinkProvenance(t *testing.T, source parser.Source, n, enclosi
 		projection(*p.Title, *d.Title)
 	}
 	checkInlineSourceCoverage(t, n)
+	if referenceHasNestedLink(n) {
+		t.Fatal("nested reference Link")
+	}
+}
+
+func referenceHasNestedLink(n *parser.Node) bool {
+	if n.Kind() != parser.Link {
+		return false
+	}
+	found := false
 	for _, c := range n.Children() {
 		parser.Walk(c, func(child *parser.Node) bool {
-			if child.Kind() == parser.Link {
-				t.Fatal("nested reference Link")
-			}
+			found = found || child.Kind() == parser.Link
 			return true
 		})
+	}
+	return found
+}
+
+// Construct invalid parser output so this checks the oracle itself, even though
+// the real parser correctly prevents these nested-link shapes.
+func TestReferenceNestedLinkOracle(t *testing.T) {
+	r := parser.Parse(context.Background(), parser.NewSource([]byte("![[inner]][outer]\n\n[inner]: /link\n[outer]: /image")))
+	image := r.Document.Root().Children()[0].Children()[0]
+	inner := image.Children()[0]
+	for _, wrapper := range []parser.Kind{"", parser.Emphasis, parser.Strong, parser.Image} {
+		child := inner
+		if wrapper != "" {
+			props := parser.Properties{}
+			if wrapper == parser.Image {
+				props = image.Properties()
+			}
+			child = node(t, parser.NodeSpec{Kind: wrapper, Envelope: image.Span(), Properties: props, Children: []*parser.Node{inner}})
+		}
+		for _, kind := range []parser.Kind{parser.Link, parser.Image} {
+			parent := node(t, parser.NodeSpec{Kind: kind, Envelope: image.Span(), Properties: image.Properties(), Children: []*parser.Node{child}})
+			if got, want := referenceHasNestedLink(parent), kind == parser.Link; got != want {
+				t.Fatalf("parent %s wrapper %s: nested-link oracle = %v, want %v", kind, wrapper, got, want)
+			}
+		}
+	}
+	if referenceHasNestedLink(inner) {
+		t.Fatal("leaf link rejected")
 	}
 }
 
