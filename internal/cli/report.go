@@ -271,7 +271,11 @@ func renderText(ctx context.Context, w io.Writer, r result.Result) error {
 		}
 	}
 	for _, c := range r.Coverage {
-		if err := line("coverage %s %s %s: %s\n", textField(c.Path), textField(c.Rule), textField(c.Reason), textField(c.Message)); err != nil {
+		location := textField(c.Path)
+		if c.Path != "" && c.Range != nil {
+			location += fmt.Sprintf(":%d:%d", c.Range.Start.Line, c.Range.Start.Column)
+		}
+		if err := line("coverage %s %s %s: %s\n", location, textField(c.Rule), textField(c.Reason), textField(c.Message)); err != nil {
 			return err
 		}
 	}

@@ -193,17 +193,31 @@ func TestCompiledReportStreamsAndExits(t *testing.T) {
 		}
 	}
 	put(t, filepath.Join(root, config.Filename), availableConfig)
-	cmd := exec.Command(binary, "lint", "--format=json", "good.md") //nolint:gosec // Controlled compiled fixture.
-	cmd.Dir = root
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	var processExit *exec.ExitError
-	if err := cmd.Run(); !errors.As(err, &processExit) || processExit.ExitCode() != 15 {
-		t.Fatalf("coverage exit %v", err)
-	}
-	r := validateEmitted(t, root, out.Bytes())
-	if r.Complete || len(r.Coverage) == 0 {
-		t.Fatal("missing coverage")
+	for _, format := range []string{"text", "json"} {
+		cmd := exec.Command(binary, "lint", "--format="+format, "good.md") //nolint:gosec // Controlled compiled fixture.
+		cmd.Dir = root
+		var stdout, stderr bytes.Buffer
+		cmd.Stdout, cmd.Stderr = &stdout, &stderr
+		var processExit *exec.ExitError
+		if err := cmd.Run(); !errors.As(err, &processExit) || processExit.ExitCode() != 15 {
+			t.Fatalf("%s incomplete analysis must fail CI with exit 15: %v", format, err)
+		}
+		if stderr.Len() != 0 {
+			t.Fatalf("%s stderr=%q", format, &stderr)
+		}
+		if format == "json" {
+			r := validateEmitted(t, root, stdout.Bytes())
+			if r.Status != "incomplete" || r.Complete || len(r.Diagnostics) != 0 || len(r.Coverage) == 0 {
+				t.Fatalf("zero-finding incomplete result: %+v", r)
+			}
+			for _, c := range r.Coverage {
+				if c.Reason != result.RuleUnavailable || c.Rule == "" || c.Path != "good.md" || c.Range != nil {
+					t.Fatalf("fabricated or missing default-rule coverage: %+v", c)
+				}
+			}
+		} else if !strings.Contains(stdout.String(), "Found 0 violations.") || !strings.Contains(stdout.String(), "incomplete (complete: false)") || !strings.Contains(stdout.String(), "rule-unavailable:") {
+			t.Fatalf("incomplete text: %q", &stdout)
+		}
 	}
 	// A real read-only stdout descriptor must become IO/13, without an alternate
 	// report on stderr. The executable is built once for all process checks.
@@ -216,9 +230,10 @@ func TestCompiledReportStreamsAndExits(t *testing.T) {
 			t.Error(err)
 		}
 	}()
-	cmd = exec.Command(binary, "lint", "--format=json", "good.md") //nolint:gosec // Controlled compiled fixture.
+	cmd := exec.Command(binary, "lint", "--format=json", "good.md") //nolint:gosec // Controlled compiled fixture.
 	cmd.Dir = root
 	cmd.Stdout = f
+	var processExit *exec.ExitError
 	if err := cmd.Run(); !errors.As(err, &processExit) || processExit.ExitCode() != 13 {
 		t.Fatalf("read-only stdout: %v", err)
 	}

@@ -90,7 +90,25 @@ inspect can retain `inspected`/exit 0 for observations; interrupted inspect uses
 
 Coverage deficits are distinct from Markdown violations and operational errors. A read or decoding failure remains an operational error and may coexist with coverage records. They cannot be suppressed by inline directives; actual rule disablement or inapplicability determines whether a check is required.
 
-Text reports identify incomplete coverage and its reasons. VS Code emits located coverage records with identifier `coverage` and sends location-free records to stderr. GitHub emits coverage error annotations, omitting source coordinates when none exist. All retain the nonzero exit so incomplete work cannot appear as a clean CI check. Inspect retains status `inspected` and successful exit when its report is produced; config validation does not run Markdown checks.
+Lint text reports identify each coverage reason as
+`coverage path:line:column rule reason: message` when a path and range are
+supplied. The position is the supplied start line and Unicode scalar column;
+JSON retains the full exclusive-end range and snapshot. Path-only records omit
+the coordinates, and build-wide records leave the path field empty rather than
+inventing a source position. For example:
+
+```text
+coverage  MD001 rule-unavailable: Rule has no executable implementation.
+coverage docs/guide.md:2:4 MD057 context-unavailable: Required context is unavailable.
+```
+
+The initial lint CLI returns `15` with zero findings when default-enabled
+implementations are missing. Available findings and coverage remain in both
+text and JSON when file I/O (`13`) or internal execution (`14`) errors override
+that outcome. Results remain on stdout; a nonzero exit, including `15`, must
+fail a CI check.
+
+VS Code emits located coverage records with identifier `coverage` and sends location-free records to stderr. GitHub emits coverage error annotations, omitting source coordinates when none exist. All retain the nonzero exit so incomplete work cannot appear as a clean CI check. Inspect retains status `inspected` and successful exit when its report is produced; config validation does not run Markdown checks.
 
 Resource coverage belongs to the source document and affected check. Unknown partial-map entries, blocked paths, and missing required content use `context-unavailable`; established target absence belongs to MD057 or the applicable navigation rule. MD051 does not duplicate a missing-file finding. Actual read/decode failures also produce an attributed `io` error. Shared resource failures are deduplicated without losing affected source coverage. See [resource outcomes](engineering/resources.md#outcomes-and-rule-ownership).
 
