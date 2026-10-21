@@ -1,6 +1,6 @@
 # Configuration engineering design
 
-The shared configuration loader implements the [configuration contract](../configuration.md) for CLI and MCP. `mdchk config validate` also scans a project for definitions and validates each eligible file independently. Its [command guide](../commands/config/validate.md) defines selection, exclusions, output, and exit behavior. The contracts below are approved; implementation is pending.
+The shared configuration loader implements the [configuration contract](../configuration.md) for CLI and MCP. `mdchk config validate` also scans a project for definitions and validates each eligible file independently. Its [command guide](../commands/config/validate.md) defines selection, exclusions, output, and exit behavior. The contracts below are approved. Shared decoding, semantic validation and bounded one-file policy resolution are implemented as described below; command integration and the downward validation scan remain pending.
 
 ## Implemented configuration boundary
 
@@ -57,12 +57,63 @@ distinct from an absent body. Unrelated invalid tokens are never suppressed.
 Recognized block header tokens are checked for one optional indentation indicator
 and one optional chomping indicator, in either order, as YAML 1.2.2 specifies.
 
-`DecodeJSON` and explicit-file `Load` remain unavailable stubs: every call returns
-a nil definition and recognizable `ErrUnavailable`. `Load` performs no IO.
-Complete catalog metadata, semantic and capability validation, and exclusion
-matching are implemented independently of loading. Bounded discovery and
-ancestor policy resolution remain #219 work. The YAML examples can be decoded
-and validated in memory; filesystem integration remains pending.
+`DecodeJSON` remains an unavailable raw transport stub: every call returns a
+nil definition and recognizable `ErrUnavailable`. Complete catalog metadata,
+semantic and capability validation, exclusion matching, and bounded read-only
+filesystem selection are implemented. Command adapters and the downward
+multi-definition validation scan remain pending.
+
+## Bounded filesystem selection
+
+`Resolve(SelectionOptions, registry, providers, capabilities)` implements initial
+one-file discovery and ancestor policy resolution. `WorkingDirectory` supplies
+relative explicit-path resolution; `StartDirectory` independently supplies the
+upward discovery start, allowing inspect to use the resolved target's parent.
+Both default to the invocation working directory. `BoundaryDirectory`, when
+supplied, is an inclusive caller cap, allowing project MCP to retain its startup
+root. Directory identities are resolved against the working directory; the
+caller cap must identify its canonical nonsymlink directory. Every config
+component must be a nonsymlink directory or regular file as appropriate. A target
+adapter that explicitly resolves a document symlink supplies the resolved parent;
+this does not allow symlinks in a configuration path.
+
+Within the cap, discovery first establishes the nearest enclosing repository
+from a `.git` directory or regular worktree file, without reading Git metadata or
+running Git. That repository further narrows the boundary. Without either a
+repository or a supplied cap, discovery reaches the filesystem root. Selection
+then chooses the nearest `.mdchk.yaml`, or the explicitly named YAML file.
+Explicit paths cannot widen the boundary or enter another repository scope.
+A same-scope sibling is permitted; its ancestors come from the selected path,
+not the working directory. A custom filename replaces the recognized filename
+in its own directory. Explicit document targets do not participate in this API.
+
+All recognized definitions in strict parent directories of the selected file,
+through the inclusive boundary, undergo complete schema/domain validation in
+top-down order. Before adding each definition's own permissions, the resolver
+rejects its nonempty exclusion list under any prior nested-exclusion denial.
+`PolicyError` retains the addition's origin and every governing restriction.
+Only permissions combine; ancestor settings and exclusion patterns never merge.
+Only the selected definition undergoes execution admission. With no selected
+file, built-in and catalog defaults undergo normal admission, including the GFM
+and global directive gates. No failure returns a partial usable `Selection`.
+
+`Selection` owns the selected path, top-down ancestor paths, established
+`Boundary` (including the repository identity when known), and an independent
+`Resolution`. These identities are reusable by later inspect, resource-root and
+multi-definition adapters; they grant no target or resource access themselves.
+Production filesystem access uses confined `os.Root` directory handles, checks
+all config components for symlinks, rejects nonregular files, and caps bytes read
+before YAML decoding. On Unix, nonblocking/no-follow opens also prevent a
+substituted FIFO from hanging startup or a final symlink from being followed.
+Opened file and directory identities are checked against their pre-open identity.
+Invalid, unreadable, missing explicit, symlinked or special definitions fail
+without falling back to another file. IO causes remain inspectable through
+`ValidationError`; YAML and semantic errors retain original file locations.
+
+`Load(path)` is the low-level regular-file YAML syntax adapter. It rejects
+symlinks and special files and retains owned source data, but does not establish
+operation scope or validate semantic domains, permissions or capabilities.
+Operation adapters must use `Resolve` for bounded selection and admission.
 
 ## Semantic validation API
 

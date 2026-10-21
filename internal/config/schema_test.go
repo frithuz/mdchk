@@ -75,10 +75,4 @@ func TestLoaderBoundariesFailClosed(t *testing.T) {
 			}
 		}
 	}
-	for _, path := range []string{"", ".mdchk.yaml", "nonexistent/custom.yaml"} {
-		definition, err := Load(path)
-		if definition != nil || !errors.Is(err, ErrUnavailable) {
-			t.Fatalf("Load(%q) = %v, %v; want nil, ErrUnavailable", path, definition, err)
-		}
-	}
 }
