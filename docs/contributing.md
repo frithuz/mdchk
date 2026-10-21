@@ -59,7 +59,10 @@ enabled default implementations produce coverage deficits and return `15`;
 valid UTF-8 with all ordinary rules disabled can return clean `0`. Acquisition
 uses document/aggregate byte limits and shares its work/time budget and caller
 context with the engine. The executable propagates interrupts through
-`cli.RunContext`. Format-specific reporters and other commands remain pending;
+`cli.RunContext`. Lint emits text by default or one schema-v1 JSON result on
+stdout, including ordinary usage/configuration failures. Reporting bounds actual
+encoded bytes and uses an independent cleanup deadline; stderr carries execution
+logs. VS Code/GitHub reporters and other commands remain pending;
 see [current implementation](index.md#current-implementation).
 The conformance adapter below remains a separate test command.
 

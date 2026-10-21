@@ -1,6 +1,10 @@
 # mdchk result formats
 
-Choose a result format with `--format`. The default is readable terminal output. Use JSON for automation, VS Code problem matcher output for inline findings, or GitHub Actions annotations for CI feedback.
+Choose a result format with `--format`. Lint currently implements readable text
+(the default) and JSON for automation. Results go to stdout; stderr is reserved
+for execution logs. VS Code and GitHub reporters are planned and currently return
+unsupported usage before project access. Fix, inspect, config validation and MCP
+remain planned; their format behavior below describes the accepted contract.
 
 | Format | Use |
 | --- | --- |
@@ -9,7 +13,10 @@ Choose a result format with `--format`. The default is readable terminal output.
 | `vscode` | Send file locations and messages to a VS Code problem matcher |
 | `github` | Annotate files in GitHub Actions workflow results |
 
-Formats change presentation, not the rules, fixes, or [exit codes](exit-codes.md). `lint`, `fix`, and [`config validate`](commands/config/validate.md) accept all four formats.
+Formats change presentation, not the rules, fixes, or [exit codes](exit-codes.md).
+The complete contract gives `lint`, `fix`, and
+[`config validate`](commands/config/validate.md) all four formats; this build
+implements only lint text and JSON.
 
 [`inspect`](commands/inspect.md) accepts `text` and `json` for its detailed processing report. VS Code and GitHub annotations do not carry its AST and other inspection data.
 
@@ -27,7 +34,10 @@ docs/guide.md:18:1 MD001: Heading jumps from level 2 to level 4. Choose the inte
 Checked 3 files. Found 1 violation.
 ```
 
-Fix reports show corrections and remaining findings. Dry runs show proposed diffs. Summaries identify skipped files and errors as well as violations.
+Fix reports show corrections and remaining findings. Dry runs show proposed diffs. Summaries identify skipped files and errors as well as violations. Lint text
+also identifies coverage reasons, interruptions and omissions. CR and LF in
+paths, explanations and other line-oriented fields are escaped so user data
+cannot forge another output record; JSON retains the original string values.
 
 ## Parse results as JSON
 
@@ -86,7 +96,7 @@ Resource coverage belongs to the source document and affected check. Unknown par
 
 Cross-file preview and standalone fix findings use the coordinated candidate view. Project fix findings use the actual saved view after writes, with stale or uncertain dependencies explicitly invalidated. Resource-only content is never returned as corrected target content.
 
-## Highlight findings in VS Code
+## Highlight findings in VS Code (planned)
 
 ```sh
 mdchk lint . --format vscode
@@ -132,7 +142,7 @@ Configure a VS Code task to parse that pattern and run the command from the proj
 
 This provides findings when the task runs. Use JSON for an integration that needs exact ranges or its own conversion to editor-specific character coordinates.
 
-## Annotate GitHub Actions results
+## Annotate GitHub Actions results (planned)
 
 ```sh
 mdchk lint . --format github
@@ -167,7 +177,25 @@ MCP calls return structured tool results rather than selecting a terminal format
 
 ## Bounded reporting
 
-The default encoded response budget is 8 MiB. Omit whole optional diff/AST sections
+Lint enforces the default encoded response budget of 8 MiB, including escaping
+and the final newline, and an independent reporting deadline of 2 seconds.
+Use `--limit response-bytes=4MiB` or `--limit reporting-time=3s` to change
+these finite operator budgets. Whole records are retained deterministically.
+Detailed errors can become summaries with exact `/errors` omission counts,
+preserving categories, IDs, paths, snapshots and ranges; encountered errors
+and file outcomes remain authoritative. Before analysis, the report reserve
+plus mandatory target manifest must fit. Genuinely known request/envelope
+infeasibility is preflight usage `11`. CLI paths request selection and can name
+directories or excluded entries, so preproject feasibility checks only the
+known empty envelope. After discovery, an infeasible actual target manifest
+stops before acquisition/analysis as incomplete `15`, with exact `/files` and
+`/coverage` omissions. The final report can use the full response budget.
+Reporting pre-encodes an essential partial fallback for its independent deadline.
+A failed output write,
+including a short write, returns `13` unless an established internal error
+requires `14`; a failed delivery can leave a partial report.
+
+The full contract for other operations is: Omit whole optional diff/AST sections
 first, then whole ordered records with exact omitted counts when known. Unknown
 counts are omitted, never fabricated as zero. Omission makes `complete: false`.
 Reserve every target write outcome before commits; no size reduction can discard

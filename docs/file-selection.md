@@ -6,8 +6,9 @@ The shared filesystem provider implements lint target selection and bounded,
 read-only source acquisition. Compiled lint passes snapshots to the admitted
 engine for mandatory UTF-8 validation, parsing and available registered checks.
 Missing enabled rule implementations produce coverage deficits; valid UTF-8
-with ordinary checks disabled can return clean `0`. Format-specific reporters
-remain pending. See the [provider boundary](engineering/file-selection.md)
+with ordinary checks disabled can return clean `0`. Lint text and JSON reports
+retain selection skips, acquired snapshots, per-file outcomes and partial failures.
+VS Code/GitHub reporters remain pending. See the [provider boundary](engineering/file-selection.md)
 and [current lint status](commands/lint.md#current-implementation).
 
 ## Selection by operation

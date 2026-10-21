@@ -5,7 +5,8 @@ The shared configuration loader implements the approved
 execution through the shared parser/rule engine. Shared decoding, semantic
 validation and bounded one-file policy resolution are implemented as described
 below. Missing enabled rule implementations produce genuine coverage deficits;
-format-specific reporters remain deferred.
+lint presents shared results as readable text or schema-v1 JSON. VS Code/GitHub
+reporters remain deferred.
 
 The contract also covers MCP and the planned `mdchk config validate` command,
 which scans a project for definitions and validates each eligible file
@@ -200,6 +201,15 @@ retain source positions, including alias use sites; object diagnostics retain
 only property paths. No validation step calls a parser, rule check, filesystem,
 reporter or write adapter, and failures return no partial usable resolution.
 
+`SourceError` wraps failures after successful configuration acquisition and
+preserves underlying typed errors through `Unwrap`. `Sources()` returns owned
+path, SHA-256 and byte-count metadata computed from the same bytes used for
+decoding, including acquired ancestors needed for governing policy origins.
+Reporting matches each origin to that metadata and never rereads a path to
+construct a location. Missing or unreadable files have no fabricated snapshot
+or range; replacing a configuration after failure cannot change its reported
+identity. Standalone syntax/semantic validation still performs no filesystem IO.
+
 ## Admitted lint execution
 
 `Resolution.ExecutionPlan()` returns the immutable admitted bridge to the shared
@@ -225,8 +235,10 @@ gate, parser and callback execution. Selection/acquisition observations merge
 through `engine.FinalizeLintResult`, which regenerates canonical IDs, cause links
 and per-file references before deriving the shared outcome. Public CLI paths
 are relative to the invocation directory; acquisition keeps native names private.
-Production rule callbacks, GFM/Pandoc parsers, directives, optional contexts and
-format-specific reporters remain separate deliveries.
+Lint text and JSON reporters present the canonical result without rereading
+configuration sources or target documents. Production rule callbacks, GFM/Pandoc
+parsers, directives, optional contexts and VS Code/GitHub reporters remain
+separate deliveries.
 
 ## Confirmed requirements
 

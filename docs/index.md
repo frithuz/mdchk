@@ -16,9 +16,11 @@ enabled defaults return `15`. Valid UTF-8 with all ordinary rules disabled can
 return clean `0`; available registered checks retain findings and coverage.
 See [lint's current implementation](commands/lint.md#current-implementation) for
 the available configuration and remaining execution work. Help and version do
-not access the project. The result reporters tracked by #128 remain pending;
-`--format` parses the documented names but produces no formatted report. Findings, errors and an execution/coverage-count summary
-currently use plain stderr text.
+not access the project. Lint reports readable text by default or one schema-v1
+JSON object with `--format json` on stdout; stderr is reserved for execution logs.
+Reports retain findings, coverage reasons, errors, interruptions and omissions.
+VS Code and GitHub reporters remain planned and are rejected as unsupported usage
+before project access.
 The other commands below describe planned behavior and are rejected by this build.
 
 ## Get started (planned execution)

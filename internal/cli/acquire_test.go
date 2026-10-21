@@ -34,7 +34,7 @@ func TestActualLintAcquisition(t *testing.T) {
 		t.Run(strings.Join(tc.paths, ","), func(t *testing.T) {
 			args := append([]string{"lint"}, tc.paths...)
 			var out, stderr bytes.Buffer
-			if status := Run(args, &out, &stderr, "dev"); status != tc.status || out.Len() != 0 {
+			if status := Run(args, &out, &stderr, "dev"); status != tc.status || out.Len() == 0 || stderr.Len() != 0 {
 				t.Fatalf("actual: status=%d out=%q stderr=%q", status, &out, &stderr)
 			}
 			options, err := parseLint(tc.paths)
@@ -91,7 +91,7 @@ func TestActualLintInvalidUTF8AndSnapshots(t *testing.T) {
 		}
 	}
 	var stderr bytes.Buffer
-	if status := Run([]string{"lint"}, io.Discard, &stderr, "dev"); status != 13 || !strings.Contains(stderr.String(), "Invalid UTF-8") {
+	if status := Run([]string{"lint"}, &stderr, io.Discard, "dev"); status != 13 || !strings.Contains(stderr.String(), "Invalid UTF-8") {
 		t.Fatalf("actual invalid source: status=%d %s", status, &stderr)
 	}
 	if status := Run([]string{"lint"}, io.Discard, failingWriter{}, "dev"); status != 13 {
@@ -178,9 +178,9 @@ func TestActualLintCleanDisabledRulesAndFormats(t *testing.T) {
 		fmt.Fprintf(&body, "  %s: {enabled: false}\n", metadata.ID)
 	}
 	put(t, filepath.Join(root, ".mdchk.yaml"), body.String())
-	for _, format := range []string{"text", "json", "vscode", "github"} {
+	for _, format := range []string{"text", "json"} {
 		var stderr bytes.Buffer
-		if status := Run([]string{"lint", "--format", format, "doc.md"}, io.Discard, &stderr, "dev"); status != 0 || !strings.Contains(stderr.String(), "0 coverage deficits; clean") {
+		if status := Run([]string{"lint", "--format", format, "doc.md"}, &stderr, io.Discard, "dev"); status != 0 || !strings.Contains(stderr.String(), "clean") {
 			t.Fatalf("format=%s status=%d stderr=%s", format, status, &stderr)
 		}
 	}

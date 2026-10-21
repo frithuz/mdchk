@@ -28,7 +28,7 @@ const lintHelp = `Usage: mdchk lint [options] [paths...]
 
 Options may appear before or after paths. Use -- for dash-prefixed paths.
   --config PATH       Select project configuration
-  --format FORMAT     text (default), json, vscode, or github
+  --format FORMAT     text (default) or json
   --limit NAME=VALUE  Set a finite resource limit; repeat for multiple limits
   --help              Show this help
   --version           Print version
@@ -36,8 +36,9 @@ Options may appear before or after paths. Use -- for dash-prefixed paths.
 Configuration is loaded and validated before any target access.
 Unavailable configuration returns 12; target I/O or invalid UTF-8 returns 13.
 No selected files returns 11. Complete clean checks return 0, violations 10,
-and unavailable checks or interrupted analysis 15. Format names are accepted;
-full format-specific reporters are pending. Results currently use plain stderr.
+and unavailable checks or interrupted analysis 15.
+Text and JSON reports go to stdout; execution logs go to stderr.
+The vscode and github formats are not yet supported.
 `
 
 // Run executes with supplied arguments (excluding argv[0]) and streams. Version
@@ -81,7 +82,7 @@ func runContext(ctx context.Context, args []string, stdout, stderr io.Writer, ve
 	case "lint":
 		opts, err := parseLint(append(global, args[1:]...))
 		if err != nil {
-			return output(stderr, "mdchk: "+err.Error()+"\n", exitUsage)
+			return reportFailure(err, "invalid-arguments", "usage", recoverFormat(args[1:]), stdout, nil)
 		}
 		if opts.help {
 			return output(stdout, lintHelp, 0)
@@ -89,18 +90,28 @@ func runContext(ctx context.Context, args []string, stdout, stderr io.Writer, ve
 		if opts.version {
 			return output(stdout, "mdchk "+version+"\n", 0)
 		}
+		if opts.format == "vscode" || opts.format == "github" {
+			return reportFailure(fmt.Errorf("format %q is not yet supported; use text or json", opts.format), "unsupported-format", "usage", "text", stdout, opts.limits)
+		}
+		if err := invocationFeasibility(opts); err != nil {
+			return reportFailure(err, "response-manifest-too-large", "usage", opts.format, stdout, opts.limits)
+		}
 		invocation, err := prepare(opts)
 		if err != nil {
-			return output(stderr, "mdchk: "+err.Error()+"\n", exitConfig)
+			return reportFailure(err, "config-definition", "configuration", opts.format, stdout, opts.limits)
 		}
-		return execute(ctx, invocation, stdout, stderr)
+		status := execute(ctx, invocation, stdout, stderr)
+		if invocation.result != nil {
+			return reportResult(*invocation.result, opts.format, stdout, opts.limits)
+		}
+		return status
 	default:
-		return output(stderr, fmt.Sprintf("mdchk: unknown command or global option %q; use --help\n", args[0]), exitUsage)
+		return reportFailure(fmt.Errorf("unknown command or global option %q; use --help", args[0]), "unknown-command", "usage", recoverFormat(args), stdout, nil)
 	}
 }
 
 func output(w io.Writer, message string, status int) int {
-	if _, err := io.WriteString(w, message); err != nil {
+	if n, err := io.WriteString(w, message); err != nil || n != len(message) {
 		return exitIO
 	}
 	return status
@@ -185,4 +196,35 @@ func parseLint(args []string) (lintOptions, error) {
 		return opts, err
 	}
 	return opts, nil
+}
+
+// recoverFormat recovers presentation independently from argument validation.
+// Recognized operands cannot become format flags, and -- ends option parsing.
+func recoverFormat(args []string) string {
+	format := "text"
+	for i := 0; i < len(args); i++ {
+		if args[i] == "--" {
+			break
+		}
+		name, value, inline := strings.Cut(args[i], "=")
+		switch name {
+		case "--config", "--limit", "--format":
+		default:
+			continue
+		}
+		if !inline {
+			if i+1 >= len(args) || strings.HasPrefix(args[i+1], "--") {
+				continue
+			}
+			i++
+			value = args[i]
+		}
+		if name == "--format" {
+			format = "text"
+			if value == "json" {
+				format = "json"
+			}
+		}
+	}
+	return format
 }

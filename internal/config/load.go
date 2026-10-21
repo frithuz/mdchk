@@ -50,5 +50,6 @@ func Load(path string) (*Definition, error) {
 	if err != nil {
 		return nil, pathError(absolute, err)
 	}
-	return DecodeYAML(absolute, content)
+	definition, err := DecodeYAML(absolute, content)
+	return definition, sourceError(err, []SourceSnapshot{snapshotSource(absolute, content)})
 }

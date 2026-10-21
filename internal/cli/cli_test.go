@@ -33,10 +33,10 @@ func TestDispatch(t *testing.T) {
 			if tc.stdout != "" && !strings.Contains(out.String(), tc.stdout) {
 				t.Fatalf("stdout=%q; want %q", &out, tc.stdout)
 			}
-			if tc.status != 0 && out.Len() != 0 {
-				t.Fatalf("failure wrote success/report output: %q", &out)
+			if tc.status != 0 && (out.Len() == 0 || errout.Len() != 0) {
+				t.Fatalf("failure did not write sole stdout report: %q", &out)
 			}
-			if tc.status == 15 && !strings.Contains(errout.String(), "Markdown analysis is not available") {
+			if tc.status == 15 && !strings.Contains(out.String(), "coverage") {
 				t.Fatalf("missing incomplete explanation: %q", &errout)
 			}
 		})
@@ -55,7 +55,11 @@ func TestLintOptions(t *testing.T) {
 	}
 	for _, format := range []string{"text", "json", "vscode", "github"} {
 		var out, errout bytes.Buffer
-		if got := Run([]string{"lint", "--format", format}, &out, &errout, "dev"); got != 15 || out.Len() != 0 {
+		want := 15
+		if format == "vscode" || format == "github" {
+			want = 11
+		}
+		if got := Run([]string{"lint", "--format", format}, &out, &errout, "dev"); got != want || out.Len() == 0 || errout.Len() != 0 {
 			t.Fatalf("format %s: status=%d stdout=%q", format, got, &out)
 		}
 	}

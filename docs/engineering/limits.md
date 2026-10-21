@@ -1,14 +1,49 @@
 # Shared resource limits
 
 Status: accepted on 2026-10-15. Parser-layer budgets are implemented and
-verified as described in [parser accounting](parser-limits.md); remaining
-adapter/application limits and end-to-end verification remain pending.
+verified as described in [parser accounting](parser-limits.md). Lint acquisition
+enforces document and aggregate content bytes with the shared execution budget;
+text/JSON reporting enforces encoded response bytes, reporting time and
+report reserve feasibility. Remaining adapter/application limits and their end-to-end
+verification remain pending.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
 
 These are finite application-work budgets, not a process memory or throughput guarantee.
 The [machine-readable profile](limits.json) carries exact values and accounting scope.
 MiB = 1,048,576 bytes; KiB = 1,024 bytes.
+
+## Current CLI enforcement
+
+Lint reports only applicable enforced values in `effective_limits`, including
+its parser budgets, aggregate acquisition bytes and `response-bytes`,
+`reporting-time`, and `report-reserve-bytes`. Reporting-time uses nanoseconds;
+response/reserve values use bytes. Operator overrides replace the corresponding
+defaults. Reporting gets its own deadline after analysis stops and measures
+actual encoded text/JSON bytes, including escaping and newline framing. Whole
+optional records can be omitted with exact known counts. Detailed error records
+can become identity-preserving summaries with exact `/errors` omission counts;
+categories, IDs, paths, snapshots and ranges remain intact. Actual encountered
+errors, interruptions and file outcomes retain their meaning. A delivery failure returns
+IO/13 unless an established internal failure requires 14.
+
+Before analysis, reserve feasibility requires `report-reserve-bytes` plus the
+encoded mandatory target identity/outcome manifest to fit `response-bytes`.
+The final encoded report can use the full response budget. A genuinely known
+infeasible request or envelope is a preflight usage/11 failure. CLI path
+arguments are selection requests, not known target records: a directory or
+excluded path can select zero targets. CLI preproject feasibility therefore
+checks only the known empty envelope. After discovery, an infeasible actual
+target manifest stops before acquisition/analysis as incomplete/15, with exact
+`/files` and `/coverage` output-limit omissions; already encountered errors
+retain their precedence.
+Reporting pre-encodes an essential partial fallback for deadline expiry.
+
+Accepting an override name does not assert that every future application scope
+is already integrated. Traversal counts, logical path budgets, aggregate
+configuration accounting, resource inventories, MCP admission and write
+reservation remain work for their owning adapters. The full profile below is
+the accepted implementation contract.
 
 ## Defaults
 

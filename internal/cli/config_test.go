@@ -71,10 +71,10 @@ func TestLintConfigurationStopsBeforeTargets(t *testing.T) {
 			calls := 0
 			var out, stderr bytes.Buffer
 			status := run(args, &out, &stderr, "dev", prepareLint, func(*lintInvocation, io.Writer, io.Writer) int { calls++; return 0 })
-			if status != 12 || calls != 0 || out.Len() != 0 || !strings.Contains(stderr.String(), tc.want) {
+			if status != 12 || calls != 0 || out.Len() == 0 || stderr.Len() != 0 || !strings.Contains(out.String(), tc.want) {
 				t.Fatalf("status=%d calls=%d out=%q err=%q", status, calls, &out, &stderr)
 			}
-			if got := Run(args, io.Discard, failingWriter{}, "dev"); got != 13 {
+			if got := Run(args, failingWriter{}, io.Discard, "dev"); got != 13 {
 				t.Fatalf("config output failure=%d", got)
 			}
 		})
@@ -205,7 +205,7 @@ func TestLintRejectsConfigNonregularAndSymlink(t *testing.T) {
 			}
 		}
 		var stderr bytes.Buffer
-		if status := Run([]string{"lint", "--config", path}, io.Discard, &stderr, "dev"); status != 12 || !strings.Contains(stderr.String(), path) {
+		if status := Run([]string{"lint", "--config", path}, &stderr, io.Discard, "dev"); status != 12 || !strings.Contains(stderr.String(), path) {
 			t.Fatalf("%s: status=%d %s", name, status, &stderr)
 		}
 	}

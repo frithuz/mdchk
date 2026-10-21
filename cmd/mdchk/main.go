@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	configureOutputSignals()
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	status := cli.RunContext(ctx, os.Args[1:], os.Stdout, os.Stderr, buildVersion())
 	stop()

@@ -134,7 +134,9 @@ func Resolve(options SelectionOptions, registry *engine.Registry, providers engi
 	return resolveFS(access, canonicalStart, canonicalCap, explicit, registry, providers, capabilities, rawExplicit)
 }
 
-func resolveFS(access discoveryFS, start, cap, explicit string, registry *engine.Registry, providers engine.ValidationProviders, capabilities Capabilities, rawExplicit ...string) (*Selection, error) {
+func resolveFS(access discoveryFS, start, cap, explicit string, registry *engine.Registry, providers engine.ValidationProviders, capabilities Capabilities, rawExplicit ...string) (selection *Selection, resultErr error) {
+	var sources []SourceSnapshot
+	defer func() { resultErr = sourceError(resultErr, sources) }()
 	info, err := access.lstat(start)
 	if err != nil {
 		return nil, pathError(start, err)
@@ -223,7 +225,10 @@ func resolveFS(access discoveryFS, start, cap, explicit string, registry *engine
 			if e != nil {
 				return nil, pathError(path, e)
 			}
-			v, e := validateFile(access, path, registry, providers, inherited)
+			v, source, e := validateFile(access, path, registry, providers, inherited)
+			if source.Path != "" {
+				sources = append(sources, source)
+			}
 			if e != nil {
 				return nil, e
 			}
@@ -239,7 +244,11 @@ func resolveFS(access discoveryFS, start, cap, explicit string, registry *engine
 		}
 		validated, err = ValidateDefinition(d, registry, providers)
 	} else {
-		validated, err = validateFile(access, selected, registry, providers, inherited)
+		var source SourceSnapshot
+		validated, source, err = validateFile(access, selected, registry, providers, inherited)
+		if source.Path != "" {
+			sources = append(sources, source)
+		}
 	}
 	if err != nil {
 		return nil, err
@@ -250,23 +259,24 @@ func resolveFS(access discoveryFS, start, cap, explicit string, registry *engine
 	}
 	return &Selection{boundary, selected, ancestors, resolved}, nil
 }
-func validateFile(access discoveryFS, path string, registry *engine.Registry, providers engine.ValidationProviders, inherited Permissions) (*Validated, error) {
+func validateFile(access discoveryFS, path string, registry *engine.Registry, providers engine.ValidationProviders, inherited Permissions) (*Validated, SourceSnapshot, error) {
 	data, err := access.readRegular(path)
 	if err != nil {
-		return nil, pathError(path, err)
+		return nil, SourceSnapshot{}, pathError(path, err)
 	}
+	source := snapshotSource(path, data)
 	d, err := DecodeYAML(path, data)
 	if err != nil {
-		return nil, err
+		return nil, source, err
 	}
 	v, err := ValidateDefinition(d, registry, providers)
 	if err != nil {
-		return nil, err
+		return nil, source, err
 	}
 	if len(v.settings.Exclude) > 0 && len(inherited.NestedExcludes) > 0 {
-		return nil, &PolicyError{cloneOrigin(v.definition.Provenance["exclude"]), clonePermissions(inherited).NestedExcludes}
+		return nil, source, &PolicyError{cloneOrigin(v.definition.Provenance["exclude"]), clonePermissions(inherited).NestedExcludes}
 	}
-	return v, nil
+	return v, source, nil
 }
 func repositoryAt(access discoveryFS, path string) (bool, error) {
 	info, err := access.lstat(path)

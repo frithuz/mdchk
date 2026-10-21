@@ -4,7 +4,8 @@
 `Acquire` loads bounded immutable source snapshots, and compiled lint connects
 selection and acquisition to the admitted engine plan after configuration
 preparation. The plan owns mandatory UTF-8 validation, parsing and registered
-checks. Format-specific reports remain pending.
+checks. Lint text and JSON reporters present the finalized shared result;
+VS Code/GitHub reporters remain pending.
 Selection does not read document contents, label targets as checked, discover
 configuration, interpret Git ignores, access linked resources, or write files.
 
@@ -116,5 +117,6 @@ original source byte length. Parsing, rule work and diagnostic coordinate
 projection continue against that shared execution budget under their own
 charges. Context and shared deadline checkpoints surround reads; unresponsive
 OS calls are not promised preemption. No resource contents are loaded. Discovery
-counts, broader application limits and reporting limits remain pending; the
+counts and broader application limits remain pending; encoded response bytes
+and the independent reporting deadline are enforced by the CLI reporter. The
 command does not claim complete operation accounting.

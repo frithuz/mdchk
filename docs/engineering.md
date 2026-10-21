@@ -247,9 +247,14 @@ with the same context and operation budget. The engine owns mandatory UTF-8
 validation, parsing and available registered checks. No production rule callbacks
 exist yet: missing enabled defaults produce genuine coverage deficits and return
 15. Valid UTF-8 with ordinary rules disabled can return clean 0; available checks
-can produce violations and retained partial findings. Pending reporter delivery
-in #128, findings, errors and an execution/coverage-count summary use plain stderr
-even when a structured format was selected. No JSON result envelope is emitted.
+can produce violations and retained partial findings. Lint emits text by default
+or one schema-v1 JSON object on stdout, with execution logs on stderr. Ordinary
+usage/configuration errors preserve a valid selected JSON presentation. Reporters
+retain canonical outcomes, snapshot identities, coverage, errors and partial
+observations; encoded-byte limits reduce whole records with explicit omissions.
+The reporting deadline is independent of expired analysis. VS Code/GitHub
+reporters return unsupported usage before project access; other commands remain
+planned.
 
 ## CLI and result schema
 

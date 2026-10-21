@@ -31,7 +31,7 @@ func acquireLint(inv *lintInvocation, _ io.Writer, stderr io.Writer) int {
 // acquireLintContext gives immutable acquired snapshots to the admitted plan.
 // The acquisition meter and caller context continue through the engine's single
 // mandatory encoding gate, parser and callbacks; no adapter decoding scan occurs.
-func acquireLintContext(ctx context.Context, inv *lintInvocation, stderr io.Writer) int {
+func acquireLintContext(ctx context.Context, inv *lintInvocation, _ io.Writer) int {
 	limits := parser.Limits{
 		DocumentBytes: inv.limit("document-bytes"), SyntaxDepth: inv.limit("syntax-depth"),
 		DocumentNodes: inv.limit("document-nodes"), TotalNodes: inv.limit("total-nodes"),
@@ -39,21 +39,24 @@ func acquireLintContext(ctx context.Context, inv *lintInvocation, stderr io.Writ
 	}
 	budget, err := parser.NewOperationBudget(limits)
 	if err != nil {
-		return output(stderr, fmt.Sprintf("mdchk: unsupported execution limits: %v\n", err), exitUsage)
+		return inv.fail(err, "unsupported-limits", result.Usage)
 	}
 	if ctx == nil {
-		return output(stderr, "mdchk: nil execution context\n", 14)
+		return inv.fail(errors.New("nil execution context"), "invalid-context", result.Internal)
 	}
 	ctx, cancel := context.WithTimeout(ctx, limits.OperationTime)
 	defer cancel()
 	selected, err := files.Select(files.Options{WorkingDirectory: inv.workingDirectory, ExclusionBase: inv.exclusionBase, Paths: inv.options.paths, Exclusions: inv.exclusions, Quarto: inv.plan.Configuration().Settings.QuartoEnabled})
 	if err != nil {
-		return output(stderr, "mdchk: "+err.Error()+"\n", exitIO)
+		return inv.fail(err, "selection-failed", result.IO)
 	}
 	inv.targetSelection = selected
+	if status, rejected := inv.selectionFeasibility(selected); rejected {
+		return status
+	}
 	acquired, err := files.Acquire(ctx, selected, files.AcquireOptions{DocumentBytes: limits.DocumentBytes, TotalContentBytes: inv.limit("total-content-bytes"), Budget: budget})
 	if err != nil {
-		return output(stderr, "mdchk: "+err.Error()+"\n", exitUsage)
+		return inv.fail(err, "invalid-acquisition", result.Usage)
 	}
 	inv.acquisition = acquired
 	var inputs []engine.Input
@@ -64,23 +67,19 @@ func acquireLintContext(ctx context.Context, inv *lintInvocation, stderr io.Writ
 		for _, document := range acquired.Documents {
 			in, err := inv.plan.NewInput(inv.logicalPath(document.Path), document.Source.Bytes())
 			if err != nil {
-				return output(stderr, "mdchk: "+err.Error()+"\n", 14)
+				return inv.fail(err, "invalid-input", result.Internal)
 			}
 			inputs = append(inputs, in)
 		}
 	}
 	out, err := inv.plan.Lint(ctx, inputs, engine.RunOptions{Mode: "cli", Budget: budget})
 	if err != nil {
-		return output(stderr, "mdchk: admitted lint execution: "+err.Error()+"\n", 14)
+		return inv.fail(err, "execution-failed", result.Internal)
 	}
 	inv.mergeAcquisition(&out, selected, acquired)
 	engine.FinalizeLintResult(&out)
 	inv.result = &out
-	status := lintExit(out)
-	if err := renderLintProgress(stderr, out); err != nil {
-		return exitIO
-	}
-	return status
+	return lintExit(out)
 }
 
 func (inv *lintInvocation) logicalPath(path string) string {
@@ -184,6 +183,9 @@ func lintExit(out result.Result) int {
 	// Usage errors here are preflight/empty selection only. Runtime failures
 	// retain semantic precedence, including IO over an empty selection.
 	for _, e := range out.Errors {
+		if e.Category == result.Configuration {
+			status = exitConfig
+		}
 		if e.Category == result.Usage {
 			status = exitUsage
 		}
@@ -199,30 +201,4 @@ func lintExit(out result.Result) int {
 		}
 	}
 	return status
-}
-
-// renderLintProgress is the transitional plain execution summary. Format-aware
-// reports are owned by #128; choosing a format does not fabricate a deficit.
-func renderLintProgress(w io.Writer, out result.Result) error {
-	for _, d := range out.Diagnostics {
-		if _, err := fmt.Fprintf(w, "%s:%d:%d: %s: %s\n", d.Path, d.Range.Start.Line, d.Range.Start.Column, d.Rule, d.Message); err != nil {
-			return err
-		}
-	}
-	for _, e := range out.Errors {
-		message := e.Message
-		if e.Path != "" {
-			message = e.Path + ": " + message
-		}
-		if _, err := fmt.Fprintf(w, "mdchk: %s\n", message); err != nil {
-			return err
-		}
-	}
-	for _, stop := range out.Interruptions {
-		if _, err := fmt.Fprintf(w, "mdchk: %s: %s\n", stop.Path, stop.Message); err != nil {
-			return err
-		}
-	}
-	_, err := fmt.Fprintf(w, "mdchk: %d checked, %d skipped, %d findings, %d errors, %d coverage deficits; %s\n", len(out.CheckedFiles), len(out.SkippedFiles), len(out.Diagnostics), len(out.Errors), len(out.Coverage), out.Status)
-	return err
 }

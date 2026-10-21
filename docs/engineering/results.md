@@ -1,6 +1,9 @@
 # Shared results and interruption contract
 
-Status: accepted on 2026-10-15; implementation and end-to-end verification remain pending.
+Status: accepted on 2026-10-15. The shared result model, canonical lint
+finalizer, schema/semantic validators and lint text/JSON reporters are
+implemented and verified. Fix, inspect, config validation, MCP and the remaining
+format adapters require their own implementation and end-to-end verification.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
 
@@ -114,7 +117,7 @@ define schema version 1 and inspection projection version 1.
 ### Compatibility
 
 - All listed top-level collections are present, including empty arrays. Optional fields are absent when inapplicable; structural unknowns are not null, fabricated zero values or successful empty checks. A literal null originating in source data can appear inside typed JSON property data; it is not an absence marker.
-- Schema v1 is the initial pre-implementation contract; update existing draft examples consistently. Breaking type/required-field/meaning changes require a schema-version increment. New optional fields and documented open reason codes/node kinds can be additive; consumers ignore unknown optional fields and render unknown codes generically.
+- Schema v1 is the initial result contract; keep producers and accepted fixtures consistent. Breaking type/required-field/meaning changes require a schema-version increment. New optional fields and documented open reason codes/node kinds can be additive; consumers ignore unknown optional fields and render unknown codes generically.
 - Producer/schema validation rejects undeclared fields for the selected schema revision. This does not relax strict input validation; requests still reject unknown fields.
 
 ### Semantics
@@ -148,10 +151,45 @@ define schema version 1 and inspection projection version 1.
 - Diff hunk line counts match their context/remove/add records and line text excludes CR/LF terminators. Do not use display formatting to hide raw line-ending changes.
 - Project/CLI outputs contain no corrected content strings; standalone fix content includes unchanged successfully returned targets and excludes resource-only entries.
 
+## Implemented lint presentation
+
+The CLI presents the canonical shared result as readable text or one undecorated
+schema-v1 JSON object, including every mandatory collection. Both formats use
+stdout; stderr is reserved for execution logs. Text escapes CR/LF in every
+line-oriented user field and preserves Unicode scalar coordinates. JSON retains
+original strings and same-read source identities. Usage and configuration
+failures retain the selected valid presentation, including format options after
+an earlier malformed option; `--` still ends option recognition. VS Code/GitHub
+formats are rejected before project access until their adapters are implemented.
+
+Actual encoded response bytes, including JSON escaping and the final newline,
+are bounded. Whole optional records are reduced deterministically, recording
+exact known omission counts and incomplete status. Detailed errors may be
+replaced with identity-preserving summaries, recording exact `/errors` omission
+counts while retaining categories, IDs, paths, snapshots and ranges. Encountered
+errors and file outcomes remain authoritative, and canonical finalization
+rebuilds retained references. Before analysis, report feasibility requires the
+minimum reserve plus the encoded mandatory target manifest. Genuinely known
+request/envelope infeasibility is preflight usage/11. CLI paths are selection
+requests rather than known target records, so preproject feasibility checks
+only the known empty envelope. After discovery, infeasible actual target
+manifests stop before acquisition/analysis as incomplete/15 with exact `/files`
+and `/coverage` output-limit omissions, retaining encountered errors. Reporting uses an independent cleanup deadline after analysis stops
+and pre-encodes an essential partial fallback for deadline expiry.
+Short writes and other delivery failures return IO/13 unless internal/14 already
+applies; failed delivery does not promise a complete JSON object. Only enforced
+applicable limits are exposed, with operator/default provenance.
+
+Emitted CLI JSON is checked against both the schema and semantic validator;
+these are complementary because JSON Schema cannot establish cross-record
+state, ID and hash invariants.
+
 ## Remaining verification
 
-- Implement schema-backed producer tests and a semantic validator for cross-record/state/hash invariants; JSON Schema alone cannot prove them.
+- Extend schema-backed producer and semantic tests to every remaining operation
+  and reporter; preserve cross-record/state/hash invariants.
 - Complete the stable AST node/property catalog within #139 using the established CommonMark/GFM/Pandoc source contracts; validate representative dialect projection fixtures.
 
 
-Implement bounded serialization and all adapters against these shared fixtures.
+Extend the implemented bounded lint serialization to the remaining adapters
+against these shared fixtures.

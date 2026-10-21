@@ -42,9 +42,12 @@ implemented yet: enabled missing defaults produce real coverage deficits and
 return `15`. Disabling all ordinary rules permits a clean `0` for valid UTF-8.
 Available registered checks can return violations (`10`); interruptions retain
 partial findings and known targets, with runtime precedence `14 > 13 > 15 > 10 > 0`.
-Reporters are deferred to #128: `--format` accepts the documented names but does
-not yet produce their reports or JSON envelopes. Execution currently prints findings, operational errors and a coverage-count
-summary as plain stderr text. Reporter availability does not reduce coverage.
+Text reports are the default; `--format json` emits one undecorated schema-v1
+result. Results, including usage and configuration errors, go to stdout; stderr
+is reserved for execution logs. Reports retain available findings, errors, skip
+and coverage reasons, partial file outcomes, interruptions and omissions.
+VS Code and GitHub reporters remain unavailable and return usage `11` before
+project access. Reporter availability does not reduce analysis coverage.
 
 The remaining execution behavior on this page is the accepted target contract.
 
@@ -67,7 +70,7 @@ Git ignore support for lint and fix is deferred; use configuration exclusions fo
 | --- | --- |
 | `--limit NAME=VALUE` | Set a finite operator [resource limit](../engineering/limits.md); repeat for multiple limits |
 | `--config PATH` | Select a configuration inside the operation's discovery boundary |
-| `--format FORMAT` | Choose `text`, `json`, `vscode`, or `github`; defaults to `text` |
+| `--format FORMAT` | Choose `text` or `json`; defaults to `text`. `vscode` and `github` are planned and currently rejected |
 
 `--limit` accepts positive decimal integer counts; bytes accept decimal integers
 in bytes or the exact suffixes `B`, `KiB`, `MiB`, and `GiB`. Durations use explicit
@@ -79,8 +82,22 @@ bytes. Acquisition enforces `document-bytes` (default 1 MiB) and
 `total-content-bytes` (default 8 MiB), sharing the operation work and elapsed-time
 budget with mandatory decoding, parsing and registered checks. A known oversized file is a usage error (`11`);
 runtime growth, aggregate exhaustion, cancellation or deadline leaves work
-incomplete (`15`). I/O failures retain precedence (`13`). Broader traversal,
-and reporting limit enforcement remains pending.
+incomplete (`15`). I/O failures retain precedence (`13`). Reporting enforces the encoded
+`response-bytes` bound (default 8 MiB), including JSON escaping and the final
+newline, and its independent `reporting-time` budget (default 2 seconds).
+Whole-record omissions are counted and force incomplete results. Error details
+may become identity-preserving summaries with exact omission counts. Before
+analysis, the reserve plus mandatory target manifest must fit the response
+budget. CLI path arguments request selection rather than defining known
+target records; directories and exclusions can yield zero targets. Preproject
+feasibility checks only the known empty envelope. After discovery, an infeasible
+actual target manifest stops before acquisition and analysis as incomplete `15`,
+with exact file and coverage omission counts. Genuinely known request/envelope
+infeasibility remains preflight usage `11`.
+Encountered errors retain precedence. The final report can use the whole
+response budget. Output delivery failures return `13` unless an established
+internal error requires `14`.
+Broader traversal and application limit enforcement remain pending.
 
 The [global options](../index.md#global-options) also apply. See [configuration](../configuration.md) for discovery and settings, and [result formats](../output-formats.md) for output examples.
 
@@ -89,8 +106,6 @@ The [global options](../index.md#global-options) also apply. See [configuration]
 ```sh
 mdchk lint docs/ --config .mdchk.yaml
 mdchk lint . --format json
-mdchk lint . --format vscode
-mdchk lint . --format github
 mdchk lint -- --draft.md
 ```
 
