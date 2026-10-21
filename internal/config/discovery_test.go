@@ -31,8 +31,16 @@ func discoveryDir(t *testing.T, root, rel string) string {
 func discoveryFile(t *testing.T, dir, name, body string) string {
 	t.Helper()
 	p := filepath.Join(dir, name)
-	//nolint:gosec // The helper writes only caller-controlled temporary test fixtures.
-	if err := os.WriteFile(p, []byte(body), 0600); err != nil {
+	root, err := os.OpenRoot(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := root.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
+	if err := root.WriteFile(name, []byte(body), 0600); err != nil {
 		t.Fatal(err)
 	}
 	return p
