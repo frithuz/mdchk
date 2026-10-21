@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 	"slices"
@@ -39,8 +40,45 @@ var coreSpecialNumber = regexp.MustCompile(`^([-+]?\.(inf|Inf|INF)|\.(nan|NaN|NA
 // The accepted default config-byte, structured-depth and document-node limits
 // bound source parsing and alias expansion. No defaults or partial results escape.
 func DecodeYAML(sourcePath string, content []byte) (*Definition, error) {
+	return decodeYAML(context.Background(), sourcePath, content, nil)
+}
+
+// DecodeYAMLBounded charges the caller's shared operation, including alias
+// expansion, before construction. Its errors retain cancellation/limit identity.
+func DecodeYAMLBounded(ctx context.Context, path string, content []byte, budget *source.OperationBudget) (d *Definition, err error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			if stop, ok := p.(yamlBudgetStop); ok {
+				d = nil
+				err = stop.err
+			} else {
+				panic(p)
+			}
+		}
+	}()
+	return decodeYAML(ctx, path, content, budget)
+}
+
+type yamlBudgetStop struct{ err error }
+
+func decodeYAML(ctx context.Context, sourcePath string, content []byte, budget *source.OperationBudget) (*Definition, error) {
+	meter := func(n int64) {
+		if budget != nil {
+			if err := ctx.Err(); err != nil {
+				panic(yamlBudgetStop{err})
+			}
+			if err := budget.ChargeWork(n); err != nil {
+				panic(yamlBudgetStop{err})
+			}
+		}
+	}
+	meter(8*int64(len(content)) + 1)
+
 	origin := Origin{Path: sourcePath}
-	if len(content) > configBytes {
+	if budget == nil && len(content) > configBytes {
 		return nil, &DecodeError{Message: "config-bytes limit exceeded", Origin: origin}
 	}
 	if !utf8.Valid(content) {
@@ -48,9 +86,13 @@ func DecodeYAML(sourcePath string, content []byte) (*Definition, error) {
 	}
 	text := string(content)
 	tokens := lexer.Tokenize(text)
-	if len(tokens) > 250000 {
+	if budget != nil && int64(len(tokens)) > budget.Limits().DocumentNodes {
+		return nil, &source.LimitExceeded{Name: "document-nodes", Observed: int64(len(tokens)), Allowed: budget.Limits().DocumentNodes}
+	}
+	if budget == nil && len(tokens) > 250000 {
 		return nil, &DecodeError{Message: "document-nodes limit exceeded by YAML tokens", Origin: origin}
 	}
+	meter(8 * int64(len(tokens)))
 	lineStarts := yamlLineStarts(text)
 	normalizeCommentLines(text, lineStarts, tokens)
 	// Preflight the library's tokens before its recursive syntax construction.
@@ -67,6 +109,9 @@ func DecodeYAML(sourcePath string, content []byte) (*Definition, error) {
 			flow--
 		}
 		if flow > structuredDepth || t.Position.IndentLevel > structuredDepth {
+			if budget != nil {
+				return nil, &source.LimitExceeded{Name: "structured-input-depth", Observed: int64(max(flow, t.Position.IndentLevel)), Allowed: structuredDepth}
+			}
 			return nil, &DecodeError{Message: "structured-input-depth limit exceeded", Origin: tokenOrigin(sourcePath, "", t)}
 		}
 	}
@@ -82,6 +127,8 @@ func DecodeYAML(sourcePath string, content []byte) (*Definition, error) {
 		return nil, &DecodeError{Message: "expected a nonempty mapping document", Origin: origin}
 	}
 	b := yamlBuilder{path: sourcePath, content: text, anchors: map[string]ast.Node{}, bindings: map[*ast.AliasNode]ast.Node{}, active: map[ast.Node]bool{}, blocks: map[*ast.LiteralNode]blockScalar{}, conversions: map[ast.Node]*scalarConversion{}, tags: map[*ast.TagNode]bool{}, work: int64(len(text) + 2*len(tokens))}
+	b.ctx = ctx
+	b.budget = budget
 	b.lineStarts = lineStarts
 	root, err := b.value(file.Docs[0].Body, "", 0, 0, nil)
 	if err != nil {
@@ -95,6 +142,8 @@ func DecodeYAML(sourcePath string, content []byte) (*Definition, error) {
 type blockScalar struct{ spelling, text string }
 
 type yamlBuilder struct {
+	ctx         context.Context
+	budget      *source.OperationBudget
 	conversions map[ast.Node]*scalarConversion
 	tags        map[*ast.TagNode]bool
 	content     string
@@ -133,15 +182,30 @@ func (b *yamlBuilder) value(n ast.Node, path string, depth, aliases int, use *to
 	fail := func(message string) (LocatedValue, error) {
 		return LocatedValue{}, &DecodeError{Message: message, Origin: origin}
 	}
-	b.work += int64(len(path) + len(n.GetToken().Value) + 1)
-	if b.work > 250000000 {
+	b.charge(int64(len(path) + len(n.GetToken().Value) + 1))
+	if b.budget == nil && b.work > 250000000 {
 		return fail("work-units limit exceeded during YAML/alias validation")
 	}
+	if b.budget != nil {
+		if int64(b.nodes)+1 > b.budget.Limits().DocumentNodes {
+			panic(yamlBudgetStop{&source.LimitExceeded{Name: "document-nodes", Observed: int64(b.nodes) + 1, Allowed: b.budget.Limits().DocumentNodes}})
+		}
+		if err := b.budget.ChargeNodes(1); err != nil {
+			panic(yamlBudgetStop{err})
+		}
+	}
 	b.nodes++
-	if b.nodes > 250000 {
+	if b.budget == nil && b.nodes > 250000 {
 		return fail("document-nodes limit exceeded during YAML/alias validation")
 	}
-	if aliases > 256 {
+	aliasLimit := int64(256)
+	if b.budget != nil {
+		aliasLimit = b.budget.Limits().SyntaxDepth
+	}
+	if int64(aliases) > aliasLimit {
+		if b.budget != nil {
+			return LocatedValue{}, &source.LimitExceeded{Name: "syntax-depth", Observed: int64(aliases), Allowed: aliasLimit}
+		}
 		return fail("syntax-depth limit exceeded during alias traversal")
 	}
 	if b.active[n] {
@@ -219,8 +283,8 @@ func (b *yamlBuilder) value(n ast.Node, path string, depth, aliases int, use *to
 		// Successful immutable tag validation is cached, so repeated aliases
 		// do not rescan long numeric block contents. Charge the first lexical
 		// inspection before running the type-specific validators.
-		b.work += int64(len(text))
-		if b.work > 250000000 {
+		b.charge(int64(len(text)))
+		if b.budget == nil && b.work > 250000000 {
 			return fail("work-units limit exceeded during YAML/alias validation")
 		}
 		switch expected {
@@ -243,6 +307,9 @@ func (b *yamlBuilder) value(n ast.Node, path string, depth, aliases int, use *to
 	case *ast.MappingNode:
 		depth++
 		if depth > structuredDepth {
+			if b.budget != nil {
+				return LocatedValue{}, &source.LimitExceeded{Name: "structured-input-depth", Observed: int64(depth), Allowed: structuredDepth}
+			}
 			return fail("structured-input-depth limit exceeded")
 		}
 		v.node.kind = MappingValue
@@ -258,8 +325,8 @@ func (b *yamlBuilder) value(n ast.Node, path string, depth, aliases int, use *to
 				return LocatedValue{}, &DecodeError{Message: "mapping keys must be strings; merge keys are not permitted", Origin: key.Origin()}
 			}
 			name := key.StringValue()
-			b.work += int64(len(path) + len(name) + 1)
-			if b.work > 250000000 {
+			b.charge(int64(len(path) + len(name) + 1))
+			if b.budget == nil && b.work > 250000000 {
 				return fail("work-units limit exceeded during YAML/alias validation")
 			}
 			kp := childPath(path, name)
@@ -281,6 +348,9 @@ func (b *yamlBuilder) value(n ast.Node, path string, depth, aliases int, use *to
 	case *ast.SequenceNode:
 		depth++
 		if depth > structuredDepth {
+			if b.budget != nil {
+				return LocatedValue{}, &source.LimitExceeded{Name: "structured-input-depth", Observed: int64(depth), Allowed: structuredDepth}
+			}
 			return fail("structured-input-depth limit exceeded")
 		}
 		v.node.kind = SequenceValue
@@ -599,8 +669,8 @@ func (b *yamlBuilder) block(n *ast.LiteralNode) (blockScalar, error) {
 	// Both strings are shared immutable storage already owned by this decode.
 	// Charge source/semantic inspection once before caching rather than charging
 	// or allocating a body-sized copy for every alias use.
-	b.work += int64(len(spelling) + len(text))
-	if b.work > 250000000 {
+	b.charge(int64(len(spelling) + len(text)))
+	if b.budget == nil && b.work > 250000000 {
 		return blockScalar{}, fmt.Errorf("work-units limit exceeded during YAML/alias validation")
 	}
 	cached := blockScalar{spelling: spelling, text: text}
@@ -657,8 +727,8 @@ func (b *yamlBuilder) finishScalar(n ast.Node, v LocatedValue) (LocatedValue, er
 		v.node.conversion = c
 		return v, nil
 	}
-	b.work += int64(len(v.node.text))
-	if b.work > 250000000 {
+	b.charge(int64(len(v.node.text)))
+	if b.budget == nil && b.work > 250000000 {
 		return LocatedValue{}, invalid(v, "work-units limit exceeded during YAML numeric conversion")
 	}
 	c := &scalarConversion{}
@@ -798,4 +868,16 @@ func yamlBreakCount(s string) int {
 		}
 	}
 	return lines
+}
+
+func (b *yamlBuilder) charge(n int64) {
+	if b.budget != nil {
+		if err := b.ctx.Err(); err != nil {
+			panic(yamlBudgetStop{err})
+		}
+		if err := b.budget.ChargeWork(8*n + 1); err != nil {
+			panic(yamlBudgetStop{err})
+		}
+	}
+	b.work += n
 }

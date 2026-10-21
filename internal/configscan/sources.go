@@ -202,7 +202,7 @@ func gitBool(value string) (bool, error) {
 func (s *scanner) gitConfig(path string, settings map[string]gitSetting) (resultErr error) {
 	defer func() {
 		if resultErr != nil {
-			resultErr = Failure{path, "git configuration", resultErr}
+			resultErr = Failure{Path: path, Operation: "git configuration", Role: IgnoreSource, Err: resultErr}
 		}
 	}()
 	data, err := s.read(path)
@@ -287,5 +287,5 @@ func (e *GitSettingError) Unwrap() error { return e.Err }
 type gitSetting struct{ value, path string }
 
 func (s gitSetting) failure(key string, err error) error {
-	return Failure{s.path, "git configuration", &GitSettingError{s.path, key, err}}
+	return Failure{Path: s.path, Operation: "git configuration", Role: IgnoreSource, Err: &GitSettingError{s.path, key, err}}
 }

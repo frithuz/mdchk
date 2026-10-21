@@ -1,5 +1,4 @@
-// Package configscan discovers configuration definitions without validating or
-// activating them. Lint's single-definition selection does not use this walker.
+// Package configscan discovers configuration definitions and validates configuration definitions with scoped policy. Lint's single-definition selection does not use this walker.
 package configscan
 
 import (
@@ -43,9 +42,19 @@ type Definition struct {
 type Skip struct {
 	Path, Reason, Source string
 	Line                 int
+	Origins              []config.Origin
 }
+type SourceRole string
+
+const (
+	DefinitionSource SourceRole = "definition"
+	IgnoreSource     SourceRole = "ignore"
+	TraversalSource  SourceRole = "traversal"
+)
+
 type Failure struct {
 	Path, Operation string
+	Role            SourceRole
 	Err             error
 }
 
@@ -68,6 +77,7 @@ type Result struct {
 // Callbacks must treat their inputs as owned branch values (PolicyState does).
 type Hooks struct {
 	Prune      func(string, config.PolicyState) bool
+	Exclude    func(string, bool, config.PolicyState) (Skip, bool, error)
 	Definition func(Definition, config.PolicyState) (config.PolicyState, error)
 }
 type ignoreSource struct {
@@ -173,7 +183,7 @@ func (s *scanner) check() error {
 func (s *scanner) stop(err error) { s.result.Complete = false; s.result.Interruption = err }
 func (s *scanner) fail(path, op string, err error) {
 	s.result.Complete = false
-	s.result.Errors = append(s.result.Errors, Failure{path, op, err})
+	s.result.Errors = append(s.result.Errors, Failure{Path: path, Operation: op, Role: TraversalSource, Err: err})
 }
 func (s *scanner) handle(path, op string, err error) {
 	var limit *parser.LimitExceeded
@@ -182,7 +192,8 @@ func (s *scanner) handle(path, op string, err error) {
 	} else {
 		var failure Failure
 		if errors.As(err, &failure) {
-			s.fail(failure.Path, failure.Operation, failure.Err)
+			s.result.Complete = false
+			s.result.Errors = append(s.result.Errors, failure)
 		} else {
 			s.fail(path, op, err)
 		}
@@ -202,7 +213,7 @@ func (s *scanner) logical(path string) string {
 func (s *scanner) read(path string) (body []byte, resultErr error) {
 	defer func() {
 		if resultErr != nil {
-			resultErr = Failure{path, "read source", resultErr}
+			resultErr = Failure{Path: path, Operation: "read source", Role: IgnoreSource, Err: resultErr}
 		}
 	}()
 	if err := s.check(); err != nil {
@@ -297,7 +308,7 @@ func (s *scanner) ignored(path string, dir bool, sources []ignoreSource) (Skip, 
 		}
 		if d.Matched {
 			ignored = d.Ignored
-			decision = Skip{path, "gitignore", source.path, d.Line}
+			decision = Skip{Path: path, Reason: "gitignore", Source: source.path, Line: d.Line}
 		}
 	}
 	return decision, ignored, nil
@@ -309,6 +320,17 @@ func (s *scanner) walk(path string, sources []ignoreSource, state config.PolicyS
 	if err := s.check(); err != nil {
 		s.stop(err)
 		return
+	}
+	if hooks.Exclude != nil {
+		skip, excluded, err := hooks.Exclude(path, true, state)
+		if err != nil {
+			s.handle(path, "configuration exclusion", err)
+			return
+		}
+		if excluded {
+			s.result.Skipped = append(s.result.Skipped, skip)
+			return
+		}
 	}
 	if hooks.Prune != nil && hooks.Prune(path, state) {
 		s.result.Skipped = append(s.result.Skipped, Skip{Path: path, Reason: "configuration exclusion"})
@@ -423,14 +445,26 @@ func (s *scanner) walk(path string, sources []ignoreSource, state config.PolicyS
 		sources = append(slices.Clone(sources), local)
 	}
 	definition := filepath.Join(path, config.Filename)
-	if presentNames[config.Filename] {
+	eligible := presentNames[config.Filename]
+	if eligible && hooks.Exclude != nil {
+		skip, excluded, e := hooks.Exclude(definition, false, state)
+		if e != nil {
+			s.handle(definition, "configuration exclusion", e)
+			return
+		}
+		if excluded {
+			s.result.Skipped = append(s.result.Skipped, skip)
+			eligible = false
+		}
+	}
+	if eligible {
 		if err := s.check(); err != nil {
 			s.stop(err)
 			return
 		}
 		info, e := s.access.lstat(definition)
 		if e != nil {
-			s.handle(definition, "stat definition", e)
+			s.definitionFailure(definition, "stat definition", e)
 		} else if info.Mode()&fs.ModeSymlink == 0 {
 			skip, ignored, e := s.ignored(definition, false, sources)
 			if e != nil {
@@ -442,7 +476,7 @@ func (s *scanner) walk(path string, sources []ignoreSource, state config.PolicyS
 			} else {
 				data, e := s.read(definition)
 				if e != nil {
-					s.handle(definition, "read definition", e)
+					s.definitionFailure(definition, "read definition", e)
 				} else {
 					if err := s.check(); err != nil {
 						s.stop(err)
@@ -461,7 +495,7 @@ func (s *scanner) walk(path string, sources []ignoreSource, state config.PolicyS
 							if errors.As(e, &limit) || errors.Is(e, context.Canceled) || errors.Is(e, context.DeadlineExceeded) {
 								s.stop(e)
 							} else {
-								s.result.Errors = append(s.result.Errors, Failure{definition, "definition", e})
+								s.result.Errors = append(s.result.Errors, Failure{Path: definition, Operation: "definition", Role: DefinitionSource, Err: e})
 							}
 						} else {
 							state = next
@@ -547,4 +581,14 @@ func (s *scanner) pathLimit(path string) error {
 		return &parser.LimitExceeded{Name: "path-depth", Observed: depth, Allowed: s.options.Limits.Depth}
 	}
 	return nil
+}
+
+func (s *scanner) definitionFailure(path, op string, err error) {
+	var limit *parser.LimitExceeded
+	if errors.As(err, &limit) || errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		s.stop(err)
+		return
+	}
+	s.result.Complete = false
+	s.result.Errors = append(s.result.Errors, Failure{Path: path, Operation: op, Role: DefinitionSource, Err: err})
 }

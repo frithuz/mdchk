@@ -12,7 +12,16 @@ The contract also covers MCP and the planned `mdchk config validate` command,
 which scans a project for definitions and validates each eligible file
 independently. Its [command guide](../commands/config/validate.md) defines
 selection, exclusions, output and exit behavior. Other command adapters and the
-downward validation scan remain pending.
+downward command/report integration remain pending. The shared downward validation
+adapter is implemented in `internal/configscan.Validate`: it admits each eligible
+definition before atomically publishing exclusions and permission denials, carries
+valid inherited policy after rejected or unreadable files, and prunes directories
+and individual definition files before acquisition. Its owned outcomes retain
+same-read source hashes and located errors. Readable invalid definitions do not
+make an otherwise fully traversed scan incomplete; acquisition failures do.
+Typed source roles distinguish definition acquisition from traversal/Git-source
+failures without basename inference. Shared operation accounting covers YAML and
+alias construction, semantic validation and exclusion matching.
 
 ## Implemented configuration boundary
 
@@ -74,7 +83,8 @@ semantic schema as YAML. Complete catalog metadata,
 semantic and capability validation, exclusion matching, and bounded read-only
 filesystem selection are implemented. The lint adapter uses `Resolve` before target access and retains its full
 selection snapshot, with exclusions bound to the selected directory. Other
-command adapters and the downward multi-definition validation scan remain pending.
+command adapters remain pending; the downward multi-definition validation
+package is implemented independently of command/report integration.
 
 ## Bounded filesystem selection
 

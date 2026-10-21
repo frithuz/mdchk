@@ -1,8 +1,10 @@
 package config
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"github.com/frithuz/mdchk/internal/parser"
 	"path"
 	"strings"
 	"unicode/utf8"
@@ -146,17 +148,30 @@ func compilePattern(s string) (compiledPattern, error) {
 // supply directory identity; no symlinks, extensions, or filesystem are inspected.
 // Terminal /** includes its base only when that entry is a directory.
 func (p Patterns) Match(name string, isDir, inBase bool) (bool, error) {
-	return p.match(name, isDir, inBase, false)
+	return p.match(name, isDir, inBase, false, nil)
 }
 
 // Excludes reports a direct match or a matching ancestor directory. Thus an
 // explicitly submitted file beneath an excluded directory is still excluded.
 // Use Match for consumers such as slide annotations that need direct matching.
 func (p Patterns) Excludes(name string, isDir, inBase bool) (bool, error) {
-	return p.match(name, isDir, inBase, true)
+	return p.match(name, isDir, inBase, true, nil)
 }
 
-func (p Patterns) match(name string, isDir, inBase, ancestors bool) (bool, error) {
+// ExcludesBounded uses the same grammar and matcher with shared operation work.
+func (p Patterns) ExcludesBounded(ctx context.Context, budget *parser.OperationBudget, name string, isDir, inBase bool) (bool, error) {
+	charge := func(n int) error {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		return budget.ChargeWork(int64(n))
+	}
+	if err := charge(len(name) + 1); err != nil {
+		return false, err
+	}
+	return p.match(name, isDir, inBase, true, charge)
+}
+func (p Patterns) match(name string, isDir, inBase, ancestors bool, charge func(int) error) (bool, error) {
 	if !inBase {
 		return false, nil
 	}
@@ -180,7 +195,7 @@ func (p Patterns) match(name string, isDir, inBase, ancestors bool) (bool, error
 	}
 	work := 0
 	for _, pattern := range p.patterns {
-		matched, err := pattern.match(names, isDir, ancestors, &work)
+		matched, err := pattern.match(names, isDir, ancestors, &work, charge)
 		if err != nil || matched {
 			return matched, err
 		}
@@ -190,12 +205,17 @@ func (p Patterns) match(name string, isDir, inBase, ancestors bool) (bool, error
 
 // Each row memoizes reachable (pattern index, name index) states. Ancestors
 // are tested during this single scan instead of restarting at every prefix.
-func (p compiledPattern) match(names []string, isDir, ancestors bool, work *int) (bool, error) {
+func (p compiledPattern) match(names []string, isDir, ancestors bool, work *int, charge func(int) error) (bool, error) {
 	states := make([]bool, len(p.segments)+1)
 	next := make([]bool, len(states))
 	states[0] = true
 	for n := 0; n <= len(names); n++ {
 		for i, s := range p.segments {
+			if charge != nil {
+				if err := charge(1); err != nil {
+					return false, err
+				}
+			}
 			*work++
 			if *work > MaxPatternMatchWork {
 				return false, fmt.Errorf("%w: matching work", ErrPatternLimit)
@@ -229,7 +249,13 @@ func (p compiledPattern) match(names []string, isDir, ancestors bool, work *int)
 				continue
 			}
 			// Charge a conservative bound before entering the standard-library matcher.
-			*work += (len(s) + 1) * (len(names[n]) + 1)
+			units := (len(s) + 1) * (len(names[n]) + 1)
+			if charge != nil {
+				if err := charge(units); err != nil {
+					return false, err
+				}
+			}
+			*work += units
 			if *work > MaxPatternMatchWork {
 				return false, fmt.Errorf("%w: matching work", ErrPatternLimit)
 			}

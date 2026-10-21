@@ -17,8 +17,9 @@ type ExclusionScope struct {
 // with no inherited restrictions or exclusions; it performs no ancestor lookup.
 // A walker remains responsible for its explicit root and pruning before reads.
 type PolicyState struct {
-	permissions Permissions
-	exclusions  []ExclusionScope
+	permissions  Permissions
+	exclusions   []ExclusionScope
+	snapshotWork int64
 }
 
 // Permissions returns an owned snapshot of all valid governing denials.
@@ -50,7 +51,30 @@ func (s PolicyState) Apply(d *Definition, registry *engine.Registry, providers e
 	if len(v.settings.Exclude) > 0 {
 		next.exclusions = append(next.exclusions, ExclusionScope{cloneOrigin(v.definition.Provenance["exclude"]), ownedPatterns(v.exclude)})
 	}
+	next.cacheWork()
 	return next, v.configuration(c, s.permissions), nil
+}
+
+// ApplyAdmitted validates and admits a selected definition before publishing any
+// policy. Unlike Apply, unavailable requested capabilities reject the transition.
+func (s PolicyState) ApplyAdmitted(d *Definition, registry *engine.Registry, providers engine.ValidationProviders, c Capabilities) (PolicyState, *Resolution, error) {
+	v, err := ValidateDefinition(d, registry, providers)
+	if err != nil {
+		return s, nil, err
+	}
+	if err = v.checkPolicy(s.permissions); err != nil {
+		return s, nil, err
+	}
+	resolution, err := v.Admit(c, s.permissions)
+	if err != nil {
+		return s, nil, err
+	}
+	next := PolicyState{permissions: v.Permissions(s.permissions), exclusions: s.Exclusions()}
+	if len(v.settings.Exclude) > 0 {
+		next.exclusions = append(next.exclusions, ExclusionScope{cloneOrigin(v.definition.Provenance["exclude"]), ownedPatterns(v.exclude)})
+	}
+	next.cacheWork()
+	return next, resolution, nil
 }
 
 func (v *Validated) checkPolicy(inherited Permissions) error {
@@ -146,4 +170,17 @@ func directiveOriginWork(origins []Origin) int64 {
 		units = min(math.MaxInt64/16, units+min(n, math.MaxInt64/16))
 	}
 	return units
+}
+
+// SnapshotWork conservatively reserves copies of inherited policy views before
+// bounded consumers request them. The cached estimate does not traverse state.
+func (s PolicyState) SnapshotWork() int64 { return s.snapshotWork + 1 }
+func (s *PolicyState) cacheWork() {
+	s.snapshotWork = directiveOriginWork(s.permissions.Directives) + directiveOriginWork(s.permissions.NestedExcludes)
+	for _, origins := range s.permissions.RuleDirectives {
+		s.snapshotWork += directiveOriginWork(origins) + 1
+	}
+	for _, scope := range s.exclusions {
+		s.snapshotWork += directiveOriginWork([]Origin{scope.Origin}) + 1
+	}
 }
