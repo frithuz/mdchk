@@ -2,6 +2,33 @@
 
 The shared configuration loader implements the [configuration contract](../configuration.md) for CLI and MCP. `mdchk config validate` also scans a project for definitions and validates each eligible file independently. Its [command guide](../commands/config/validate.md) defines selection, exclusions, output, and exit behavior. The contracts below are approved; implementation is pending.
 
+## Implemented configuration boundary
+
+`internal/config` defines passive version-1 schema types for all approved fields,
+including shared resources, optional contexts, exclusions and directive permissions.
+Pointers retain omission versus explicit zero values; rule-map membership retains
+an explicit empty entry. Rule options reuse `engine.Options`. Field origins retain
+definition identity, property paths and optional source positions for future
+diagnostics and ancestor-restriction inspection. These data types do not validate
+input or resolve inherited policy.
+
+`DefaultSettings` returns independent built-in non-rule defaults, including GFM;
+it does not mark fields explicit or depend on executable availability. Rule
+defaults remain catalog metadata. Callers must carry the effective configured
+flavor explicitly into the engine rather than relying on its internal CommonMark
+fallback. Presence must survive validation, including explicit resource values
+equal to defaults and rule entries containing only permissions or options.
+
+The `DecodeYAML`, `DecodeJSON` and explicit-file `Load` entrypoints are unavailable
+stubs: every call returns a nil definition and the recognizable `ErrUnavailable`
+error. They never return defaults or a partially decoded definition. `Load` does
+not read files. No loader or capability validation is delivered by these stubs.
+Strict YAML decoding and its pinned dependency belong to #217; complete catalog
+metadata to #215, semantic and capability validation to #218, exclusion matching
+to #220, and bounded discovery and ancestor policy resolution to #219. The
+examples remain future decoder and integration fixtures, not currently accepted
+loader inputs.
+
 ## Confirmed requirements
 
 - Provide validation under the `config` command group as `config validate`.

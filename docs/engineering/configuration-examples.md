@@ -121,7 +121,7 @@ must be checked from source nodes, without relying on struct-decoder coercion.
 | Escaping pattern base | `{version: 1, exclude: ['../**']}` | Parent-relative exclusion prohibited |
 | Unsupported negation | `{version: 1, exclude: ['!README.md']}` | Negation unsupported |
 | Embedded globstar | `{version: 1, exclude: ['docs/ab**cd']}` | Globstar must occupy a whole segment |
-| Unspecified frontmatter setting | `{version: 1, frontmatter: true}` | Unknown setting in the initial schema |
+| Wrong frontmatter type | `{version: 1, frontmatter: true}` | Boolean instead of the required frontmatter mapping |
 
 The validator need not aggregate every error in one invalid definition. When
 multiple problems exist, at least one precise error must explain rejection;
