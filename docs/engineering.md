@@ -58,7 +58,7 @@ Acquire an immutable snapshot with `parser.NewSource(content)`, then call
 `parser.Parse(ctx, source)` with a non-nil context. `NewSource` copies input and
 `Source.Bytes` returns a copy. Parse has no flavor or frontmatter option: it
 recognizes core syntax with extensions/frontmatter disabled. Configuration-driven
-selection, GFM/Pandoc extensions, frontmatter, rules, CLI/MCP integration and
+selection, GFM/Pandoc extensions, frontmatter, rules, CLI execution/MCP integration and
 production rendering remain separate deliveries. The configuration examples in
 the format guide describe those future adapters.
 
@@ -219,6 +219,16 @@ With no paths, recursively select `.md` and `.markdown` files (also `.qmd` when 
 The [configuration validation design](engineering/configuration.md) defines the separate project-wide scan used by `config validate`, including Git ignore support and scoped exclusions from nested definitions. Nested validation does not introduce overrides for Markdown operations. Defer Git ignore support for lint and fix, nested configuration overrides, stdin input, and global mdchk user configuration until their behavior is designed. The [configuration guide](configuration.md) defines user-facing settings and examples.
 
 The [inspection design](engineering/inspect.md) defines processing instrumentation and directive attribution. The [directive processing design](engineering/directives.md) defines shared comment recognition, rule-state transitions, configuration permissions, and suppression for inspect, lint, fix, and MCP.
+
+## CLI bootstrap status
+
+`cmd/mdchk` delegates to the standard-library-only `internal/cli.Run`, with
+supplied arguments and output streams. Only main exits the process. Help and
+version perform no project I/O. The bootstrap parses lint arguments but returns
+incomplete/15 without acquiring configuration or targets; it never reports a
+clean check. Pending reporter delivery in #128, all bootstrap errors use plain
+stderr even when a structured format was selected. No success-shaped result
+envelope is emitted. The contracts below remain the target for execution.
 
 ## CLI and result schema
 

@@ -2,7 +2,18 @@
 
 mdchk checks Markdown against your project's expectations and applies safe corrections when requested. Use it from the terminal, in editors and CI, or through an MCP server for AI agents.
 
-## Get started
+## Current implementation
+
+The executable currently provides general help, lint help, version output, and
+lint argument parsing. Build it from a checkout with `go build -o mdchk ./cmd/mdchk`.
+Lint execution is pending: valid lint invocations return `15` and explain on
+stderr that no files were checked. They load no configuration or Markdown.
+The result reporters tracked by #128 are also pending; selecting `--format json`,
+`vscode`, or `github` currently parses the option but produces no formatted report.
+This bootstrap exception also applies to usage errors; stderr is plain text.
+The other commands below describe planned behavior and are rejected by this build.
+
+## Get started (planned execution)
 
 ```sh
 mdchk lint .

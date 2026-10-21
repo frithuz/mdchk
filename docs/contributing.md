@@ -37,8 +37,20 @@ GOTOOLCHAIN=local GOWORK=off GOPROXY=off GOSUMDB=off GOFLAGS=-mod=readonly go ve
 The [Go workflow](../.github/workflows/go.yml) runs test, vet, and the CommonMark
 corpus checks below on pushes and pull requests. Its actions are pinned to commit
 IDs; module caching is disabled while there are no external dependencies. Go
-package builds provide no production command-line executable; the conformance
-adapter below is a separate test command.
+package builds include the bootstrap CLI. Build and run its metadata commands:
+
+```sh
+go build -o mdchk ./cmd/mdchk
+./mdchk --help
+./mdchk lint --help
+./mdchk --version
+```
+
+The version is `dev` for local source builds and uses Go module build metadata
+when a version is available. Lint argument parsing is implemented; execution
+returns `15` without reading project configuration or Markdown. Reporters and
+other commands are pending; see [current implementation](index.md#current-implementation).
+The conformance adapter below remains a separate test command.
 
 ### Static analysis
 
