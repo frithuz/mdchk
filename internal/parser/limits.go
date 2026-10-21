@@ -134,6 +134,26 @@ func (b *OperationBudget) ChargeWork(units int64) error {
 	return nil
 }
 
+// ChargeNodes meters source records constructed by adapters outside Parse.
+// Reusing an immutable record does not charge again. Exhaustion shares Parse's
+// operation-wide counter, including previously constructed Markdown nodes.
+func (b *OperationBudget) ChargeNodes(records int64) error {
+	if b == nil {
+		return errors.New("nil parser operation budget")
+	}
+	if err := b.limits.Validate(); err != nil {
+		return err
+	}
+	if records < 0 {
+		return errors.New("negative parser node charge")
+	}
+	if exceeded := b.charge("total-nodes", records); exceeded != nil {
+		copy := *exceeded
+		return &copy
+	}
+	return nil
+}
+
 type budgetKey struct{}
 type parserContext struct {
 	context.Context
