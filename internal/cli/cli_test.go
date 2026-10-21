@@ -18,11 +18,11 @@ func TestDispatch(t *testing.T) {
 		stdout string
 	}{
 		{nil, 0, "Usage: mdchk"}, {[]string{"--help"}, 0, "Commands:"}, {[]string{"lint", "--help"}, 0, "Usage: mdchk lint"}, {[]string{"--help", "lint"}, 0, "Usage: mdchk lint"}, {[]string{"--version"}, 0, "mdchk test-version"},
-		{[]string{"lint", "--version"}, 0, "mdchk test-version"}, {[]string{"lint"}, 15, ""},
+		{[]string{"lint", "--version"}, 0, "mdchk test-version"}, {[]string{"lint"}, 11, ""},
 		{[]string{"fix"}, 11, ""}, {[]string{"inspect"}, 11, ""}, {[]string{"config"}, 11, ""}, {[]string{"mcp"}, 11, ""}, {[]string{"wat"}, 11, ""}, {[]string{"--wat"}, 11, ""},
 		{[]string{"lint", "a.md", "--wat"}, 11, ""}, {[]string{"lint", "--format"}, 11, ""}, {[]string{"lint", "--format", "--help"}, 11, ""},
 		{[]string{"lint", "--config="}, 11, ""}, {[]string{"lint", "--limit="}, 11, ""}, {[]string{"lint", "--format", "yaml"}, 11, ""},
-		{[]string{"lint", "--", "--help", "--version"}, 15, ""},
+		{[]string{"lint", "--", "--help", "--version"}, 13, ""},
 	} {
 		t.Run(strings.Join(tc.args, " "), func(t *testing.T) {
 			var out, errout bytes.Buffer
@@ -36,7 +36,7 @@ func TestDispatch(t *testing.T) {
 			if tc.status != 0 && out.Len() != 0 {
 				t.Fatalf("failure wrote success/report output: %q", &out)
 			}
-			if tc.status == 15 && !strings.Contains(errout.String(), "no files were checked") {
+			if tc.status == 15 && !strings.Contains(errout.String(), "Markdown analysis is not available") {
 				t.Fatalf("missing incomplete explanation: %q", &errout)
 			}
 		})
@@ -44,7 +44,8 @@ func TestDispatch(t *testing.T) {
 }
 
 func TestLintOptions(t *testing.T) {
-	validProject(t)
+	root := validProject(t)
+	put(t, filepath.Join(root, "target.md"), "ok")
 	got, err := parseLint([]string{"--config", "missing.yaml", "one.md", "--format=json", "two.md", "--limit", "operation-time=120s", "--limit=target-files=20", "--", "--draft.md", "--help"})
 	if err != nil {
 		t.Fatal(err)

@@ -90,16 +90,10 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			out.Files = append(out.Files, file)
 			continue
 		}
-		index := parser.NewLineIndex(in.source)
-		if failure := index.EncodingFailure(); failure != nil {
-			offset := failure.Location.Start()
-			position, _ := index.FailurePosition()
-			location := result.Range{Start: position, End: position}
-			rule := ""
-			if setting, ok := settings[i]["MD094"]; ok && setting.Enabled {
-				rule = "MD094"
-			}
-			out.Errors = append(out.Errors, result.Error{Category: result.IO, Code: "invalid-utf8", Scope: "operation", Message: fmt.Sprintf("Invalid UTF-8 at byte offset %d.", offset), Path: in.path, Rule: rule, ByteOffset: &offset, Range: &location, Snapshot: &snap})
+		validation := validateEncoding(in.path, in.source, settings[i]["MD094"].Enabled, snap)
+		index := validation.Index
+		if validation.Error != nil {
+			out.Errors = append(out.Errors, *validation.Error)
 			out.Coverage = append(out.Coverage, result.Coverage{Reason: "decoding-failed", Path: in.path, Message: "Markdown validation is unavailable."})
 			file.Analysis = "failed"
 			out.Files = append(out.Files, file)

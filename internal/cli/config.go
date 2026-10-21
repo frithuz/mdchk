@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 
@@ -18,6 +17,10 @@ type lintInvocation struct {
 	selection                       *config.Selection
 	workingDirectory, exclusionBase string
 	exclusions                      *config.Patterns
+	targetSelection                 *files.Selection
+	acquisition                     *files.Acquisition
+	encoding                        []targetEncoding
+	checkedPaths                    []string
 }
 
 func prepareLint(options lintOptions) (*lintInvocation, error) {
@@ -57,8 +60,4 @@ func (inv *lintInvocation) excludes(target string, isDir bool) (bool, error) {
 		target = filepath.Join(inv.workingDirectory, target)
 	}
 	return files.Excludes(inv.exclusionBase, target, isDir, inv.exclusions)
-}
-
-func unavailableLint(_ *lintInvocation, _ io.Writer, stderr io.Writer) int {
-	return output(stderr, "mdchk: lint execution is not available in this build; no files were checked\n", exitIncomplete)
 }

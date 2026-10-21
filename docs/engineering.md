@@ -58,8 +58,10 @@ Acquire an immutable snapshot with `parser.NewSource(content)`, then call
 `parser.Parse(ctx, source)` with a non-nil context. `NewSource` copies input and
 `Source.Bytes` returns a copy. Parse has no flavor or frontmatter option: it
 recognizes core syntax with extensions/frontmatter disabled. Configuration-driven
-selection, GFM/Pandoc extensions, frontmatter, rules, CLI execution/MCP integration and
-production rendering remain separate deliveries. The configuration examples in
+selection and bounded read-only acquisition are connected to CLI lint, including
+the shared mandatory UTF-8 gate. GFM/Pandoc extensions, frontmatter, production
+rules, CLI Markdown analysis/MCP integration and production rendering remain
+separate deliveries. The configuration examples in
 the format guide describe those future adapters.
 
 The first phase identifies paragraphs, ATX/Setext headings, fenced/indented code,

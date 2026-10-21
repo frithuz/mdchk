@@ -147,8 +147,8 @@ func TestSelectExplicitFilesOverlapAndDeterminism(t *testing.T) {
 				t.Errorf("explicit selected file retained scan skip: %+v", skip)
 			}
 		}
-		if previous != nil && !reflect.DeepEqual(selection, previous) {
-			t.Fatalf("argument order/aliases changed selection:\n%+v\n%+v", previous, selection)
+		if previous != nil {
+			wantSameSelection(t, selection, previous)
 		}
 		previous = selection
 	}
@@ -291,6 +291,27 @@ func TestSelectWindowsRootedAndDriveRelativePaths(t *testing.T) {
 		wantTargets(t, got, target)
 		if len(got.Errors) != 0 {
 			t.Fatalf("native path %q: %v", path, got.Errors)
+		}
+	}
+}
+
+// Enumeration can update access timestamps in opaque FileInfo system data.
+// Compare observable outcomes and the stable identities acquisition relies on.
+func wantSameSelection(t *testing.T, got, want *Selection) {
+	t.Helper()
+	if !slices.Equal(targetPaths(got), targetPaths(want)) || !reflect.DeepEqual(got.Skipped, want.Skipped) || !reflect.DeepEqual(got.Errors, want.Errors) {
+		t.Fatalf("selection outcomes changed: %+v vs %+v", got, want)
+	}
+	for i, target := range got.Targets {
+		previous := want.Targets[i]
+		if len(target.identities) != len(previous.identities) {
+			t.Fatalf("identity chain length changed for %q", target.Path)
+		}
+		for j, part := range target.identities {
+			prior := previous.identities[j]
+			if part.path != prior.path || !os.SameFile(part.info, prior.info) {
+				t.Fatalf("identity chain changed for %q at %q", target.Path, part.path)
+			}
 		}
 	}
 }

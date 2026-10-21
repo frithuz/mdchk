@@ -51,9 +51,12 @@ when a version is available. Help and version do not access the project. Lint
 parses arguments and loads and admits configuration before target access;
 configuration failures return `12`, including unavailable default GFM when no
 configuration exists. A valid CommonMark configuration with effective global
-directives disabled completes preparation and reaches the unavailable execution
-response `15`, without reading Markdown. Reporters and other commands are
-pending; see [current implementation](index.md#current-implementation).
+directives disabled completes preparation, selects targets and acquires immutable
+source snapshots. The mandatory UTF-8 gate reports malformed source as I/O (`13`),
+independently of rule enablement; successful empty selection returns `11`. Valid
+acquired sources still return `15` while Markdown analysis is pending. Acquisition
+uses document/aggregate byte limits and a shared work/time budget. Reporters and
+other commands remain pending; see [current implementation](index.md#current-implementation).
 The conformance adapter below remains a separate test command.
 
 ### Static analysis

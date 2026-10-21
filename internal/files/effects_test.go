@@ -5,7 +5,6 @@ import (
 	"github.com/frithuz/mdchk/internal/config"
 	"io/fs"
 	"path/filepath"
-	"reflect"
 	"slices"
 	"strings"
 	"testing"
@@ -111,8 +110,8 @@ func TestSelectionEnumerationOrderAndRepeatedAliases(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if previous != nil && !reflect.DeepEqual(got, previous) {
-			t.Fatalf("unstable enumeration: %+v vs %+v", previous, got)
+		if previous != nil {
+			wantSameSelection(t, got, previous)
 		}
 		previous = got
 	}

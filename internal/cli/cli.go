@@ -17,7 +17,7 @@ const (
 const generalHelp = `Usage: mdchk [global options] <command> [options] [paths...]
 
 Commands:
-  lint       Prepare lint configuration (execution is not available in this build)
+  lint       Acquire lint targets and validate UTF-8 (analysis is pending)
 
 Global options:
   --help     Show general or selected command help
@@ -33,14 +33,15 @@ Options may appear before or after paths. Use -- for dash-prefixed paths.
   --version           Print version
 
 Configuration is loaded and validated before any target access.
-Unavailable configuration returns 12; prepared lint execution returns 15.
-No files are checked; result reporters are not yet implemented.
+Unavailable configuration returns 12; target I/O or invalid UTF-8 returns 13.
+No selected files returns 11. Acquired valid UTF-8 still returns 15 because
+Markdown analysis and result reporters are not yet implemented.
 `
 
 // Run executes with supplied arguments (excluding argv[0]) and streams. Version
 // is supplied by the executable so tests and alternate launchers need no globals.
 func Run(args []string, stdout, stderr io.Writer, version string) int {
-	return run(args, stdout, stderr, version, prepareLint, unavailableLint)
+	return run(args, stdout, stderr, version, prepareLint, acquireLint)
 }
 
 func run(args []string, stdout, stderr io.Writer, version string, prepare func(lintOptions) (*lintInvocation, error), execute func(*lintInvocation, io.Writer, io.Writer) int) int {

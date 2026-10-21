@@ -5,11 +5,14 @@ mdchk checks Markdown against your project's expectations and applies safe corre
 ## Current implementation
 
 The executable currently provides general help, lint help, version output, lint
-argument parsing, and configuration preparation. Build it from a checkout with
+argument parsing, configuration preparation, bounded source acquisition and
+mandatory UTF-8 validation. Build it from a checkout with
 `go build -o mdchk ./cmd/mdchk`. Lint loads and validates the selected configuration
 before target access; invalid or unavailable settings return `12`. This build's
 available flavor is CommonMark; unavailable default GFM is never substituted.
-Successful preparation returns `15` and explains that no files were checked.
+After preparation, target I/O and invalid UTF-8 return `13`; successful empty
+selection returns `11`. Valid acquired sources still return `15` because Markdown
+analysis and production rule execution remain pending.
 See [lint's current implementation](commands/lint.md#current-implementation) for
 the available configuration and remaining execution work. Help and version do
 not access the project. The result reporters tracked by #128 remain pending;

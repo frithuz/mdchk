@@ -1,8 +1,9 @@
 # Filesystem target selection
 
 `internal/files.Select` implements the reusable lint/fix selection provider.
-The compiled lint command still stops after configuration preparation; #126
-adds source acquisition and integration, and later tasks add analysis and reports.
+`Acquire` loads bounded immutable source snapshots, and compiled lint connects
+selection, acquisition and the shared mandatory UTF-8 gate after configuration
+preparation. Later tasks add ordinary Markdown analysis and reports.
 Selection does not read document contents, label targets as checked, discover
 configuration, interpret Git ignores, access linked resources, or write files.
 
@@ -37,7 +38,7 @@ explicit descendants, directory-only patterns and terminal `/**` patterns.
 A trailing-slash exclusion never matches a regular file. Selection applies only
 the prepared list; it does not accumulate ancestor lists or read nested configs.
 
-## Outcomes and later acquisition
+## Selection outcomes
 
 `Selection.Targets`, `Skipped` and `Errors` are ordered deterministically by
 native absolute path, with stable reason/operation tie breakers. Cleaned aliases
@@ -52,15 +53,15 @@ operation, path and underlying cause in `fs.PathError`. Independent targets
 continue after missing paths, failed metadata access, matcher limits or directory
 enumeration errors. No partial failure becomes an intentional skip.
 
-`Empty()` describes target count alone. The later adapter must retain IO errors
+`Empty()` describes target count alone. The acquisition adapter retains IO errors
 rather than mask them with empty-selection usage behavior. A completed selection
 with no targets produces the accepted lint/fix usage outcome; selection itself
 does not choose exit codes or create public result records.
 
 Selection is a filesystem snapshot, not a persistent authority to open a name.
-The later acquisition provider must recheck symlink components and regular-file
-identity, handle read failures and acquire exact source bytes without newline or
-encoding normalization. A selected but unread file has not entered analysis and
+Selection retains private component and final-file identities. Acquisition
+rechecks them, handles read failures and acquires exact source bytes without
+newline or encoding normalization. A selected but unread file has not entered analysis and
 must not appear in `checked_files`. Concurrent filesystem changes may invalidate
 a selection; no stable path identity is promised across separate IO operations.
 
@@ -68,3 +69,44 @@ Tests combine real temporary trees with injected metadata/enumeration failures
 and shuffled enumeration. They verify pruning before access, error causes,
 independent successes, stable identities, native separator/escape semantics,
 symlink and hard-link behavior, and unchanged source bytes.
+
+## Read-only acquisition
+
+`Acquire(ctx, selection, options)` retains the selection separately from its
+`Documents`, `Errors`, `PreflightErrors` and `Interruptions`. Each document owns a
+`parser.Source`; neither modifying returned byte copies nor rewriting its file
+changes the snapshot. Source acquisition does not validate encoding. The CLI
+then enters the same `engine.ValidateEncoding` gate used by the engine. A gate
+entry counts as checked; ordinary Markdown checks remain unavailable and return
+15. Invalid UTF-8 returns one IO error with the original snapshot identity and
+leading-byte location. MD094 controls attribution only.
+
+Acquisition pins parent directories with `os.Root` from the target's filesystem
+root, without restricting explicitly named files to the configuration directory.
+It compares nonsymlink component and final regular-file identities against
+selection, and rechecks the current path after reading. Git metadata aliases
+are rejected again. Unix final opens use no-follow and nonblocking flags to
+reject raced symlinks and avoid waiting on a FIFO. Unstable snapshots fail after
+one attempt; acquisition does not retry or retain partial bytes. These checks do
+not promise atomic contents against concurrent in-place writes that evade host
+metadata observations.
+
+Open, descriptor-stat, read, identity and close failures retain path, effect and
+underlying cause. Independent files continue. A failed read or close never
+publishes a snapshot, including a read returning both bytes and an error.
+Selection IO failures also remain available and take precedence over empty
+selection usage behavior. Only a completed, error-free empty selection returns
+11; encountered IO returns 13.
+
+`AcquireOptions` defaults to 1 MiB per document and 8 MiB cumulative bytes read.
+Finite positive operator overrides require document bytes not to exceed the
+aggregate or the supported 1 GiB per-document implementation bound. A known
+oversized descriptor is a preflight failure; growth beyond a bound, aggregate
+exhaustion, cancellation, deadline and shared work exhaustion are runtime
+interruptions. Reads probe at most one extra byte to detect exhaustion and never
+retain it. Failed-read bytes count toward aggregate acquisition. Shared parser
+work charges byte reads/copies, and the CLI separately charges encoding indexing
+and snapshot projection. Context and shared deadline checkpoints surround reads;
+unresponsive OS calls are not promised preemption. No resource contents are
+loaded. Discovery counts, broader application limits and reporting limits remain
+pending; the command does not claim complete operation accounting.

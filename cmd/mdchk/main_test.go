@@ -29,7 +29,7 @@ func TestExecutableStatuses(t *testing.T) {
 	for _, tc := range []struct {
 		args   []string
 		status int
-	}{{[]string{"--help"}, 0}, {[]string{"--version"}, 0}, {[]string{"lint", "--help"}, 0}, {[]string{"lint"}, 15}, {[]string{"unknown"}, 11}, {[]string{"lint", "--format", "--help"}, 11}, {[]string{"lint", "--", "--help"}, 15}} {
+	}{{[]string{"--help"}, 0}, {[]string{"--version"}, 0}, {[]string{"lint", "--help"}, 0}, {[]string{"lint"}, 11}, {[]string{"lint", ".mdchk.yaml"}, 15}, {[]string{"unknown"}, 11}, {[]string{"lint", "--format", "--help"}, 11}, {[]string{"lint", "--", "--help"}, 13}} {
 		//nolint:gosec // Execute only the binary just built in this test with fixed test arguments.
 		command := exec.Command(binary, tc.args...)
 		command.Dir = project

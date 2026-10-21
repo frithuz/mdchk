@@ -27,7 +27,14 @@ type Options struct {
 
 // Target is a cleaned absolute native path, not an acquired or checked file.
 // Distinct logical names remain distinct even when they are hard links.
-type Target struct{ Path string }
+type Target struct {
+	Path       string
+	identities []pathIdentity
+}
+type pathIdentity struct {
+	path string
+	info fs.FileInfo
+}
 
 // SkipReason identifies an intentional selection decision, not an IO failure.
 type SkipReason string
@@ -123,7 +130,7 @@ func selectFS(options Options, access selectionFS) (*Selection, error) {
 	paths = slices.Compact(paths)
 	walker := selector{
 		options: options, access: access,
-		selected: map[string]bool{}, skips: map[Skipped]bool{},
+		selected: map[string]Target{}, skips: map[Skipped]bool{},
 		failures: map[failureKey]*fs.PathError{},
 		visited:  map[string]bool{}, expanded: map[string]bool{},
 	}
@@ -134,13 +141,13 @@ func selectFS(options Options, access selectionFS) (*Selection, error) {
 		}
 	}
 	result := &Selection{}
-	for p := range walker.selected {
-		result.Targets = append(result.Targets, Target{p})
+	for _, target := range walker.selected {
+		result.Targets = append(result.Targets, target)
 	}
 	for skip := range walker.skips {
 		// Explicit files are eligible regardless of extension, even when also seen
 		// through a directory argument.
-		if skip.Reason != SkipExtension || !walker.selected[skip.Path] {
+		if skip.Reason != SkipExtension || walker.selected[skip.Path].Path == "" {
 			result.Skipped = append(result.Skipped, skip)
 		}
 	}
@@ -196,7 +203,7 @@ type failureKey struct{ path, op, message string }
 type selector struct {
 	options  Options
 	access   selectionFS
-	selected map[string]bool
+	selected map[string]Target
 	skips    map[Skipped]bool
 	failures map[failureKey]*fs.PathError
 	visited  map[string]bool
@@ -358,7 +365,12 @@ func (s *selector) walk(root string, explicit bool) {
 			s.skip(p, SkipExtension)
 			continue
 		}
-		s.selected[p] = true
+		identities, err := s.identities(p, info)
+		if err != nil {
+			s.fail(p, "identity", err)
+			continue
+		}
+		s.selected[p] = Target{Path: p, identities: identities}
 	}
 }
 func eligible(p string, quarto bool) bool {
@@ -402,4 +414,29 @@ func Excludes(base, target string, isDir bool, patterns *config.Patterns) (bool,
 		return false, fmt.Errorf("exclusions for %q: %w", target, err)
 	}
 	return matched, nil
+}
+
+// identities retains selection-time components so acquisition cannot silently
+// accept a different parent or final file after selection.
+func (s *selector) identities(path string, final fs.FileInfo) ([]pathIdentity, error) {
+	var reversed []pathIdentity
+	for current := path; ; current = filepath.Dir(current) {
+		info := final
+		if current != path {
+			var err error
+			info, err = s.access.lstat(current)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if info.Mode()&fs.ModeSymlink != 0 || (current != path && !info.IsDir()) {
+			return nil, fmt.Errorf("path changed during selection")
+		}
+		reversed = append(reversed, pathIdentity{current, info})
+		if filepath.Dir(current) == current {
+			break
+		}
+	}
+	slices.Reverse(reversed)
+	return reversed, nil
 }
