@@ -114,6 +114,72 @@ When upgrading the pin, review its transitive graph and licenses, Go export-data
 compatibility, configuration changes, and both gate commands. Never independently
 upgrade the tool's transitive dependencies or use an unpinned `latest` install.
 
+### Vulnerability scanning
+
+Run the same pinned vulnerability gate as CI from the checkout root:
+
+```sh
+sh tools/vulncheck.sh
+sh tools/vulncheck.sh --self-test
+```
+
+The POSIX shell script installs **govulncheck v1.9.0** into a private temporary
+`GOBIN`, then runs `govulncheck -format=text -scan=symbol -test
+-show=traces,version ./...` against the complete root Go module. It includes test
+packages, standard-library vulnerabilities applicable to the installed Go
+version, and runtime dependency vulnerabilities as dependencies are added.
+It uses `GOTOOLCHAIN=local`, `GOWORK=off` and analysis with
+`GOFLAGS=-mod=readonly`, never a scanner from `PATH`. Go 1.27.2 and this exact
+scanner pin were verified together. Installation needs the configured module
+proxy and checksum database; scanning needs the live Go vulnerability database
+at `https://vuln.go.dev`. Failures in installation, database access, loading or
+analysis return nonzero. The default text format also returns nonzero for
+applicable symbol findings and prints vulnerability IDs, affected/fixed versions
+and call traces directly to the terminal and CI logs. Do not pipe through a
+command that masks that status. JSON, SARIF and OpenVEX formats do not provide
+the same finding exit behavior and must not replace this gate without explicit
+status handling.
+
+The independent, 15-minute `vulnerabilities` job in the existing Go workflow
+runs on pushes, pull requests, manual dispatch and the existing Monday 04:23 UTC
+schedule. It uses the minimum Go version in `go.mod` on Ubuntu amd64. Local
+scans cover the current `GOOS`/`GOARCH`, build tags and installed toolchain; CI
+covers its Linux amd64 build. Neither is an all-platform proof. Before shipping
+other platforms or custom tags, repeat source scans with the corresponding Go
+build environment. See upstream's [usage and analysis limitations](https://github.com/golang/vuln/blob/v1.9.0/cmd/govulncheck/doc.go),
+including conservative interface analysis and reflection/unsafe blind spots.
+
+The scanner version is reproducible; the live vulnerability database evolves
+independently so newly published findings can fail the scheduled job without a
+code change. The self-test uses disposable modules and synthetic local v1
+[database fixtures](https://go.dev/security/vuln/database), never the live feed.
+It checks clean and nonapplicable symbols, applicable production and test-only
+calls with actionable output, database corruption and package loading failures.
+Its fixture IDs describe invented vulnerabilities and are never suppressions.
+
+For a finding, use the reported call trace and fixed version to upgrade the Go
+toolchain to a supported patched version or update the affected dependency and
+its checksums, then rerun scans and the normal compatibility checks. If the
+supported minimum itself is affected, update `go.mod` and contributor/toolchain
+requirements together. Retain the failed scan output with the remediation
+record. Any exception requires explicit reviewed justification naming the
+vulnerability ID, affected build/version, reachability evidence, owner and
+expiry/recheck date. There are no current exceptions and no automatic scanner
+suppression or `continue-on-error` bypass. An exception must not silently turn a
+failed scan into a clean result.
+
+Govulncheck supplies the maintained Go vulnerability database client and
+call-graph analysis; reimplementing either would add a separate security
+maintenance burden. This is development tooling only. Version-qualified
+installation uses the exact upstream [go.mod](https://github.com/golang/vuln/blob/v1.9.0/go.mod)
+and [go.sum](https://github.com/golang/vuln/blob/v1.9.0/go.sum) graph and leaves
+mdchk's runtime module files unchanged. The Go team's scanner uses a
+[BSD-style license](https://github.com/golang/vuln/blob/v1.9.0/LICENSE);
+transitive dependencies retain their licenses. Review upstream maintenance,
+release/security changes, the full graph and licenses, Go export-data
+compatibility, and both gate commands whenever upgrading the pin. Do not use
+`latest` or independently override the scanner's transitive dependencies.
+
 ### Package boundaries and current capability
 
 `internal/parser` provides immutable source snapshots, physical-line/source
