@@ -1,0 +1,9 @@
+version: '3.54.0'
+
+tasks:
+  repo:init:
+    desc: Initialize this clone by activating the repository Git hooks
+    dir: '{{.TASKFILE_DIR}}'
+    cmds:
+      # Compose future setup steps here, in order, under the same public task.
+      - sh tools/repo-init.sh

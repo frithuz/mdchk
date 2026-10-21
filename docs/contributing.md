@@ -739,18 +739,60 @@ all C/F mappings directly with the retained source, including default versus
 Turkic behavior. The [parser accounting specification](engineering/parser-limits.md) defines
 shared finite parser budgets and interruption semantics.
 
-## Activate the commit message hook
+## Initialize a new clone
 
-After cloning, run this from the repository root:
+Install **Task v3.54.0**, the supported and verified repository task runner.
+With Go installed, use the upstream [source installation](https://taskfile.dev/docs/installation)
+with an exact version:
 
 ```sh
-git config core.hooksPath .githooks
+go install github.com/go-task/task/v3/cmd/task@v3.54.0
 ```
 
-The executable [commit-msg hook](../.githooks/commit-msg) works immediately;
-building mdchk and installing a third-party hook manager are unnecessary.
-This setting replaces the hook directory for this local repository. If you
-already use hooks, integrate them into that directory before switching it.
+Put Go's installation directory (`go env GOBIN`, or `$(go env GOPATH)/bin`
+when GOBIN is empty) on your `PATH`. Alternatively, install the matching binary
+for your OS/architecture from the official [v3.54.0 release](https://github.com/go-task/task/releases/tag/v3.54.0)
+and verify it against that release's checksums. Confirm `task --version`
+reports `3.54.0`; other versions have not been validated here.
+
+Clone the repository, then initialize it from the checkout:
+
+```sh
+git clone https://github.com/frithuz/mdchk.git
+cd mdchk
+task --list
+task repo:init
+```
+
+`repo:init` is the setup entry point. It currently activates only the executable
+[commit-msg hook](../.githooks/commit-msg), by setting repository-local
+`core.hooksPath` to `.githooks`. It does not change global Git configuration,
+install tools, download anything, or require building mdchk. Rerunning it is
+safe and leaves the same hook configuration in place. Missing prerequisites,
+a missing or non-executable hook, or a failed configuration write fail setup.
+The task runs at the Taskfile root even when invoked from a subdirectory;
+future setup steps can be composed in its ordered command list.
+
+This setting replaces the hook directory for this local repository, including
+an inherited global hook directory. Initialization warns when replacing a
+different effective path. If you already use hooks, integrate them into
+`.githooks` before initialization; existing hooks elsewhere are no longer run.
+
+Task supplies discoverable tasks and ordered, extensible setup orchestration
+without a separate hook manager. This is development tooling only, with no
+mdchk runtime dependency or root module-file changes. Its full transitive
+graph is pinned by the upstream [go.mod](https://github.com/go-task/task/blob/v3.54.0/go.mod)
+and [go.sum](https://github.com/go-task/task/blob/v3.54.0/go.sum).
+Task is [MIT licensed](https://github.com/go-task/task/blob/v3.54.0/LICENSE);
+its dependencies retain their own licenses. When upgrading the supported pin,
+review upstream maintenance/security changes, the dependency graph and licenses,
+Taskfile compatibility, and fresh-clone, repeat-setup and hook integration checks.
+Do not use `latest` or independently override its transitive dependencies.
+
+Initialization and the delivered hook target macOS and Linux with POSIX
+`/bin/sh` and standard Unix utilities. This setup was verified on Darwin arm64;
+Linux uses the same shell/utility interface but was not run locally. Native
+Windows setup is not currently validated or supported by this Taskfile.
 
 The hook uses POSIX `/bin/sh`, Git 2.22 or newer, and standard Unix utilities,
 including `awk`, `cmp`, `cp`, `mv`, `tr`, `wc`, and `mktemp -d` (available on
