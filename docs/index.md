@@ -25,7 +25,11 @@ before project access.
 `config validate` now scans project definitions read-only and reports bounded
 text/JSON results, including completed validity counts, skipped paths, located
 errors and actual scan completeness. See its [command guide](commands/config/validate.md).
-Fix, inspect and MCP remain planned and are rejected by this build.
+`inspect` reports one immutable target in labeled text or versioned JSON, with
+physical-line selection, AST, effective rule counts, directives, provenance and
+explicit availability. Completed observations return inspected/0; runtime or
+reporting interruption returns incomplete/15. See its [command guide](commands/inspect.md).
+Fix and MCP remain planned and are rejected by this build.
 
 ## Get started (planned execution)
 

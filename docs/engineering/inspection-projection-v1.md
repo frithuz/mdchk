@@ -19,7 +19,8 @@ that is successfully constructed can remain available while dependent execution
 is incomplete. Observation errors remain separate from active findings.
 
 Analyze supplies full-document data with counts `not-requested`. Filter adds
-contextual selection and counts as described below; command reports remain #141. It implements neither
+contextual selection and counts as described below. The inspect CLI renders this
+projection in text/JSON and preserves its identities and causal links. It implements neither
 MD087 counterfactual conclusions nor additional rule implementations. Resource,
 frontmatter, slide, GFM and Pandoc processing retain their own admission gates;
 no CommonMark substitute or guessed document context is supplied.
@@ -191,4 +192,4 @@ These fields are optional additive version 1 extensions. Older fixtures remain
 valid. Actual filtered envelopes use the existing shared JSON Schema and semantic
 validator, including unchanged full-root, interval-owner and execution-coverage
 invariants and new selected-bound/count checks. The package API is implemented;
-inspection command reporting remains #141.
+inspection command reporting is implemented with compiled end-to-end acceptance.

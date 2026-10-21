@@ -25,6 +25,22 @@ func ParseLines(index parser.LineIndex, text string) (*LineSelection, error) {
 	if text == "" {
 		return nil, nil
 	}
+	selection, err := ParseLineSelection(text)
+	if err != nil {
+		return nil, err
+	}
+	if selection.End > index.LineCount() {
+		return nil, fmt.Errorf("invalid inspection lines %q: %w", text, parser.ErrPosition)
+	}
+	return selection, nil
+}
+
+// ParseLineSelection checks the strict line-range grammar without source access.
+// ParseLines additionally validates its bounds against an immutable line index.
+func ParseLineSelection(text string) (*LineSelection, error) {
+	if text == "" {
+		return nil, nil
+	}
 	// Two machine-sized decimal integers and one separator fit in 41 bytes.
 	// Reject longer input before splitting or quoting an unbounded argument.
 	if len(text) > 41 {
@@ -57,7 +73,7 @@ func ParseLines(index parser.LineIndex, text string) (*LineSelection, error) {
 	if len(parts) == 2 {
 		last, err = number(parts[1])
 	}
-	if err != nil || last < first || last > index.LineCount() {
+	if err != nil || last < first {
 		return nil, fmt.Errorf("invalid inspection lines %q: %w", text, parser.ErrPosition)
 	}
 	return &LineSelection{first, last}, nil

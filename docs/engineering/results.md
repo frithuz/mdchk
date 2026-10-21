@@ -3,7 +3,8 @@
 Status: accepted on 2026-10-15. The shared result model, canonical lint
 finalizer, schema/semantic validators and lint text/JSON reporters are
 implemented and verified. Config validation text/JSON and its operation-specific finalization are also
-implemented. Fix, inspect, MCP and the remaining
+implemented. Inspection also has operation-specific text/JSON reporting and compiled
+acceptance, including observation versus interruption exits. Fix, MCP and the remaining
 format adapters require their own implementation and end-to-end verification.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.

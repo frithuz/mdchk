@@ -76,3 +76,33 @@ A completed inspection returns `0`, regardless of Markdown findings, directive p
 Errors that prevent inspection still use the operational codes: `11` for missing or extra arguments, a directory target, or invalid line bounds; `13` for an unreadable or missing target or output failure; and `14` for an internal execution failure. An unreadable configuration is shown as unresolved configuration within the inspection when the target itself is readable. See [exit codes](../exit-codes.md).
 
 Runtime limits, deadlines and cancellation instead return `15` unless an operational error takes precedence. An acquired invalid UTF-8 snapshot can still produce a completed inspection: exit `0`, status `inspected`, `complete: false`, byte metadata and a decoding observation, with parsed sections unavailable.
+
+## Current implementation
+
+This build implements the text/JSON command using one shared snapshot, analysis
+and line-filtering budget. CommonMark is available; unavailable selected flavors
+and missing ordinary rule implementations remain visible observations. Resources
+and document-context integration are reported as not requested.
+
+Applicable overrides are `document-bytes`, `total-content-bytes`, `config-bytes`,
+`total-config-bytes`, `structured-input-depth`, `syntax-depth`, `document-nodes`,
+`total-nodes`, `work-units`, `operation-time`, `response-bytes`, `reporting-time`
+and `report-reserve-bytes`. Other limit names are rejected before project access.
+
+Reports size the owned typed projection with deadline checkpoints before encoding
+JSON, and render text directly from the typed view. Bounded counting stops once
+admission is impossible; it does not encode an oversized AST to learn its size.
+Text visibly escapes terminal controls in paths and source data while JSON keeps
+its structured string identities. Reports omit the whole optional AST first
+when details exceed the encoded byte budget. Further reduction omits whole linked rule/directive/suppression sections
+and other detail collections, retaining the acquired target identity and outcome
+with exact known omission counts. A pre-encoded emergency report supports even
+positive reporting deadlines of `1ns`: its fixed reserve construction and output
+delivery are outside that timed detail interval. Reporting omissions return
+incomplete/15. A true failed or short output write returns 13, unless an already
+established internal operation error requires 14.
+
+Before analysis starts, the reporting reserve and the now-known target identity
+must fit together. If acquisition reveals an infeasible manifest, inspection
+retains the acquired metadata, leaves analysis explicitly not started, and
+returns incomplete/15 without invoking rule callbacks.

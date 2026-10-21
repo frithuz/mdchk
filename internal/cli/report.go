@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/result"
@@ -273,8 +274,46 @@ func cloneReport(r result.Result) result.Result {
 	return r
 }
 
-func textField(s string) string { return strings.NewReplacer("\r", "\\r", "\n", "\\n").Replace(s) }
+func textField(s string) string {
+	var b strings.Builder
+	for _, r := range s {
+		switch r {
+		case '\n':
+			b.WriteString(`\n`)
+		case '\r':
+			b.WriteString(`\r`)
+		case '\t':
+			b.WriteString(`\t`)
+		case '\b':
+			b.WriteString(`\b`)
+		case '\f':
+			b.WriteString(`\f`)
+		case '\v':
+			b.WriteString(`\v`)
+		default:
+			if terminalControl(r) {
+				if r < 128 {
+					fmt.Fprintf(&b, `\x%02x`, r)
+				} else {
+					fmt.Fprintf(&b, `\u%04x`, r)
+				}
+			} else {
+				b.WriteRune(r)
+			}
+		}
+	}
+	return b.String()
+}
+func terminalControl(r rune) bool {
+	return unicode.IsControl(r) || r == 0x2028 || r == 0x2029 || r >= 0x202a && r <= 0x202e || r >= 0x2066 && r <= 0x2069
+}
+
 func renderText(ctx context.Context, w io.Writer, r result.Result) error {
+	if r.Operation == "inspect" && len(r.Inspection) > 0 {
+		if err := renderInspectionRawText(ctx, w, r.Inspection); err != nil {
+			return err
+		}
+	}
 	line := func(format string, args ...any) error {
 		if err := ctx.Err(); err != nil {
 			return err
@@ -365,6 +404,9 @@ func renderText(ctx context.Context, w io.Writer, r result.Result) error {
 				return err
 			}
 		}
+	}
+	if r.Operation == "inspect" {
+		return line("Inspected %d files. %d findings, %d suppressed observations; %s (complete: %t).\n", len(r.CheckedFiles), len(r.Diagnostics), len(r.SuppressedDiagnostics), textField(r.Status), r.Complete)
 	}
 	if r.ConfigValidation != nil {
 		s := r.ConfigValidation

@@ -20,6 +20,7 @@ const generalHelp = `Usage: mdchk [global options] <command> [options] [paths...
 Commands:
   lint       Check Markdown with available registered rules
   config     Validate project configuration
+  inspect    Reveal processing details for one Markdown file
 
 Global options:
   --help     Show general or selected command help
@@ -80,6 +81,8 @@ func runContext(ctx context.Context, args []string, stdout, stderr io.Writer, ve
 		return output(stdout, generalHelp, 0)
 	}
 	switch args[0] {
+	case "inspect":
+		return runInspect(ctx, append(global, args[1:]...), stdout, version)
 	case "config":
 		return runConfig(ctx, append(global, args[1:]...), stdout, version)
 	case "lint":
@@ -123,6 +126,7 @@ func output(w io.Writer, message string, status int) int {
 type lintOptions struct {
 	paths         []string
 	config        string
+	lines         string
 	format        string
 	limits        map[string]int64
 	help, version bool
@@ -131,6 +135,10 @@ type lintOptions struct {
 func parseLint(args []string) (lintOptions, error) { return parseOptions(args, false) }
 
 func parseOptions(args []string, validation bool) (lintOptions, error) {
+	return parseCommandOptions(args, validation, false)
+}
+
+func parseCommandOptions(args []string, validation, inspect bool) (lintOptions, error) {
 	opts := lintOptions{format: "text", limits: make(map[string]int64)}
 	literal := false
 	for i := 0; i < len(args); i++ {
@@ -158,8 +166,12 @@ func parseOptions(args []string, validation bool) (lintOptions, error) {
 		name, value, inline := strings.Cut(arg, "=")
 		switch name {
 		case "--config", "--format", "--limit":
+		case "--lines":
+			if !inspect {
+				return opts, fmt.Errorf("unsupported option %q", arg)
+			}
 		default:
-			return opts, fmt.Errorf("unsupported lint option %q", arg)
+			return opts, fmt.Errorf("unsupported option %q", arg)
 		}
 		if !inline {
 			next := i + 1
@@ -176,6 +188,8 @@ func parseOptions(args []string, validation bool) (lintOptions, error) {
 			return opts, fmt.Errorf("%s requires a nonempty value", name)
 		}
 		switch name {
+		case "--lines":
+			opts.lines = value
 		case "--config":
 			opts.config = value
 		case "--format":
@@ -218,7 +232,7 @@ func recoverFormat(args []string) string {
 		}
 		name, value, inline := strings.Cut(args[i], "=")
 		switch name {
-		case "--config", "--limit", "--format":
+		case "--config", "--limit", "--format", "--lines":
 		default:
 			continue
 		}
