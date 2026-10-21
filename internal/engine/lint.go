@@ -19,6 +19,7 @@ type RunOptions struct {
 	Mode       string
 	Budget     *parser.OperationBudget
 	Validation ValidationProviders
+	inspection *InspectionTrace
 }
 
 // Lint preflights the complete supplied batch before entering validation. Its
@@ -106,8 +107,14 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			out.Files = append(out.Files, file)
 			continue
 		}
+		if options.inspection != nil {
+			options.inspection.initialize(r)
+		}
 		validation := validateEncoding(in.path, in.source, settings[i]["MD094"].Enabled, snap)
 		index := validation.Index
+		if options.inspection != nil {
+			options.inspection.encoding(validation.Error, in.source)
+		}
 		if validation.Error != nil {
 			out.Errors = append(out.Errors, *validation.Error)
 			out.Coverage = append(out.Coverage, result.Coverage{Reason: "decoding-failed", Path: in.path, Message: "Markdown validation is unavailable."})
@@ -116,6 +123,9 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			continue
 		}
 		parsed := parser.ParseWithBudget(ctx, in.source, budget)
+		if options.inspection != nil {
+			options.inspection.parsed = parsed
+		}
 		if parsed.Failure != nil {
 			out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "parser-failure", Scope: "operation", Path: in.path, Message: parsed.Failure.Error()})
 			out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Reason: result.ParserUncertain, Message: "Parser context is unavailable."})
@@ -147,6 +157,9 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 		}
 		directives := ProcessDirectives(ctx, parsed, policy, budget)
 		analysis := DirectiveAnalysis{path: in.path, state: directives}
+		if options.inspection != nil {
+			options.inspection.directives = directives
+		}
 		for _, diagnostic := range directives.Diagnostics() {
 			diagnostic.Path, diagnostic.Snapshot = in.path, snap
 			out.Diagnostics = append(out.Diagnostics, diagnostic)
@@ -173,6 +186,20 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			out.Files = append(out.Files, file)
 			continue
 		}
+		if options.inspection != nil && options.inspection.prepare != nil {
+			if err := options.inspection.prepare(options.inspection); err != nil {
+				if isInterruption(err) {
+					stopped = recordInterruption(&out, in.path, "analysis", err)
+				} else {
+					out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "inspection-projection", Scope: "operation", Path: in.path, Message: err.Error()})
+				}
+				file.Analysis = "partial"
+				file.ResultSnapshot = &snap
+				out.Files = append(out.Files, file)
+				out.RetainAnalysis(analysis)
+				continue
+			}
+		}
 		rc := RuleContext{input: in, index: index, document: parsed.Document, budget: budget}
 
 		for _, id := range r.ids {
@@ -180,9 +207,15 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			m := r.metadata[id]
 			active := directives.EnabledSomewhere(id)
 			if !active || id == "MD094" {
+				if options.inspection != nil && id != "MD094" {
+					options.inspection.skip(id, "inactive")
+				}
 				continue
 			}
 			if m.AppliesTo != nil && !m.AppliesTo(in.documentContext) {
+				if options.inspection != nil {
+					options.inspection.skip(id, "inapplicable")
+				}
 				continue
 			}
 			if err := rc.Checkpoint(ctx, 1); err != nil {
@@ -191,10 +224,16 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			}
 			check := r.checks[id]
 			if check == nil {
+				if options.inspection != nil {
+					options.inspection.skip(id, "rule-unavailable")
+				}
 				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.RuleUnavailable, Message: "No executable implementation is registered."})
 				continue
 			}
 			if m.RequiresSyntax && !syntaxReliable {
+				if options.inspection != nil {
+					options.inspection.skip(id, "parser-uncertain")
+				}
 				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ParserUncertain, Message: "Rule requires reliable complete parser context."})
 				continue
 			}
@@ -205,6 +244,13 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				rc.document = nil
 			}
 			outcome := check(ctx, rc)
+			if options.inspection != nil {
+				recorded := outcome
+				if recorded.Err == nil {
+					recorded.Err = rc.Checkpoint(ctx, 0)
+				}
+				options.inspection.ran(id, recorded, false, in.source.Len())
+			}
 			if isInterruption(outcome.Err) {
 				projection.stop = outcome.Err
 			}
@@ -216,6 +262,9 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 					break
 				}
 				if err != nil {
+					if options.inspection != nil {
+						options.inspection.invalid(id, false)
+					}
 					out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "invalid-finding", Scope: "operation", Path: in.path, Rule: id, Message: err.Error()})
 					out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: "Rule returned an invalid finding."})
 					continue
@@ -256,6 +305,9 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				break
 			}
 		}
+		if options.inspection != nil && stopped == "" {
+			options.inspection.observe(ctx, r, rc, parsed, directives, &projection, snap, syntaxReliable)
+		}
 		out.RetainAnalysis(analysis)
 		file.ResultSnapshot = &snap
 		out.Files = append(out.Files, file)
@@ -294,25 +346,11 @@ func recordInterruption(out *result.Result, path, phase string, err error) strin
 	interruption := result.Interruption{Path: path, Reason: reason, Phase: phase, Message: err.Error()}
 	var limit *parser.LimitExceeded
 	if errors.As(err, &limit) {
-		interruption.Limit = &result.LimitObservation{Name: limit.Name, Observed: limit.Observed, Allowed: limit.Allowed, Unit: limitUnit(limit.Name)}
+		interruption.Limit = &result.LimitObservation{Name: limit.Name, Observed: limit.Observed, Allowed: limit.Allowed, Unit: result.LimitUnit(limit.Name)}
 	}
 	out.Interruptions = append(out.Interruptions, interruption)
 	out.Coverage = append(out.Coverage, result.Coverage{Path: path, Reason: reason, Message: "Remaining validation is unassessed."})
 	return reason
-}
-func limitUnit(name string) string {
-	switch name {
-	case "document-bytes":
-		return "bytes"
-	case "operation-time":
-		return "nanoseconds"
-	case "syntax-depth":
-		return "nested constructs"
-	case "document-nodes", "total-nodes":
-		return "nodes or source records"
-	default:
-		return "metered work units"
-	}
 }
 func effectiveLimits(l parser.Limits) []result.EffectiveLimit {
 	d := parser.DefaultLimits()
@@ -326,7 +364,7 @@ func effectiveLimits(l parser.Limits) []result.EffectiveLimit {
 		if v.value != v.def {
 			source = "operator"
 		}
-		out = append(out, result.EffectiveLimit{Name: v.name, Value: v.value, Unit: limitUnit(v.name), Source: source})
+		out = append(out, result.EffectiveLimit{Name: v.name, Value: v.value, Unit: result.LimitUnit(v.name), Source: source})
 	}
 	out = append(out, result.EffectiveLimit{Name: "reporting-time", Value: 2, Unit: "seconds", Source: "default"})
 	slices.SortFunc(out, func(a, b result.EffectiveLimit) int { return strings.Compare(a.Name, b.Name) })

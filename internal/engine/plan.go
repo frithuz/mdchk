@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -122,4 +123,18 @@ func (p *ExecutionPlan) Lint(ctx context.Context, inputs []Input, options RunOpt
 		}
 	}
 	return p.registry.Lint(ctx, inputs, options)
+}
+
+// NewSourceInput binds an already immutable source without reacquisition or a
+// second byte snapshot. The operation's caller owns any acquisition work charge.
+func (p *ExecutionPlan) NewSourceInput(path string, source parser.Source) (Input, error) {
+	if p == nil || p.registry == nil {
+		return Input{}, fmt.Errorf("nil execution plan")
+	}
+	in, err := NewInput(path, nil, nil, p.documentContext)
+	if err != nil {
+		return Input{}, err
+	}
+	in.source, in.plan = source, p
+	return in, nil
 }

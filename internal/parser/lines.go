@@ -3,6 +3,7 @@ package parser
 import (
 	"context"
 	"errors"
+	"math/bits"
 	"sort"
 	"unicode/utf8"
 )
@@ -143,6 +144,49 @@ func (index LineIndex) positionAt(offset int) (Position, error) {
 	n := sort.Search(len(index.lines), func(i int) bool { meterWork(index.ctx, 1); return index.lines[i].start > offset }) - 1
 	line := index.lines[n]
 	return Position{Line: n + 1, Column: utf8.RuneCountInString(text[line.start:offset]) + 1}, nil
+}
+
+// PositionBounded performs the same conversion as Position, charging the caller's
+// existing operation budget before binary searches and Unicode prefix decoding.
+// The charge is O(log line-count + actual line-prefix bytes), not source size.
+// No operation budget is created and no parser-private metering context escapes.
+func (index LineIndex) PositionBounded(ctx context.Context, budget *OperationBudget, offset int) (Position, error) {
+	if ctx == nil || budget == nil {
+		return Position{}, errors.New("nil coordinate context or budget")
+	}
+	if err := ctx.Err(); err != nil {
+		return Position{}, err
+	}
+	// Reserve both this locating search and the canonical conversion's search,
+	// validity checks and constant-size result construction before doing either.
+	if err := budget.ChargeWork(int64(2*bits.Len(uint(len(index.lines))) + 16)); err != nil {
+		return Position{}, err
+	}
+	if offset < 0 || offset > index.source.Len() {
+		return Position{}, ErrPosition
+	}
+	if len(index.lines) > 0 {
+		n := sort.Search(len(index.lines), func(i int) bool { return index.lines[i].start > offset }) - 1
+		if n >= 0 {
+			if err := budget.ChargeWork(int64(offset - index.lines[n].start)); err != nil {
+				return Position{}, err
+			}
+		}
+	}
+	if err := ctx.Err(); err != nil {
+		return Position{}, err
+	}
+	// The source/index are immutable. Use the canonical conversion without its
+	// parse-local context; all work has just been reserved on this caller's meter.
+	index.ctx = nil
+	position, err := index.Position(offset)
+	if stop := ctx.Err(); stop != nil {
+		return Position{}, stop
+	}
+	if stop := budget.ChargeWork(0); stop != nil {
+		return Position{}, stop
+	}
+	return position, err
 }
 
 // Offset converts a one-based physical-line/code-point position to original

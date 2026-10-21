@@ -144,6 +144,7 @@ type ConfigValidation struct {
 // Operation-specific records must follow the same normative schema. RawMessage
 // here is not an extension bag: producers must validate against that schema.
 type Result struct {
+	Inspection            json.RawMessage `json:"inspection,omitempty"`
 	reportingErrorCounts  [4]int
 	ConfigValidation      *ConfigValidation `json:"config_validation,omitempty"`
 	analysis              []AnalysisRecord

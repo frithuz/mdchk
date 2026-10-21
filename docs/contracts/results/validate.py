@@ -68,8 +68,60 @@ def semantic(x):
     if x['operation']=='config validate' and 'config_validation' in x:
         s=x['config_validation'];require(s['valid_definitions']+s['invalid_definitions']==s['definitions_checked'],'configuration count mismatch')
     if 'inspection' in x:
+        inspection_semantic(x)
         r=x['inspection']['rule_counts']
         if r['availability']=='available':require(r['data']['active']+r['data']['inactive']==r['data']['known'],'catalog count mismatch')
+
+def inspection_semantic(x):
+    p=x['inspection'];ids={r['id'] for k in ['errors','interruptions','coverage'] for r in x[k]}
+    for name,section in p.items():
+        if isinstance(section,dict) and 'availability' in section:require(all(c in ids for c in section.get('cause_ids',[])),'inspection section has unresolved cause')
+    size=p['file']['size_bytes'];snapshot={'view':'original','sha256':p['file']['sha256'],'size_bytes':size}
+    def section(name):return p.get(name,{}).get('data')
+    def bounded(r):require(0<=r['start']<=r['end']<=size,'inspection byte range outside snapshot')
+    directives=section('directives') or []
+    by_id={d['id']:d for d in directives}
+    require(len(by_id)==len(directives),'duplicate directive id')
+    for d in directives:
+        bounded(d['byte_range']);require(d['byte_range']['start']<=d['closing_offset']<=d['byte_range']['end'],'directive closing offset outside envelope')
+        for token in d.get('named_tokens',[]):bounded(token['byte_range']);require(d['byte_range']['start']<=token['byte_range']['start']<=token['byte_range']['end']<=d['byte_range']['end'],'directive token outside envelope')
+    ast=section('ast')
+    if ast:
+        require(ast['snapshot']==snapshot,'AST snapshot identity mismatch')
+        node_ids=set()
+        def walk(n,parent=None):
+            require(n['id'] not in node_ids,'duplicate AST node id');node_ids.add(n['id']);bounded(n['byte_range'])
+            if parent:require(parent['start']<=n['byte_range']['start']<=n['byte_range']['end']<=parent['end'],'AST child outside parent')
+            previous=-1
+            for child in n['children']:
+                require(child['byte_range']['start']>=previous,'AST children out of source order');previous=child['byte_range']['start'];walk(child,n['byte_range'])
+        walk(ast['root']);require(ast['root']['kind']=='document' and ast['root']['byte_range']=={'start':0,'end':size},'AST lacks full document root')
+        for reference in ast.get('references',[]):bounded(reference['byte_range'])
+    rules=section('rules') or []
+    require(len({r['rule'] for r in rules})==len(rules),'duplicate inspected rule')
+    for r in rules:
+        for interval in r['intervals']:
+            bounded(interval['byte_range'])
+            if interval['origin']=='directive':
+                require(interval.get('directive_id') in by_id,'unresolved interval directive')
+                owner=by_id[interval['directive_id']]
+                require(interval['byte_range']['start']==owner['closing_offset'],'directive interval starts before or after owner')
+                require(any(e['rule']==r['rule'] and e['effect'] in ['enable','disable','no-op'] and e['permission']=='allowed' for e in owner['effects']),'blocked directive owns interval')
+        if 'source_coverage' in r:
+            for mode,status in [('active','active_evaluation'),('observational','observational_evaluation')]:
+                coverage=r['source_coverage'][mode]
+                require(len(coverage['ranges'])==len(coverage['byte_ranges']),'coverage coordinate lengths differ')
+                for region in coverage['byte_ranges']:bounded(region)
+                if coverage['availability']=='complete':require(r[status]=='complete' and coverage['byte_ranges']==[{'start':0,'end':size}],'unproven complete rule source coverage')
+                else:require(not coverage['byte_ranges'] and not coverage['ranges'],'unknown coverage claims evaluated regions')
+    for candidate in section('raw_candidates') or []:
+        bounded(candidate['byte_range'])
+        if 'directive_id' in candidate:require(candidate['directive_id'] in by_id,'raw candidate has dangling directive id')
+    for hidden in x['suppressed_diagnostics']:
+        cause=hidden['suppressed_by'];d=hidden['diagnostic']
+        if cause['kind']=='directive':
+            require(cause.get('directive_id') in by_id,'suppressed diagnostic has dangling directive id')
+            require(any(r['rule']==d['rule'] and any(not interval['enabled'] and interval.get('directive_id')==cause['directive_id'] and interval['byte_range']['start']<=d['byte_range']['start'] and (d['byte_range']['start']<interval['byte_range']['end'] or d['byte_range']['start']==interval['byte_range']['end']==size) for interval in r['intervals']) for r in rules),'suppressed diagnostic owner does not control anchor')
 
 def exit_code(x):
     errors=[e for e in x['errors'] if e['scope']=='operation']

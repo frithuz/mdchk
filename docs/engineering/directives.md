@@ -87,5 +87,6 @@ paths/points remain internal inspection data. Suppressed lint records use the
 declared `suppressed_by.kind` without a dangling `directive_id`. No directive
 collection, returned source documents or undeclared wire fields are fabricated.
 Both text and JSON reporters include these observations and count whole-record
-omissions under reporting limits. Inspection/fix/MCP commands, observational
-runs of disabled-throughout rules and MD087 counterfactuals remain downstream.
+omissions under reporting limits. The inspection package now projects these observations and optionally runs
+disabled-throughout callbacks on the shared budget. Inspection/fix/MCP commands
+and MD087 counterfactual conclusions remain downstream.

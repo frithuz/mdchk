@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -76,4 +77,21 @@ func (p *ExecutionPlan) Lint(ctx context.Context, inputs []engine.Input, options
 		return result.Result{}, fmt.Errorf("nil admitted execution plan")
 	}
 	return p.engine.Lint(ctx, inputs, options)
+}
+
+// Inspect retains the shared engine's parse and actual scheduling observations.
+// Observation of inactive rules is explicit and shares the supplied budget.
+func (p *ExecutionPlan) Inspect(ctx context.Context, in engine.Input, options engine.RunOptions, inspection engine.InspectionOptions) (result.Result, *engine.InspectionTrace, error) {
+	if p == nil || p.engine == nil {
+		return result.Result{}, nil, fmt.Errorf("nil admitted execution plan")
+	}
+	return p.engine.Inspect(ctx, in, options, inspection)
+}
+
+// NewSourceInput binds acquired immutable bytes to the admitted execution plan.
+func (p *ExecutionPlan) NewSourceInput(path string, source parser.Source) (engine.Input, error) {
+	if p == nil || p.engine == nil {
+		return engine.Input{}, fmt.Errorf("nil admitted execution plan")
+	}
+	return p.engine.NewSourceInput(path, source)
 }

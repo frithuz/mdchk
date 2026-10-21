@@ -87,8 +87,15 @@ type DirectiveResult struct {
 	err         error
 }
 
-func (r DirectiveResult) Complete() bool        { return r.complete }
-func (r DirectiveResult) Err() error            { return r.err }
+func (r DirectiveResult) Complete() bool { return r.complete }
+func (r DirectiveResult) Err() error {
+	var limit *parser.LimitExceeded
+	if errors.As(r.err, &limit) {
+		copy := *limit
+		return &copy
+	}
+	return r.err
+}
 func (r DirectiveResult) Source() parser.Source { return r.source }
 func (r DirectiveResult) Candidates() []DirectiveCandidate {
 	out := slices.Clone(r.candidates)

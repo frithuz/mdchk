@@ -1211,6 +1211,12 @@
         },
         "root": {
           "$ref": "#/$defs/AstNode"
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProjectionReference"
+          }
         }
       },
       "required": [
@@ -1310,6 +1316,22 @@
             "type": "string",
             "pattern": "^[a-z][a-z0-9-]*$"
           }
+        },
+        "source_coverage": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "$ref": "#/$defs/EvaluationCoverage"
+            },
+            "observational": {
+              "$ref": "#/$defs/EvaluationCoverage"
+            }
+          },
+          "required": [
+            "active",
+            "observational"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -1363,6 +1385,12 @@
         },
         "provenance": {
           "$ref": "#/$defs/Provenance"
+        },
+        "permission_provenance": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Provenance"
+          }
         }
       },
       "required": [
@@ -1416,6 +1444,33 @@
           "items": {
             "$ref": "#/$defs/DirectiveEffect"
           }
+        },
+        "named_tokens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "byte_range": {
+                "$ref": "#/$defs/ByteRange"
+              }
+            },
+            "required": [
+              "name",
+              "byte_range"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "resolved_rules": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^MD[0-9]{3}$"
+          },
+          "uniqueItems": true
         }
       },
       "required": [
@@ -1557,6 +1612,9 @@
         },
         "normally_excluded": {
           "type": "boolean"
+        },
+        "normally_excluded_known": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -1599,6 +1657,13 @@
             },
             "data": {
               "$ref": "#/$defs/Configuration"
+            },
+            "cause_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
             }
           },
           "required": [
@@ -1688,6 +1753,13 @@
                 "gfm",
                 "pandoc"
               ]
+            },
+            "cause_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
             }
           },
           "required": [
@@ -1803,6 +1875,13 @@
                 "quarto_enabled"
               ],
               "additionalProperties": false
+            },
+            "cause_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
             }
           },
           "required": [
@@ -1888,6 +1967,13 @@
             },
             "data": {
               "$ref": "#/$defs/AstProjection"
+            },
+            "cause_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
             }
           },
           "required": [
@@ -1976,6 +2062,13 @@
               "items": {
                 "$ref": "#/$defs/RuleInspection"
               }
+            },
+            "cause_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
             }
           },
           "required": [
@@ -2084,6 +2177,13 @@
                 "inactive"
               ],
               "additionalProperties": false
+            },
+            "cause_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
             }
           },
           "required": [
@@ -2172,6 +2272,13 @@
               "items": {
                 "$ref": "#/$defs/Directive"
               }
+            },
+            "cause_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
             }
           },
           "required": [
@@ -2284,6 +2391,13 @@
                 "observations"
               ],
               "additionalProperties": false
+            },
+            "cause_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
             }
           },
           "required": [
@@ -2372,6 +2486,108 @@
               "items": {
                 "$ref": "#/$defs/Note"
               }
+            },
+            "cause_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "availability",
+            "reasons"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "availability": {
+                    "enum": [
+                      "available",
+                      "partial"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "data"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "availability": {
+                    "enum": [
+                      "unavailable",
+                      "not-requested"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "availability": {
+                    "enum": [
+                      "partial",
+                      "unavailable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "reasons": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "raw_candidates": {
+          "type": "object",
+          "properties": {
+            "availability": {
+              "enum": [
+                "available",
+                "partial",
+                "unavailable",
+                "not-requested"
+              ]
+            },
+            "reasons": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              }
+            },
+            "data": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RawDirectiveCandidate"
+              }
+            },
+            "cause_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
             }
           },
           "required": [
@@ -2486,6 +2702,161 @@
         "valid_definitions",
         "invalid_definitions",
         "skipped_definitions"
+      ],
+      "additionalProperties": false
+    },
+    "EvaluationCoverage": {
+      "type": "object",
+      "properties": {
+        "availability": {
+          "enum": [
+            "complete",
+            "unknown",
+            "not-requested"
+          ]
+        },
+        "ranges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Range"
+          }
+        },
+        "byte_ranges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ByteRange"
+          }
+        }
+      },
+      "required": [
+        "availability",
+        "ranges",
+        "byte_ranges"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectionMarker": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string"
+        },
+        "byte_range": {
+          "$ref": "#/$defs/ByteRange"
+        }
+      },
+      "required": [
+        "role",
+        "byte_range"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectionSegment": {
+      "type": "object",
+      "properties": {
+        "transformation": {
+          "enum": [
+            "exact",
+            "escape",
+            "entity",
+            "normalized",
+            "partial-tab",
+            "synthetic",
+            "unavailable"
+          ]
+        },
+        "byte_range": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "semantic": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "transformation"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectionValue": {
+      "type": "object",
+      "properties": {
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProjectionSegment"
+          }
+        },
+        "semantic": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "segments"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectionReference": {
+      "type": "object",
+      "properties": {
+        "byte_range": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "markers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProjectionMarker"
+          }
+        },
+        "label": {
+          "$ref": "#/$defs/ProjectionValue"
+        },
+        "destination": {
+          "$ref": "#/$defs/ProjectionValue"
+        },
+        "effective": {
+          "type": "boolean"
+        },
+        "title": {
+          "$ref": "#/$defs/ProjectionValue"
+        },
+        "normalized_label": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "byte_range",
+        "markers",
+        "label",
+        "destination",
+        "effective"
+      ],
+      "additionalProperties": false
+    },
+    "RawDirectiveCandidate": {
+      "type": "object",
+      "properties": {
+        "byte_range": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "raw_base64": {
+          "type": "string",
+          "contentEncoding": "base64"
+        },
+        "context": {
+          "enum": [
+            "confirmed",
+            "literal",
+            "unconfirmed"
+          ]
+        },
+        "directive_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "byte_range",
+        "raw_base64",
+        "context"
       ],
       "additionalProperties": false
     }

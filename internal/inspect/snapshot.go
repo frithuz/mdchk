@@ -1,5 +1,5 @@
-// Package inspect acquires immutable inspection data independently of command
-// reporting, Markdown parsing, rule execution and presentation filtering.
+// Package inspect acquires and projects immutable inspection data independently
+// of command reporting and presentation filtering.
 package inspect
 
 import (
@@ -48,6 +48,7 @@ type Exclusion struct {
 // be changed without changing later readers. Disk changes after acquisition have
 // no effect. A configuration observation never fabricates default settings.
 type Snapshot struct {
+	budget                  *parser.OperationBudget
 	file                    File
 	source                  parser.Source
 	lines                   parser.LineIndex
@@ -154,7 +155,7 @@ func Acquire(ctx context.Context, target string, options Options) (*Snapshot, er
 	if version == "" {
 		version = "development"
 	}
-	s := &Snapshot{file: File{Path: document.Path, Version: version, SizeBytes: int64(size), SizeDisplay: displaySize(int64(size)), SHA1: hex.EncodeToString(shaOne[:]), SHA256: hex.EncodeToString(shaTwo[:])}, source: document.Source, lines: parser.NewLineIndex(document.Source), capabilities: options.Capabilities}
+	s := &Snapshot{budget: budget, file: File{Path: document.Path, Version: version, SizeBytes: int64(size), SizeDisplay: displaySize(int64(size)), SHA1: hex.EncodeToString(shaOne[:]), SHA256: hex.EncodeToString(shaTwo[:])}, source: document.Source, lines: parser.NewLineIndex(document.Source), capabilities: options.Capabilities}
 	if err := check(0); err != nil {
 		return s, err
 	}
