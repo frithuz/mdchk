@@ -2,6 +2,11 @@
 
 Use this guide to understand which files an operation targets and why a path might be skipped. The command guides describe each operation's flags.
 
+The shared filesystem selection provider implements the lint/fix path rules
+below; compiled lint still stops after configuration preparation. Source loading
+and command integration follow separately. See the [provider boundary](engineering/file-selection.md)
+and [current lint status](commands/lint.md#current-implementation).
+
 ## Selection by operation
 
 | Operation | Target | Exclusions and boundaries |

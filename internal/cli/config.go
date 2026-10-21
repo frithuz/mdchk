@@ -5,10 +5,10 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/frithuz/mdchk/internal/config"
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/files"
 )
 
 // lintInvocation owns the complete preparation result for later target loading
@@ -50,28 +50,13 @@ func prepareLint(options lintOptions) (*lintInvocation, error) {
 // excludes applies the selected definition's compiled list to a native target
 // path and its ancestor directories, including explicitly named descendants.
 // The caller supplies directory identity; this seam performs no target IO.
-// Portable traversal, eligibility, symlink checks and loading are separate work.
+// The shared files provider owns traversal, eligibility and symlink checks;
+// source loading is separate work.
 func (inv *lintInvocation) excludes(target string, isDir bool) (bool, error) {
 	if !filepath.IsAbs(target) {
 		target = filepath.Join(inv.workingDirectory, target)
 	}
-	if !strings.EqualFold(filepath.VolumeName(inv.exclusionBase), filepath.VolumeName(target)) {
-		return false, nil
-	}
-	rel, err := filepath.Rel(inv.exclusionBase, target)
-	if err != nil {
-		return false, err
-	}
-	inBase := rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) && !filepath.IsAbs(rel)
-	name := filepath.ToSlash(rel)
-	if rel == "." {
-		name = ""
-	}
-	excluded, err := inv.exclusions.Excludes(name, isDir, inBase)
-	if err != nil {
-		return false, fmt.Errorf("exclusions for %q: %w", target, err)
-	}
-	return excluded, nil
+	return files.Excludes(inv.exclusionBase, target, isDir, inv.exclusions)
 }
 
 func unavailableLint(_ *lintInvocation, _ io.Writer, stderr io.Writer) int {

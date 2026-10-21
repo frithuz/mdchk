@@ -25,9 +25,11 @@ remain in the complete catalog for later coverage reporting.
 
 After successful preparation, lint returns `15` with
 `lint execution is not available in this build; no files were checked` on stderr.
-Target traversal, loading, rule execution and resource budget enforcement remain
-pending. Prepared exclusions are bound to the selected configuration directory
-(or working directory without a file) for later target selection. Reporters are
+A reusable [target selection provider](../engineering/file-selection.md) is
+implemented, including portable paths, pruning and structured selection outcomes.
+Connecting it to lint, loading source bytes, rule execution and resource budget
+enforcement remain pending. Prepared exclusions are bound to the selected
+configuration directory (or working directory without a file). Reporters are
 deferred to #128: `--format` accepts the documented names but does not yet produce
 their reports or JSON envelopes. Errors currently use plain stderr text.
 

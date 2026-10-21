@@ -235,9 +235,10 @@ Preparation retains the full owned selection and resolution for later execution.
 Its exclusion seam binds the selected compiled matcher to the configuration
 directory (or invocation directory without a file) and calls `Patterns.Excludes`
 for native explicit paths, including ancestor directories. Directory identity
-comes from the later target adapter; portable traversal and loading remain
-pending. Successful preparation still returns incomplete/15 without target
-access and never reports a clean check. Pending reporter delivery in #128,
+comes from the reusable [filesystem selection provider](engineering/file-selection.md),
+which implements portable traversal and structured skips/failures. Source loading
+and command integration remain pending. Successful preparation still returns
+incomplete/15 without target access and never reports a clean check. Pending reporter delivery in #128,
 errors use plain stderr even when a structured format was selected. No
 success-shaped result envelope is emitted.
 
