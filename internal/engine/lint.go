@@ -427,7 +427,9 @@ func FinalizeLintResult(out *result.Result) {
 	decodeErrors := make(map[string][]int)
 	stopsByReason := make(map[key][]string)
 	coverageByPath := make(map[string][]string)
+	out.ResetReportingErrors()
 	for i, e := range out.Errors {
+		out.CountReportingError(e.Category)
 		errorsByPath[e.Path] = append(errorsByPath[e.Path], e.ID)
 		if e.Rule != "" {
 			k := key{e.Path, e.Rule}
@@ -474,11 +476,21 @@ func FinalizeLintResult(out *result.Result) {
 		if len(f.CoverageIDs) > 0 && f.Analysis == "complete" {
 			f.Analysis = "partial"
 		}
-		if len(f.ErrorIDs) > 0 {
+		if len(f.ErrorIDs) > 0 && out.Operation != "config validate" {
 			f.Analysis = "failed"
 		}
 	}
 	out.FinalizeLintFixOutcome()
+	if out.Operation == "config validate" {
+		out.Complete = out.ConfigValidation != nil && out.ConfigValidation.ScanComplete && len(out.Interruptions) == 0 && len(out.Omissions) == 0
+		out.Status = "clean"
+		if !out.Complete {
+			out.Status = "incomplete"
+		}
+		if len(out.Errors) > 0 {
+			out.Status = "error"
+		}
+	}
 }
 func compareRange(a, b *result.Range) int {
 	if a == nil {

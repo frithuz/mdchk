@@ -30,16 +30,19 @@ func (l Limits) validate() error {
 // Options makes ambient Git source selection explicit and testable. Nil
 // Options.Environment snapshots the process environment once at operation entry.
 type Options struct {
-	Root        string
-	Limits      Limits
-	Budget      *parser.OperationBudget
-	Environment map[string]string
+	StructuredDepth int
+	Root            string
+	Limits          Limits
+	Budget          *parser.OperationBudget
+	Environment     map[string]string
 }
 type Definition struct {
 	Path string
 	Data []byte
 }
 type Skip struct {
+	// Definition identifies a known eligible definition, never a pruned directory.
+	Definition           bool
 	Path, Reason, Source string
 	Line                 int
 	Origins              []config.Origin
@@ -445,7 +448,21 @@ func (s *scanner) walk(path string, sources []ignoreSource, state config.PolicyS
 		sources = append(slices.Clone(sources), local)
 	}
 	definition := filepath.Join(path, config.Filename)
-	eligible := presentNames[config.Filename]
+	eligible := false
+	if presentNames[config.Filename] {
+		if err := s.check(); err != nil {
+			s.stop(err)
+			return
+		}
+		info, e := s.access.lstat(definition)
+		if e != nil {
+			s.definitionFailure(definition, "stat definition", e)
+		} else {
+			// A matching basename alone does not establish an eligible definition.
+			// Directories and symlinks retain the ordinary traversal/skip path below.
+			eligible = info.Mode().IsRegular()
+		}
+	}
 	if eligible && hooks.Exclude != nil {
 		skip, excluded, e := hooks.Exclude(definition, false, state)
 		if e != nil {
@@ -453,6 +470,7 @@ func (s *scanner) walk(path string, sources []ignoreSource, state config.PolicyS
 			return
 		}
 		if excluded {
+			skip.Definition = true
 			s.result.Skipped = append(s.result.Skipped, skip)
 			eligible = false
 		}
@@ -462,49 +480,47 @@ func (s *scanner) walk(path string, sources []ignoreSource, state config.PolicyS
 			s.stop(err)
 			return
 		}
-		info, e := s.access.lstat(definition)
+
+		skip, ignored, e := s.ignored(definition, false, sources)
 		if e != nil {
-			s.definitionFailure(definition, "stat definition", e)
-		} else if info.Mode()&fs.ModeSymlink == 0 {
-			skip, ignored, e := s.ignored(definition, false, sources)
+			s.handle(definition, "match", e)
+			return
+		}
+		if ignored {
+			skip.Definition = true
+			s.result.Skipped = append(s.result.Skipped, skip)
+		} else {
+			data, e := s.read(definition)
 			if e != nil {
-				s.handle(definition, "match", e)
-				return
-			}
-			if ignored {
-				s.result.Skipped = append(s.result.Skipped, skip)
+				s.definitionFailure(definition, "read definition", e)
 			} else {
-				data, e := s.read(definition)
-				if e != nil {
-					s.definitionFailure(definition, "read definition", e)
-				} else {
+				if err := s.check(); err != nil {
+					s.stop(err)
+					return
+				}
+				d := Definition{definition, data}
+				s.result.Definitions = append(s.result.Definitions, d)
+				if hooks.Definition != nil {
 					if err := s.check(); err != nil {
 						s.stop(err)
 						return
 					}
-					d := Definition{definition, data}
-					s.result.Definitions = append(s.result.Definitions, d)
-					if hooks.Definition != nil {
-						if err := s.check(); err != nil {
-							s.stop(err)
-							return
-						}
-						next, e := hooks.Definition(Definition{d.Path, slices.Clone(d.Data)}, state)
-						if e != nil {
-							var limit *parser.LimitExceeded
-							if errors.As(e, &limit) || errors.Is(e, context.Canceled) || errors.Is(e, context.DeadlineExceeded) {
-								s.stop(e)
-							} else {
-								s.result.Errors = append(s.result.Errors, Failure{Path: definition, Operation: "definition", Role: DefinitionSource, Err: e})
-							}
+					next, e := hooks.Definition(Definition{d.Path, slices.Clone(d.Data)}, state)
+					if e != nil {
+						var limit *parser.LimitExceeded
+						if errors.As(e, &limit) || errors.Is(e, context.Canceled) || errors.Is(e, context.DeadlineExceeded) {
+							s.stop(e)
 						} else {
-							state = next
+							s.result.Errors = append(s.result.Errors, Failure{Path: definition, Operation: "definition", Role: DefinitionSource, Err: e})
 						}
+					} else {
+						state = next
 					}
 				}
 			}
 		}
 	}
+
 	if s.result.Interruption != nil {
 		return
 	}

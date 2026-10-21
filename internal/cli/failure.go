@@ -28,6 +28,11 @@ func failureResult(err error, code string, category result.ErrorCategory) result
 			snapshots[s.Path] = result.Snapshot{View: "original", SHA256: s.SHA256, SizeBytes: int(s.SizeBytes)}
 		}
 	}
+	return configurationFailure(err, base, snapshots)
+}
+
+func configurationFailure(err error, base result.Error, snapshots map[string]result.Snapshot) result.Result {
+	out := result.NewLint("cli")
 	logical := func(path string) string {
 		cwd, e := os.Getwd()
 		if e == nil {

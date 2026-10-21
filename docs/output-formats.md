@@ -1,9 +1,9 @@
 # mdchk result formats
 
-Choose a result format with `--format`. Lint currently implements readable text
+Choose a result format with `--format`. Lint and config validate currently implement readable text
 (the default) and JSON for automation. Results go to stdout; stderr is reserved
 for execution logs. VS Code and GitHub reporters are planned and currently return
-unsupported usage before project access. Fix, inspect, config validation and MCP
+unsupported usage before project access. Fix, inspect and MCP
 remain planned; their format behavior below describes the accepted contract.
 
 | Format | Use |
@@ -16,7 +16,7 @@ remain planned; their format behavior below describes the accepted contract.
 Formats change presentation, not the rules, fixes, or [exit codes](exit-codes.md).
 The complete contract gives `lint`, `fix`, and
 [`config validate`](commands/config/validate.md) all four formats; this build
-implements only lint text and JSON.
+implements lint and config validate text and JSON.
 
 [`inspect`](commands/inspect.md) accepts `text` and `json` for its detailed processing report. VS Code and GitHub annotations do not carry its AST and other inspection data.
 
@@ -224,3 +224,9 @@ an explicit `return_status: withheld`; it never truncates a content string.
 result and serialized JSON text fallback both count, including escaping. See
 [resource limits](engineering/limits.md) and the
 [withheld-content example](contracts/results/withheld-whole-content.json).
+
+Configuration validation uses the same envelope with a typed `config_validation`
+summary. It leaves Markdown diagnostics, coverage, changes and returned documents
+empty. Completed invalid definitions retain complete file analysis and located
+configuration errors; interrupted validation retains partial outcomes without
+claiming validity. See the [command guide](commands/config/validate.md).

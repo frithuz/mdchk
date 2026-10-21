@@ -17,14 +17,14 @@ Validation includes twelve deliberately invalid mutations. It checks serializati
 and representative semantic invariants; it does not execute mdchk or prove
 parser, fixer, transport, authentication, or platform conformance.
 
-Lint producer tests also validate the actual emitted CLI JSON with this same
+Lint and config validate producer tests also validate the actual emitted CLI JSON with this same
 schema and semantic validator. Enable the isolated interpreter explicitly:
 
 ```sh
 MDCHK_RESULT_VALIDATOR_PYTHON=/tmp/mdchk-contract-validation/bin/python go test ./...
 ```
 
-This checks the implemented lint envelope and error paths; the other operations
+This checks the implemented lint/config-validation envelopes and error paths; the other operations
 and reporters retain their separate implementation and conformance requirements.
 
 Lint directive integration populates `notes` and `suppressed_diagnostics`. The

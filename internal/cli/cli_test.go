@@ -19,7 +19,7 @@ func TestDispatch(t *testing.T) {
 	}{
 		{nil, 0, "Usage: mdchk"}, {[]string{"--help"}, 0, "Commands:"}, {[]string{"lint", "--help"}, 0, "Usage: mdchk lint"}, {[]string{"--help", "lint"}, 0, "Usage: mdchk lint"}, {[]string{"--version"}, 0, "mdchk test-version"},
 		{[]string{"lint", "--version"}, 0, "mdchk test-version"}, {[]string{"lint"}, 11, ""},
-		{[]string{"fix"}, 11, ""}, {[]string{"inspect"}, 11, ""}, {[]string{"config"}, 11, ""}, {[]string{"mcp"}, 11, ""}, {[]string{"wat"}, 11, ""}, {[]string{"--wat"}, 11, ""},
+		{[]string{"fix"}, 11, ""}, {[]string{"inspect"}, 11, ""}, {[]string{"config"}, 0, "Usage: mdchk config"}, {[]string{"mcp"}, 11, ""}, {[]string{"wat"}, 11, ""}, {[]string{"--wat"}, 11, ""},
 		{[]string{"lint", "a.md", "--wat"}, 11, ""}, {[]string{"lint", "--format"}, 11, ""}, {[]string{"lint", "--format", "--help"}, 11, ""},
 		{[]string{"lint", "--config="}, 11, ""}, {[]string{"lint", "--limit="}, 11, ""}, {[]string{"lint", "--format", "yaml"}, 11, ""},
 		{[]string{"lint", "--", "--help", "--version"}, 13, ""},

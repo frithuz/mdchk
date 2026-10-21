@@ -41,6 +41,9 @@ func validate(ctx context.Context, options Options, registry *engine.Registry, p
 	if options.Budget == nil {
 		options.Budget, _ = parser.NewOperationBudget(parser.DefaultLimits())
 	}
+	if options.StructuredDepth == 0 {
+		options.StructuredDepth = 64
+	}
 	result := ValidationResult{}
 	hooks := Hooks{}
 	hooks.Exclude = func(path string, directory bool, state config.PolicyState) (Skip, bool, error) {
@@ -86,7 +89,7 @@ func validate(ctx context.Context, options Options, registry *engine.Registry, p
 	hooks.Definition = func(d Definition, state config.PolicyState) (config.PolicyState, error) {
 		sum := sha256.Sum256(d.Data)
 		outcome := ValidationOutcome{Source: config.SourceSnapshot{Path: d.Path, SHA256: hex.EncodeToString(sum[:]), SizeBytes: int64(len(d.Data))}}
-		decoded, err := config.DecodeYAMLBounded(ctx, d.Path, d.Data, options.Budget)
+		decoded, err := config.DecodeYAMLProfile(ctx, d.Path, d.Data, options.Budget, options.StructuredDepth)
 		next := state
 		if err == nil {
 			next, outcome.Resolution, err = state.ApplyAdmittedBounded(ctx, options.Budget, decoded, registry, providers, capabilities)

@@ -19,6 +19,7 @@ const generalHelp = `Usage: mdchk [global options] <command> [options] [paths...
 
 Commands:
   lint       Check Markdown with available registered rules
+  config     Validate project configuration
 
 Global options:
   --help     Show general or selected command help
@@ -79,6 +80,8 @@ func runContext(ctx context.Context, args []string, stdout, stderr io.Writer, ve
 		return output(stdout, generalHelp, 0)
 	}
 	switch args[0] {
+	case "config":
+		return runConfig(ctx, append(global, args[1:]...), stdout, version)
 	case "lint":
 		opts, err := parseLint(append(global, args[1:]...))
 		if err != nil {
@@ -125,7 +128,9 @@ type lintOptions struct {
 	help, version bool
 }
 
-func parseLint(args []string) (lintOptions, error) {
+func parseLint(args []string) (lintOptions, error) { return parseOptions(args, false) }
+
+func parseOptions(args []string, validation bool) (lintOptions, error) {
 	opts := lintOptions{format: "text", limits: make(map[string]int64)}
 	literal := false
 	for i := 0; i < len(args); i++ {
@@ -161,7 +166,6 @@ func parseLint(args []string) (lintOptions, error) {
 			if next >= len(args) {
 				return opts, fmt.Errorf("%s requires a value", name)
 			}
-			//nolint:gosec // next is nonnegative and checked against len(args) immediately above.
 			value = args[next]
 			if strings.HasPrefix(value, "--") {
 				return opts, fmt.Errorf("%s requires a value", name)
@@ -192,7 +196,13 @@ func parseLint(args []string) (lintOptions, error) {
 			opts.limits[key] = n
 		}
 	}
-	if err := validateLimits(opts.limits); err != nil {
+	var validationErr error
+	if validation {
+		validationErr = validateConfigLimits(opts.limits)
+	} else {
+		validationErr = validateLimits(opts.limits)
+	}
+	if err := validationErr; err != nil {
 		return opts, err
 	}
 	return opts, nil

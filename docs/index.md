@@ -22,7 +22,10 @@ JSON object with `--format json` on stdout; stderr is reserved for execution log
 Reports retain findings, coverage reasons, errors, interruptions and omissions.
 VS Code and GitHub reporters remain planned and are rejected as unsupported usage
 before project access.
-The other commands below describe planned behavior and are rejected by this build.
+`config validate` now scans project definitions read-only and reports bounded
+text/JSON results, including completed validity counts, skipped paths, located
+errors and actual scan completeness. See its [command guide](commands/config/validate.md).
+Fix, inspect and MCP remain planned and are rejected by this build.
 
 ## Get started (planned execution)
 

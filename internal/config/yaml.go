@@ -40,12 +40,20 @@ var coreSpecialNumber = regexp.MustCompile(`^([-+]?\.(inf|Inf|INF)|\.(nan|NaN|NA
 // The accepted default config-byte, structured-depth and document-node limits
 // bound source parsing and alias expansion. No defaults or partial results escape.
 func DecodeYAML(sourcePath string, content []byte) (*Definition, error) {
-	return decodeYAML(context.Background(), sourcePath, content, nil)
+	return decodeYAML(context.Background(), sourcePath, content, nil, structuredDepth)
 }
 
 // DecodeYAMLBounded charges the caller's shared operation, including alias
 // expansion, before construction. Its errors retain cancellation/limit identity.
 func DecodeYAMLBounded(ctx context.Context, path string, content []byte, budget *source.OperationBudget) (d *Definition, err error) {
+	return DecodeYAMLProfile(ctx, path, content, budget, structuredDepth)
+}
+
+// DecodeYAMLProfile applies an explicit finite structured-input depth.
+func DecodeYAMLProfile(ctx context.Context, path string, content []byte, budget *source.OperationBudget, depth int) (d *Definition, err error) {
+	if depth <= 0 || depth > 4096 {
+		return nil, fmt.Errorf("unsupported structured-input-depth")
+	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -59,12 +67,12 @@ func DecodeYAMLBounded(ctx context.Context, path string, content []byte, budget 
 			}
 		}
 	}()
-	return decodeYAML(ctx, path, content, budget)
+	return decodeYAML(ctx, path, content, budget, depth)
 }
 
 type yamlBudgetStop struct{ err error }
 
-func decodeYAML(ctx context.Context, sourcePath string, content []byte, budget *source.OperationBudget) (*Definition, error) {
+func decodeYAML(ctx context.Context, sourcePath string, content []byte, budget *source.OperationBudget, depthLimit int) (*Definition, error) {
 	meter := func(n int64) {
 		if budget != nil {
 			if err := ctx.Err(); err != nil {
@@ -108,9 +116,9 @@ func decodeYAML(ctx context.Context, sourcePath string, content []byte, budget *
 		} else if t.Type == token.MappingEndType || t.Type == token.SequenceEndType {
 			flow--
 		}
-		if flow > structuredDepth || t.Position.IndentLevel > structuredDepth {
+		if flow > depthLimit || t.Position.IndentLevel > depthLimit {
 			if budget != nil {
-				return nil, &source.LimitExceeded{Name: "structured-input-depth", Observed: int64(max(flow, t.Position.IndentLevel)), Allowed: structuredDepth}
+				return nil, &source.LimitExceeded{Name: "structured-input-depth", Observed: int64(max(flow, t.Position.IndentLevel)), Allowed: int64(depthLimit)}
 			}
 			return nil, &DecodeError{Message: "structured-input-depth limit exceeded", Origin: tokenOrigin(sourcePath, "", t)}
 		}
@@ -127,6 +135,7 @@ func decodeYAML(ctx context.Context, sourcePath string, content []byte, budget *
 		return nil, &DecodeError{Message: "expected a nonempty mapping document", Origin: origin}
 	}
 	b := yamlBuilder{path: sourcePath, content: text, anchors: map[string]ast.Node{}, bindings: map[*ast.AliasNode]ast.Node{}, active: map[ast.Node]bool{}, blocks: map[*ast.LiteralNode]blockScalar{}, conversions: map[ast.Node]*scalarConversion{}, tags: map[*ast.TagNode]bool{}, work: int64(len(text) + 2*len(tokens))}
+	b.depthLimit = depthLimit
 	b.ctx = ctx
 	b.budget = budget
 	b.lineStarts = lineStarts
@@ -142,6 +151,7 @@ func decodeYAML(ctx context.Context, sourcePath string, content []byte, budget *
 type blockScalar struct{ spelling, text string }
 
 type yamlBuilder struct {
+	depthLimit  int
 	ctx         context.Context
 	budget      *source.OperationBudget
 	conversions map[ast.Node]*scalarConversion
@@ -306,9 +316,9 @@ func (b *yamlBuilder) value(n ast.Node, path string, depth, aliases int, use *to
 		b.tags[n] = true
 	case *ast.MappingNode:
 		depth++
-		if depth > structuredDepth {
+		if depth > b.depthLimit {
 			if b.budget != nil {
-				return LocatedValue{}, &source.LimitExceeded{Name: "structured-input-depth", Observed: int64(depth), Allowed: structuredDepth}
+				return LocatedValue{}, &source.LimitExceeded{Name: "structured-input-depth", Observed: int64(depth), Allowed: int64(b.depthLimit)}
 			}
 			return fail("structured-input-depth limit exceeded")
 		}
@@ -347,9 +357,9 @@ func (b *yamlBuilder) value(n ast.Node, path string, depth, aliases int, use *to
 		}
 	case *ast.SequenceNode:
 		depth++
-		if depth > structuredDepth {
+		if depth > b.depthLimit {
 			if b.budget != nil {
-				return LocatedValue{}, &source.LimitExceeded{Name: "structured-input-depth", Observed: int64(depth), Allowed: structuredDepth}
+				return LocatedValue{}, &source.LimitExceeded{Name: "structured-input-depth", Observed: int64(depth), Allowed: int64(b.depthLimit)}
 			}
 			return fail("structured-input-depth limit exceeded")
 		}

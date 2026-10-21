@@ -8,11 +8,11 @@ below. Missing enabled rule implementations produce genuine coverage deficits;
 lint presents shared results as readable text or schema-v1 JSON. VS Code/GitHub
 reporters remain deferred.
 
-The contract also covers MCP and the planned `mdchk config validate` command,
+The contract also covers MCP and the implemented `mdchk config validate` command,
 which scans a project for definitions and validates each eligible file
 independently. Its [command guide](../commands/config/validate.md) defines
-selection, exclusions, output and exit behavior. Other command adapters and the
-downward command/report integration remain pending. The shared downward validation
+selection, exclusions, output and exit behavior. Other command adapters remain pending; downward command/report integration
+is implemented for text and JSON. The shared downward validation
 adapter is implemented in `internal/configscan.Validate`: it admits each eligible
 definition before atomically publishing exclusions and permission denials, carries
 valid inherited policy after rejected or unreadable files, and prunes directories
@@ -83,8 +83,8 @@ semantic schema as YAML. Complete catalog metadata,
 semantic and capability validation, exclusion matching, and bounded read-only
 filesystem selection are implemented. The lint adapter uses `Resolve` before target access and retains its full
 selection snapshot, with exclusions bound to the selected directory. Other
-command adapters remain pending; the downward multi-definition validation
-package is implemented independently of command/report integration.
+command adapters remain pending; config validate reuses the downward
+multi-definition validation package and the shared text/JSON reporters.
 
 ## Bounded filesystem selection
 
@@ -403,3 +403,9 @@ Include optional paths and source ranges in error records. Text reports validati
 Cover multiple valid and invalid definitions, duplicate keys, unknown rules, invalid options and globs, unreadable files and directories, nested scope, ancestor pruning, self-exclusion, invalid-config exclusions, inherited exclusion locks, descendant attempts to reopen permission, explicit-config selection under a lock, discovery boundaries, Git negation and tracked-file behavior, symlinks, empty scans, and all four reporters. Verify no filesystem writes and that lint, fix, inspect, and MCP use shared policy resolution without merging rule settings.
 
 Use the [configuration examples](configuration-examples.md) as fixture inputs and expected outcomes. Include coercion traps, multiple documents, aliases, disabled-rule validation, explicit versus implicit unavailable rules, inherited false versus explicit true, and excluded explicit descendants. Verify incomplete analysis uses the shared [coverage result](../output-formats.md#incomplete-analysis) and exit 15 without turning configuration validation or inspect into lint operations.
+
+The `config validate` command now calls `configscan.Validate` directly, preserving
+source roles for configuration versus ignore/traversal failures. Its shared result
+summary distinguishes completed validity decisions from interrupted acquired
+files and retains actual scan completeness through bounded text/JSON reporting.
+See the [command guide](../commands/config/validate.md) for enforced limits.

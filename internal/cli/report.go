@@ -21,10 +21,26 @@ var errReportBudget = errors.New("essential result manifest exceeds response-byt
 // reportResult owns presentation only. Its cleanup deadline starts after analysis;
 // an expired analysis context cannot consume this independently reserved budget.
 func reportResult(out result.Result, format string, stdout io.Writer, limits map[string]int64) int {
+	// Encode a fixed-work emergency reserve before starting the operator's
+	// timed full-fallback/detail construction. It uses only precomputed counts
+	// and bounded categories, never walks the potentially large source manifest.
+	var reserve encodedReport
+	var reserveErr error
+	if out.Operation == "config validate" {
+		reserve, reserveErr = emergencyConfigReport(out, format, limits)
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(reportLimit(limits, "reporting-time")))
 	defer cancel()
 	encoded, err := buildReport(ctx, out, format, limits)
-	status := lintExit(out)
+	if err != nil && ctx.Err() != nil && out.Operation == "config validate" && reserveErr == nil {
+		encoded, err = reserve, nil
+	}
+	status := 0
+	if out.Operation == "config validate" && reserveErr == nil {
+		status = lintExit(reserve.out)
+	} else {
+		status = lintExit(out)
+	}
 	if err != nil {
 		if status == 14 {
 			return status
@@ -64,12 +80,12 @@ func reportFeasibility(out result.Result, format string, limits map[string]int64
 	// to the entire known per-target identity/outcome manifest. The final fully
 	// encoded report can then use all response bytes; this is an admission check,
 	// not a permanent subtraction from successful presentation capacity.
-	manifest := result.NewLint(out.Mode)
+	manifest := newReportOperation(out)
 	owned := cloneReport(out)
 	manifest.Files, manifest.CheckedFiles = owned.Files, owned.CheckedFiles
 	setReportLimits(&manifest, limits)
 	engine.FinalizeLintResult(&manifest)
-	empty := result.NewLint(out.Mode)
+	empty := newReportOperation(out)
 	setReportLimits(&empty, limits)
 	fullSize, err := reportSize(ctx, manifest, "json")
 	if err != nil {
@@ -102,6 +118,9 @@ func buildReport(ctx context.Context, original result.Result, format string, lim
 }
 
 func buildReportCore(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+	if err := ctx.Err(); err != nil {
+		return encodedReport{}, err
+	}
 	out := cloneReport(original)
 	setReportLimits(&out, limits)
 	engine.FinalizeLintResult(&out)
@@ -189,6 +208,15 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 			if err != nil {
 				return encodedReport{}, err
 			}
+			if !ok && out.Operation == "config validate" {
+				if err := reduceConfigManifest(ctx, &out, format, bound); err != nil {
+					return encodedReport{}, err
+				}
+				ok, err = fits()
+				if err != nil {
+					return encodedReport{}, err
+				}
+			}
 			if !ok {
 				return encodedReport{}, errReportBudget
 			}
@@ -219,6 +247,10 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 }
 
 func cloneReport(r result.Result) result.Result {
+	if r.ConfigValidation != nil {
+		summary := *r.ConfigValidation
+		r.ConfigValidation = &summary
+	}
 	r.CheckedFiles = slices.Clone(r.CheckedFiles)
 	r.SkippedFiles = slices.Clone(r.SkippedFiles)
 	r.Diagnostics = slices.Clone(r.Diagnostics)
@@ -324,11 +356,19 @@ func renderText(ctx context.Context, w io.Writer, r result.Result) error {
 		}
 	}
 	for _, f := range r.Files {
-		if f.Analysis != "complete" {
-			if err := line("file %s: analysis %s\n", textField(f.Path), textField(f.Analysis)); err != nil {
+		if f.Analysis != "complete" || r.Operation == "config validate" {
+			kind := "file"
+			if r.Operation == "config validate" {
+				kind = "definition"
+			}
+			if err := line("%s %s: analysis %s\n", kind, textField(f.Path), textField(f.Analysis)); err != nil {
 				return err
 			}
 		}
+	}
+	if r.ConfigValidation != nil {
+		s := r.ConfigValidation
+		return line("Checked %d definitions: %d valid, %d invalid, %d known definitions skipped. %d skipped paths, %d errors; %s (scan complete: %t, complete: %t).\n", s.DefinitionsChecked, s.ValidDefinitions, s.InvalidDefinitions, s.SkippedDefinitions, len(r.SkippedFiles), len(r.Errors), textField(r.Status), s.ScanComplete, r.Complete)
 	}
 	return line("Checked %d files. Found %d violations. %d skipped, %d errors, %d coverage deficits; %s (complete: %t).\n", len(r.CheckedFiles), len(r.Diagnostics), len(r.SkippedFiles), len(r.Errors), len(r.Coverage), textField(r.Status), r.Complete)
 }
@@ -369,6 +409,9 @@ func summarizeErrors(out *result.Result) {
 }
 
 func deadlineReport(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+	if err := ctx.Err(); err != nil {
+		return encodedReport{}, err
+	}
 	out := cloneReport(original)
 	setReportLimits(&out, limits)
 	engine.FinalizeLintResult(&out)
@@ -402,6 +445,15 @@ func deadlineReport(ctx context.Context, original result.Result, format string, 
 			return encodedReport{}, err
 		}
 	}
+	if n > reportLimit(limits, "response-bytes") && out.Operation == "config validate" {
+		if err := reduceConfigManifest(ctx, &out, format, reportLimit(limits, "response-bytes")); err != nil {
+			return encodedReport{}, err
+		}
+		n, err = reportSize(ctx, out, format)
+		if err != nil {
+			return encodedReport{}, err
+		}
+	}
 	if n > reportLimit(limits, "response-bytes") {
 		return encodedReport{}, errReportBudget
 	}
@@ -419,6 +471,126 @@ func deadlineReport(ctx context.Context, original result.Result, format string, 
 	}
 	if err := ctx.Err(); err != nil {
 		return encodedReport{}, err
+	}
+	return encodedReport{data: data, out: out}, nil
+}
+
+func newReportOperation(out result.Result) result.Result {
+	if out.Operation == "config validate" {
+		r := result.NewConfigValidation()
+		if out.ConfigValidation != nil {
+			s := *out.ConfigValidation
+			r.ConfigValidation = &s
+		}
+		return r
+	}
+	return result.NewLint(out.Mode)
+}
+
+// Configuration scans are read-only and can enumerate more completed outcomes
+// than a response can retain. Preserve authoritative counts and scan state,
+// explicitly accounting for whole known records omitted from the presentation.
+// Lint's pre-admitted manifest and any future write outcomes are not reduced here.
+func reduceConfigManifest(ctx context.Context, out *result.Result, format string, bound int64) error {
+	omit := func(section string, count int) {
+		if count > 0 {
+			n := count
+			out.Omissions = append(out.Omissions, result.Omission{Section: section, Reason: "output-limit", Message: "whole known configuration records omitted to satisfy response-bytes; aggregate scan counts are retained", Count: &n})
+		}
+	}
+	omit("/files", len(out.Files))
+	omit("/checked_files", len(out.CheckedFiles))
+	out.Files = []result.File{}
+	out.CheckedFiles = []string{}
+	engine.FinalizeLintResult(out)
+	n, err := reportSize(ctx, *out, format)
+	if err != nil || n <= bound {
+		return err
+	}
+	// Retain every encountered category even when individual source identities
+	// cannot fit. The explicit omissions distinguish these aggregate summaries
+	// from complete located errors, and preserve operation-specific exit precedence.
+	counts := map[result.ErrorCategory]int{}
+	representatives := map[result.ErrorCategory]result.Error{}
+	for _, e := range out.Errors {
+		counts[e.Category]++
+		if _, ok := representatives[e.Category]; !ok {
+			representatives[e.Category] = e
+		}
+	}
+	original := len(out.Errors)
+	out.Errors = []result.Error{}
+	for _, category := range []result.ErrorCategory{result.Usage, result.Configuration, result.IO, result.Internal} {
+		if count := counts[category]; count > 0 {
+			e := representatives[category]
+			e.Path = ""
+			e.Rule = ""
+			e.Range = nil
+			e.Snapshot = nil
+			e.ByteOffset = nil
+			e.Code = "config-error-summary"
+			e.Message = fmt.Sprintf("%d encountered %s errors; located details omitted to satisfy response-bytes.", count, category)
+			out.Errors = append(out.Errors, e)
+		}
+	}
+	omit("/errors", original)
+	engine.FinalizeLintResult(out)
+	return nil
+}
+
+// emergencyConfigReport has work and output bounded by a fixed record count.
+// Source identities and prose are replaced by exact omissions; actual scan and
+// validity counts and every encountered error category remain authoritative.
+func emergencyConfigReport(original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+	out := newReportOperation(original)
+	out.Errors = original.ReportingErrorSummaries()
+	omit := func(section string, count int) {
+		if count > 0 {
+			n := count
+			out.Omissions = append(out.Omissions, result.Omission{Section: section, Reason: "output-limit", Message: "reserved deadline report omits known source details; aggregate counts are retained", Count: &n})
+		}
+	}
+	omit("/files", len(original.Files))
+	omit("/checked_files", len(original.CheckedFiles))
+	omit("/skipped_files", len(original.SkippedFiles))
+	omit("/errors", len(original.Errors))
+	// A configuration scan has at most one operation interruption. Reconstruct
+	// its bounded semantic fields instead of copying source-derived prose.
+	if len(original.Interruptions) > 0 {
+		stop := original.Interruptions[0]
+		stop.ID = ""
+		stop.Path = ""
+		stop.Message = "Configuration scanning was interrupted; detailed reporting was interrupted as well."
+		out.Interruptions = append(out.Interruptions, stop)
+		if len(original.Interruptions) > 1 {
+			omit("/interruptions", len(original.Interruptions)-1)
+		}
+	}
+	out.Interruptions = append(out.Interruptions, result.Interruption{Reason: "deadline-exceeded", Phase: "reporting", Message: "reporting-time exhausted while constructing result details"})
+	// Applicable limits have a fixed vocabulary in this adapter; copy only those
+	// records and rebuild reporting limits from the validated operator profile.
+	for _, limit := range original.EffectiveLimits {
+		if validationLimitApplicable(limit.Name) {
+			out.EffectiveLimits = append(out.EffectiveLimits, limit)
+		}
+	}
+	setReportLimits(&out, limits)
+	engine.FinalizeLintResult(&out)
+	var data []byte
+	var err error
+	if format == "json" {
+		data, err = json.Marshal(out)
+		data = append(data, '\n')
+	} else {
+		var b bytes.Buffer
+		err = renderText(context.Background(), &b, out)
+		data = b.Bytes()
+	}
+	if err != nil {
+		return encodedReport{}, err
+	}
+	if int64(len(data)) > reportLimit(limits, "response-bytes") {
+		return encodedReport{}, errReportBudget
 	}
 	return encodedReport{data: data, out: out}, nil
 }

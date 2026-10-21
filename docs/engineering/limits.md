@@ -4,7 +4,10 @@ Status: accepted on 2026-10-15. Parser-layer budgets are implemented and
 verified as described in [parser accounting](parser-limits.md). Lint acquisition
 enforces document and aggregate content bytes with the shared execution budget;
 text/JSON reporting enforces encoded response bytes, reporting time and
-report reserve feasibility. Remaining adapter/application limits and their end-to-end
+report reserve feasibility. Config validation also enforces bounded configuration/Git-source acquisition,
+directory/path limits, structured and alias depth, shared node/work/time budgets
+and text/JSON reporting; it rejects inapplicable overrides. Remaining
+adapter/application limits and their end-to-end
 verification remain pending.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
@@ -149,3 +152,20 @@ when necessary. Smaller input defaults do not establish an eightfold speedup.
 HTTP-specific admission, authentication, and network deadlines are defined in the
 [HTTP contract](http.md#transport-limits). Runtime exhaustion follows the
 [result contract](results.md#interruption-and-exit-precedence).
+
+## Configuration emergency reporting reserve
+
+Before starting the operator's `reporting-time` interval, configuration validation
+encodes a fixed-work emergency envelope. Canonical finalization has already
+accumulated at most four error-category counts; the reserve uses those counts,
+the typed scan/validity summary and O(1) collection lengths for exact omissions.
+It never clones/sorts the source manifest or encodes source-derived error prose.
+Its fixed number of records is checked against the encoded response limit.
+
+The requested interval bounds subsequent full-fallback and detail construction.
+Expiration in either stage delivers the pre-encoded reserve, with an explicit
+reporting interruption, incomplete envelope, retained scan completeness/counts
+and operational-error precedence. This supports positive finite deadlines down
+to a nanosecond without claiming that constant reserve construction or output
+delivery finishes within that interval. No second timed retry performs additional
+project work. Lint retains its existing manifest and presentation behavior.

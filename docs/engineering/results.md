@@ -2,7 +2,8 @@
 
 Status: accepted on 2026-10-15. The shared result model, canonical lint
 finalizer, schema/semantic validators and lint text/JSON reporters are
-implemented and verified. Fix, inspect, config validation, MCP and the remaining
+implemented and verified. Config validation text/JSON and its operation-specific finalization are also
+implemented. Fix, inspect, MCP and the remaining
 format adapters require their own implementation and end-to-end verification.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
@@ -193,3 +194,25 @@ state, ID and hash invariants.
 
 Extend the implemented bounded lint serialization to the remaining adapters
 against these shared fixtures.
+
+Config validation preserves completed invalid file analysis through canonical
+ID assignment and every reporting reduction. The typed schema-v1 summary counts
+completed valid/invalid decisions; interrupted acquired sources remain in
+`checked_files` with partial outcomes but no invented validity decision.
+
+Read-only configuration reports can reduce oversized known `files` and
+`checked_files` collections with exact omissions. If error identities alone
+exceed the bound, explicit category/count summaries preserve all encountered
+error categories and precedence, with `/errors` omissions for the replaced
+located details. This is configuration-specific; lint's pre-admitted essential
+manifest and future write outcomes are not discarded. Response quotas are
+interruptions, while actual output-delivery failures remain IO.
+
+Configuration validation additionally pre-encodes a fixed-record emergency result
+before starting timed full-fallback/detail construction. Error-category counts
+are accumulated during canonical finalization. The emergency result preserves
+actual scan/validity counts and every encountered category, with exact omissions
+for source records/details, even if the reporting deadline expires before the
+full fallback exists. It retains any operation interruption and adds reporting
+deadline attribution. The response bound still applies, and actual failed output
+retains IO/internal precedence. See the [reserve timing boundary](limits.md#configuration-emergency-reporting-reserve).

@@ -5,6 +5,7 @@ package result
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/frithuz/mdchk/internal/parser"
 )
@@ -129,11 +130,22 @@ type EffectiveLimit struct {
 	Source string `json:"source"`
 }
 
+// ConfigValidation summarizes completed validity decisions and actual scan state.
+type ConfigValidation struct {
+	ScanComplete       bool `json:"scan_complete"`
+	DefinitionsChecked int  `json:"definitions_checked"`
+	ValidDefinitions   int  `json:"valid_definitions"`
+	InvalidDefinitions int  `json:"invalid_definitions"`
+	SkippedDefinitions int  `json:"skipped_definitions"`
+}
+
 // Result is the existing shared v1 envelope. Lint populates notes and suppressed
 // diagnostics; correction and returned-document collections remain empty.
 // Operation-specific records must follow the same normative schema. RawMessage
 // here is not an extension bag: producers must validate against that schema.
 type Result struct {
+	reportingErrorCounts  [4]int
+	ConfigValidation      *ConfigValidation `json:"config_validation,omitempty"`
 	analysis              []AnalysisRecord
 	SchemaVersion         int               `json:"schema_version"`
 	Operation             string            `json:"operation"`
@@ -158,4 +170,41 @@ type Result struct {
 
 func NewLint(mode string) Result {
 	return Result{SchemaVersion: 1, Operation: "lint", Mode: mode, Status: "clean", Complete: true, CheckedFiles: []string{}, SkippedFiles: []SkippedFile{}, Files: []File{}, Diagnostics: []Diagnostic{}, Coverage: []Coverage{}, Errors: []Error{}, Interruptions: []Interruption{}, EffectiveLimits: []EffectiveLimit{}, Changes: []json.RawMessage{}, DeferredFixes: []json.RawMessage{}, Notes: []json.RawMessage{}, Omissions: []Omission{}, Documents: []json.RawMessage{}, SuppressedDiagnostics: []json.RawMessage{}}
+}
+
+// NewConfigValidation starts an empty read-only project scan.
+func NewConfigValidation() Result {
+	r := NewLint("cli")
+	r.Operation = "config validate"
+	r.ConfigValidation = &ConfigValidation{ScanComplete: true}
+	return r
+}
+
+// ResetReportingErrors starts aggregate accounting during canonical finalization.
+func (r *Result) ResetReportingErrors() { r.reportingErrorCounts = [4]int{} }
+
+// CountReportingError records a category without retaining unbounded detail.
+func (r *Result) CountReportingError(category ErrorCategory) {
+	switch category {
+	case Usage:
+		r.reportingErrorCounts[0]++
+	case Configuration:
+		r.reportingErrorCounts[1]++
+	case IO:
+		r.reportingErrorCounts[2]++
+	case Internal:
+		r.reportingErrorCounts[3]++
+	}
+}
+
+// ReportingErrorSummaries returns at most four aggregate operational errors.
+// Counts were accumulated while canonicalizing observations, before reporting.
+func (r Result) ReportingErrorSummaries() []Error {
+	summaries := []Error{}
+	for i, category := range []ErrorCategory{Usage, Configuration, IO, Internal} {
+		if count := r.reportingErrorCounts[i]; count > 0 {
+			summaries = append(summaries, Error{Category: category, Code: "config-error-summary", Scope: "operation", Message: fmt.Sprintf("%d encountered %s errors; located details omitted by reporting deadline.", count, category)})
+		}
+	}
+	return summaries
 }

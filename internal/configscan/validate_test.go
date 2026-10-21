@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -391,6 +392,57 @@ func TestValidationDecoderResourceLimitsInterruptBeforeDescendants(t *testing.T)
 			var limit *parser.LimitExceeded
 			if !errors.As(r.Scan.Interruption, &limit) || limit.Name != test.limit || r.Scan.Complete || len(r.Scan.Errors) != 0 || len(r.Outcomes) != 1 || r.Outcomes[0].Resolution != nil || opens != 0 {
 				t.Fatalf("limit=%+v child opens=%d result=%+v", limit, opens, r)
+			}
+		})
+	}
+}
+
+func TestValidationExcludedDefinitionSourceKinds(t *testing.T) {
+	for _, kind := range []string{"symlink", "directory", "regular"} {
+		t.Run(kind, func(t *testing.T) {
+			root := temp(t)
+			fixture(t, root, config.Filename, admissible+"exclude: ['child/.mdchk.yaml']\n")
+			definition := filepath.Join(root, "child", config.Filename)
+			fixture(t, root, "target", "invalid target source: [")
+			switch kind {
+			case "symlink":
+				if e := os.MkdirAll(filepath.Dir(definition), 0700); e != nil {
+					t.Fatal(e)
+				}
+				if e := os.Symlink("../target", definition); e != nil {
+					t.Fatal(e)
+				}
+			case "directory":
+				fixture(t, root, "child/.mdchk.yaml/.mdchk.yaml", "invalid nested source: [")
+			case "regular":
+				fixture(t, root, "child/.mdchk.yaml", "invalid excluded source: [")
+			}
+			before := snapshot(t, root)
+			opens := map[string]int{}
+			r := validate(context.Background(), Options{Root: root, Environment: environment(t)}, validationRegistry(t), engine.ValidationProviders{}, config.Capabilities{CommonMark: true}, func(a scanAccess) scanAccess {
+				return effectAccess{scanAccess: a, opening: func(p string, _ bool) { opens[p]++ }}
+			})
+			if !r.Scan.Complete || r.Scan.Interruption != nil || len(r.Scan.Errors) != 0 || len(r.Outcomes) != 1 || r.Outcomes[0].Err != nil {
+				t.Fatalf("unexpected validation outcome %+v", r)
+			}
+			if len(r.Scan.Skipped) != 1 {
+				t.Fatalf("duplicate source-kind skips: %+v", r.Scan.Skipped)
+			}
+			skip := r.Scan.Skipped[0]
+			expectedReason := "configuration exclusion"
+			if kind == "symlink" {
+				expectedReason = "symlink"
+			}
+			if skip.Path != definition || skip.Definition != (kind == "regular") || skip.Reason != expectedReason {
+				t.Fatalf("source kind %s classified as %+v", kind, skip)
+			}
+			for p, n := range opens {
+				if p == definition || strings.HasPrefix(p, definition+string(filepath.Separator)) || p == filepath.Join(root, "target") {
+					t.Fatalf("ineligible/pruned source opened %s %d", p, n)
+				}
+			}
+			if !reflect.DeepEqual(before, snapshot(t, root)) {
+				t.Fatal("validation changed source bytes")
 			}
 		})
 	}
