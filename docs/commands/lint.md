@@ -51,6 +51,52 @@ project access. Reporter availability does not reduce analysis coverage.
 
 The remaining execution behavior on this page is the accepted target contract.
 
+## Run a disposable project
+
+From the repository root with Go 1.27.2 or newer and dependencies retrieved
+(`go mod download` on the first build), use this POSIX shell example:
+
+```sh
+mdchk_demo=$(mktemp -d)
+go build -o "$mdchk_demo/mdchk" ./cmd/mdchk
+cat > "$mdchk_demo/.mdchk.yaml" <<'YAML'
+version: 1
+flavor: commonmark
+directives: {enabled: false}
+YAML
+printf '# Example\n' > "$mdchk_demo/example.md"
+(
+  cd "$mdchk_demo" || exit 1
+  ./mdchk --help
+  ./mdchk lint --format json example.md
+  mdchk_status=$?
+  printf 'lint status: %s\n' "$mdchk_status"
+  test "$mdchk_status" -eq 15
+)
+```
+
+The compiled binary reports `incomplete` and exits `15`: this configuration admits
+the current CommonMark parser, while the enabled ordinary defaults have no
+production implementations. The catalog contains 89 entries, with 59 enabled
+and 30 disabled by default; the mandatory UTF-8 gate is available independently
+of ordinary checks. Explicitly requesting an unavailable rule returns `12`.
+Omitting configuration selects unavailable default GFM and also returns `12`.
+
+To obtain a clean `0` for valid UTF-8 today, disable every ordinary rule. The
+compiled production fixture in
+[`cleanConfiguration`](../../cmd/mdchk/configuration_acceptance_test.go)
+generates that complete configuration from the actual catalog and verifies both
+reporters; use the [contributor workflow](../contributing.md#exercise-a-newly-registered-rule-through-the-cli)
+to run it or add a registered-rule fixture. It also describes the separate
+compile-time synthetic registration used to demonstrate violations (`10`) and
+validated options. A clean fixture with ordinary checks disabled establishes only
+the requested reduced coverage, rather than full Markdown rule conformance.
+
+Capture `$?` immediately after the executable, as above. `go run` reports a
+wrapper status for nonzero program exits and cannot verify mdchk's semantic
+status. The current executable implements `lint`, help and version. `fix`, GFM,
+Pandoc, directive processing and VS Code/GitHub reporters remain deferred.
+
 ## Select files
 
 Pass one or more files or directories. Directories are searched recursively for `.md` and `.markdown` files. With no paths, lint checks the working directory.

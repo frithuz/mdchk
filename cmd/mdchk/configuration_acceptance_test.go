@@ -106,6 +106,30 @@ func configurationBytes(t *testing.T, root string) map[string][32]byte {
 func runConfiguration(t *testing.T, binary, cwd, snapshotRoot string, args ...string) configurationRun {
 	t.Helper()
 	before := configurationBytes(t, snapshotRoot)
+	defer func() {
+		after := configurationBytes(t, snapshotRoot)
+		if !reflect.DeepEqual(before, after) {
+			t.Error("lint changed source/configuration fixture bytes or files")
+		}
+	}()
+	out := runConfigurationProcess(t, binary, cwd, args...)
+	jsonFormat := false
+	for i, arg := range args {
+		if arg == "--format=json" || arg == "--format" && i+1 < len(args) && args[i+1] == "json" {
+			jsonFormat = true
+		}
+	}
+	if jsonFormat {
+		out.Result = validateConfigurationJSON(t, []byte(out.Stdout))
+		checkConfigurationLinks(t, cwd, out)
+	}
+	return out
+}
+
+// runConfigurationProcess runs the actual executable. Callers independently
+// guard fixture bytes; metadata and permission tests need different guards.
+func runConfigurationProcess(t *testing.T, binary, cwd string, args ...string) configurationRun {
+	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	//nolint:gosec // Execute only our compiled binary with test-owned arguments and fixtures.
@@ -114,10 +138,6 @@ func runConfiguration(t *testing.T, binary, cwd, snapshotRoot string, args ...st
 	var stdout, stderr bytes.Buffer
 	command.Stdout, command.Stderr = &stdout, &stderr
 	err := command.Run()
-	after := configurationBytes(t, snapshotRoot)
-	if !reflect.DeepEqual(before, after) {
-		t.Fatal("lint changed source/configuration fixture bytes or files")
-	}
 	out := configurationRun{Stdout: stdout.String()}
 	if err != nil {
 		var exit *exec.ExitError
@@ -131,16 +151,6 @@ func runConfiguration(t *testing.T, binary, cwd, snapshotRoot string, args ...st
 	}
 	if stderr.Len() != 0 {
 		t.Fatalf("unexpected stderr: %q", &stderr)
-	}
-	jsonFormat := false
-	for i, arg := range args {
-		if arg == "--format=json" || arg == "--format" && i+1 < len(args) && args[i+1] == "json" {
-			jsonFormat = true
-		}
-	}
-	if jsonFormat {
-		out.Result = validateConfigurationJSON(t, stdout.Bytes())
-		checkConfigurationLinks(t, cwd, out)
 	}
 	return out
 }

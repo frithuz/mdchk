@@ -24,10 +24,17 @@ On platforms that support Go's race detector, also run:
 go test -race ./...
 ```
 
-The module is `github.com/frithuz/mdchk`. It currently uses only the Go standard
-library, with no third-party dependencies or `go.sum` entries. With Go already
-installed, the commands above need no network access. To check without automatic
-toolchain downloads, workspace overrides, module downloads or module-file edits:
+The module is `github.com/frithuz/mdchk`. Configuration loading uses the pinned
+`github.com/goccy/go-yaml v1.19.2` dependency recorded in `go.mod` and `go.sum`.
+A fresh module cache needs network access to retrieve and verify it first:
+
+```sh
+go mod download
+```
+
+With the supported toolchain installed and that cache populated, verify without
+automatic toolchain downloads, workspace overrides, network access or module-file
+edits:
 
 ```sh
 GOTOOLCHAIN=local GOWORK=off GOPROXY=off GOSUMDB=off GOFLAGS=-mod=readonly go test ./...
@@ -36,8 +43,8 @@ GOTOOLCHAIN=local GOWORK=off GOPROXY=off GOSUMDB=off GOFLAGS=-mod=readonly go ve
 
 The [Go workflow](../.github/workflows/go.yml) runs test, vet, and the CommonMark
 corpus checks below on pushes and pull requests. Its actions are pinned to commit
-IDs; module caching is disabled while there are no external dependencies. Go
-package builds include the bootstrap CLI. Build and run its metadata commands:
+IDs. Go package builds include the bootstrap CLI. Build and run its metadata
+commands:
 
 ```sh
 go build -o mdchk ./cmd/mdchk
@@ -66,7 +73,55 @@ logs. VS Code/GitHub reporters and other commands remain pending;
 see [current implementation](index.md#current-implementation).
 The conformance adapter below remains a separate test command.
 
-### Static analysis
+## Exercise a newly registered rule through the CLI
+
+Start with the [disposable lint project](commands/lint.md#run-a-disposable-project)
+to build and exercise the current production executable. The repository includes
+compiled-process acceptance tests with exact operating-system exit statuses:
+
+```sh
+go test ./cmd/mdchk -run 'Test(Configuration|Lint)' -count=1 -v
+```
+
+`configuration_acceptance_test.go` supplies the bounded build/process helpers,
+full-catalog `cleanConfiguration` and before/after fixture byte checks.
+`workflow_acceptance_test.go` covers successful target forms, option placement,
+metadata bypass, validated callback options and a genuinely permission-denied
+input alongside a readable finding. The permission case probes the operating
+system and explicitly skips when the user/platform can still read mode-000 files.
+The configuration suites cover strict validation, discovery, policy, both
+reporters and retained findings under incomplete, I/O and internal outcomes.
+JSON checks validate linked records and original-byte identities. For the full
+JSON Schema and semantic validator, install the development validator described
+in [result contracts](contracts/results/README.md) and set
+`MDCHK_RESULT_VALIDATOR_PYTHON` to that environment's Python when running tests.
+
+For a synthetic callback integration test, reuse
+`buildConfigurationFixtureExecutable`, `fixtureConfiguration` and
+`runConfiguration` from `cmd/mdchk` tests. The build helper writes a temporary Go
+`-overlay` replacing only `internal/cli/providers.go` with
+`cmd/mdchk/testdata/configuration_providers.go`. That file registers explicit
+MD001 and MD003 synthetic callbacks against all 89 catalog entries; a normal
+build excludes it. These probes demonstrate findings, failure and option delivery,
+and do not implement those rules' Markdown semantics. Keep implicit defaults and
+explicit enablement distinct, disable other absent ordinary checks through the
+full-catalog helper, and assert status, reporter contents and unchanged bytes.
+The MD003 probe consumes validated `style`, so default `consistent` and override
+`atx` pass while `setext` produces its controlled finding. Disabling it suppresses
+the callback even with `style: setext`. Its controlled internal-failure case
+remains covered separately.
+
+For a production rule, implement an `engine.Check`, register its canonical ID in
+`internal/cli/providers.go` through `engine.NewCatalogRegistry`, and exercise the
+normal compiled executable with an otherwise admissible CommonMark fixture.
+Use the existing catalog metadata/options rather than inventing a smaller catalog
+or adding placeholder callbacks for unavailable rules. No dispatcher or reporter
+change is needed for a registration. Synthetic fixture results do not establish
+production availability. See the
+[engine contracts](engineering.md#shared-engine-and-package-boundaries) for callback
+and coverage requirements.
+
+## Static analysis
 
 Run the same pinned gate as CI from the checkout root (POSIX shell, including
 Git Bash on Windows):
@@ -99,8 +154,8 @@ standard library; production packages cannot import the conformance renderer;
 YAML imports stay behind `internal/config` and MCP SDK imports behind
 `internal/mcp`. The approved external import families are the selected
 `github.com/goccy/go-yaml` and `github.com/modelcontextprotocol/go-sdk` modules.
-Their accepted versions remain v1.19.2 and v1.8.0, respectively, to be pinned in
-`go.mod` when implemented. Depguard checks import paths, not module versions;
+YAML v1.19.2 is pinned in `go.mod`; the MCP SDK's accepted v1.8.0 pin is for its
+future implementation. Depguard checks import paths, not module versions;
 review changes to module pins against the accepted contracts. Suggested future
 package layout does not impose an additional dependency graph.
 
@@ -125,8 +180,8 @@ errors fail. Local replacement modules exercise approved and unapproved imports
 without downloading runtime dependencies or altering the checkout.
 
 The tool is a development dependency only: version-qualified `go install` uses
-the upstream module graph outside mdchk's module. It does not modify `go.mod`,
-create a root `go.sum`, or link tool dependencies into mdchk. Its capability is
+the upstream module graph outside mdchk's module. It does not modify the root
+`go.mod` or `go.sum`, or link tool dependencies into mdchk. Its capability is
 the maintained analyzer integration and configuration schema, which would be
 costly to reimplement internally. Provenance and the full transitive dependency
 graph are recorded in the pinned upstream

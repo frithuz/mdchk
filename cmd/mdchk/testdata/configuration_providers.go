@@ -42,5 +42,16 @@ func configurationFixtureFailure(ctx context.Context, c engine.RuleContext) engi
 	if bytes.Contains(c.Source().Bytes(), []byte("fixture failure")) {
 		return engine.RuleOutcome{Err: errors.New("fixture callback failure")}
 	}
+	// Synthetic option probe, deliberately unrelated to MD003's future semantics.
+	// It demonstrates that validated defaults and overrides reach a callback.
+	marker := []byte("fixture style")
+	start := bytes.Index(c.Source().Bytes(), marker)
+	if start >= 0 && c.Options()["style"] == "setext" {
+		span, err := c.Source().Span(start, start+len(marker))
+		if err != nil {
+			return engine.RuleOutcome{Err: err}
+		}
+		return engine.RuleOutcome{Findings: []engine.Finding{{Message: "fixture style setext", Span: span}}}
+	}
 	return engine.RuleOutcome{}
 }
