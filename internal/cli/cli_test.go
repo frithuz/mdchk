@@ -11,6 +11,7 @@ import (
 )
 
 func TestDispatch(t *testing.T) {
+	validProject(t)
 	for _, tc := range []struct {
 		args   []string
 		status int
@@ -43,6 +44,7 @@ func TestDispatch(t *testing.T) {
 }
 
 func TestLintOptions(t *testing.T) {
+	validProject(t)
 	got, err := parseLint([]string{"--config", "missing.yaml", "one.md", "--format=json", "two.md", "--limit", "operation-time=120s", "--limit=target-files=20", "--", "--draft.md", "--help"})
 	if err != nil {
 		t.Fatal(err)

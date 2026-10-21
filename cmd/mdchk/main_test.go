@@ -16,12 +16,23 @@ func TestExecutableStatuses(t *testing.T) {
 	if output, err := build.CombinedOutput(); err != nil {
 		t.Fatalf("build: %v\n%s", err, output)
 	}
+	project, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Mkdir(filepath.Join(project, ".git"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(project, ".mdchk.yaml"), []byte("version: 1\nflavor: commonmark\ndirectives: {enabled: false}\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
 	for _, tc := range []struct {
 		args   []string
 		status int
 	}{{[]string{"--help"}, 0}, {[]string{"--version"}, 0}, {[]string{"lint", "--help"}, 0}, {[]string{"lint"}, 15}, {[]string{"unknown"}, 11}, {[]string{"lint", "--format", "--help"}, 11}, {[]string{"lint", "--", "--help"}, 15}} {
 		//nolint:gosec // Execute only the binary just built in this test with fixed test arguments.
 		command := exec.Command(binary, tc.args...)
+		command.Dir = project
 		var stdout, stderr bytes.Buffer
 		command.Stdout = &stdout
 		command.Stderr = &stderr

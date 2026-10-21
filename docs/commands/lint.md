@@ -8,13 +8,28 @@ mdchk lint [options] [paths...]
 
 ## Current implementation
 
-Build the executable with `go build -o mdchk ./cmd/mdchk`. Help, version, and
-argument parsing are available. Valid lint invocations currently return `15`
-with `lint execution is not available in this build; no files were checked`
-on stderr, without reading configuration or targets. No lint engine or resource
-budget enforcement runs yet. Reporters are deferred to #128: `--format` accepts
-the documented names but does not yet produce their reports or JSON envelopes.
-Usage errors also use plain stderr text during this bootstrap.
+Build the executable with `go build -o mdchk ./cmd/mdchk`. Help, version, argument
+parsing, and configuration preparation are available. Lint resolves its single
+configuration from the working directory or `--config`, validates all settings
+and ancestor permissions, and checks selected capabilities before target access.
+Invalid or unreadable configuration returns `12`. Help and version need no
+project access.
+
+This build supports CommonMark configuration, but GFM, directives, optional
+contexts and resource handling remain unavailable. Built-in defaults still select
+GFM and therefore return `12` when no configuration exists. A configuration with
+`flavor: commonmark` and `directives: {enabled: false}` can complete preparation;
+an inherited global directive denial also satisfies the directive requirement.
+Explicitly enabled unavailable rules fail preparation; unmentioned default rules
+remain in the complete catalog for later coverage reporting.
+
+After successful preparation, lint returns `15` with
+`lint execution is not available in this build; no files were checked` on stderr.
+Target traversal, loading, rule execution and resource budget enforcement remain
+pending. Prepared exclusions are bound to the selected configuration directory
+(or working directory without a file) for later target selection. Reporters are
+deferred to #128: `--format` accepts the documented names but does not yet produce
+their reports or JSON envelopes. Errors currently use plain stderr text.
 
 The remaining execution behavior on this page is the accepted target contract.
 

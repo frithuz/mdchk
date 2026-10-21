@@ -222,13 +222,24 @@ The [inspection design](engineering/inspect.md) defines processing instrumentati
 
 ## CLI bootstrap status
 
-`cmd/mdchk` delegates to the standard-library-only `internal/cli.Run`, with
-supplied arguments and output streams. Only main exits the process. Help and
-version perform no project I/O. The bootstrap parses lint arguments but returns
-incomplete/15 without acquiring configuration or targets; it never reports a
-clean check. Pending reporter delivery in #128, all bootstrap errors use plain
-stderr even when a structured format was selected. No success-shaped result
-envelope is emitted. The contracts below remain the target for execution.
+`cmd/mdchk` delegates to `internal/cli.Run`, with supplied arguments and output
+streams. Only main exits the process. Help and version perform no project I/O.
+After syntax checks, lint calls the shared `config.Resolve` with its working
+directory and optional explicit config, before accessing targets. Production
+assembly uses the complete catalog with no ordinary executable registrations
+and asserts only CommonMark capability. No configuration still selects built-in
+GFM, which fails admission rather than falling back. Configuration and read
+failures return 12; output failures return 13.
+
+Preparation retains the full owned selection and resolution for later execution.
+Its exclusion seam binds the selected compiled matcher to the configuration
+directory (or invocation directory without a file) and calls `Patterns.Excludes`
+for native explicit paths, including ancestor directories. Directory identity
+comes from the later target adapter; portable traversal and loading remain
+pending. Successful preparation still returns incomplete/15 without target
+access and never reports a clean check. Pending reporter delivery in #128,
+errors use plain stderr even when a structured format was selected. No
+success-shaped result envelope is emitted.
 
 ## CLI and result schema
 

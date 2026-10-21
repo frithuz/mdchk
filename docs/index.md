@@ -4,13 +4,17 @@ mdchk checks Markdown against your project's expectations and applies safe corre
 
 ## Current implementation
 
-The executable currently provides general help, lint help, version output, and
-lint argument parsing. Build it from a checkout with `go build -o mdchk ./cmd/mdchk`.
-Lint execution is pending: valid lint invocations return `15` and explain on
-stderr that no files were checked. They load no configuration or Markdown.
-The result reporters tracked by #128 are also pending; selecting `--format json`,
-`vscode`, or `github` currently parses the option but produces no formatted report.
-This bootstrap exception also applies to usage errors; stderr is plain text.
+The executable currently provides general help, lint help, version output, lint
+argument parsing, and configuration preparation. Build it from a checkout with
+`go build -o mdchk ./cmd/mdchk`. Lint loads and validates the selected configuration
+before target access; invalid or unavailable settings return `12`. This build's
+available flavor is CommonMark; unavailable default GFM is never substituted.
+Successful preparation returns `15` and explains that no files were checked.
+See [lint's current implementation](commands/lint.md#current-implementation) for
+the available configuration and remaining execution work. Help and version do
+not access the project. The result reporters tracked by #128 remain pending;
+`--format` parses the documented names but produces no formatted report. Errors
+currently use plain stderr text.
 The other commands below describe planned behavior and are rejected by this build.
 
 ## Get started (planned execution)

@@ -1,6 +1,6 @@
 # Configuration engineering design
 
-The shared configuration loader implements the [configuration contract](../configuration.md) for CLI and MCP. `mdchk config validate` also scans a project for definitions and validates each eligible file independently. Its [command guide](../commands/config/validate.md) defines selection, exclusions, output, and exit behavior. The contracts below are approved. Shared decoding, semantic validation and bounded one-file policy resolution are implemented as described below; command integration and the downward validation scan remain pending.
+The shared configuration loader implements the [configuration contract](../configuration.md) for CLI and MCP. `mdchk config validate` also scans a project for definitions and validates each eligible file independently. Its [command guide](../commands/config/validate.md) defines selection, exclusions, output, and exit behavior. The contracts below are approved. Shared decoding, semantic validation and bounded one-file policy resolution are implemented as described below; lint preparation is integrated, while target execution, other command adapters and the downward validation scan remain pending.
 
 ## Implemented configuration boundary
 
@@ -60,8 +60,9 @@ and one optional chomping indicator, in either order, as YAML 1.2.2 specifies.
 `DecodeJSON` remains an unavailable raw transport stub: every call returns a
 nil definition and recognizable `ErrUnavailable`. Complete catalog metadata,
 semantic and capability validation, exclusion matching, and bounded read-only
-filesystem selection are implemented. Command adapters and the downward
-multi-definition validation scan remain pending.
+filesystem selection are implemented. The lint adapter uses `Resolve` before target access and retains its full
+selection snapshot, with exclusions bound to the selected directory. Other
+command adapters and the downward multi-definition validation scan remain pending.
 
 ## Bounded filesystem selection
 

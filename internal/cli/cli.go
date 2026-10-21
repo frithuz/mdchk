@@ -1,4 +1,4 @@
-// Package cli implements mdchk command dispatch without process exits or project I/O.
+// Package cli implements mdchk command dispatch without process exits.
 package cli
 
 import (
@@ -9,6 +9,7 @@ import (
 
 const (
 	exitUsage      = 11
+	exitConfig     = 12
 	exitIO         = 13
 	exitIncomplete = 15
 )
@@ -16,7 +17,7 @@ const (
 const generalHelp = `Usage: mdchk [global options] <command> [options] [paths...]
 
 Commands:
-  lint       Parse lint arguments (execution is not available in this build)
+  lint       Prepare lint configuration (execution is not available in this build)
 
 Global options:
   --help     Show general or selected command help
@@ -31,13 +32,18 @@ Options may appear before or after paths. Use -- for dash-prefixed paths.
   --help              Show this help
   --version           Print version
 
-Bootstrap only: no files are checked and no configuration is loaded.
-Lint execution returns 15; result reporters are not yet implemented.
+Configuration is loaded and validated before any target access.
+Unavailable configuration returns 12; prepared lint execution returns 15.
+No files are checked; result reporters are not yet implemented.
 `
 
 // Run executes with supplied arguments (excluding argv[0]) and streams. Version
 // is supplied by the executable so tests and alternate launchers need no globals.
 func Run(args []string, stdout, stderr io.Writer, version string) int {
+	return run(args, stdout, stderr, version, prepareLint, unavailableLint)
+}
+
+func run(args []string, stdout, stderr io.Writer, version string, prepare func(lintOptions) (*lintInvocation, error), execute func(*lintInvocation, io.Writer, io.Writer) int) int {
 	var global []string
 	for len(args) > 0 && (args[0] == "--help" || args[0] == "--version") {
 		global = append(global, args[0])
@@ -66,7 +72,11 @@ func Run(args []string, stdout, stderr io.Writer, version string) int {
 		if opts.version {
 			return output(stdout, "mdchk "+version+"\n", 0)
 		}
-		return output(stderr, "mdchk: lint execution is not available in this build; no files were checked\n", exitIncomplete)
+		invocation, err := prepare(opts)
+		if err != nil {
+			return output(stderr, "mdchk: "+err.Error()+"\n", exitConfig)
+		}
+		return execute(invocation, stdout, stderr)
 	default:
 		return output(stderr, fmt.Sprintf("mdchk: unknown command or global option %q; use --help\n", args[0]), exitUsage)
 	}

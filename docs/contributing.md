@@ -47,9 +47,13 @@ go build -o mdchk ./cmd/mdchk
 ```
 
 The version is `dev` for local source builds and uses Go module build metadata
-when a version is available. Lint argument parsing is implemented; execution
-returns `15` without reading project configuration or Markdown. Reporters and
-other commands are pending; see [current implementation](index.md#current-implementation).
+when a version is available. Help and version do not access the project. Lint
+parses arguments and loads and admits configuration before target access;
+configuration failures return `12`, including unavailable default GFM when no
+configuration exists. A valid CommonMark configuration with effective global
+directives disabled completes preparation and reaches the unavailable execution
+response `15`, without reading Markdown. Reporters and other commands are
+pending; see [current implementation](index.md#current-implementation).
 The conformance adapter below remains a separate test command.
 
 ### Static analysis
