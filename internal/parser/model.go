@@ -139,8 +139,12 @@ type NodeSpec struct {
 // Node is an immutable source-bound model value. It can be constructed for contract
 // fixtures without implying that Parse recognizes its syntax.
 type Node struct {
-	spec  NodeSpec
-	depth int
+	spec                      NodeSpec
+	depth                     int
+	commentOpen, commentClose Span
+	rawTag                    string
+	rawClosing                bool
+	htmlTail                  []*Node
 }
 
 var ErrModel = errors.New("invalid source model")

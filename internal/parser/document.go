@@ -84,6 +84,8 @@ type Document struct {
 	// Only a successful, complete block pass establishes this handoff. Model
 	// constructors cannot manufacture recognition of the original source.
 	blocksRecognized bool
+	parsedComplete   bool
+	commentOperation *operationIdentity
 }
 
 // NewDocument binds a complete source envelope to records. It validates supplied

@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"github.com/frithuz/mdchk/internal/engine"
+	"math"
 )
 
 // ExclusionScope retains a valid definition's exclusions and the directory to
@@ -75,8 +76,7 @@ func (c *Configuration) DirectivePermission(ruleID string) DirectiveDecision {
 	if c == nil || !c.knownRules[ruleID] {
 		return DirectiveDecision{Err: errors.New("unresolved configuration or unknown rule")}
 	}
-	p := clonePermissions(c.permissions)
-	restrictions := append(p.Directives, p.RuleDirectives[ruleID]...)
+	restrictions := append(cloneDirectiveOrigins(c.permissions.Directives), cloneDirectiveOrigins(c.permissions.RuleDirectives[ruleID])...)
 	return DirectiveDecision{Allowed: len(restrictions) == 0, Restrictions: restrictions}
 }
 
@@ -89,4 +89,65 @@ func ownedPatterns(patterns *Patterns) *Patterns {
 	}
 	owned := *patterns
 	return &owned
+}
+
+// DirectiveConfiguration returns an owned immutable-authority snapshot. Exported
+// Configuration settings are inspection views and cannot grant permissions or
+// change the initial rule state/options used by directive consumers.
+func (c *Configuration) DirectiveConfiguration() (bool, map[string]engine.ResolvedRule, error) {
+	if c == nil || c.directiveRules == nil {
+		return false, nil, errors.New("unresolved directive configuration")
+	}
+	return len(c.permissions.Directives) == 0, cloneResolvedRules(c.directiveRules), nil
+}
+func cloneResolvedRules(in map[string]engine.ResolvedRule) map[string]engine.ResolvedRule {
+	out := make(map[string]engine.ResolvedRule, len(in))
+	for id, rule := range in {
+		rule.Options = cloneOptions(rule.Options)
+		out[id] = rule
+	}
+	return out
+}
+
+// GlobalDirectivePermission reports immutable global authority and all governing
+// denials, without conflating a particular rule's own protection.
+func (c *Configuration) GlobalDirectivePermission() DirectiveDecision {
+	if c == nil || c.directiveRules == nil {
+		return DirectiveDecision{Err: errors.New("unresolved directive configuration")}
+	}
+	return DirectiveDecision{Allowed: len(c.permissions.Directives) == 0, Restrictions: cloneDirectiveOrigins(c.permissions.Directives)}
+}
+
+func cloneDirectiveOrigins(in []Origin) []Origin {
+	out := make([]Origin, len(in))
+	for i, origin := range in {
+		out[i] = cloneOrigin(origin)
+	}
+	return out
+}
+
+// DirectivePermissionWork returns a conservative immutable estimate for one
+// owned origin copy, including record, path/property bytes and position work.
+// An empty rule ID requests global-only authority. The estimate itself neither
+// traverses nor copies origins, so bounded consumers reserve it before querying.
+func (c *Configuration) DirectivePermissionWork(ruleID string) (int64, error) {
+	if c == nil || c.directiveRules == nil {
+		return 0, errors.New("unresolved directive configuration")
+	}
+	if ruleID != "" && !c.knownRules[ruleID] {
+		return 0, errors.New("unknown directive rule")
+	}
+	return min(math.MaxInt64/8, c.globalDirectiveWork+c.ruleDirectiveWork[ruleID]), nil
+}
+func directiveOriginWork(origins []Origin) int64 {
+	var units int64
+	for _, origin := range origins {
+		// Bound additions/multipliers before publishing the cached estimate.
+		n := int64(len(origin.Path)) + int64(len(origin.PropertyPath)) + 4
+		if origin.Position != nil {
+			n += 2
+		}
+		units = min(math.MaxInt64/16, units+min(n, math.MaxInt64/16))
+	}
+	return units
 }

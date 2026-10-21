@@ -35,6 +35,9 @@ type Configuration struct {
 	permissions                          Permissions
 	inherited                            Permissions
 	knownRules                           map[string]bool
+	directiveRules                       map[string]engine.ResolvedRule
+	globalDirectiveWork                  int64
+	ruleDirectiveWork                    map[string]int64
 }
 
 // Configuration exposes fully validated settings even when Admit would reject
@@ -122,6 +125,12 @@ func (v *Validated) configuration(c Capabilities, inherited Permissions) *Config
 		view.knownRules[id] = true
 		r.AllowDirectives = len(view.permissions.Directives) == 0 && len(view.permissions.RuleDirectives[id]) == 0
 		view.Rules[id] = r
+	}
+	view.directiveRules = cloneResolvedRules(view.Rules)
+	view.globalDirectiveWork = directiveOriginWork(view.permissions.Directives)
+	view.ruleDirectiveWork = make(map[string]int64, len(view.Rules))
+	for id := range view.Rules {
+		view.ruleDirectiveWork[id] = directiveOriginWork(view.permissions.RuleDirectives[id])
 	}
 	return view
 }

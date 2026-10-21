@@ -3,6 +3,7 @@ package parser
 import (
 	"context"
 	"sort"
+	"strings"
 )
 
 // blockLine is a borrowed view of one indexed physical line. Indent is capped
@@ -204,6 +205,19 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 			checkDepth(p.ctx, p.syntaxDepth()+1)
 			p.html = &htmlBlock{start: line.start, form: form}
+			if form == 7 {
+				raw := p.index.source.content[line.contentStart:line.end]
+				if len(raw) > 2 && raw[1] == '/' {
+					end := htmlTagNameEndContext(p.ctx, raw, 2)
+					if end > 2 && htmlRawTag(raw[2:end]) {
+						p.html.rawTag = strings.ToLower(raw[2:end])
+						p.html.rawClosing = true
+					}
+				}
+			}
+			if form == 2 {
+				p.html.open = p.index.span(line.contentStart, line.contentStart+4)
+			}
 			if err := p.appendHTMLLine(line); err != nil {
 				return Pending, err
 			}

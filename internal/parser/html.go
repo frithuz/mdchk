@@ -9,9 +9,12 @@ import (
 // terminator. Logical lines acquire original-source segments without prefixes;
 // closure or normal EOF freezes the node once.
 type htmlBlock struct {
-	start, end int
-	form       int
-	content    []Segment
+	start, end  int
+	open, close Span
+	form        int
+	content     []Segment
+	rawTag      string
+	rawClosing  bool
 }
 
 func (p *blockParser) htmlOpening(line blockLine, paragraphOpen bool) int {
@@ -53,30 +56,39 @@ func (p *blockParser) appendHTMLLine(line blockLine) error {
 	p.html.end = line.next
 	p.html.content = p.appendRawLine(p.html.content, line)
 	s := p.index.source.content[line.start:line.end]
+
 	closed := false
 	switch p.html.form {
 	case 1:
-		// Any of these closers terminates form 1, regardless of its opener.
+		// CommonMark closes form 1 at the first raw closer of any of these
+		// spellings. Retain that exact boundary, independently of the physical
+		// line envelope, so later comments are outside the literal interior.
+	search:
 		for i := 0; i < len(s); i++ {
 			meterWork(p.ctx, 1)
-			if s[i] == '<' {
-				for _, tag := range []string{"</pre>", "</script>", "</style>", "</textarea>"} {
-					meterWork(p.ctx, 1)
-					if len(s)-i >= len(tag) && meteredEqualFold(p.ctx, s[i:i+len(tag)], tag) {
-						closed = true
-					}
+			if s[i] != '<' {
+				continue
+			}
+			for _, tag := range []string{"</pre>", "</script>", "</style>", "</textarea>"} {
+				meterWork(p.ctx, 1)
+				if len(s)-i >= len(tag) && meteredEqualFold(p.ctx, s[i:i+len(tag)], tag) {
+					p.html.close = p.index.span(line.start+i, line.start+i+len(tag))
+					p.html.rawTag = strings.ToLower(tag[2 : len(tag)-1])
+					p.html.rawClosing = true
+					closed = true
+					break search
 				}
 			}
 		}
-	case 2:
-		closed = meteredContains(p.ctx, s, "-->")
-	case 3:
-		closed = meteredContains(p.ctx, s, "?>")
-	case 4:
-		closed = meteredContains(p.ctx, s, ">")
-	case 5:
-		closed = meteredContains(p.ctx, s, "]]>")
+	case 2, 3, 4, 5:
+		marker := [6]string{2: "-->", 3: "?>", 4: ">", 5: "]]>"}[p.html.form]
+		meterWork(p.ctx, len(s))
+		if at := strings.Index(s, marker); at >= 0 {
+			p.html.close = p.index.span(line.start+at, line.start+at+len(marker))
+			closed = true
+		}
 	}
+
 	if closed {
 		return p.closeHTML()
 	}
@@ -97,6 +109,16 @@ func (p *blockParser) closeHTML() error {
 	if err != nil {
 		return err
 	}
+	if h.form == 2 {
+		node.commentOpen, node.commentClose = h.open, h.close
+	}
+	if h.close.Present() {
+		node.htmlTail, err = p.htmlTail(h)
+		if err != nil {
+			return err
+		}
+	}
+	node.rawTag, node.rawClosing = h.rawTag, h.rawClosing
 	p.attach(node)
 	p.html = nil
 	return nil
@@ -216,4 +238,78 @@ func completeHTMLTagContext(ctx context.Context, s string) bool {
 		i++
 	}
 	return i == len(s)
+}
+
+// htmlTail recognizes the rest of the physical closing line as HTML, not as
+// Markdown. The existing HTML lexer skips quoted attributes/other opaque HTML
+// tokens, while the mapped cursor preserves omitted container-prefix gaps.
+func (p *blockParser) htmlTail(h *htmlBlock) ([]*Node, error) {
+	var parts []Segment
+	var text strings.Builder
+	for _, part := range h.content {
+		meterWork(p.ctx, 1)
+		if interruption(p.ctx) != "" {
+			return nil, nil
+		}
+		start, end := max(part.Source.Start(), h.close.End()), part.Source.End()
+		if start >= end {
+			continue
+		}
+		span := p.index.span(start, end)
+		raw, _ := p.index.source.Text(span)
+		parts = meteredAppend(p.ctx, parts, Segment{Source: span, Transformation: Exact, Semantic: Some(raw)})
+		meteredWriteString(p.ctx, &text, raw)
+	}
+	if len(parts) == 0 {
+		return nil, nil
+	}
+	scanner := inlineScanner{ctx: p.ctx, text: text.String()}
+	cursor := inlineContent{ctx: p.ctx, parts: parts}
+	var out []*Node
+	for i := 0; i < len(scanner.text); {
+		meterWork(p.ctx, 1)
+		if interruption(p.ctx) != "" {
+			return nil, nil
+		}
+		if scanner.text[i] != '<' {
+			i++
+			continue
+		}
+		end, closing := scanner.inlineHTMLEnd(i)
+		if end == 0 {
+			if meteredHasPrefix(p.ctx, scanner.text[i:], "<!--") {
+				if _, err := cursor.take(i); err != nil || interruption(p.ctx) != "" {
+					return nil, err
+				}
+				opening, err := cursor.take(i + 4)
+				if err != nil || interruption(p.ctx) != "" {
+					return nil, err
+				}
+				payload, err := cursor.take(len(scanner.text))
+				if err != nil || interruption(p.ctx) != "" {
+					return nil, err
+				}
+				content := meteredAppend(p.ctx, opening, payload...)
+				node, err := meteredNode(p.ctx, NodeSpec{Kind: InlineHTML, Envelope: contentEnvelope(content), Content: content, Properties: Properties{HTML: &HTMLProperties{}}})
+				if err != nil || interruption(p.ctx) != "" {
+					return nil, err
+				}
+				node.commentOpen = contentEnvelope(opening)
+				out = meteredAppend(p.ctx, out, node)
+				break
+			}
+			i++
+			continue
+		}
+		if _, err := cursor.take(i); err != nil || interruption(p.ctx) != "" {
+			return nil, err
+		}
+		node, err := scanInlineHTML(&cursor, i, end, closing)
+		if err != nil || interruption(p.ctx) != "" {
+			return nil, err
+		}
+		out = meteredAppend(p.ctx, out, node)
+		i = end
+	}
+	return out, nil
 }

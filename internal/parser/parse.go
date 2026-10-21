@@ -189,6 +189,8 @@ func ParseWithBudget(ctx context.Context, source Source, budget *OperationBudget
 	meterWork(ctx, 0)
 	if r.Phases.Inlines == PhaseComplete {
 		r.Status, r.AST = Complete, Available
+		r.Document.parsedComplete = true
+		r.Document.commentOperation = budget.identity
 	} else {
 		r.Uncertainty = []Uncertainty{{Region: span, Reason: SyntaxUnimplemented}}
 	}

@@ -46,10 +46,14 @@ func (e *LimitExceeded) Error() string {
 	return fmt.Sprintf("%s: observed %d, allowed %d", e.Name, e.Observed, e.Allowed)
 }
 
+// A private token binds completed syntax facts to their existing operation.
+type operationIdentity struct{ _ byte }
+
 // OperationBudget shares cumulative work, construction and elapsed time across
 // parses/reparses and future adapters. It is safe for concurrent charging. A new
 // parse resets only document-local construction; exhaustion is sticky.
 type OperationBudget struct {
+	identity    *operationIdentity
 	mu          sync.Mutex
 	limits      Limits
 	started     time.Time
@@ -62,7 +66,7 @@ func NewOperationBudget(l Limits) (*OperationBudget, error) {
 	if err := l.Validate(); err != nil {
 		return nil, err
 	}
-	return &OperationBudget{limits: l, started: time.Now()}, nil
+	return &OperationBudget{identity: &operationIdentity{}, limits: l, started: time.Now()}, nil
 }
 func (b *OperationBudget) Limits() Limits { return b.limits }
 func addBounded(a, n int64) int64 {

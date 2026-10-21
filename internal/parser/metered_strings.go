@@ -7,10 +7,6 @@ import (
 
 // Standard-library scans are charged conservatively before entering the bounded
 // call; the admitted document bounds any indivisible library scan.
-func meteredContains(ctx context.Context, s, sub string) bool {
-	meterWork(ctx, len(s)+len(sub))
-	return strings.Contains(s, sub)
-}
 func meteredEqualFold(ctx context.Context, a, b string) bool {
 	meterWork(ctx, len(a)+len(b))
 	return strings.EqualFold(a, b)

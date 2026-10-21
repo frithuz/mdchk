@@ -2,6 +2,7 @@ package parser
 
 import (
 	"slices"
+	"strings"
 )
 
 // Index source-logical terminators once. In particular, repeated unterminated
@@ -223,6 +224,25 @@ func scanInlineHTML(cursor *inlineContent, start, end, closing int) (*Node, erro
 			return nil, err
 		}
 	}
-	return meteredNode(cursor.ctx, NodeSpec{Kind: InlineHTML, Envelope: contentEnvelope(content), Content: content,
+	var rawTag string
+	rawClosing := false
+	if closing == 0 {
+		envelope := contentEnvelope(content)
+		raw, _ := envelope.source.Text(envelope)
+		begin := 1
+		if len(raw) > 1 && raw[1] == '/' {
+			rawClosing = true
+			begin++
+		}
+		end := htmlTagNameEndContext(cursor.ctx, raw, begin)
+		if end > begin && htmlRawTag(raw[begin:end]) {
+			rawTag = strings.ToLower(raw[begin:end])
+		}
+	}
+	node, err := meteredNode(cursor.ctx, NodeSpec{Kind: InlineHTML, Envelope: contentEnvelope(content), Content: content,
 		Markers: markers, Properties: Properties{HTML: &HTMLProperties{}}})
+	if node != nil {
+		node.rawTag, node.rawClosing = rawTag, rawClosing
+	}
+	return node, err
 }

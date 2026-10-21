@@ -52,3 +52,18 @@ Test inline and standalone comments, multiline syntax, code and front matter exc
 MD074 is project-scoped and MD094 controls pre-parse UTF-8 error attribution; directives targeting either have an inapplicable effect. A valid mixed-rule comment still applies its other permitted effects. UTF-8 validation cannot be disabled.
 
 MD087 observes otherwise-enabled target rules without disable intervals, on the original source and shared budgets. Last permitted disable instructions own intervals, including repeated disables. A proved hidden finding establishes use; only complete absence establishes an unused suppression. Missing context, unavailable rules or interruption withhold that conclusion and report incomplete coverage. See the [counterfactual contract](rule-behavior.md#unused-suppressions).
+
+## Implemented shared foundation
+
+`internal/directives` recognizes candidates and builds owned rule-state intervals
+from parser-confirmed comment facts and immutable configuration authority. Its
+README documents candidate classification, Unicode whitespace, original byte
+anchors, EOF ownership and incomplete outcomes. Parser collection rejects
+constructed or unfinished documents and uses the caller's existing operation
+budget. Block comment boundaries are separate from physical HTML-block envelopes.
+
+Production lint integration and directive capability admission remain pending
+#133. The shared foundation alone does not make `directives.enabled: true`
+operational in the CLI or claim suppression, unavailable-rule coverage, inspection,
+fix or MCP behavior. MD087 ownership records are available without implementing its
+counterfactual observations.
