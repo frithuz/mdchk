@@ -74,7 +74,7 @@ jobs:
       - name: Identify actual runtime and native adapter prerequisites
         run: go env GOOS GOARCH CGO_ENABLED
       - name: Verify compiled native paths, streams, real interrupts and capabilities
-        run: go test ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryUnsupportedApply|TestCompiledApplyNoCGOClearlyRefuses|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -v -timeout=15m
+        run: go test ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryUnsupportedApply|TestCompiledApplyNoCGOClearlyRefuses|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -v -timeout=15m
       - name: Verify compiled editor and documented integration contracts
         run: go test ./internal/cli -run "^(TestCompiledEditor.*|TestDocumented.*|TestEditorRealCommandWriterFailuresAndBounds|TestEditorCommandArgumentsAndIndependentLifetime|TestValidateActualTinyReportingDeadline|TestValidateCompletedReportingAssertions|TestValidateExpiredReportingContextPreservesActualCounts)$" -count=1 -v -timeout=15m
 

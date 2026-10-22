@@ -309,6 +309,12 @@ Before the first release, publish rule documentation, install instructions, plat
 5. Choose a project license, release platforms and installation channels in release planning; these are outside the audited implementation policy decisions.
 
 
+## CLI readiness acceptance
+
+The [delivered CLI readiness record](engineering/cli-readiness.md) maps the
+ordinary compiled five-operation journey and supporting boundary tests to their
+current capability limits.
+
 ## Platform and process acceptance
 
 The `cli-platform` CI jobs execute actual compiled commands on pinned macOS,
