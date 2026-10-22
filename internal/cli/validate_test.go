@@ -11,6 +11,7 @@ import (
 	"slices"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/frithuz/mdchk/internal/config"
 	"github.com/frithuz/mdchk/internal/configscan"
@@ -347,37 +348,162 @@ func TestValidateActualTinyReportingDeadline(t *testing.T) {
 				t.Run(fmt.Sprintf("invalid=%t/%s/%s", invalid, format, duration), func(t *testing.T) {
 					root := validationProject(t)
 					source := "version: 1\nflavor: commonmark\n"
-					want := 15
 					if invalid {
 						source = "version: 2\n"
-						want = 12
 					}
 					put(t, filepath.Join(root, ".mdchk.yaml"), source)
 					var out, logs bytes.Buffer
 					got := Run([]string{"config", "validate", root, "--format=" + format, "--limit=reporting-time=" + duration}, &out, &logs, "test")
-					allowedFastComplete := !invalid && duration == "1us" && got == 0
-					if got != want && !allowedFastComplete || out.Len() == 0 || logs.Len() != 0 {
-						t.Fatalf("actual tiny deadline status=%d want=%d stdout=%s stderr=%s", got, want, &out, &logs)
+					if (invalid && got != 12) || (!invalid && got != 0 && got != 15) || out.Len() == 0 || logs.Len() != 0 {
+						t.Fatalf("actual tiny deadline status=%d stdout=%s stderr=%s", got, &out, &logs)
 					}
 					if format == "json" {
 						r := validateEmitted(t, t.TempDir(), out.Bytes())
-						if !r.ConfigValidation.ScanComplete || r.ConfigValidation.DefinitionsChecked != 1 || r.ConfigValidation.InvalidDefinitions != btoi(invalid) || r.ConfigValidation.ValidDefinitions != btoi(!invalid) || len(r.Coverage) != 0 {
-							t.Fatalf("deadline lost actual decisions: %+v", r.ConfigValidation)
-						}
-						if r.Complete {
-							if duration != "1us" || len(r.Interruptions) != 0 {
-								t.Fatal("unexpected completed deadline result")
-							}
-						} else if len(r.Interruptions) == 0 {
-							t.Fatal("deadline interruption missing")
-						}
-						if lintExit(r) != got {
-							t.Fatalf("wrong emitted precedence %d", lintExit(r))
-						}
-					} else if duration == "1ns" && !strings.Contains(out.String(), "reporting-time exhausted") || !strings.Contains(out.String(), "Checked 1 definitions") {
-						t.Fatalf("missing partial text result: %s", &out)
+						assertTinyValidationJSON(t, r, got, invalid, source)
+					} else {
+						assertTinyValidationText(t, out.String(), got, invalid)
 					}
 				})
+			}
+		}
+	}
+}
+
+// A positive interval permits completion on a coarse clock. Branch on observed
+// completeness, never the requested duration, and check each outcome fully.
+func assertTinyValidationJSON(t *testing.T, r result.Result, status int, invalid bool, source string) {
+	t.Helper()
+	want := result.ConfigValidation{ScanComplete: true, DefinitionsChecked: 1, ValidDefinitions: btoi(!invalid), InvalidDefinitions: btoi(invalid)}
+	if r.ConfigValidation == nil || *r.ConfigValidation != want || len(r.Coverage) != 0 || len(r.Errors) != btoi(invalid) || lintExit(r) != status {
+		t.Fatalf("lost decisions or precedence: summary=%+v status=%d errors=%+v", r.ConfigValidation, status, r.Errors)
+	}
+	for _, e := range r.Errors {
+		if e.Category != result.Configuration {
+			t.Fatalf("wrong configuration error: %+v", e)
+		}
+	}
+	if r.Complete {
+		wantStatus, wantExit := "clean", 0
+		if invalid {
+			wantStatus, wantExit = "error", 12
+		}
+		if r.Status != wantStatus || status != wantExit || len(r.Interruptions)+len(r.Omissions) != 0 || len(r.CheckedFiles) != 1 || len(r.Files) != 1 || r.CheckedFiles[0] != r.Files[0].Path {
+			t.Fatalf("incoherent completed result: %+v", r)
+		}
+		f := r.Files[0]
+		hash := fmt.Sprintf("%x", sha256.Sum256([]byte(source)))
+		if !strings.HasSuffix(f.Path, ".mdchk.yaml") || f.Analysis != "complete" || f.InputSnapshot == nil || f.ResultSnapshot == nil || f.InputSnapshot.View != "original" || f.InputSnapshot.SHA256 != hash || f.InputSnapshot.SizeBytes != len(source) || *f.InputSnapshot != *f.ResultSnapshot {
+			t.Fatalf("lost original source identity: %+v", f)
+		}
+	} else {
+		wantStatus := "incomplete"
+		if invalid {
+			wantStatus = "error"
+		}
+		if r.Status != wantStatus || len(r.Omissions) == 0 || len(r.Interruptions) != 1 || r.Interruptions[0].Reason != "deadline-exceeded" || r.Interruptions[0].Phase != "reporting" || (!invalid && status != 15) {
+			t.Fatalf("incoherent interrupted result: %+v", r)
+		}
+	}
+	// Source records are either retained with their identity or explicitly
+	// counted as omitted. The reserve must never silently lose a decision.
+	for section, count := range map[string]int{"/files": len(r.Files), "/checked_files": len(r.CheckedFiles)} {
+		for _, omission := range r.Omissions {
+			if omission.Section == section && omission.Count != nil {
+				count += *omission.Count
+			}
+		}
+		if count != 1 {
+			t.Fatalf("lost exact source count %s=%d", section, count)
+		}
+	}
+}
+
+func assertTinyValidationText(t *testing.T, text string, status int, invalid bool) {
+	t.Helper()
+	interrupted := strings.Contains(text, "reporting-time exhausted")
+	semantic := "clean"
+	if interrupted {
+		semantic = "incomplete"
+	}
+	if invalid {
+		semantic = "error"
+	}
+	wantStatus := 0
+	if interrupted {
+		wantStatus = 15
+	}
+	if invalid {
+		wantStatus = 12
+	}
+	want := fmt.Sprintf("Checked 1 definitions: %d valid, %d invalid, 0 known definitions skipped. 0 skipped paths, %d errors; %s (scan complete: true, complete: %t).\n", btoi(!invalid), btoi(invalid), btoi(invalid), semantic, !interrupted)
+	fullWant := strings.Replace(want, "0 skipped paths", "1 skipped paths", 1)
+	if status != wantStatus || (!strings.HasSuffix(text, fullWant) && (!interrupted || !strings.HasSuffix(text, want))) || (interrupted && !strings.Contains(text, "deadline-exceeded")) || (invalid && !strings.Contains(text, "configuration")) {
+		t.Fatalf("incoherent text status=%d: %s", status, text)
+	}
+}
+
+func TestValidateCompletedReportingAssertions(t *testing.T) {
+	for _, invalid := range []bool{false, true} {
+		root := validationProject(t)
+		source, status := "version: 1\nflavor: commonmark\n", 0
+		if invalid {
+			source, status = "version: 2\n", 12
+		}
+		put(t, filepath.Join(root, ".mdchk.yaml"), source)
+		r := runValidate(t, root, status)
+		if !r.Complete {
+			t.Fatal("ordinary result did not exercise completed branch")
+		}
+		assertTinyValidationJSON(t, r, status, invalid, source)
+		var out, logs bytes.Buffer
+		got := Run([]string{"config", "validate", root}, &out, &logs, "test")
+		if logs.Len() != 0 || strings.Contains(out.String(), "reporting-time exhausted") {
+			t.Fatalf("ordinary text did not complete: stdout=%s stderr=%s", &out, &logs)
+		}
+		assertTinyValidationText(t, out.String(), got, invalid)
+	}
+}
+
+func TestValidateExpiredReportingContextPreservesActualCounts(t *testing.T) {
+	for _, invalid := range []bool{false, true} {
+		root := validationProject(t)
+		source, status := "version: 1\nflavor: commonmark\n", 0
+		if invalid {
+			source, status = "version: 2\n", 12
+		}
+		put(t, filepath.Join(root, ".mdchk.yaml"), source)
+		r := runValidate(t, root, status)
+		// Rebuild private category counts after decoding the actual command result,
+		// exactly as canonical finalization does before production reporting.
+		engine.FinalizeLintResult(&r)
+		// A deadline in the past is observed synchronously, independent of timer
+		// scheduling and host clock granularity. No sleep or synthetic result.
+		ctx, cancel := context.WithDeadline(context.Background(), time.Unix(1, 0))
+		defer cancel()
+		if ctx.Err() != context.DeadlineExceeded {
+			t.Fatal("expired context is not expired")
+		}
+		for _, format := range []string{"text", "json"} {
+			var out, logs bytes.Buffer
+			got := reportResultStreamsContext(ctx, r, format, &out, &logs, nil)
+			want := 15
+			if invalid {
+				want = 12
+			}
+			if got != want || out.Len() == 0 || logs.Len() != 0 {
+				t.Fatalf("expired reporting %s status=%d stdout=%s stderr=%s", format, got, &out, &logs)
+			}
+			if format == "json" {
+				emitted := validateEmitted(t, t.TempDir(), out.Bytes())
+				assertTinyValidationJSON(t, emitted, got, invalid, source)
+				if emitted.Complete || len(emitted.Interruptions) != 1 {
+					t.Fatal("expired context did not exercise interruption")
+				}
+			} else {
+				assertTinyValidationText(t, out.String(), got, invalid)
+				if !strings.Contains(out.String(), "reporting-time exhausted") {
+					t.Fatal("expired text missing interruption")
+				}
 			}
 		}
 	}

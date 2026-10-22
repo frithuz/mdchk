@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -158,7 +159,7 @@ func TestConfigurationValidationWorkflow(t *testing.T) {
 		if err != nil {
 			t.Skip("Git unavailable for tracked fixture setup")
 		}
-		for _, args := range [][]string{{"init", "-q", root}, {"-C", root, "config", "core.excludesFile", filepath.Join(root, "absent")}} {
+		for _, args := range [][]string{{"init", "-q", root}, {"-C", root, "config", "core.excludesFile", filepath.ToSlash(filepath.Join(root, "absent"))}} {
 			//nolint:gosec // Located Git constructs this test-owned repository only.
 			cmd := exec.Command(git, args...)
 			cmd.Env = env
@@ -185,6 +186,17 @@ func TestConfigurationValidationWorkflow(t *testing.T) {
 			requireValidationSkip(t, got, path, "gitignore")
 		}
 	})
+	t.Run("unsupported Git escaping remains a source failure", func(t *testing.T) {
+		root := configurationProject(t)
+		putConfigurationFile(t, root, ".mdchk.yaml", availableConfiguration)
+		putConfigurationFile(t, root, ".git/config", "[core]\nexcludesFile = C:\\\\Users\\\\runner\\\\absent\n")
+		got := run(t, root, root, "config", "validate", "--format=json")
+		assertValidationSummary(t, got, 13, false, 0, 0, 0, 0)
+		if got.Result.Complete || len(got.Result.Errors) != 1 || got.Result.Errors[0].Category != result.IO || got.Result.Errors[0].Code != "config-ignore" || !strings.Contains(got.Result.Errors[0].Message, "unsupported Git config escaping") || len(got.Result.CheckedFiles)+len(got.Result.Files) != 0 {
+			t.Fatalf("unsupported policy was disregarded: %+v", got)
+		}
+	})
+
 	t.Run("symlinks and empty scans", func(t *testing.T) {
 		root := configurationProject(t)
 		outside := configurationProject(t)
@@ -245,14 +257,34 @@ func TestConfigurationValidationWorkflow(t *testing.T) {
 		root := configurationProject(t)
 		putConfigurationFile(t, root, ".mdchk.yaml", availableConfiguration)
 		for _, format := range []string{"json", "text"} {
-			got := run(t, root, root, "config", "validate", "--format="+format, "--limit=reporting-time=1ns")
-			if got.Status != 15 || len(got.Stdout) == 0 {
-				t.Fatalf("report reserve lost: %+v", got)
-			}
-			if format == "json" {
-				assertValidationSummary(t, got, 15, true, 1, 1, 0, 0)
-				if got.Result.Complete || len(got.Result.Omissions) == 0 || len(got.Result.Interruptions) == 0 {
-					t.Fatalf("reserve not explicit: %+v", got.Result)
+			for _, duration := range []string{"1ns", "1us"} {
+				got := run(t, root, root, "config", "validate", "--format="+format, "--limit=reporting-time="+duration)
+				if (got.Status != 0 && got.Status != 15) || got.Stdout == "" {
+					t.Fatalf("invalid reporting outcome: %+v", got)
+				}
+				if format == "json" {
+					assertValidationSummary(t, got, got.Status, true, 1, 1, 0, 0)
+					if len(got.Result.Errors) != 0 {
+						t.Fatalf("unexpected error: %+v", got.Result.Errors)
+					}
+					if got.Status == 0 {
+						if !got.Result.Complete || got.Result.Status != "clean" || len(got.Result.Interruptions)+len(got.Result.Omissions) != 0 || !reflect.DeepEqual(got.Result.CheckedFiles, []string{".mdchk.yaml"}) || len(got.Result.Files) != 1 || got.Result.Files[0].Analysis != "complete" || got.Result.Files[0].InputSnapshot == nil || got.Result.Files[0].ResultSnapshot == nil {
+							t.Fatalf("incoherent completed report: %+v", got.Result)
+						}
+					} else if got.Result.Complete || got.Result.Status != "incomplete" || len(got.Result.Omissions) == 0 || len(got.Result.Interruptions) != 1 || got.Result.Interruptions[0].Phase != "reporting" || got.Result.Interruptions[0].Reason != "deadline-exceeded" {
+						t.Fatalf("incoherent interrupted report: %+v", got.Result)
+					}
+				} else {
+					complete := got.Status == 0
+					status := "incomplete"
+					if complete {
+						status = "clean"
+					}
+					want := fmt.Sprintf("Checked 1 definitions: 1 valid, 0 invalid, 0 known definitions skipped. 1 skipped paths, 0 errors; %s (scan complete: true, complete: %t).\n", status, complete)
+					reserveWant := strings.Replace(want, "1 skipped paths", "0 skipped paths", 1)
+					if (!strings.Contains(got.Stdout, want) && (complete || !strings.Contains(got.Stdout, reserveWant))) || strings.Contains(got.Stdout, "reporting-time exhausted") == complete {
+						t.Fatalf("incoherent text report: %+v", got)
+					}
 				}
 			}
 		}
