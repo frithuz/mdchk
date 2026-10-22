@@ -308,3 +308,42 @@ Before the first release, publish rule documentation, install instructions, plat
 4. Choose a supported Go toolchain and maintain exact dependency checksums and licenses for the approved SDK and adapters.
 5. Choose a project license, release platforms and installation channels in release planning; these are outside the audited implementation policy decisions.
 
+
+## Platform and process acceptance
+
+The `cli-platform` CI jobs execute actual compiled commands on pinned macOS,
+Linux and Windows runner images. They print GOOS, GOARCH and CGO_ENABLED and
+exercise native separators, spaces, Unicode, dash-prefixed paths, alias and
+ordering stability, raw CRLF bytes, public report paths, real output descriptors,
+filesystem errors and read-only previews. Editor and documented integration
+fixtures run on each host too. Cross-vet checks compilation separately; it is not
+runtime evidence. These jobs build for testing and do not publish executables.
+
+Symlink tests first create a real link. Permission tests probe whether the same
+user actually receives a read denial; mode changes alone do not establish that
+capability on Windows or privileged hosts. Unavailable capabilities have explicit
+native-error or non-enforcement skips, while independent missing-target and
+non-directory error tests still run. POSIX backslashes remain filename characters;
+Windows report paths use slash separators. Source bytes are never normalized.
+
+The executable handles `os.Interrupt`: SIGINT on Unix and console Control-C or
+Control-Break events on Windows. SIGTERM and forced termination are outside this
+handled-request promise and may prevent any report. The process fixture overlays
+only startup synchronization after signal-handler registration, then sends a real
+SIGINT or a Windows CTRL_BREAK_EVENT to the child's isolated process group.
+It checks the normal incomplete/cancelled JSON report and exit 15. A Windows
+runner without working console-event delivery records the actual event-generation
+failure as a capability skip; ordinary compiled deadline and domain cancellation
+checks remain separate evidence. A harness timeout kills only its owned child
+and never counts as successful graceful cancellation.
+
+Inherited read-only output descriptors exercise actual stdout and stderr delivery
+failures; Unix closed-pipe tests separately check SIGPIPE handling. Injected short
+writers test the distinct short-write boundary. Delivery failures return 13 unless
+an internal failure requires 14. The other stream is still attempted, and ordinary
+text/JSON reports are not copied to stderr as a fallback.
+
+Safe publication remains limited to the verified Darwin arm64+cgo/local APFS
+adapter. Other builds refuse apply with 13 and unchanged files, while dry-run
+works. A macOS runner's name alone does not prove those adapter prerequisites;
+architecture, cgo and filesystem capabilities must be verified independently.

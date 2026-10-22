@@ -5,12 +5,17 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 )
 
 func TestCompiledApplyNoCGOClearlyRefuses(t *testing.T) {
-	binary := filepath.Join(t.TempDir(), "mdchk")
+	name := "mdchk"
+	if runtime.GOOS == "windows" {
+		name += ".exe"
+	}
+	binary := filepath.Join(t.TempDir(), name)
 	//nolint:gosec // Fixed Go tool builds this package into a synthetic destination.
 	command := exec.Command("go", "build", "-o", binary, ".")
 	command.Env = append(os.Environ(), "CGO_ENABLED=0")

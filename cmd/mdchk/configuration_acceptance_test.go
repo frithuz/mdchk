@@ -195,7 +195,7 @@ func validateConfigurationOperationJSON(t *testing.T, data []byte, operation str
 		}
 	}
 	for _, name := range out.CheckedFiles {
-		if filepath.IsAbs(name) || strings.Contains(name, "\\") {
+		if filepath.IsAbs(name) || (runtime.GOOS == "windows" && strings.Contains(name, "\\")) {
 			t.Fatalf("nonportable checked path %q", name)
 		}
 	}

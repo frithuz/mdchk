@@ -46,16 +46,24 @@ jobs:
       - name: Test CommonMark transport, ratchet, and full upstream conformance
         run: python3 -B -m unittest discover -s tools -p 'test_commonmark_conformance.py' -v
 
-  windows-fix-contract:
-    # Runtime refusal is distinct from cross-build compatibility. No Windows
-    # publication adapter is enabled by this focused acceptance job.
-    runs-on: windows-2025
-    timeout-minutes: 15
+  cli-platform:
+    # These execute actual host binaries. Cross-vet is a separate compile check;
+    # no additional native publication adapter is enabled by this matrix.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     env:
       GOTOOLCHAIN: local
       GOWORK: "off"
       GOFLAGS: -mod=readonly
     steps:
+      # Source overlays and documentation fences are checkout artifacts, not
+      # runtime Markdown input. Preserve repository LF on Windows as elsewhere.
+      - name: Preserve checked-in source line endings
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
@@ -63,8 +71,12 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
-      - name: Verify ordinary unsupported apply, native paths and project-free help
-        run: go test ./cmd/mdchk -run "^(TestCompiledOrdinaryUnsupportedApply|TestCompiledFixHelpWithoutProject)$" -count=1 -v
+      - name: Identify actual runtime and native adapter prerequisites
+        run: go env GOOS GOARCH CGO_ENABLED
+      - name: Verify compiled native paths, streams, real interrupts and capabilities
+        run: go test ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryUnsupportedApply|TestCompiledApplyNoCGOClearlyRefuses|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -v -timeout=15m
+      - name: Verify compiled editor and documented integration contracts
+        run: go test ./internal/cli -run "^(TestCompiledEditor.*|TestDocumented.*|TestEditorRealCommandWriterFailuresAndBounds|TestEditorCommandArgumentsAndIndependentLifetime)$" -count=1 -v -timeout=15m
 
   vulnerabilities:
     # Independent of tests so scheduled scans still run when another gate fails.

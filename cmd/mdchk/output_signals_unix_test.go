@@ -18,7 +18,13 @@ func TestExecutableClosedOutputPipe(t *testing.T) {
 	if output, err := build.CombinedOutput(); err != nil {
 		t.Fatalf("build: %v\n%s", err, output)
 	}
-	for _, args := range [][]string{{"--help"}, {"lint", "--bad", "--format=text"}, {"lint", "--bad", "--format=json"}} {
+	for _, tc := range []struct {
+		args   []string
+		stderr bool
+	}{
+		{[]string{"--help"}, false}, {[]string{"lint", "--bad", "--format=text"}, false}, {[]string{"lint", "--bad", "--format=json"}, false}, {[]string{"lint", "--bad", "--format=vscode"}, true},
+	} {
+		args := tc.args
 		t.Run(args[len(args)-1], func(t *testing.T) {
 			reader, writer, err := os.Pipe()
 			if err != nil {
@@ -36,16 +42,21 @@ func TestExecutableClosedOutputPipe(t *testing.T) {
 			// tests the inherited real stdout descriptor, not an injected io.Writer.
 			//nolint:gosec // Execute only the test-owned binary with fixed arguments.
 			cmd := exec.Command(binary, args...)
-			cmd.Stdout = writer
 			var stderr bytes.Buffer
-			cmd.Stderr = &stderr
+			if tc.stderr {
+				cmd.Stderr = writer
+				cmd.Stdout = &stderr
+			} else {
+				cmd.Stdout = writer
+				cmd.Stderr = &stderr
+			}
 			err = cmd.Run()
 			var exit *exec.ExitError
 			if !errors.As(err, &exit) || exit.ExitCode() != 13 {
-				t.Fatalf("closed stdout pipe: err=%v, stderr=%q; want exit13", err, &stderr)
+				t.Fatalf("closed output pipe: err=%v, stderr=%q; want exit13", err, &stderr)
 			}
 			if stderr.Len() != 0 {
-				t.Fatalf("duplicated failed report on stderr: %q", &stderr)
+				t.Fatalf("unexpected report on other stream: %q", &stderr)
 			}
 		})
 	}

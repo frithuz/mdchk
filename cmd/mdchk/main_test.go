@@ -10,12 +10,7 @@ import (
 )
 
 func TestExecutableStatuses(t *testing.T) {
-	binary := filepath.Join(t.TempDir(), "mdchk")
-	//nolint:gosec // Fixed Go tool and test-owned temporary build destination.
-	build := exec.Command("go", "build", "-o", binary, ".")
-	if output, err := build.CombinedOutput(); err != nil {
-		t.Fatalf("build: %v\n%s", err, output)
-	}
+	binary := buildConfigurationExecutable(t, "")
 	project, err := filepath.EvalSymlinks(t.TempDir())
 	if err != nil {
 		t.Fatal(err)
