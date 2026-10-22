@@ -2,9 +2,9 @@
 
 Current implementation: `fix --dry-run` supports text and JSON previews and
 writes nothing. Apply without `--dry-run` returns usage status 11 before project
-access. VS Code/GitHub formats are not yet supported. Production correction
-providers are currently empty; MD047 analysis reports missing/excess endings
-with `fix_available: false`. The correction implementation follows separately.
+access. VS Code/GitHub formats are not yet supported. MD047 supplies the first production correction: minimal terminal-newline changes
+with independently checked preservation and shared directive permissions. Unsafe
+protected EOF contexts remain manual, with explicit deferral reasons.
 
 
 Apply safe corrections to Markdown files and report problems that still need attention. Preview changes with `--dry-run` before saving them.
@@ -41,7 +41,7 @@ mdchk fix docs/ --dry-run --format json
 ```
 
 Text and JSON previews include proposed diffs when a registered correction
-passes shared candidate validation. Current builds have no production corrections. VS Code and GitHub output show only findings remaining in the proposed content, so use [lint](lint.md) when highlighted locations must match files currently on disk.
+passes shared candidate validation. MD047 final-newline correction is implemented. Other corrections remain planned. VS Code and GitHub output show only findings remaining in the proposed content, so use [lint](lint.md) when highlighted locations must match files currently on disk.
 
 Corrections preserve meaning and unrelated content. For example, fix can add a missing final newline while preserving intentional hard breaks. It leaves code examples, front matter, and ambiguous changes alone. A skipped heading level or missing code language needs a decision rather than a guessed correction.
 

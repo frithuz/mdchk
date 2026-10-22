@@ -35,7 +35,7 @@ Options may appear before or after paths. Use -- for dash-prefixed paths.
 
 Exit 0/10 describes final candidate content; incomplete analysis returns 15.
 Usage returns 11, configuration 12, I/O 13 and internal failures 14.
-No production corrections are registered yet; MD047 analysis remains available.
+MD047 previews safe final-newline corrections; ambiguous contexts remain manual.
 `
 
 func parseFix(args []string) (lintOptions, bool, error) {

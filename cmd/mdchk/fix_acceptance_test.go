@@ -202,7 +202,8 @@ func TestCompiledProductionFixBoundaryAndNoWrites(t *testing.T) {
 	config := strings.ReplaceAll(fixFixtureConfiguration(), "MD001: {enabled: true}", "MD001: {enabled: false}")
 	config = strings.ReplaceAll(config, "MD047: {enabled: false}", "MD047: {enabled: true}")
 	putConfigurationFile(t, root, ".mdchk.yaml", config)
-	putConfigurationFile(t, root, "doc.md", "snow 雪")
+	// Keep this boundary matrix report-only through an indented-code EOF.
+	putConfigurationFile(t, root, "doc.md", "    snow 雪")
 	putConfigurationFile(t, root, "-dash.md", "text\n")
 	for _, tc := range []struct {
 		args   []string
@@ -240,7 +241,7 @@ func TestCompiledProductionFixBoundaryAndNoWrites(t *testing.T) {
 		}
 		for _, d := range got.Result.Diagnostics {
 			if d.FixAvailable {
-				t.Fatal("unavailable production correction advertised")
+				t.Fatal("unsafe production correction advertised")
 			}
 		}
 	}

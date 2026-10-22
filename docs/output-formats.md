@@ -4,8 +4,8 @@ Choose a result format with `--format`. Lint, fix --dry-run, config validate and
 (the default) and JSON for automation. Results go to stdout; stderr is reserved
 for execution logs. VS Code and GitHub reporters are planned and currently return
 unsupported usage before project access. Apply and MCP remain planned; their
-format behavior below describes the accepted contract. Production correction
-providers are currently empty; previews honestly retain available findings.
+format behavior below describes the accepted contract. Production MD047 previews report validated terminal-newline proposals and retain
+manual findings for unsafe contexts and other report-only checks.
 
 | Format | Use |
 | --- | --- |

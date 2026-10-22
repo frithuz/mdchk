@@ -127,8 +127,12 @@ type RoundContext struct {
 	resources map[string]ResourceObservation
 }
 
-func (c RoundContext) Path() string                       { return c.path }
-func (c RoundContext) Current() parser.Source             { return c.current }
+func (c RoundContext) Path() string            { return c.path }
+func (c RoundContext) Current() parser.Source  { return c.current }
+func (c RoundContext) Lines() parser.LineIndex { return c.trace.Lines() }
+func (c RoundContext) TerminalEditEligible(ctx context.Context, id string, span parser.Span) (bool, error) {
+	return engine.TerminalEditEligible(ctx, c.Parsed(), c.Directives(), id, span, c.meter.budget)
+}
 func (c RoundContext) Parsed() parser.ParseResult         { return c.trace.Parsed() }
 func (c RoundContext) Directives() engine.DirectiveResult { return c.trace.Directives() }
 func (c RoundContext) Source(path string) (parser.Source, bool) {
@@ -140,6 +144,28 @@ func (c RoundContext) Resource(key string) (ResourceObservation, bool) {
 	return r, ok
 }
 func (c RoundContext) Analysis() result.Result { return decodeAnalysis(c.analysis) }
+
+// BoundedAnalysis reserves the actual encoded collections before returning an
+// owned view. Producers must not estimate analysis size from source byte count.
+func (c RoundContext) BoundedAnalysis(ctx context.Context) (result.Result, error) {
+	if err := ctx.Err(); err != nil {
+		return result.Result{}, err
+	}
+	if err := reserveEncoded(c.meter, c.analysis); err != nil {
+		return result.Result{}, err
+	}
+	out := decodeAnalysis(c.analysis)
+	return out, c.Checkpoint(ctx, 0)
+}
+
+// Reserve charges callback-owned collections before constructing them.
+func (c RoundContext) Reserve(ctx context.Context, work, nodes int64) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	return c.meter.reserve(work, nodes)
+}
+
 func (c RoundContext) Checkpoint(ctx context.Context, work int64) error {
 	if err := ctx.Err(); err != nil {
 		return err
@@ -157,6 +183,36 @@ type CheckContext struct {
 
 func (c CheckContext) Group() Group        { return cloneGroup(c.group) }
 func (c CheckContext) Edits() []SharedEdit { return StructuralPlan{edits: c.edits}.Edits() }
+
+// BoundedViews reserves independent proposal/edit copies for trusted checkers.
+func (c CheckContext) BoundedViews(ctx context.Context) (Group, []SharedEdit, error) {
+	work := int64(len(c.group.ID)+len(c.group.Rule)+len(c.group.Provenance)) + 1
+	nodes := int64(len(c.group.Edits)*3 + len(c.group.Requirements)*2 + len(c.edits)*4 + 4)
+	if err := c.Before.Reserve(ctx, work+int64(len(c.group.Edits)+len(c.group.Requirements)+len(c.edits)), nodes); err != nil {
+		return Group{}, nil, err
+	}
+	for _, e := range c.group.Edits {
+		if err := c.Before.Checkpoint(ctx, int64(len(e.Expected)+len(e.Replacement))+1); err != nil {
+			return Group{}, nil, err
+		}
+	}
+	for _, r := range c.group.Requirements {
+		if err := c.Before.Checkpoint(ctx, int64(len(r.Expected))+1); err != nil {
+			return Group{}, nil, err
+		}
+	}
+	for _, e := range c.edits {
+		if err := c.Before.Reserve(ctx, int64(len(e.Edit.Expected)+len(e.Edit.Replacement)+len(e.Groups))+1, int64(len(e.Groups))); err != nil {
+			return Group{}, nil, err
+		}
+		for _, g := range e.Groups {
+			if err := c.Before.Checkpoint(ctx, int64(len(g))+1); err != nil {
+				return Group{}, nil, err
+			}
+		}
+	}
+	return c.Group(), c.Edits(), c.Before.Checkpoint(ctx, 0)
+}
 
 // MapUnchanged maps an original source-owned fact into the combined candidate.
 // A rewritten/intersected fact is explicitly unmappable, never guessed.

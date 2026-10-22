@@ -14,8 +14,7 @@ Use the exit code to decide whether a check passed, Markdown problems remain, or
 
 The current lint, fix --dry-run, config validate and inspect commands emit text or schema-v1 JSON on stdout for these
 outcomes, including usage and configuration failures when a valid format is
-selected. Apply without `--dry-run` returns 11 before project access. Production
-correction providers are currently empty. VS Code/GitHub reporters and MCP remain
+selected. Apply without `--dry-run` returns 11 before project access. MD047 previews safe final-newline corrections and defers unsafe EOF contexts. VS Code/GitHub reporters and MCP remain
 planned.
 An output-delivery error, including a short write, returns `13` unless a
 previously established internal failure requires `14`; it may prevent a complete

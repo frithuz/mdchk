@@ -30,9 +30,8 @@ physical-line selection, AST, effective rule counts, directives, provenance and
 explicit availability. Completed observations return inspected/0; runtime or
 reporting interruption returns incomplete/15. See its [command guide](commands/inspect.md).
 `fix --dry-run` uses the same selection/configuration and reports validated
-candidate outcomes in text or JSON without writing files. The production
-correction provider list is currently empty; MD047 findings remain manual until
-its correction is delivered. Apply without `--dry-run` returns usage/11 before
+candidate outcomes in text or JSON without writing files. MD047 supplies the first production correction, with minimal terminal-newline
+changes and conservative protected-content deferrals. Apply without `--dry-run` returns usage/11 before
 project access. MCP remains planned and is rejected by this build.
 
 ## Get started (planned execution)

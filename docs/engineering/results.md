@@ -6,8 +6,7 @@ implemented and verified. Config validation text/JSON and its operation-specific
 implemented. Inspection also has operation-specific text/JSON reporting and compiled
 acceptance, including observation versus interruption exits. Fix dry-run text/JSON
 uses the shared candidate validator and typed v1 changes, deferrals and line diffs,
-with compiled synthetic producer acceptance. Production correction providers are
-empty until the initial MD047 correction; apply, MCP and the remaining format
+with compiled production MD047 and synthetic producer acceptance. Apply, MCP and the remaining format
 adapters require their own implementation and end-to-end verification.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.

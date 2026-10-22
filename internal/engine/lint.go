@@ -129,6 +129,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 		parsed := parser.ParseWithBudget(ctx, in.source, budget)
 		if options.inspection != nil {
 			options.inspection.parsed = parsed
+			options.inspection.lines = index
 		}
 		if parsed.Failure != nil {
 			out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "parser-failure", Scope: "operation", Path: in.path, Message: parsed.Failure.Error()})
@@ -204,7 +205,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				continue
 			}
 		}
-		rc := RuleContext{input: in, index: index, document: parsed.Document, budget: budget}
+		rc := RuleContext{input: in, index: index, document: parsed.Document, budget: budget, parsed: parsed, directives: directives, syntaxReliable: syntaxReliable}
 
 		for _, id := range r.ids {
 			state := settings[i][id]

@@ -42,11 +42,6 @@ func analyze(t *testing.T, r *engine.Registry, text string, s engine.Settings, o
 	if string(caller) != text || string(in.Source().Bytes()) != text || len(out.Changes) != 0 || len(out.Documents) != 0 || out.Files[0].WriteStatus != "not-requested" {
 		t.Fatal("analysis changed source or requested edits", out)
 	}
-	for _, d := range out.Diagnostics {
-		if d.FixAvailable {
-			t.Fatal("analysis promised a fix", d)
-		}
-	}
 	return out
 }
 func TestMD047AnalysisFixtures(t *testing.T) {
@@ -145,7 +140,7 @@ func TestMD047SharedConfigurationAndOwnership(t *testing.T) {
 		t.Fatal("incorrect availability")
 	}
 	for _, m := range r.Metadata() {
-		if m.ID == "MD047" && (!m.DefaultEnabled || m.RequiresSyntax || m.Fix != engine.PlannedFix || len(m.Options) != 0) {
+		if m.ID == "MD047" && (!m.DefaultEnabled || m.RequiresSyntax || m.Fix != engine.ImplementedFix || len(m.Options) != 0) {
 			t.Fatal(m)
 		}
 	}

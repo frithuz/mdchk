@@ -62,11 +62,14 @@ func (in Input) Source() parser.Source { return in.source }
 // observes cancellation; providers must use it for their own bounded loops.
 // It must not be retained after the callback returns.
 type RuleContext struct {
-	input    Input
-	index    parser.LineIndex
-	document *parser.Document
-	options  Options
-	budget   *parser.OperationBudget
+	input          Input
+	index          parser.LineIndex
+	document       *parser.Document
+	options        Options
+	budget         *parser.OperationBudget
+	parsed         parser.ParseResult
+	directives     DirectiveResult
+	syntaxReliable bool
 }
 
 func (c RuleContext) Source() parser.Source      { return c.input.source }
@@ -80,4 +83,13 @@ func (c RuleContext) Checkpoint(ctx context.Context, units int64) error {
 		return err
 	}
 	return c.budget.ChargeWork(units)
+}
+
+// TerminalEditEligible assesses an exact terminal edit against engine-owned
+// syntax, protection and directive authority. It never generates corrections.
+func (c RuleContext) TerminalEditEligible(ctx context.Context, id string, span parser.Span) (bool, error) {
+	if !c.syntaxReliable {
+		return false, c.Checkpoint(ctx, 1)
+	}
+	return TerminalEditEligible(ctx, c.parsed, c.directives, id, span, c.budget)
 }

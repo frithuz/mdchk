@@ -60,7 +60,7 @@ protected-syntax and unchanged-directive obligations always apply, independently
 of the producer's additional requirements. Only that later validated stage can
 feed public proposed changes, returned corrections or persistence.
 
-Issue #144 supplies dry-run/report adapters; #145 supplies the first MD047
+The CLI supplies dry-run/report adapters; rules supplies the first MD047
 producer and newline insertion convention. Filesystem publication starts with
 #146. This package adds no CLI command, public result records, production producer,
 positive fix flags, temporary files or writes. Reusable byte fixtures in

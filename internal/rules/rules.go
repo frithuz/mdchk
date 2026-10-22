@@ -1,4 +1,4 @@
-// Package rules supplies production read-only checks to the shared engine.
+// Package rules supplies production read-only checks and correction providers.
 // Source ownership, decoding, directives, coordinates and budgets remain engine
 // concerns. Registrations returns a fresh slice, with no mutable global registry.
 package rules

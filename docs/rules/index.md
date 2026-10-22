@@ -4,7 +4,7 @@ We target the implemented rule list from `rumdl` because it covers markdownlint'
 
 The mdchk ruleset contains 89 rules: MD001 through MD095, excluding MD002, MD006, MD008, MD015, MD016, and MD017. Preserve these reserved gaps; do not implement checks under those IDs.
 
-MD047 analysis and configuration are implemented for CommonMark; its correction remains planned. Other ordinary rules remain planned. Each linked page defines its behavior, configuration, examples, correction policy, and validation requirements. These are internal mdchk specifications; individual status text identifies implemented support. Rule IDs are stable; additions and changes to defaults require an explicit specification update.
+MD047 analysis, configuration and safe correction previews are implemented for CommonMark; filesystem application remains planned. Other ordinary rules remain planned. Each linked page defines its behavior, configuration, examples, correction policy, and validation requirements. These are internal mdchk specifications; individual status text identifies implemented support. Rule IDs are stable; additions and changes to defaults require an explicit specification update.
 
 ## Areas
 

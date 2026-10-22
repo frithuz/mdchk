@@ -51,7 +51,7 @@ func TestCompiledMD047ProductionAnalysis(t *testing.T) {
 			}
 			if want > 0 {
 				d := out.Diagnostics[0]
-				if d.Rule != "MD047" || d.ByteRange != (result.ByteRange{Start: tc.start, End: tc.end}) || d.Range.Start != (result.Position{Line: tc.line, Column: tc.column}) || d.FixAvailable {
+				if d.Rule != "MD047" || d.ByteRange != (result.ByteRange{Start: tc.start, End: tc.end}) || d.Range.Start != (result.Position{Line: tc.line, Column: tc.column}) || d.FixAvailable != (tc.name == "surplus") {
 					t.Fatal(d)
 				}
 			}

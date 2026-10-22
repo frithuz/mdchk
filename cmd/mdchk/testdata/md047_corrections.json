@@ -1,0 +1,299 @@
+[
+  {
+    "name": "missing-LF",
+    "source": "text",
+    "candidate": "text\n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "empty",
+    "source": "",
+    "candidate": "",
+    "status": 0,
+    "eligible": false,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "one-LF",
+    "source": "text\n",
+    "candidate": "text\n",
+    "status": 0,
+    "eligible": false,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "one-CRLF",
+    "source": "text\r\n",
+    "candidate": "text\r\n",
+    "status": 0,
+    "eligible": false,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "one-CR",
+    "source": "text\r",
+    "candidate": "text\r",
+    "status": 0,
+    "eligible": false,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "surplus-LF",
+    "source": "text\n\n\n",
+    "candidate": "text\n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "surplus-mixed",
+    "source": "text\r\n\n\r",
+    "candidate": "text\r\n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "missing-CRLF",
+    "source": "a\r\nb",
+    "candidate": "a\r\nb\r\n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "missing-CR",
+    "source": "a\rb",
+    "candidate": "a\rb\r",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "mixed-choose-last",
+    "source": "a\r\nb\nc",
+    "candidate": "a\r\nb\nc\n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "all-endings",
+    "source": "\r\n\n",
+    "candidate": "\r\n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "spaces-only",
+    "source": "  ",
+    "candidate": "  \n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "hardbreak-spaces",
+    "source": "text  ",
+    "candidate": "text  \n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "whitespace-final-line",
+    "source": "x\n ",
+    "candidate": "x\n \n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "space-breaks-run",
+    "source": "x\n \n",
+    "candidate": "x\n \n",
+    "status": 0,
+    "eligible": false,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "hardbreak-valid",
+    "source": "text  \n",
+    "candidate": "text  \n",
+    "status": 0,
+    "eligible": false,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "unicode",
+    "source": "雪é",
+    "candidate": "雪é\n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "nested",
+    "source": "> - nested\n>   text",
+    "candidate": "> - nested\n>   text\n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "unclosed-fence",
+    "source": "```\ncode",
+    "candidate": "```\ncode",
+    "status": 10,
+    "eligible": false,
+    "deferred": true,
+    "config": ""
+  },
+  {
+    "name": "closed-fence-EOF",
+    "source": "```\ncode\n```",
+    "candidate": "```\ncode\n```",
+    "status": 10,
+    "eligible": false,
+    "deferred": true,
+    "config": ""
+  },
+  {
+    "name": "indented-code",
+    "source": "    code",
+    "candidate": "    code",
+    "status": 10,
+    "eligible": false,
+    "deferred": true,
+    "config": ""
+  },
+  {
+    "name": "raw-HTML",
+    "source": "<div>raw",
+    "candidate": "<div>raw",
+    "status": 10,
+    "eligible": false,
+    "deferred": true,
+    "config": ""
+  },
+  {
+    "name": "comment-only",
+    "source": "<!-- comment -->",
+    "candidate": "<!-- comment -->",
+    "status": 10,
+    "eligible": false,
+    "deferred": true,
+    "config": ""
+  },
+  {
+    "name": "unclosed-comment",
+    "source": "<!-- unclosed",
+    "candidate": "<!-- unclosed",
+    "status": 10,
+    "eligible": false,
+    "deferred": true,
+    "config": ""
+  },
+  {
+    "name": "literal-directive",
+    "source": "```\n<!-- mdchk:disable MD047 -->",
+    "candidate": "```\n<!-- mdchk:disable MD047 -->",
+    "status": 10,
+    "eligible": false,
+    "deferred": true,
+    "config": ""
+  },
+  {
+    "name": "closed-fence-surplus",
+    "source": "```\ncode\n```\n\n",
+    "candidate": "```\ncode\n```\n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "disabled",
+    "source": "text",
+    "candidate": "text",
+    "status": 0,
+    "eligible": false,
+    "deferred": false,
+    "config": "off"
+  },
+  {
+    "name": "EOF-disable",
+    "source": "text<!-- mdchk:disable MD047 -->",
+    "candidate": "text<!-- mdchk:disable MD047 -->",
+    "status": 0,
+    "eligible": false,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "repeated-disable",
+    "source": "<!-- mdchk:disable MD047 --><!-- mdchk:disable MD047 -->tail",
+    "candidate": "<!-- mdchk:disable MD047 --><!-- mdchk:disable MD047 -->tail",
+    "status": 0,
+    "eligible": false,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "EOF-enable",
+    "source": "<!-- mdchk:enable MD047 -->",
+    "candidate": "<!-- mdchk:enable MD047 -->",
+    "status": 10,
+    "eligible": false,
+    "deferred": true,
+    "config": "off"
+  },
+  {
+    "name": "re-enabled",
+    "source": "<!-- mdchk:disable MD047 --><!-- mdchk:enable MD047 -->\ntext",
+    "candidate": "<!-- mdchk:disable MD047 --><!-- mdchk:enable MD047 -->\ntext\n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  },
+  {
+    "name": "blocked-disable",
+    "source": "<!-- mdchk:disable MD047 -->\ntext",
+    "candidate": "<!-- mdchk:disable MD047 -->\ntext\n",
+    "status": 0,
+    "eligible": true,
+    "deferred": false,
+    "config": "blocked"
+  },
+  {
+    "name": "malformed-manual",
+    "source": "<!-- mdchk:enable WHAT -->\ntext",
+    "candidate": "<!-- mdchk:enable WHAT -->\ntext\n",
+    "status": 10,
+    "eligible": true,
+    "deferred": false,
+    "config": ""
+  }
+]

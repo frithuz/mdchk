@@ -5,8 +5,9 @@ original-source permission/precondition checks and provisional application are
 implemented in `internal/fix`. Combined candidate semantic validation, mapped
 common protection/directive checks, shared reanalysis and bounded convergence
 with coupled rollback are implemented by its validated-stage API. Rule-specific
-trusted checkers remain required; no production correction is registered yet.
-Producers, reporting and filesystem publication remain pending.
+trusted checkers remain required. MD047 supplies the first production producer
+and independent checker, with compiled text/JSON preview acceptance. Filesystem
+publication remains pending.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
 
@@ -217,8 +218,8 @@ The `fix --dry-run` adapter resolves invocation-directory configuration with the
 bounded resolver before target access, then shares one context and residual
 operation budget through selection, acquisition, `Validator.Validate`, and diff
 construction. It does not run an initial adapter lint pass or reopen targets.
-Production correction providers remain empty until the initial MD047 correction
-is delivered. Build-time synthetic providers exercise the real compiled adapter;
+Production MD047 corrections use the shared provider boundary and are exercised
+through the ordinary compiled command. Build-time synthetic providers additionally exercise the adapter;
 there is no runtime fixture switch.
 
 Each changed file publishes one `Change` from original to retained final
@@ -271,3 +272,25 @@ single-entry `File.ReadDir(1)` batch before constructing/retaining it, with a
 fixed native buffering overhead; it never uses whole-directory `os.ReadDir`.
 An EOF probe may consume one unused construction reservation, without refunds.
 Only admitted entries reach deterministic ordering and later target selection.
+
+
+### Production rule integration
+
+`internal/rules.Corrections` regenerates MD047 groups from each current round's
+actual shared analysis and source-owned diagnostic range. The source's retained
+physical-line index supplies the same terminal facts as analysis; the shared
+`fix.InsertionEnding` chooses inserted spelling without normalizing input.
+The independent `rules.CorrectionCheckers` registration proves the precise
+minimal suffix transformation and unchanged body bytes. Complete shared parser,
+protected envelope/payload/binding and mapped directive checks remain binding.
+The engine's bounded terminal eligibility query withholds positive fix flags
+when syntax, permissions or EOF protection cannot establish safety.
+
+Future corrections add rule producers, separately registered trusted checkers,
+implemented catalog metadata and affirmative per-finding eligibility. Compose
+producers at the existing `configuredCorrections` boundary; command parsing,
+selection, reporting and validation need no rule-ID dispatch. Producers cannot
+self-authorize preservation through requirement flags. Keep ambiguous rules
+report-only until independent proof and production acceptance exist. Retained
+compiled fixtures in `cmd/mdchk/testdata/md047_corrections.json` are available
+for later consumer acceptance; they do not claim filesystem apply or MCP support.

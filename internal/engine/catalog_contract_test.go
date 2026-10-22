@@ -87,7 +87,7 @@ func documentedOptions() map[string]engine.OptionSchema {
 
 func TestCatalogDocumentedContracts(t *testing.T) {
 	disabled := strings.Fields("MD013 MD026 MD033 MD036 MD040 MD043 MD044 MD054 MD060 MD061 MD063 MD070 MD072 MD073 MD074 MD078 MD079 MD080 MD081 MD082 MD083 MD084 MD085 MD087 MD088 MD089 MD090 MD091 MD093 MD095")
-	planned := strings.Fields("MD003 MD004 MD005 MD007 MD009 MD010 MD011 MD012 MD014 MD019 MD021 MD022 MD023 MD027 MD029 MD030 MD031 MD032 MD034 MD035 MD038 MD044 MD046 MD047 MD048 MD049 MD050 MD053 MD054 MD055 MD058 MD060 MD063 MD064 MD065 MD067 MD070 MD071 MD072 MD073 MD076 MD077 MD085 MD088 MD089")
+	planned := strings.Fields("MD003 MD004 MD005 MD007 MD009 MD010 MD011 MD012 MD014 MD019 MD021 MD022 MD023 MD027 MD029 MD030 MD031 MD032 MD034 MD035 MD038 MD044 MD046 MD048 MD049 MD050 MD053 MD054 MD055 MD058 MD060 MD063 MD064 MD065 MD067 MD070 MD071 MD072 MD073 MD076 MD077 MD085 MD088 MD089")
 	reserved := []int{2, 6, 8, 15, 16, 17}
 	var wantIDs []string
 	for i := 1; i <= 95; i++ {
@@ -142,6 +142,9 @@ func TestCatalogDocumentedContracts(t *testing.T) {
 		fix := engine.NoFix
 		if slices.Contains(planned, m.ID) {
 			fix = engine.PlannedFix
+		}
+		if m.ID == "MD047" {
+			fix = engine.ImplementedFix
 		}
 		if m.Fix != fix {
 			t.Errorf("%s fix = %s, want %s", m.ID, m.Fix, fix)

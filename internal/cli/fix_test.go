@@ -24,18 +24,18 @@ func fixConfiguration() string {
 	}
 	return b.String()
 }
-func TestFixProductionNoCorrectionAndArguments(t *testing.T) {
+func TestFixProductionCorrectionAndArguments(t *testing.T) {
 	root := project(t)
 	put(t, filepath.Join(root, ".mdchk.yaml"), fixConfiguration())
 	put(t, filepath.Join(root, "doc.md"), "hello")
 	for _, args := range [][]string{{"fix", "--dry-run", "doc.md", "--format=json"}, {"fix", "doc.md", "--format", "json", "--dry-run"}, {"fix", "--dry-run", "--format=json", "--", "doc.md"}} {
 		var stdout, stderr bytes.Buffer
 		status := Run(args, &stdout, &stderr, "test")
-		if status != 10 {
+		if status != 0 {
 			t.Fatal(status, stdout.String())
 		}
 		r := validateEmitted(t, t.TempDir(), stdout.Bytes())
-		if r.Operation != "fix" || r.DryRun == nil || !*r.DryRun || len(r.Changes) != 0 || len(r.Diagnostics) != 1 || r.Diagnostics[0].FixAvailable || r.Diagnostics[0].Snapshot.View != "candidate" || r.Files[0].WriteStatus != "not-needed" {
+		if r.Operation != "fix" || r.DryRun == nil || !*r.DryRun || len(r.Changes) != 1 || len(r.Diagnostics) != 0 || r.Files[0].WriteStatus != "proposed" {
 			t.Fatal(r)
 		}
 	}

@@ -32,6 +32,7 @@ type InspectionOptions struct {
 type InspectionTrace struct {
 	prepare         func(*InspectionTrace) error
 	parsed          parser.ParseResult
+	lines           parser.LineIndex
 	directives      DirectiveResult
 	evaluations     []Evaluation
 	observeInactive bool
@@ -257,3 +258,6 @@ func (p *ExecutionPlan) InspectCandidate(ctx context.Context, in Input, options 
 	options.candidate = true
 	return p.Inspect(ctx, in, options, InspectionOptions{})
 }
+
+// Lines retains the original shared physical-line index without rescanning.
+func (t *InspectionTrace) Lines() parser.LineIndex { return t.lines }
