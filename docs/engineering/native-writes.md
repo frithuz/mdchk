@@ -15,6 +15,22 @@ cross-builds do not establish native guarantees. Linux and Windows remain target
 platforms with no enabled native publication adapter. Network, cloud and virtual
 filesystems have no inferred support.
 
+The compiled-command acceptance suite distinguishes these behaviors:
+
+| Host | Apply behavior under test | Evidence required |
+| --- | --- | --- |
+| Darwin arm64, cgo, local APFS | Native replacement and exact saved snapshots | Native filesystem tests and production compiled apply fixtures |
+| Linux | Explicit unsupported refusal, exit 13, no mutation; dry-run remains usable | Ordinary Linux binary in the Ubuntu test job |
+| Windows | Explicit unsupported refusal, exit 13, no mutation; dry-run remains usable | Ordinary Windows binary in the focused Windows acceptance job |
+| Darwin without cgo | Explicit unsupported refusal, exit 13 | Compiled no-cgo acceptance |
+
+The unsupported-host controls use native path separators, spaces and non-ASCII
+names, predict LF/CRLF/lone-CR corrections, and verify unchanged bytes, entry
+identity, mode, mtime and artifact inventory. A cross-platform vet/build pass
+establishes compatibility only; a completed native job establishes refusal on
+that host, never publication support. Native replacement tests also retain the
+accepted noncooperating-writer interval described below.
+
 A supported target is a regular file with writable owner permissions, ordinary
 owner/group/mode, no ACL entries, no file flags, no set-ID/sticky bits, and no
 extended attributes except the bounded `com.apple.provenance` attribute. That
@@ -52,7 +68,7 @@ revalidated under coordination immediately before publication. Changes with
 restored mtime and identical-byte inode replacement are stale. No rebasing occurs.
 After this operation observes one of its own replacements, later dependency
 checks use that saved identity/content while retaining the original acquisition
-binding. Saved-view cross-file reconciliation belongs to #148.
+binding. CLI saved-view reconciliation uses these observations.
 
 ## Coordination and publication
 
@@ -88,8 +104,8 @@ retains successful rename evidence even if later sync/cancellation fails;
 An uncertain state cannot authorize later dependent writes without a new
 operation. Published content is never blindly rolled back over newer content.
 This boundary does not promise whole-operation transactions or power-loss
-survival. #148 owns final CLI outcomes,
-independent-file continuation and saved-view reanalysis.
+survival. CLI apply implements final outcomes, independent-file continuation
+and saved-view reanalysis.
 
 ## Accepted concurrent-writer limitation
 

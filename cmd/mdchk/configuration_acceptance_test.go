@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -31,7 +32,11 @@ type configurationRun struct {
 
 func buildConfigurationExecutable(t *testing.T, overlay string) string {
 	t.Helper()
-	binary := filepath.Join(t.TempDir(), "mdchk")
+	name := "mdchk"
+	if runtime.GOOS == "windows" {
+		name += ".exe"
+	}
+	binary := filepath.Join(t.TempDir(), name)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	args := []string{"build", "-o", binary}

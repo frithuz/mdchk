@@ -18,7 +18,7 @@ const (
 const generalHelp = `Usage: mdchk [global options] <command> [options] [paths...]
 
 Commands:
-  fix        Preview validated corrections without writing files
+  fix        Apply validated corrections; use --dry-run to preview
   lint       Check Markdown with available registered rules
   config     Validate project configuration
   inspect    Reveal processing details for one Markdown file

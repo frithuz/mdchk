@@ -37,7 +37,7 @@ Options may appear before or after paths. Use -- for dash-prefixed paths.
 Exit 0/10 describes saved content (candidate content for --dry-run).
 Incomplete analysis returns 15; apply requires Darwin arm64+cgo on local APFS.
 Usage returns 11, configuration 12, I/O 13 and internal failures 14.
-MD047 previews safe final-newline corrections; ambiguous contexts remain manual.
+MD047 corrects safe final-newline changes; ambiguous contexts remain manual.
 `
 
 func parseFix(args []string) (lintOptions, bool, error) {

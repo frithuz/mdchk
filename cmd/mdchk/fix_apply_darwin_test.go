@@ -140,6 +140,11 @@ func runAppliedFix(t *testing.T, binary, root string, args ...string) configurat
 
 func buildApplyBoundaryFixture(t *testing.T, body string) string {
 	t.Helper()
+	return buildApplyBoundaryOriginFixture(t, body, false)
+}
+
+func buildApplyBoundaryOriginFixture(t *testing.T, body string, cancellation bool) string {
+	t.Helper()
 	cwd, e := os.Getwd()
 	if e != nil {
 		t.Fatal(e)
@@ -150,13 +155,39 @@ func buildApplyBoundaryFixture(t *testing.T, body string) string {
 	if e != nil {
 		t.Fatal(e)
 	}
+	if strings.Count(string(data), "return validated.PublishMapped(ctx, native, path, names)") != 1 {
+		t.Fatal("publication seam changed")
+	}
 	source := strings.Replace(string(data), "return validated.PublishMapped(ctx, native, path, names)", body, 1)
+	if strings.Contains(body, "os.") {
+		source = strings.Replace(source, "import (", "import (\n\"os\"", 1)
+	}
 	replacement := filepath.Join(t.TempDir(), "fix_apply.go")
 	//nolint:gosec // Access only synthetic test fixtures or the fixed repository source overlay.
 	if e = os.WriteFile(replacement, []byte(source), 0600); e != nil {
 		t.Fatal(e)
 	}
-	overlayData, e := json.Marshal(struct{ Replace map[string]string }{map[string]string{sourcePath: replacement}})
+	replacements := map[string]string{sourcePath: replacement}
+	if cancellation {
+		fixPath := filepath.Join(cwd, "..", "..", "internal", "cli", "fix.go")
+		//nolint:gosec // Read only fixed repository source for this build-time control.
+		fixData, err := os.ReadFile(fixPath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		needle := "ctx, cancel := context.WithTimeout(ctx, profile.OperationTime)"
+		if strings.Count(string(fixData), needle) != 1 {
+			t.Fatal("origin cancellation seam changed")
+		}
+		patched := strings.Replace(string(fixData), needle, needle+"\nctx = context.WithValue(ctx, struct{ issue149 bool }{true}, cancel)", 1)
+		destination := filepath.Join(t.TempDir(), "fix.go")
+		//nolint:gosec // Write only this test-owned source overlay.
+		if err := os.WriteFile(destination, []byte(patched), 0600); err != nil {
+			t.Fatal(err)
+		}
+		replacements[fixPath] = destination
+	}
+	overlayData, e := json.Marshal(struct{ Replace map[string]string }{replacements})
 	if e != nil {
 		t.Fatal(e)
 	}

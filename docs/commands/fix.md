@@ -27,7 +27,7 @@ mdchk fix --dry-run README.md docs/
 | --- | --- |
 | `--limit NAME=VALUE` | Set a finite operator [resource limit](../engineering/limits.md); repeat for multiple limits |
 | `--config PATH` | Select a configuration inside the operation's discovery boundary |
-| `--format FORMAT` | Choose `text`, `json`, `vscode`, or `github`; defaults to `text` |
+| `--format FORMAT` | Choose implemented `text` (default) or `json`; `vscode` and `github` remain planned |
 | `--dry-run` | Compute corrections and report the predicted result without writing files |
 
 The [global options](../index.md#global-options) also apply. See [configuration](../configuration.md) and [result formats](../output-formats.md) for details.
@@ -41,11 +41,11 @@ mdchk fix docs/ --dry-run --format json
 ```
 
 Text and JSON previews include proposed diffs when a registered correction
-passes shared candidate validation. MD047 final-newline correction is implemented. Other corrections remain planned. VS Code and GitHub output show only findings remaining in the proposed content, so use [lint](lint.md) when highlighted locations must match files currently on disk.
+passes shared candidate validation. MD047 final-newline correction is implemented. Other corrections remain planned. Planned VS Code and GitHub reporters will describe findings remaining in proposed content for dry runs; they are currently rejected. Use [lint](lint.md) when highlighted locations must match files currently on disk.
 
 Corrections preserve meaning and unrelated content. For example, fix can add a missing final newline while preserving intentional hard breaks. It leaves code examples, front matter, and ambiguous changes alone. A skipped heading level or missing code language needs a decision rather than a guessed correction.
 
-After corrections, mdchk checks the resulting content and reports remaining findings at their new locations. The report identifies changed files and what was corrected.
+After corrections, mdchk checks the resulting content and reports remaining findings at their new locations. Apply reports observed saved snapshots and confirmed written changes; dry-run reports candidate snapshots and proposed changes. Refused or unavailable saved observations are never replaced by predicted clean content.
 
 Cross-file post-fix checks use one candidate view containing all proposed target changes. Referenced resources remain read-only. After project writes, results use the actual saved view: successful writes plus confirmed unchanged snapshots. If writes fail or a dependency changes, mdchk reports the error and affected incomplete coverage instead of treating every proposal as saved. See the [resource snapshot contract](../engineering/resources.md#snapshots-caching-fixes-and-limits).
 
