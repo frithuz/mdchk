@@ -6,7 +6,9 @@ Reveal how mdchk processes one Markdown file: its identity, parser output, rules
 mdchk inspect [options] <file>
 ```
 
-Exactly one file path is required. Paths may be absolute or relative to the working directory. Directories are not accepted.
+Exactly one file path is required for inspection; valid help/version requests bypass
+that requirement. Options may appear before or after the target; use `--` for
+dash-prefixed paths. Paths may be absolute or relative to the working directory. Directories are not accepted.
 
 ```sh
 mdchk inspect README.md
@@ -33,7 +35,7 @@ Every inspection includes:
 | Detail | Meaning |
 | --- | --- |
 | Resolved path | Full absolute path on the host, resolving symlinks |
-| Binary version | Version of mdchk performing the inspection |
+| Binary version | Exact version selected for `--version`, including the `dev` fallback; see [version policy](../index.md#global-options) |
 | File size | Human-readable size followed by the exact byte count, such as `1.5 KiB (1536 bytes)` |
 | SHA-1 | Checksum of the full file's original bytes |
 | SHA-256 | Checksum of the same original bytes |

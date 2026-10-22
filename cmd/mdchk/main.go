@@ -19,7 +19,13 @@ func main() {
 }
 
 func buildVersion() string {
-	if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "" && info.Main.Version != "(devel)" {
+	return versionFromBuildInfo(debug.ReadBuildInfo())
+}
+
+// versionFromBuildInfo preserves the Go toolchain's release or pseudo-version.
+// Build settings do not independently define a different binary identity.
+func versionFromBuildInfo(info *debug.BuildInfo, ok bool) string {
+	if ok && info != nil && info.Main.Version != "" && info.Main.Version != "(devel)" {
 		return info.Main.Version
 	}
 	return "dev"

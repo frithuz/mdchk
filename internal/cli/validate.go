@@ -23,7 +23,8 @@ Subcommands:
 `
 const validateHelp = `Usage: mdchk config validate [options] [project]
 
-The project defaults to the working directory. Use -- for dash-prefixed paths.
+The project defaults to the working directory. Options may precede or follow it.
+Use -- for dash-prefixed paths.
   --format FORMAT     text (default), json, vscode or github
   --limit NAME=VALUE  Set a finite applicable resource limit; repeat as needed
   --help              Show this help
@@ -68,7 +69,7 @@ func runConfig(ctx context.Context, args []string, stdout, stderr io.Writer, pre
 	if err == nil && opts.config != "" {
 		err = errors.New("config validate does not accept --config")
 	}
-	if err == nil && len(opts.paths) > 1 {
+	if err == nil && !opts.help && !opts.version && len(opts.paths) > 1 {
 		err = errors.New("config validate accepts at most one directory")
 	}
 	if err == nil {

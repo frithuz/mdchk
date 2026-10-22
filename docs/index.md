@@ -65,7 +65,21 @@ mdchk lint --help
 mdchk --version
 ```
 
-Help and version output do not load project configuration or process Markdown files. Configuration, result formats, previews, and server settings are command options described in the command guides.
+Help and version output do not load project configuration or process Markdown files.
+Command identity and option syntax/scope are checked first: unknown commands,
+unsupported options or formats, malformed limits/ranges, and missing option
+operands return usage `11` even with `--help` or `--version`. Valid metadata
+requests bypass target count and target existence checks; help wins if both
+flags appear. Metadata may precede the command or follow it (including between
+`config` and `validate`). After `--`, these spellings are literal path arguments.
+
+The executable preserves a supplied Go main-module version, including release
+and pseudo-versions. Absent build information, an empty version, or `(devel)`
+uses `dev`; VCS settings do not independently override that choice. A normal
+checkout build may have a Go-synthesized pseudo-version, while a
+`go build -buildvcs=false` checkout build uses `dev`. Inspect's `Binary version`
+is exactly the same selected value printed after `mdchk ` by `--version`.
+ Configuration, result formats, previews, and server settings are command options described in the command guides.
 
 ## Commands
 
@@ -75,7 +89,7 @@ Help and version output do not load project configuration or process Markdown fi
 | `fix` | Preview with `--dry-run`; apply on the verified native adapter | [Fix command](commands/fix.md) |
 | `inspect` | Reveal processing details for one file or a selected line range | [Inspect command](commands/inspect.md) |
 | `config` | Work with configuration, including project-wide validation | [Config commands](commands/config.md) |
-| `mcp` | Provide lint and fix tools to AI agents in project or standalone mode | [MCP command](commands/mcp.md) |
+| `mcp` | Planned; unavailable in this build | [MCP command](commands/mcp.md) |
 
 ## Rules
 

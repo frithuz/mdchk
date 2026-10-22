@@ -59,7 +59,7 @@ func TestSnapshotExactImmutableBytesAndLines(t *testing.T) {
 				t.Fatal(err)
 			}
 			s := acquire(t, "file.md", o)
-			if s.File().Path != path || s.File().Version != "development" || s.File().SizeBytes != int64(len(data)) {
+			if s.File().Path != path || s.File().Version != "dev" || s.File().SizeBytes != int64(len(data)) {
 				t.Fatalf("metadata %+v", s.File())
 			}
 			//nolint:gosec // G401: verify the mandated descriptive checksum against original bytes.

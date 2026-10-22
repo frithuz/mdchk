@@ -131,6 +131,10 @@ Git ignore support for lint and fix is deferred; use configuration exclusions fo
 
 ## Options
 
+Options may appear before or after path arguments; `--` ends option parsing.
+Valid help/version requests bypass target requirements, while invalid option
+syntax or scope still returns usage `11`. See the linked global options policy.
+
 | Option | Effect |
 | --- | --- |
 | `--limit NAME=VALUE` | Set a finite operator [resource limit](../engineering/limits.md); repeat for multiple limits |

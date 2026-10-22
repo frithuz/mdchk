@@ -1,5 +1,9 @@
 # mdchk mcp
 
+Status: planned and unavailable in this build. The executable rejects `mcp`,
+including with help/version flags. The syntax and examples below describe the
+accepted future command contract.
+
 The mdchk MCP server gives AI agents `lint` and `fix` tools. Use project mode to work on files in a project directory, or standalone mode to send configuration and Markdown content directly to the server.
 
 ```text

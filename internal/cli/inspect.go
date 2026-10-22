@@ -82,14 +82,14 @@ func runInspect(ctx context.Context, args []string, stdout io.Writer, version st
 	if err != nil {
 		return inspectFailure(err, "invalid-arguments", result.Usage, recoverInspectFormat(args), stdout, nil)
 	}
+	if opts.format != "text" && opts.format != "json" {
+		return inspectFailure(fmt.Errorf("format %q is not supported; use text or json", opts.format), "unsupported-format", result.Usage, "text", stdout, opts.limits)
+	}
 	if opts.help {
 		return output(stdout, inspectHelp, 0)
 	}
 	if opts.version {
 		return output(stdout, "mdchk "+version+"\n", 0)
-	}
-	if opts.format != "text" && opts.format != "json" {
-		return inspectFailure(fmt.Errorf("format %q is not supported; use text or json", opts.format), "unsupported-format", result.Usage, "text", stdout, opts.limits)
 	}
 	profile := parser.Limits{DocumentBytes: reportLimit(opts.limits, "document-bytes"), SyntaxDepth: reportLimit(opts.limits, "syntax-depth"), DocumentNodes: reportLimit(opts.limits, "document-nodes"), TotalNodes: reportLimit(opts.limits, "total-nodes"), WorkUnits: reportLimit(opts.limits, "work-units"), OperationTime: time.Duration(reportLimit(opts.limits, "operation-time"))}
 	budget, err := parser.NewOperationBudget(profile)

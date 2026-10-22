@@ -66,7 +66,8 @@ shared directive projection described in [projection version 1](inspection-proje
 `Filter` adds physical-line presentation and catalog counts while preserving the
 full analysis authority. The CLI now supplies text/JSON reports with compiled
 end-to-end acceptance. The caller supplies the build version (an empty version is
-reported as `development`), registry and implemented capabilities.
+reported as `dev`, following the [version policy](../index.md#global-options)),
+registry and implemented capabilities.
 
 Acquisition makes one attempt, follows the explicitly named target's symlinks,
 and then uses the shared pinned directory/regular-file reader. It checks file

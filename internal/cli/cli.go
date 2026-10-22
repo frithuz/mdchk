@@ -33,6 +33,8 @@ Global options:
 
 Lint, fix and config validate support text, json, vscode and github.
 Inspect supports text and json.
+Valid help/version bypass targets and project access; help wins when both appear.
+Command identity and option syntax/scope errors still return usage 11.
 `
 const lintHelp = `Usage: mdchk lint [options] [paths...]
 
@@ -74,6 +76,9 @@ func run(args []string, stdout, stderr io.Writer, version string, prepare func(l
 }
 
 func runContext(ctx context.Context, args []string, stdout, stderr io.Writer, version string, prepare func(lintOptions) (*lintInvocation, error), execute func(context.Context, *lintInvocation, io.Writer, io.Writer) int) int {
+	if version == "" {
+		version = "dev"
+	}
 	presentation := commandPresentation()
 	fail := func(err error, code string, category result.ErrorCategory, format string, limits map[string]int64) int {
 		return reportResultStreamsContext(presentation, failureResult(err, code, category), format, stdout, stderr, limits)

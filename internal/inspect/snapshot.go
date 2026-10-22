@@ -153,7 +153,7 @@ func Acquire(ctx context.Context, target string, options Options) (*Snapshot, er
 	shaTwo := sha256.Sum256(data)
 	version := options.Version
 	if version == "" {
-		version = "development"
+		version = "dev"
 	}
 	s := &Snapshot{budget: budget, file: File{Path: document.Path, Version: version, SizeBytes: int64(size), SizeDisplay: displaySize(int64(size)), SHA1: hex.EncodeToString(shaOne[:]), SHA256: hex.EncodeToString(shaTwo[:])}, source: document.Source, lines: parser.NewLineIndex(document.Source), capabilities: options.Capabilities}
 	if err := check(0); err != nil {
