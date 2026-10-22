@@ -4,8 +4,8 @@ Status: approved on 2026-10-14. The [original published corpus and offline
 extraction tooling](../../internal/parser/testdata/gfm/0.29-gfm/README.md) are
 retained and verified. The [executable profile fixture contract](../../internal/parser/testdata/gfm/profile/README.md)
 now supplies adaptations and independent source expectations. A private parser
-stage now recognizes source-preserving tables and shares the core lifecycle and
-inline machinery. The integrated profile, its conformance
+stage now recognizes source-preserving tables and task items and shares the core
+lifecycle and inline machinery. The integrated profile, its conformance
 adapter and mdchk conformance verification remain pending. Public parser APIs
 remain CommonMark-only; configuration still rejects unavailable GFM. This contract
 defines the target for [#158](https://github.com/frithuz/mdchk/issues/158), building

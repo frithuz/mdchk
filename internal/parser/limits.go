@@ -250,6 +250,11 @@ func meteredNode(ctx context.Context, spec NodeSpec) (*Node, error) {
 	meterWork(ctx, 8*(1+len(spec.Markers)+len(spec.Content)+len(spec.Children)))
 	meterValue(ctx, Value{Segments: spec.Content, Semantic: spec.Properties.Literal})
 	p := spec.Properties
+	if p.Task != nil {
+		// Fixed token validation, association comparison and immutable copies.
+		meterRecords(ctx, 7+len(p.Task.Segments))
+		meterWork(ctx, 64+16*len(p.Task.Segments))
+	}
 	if p.Table != nil {
 		meterRecords(ctx, 1+len(p.Table.Alignments))
 		meterWork(ctx, 8*(1+len(p.Table.Alignments)))

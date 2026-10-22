@@ -116,7 +116,7 @@ invalid profiles/overflow and deterministic elapsed-time expiry. The
 allocations and measured hardening overhead; no machine-specific threshold is
 claimed.
 
-The private table stage uses the same admission, validation, phase recovery and
+The private table/task stage uses the same admission, validation, phase recovery and
 operation as public core parsing. It charges provisional row/cell specifications,
 separator/escape spans, alignment and property records, raw mapping segments and
 immutable copies, including failed delimiter/width candidates. Complete source
@@ -125,3 +125,15 @@ count per row, avoiding width-times-row synthetic allocations. Candidate rows
 freeze only after header/delimiter equality and combined depth admission. Public
 entry points keep their existing core-only behavior; this internal stage does
 not establish complete GFM capability or full-profile conformance.
+
+
+Task recognition inspects at most four original logical tokens on the first
+direct Paragraph, after core reference extraction. Existing segmented paragraph
+mapping excludes later container prefixes; the final untrimmed line supplies
+terminal separator evidence without copying or reparsing a suffix. Metadata,
+original token/segment spans, rewritten Content segment slices, constructor
+validation and immutable copies are charged before allocation/freezing, including
+failed candidates. Fixed token validation checks at most two bytes per token and
+three canonical marker segments; it never scans an aggregate marker's source gap.
+Task metadata adds no syntax-depth construct. Real list/item/paragraph and shared
+inline descendants keep their existing combined depth and operation authority.

@@ -118,6 +118,7 @@ type LinkProperties struct {
 // Properties are typed, kind-specific metadata. Nil means inapplicable/absent,
 // not a known zero. Source segments are validated against the node envelope.
 type Properties struct {
+	Task      *TaskProperties
 	Table     *TableProperties
 	Row       *TableRowProperties
 	Cell      *TableCellProperties
@@ -169,6 +170,9 @@ func NewNode(spec NodeSpec) (*Node, error) {
 		return nil, err
 	}
 	if err := validateValue(spec.Envelope, Value{Segments: spec.Content, Semantic: spec.Properties.Literal}); err != nil {
+		return nil, err
+	}
+	if err := validateTaskSpec(spec); err != nil {
 		return nil, err
 	}
 	if err := validateTableSpec(spec); err != nil {
@@ -491,6 +495,10 @@ func cloneValuePointer(p *Value) *Value {
 	return &v
 }
 func cloneProperties(p Properties) Properties {
+	p.Task = clonePointer(p.Task)
+	if p.Task != nil {
+		p.Task.Segments = slices.Clone(p.Task.Segments)
+	}
 	p.Table = clonePointer(p.Table)
 	if p.Table != nil {
 		p.Table.Alignments = slices.Clone(p.Table.Alignments)

@@ -1267,13 +1267,13 @@ capabilities only. Current checks cannot establish syntax conformance,
 general inline/link conformance, full resource enforcement,
 fix safety or CLI/MCP parity.
 
-## Internal GFM table syntax stage
+## Internal GFM table and task syntax stage
 
 Public `Parse` and `ParseWithBudget` remain CommonMark-only with unchanged
 signatures/defaults. The private `gfmInProgressProfile` selects implemented syntax
 through their shared admission, UTF-8, budgeting, block/inline and recovery body.
 It is an internal development stage, not a selectable or complete GFM profile.
-Its completed status certifies only the stage it runs. Other extensions, the
+Its completed status certifies only tables/tasks in the stage it runs. Other extensions, the
 full-profile conformance adapter and public activation remain separate work.
 
 `Table` owns `TableProperties` (positive Width and one typed Alignment per
@@ -1309,3 +1309,60 @@ all nested mutable properties. Ordinary walkers, reference validation, comments,
 literal spans and protected-node collection reach inlines in every cell,
 including excess cells. Table, row and cell each add one syntax-depth construct.
 The full operation accounting is documented in the parser limits specification.
+
+
+### Task item metadata
+
+A task retains the ordinary `List -> ListItem -> Paragraph` hierarchy and all
+core list-marker, prefix, continuation, container and tightness facts. Optional
+`Properties.Task` is present on the item and its first direct Paragraph only.
+`TaskProperties.Paragraph` identifies that actual child by its snapshot-owned
+envelope. A later paragraph or a paragraph inside an initial quote/nested list
+cannot qualify the parent item. Core reference extraction happens first;
+definitions remain separate inventory records, so the first remaining rendered
+block qualifies only when it is a direct Paragraph. Removing task syntax never
+reparses the body into new blocks or reference definitions.
+
+`Checked` distinguishes state from exact `CheckSpelling` (`x`, `X`, or original
+whitespace). `Opening`, `Check`, `Closing` and `Separator` retain the original
+brackets, check token and first required following whitespace token. `Marker`
+is their bracketed envelope. Ordered `Segments` coalesce adjacent marker tokens
+but exclude intervening container-prefix/indentation gaps. The item list marker
+(token-only `item-marker`), padded `item-prefix`, List properties and enclosing
+quote/list/item context remain on their existing authoritative owners; no ancestor
+payload is copied to every task property.
+
+The extension uses its pinned ASCII whitespace class: SPACE, TAB, LF, VT, FF and
+CR, never Unicode Zs/NBSP. A physical CRLF is one logical ending token whose
+Check/Separator span owns both bytes. This is the explicit source-model policy
+for interpreting the pinned character grammar while retaining core LF/CRLF
+mapping equivalence. Marker tokens can cross logical lines and original source
+gaps, but cannot cross a real core paragraph/block boundary. For example,
+`- [\n  ] foo\n` has Opening[2,3), Check[3,4), Closing[6,7),
+Separator[7,8), marker segments[2,4)+[6,7), and payload[8,11).
+`> - [\r\n>   ] é\r\n` has Check[5,7), Closing[11,12),
+Separator[12,13), segments[4,7)+[11,12), and payload[13,15).
+Removed quote/item prefixes are gaps, not extra marker whitespace.
+
+The Paragraph's raw envelope stays unchanged, including task syntax, remaining
+leaf indentation, physical terminal ending and later container gaps. Logical
+Content excludes the marker and only the first required separator token; any
+additional original spacing remains Content subject to ordinary paragraph-final
+ASCII trimming. The existing shared inline scanner handles the suffix. For
+`> - [X] é\r\n`, Paragraph remains[4,12), marker[4,7), separator[7,8),
+and Content/Text é[8,10); the original ending[10,12) remains in the envelope.
+A required terminal space/tab or physical ending proves the separator even when
+core final trimming omitted it from Content. Thus `- [x]` at EOF is ordinary,
+while `- [x] ` and `- [x]\n` retain a task Paragraph with empty Content and no
+fabricated Text/break. A line-ending separator before continuation payload is
+consumed whole, leaving no initial SoftBreak or container-prefix payload.
+
+Constructors validate applicability, same-snapshot containment, exact token/state/
+spelling, whole ending tokens, canonical marker segments, required separator and
+item/actual-first-child agreement. Nested metadata/slices are copied at construction
+and access. As with other model facts, valid construction does not prove parser
+recognition or grant source-edit/protection authority. Ordinary walkers, reference
+binding, Comments, LiteralSpans and ProtectedNodes continue through the real
+paragraph inline children. Checkbox rendering belongs to the future test adapter;
+the product parser emits no HTML. Task metadata adds records/work, not a syntax
+construct beyond the existing list/item/paragraph/inline depth.

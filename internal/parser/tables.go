@@ -295,7 +295,7 @@ func (p *blockParser) appendTableRow(row *Node) {
 	p.table.end = span.End()
 }
 
-func (p *blockParser) stagedTables() bool {
+func (p *blockParser) stagedGFM() bool {
 	c, ok := p.ctx.(*parserContext)
 	return ok && c.profile == gfmInProgressProfile
 }
@@ -456,7 +456,7 @@ func (p *blockParser) splitTableRow(line blockLine, role string, width int) (*ta
 }
 
 func (p *blockParser) promoteTable(line blockLine) (bool, error) {
-	if !p.stagedTables() || !p.paragraphOpen() || line.lazy || line.indent >= 4 || line.first != '|' && line.first != ':' && line.first != '-' {
+	if !p.stagedGFM() || !p.paragraphOpen() || line.lazy || line.indent >= 4 || line.first != '|' && line.first != ':' && line.first != '-' {
 		return false, nil
 	}
 	paragraph := p.stack[len(p.stack)-1]
