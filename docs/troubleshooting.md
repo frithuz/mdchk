@@ -57,7 +57,10 @@ Malformed directives change no rule state. An enable directive explicitly enable
 
 ## Fix leaves findings or a preview exits successfully
 
-Fix applies only safe corrections. A heading jump or missing fenced-code language requires a manual decision; remaining findings return `10`.
+Fix applies only safe corrections. Current MD047 leaves protected EOF contexts
+manual; remaining findings return `10`. Heading jumps and missing fenced-code
+languages are examples of future report-only checks, not currently implemented
+findings.
 
 ```sh
 mdchk fix docs/guide.md --dry-run --format text
@@ -94,11 +97,19 @@ Check JSON `complete`, `coverage`, and `errors`, then inspect parsing notes, unc
 
 ## A local link is unavailable rather than missing
 
+Availability: this section describes accepted future link/resource consumers
+and standalone MCP. They are unavailable in this build; explicit requests fail
+configuration admission (`12`), rather than producing the findings below.
+
 A missing-target finding requires established absence. An omitted standalone resource is unknown unless its inventory is complete; supply an explicit `missing` entry or a complete inventory to establish absence. A file entry without content establishes existence, but fragment checks need Markdown content. Missing documents belong to MD057; MD051 does not duplicate that finding.
 
 Check exact path case, the resource root, symlink components, and URL decoding. Root-relative `/path` references, root escapes, Git metadata, and all resource symlinks are blocked under the initial contract. Exclusions remove lint targets but do not prevent allowed read-only resource lookups. See the [resource contract](engineering/resources.md).
 
 ## An anchor or index option is rejected
+
+The schema policy below is enforced, but production anchor/resource consumers
+and Pandoc remain unavailable. Schema-valid explicit unavailable capabilities
+still return `12`.
 
 Set `resources.anchor_style` and `resources.index_file` at configuration top level. The former rule-local options are rejected even on disabled rules. All anchor consumers share the selected style. Pandoc uses the [fixed profile](engineering/pandoc-compatibility.md); per-extension switches and automatic metadata recognition are not configuration options.
 

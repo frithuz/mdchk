@@ -53,8 +53,9 @@ go build -o mdchk ./cmd/mdchk
 ./mdchk --version
 ```
 
-The version is `dev` for local source builds and uses Go module build metadata
-when a version is available. Help and version do not access the project. Lint
+The version preserves Go main-module build metadata, including a release or
+pseudo-version. Empty, absent or `(devel)` metadata uses `dev`; an ordinary
+checkout build can have a synthesized pseudo-version. See the [version policy](index.md#global-options). Help and version do not access the project. Lint
 parses arguments and loads and admits configuration before target access;
 configuration failures return `12`, including unavailable default GFM when no
 configuration exists. A valid CommonMark configuration completes preparation, selects targets and acquires immutable
@@ -68,9 +69,37 @@ context with the engine. The executable propagates interrupts through
 `cli.RunContext`. Lint emits text by default or one schema-v1 JSON result on
 stdout, including ordinary usage/configuration failures. Reporting bounds actual
 encoded bytes and uses an independent cleanup deadline; stderr carries execution
-logs. VS Code/GitHub reporters and other commands remain pending;
+logs. Lint, fix and config validate support all four reporters; inspect supports
+text/JSON. MD047 previews and verified Darwin arm64+cgo/local APFS apply are
+delivered, with protected EOF deferrals and unsupported-adapter refusal. MCP
+remains planned;
 see [current implementation](index.md#current-implementation).
 The conformance adapter below remains a separate test command.
+
+## Verify command documentation
+
+From the repository root, run:
+
+```sh
+python3 -B tools/cli_documentation.py
+python3 -B tools/cli_documentation.py --self-test
+```
+
+The verifier checks an explicit inventory of every fenced example under
+`docs/commands`. Syntax and future MCP payloads are classified separately from
+operational commands; MCP command examples must reject with usage `11`. It runs
+the published disposable build script once, then reuses that ordinary executable
+in temporary projects with controlled Git configuration. Current published config
+and Unicode source assets are exercised against literal MD047 positions, process
+statuses, preview/no-write and supported saved outcomes. Unsupported native
+adapters must refuse with `13` and preserve fixture identity and bytes. Changed
+or newly added fences require a reviewed inventory/expectation update.
+
+It also checks relative prose links and heading anchors on command guides and
+the linked CLI capability pages listed in the tool. Fenced source examples are
+excluded; external URLs are not fetched. `--links-only` runs inventory and local
+link checks without building or executing a command. This is a scoped CLI-docs
+check, not a whole-repository link or final readiness acceptance claim.
 
 ## Exercise a newly registered rule through the CLI
 

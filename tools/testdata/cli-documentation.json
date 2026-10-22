@@ -1,0 +1,180 @@
+[
+  {
+    "document": "docs/commands/config/validate.md",
+    "fence": 0,
+    "language": "text",
+    "classification": "syntax",
+    "source": "mdchk config validate [options] [project]\n"
+  },
+  {
+    "document": "docs/commands/config/validate.md",
+    "fence": 1,
+    "language": "sh",
+    "classification": "argv",
+    "source": "mdchk config validate\nmdchk config validate /path/to/project\n",
+    "exit_codes": [
+      0,
+      0
+    ]
+  },
+  {
+    "document": "docs/commands/config/validate.md",
+    "fence": 2,
+    "language": "sh",
+    "classification": "argv",
+    "source": "mdchk config validate . --format json\n",
+    "exit_codes": [
+      0
+    ]
+  },
+  {
+    "document": "docs/commands/config.md",
+    "fence": 0,
+    "language": "text",
+    "classification": "syntax",
+    "source": "mdchk config <subcommand> [options] [arguments]\n"
+  },
+  {
+    "document": "docs/commands/fix.md",
+    "fence": 0,
+    "language": "text",
+    "classification": "syntax",
+    "source": "mdchk fix [options] [paths...]\n"
+  },
+  {
+    "document": "docs/commands/fix.md",
+    "fence": 1,
+    "language": "sh",
+    "classification": "argv",
+    "source": "mdchk fix --dry-run README.md docs/\n",
+    "exit_codes": [
+      0
+    ]
+  },
+  {
+    "document": "docs/commands/fix.md",
+    "fence": 2,
+    "language": "sh",
+    "classification": "argv",
+    "source": "mdchk fix docs/ --dry-run\nmdchk fix docs/\nmdchk fix docs/ --dry-run --format json\n",
+    "exit_codes": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "document": "docs/commands/inspect.md",
+    "fence": 0,
+    "language": "text",
+    "classification": "syntax",
+    "source": "mdchk inspect [options] <file>\n"
+  },
+  {
+    "document": "docs/commands/inspect.md",
+    "fence": 1,
+    "language": "sh",
+    "classification": "argv",
+    "source": "mdchk inspect README.md\nmdchk inspect /path/to/project/docs/guide.md\nmdchk inspect docs/guide.md --lines 18-30\n",
+    "exit_codes": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "document": "docs/commands/lint.md",
+    "fence": 0,
+    "language": "text",
+    "classification": "syntax",
+    "source": "mdchk lint [options] [paths...]\n"
+  },
+  {
+    "document": "docs/commands/lint.md",
+    "fence": 1,
+    "language": "sh",
+    "classification": "disposable-build",
+    "source": "mdchk_demo=$(mktemp -d)\ngo build -o \"$mdchk_demo/mdchk\" ./cmd/mdchk\ncat > \"$mdchk_demo/.mdchk.yaml\" <<'YAML'\nversion: 1\nflavor: commonmark\nYAML\nprintf '# Example\\n' > \"$mdchk_demo/example.md\"\n(\n  cd -P \"$mdchk_demo\" || exit 1\n  ./mdchk --help\n  ./mdchk lint --format json example.md\n  mdchk_status=$?\n  printf 'lint status: %s\\n' \"$mdchk_status\"\n  test \"$mdchk_status\" -eq 15\n)\n"
+  },
+  {
+    "document": "docs/commands/lint.md",
+    "fence": 2,
+    "language": "sh",
+    "classification": "argv",
+    "source": "mdchk lint\nmdchk lint README.md docs/\n",
+    "exit_codes": [
+      0,
+      0
+    ]
+  },
+  {
+    "document": "docs/commands/lint.md",
+    "fence": 3,
+    "language": "sh",
+    "classification": "argv",
+    "source": "mdchk lint docs/ --config .mdchk.yaml\nmdchk lint . --format json\nmdchk lint -- --draft.md\n",
+    "exit_codes": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "document": "docs/commands/mcp.md",
+    "fence": 0,
+    "language": "text",
+    "classification": "syntax",
+    "source": "mdchk mcp (--root PATH | --standalone) [options]\n"
+  },
+  {
+    "document": "docs/commands/mcp.md",
+    "fence": 1,
+    "language": "sh",
+    "classification": "future-argv",
+    "source": "mdchk mcp --root /path/to/project\n",
+    "exit_codes": [
+      11
+    ]
+  },
+  {
+    "document": "docs/commands/mcp.md",
+    "fence": 2,
+    "language": "json",
+    "classification": "future-json",
+    "source": "{\n  \"paths\": [\"README.md\", \"docs/\"]\n}\n"
+  },
+  {
+    "document": "docs/commands/mcp.md",
+    "fence": 3,
+    "language": "sh",
+    "classification": "future-argv",
+    "source": "mdchk mcp --standalone\n",
+    "exit_codes": [
+      11
+    ]
+  },
+  {
+    "document": "docs/commands/mcp.md",
+    "fence": 4,
+    "language": "sh",
+    "classification": "future-argv",
+    "source": "mdchk mcp --standalone --transport http --listen 127.0.0.1:8080\n",
+    "exit_codes": [
+      11
+    ]
+  },
+  {
+    "document": "docs/commands/mcp.md",
+    "fence": 5,
+    "language": "json",
+    "classification": "future-json",
+    "source": "{\n  \"config\": {\n    \"version\": 1,\n    \"rules\": {\n      \"MD047\": {\"enabled\": true}\n    }\n  },\n  \"files\": [\n    {\"path\": \"README.md\", \"content\": \"# Example\"}\n  ]\n}\n"
+  },
+  {
+    "document": "docs/commands/mcp.md",
+    "fence": 6,
+    "language": "json",
+    "classification": "future-json",
+    "source": "{\n  \"config\": {\n    \"version\": 1,\n    \"resources\": {\"index_file\": \"index.md\", \"anchor_style\": \"github\"},\n    \"rules\": {\"MD051\": {\"cross_file\": true}}\n  },\n  \"files\": [{\"path\": \"README.md\", \"content\": \"[Guide](docs/guide.md#install)\\n\"}],\n  \"resources\": {\n    \"complete\": false,\n    \"entries\": [\n      {\"path\": \"docs/guide.md\", \"kind\": \"file\", \"content\": \"# Install\\n\"},\n      {\"path\": \"images/logo.png\", \"kind\": \"file\"},\n      {\"path\": \"empty\", \"kind\": \"directory\"},\n      {\"path\": \"removed.md\", \"kind\": \"missing\"},\n      {\"path\": \"private\", \"kind\": \"unavailable\"}\n    ]\n  }\n}\n"
+  }
+]

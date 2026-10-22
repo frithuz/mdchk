@@ -29,7 +29,7 @@ mdchk lint docs/
 mdchk fix docs/ --dry-run --format text
 ```
 
-Each finding includes a file, line, column, rule, explanation, and whether it can be fixed automatically. For example:
+Each finding includes a file, line, column, rule, explanation, and whether it can be fixed automatically. The following is illustrative future MD001 output; MD001 is unavailable in this build. For an actual MD047 example, use the [runnable integration setup](#runnable-integration-setup).
 
 ```text
 docs/guide.md:18:1 MD001: Heading jumps from level 2 to level 4. Choose the intended heading level. [manual]
@@ -111,6 +111,10 @@ that outcome. Results remain on stdout; a nonzero exit, including `15`, must
 fail a CI check.
 
 VS Code emits located coverage records with identifier `coverage` and sends location-free records to stderr. GitHub emits coverage error annotations, omitting source coordinates when none exist. All retain the nonzero exit so incomplete work cannot appear as a clean CI check. Inspect retains status `inspected` and successful exit when its report is produced; config validation does not run Markdown checks.
+
+The following resource/cross-file policies describe accepted future consumers;
+those checks and standalone MCP are not implemented in this build. Current
+CLI publication conservatively defers coupled changes.
 
 Resource coverage belongs to the source document and affected check. Unknown partial-map entries, blocked paths, and missing required content use `context-unavailable`; established target absence belongs to MD057 or the applicable navigation rule. MD051 does not duplicate a missing-file finding. Actual read/decode failures also produce an attributed `io` error. Shared resource failures are deduplicated without losing affected source coverage. See [resource outcomes](engineering/resources.md#outcomes-and-rule-ownership).
 

@@ -4,6 +4,13 @@ Use inline HTML comments with canonical MDxxx rule IDs to enable or disable rule
 
 Directives are intended for exceptions to specific rules within a document. To exclude a whole file from all rule linting, add its path to `exclude` in configuration. Do not enumerate every rule in a directive to suppress linting across the file. A whole-file exclusion does not prevent an explicitly requested inspection.
 
+Current availability: CommonMark directive processing is delivered in lint, fix
+and inspect. MD047 is the ordinary production check; the MD001/MD040 examples
+below illustrate rule-state syntax, not delivered checks. Permitted directives
+that enable unavailable rules produce incomplete coverage. Pandoc, frontmatter,
+resource consumers, MCP and MD087 counterfactual checks remain planned; their
+semantics below describe the accepted future contract.
+
 ## Disable and enable rules
 
 ```markdown
@@ -94,4 +101,4 @@ Inspect includes directives in that region and earlier directives still affectin
 
 MD074 is project-scoped and MD094 controls pre-parse UTF-8 error attribution; directives targeting either have an inapplicable effect. A valid mixed-rule comment still applies its other permitted effects. UTF-8 validation cannot be disabled.
 
-MD087 observes otherwise-enabled target rules without disable intervals, on the original source and shared budgets. Last permitted disable instructions own intervals, including repeated disables. A proved hidden finding establishes use; only complete absence establishes an unused suppression. Missing context, unavailable rules or interruption withhold that conclusion and report incomplete coverage. See the [counterfactual contract](engineering/rule-behavior.md#unused-suppressions).
+Once implemented, MD087 observes otherwise-enabled target rules without disable intervals, on the original source and shared budgets. Last permitted disable instructions own intervals, including repeated disables. A proved hidden finding establishes use; only complete absence establishes an unused suppression. Missing context, unavailable rules or interruption withhold that conclusion and report incomplete coverage. See the [counterfactual contract](engineering/rule-behavior.md#unused-suppressions).

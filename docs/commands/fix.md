@@ -15,6 +15,11 @@ Apply safe corrections to Markdown files and report problems that still need att
 mdchk fix [options] [paths...]
 ```
 
+The examples below assume the [current reduced setup](../index.md#get-started-with-this-build):
+a CommonMark+MD047 configuration and readable fixture paths. Without it,
+unavailable default GFM returns `12`; CommonMark alone retains missing default
+coverage (`15`). Apply additionally requires the verified native adapter above.
+
 ## Select files
 
 Pass one or more files or directories. Directories are searched recursively for `.md` and `.markdown` files. With no paths, fix processes the working directory. It uses the same selection and exclusion behavior as [lint](lint.md).
@@ -56,7 +61,10 @@ Corrections preserve meaning and unrelated content. For example, fix can add a m
 
 After corrections, mdchk checks the resulting content and reports remaining findings at their new locations. Apply reports observed saved snapshots and confirmed written changes; dry-run reports candidate snapshots and proposed changes. Refused or unavailable saved observations are never replaced by predicted clean content.
 
-Cross-file post-fix checks use one candidate view containing all proposed target changes. Referenced resources remain read-only. After project writes, results use the actual saved view: successful writes plus confirmed unchanged snapshots. If writes fail or a dependency changes, mdchk reports the error and affected incomplete coverage instead of treating every proposal as saved. See the [resource snapshot contract](../engineering/resources.md#snapshots-caching-fixes-and-limits).
+Production cross-file rule/resource consumers remain planned. Their accepted
+post-fix contract uses one candidate view containing all proposed target changes,
+with referenced resources read-only. Current CLI publication conservatively
+defers coupled target changes rather than claiming such checks ran. After project writes, results use the actual saved view: successful writes plus confirmed unchanged snapshots. If writes fail or a dependency changes, mdchk reports the error and affected incomplete coverage instead of treating every proposal as saved. See the [resource snapshot contract](../engineering/resources.md#snapshots-caching-fixes-and-limits).
 
 ## Understand the result
 

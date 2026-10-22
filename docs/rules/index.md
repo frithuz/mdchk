@@ -4,7 +4,7 @@ We target the implemented rule list from `rumdl` because it covers markdownlint'
 
 The mdchk ruleset contains 89 rules: MD001 through MD095, excluding MD002, MD006, MD008, MD015, MD016, and MD017. Preserve these reserved gaps; do not implement checks under those IDs.
 
-MD047 analysis, configuration and safe correction previews are implemented for CommonMark; filesystem application remains planned. Other ordinary rules remain planned. Each linked page defines its behavior, configuration, examples, correction policy, and validation requirements. These are internal mdchk specifications; individual status text identifies implemented support. Rule IDs are stable; additions and changes to defaults require an explicit specification update.
+MD047 analysis, configuration, safe previews and native application are implemented for CommonMark. Apply is limited to Darwin arm64+cgo/local APFS; other native adapters refuse writes with `13`, and protected EOF contexts remain manual. Other ordinary rule callbacks remain planned. The mandatory UTF-8 gate is implemented independently; MD094 controls attribution, not an ordinary production callback. Each linked page defines its behavior, configuration, examples, correction policy, and validation requirements. These are internal mdchk specifications; individual status text identifies implemented support. Rule IDs are stable; additions and changes to defaults require an explicit specification update.
 
 ## Areas
 

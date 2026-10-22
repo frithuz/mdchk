@@ -6,9 +6,11 @@ integration fixtures. Strict YAML decoding, semantic validation, bounded
 filesystem discovery, ancestor permissions, and compiled lint integration are
 implemented. Use the complete known rule catalog in every case, independently
 of the executable implementations. Read-only project configuration validation
-and its compiled text/JSON workflow tests are also implemented. Inspect, MCP,
-fix, and VS Code/GitHub reporters remain future delivery; their cases below
-specify the accepted contract.
+and all four reporters are implemented. Inspect supports text/JSON; fix supports
+previews and verified Darwin arm64+cgo/local APFS application of MD047, with
+protected EOF deferrals and unsupported-adapter refusal. MCP remains planned.
+Cases below involving unavailable rules, dialects, contexts or MCP specify the
+accepted future contract.
 
 Unless a case specifies otherwise, assume the selected flavor, directive
 processor, and applicable rules are implemented, no ancestor restricts the
@@ -87,8 +89,8 @@ flavor: commonmark
 ```
 
 This configuration works with the current production executable: CommonMark
-0.31.2 and directive processing are available, while GFM, Pandoc and ordinary
-rule implementations are not yet available. Lint parses
+0.31.2, directive processing and MD047 analysis/correction are available, while
+GFM, Pandoc and other ordinary rule implementations remain unavailable. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
 as `rule-unavailable`, sets `status: incomplete` and `complete: false`, and exits
 15. The complete 89-rule catalog remains intact: MD001 is default-enabled and
@@ -104,9 +106,12 @@ checks can yield clean exit 0 for valid UTF-8; mandatory decoding still applies.
 
 The implemented config validation scan does not execute MD001 and succeeds for
 this definition with exit 0. Its independent project scan checks every eligible
-definition rather than selecting the single definition used by lint. Future
-inspect can report the missing implementation while still exiting 0. Inspect,
-MCP integration, and fix are not delivered by the current build.
+definition rather than selecting the single definition used by lint. Delivered
+inspect reports missing implementations as observations while still exiting 0.
+For a current complete reduced selection, use the
+[published MD047-only configuration](../examples/editor-ci/.mdchk.yaml); see the
+[quick start](../index.md#get-started-with-this-build) for preview and saved results.
+That selection is not full Markdown conformance.
 
 ## Invalid definitions
 

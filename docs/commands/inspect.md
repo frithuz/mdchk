@@ -16,6 +16,14 @@ mdchk inspect /path/to/project/docs/guide.md
 mdchk inspect docs/guide.md --lines 18-30
 ```
 
+These examples assume the [current reduced setup](../index.md#get-started-with-this-build):
+a CommonMark+MD047 configuration and readable fixture paths. Lint/fix reject
+unavailable default GFM with `12`, or report missing default coverage with `15`
+when selecting CommonMark alone. Inspect instead completes observations with `0`
+even when configuration or check availability is unresolved. Replace
+`/path/to/project` with a real project path and ensure line-range examples have
+enough physical lines.
+
 ## Options
 
 | Option | Effect |

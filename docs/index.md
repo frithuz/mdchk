@@ -1,11 +1,11 @@
 # mdchk documentation
 
-mdchk checks Markdown against your project's expectations and applies safe corrections when requested. Use it from the terminal, in editors and CI, or through an MCP server for AI agents.
+mdchk checks Markdown against your project's expectations and applies safe corrections when requested. Use it from the terminal, in editors and CI, or, once implemented, through the planned MCP server for AI agents.
 
 ## Current implementation
 
-The executable currently provides general help, lint help, version output, lint
-argument parsing, configuration preparation, bounded source acquisition,
+The executable currently provides general and command-specific help, version
+output, lint argument parsing, configuration preparation, bounded source acquisition,
 mandatory UTF-8 validation, parsing, inherited directive suppression and
 registered-rule execution. Build it from a checkout with
 `go build -o mdchk ./cmd/mdchk`. Lint loads and validates the selected configuration
@@ -18,7 +18,7 @@ return clean `0`; available registered checks retain findings and coverage.
 See [lint's current implementation](commands/lint.md#current-implementation) for
 the available configuration and remaining execution work. Help and version do
 not access the project. Lint reports readable text by default or one schema-v1
-JSON object with `--format json` on stdout; stderr is reserved for execution logs.
+JSON object with `--format json` on stdout; these formats reserve stderr for execution logs.
 Reports retain findings, coverage reasons, errors, interruptions and omissions.
 Lint, fix and config validate support VS Code diagnostics and GitHub annotations
 with safe workflow command encoding. Inspect remains text/JSON only.
@@ -34,15 +34,32 @@ candidate outcomes in all four formats without writing files; only text/JSON
 include preview diffs. MD047 supplies the first production correction, with minimal terminal-newline
 changes and conservative protected-content deferrals. Apply uses verified native replacement on Darwin arm64+cgo/local APFS and reports actual saved content; unsupported adapters refuse writes. MCP remains planned and is rejected by this build.
 
-## Get started (planned execution)
+## Get started with this build
+
+Build `mdchk` as above and put the executable on PATH. In a disposable project,
+copy the [current example configuration](examples/editor-ci/.mdchk.yaml) to
+`.mdchk.yaml` and the [example document](examples/editor-ci/guide.md) to
+`docs/guide.md`. This explicitly selects CommonMark and MD047 while disabling the
+other ordinary checks. It is a reduced rule selection, not full Markdown
+conformance. Then run:
 
 ```sh
-mdchk lint .
-mdchk fix . --dry-run
-mdchk fix .
+mdchk lint docs/guide.md
+mdchk fix docs/guide.md --dry-run
+mdchk fix docs/guide.md
 ```
 
-Start with a read-only check. Preview safe corrections, then apply them. Reports identify remaining problems that need your attention. Defaults work without configuration; use the [configuration guide](configuration.md) to choose rules and excluded paths.
+The example has no terminal newline: lint returns `10` with MD047 at line 1,
+scalar column 5. Preview returns `0` with a proposed newline and leaves the file
+unchanged. Apply saves that newline on the verified Darwin arm64+cgo/local APFS
+adapter; unsupported adapters refuse with `13` and leave the file unchanged.
+After a successful apply, lint returns `0`.
+
+Without configuration, the default remains GFM, which this build rejects with
+`12`. CommonMark alone still leaves unavailable default checks and returns `15`.
+See the [configuration guide](configuration.md) before choosing another rule
+selection, and the [runnable integration setup](output-formats.md#runnable-integration-setup)
+for editor and CI examples.
 
 ## Command syntax
 

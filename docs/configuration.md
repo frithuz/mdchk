@@ -1,12 +1,19 @@
 # Configuring mdchk
 
-Use `.mdchk.yaml` to define your project's Markdown expectations. Lint and fix use the same rules and exclusions, whether you run them from the terminal or through the project's MCP server. Without a configuration file, mdchk uses its defaults.
+Use `.mdchk.yaml` to define your project's Markdown expectations. Lint and fix use the same rules and exclusions from the terminal; the planned MCP modes share this contract. Without a configuration file, mdchk uses its defaults, including GFM, which is currently unavailable and returns configuration error `12`.
 
-This is the approved configuration contract. Lint loads and validates configuration before target access, then acquires source snapshots and executes the shared parser and available registered checks. Lint, fix and config validate support text, schema-v1 JSON, VS Code and GitHub reports; inspect supports text/JSON. MD047 terminating-newline analysis and safe dry-run correction are implemented; other ordinary rule implementations remain pending. Missing enabled defaults produce coverage deficits rather than clean results; valid UTF-8 with all ordinary rules disabled can return clean `0`. See [initial capability handling](#initial-capability-handling) for how development builds must report unavailable behavior.
+This is the approved configuration contract. Lint loads and validates configuration before target access, then acquires source snapshots and executes the shared parser and available registered checks. Lint, fix and config validate support text, schema-v1 JSON, VS Code and GitHub reports; inspect supports text/JSON. MD047 terminating-newline analysis, safe previews and apply on the verified Darwin arm64+cgo/local APFS adapter are implemented; other ordinary rule implementations remain pending. Missing enabled defaults produce coverage deficits rather than clean results; valid UTF-8 with all ordinary rules disabled can return clean `0`. See [initial capability handling](#initial-capability-handling) for how development builds must report unavailable behavior.
 
 ## Define project expectations
 
-Place `.mdchk.yaml` in your project root:
+For a runnable current setup, copy the [MD047-only example](examples/editor-ci/.mdchk.yaml)
+to `.mdchk.yaml` in your project root and follow the [quick start](index.md#get-started-with-this-build).
+It selects CommonMark and explicitly disables other ordinary checks. CommonMark
+alone still returns incomplete/`15` for unavailable defaults; this reduced
+selection is not full Markdown conformance.
+
+The following is an accepted schema example, not a runnable configuration for
+this build: GFM and the explicitly enabled MD001/MD004 are unavailable (`12`).
 
 ```yaml
 version: 1
@@ -69,6 +76,10 @@ Standalone MCP configuration is a JSON object with the same semantic schema and 
 
 ## Shared resource settings
 
+Availability: resource consumers, cross-file checks, Pandoc and MCP remain
+planned. The following describes their accepted policy, not current CLI resource
+execution. Explicitly requesting unavailable capabilities returns `12`.
+
 Set resource policy once for the operation:
 
 ```yaml
@@ -93,6 +104,11 @@ These settings do not grant access or select lint targets. Excluded or unselecte
 `flavor: pandoc` selects the complete [fixed Pandoc profile](engineering/pandoc-compatibility.md). No per-extension configuration switches are accepted. Frontmatter and Quarto are independently configured; neither is enabled by choosing Pandoc.
 
 ## Optional document contexts
+
+Availability: frontmatter recognition, Quarto, slides and MkDocs consumers are
+not implemented in this build. Their schema and accepted behavior below remain
+the contract; explicitly enabling unavailable context returns `12`. Disabled
+settings do not enable these capabilities.
 
 ```yaml
 version: 1

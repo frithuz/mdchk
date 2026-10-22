@@ -10,7 +10,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD013](md013.md) | Maximum line width | Planned |
 | [MD027](md027.md) | Whitespace after blockquote markers | Planned |
 | [MD028](md028.md) | Empty lines separating blockquotes | Planned |
-| [MD047](md047.md) | Exactly one terminating newline | CommonMark analysis, configuration and safe correction previews implemented |
+| [MD047](md047.md) | Exactly one terminating newline | CommonMark analysis, configuration, previews and Darwin arm64+cgo/local APFS apply implemented; protected EOF remains manual |
 | [MD064](md064.md) | Repeated spaces in prose | Planned |
 | [MD085](md085.md) | Indented paragraph continuation lines | Planned |
 | [MD089](md089.md) | Spacing between CJK and Latin text | Planned |

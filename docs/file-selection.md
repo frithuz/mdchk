@@ -18,8 +18,8 @@ and [current lint status](commands/lint.md#current-implementation).
 | `lint` and `fix` | Named files or recursive directory scans; no paths means the working directory | One selected configuration supplies exclusions. Git metadata and symlinks are skipped. Git ignore support is deferred. |
 | `config validate` | All eligible `.mdchk.yaml` files beneath the named project directory; defaults to the working directory | Git ignores and valid, scoped configuration exclusions apply. The scan never searches above its project directory. |
 | `inspect` | Exactly one explicitly named file | Can inspect an excluded file and follows an explicitly named symlink for read-only analysis. Configuration discovery starts at the resolved target's directory. |
-| Project MCP `lint` and `fix` | Paths relative to the server root; omitted paths select Markdown beneath it | Configuration discovery and file access stay within the server root. Symlinks cannot broaden access. |
-| Standalone MCP `lint` and `fix` | The submitted file names and contents | Exclusions match submitted relative names. No files are loaded or saved using those names. |
+| Planned project MCP `lint` and `fix` | Paths relative to the server root; omitted paths select Markdown beneath it | Configuration discovery and file access stay within the server root. Symlinks cannot broaden access. |
+| Planned standalone MCP `lint` and `fix` | The submitted file names and contents | Exclusions match submitted relative names. No files are loaded or saved using those names. |
 
 Lint and fix directory scans select `.md` and `.markdown` files using ASCII-case-insensitive extension matching, including `.MD` and `.Markdown`. An explicitly named regular file is eligible regardless of its extension. Naming a file explicitly does not bypass configuration exclusions. A skipped file is not a checked file; read the report's skip reasons before assuming it passed.
 
@@ -43,6 +43,10 @@ mdchk inspect docs/guide.md --config .mdchk.yaml
 Inspect normally discovers configuration from the resolved target's directory. Supplying the same `--config` to lint and inspect helps compare their behavior. Neither operation merges ancestor rule settings or applies nested rule overrides. Higher-level exclusion and directive permissions are checked separately; see [configuration discovery and permissions](configuration.md).
 
 ## Resource access is separate from selection
+
+Availability: the following is the accepted resource contract. Production link,
+anchor and resource consumers and MCP remain planned; current CLI execution does
+not perform these checks. Explicitly enabled unavailable checks return `12`.
 
 Link and anchor checks may read excluded or unselected resources without linting or fixing them. Resource lookup never selects another target, loads its nested configuration, or recursively checks its outgoing links. An excluded submitted standalone file can also supply a read-only resource snapshot; all-targets-excluded remains a usage error.
 
@@ -101,4 +105,5 @@ Git ignore support for lint and fix is deferred in the current design. A `.gitig
 
 See [troubleshooting](troubleshooting.md) when selected files or configuration differ from what you expected.
 
-When `integrations.quarto.enabled: true`, directory scans also select `.qmd` with the same case-insensitive extension matching. `documents.slides` only annotates selected documents; its patterns never select or exclude targets. See [optional contexts](configuration.md#optional-document-contexts).
+Under the accepted future Quarto contract (currently unavailable and rejected with `12`),
+when `integrations.quarto.enabled: true`, directory scans also select `.qmd` with the same case-insensitive extension matching. `documents.slides` only annotates selected documents; its patterns never select or exclude targets. See [optional contexts](configuration.md#optional-document-contexts).

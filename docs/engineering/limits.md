@@ -3,12 +3,16 @@
 Status: accepted on 2026-10-15. Parser-layer budgets are implemented and
 verified as described in [parser accounting](parser-limits.md). Lint acquisition
 enforces document and aggregate content bytes with the shared execution budget;
-text/JSON reporting enforces encoded response bytes, reporting time and
-report reserve feasibility. Config validation also enforces bounded configuration/Git-source acquisition,
-directory/path limits, structured and alias depth, shared node/work/time budgets
-and text/JSON reporting; it rejects inapplicable overrides. Remaining
-adapter/application limits and their end-to-end
-verification remain pending.
+all four lint/fix/config-validation reporters enforce encoded response bytes,
+reporting time and report reserve feasibility (including both editor streams).
+Inspect enforces text/JSON projection/reporting bounds. Config validation also
+enforces bounded configuration/Git-source acquisition, directory/path limits,
+structured and alias depth, and shared node/work/time budgets; it rejects
+inapplicable overrides. Fix shares candidate, reparse, preservation, diff and
+saved-content accounting, and admits the mandatory write-outcome manifest before
+native publication. Native writes require the verified Darwin arm64+cgo/local
+APFS adapter. Remaining traversal, resource and MCP adapter/application limits
+and their end-to-end verification remain pending.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
 
@@ -23,7 +27,8 @@ its parser budgets, aggregate acquisition bytes and `response-bytes`,
 `reporting-time`, and `report-reserve-bytes`. Reporting-time uses nanoseconds;
 response/reserve values use bytes. Operator overrides replace the corresponding
 defaults. Reporting gets its own deadline after analysis stops and measures
-actual encoded text/JSON bytes, including escaping and newline framing. Whole
+actual encoded bytes in each supported format, including escaping, newline
+framing and both editor output streams. Whole
 optional records can be omitted with exact known counts. Detailed error records
 can become identity-preserving summaries with exact `/errors` omission counts;
 categories, IDs, paths, snapshots and ranges remain intact. Actual encountered
@@ -43,9 +48,11 @@ retain their precedence.
 Reporting pre-encodes an essential partial fallback for deadline expiry.
 
 Accepting an override name does not assert that every future application scope
-is already integrated. Traversal counts, logical path budgets, aggregate
-configuration accounting, resource inventories, MCP admission and write
-reservation remain work for their owning adapters. The full profile below is
+is already integrated. Lint/fix traversal counts and logical discovery-path
+budgets remain partially pending; config validation enforces its scan/path and
+aggregate configuration budgets. Resource inventories and MCP admission remain
+future adapter work. Native fix write reservations are delivered; they do not
+establish future MCP reservation or whole-profile enforcement. The full profile below is
 the accepted implementation contract.
 
 ## Defaults

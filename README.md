@@ -6,6 +6,12 @@ Start with the [documentation index](docs/index.md) for global options, commands
 
 ## Check Markdown
 
+First follow the [current-build quick start](docs/index.md#get-started-with-this-build):
+use the published CommonMark+MD047 configuration, which explicitly disables other
+ordinary checks. This reduced selection is not full Markdown conformance.
+Without configuration, unavailable default GFM returns `12`; CommonMark alone
+leaves unavailable default checks and returns `15`.
+
 Run `lint` on a file or directory to find problems without modifying files:
 
 ```sh
@@ -15,7 +21,7 @@ mdchk lint docs/
 
 Each finding identifies the file, line, column, rule, and a useful explanation. Findings distinguish problems that can be fixed automatically from those that need a person or agent to decide what to change.
 
-An illustrative finding:
+An illustrative future MD001 finding (this rule is not yet implemented):
 
 ```text
 docs/guide.md:18:1 MD001: Heading jumps from level 2 to level 4. Choose the intended heading level. [manual]
@@ -32,7 +38,7 @@ mdchk fix docs/ --dry-run
 
 The report shows which files changed, what was corrected, and which problems remain. `--dry-run` shows a proposed diff without writing files. After applying corrections, mdchk checks the resulting files again so reported locations match the saved content.
 
-Safe corrections are small and specific. For example, mdchk can add a missing final newline. It preserves intentional Markdown hard breaks and leaves code examples, front matter, and ambiguous edits alone. It reports a skipped heading level rather than guessing the intended structure, and reports a missing code-block language rather than guessing the language.
+Safe corrections are small and specific. For example, mdchk can add a missing final newline. It preserves intentional Markdown hard breaks and leaves code examples, front matter, and ambiguous edits alone. Protected EOF contexts remain manual. Heading-level and code-language checks remain planned; their policies forbid guessing the intended structure or language. Apply currently requires Darwin arm64+cgo/local APFS; other native adapters refuse writes with `13`.
 
 ## Inspect processing details
 
@@ -46,9 +52,9 @@ Use [`mdchk config validate`](docs/commands/config/validate.md) to check all eli
 
 ## Use with AI agents
 
-An MCP server exposes `lint` and `fix` actions. Agents receive structured findings and fix results so they can check their work, apply safe corrections, and address the remaining problems.
+The planned MCP server is unavailable in this build. Its accepted future contract exposes `lint` and `fix` actions. Agents receive structured findings and fix results so they can check their work, apply safe corrections, and address the remaining problems.
 
-Start the server for your project:
+Future server invocation (currently rejected):
 
 ```sh
 mdchk mcp --root .
@@ -68,11 +74,11 @@ See the [result formats guide](docs/output-formats.md) for readable output, JSON
 
 ## Rules and scope
 
-mdchk provides file and directory checks, safe fixes with previews, project configuration, results for people and integrations, and an MCP server.
+mdchk provides file and directory checks, safe fixes with previews, project configuration, results for people and integrations, and a planned MCP server.
 
 The [ruleset to implement](docs/rules/index.md) defines 89 checks with stable numeric IDs and reserved gaps. Rule pages are grouped by focus area. Each page specifies behavior, default enablement, options, examples, and correction policies.
 
-The approved [format contracts](docs/markdown-formats.md) define CommonMark 0.31.2, the fixed GFM profile, and the fixed Pandoc 3.12.1 profile. The [resource contract](docs/engineering/resources.md) defines bounded link/anchor lookup and standalone context. The internal CommonMark core passes all 652 specification examples in normalized and strict comparisons. CLI lint now selects and acquires immutable source snapshots, runs mandatory UTF-8 validation, parses Markdown, resolves inherited directive permissions and suppression, and executes available registered checks. It emits readable text by default or one bounded schema-v1 JSON result on stdout, including errors and partial outcomes. VS Code and GitHub reporters remain planned. Missing default rule implementations remain explicit coverage deficits. GFM/Pandoc extensions, frontmatter, production rules, MCP integration and production rendering remain separate deliveries; see the [delivered parser contract](docs/engineering.md#delivered-commonmark-core).
+The approved [format contracts](docs/markdown-formats.md) define CommonMark 0.31.2, the fixed GFM profile, and the fixed Pandoc 3.12.1 profile. The [resource contract](docs/engineering/resources.md) defines bounded link/anchor lookup and standalone context. The internal CommonMark core passes all 652 specification examples in normalized and strict comparisons. CLI lint now selects and acquires immutable source snapshots, runs mandatory UTF-8 validation, parses Markdown, resolves inherited directive permissions and suppression, and executes available registered checks. It emits readable text by default or one bounded schema-v1 JSON result on stdout, including errors and partial outcomes. Lint, fix and config validate support all four reporters; inspect supports text/JSON. MD047 is the first production ordinary rule and correction, with native application bounded as above. Missing default rule implementations remain explicit coverage deficits. GFM/Pandoc extensions, frontmatter, other ordinary rules, MCP integration and production rendering remain separate deliveries; see the [delivered parser contract](docs/engineering.md#delivered-commonmark-core).
 
 Full-document formatting, prose rewriting, remote link checks, dedicated editor extensions, and third-party rules are outside mdchk's scope.
 

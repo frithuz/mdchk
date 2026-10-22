@@ -63,12 +63,13 @@ inactive candidates without interpreting syntax as violations.
 JSON retains suppressed findings separately with `suppressed_by.kind`, without
 `directive_id`: lint does not publish a directive-record collection. Text prints
 suppression and policy notes. Exact owner/token/raw candidate and every governing
-configuration origin remain in the owned shared analysis model for later
-inspection. Lint does not implement an inspect command or MD087 counterfactuals.
+configuration origin remain in the owned shared analysis model. The standalone
+[inspect command](inspect.md) exposes those details; lint itself does not publish
+an inspection record. MD087 counterfactual checks remain unavailable.
 Incomplete directive processing withholds ordinary callbacks and reports reduced
 coverage. All analysis shares the same parse, source snapshot and operation budget.
 
-The remaining execution behavior on this page is the accepted target contract.
+The command behavior below is delivered unless explicitly marked unavailable or deferred.
 
 ## Run a disposable project
 
@@ -84,7 +85,7 @@ flavor: commonmark
 YAML
 printf '# Example\n' > "$mdchk_demo/example.md"
 (
-  cd "$mdchk_demo" || exit 1
+  cd -P "$mdchk_demo" || exit 1
   ./mdchk --help
   ./mdchk lint --format json example.md
   mdchk_status=$?
@@ -100,11 +101,16 @@ and 30 disabled by default; the mandatory UTF-8 gate is available independently
 of ordinary checks. Explicitly requesting an unavailable rule returns `12`.
 Omitting configuration selects unavailable default GFM and also returns `12`.
 
-To obtain a clean `0` for valid UTF-8, disable unavailable ordinary rules and
-satisfy or disable MD047. To isolate the decoding gate, disable every ordinary rule. The
+For a runnable reduced selection, use the published
+[CommonMark+MD047 configuration](../examples/editor-ci/.mdchk.yaml) and
+[exact source fixture](../examples/editor-ci/guide.md), as described in the
+[quick start](../index.md#get-started-with-this-build). The original returns `10`;
+adding one newline returns `0`. Preview returns `0` with a proposed change while
+the original bytes stay unchanged. To obtain a clean `0` for other valid UTF-8,
+disable unavailable ordinary rules and satisfy or disable MD047. To isolate the decoding gate, disable every ordinary rule. The
 compiled production fixture in
 [`cleanConfiguration`](../../cmd/mdchk/configuration_acceptance_test.go)
-generates that complete configuration from the actual catalog and verifies both
+generates that complete configuration from the actual catalog and verifies text/JSON
 reporters; use the [contributor workflow](../contributing.md#exercise-a-newly-registered-rule-through-the-cli)
 to run it or add a registered-rule fixture. It also describes the separate
 compile-time synthetic registration used to demonstrate violations (`10`) and
@@ -115,6 +121,11 @@ Capture `$?` immediately after the executable, as above. `go run` reports a
 wrapper status for nonzero program exits and cannot verify mdchk's semantic
 status. The executable implements lint, fix, config validate, inspect, help and
 version. GFM and Pandoc remain deferred.
+
+The selection and option examples below assume the
+[current reduced setup](../index.md#get-started-with-this-build) and readable
+fixture paths. The disposable example above intentionally demonstrates incomplete
+CommonMark defaults instead.
 
 ## Select files
 
