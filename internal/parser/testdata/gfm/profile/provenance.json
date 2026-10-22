@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "sources": [
+    "b153d814fdfc8624bb6da7449162c1cd707a637f7d1c1b636eb44b9cf63fa220",
+    "257c41ad946f7a1414a499aca402a1aa8fdac3678532266611348c1cf54f4b80"
+  ],
+  "artifacts": {
+    "expectations.json": {
+      "sha256": "91a6950f514ff4240dffbfd1ddd39e17212d018a1e19b5e91bcdbd1b91055110",
+      "byte_count": 309382,
+      "license": "CC-BY-SA-4.0",
+      "origin": "John MacFarlane CommonMark Spec and published GitHub Flavored Markdown specification",
+      "role": "Independently authored expected output and typed source contracts",
+      "modifications": "Authored modern-core/integrated adaptations, supplemental examples, reasons, specification references and source/structure projections; originals remain unchanged"
+    },
+    "ledger.json": {
+      "sha256": "4ae394dc8779088b3199009a03d094dbb5317115a0712fe771502109600d13af",
+      "byte_count": 331480,
+      "license": "CC-BY-SA-4.0",
+      "origin": "John MacFarlane CommonMark Spec and published GitHub Flavored Markdown specification",
+      "role": "Generated three-scope published-case identity and expectation reference ledger",
+      "modifications": "Add stable original-case metadata and explicitly resolved expectation references; original data is not changed"
+    },
+    "tools/gfm_profile.py": {
+      "sha256": "83bffc35784445e61bb6b72ab922138fc6425771873ce5bfb2767c3d39044ed2",
+      "byte_count": 36203,
+      "license": "repository-authored software; no imported upstream software",
+      "origin": "mdchk repository",
+      "role": "Offline schema, source, provenance and actual-consumer accounting validator",
+      "modifications": "New stdlib-only validator; no comparison implementation imported"
+    }
+  }
+}

@@ -4,3 +4,6 @@ internal/parser/testdata/gfm/0.29-gfm/upstream/cmark-gfm-COPYING -text
 internal/parser/testdata/gfm/0.29-gfm/examples.json -text
 # Provenance pins this extractor's bytes; keep its source LF on every host.
 tools/gfm_corpus.py text eol=lf
+# Profile data and its pinned validator retain reviewed bytes across hosts.
+internal/parser/testdata/gfm/profile/*.json -text
+tools/gfm_profile.py text eol=lf

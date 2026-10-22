@@ -2,8 +2,9 @@
 
 Status: approved on 2026-10-14. The [original published corpus and offline
 extraction tooling](../../internal/parser/testdata/gfm/0.29-gfm/README.md) are
-retained and verified. Profile adaptations, parser implementation, and mdchk
-conformance verification remain pending. This contract
+retained and verified. The [executable profile fixture contract](../../internal/parser/testdata/gfm/profile/README.md)
+now supplies adaptations and independent source expectations. Parser implementation
+and mdchk conformance verification remain pending. This contract
 defines the target for [#158](https://github.com/frithuz/mdchk/issues/158), building
 on the [verified core parser contract](https://github.com/frithuz/mdchk/issues/32).
 
