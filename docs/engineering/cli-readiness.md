@@ -19,7 +19,15 @@ not Markdown documents. Inspection reports observations with exit 0 and its own
 projection version, independently of validation's validity decision.
 
 All read-only stages preserve the project's bytes, file and directory inventory,
-identities, modes and modification times. An actual missing target produces I/O
+identities, modes and modification times. The preservation oracle captures each
+file and directory through an immediately statted handle, reads file bytes from
+that handle, and checks every close before running commands. This freezes native
+identity at observation time, including on Windows; directory enumeration and
+path metadata can defer identity lookup. Each command checkpoint reports exact
+changed paths and fields. Independent filesystem mutation controls verify byte,
+size, type, mode, mtime, inventory and file/directory replacement detection without
+retries or timestamp tolerances. Access time is deliberately excluded because
+reads may update it. An actual missing target produces I/O
 exit 13 while retaining an independent readable file's finding or proposed
 candidate. Selected text and editor reports agree with literal status and scalar
 location expectations. Inspection's binary version equals this executable's

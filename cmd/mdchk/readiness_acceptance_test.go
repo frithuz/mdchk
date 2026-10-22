@@ -3,11 +3,15 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"reflect"
+	"runtime"
+	"sort"
 	"strings"
 	"testing"
 
@@ -42,9 +46,16 @@ func TestCompiledCLIReadinessJourney(t *testing.T) {
 	putConfigurationFile(t, root, "nested/.mdchk.yaml", md047Configuration(false, true))
 	putConfigurationFile(t, root, "nested/doc.md", "nested")
 	before := readinessState(t, root)
+	expected := before
+	readOnly := func(cwd string, args ...string) configurationRun {
+		t.Helper()
+		got := runConfigurationProcess(t, binary, cwd, args...)
+		readinessAssertEqual(t, strings.Join(args, " "), expected, readinessState(t, root))
+		return got
+	}
 	run := func(status int, operation string, args ...string) result.Result {
 		t.Helper()
-		got := runConfigurationProcess(t, binary, root, args...)
+		got := readOnly(root, args...)
 		if got.Status != status {
 			t.Fatalf("%v: status %d want %d: %s", args, got.Status, status, got.Stdout)
 		}
@@ -71,7 +82,7 @@ func TestCompiledCLIReadinessJourney(t *testing.T) {
 	if hidden.Diagnostic.Path != "suppressed.md" || hidden.Diagnostic.Range.Start.Line != 2 || hidden.Diagnostic.Range.Start.Column != 2 {
 		t.Fatal(hidden)
 	}
-	metadata := runConfigurationProcess(t, binary, root, "--version")
+	metadata := readOnly(root, "--version")
 	if metadata.Status != 0 || !strings.HasPrefix(metadata.Stdout, "mdchk ") {
 		t.Fatal(metadata)
 	}
@@ -89,7 +100,7 @@ func TestCompiledCLIReadinessJourney(t *testing.T) {
 	// Run from the child so both lint and preview select the attempted relaxation.
 	child := filepath.Join(root, "restricted", "child")
 	for _, args := range [][]string{{"lint", "blocked.md", "--format=json"}, {"fix", "--dry-run", "blocked.md", "--format=json"}} {
-		got := runConfigurationProcess(t, binary, child, args...)
+		got := readOnly(child, args...)
 		want := 10
 		if args[0] == "fix" {
 			want = 0
@@ -158,20 +169,19 @@ func TestCompiledCLIReadinessJourney(t *testing.T) {
 			readinessSnapshot(t, r.Changes[0].Candidate, "candidate", candidate)
 		}
 	}
-	editor := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=vscode")
+	editor := readOnly(root, "lint", "doc.md", "--format=vscode")
 	if editor.Status != 10 || editor.Stdout != "doc.md:2:6: error: MD047: File must end with a line-ending sequence.\n" {
 		t.Fatal(editor)
 	}
-	text := runConfigurationProcess(t, binary, root, "fix", "--dry-run", "doc.md")
+	text := readOnly(root, "fix", "--dry-run", "doc.md")
 	if text.Status != 0 || !strings.Contains(text.Stdout, "proposed doc.md") {
 		t.Fatal(text)
 	}
-	if !readinessEqual(before, readinessState(t, root)) {
-		t.Fatal("read-only journey changed bytes, inventory or metadata")
-	}
+	readinessAssertEqual(t, "complete read-only journey", before, readinessState(t, root))
 	// A malformed unselected descendant is a downward validation concern only.
 	putConfigurationFile(t, root, "nested/bad/.mdchk.yaml", "version: [\n")
 	malformedBefore := readinessState(t, root)
+	expected = malformedBefore
 	invalid := run(12, "config validate", "config", "validate", ".", "--format=json")
 	if !invalid.Complete || invalid.ConfigValidation == nil || invalid.ConfigValidation.InvalidDefinitions != 1 || invalid.ConfigValidation.DefinitionsChecked != 5 {
 		t.Fatal(invalid)
@@ -187,17 +197,16 @@ func TestCompiledCLIReadinessJourney(t *testing.T) {
 	}
 	run(10, "lint", "lint", "doc.md", "--format=json")
 	run(0, "fix", "fix", "--dry-run", "doc.md", "--format=json")
-	if !readinessEqual(malformedBefore, readinessState(t, root)) {
-		t.Fatal("discovery operations changed project")
-	}
+	readinessAssertEqual(t, "malformed descendant discovery", malformedBefore, readinessState(t, root))
 	// Actual publication is the capability probe: no GOOS guess can establish
 	// APFS/cgo support. A refusal must name the unsupported adapter specifically.
 	applied := runConfigurationProcess(t, binary, root, "fix", "doc.md", "--format=json")
 	saved := validateConfigurationOperationJSON(t, []byte(applied.Stdout), "fix")
 	if applied.Status == 13 {
-		if !strings.Contains(applied.Stdout, "unsupported") || len(saved.Changes) != 0 || !readinessEqual(malformedBefore, readinessState(t, root)) {
+		if !strings.Contains(applied.Stdout, "unsupported") || len(saved.Changes) != 0 {
 			t.Fatal("not an explicit no-effect adapter refusal", applied)
 		}
+		readinessAssertEqual(t, "unsupported apply refusal", malformedBefore, readinessState(t, root))
 		t.Log("actual native adapter unsupported; exact refusal and no effects verified")
 		return
 	}
@@ -211,21 +220,34 @@ func TestCompiledCLIReadinessJourney(t *testing.T) {
 		t.Fatal("saved bytes", err, string(data))
 	}
 	afterSave := readinessState(t, root)
-	for path, state := range malformedBefore {
-		if path != "doc.md" && path != "." && !readinessEntryEqual(state, afterSave[path]) {
-			t.Fatal("apply changed unrelated fixture", path)
+	// Only publication's target and its parent mtime may change. Retain the
+	// parent's identity, type and mode, and compare every other entry in full.
+	unrelatedBefore := make(map[string]readinessEntry, len(malformedBefore))
+	unrelatedAfter := make(map[string]readinessEntry, len(afterSave))
+	for path, entry := range malformedBefore {
+		if path != "doc.md" {
+			unrelatedBefore[path] = entry
 		}
 	}
-	if len(afterSave) != len(malformedBefore) {
-		t.Fatal("apply left artifacts")
+	for path, entry := range afterSave {
+		if path != "doc.md" {
+			unrelatedAfter[path] = entry
+		}
 	}
+	parentBefore, parentAfter := unrelatedBefore["."], unrelatedAfter["."]
+	readinessAssertParentAfterSave(t, parentBefore, parentAfter)
+	delete(unrelatedBefore, ".")
+	delete(unrelatedAfter, ".")
+	readinessAssertEqual(t, "apply unrelated entries", unrelatedBefore, unrelatedAfter)
+	expected = afterSave
 	run(0, "lint", "lint", "doc.md", "--format=json")
 	afterInspect := run(0, "inspect", "inspect", "doc.md", "--format=json")
 	readinessSnapshot(t, *readinessFile(t, afterInspect, "doc.md").InputSnapshot, "original", candidate)
 	second := run(0, "fix", "fix", "doc.md", "--format=json")
-	if len(second.Changes) != 0 || readinessFile(t, second, "doc.md").WriteStatus != "not-needed" || !readinessEqual(afterSave, readinessState(t, root)) {
+	if len(second.Changes) != 0 || readinessFile(t, second, "doc.md").WriteStatus != "not-needed" {
 		t.Fatal("apply not idempotent", second)
 	}
+	readinessAssertEqual(t, "second apply", afterSave, readinessState(t, root))
 	t.Log("actual native saved bytes, observed saved identity and inode-preserving idempotence verified")
 }
 
@@ -271,6 +293,10 @@ func readinessDirective(t *testing.T, r result.Result, permission, state string)
 	}
 }
 
+// Info comes from File.Stat, not DirEntry.Info or path Stat. In particular,
+// Windows File.Stat captures native IDs immediately; path FileInfo may defer
+// identity lookup until SameFile, after a fixture has already been replaced.
+// No handle remains open while an ordinary command runs.
 type readinessEntry struct {
 	Info fs.FileInfo
 	Hash string
@@ -283,18 +309,32 @@ func readinessState(t *testing.T, root string) map[string]readinessEntry {
 		if err != nil {
 			return err
 		}
-
-		info, err := d.Info()
+		if d.Type()&fs.ModeSymlink != 0 {
+			return fmt.Errorf("fixture contains symlink: %s", path)
+		}
+		if d.Type() != 0 && !d.IsDir() {
+			return fmt.Errorf("unsupported fixture entry type %s: %s", d.Type(), path)
+		}
+		//nolint:gosec // Enumerated paths belong to this test-owned physical tree.
+		f, err := os.Open(path)
 		if err != nil {
 			return err
 		}
+		info, statErr := f.Stat()
 		var data []byte
-		if !d.IsDir() {
-			//nolint:gosec // Paths come from the test-owned physical project.
-			data, err = os.ReadFile(path)
-			if err != nil {
-				return err
+		var readErr error
+		if statErr == nil {
+			if info.Mode().IsRegular() {
+				data, readErr = io.ReadAll(f)
+			} else if !info.IsDir() {
+				readErr = fmt.Errorf("unsupported fixture entry type %s: %s", info.Mode(), path)
 			}
+		}
+		if err := errors.Join(statErr, readErr, f.Close()); err != nil {
+			return fmt.Errorf("capture %s: %w", path, err)
+		}
+		if info.Mode().Type() != d.Type() {
+			return fmt.Errorf("fixture type changed during capture: %s", path)
 		}
 		name, err := filepath.Rel(root, path)
 		if err != nil {
@@ -309,17 +349,78 @@ func readinessState(t *testing.T, root string) map[string]readinessEntry {
 	return out
 }
 
-func readinessEntryEqual(a, b readinessEntry) bool {
-	return a.Info != nil && b.Info != nil && a.Hash == b.Hash && os.SameFile(a.Info, b.Info) && a.Info.Mode() == b.Info.Mode() && a.Info.ModTime().Equal(b.Info.ModTime())
-}
-func readinessEqual(a, b map[string]readinessEntry) bool {
-	if len(a) != len(b) {
-		return false
+func readinessDifferences(a, b map[string]readinessEntry) []string {
+	names := make(map[string]bool, len(a)+len(b))
+	for name := range a {
+		names[name] = true
 	}
-	for path, state := range a {
-		if !readinessEntryEqual(state, b[path]) {
-			return false
+	for name := range b {
+		names[name] = true
+	}
+	paths := make([]string, 0, len(names))
+	for name := range names {
+		paths = append(paths, name)
+	}
+	sort.Strings(paths)
+	var differences []string
+	for _, path := range paths {
+		before, was := a[path]
+		after, now := b[path]
+		if !was {
+			differences = append(differences, fmt.Sprintf("%q: extra entry", path))
+			continue
+		}
+		if !now {
+			differences = append(differences, fmt.Sprintf("%q: missing entry", path))
+			continue
+		}
+		if before.Info == nil || after.Info == nil {
+			differences = append(differences, fmt.Sprintf("%q: missing captured metadata", path))
+			continue
+		}
+		add := func(field string, old, new any) {
+			differences = append(differences, fmt.Sprintf("%q: %s before=%v after=%v", path, field, old, new))
+		}
+		if before.Hash != after.Hash {
+			add("bytes SHA256", before.Hash, after.Hash)
+		}
+		// Directory size is filesystem bookkeeping, not file contents. Its inventory,
+		// type, identity, mode and mtime remain checked exactly.
+		if before.Info.Mode().IsRegular() && before.Info.Size() != after.Info.Size() {
+			add("size", before.Info.Size(), after.Info.Size())
+		}
+		if before.Info.Mode().Type() != after.Info.Mode().Type() {
+			add("type", before.Info.Mode().Type(), after.Info.Mode().Type())
+		}
+		if before.Info.Mode() != after.Info.Mode() {
+			add("mode", before.Info.Mode(), after.Info.Mode())
+		}
+		if !os.SameFile(before.Info, after.Info) {
+			add("native identity equal", true, false)
+		}
+		if !before.Info.ModTime().Equal(after.Info.ModTime()) {
+			add("mtime", before.Info.ModTime(), after.Info.ModTime())
 		}
 	}
-	return true
+	return differences
+}
+
+func readinessAssertEqual(t *testing.T, checkpoint string, a, b map[string]readinessEntry) {
+	t.Helper()
+	if differences := readinessDifferences(a, b); len(differences) != 0 {
+		t.Fatalf("%s (%s/%s): fixture preservation failed:\n%s", checkpoint, runtime.GOOS, runtime.GOARCH, strings.Join(differences, "\n"))
+	}
+}
+
+func readinessAssertParentAfterSave(t *testing.T, before, after readinessEntry) {
+	t.Helper()
+	if before.Info == nil || after.Info == nil {
+		t.Fatal("apply parent: missing captured metadata")
+	}
+	if !os.SameFile(before.Info, after.Info) {
+		t.Fatal("apply parent: native identity changed")
+	}
+	if before.Info.Mode() != after.Info.Mode() {
+		t.Fatalf("apply parent: type/mode before=%s after=%s", before.Info.Mode(), after.Info.Mode())
+	}
 }
