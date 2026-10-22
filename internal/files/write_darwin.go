@@ -82,6 +82,13 @@ type nativeWriteSet struct {
 	hook   func(string, string) error
 	write  func(*os.File, []byte) (int, error)
 	rename func(*os.File, string, string) error
+	// Per-acquisition operation seams retain real descriptor ownership in tests.
+	closeFile   func(string, *os.File) error
+	statFile    func(string, *os.File) (fs.FileInfo, error)
+	openStage   func(*os.File, string) (*os.File, error)
+	removeStage func(*os.File, string) error
+	unlock      func(*os.File) error
+	syncFile    func(string, *os.File) error
 }
 
 func nativeOpen(parent *os.File, name string, flags int, mode uint32) (*os.File, error) {
@@ -154,7 +161,7 @@ func nativeParent(path string) (parent *os.File, chain []directoryIdentity, err 
 	}
 	defer func() {
 		if err != nil {
-			_ = current.Close()
+			err = errors.Join(err, current.Close())
 		}
 	}()
 	info, e := current.Stat()
@@ -176,16 +183,17 @@ func nativeParent(path string) (parent *os.File, chain []directoryIdentity, err 
 		}
 		info, e = next.Stat()
 		if e != nil {
-			_ = next.Close()
-			return nil, nil, e
+			return nil, nil, errors.Join(e, next.Close())
 		}
 		acl, e := directoryACL(next)
 		if e != nil {
-			_ = next.Close()
-			return nil, nil, e
+			return nil, nil, errors.Join(e, next.Close())
 		}
 		chain = append(chain, directoryIdentity{info, acl})
-		_ = current.Close()
+		if e := current.Close(); e != nil {
+			current = next
+			return nil, nil, e
+		}
 		current = next
 	}
 	return current, chain, nil
@@ -206,7 +214,7 @@ func sameSecurity(a, b fs.FileInfo) bool {
 	y, ok2 := b.Sys().(*syscall.Stat_t)
 	return ok && ok2 && a.Mode() == b.Mode() && x.Uid == y.Uid && x.Gid == y.Gid && x.Flags == y.Flags && x.Nlink == y.Nlink
 }
-func (o *nativeObservation) reopen() (*os.File, error) {
+func (o *nativeObservation) reopen() (result *os.File, err error) {
 	if o.uncertain {
 		return nil, writeError(o.path, "saved state is uncertain; new acquisition required")
 	}
@@ -217,7 +225,13 @@ func (o *nativeObservation) reopen() (*os.File, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = parent.Close() }()
+	defer func() {
+		err = errors.Join(err, parent.Close())
+		if err != nil && result != nil {
+			err = errors.Join(err, result.Close())
+			result = nil
+		}
+	}()
 	if !sameChain(o.chain, chain) {
 		return nil, writeError(o.path, "parent identity changed")
 	}
@@ -227,7 +241,7 @@ func (o *nativeObservation) reopen() (*os.File, error) {
 			return nil, nil
 		}
 		if f != nil {
-			_ = f.Close()
+			err = errors.Join(err, f.Close())
 		}
 		if err != nil {
 			return nil, err
@@ -239,20 +253,14 @@ func (o *nativeObservation) reopen() (*os.File, error) {
 	}
 	info, err := f.Stat()
 	if err != nil || !info.Mode().IsRegular() || !os.SameFile(o.info, info) || !sameSecurity(o.info, info) {
-		_ = f.Close()
-		if err != nil {
-			return nil, err
-		}
-		return nil, writeError(o.path, "identity, type or security metadata changed")
+		return nil, errors.Join(err, f.Close(), writeError(o.path, "identity, type or security metadata changed"))
 	}
 	if err = nativeMetadata(f); err != nil {
-		_ = f.Close()
-		return nil, err
+		return nil, errors.Join(err, f.Close())
 	}
 	security, err := nativeSecurity(f)
 	if err != nil || security != o.security {
-		_ = f.Close()
-		return nil, errors.Join(err, writeError(o.path, "extended security metadata changed"))
+		return nil, errors.Join(err, f.Close(), writeError(o.path, "extended security metadata changed"))
 	}
 	return f, nil
 }
@@ -275,7 +283,7 @@ func (f *nativeRead) Verify() error {
 	}
 	other, err := f.observation.reopen()
 	if other != nil {
-		_ = other.Close()
+		err = errors.Join(err, other.Close())
 	}
 	return err
 }
@@ -293,7 +301,7 @@ func acquireNativeWrite(ctx context.Context, selected *Selection, options WriteO
 	out = &nativeWriteSet{entries: map[string]*nativeObservation{}, required: map[string][]string{}}
 	defer func() {
 		if err != nil {
-			_ = out.close()
+			err = errors.Join(err, out.close())
 		}
 	}()
 
@@ -323,19 +331,16 @@ func acquireNativeWrite(ctx context.Context, selected *Selection, options WriteO
 			return nil, e
 		}
 		if len(t.identities) != len(chain)+1 {
-			_ = parent.Close()
-			return nil, writeError(t.Path, "missing selection parent authority")
+			return nil, errors.Join(writeError(t.Path, "missing selection parent authority"), parent.Close())
 		}
 		for i, info := range chain {
 			if !os.SameFile(info.info, t.identities[i].info) {
-				_ = parent.Close()
-				return nil, writeError(t.Path, "selected parent identity changed")
+				return nil, errors.Join(writeError(t.Path, "selected parent identity changed"), parent.Close())
 			}
 		}
 		f, e := nativeOpen(parent, filepath.Base(t.Path), syscall.O_RDONLY|syscall.O_NONBLOCK, 0)
 		if e != nil {
-			_ = parent.Close()
-			return nil, e
+			return nil, errors.Join(e, parent.Close())
 		}
 		info, e := f.Stat()
 		if e == nil && !info.Mode().IsRegular() {
@@ -345,15 +350,11 @@ func acquireNativeWrite(ctx context.Context, selected *Selection, options WriteO
 			e = nativeMetadata(f)
 		}
 		if e != nil {
-			_ = f.Close()
-			_ = parent.Close()
-			return nil, e
+			return nil, errors.Join(e, f.Close(), parent.Close())
 		}
 		security, e := nativeSecurity(f)
 		if e != nil {
-			_ = f.Close()
-			_ = parent.Close()
-			return nil, e
+			return nil, errors.Join(e, f.Close(), parent.Close())
 		}
 		observation := &nativeObservation{budget: options.Budget, security: security, path: t.Path, parent: parent, chain: chain, info: info, target: writable[t.Path]}
 		out.entries[t.Path] = observation
@@ -444,10 +445,31 @@ func acquireNativeWrite(ctx context.Context, selected *Selection, options WriteO
 func (s *nativeWriteSet) close() error {
 	var errs []error
 	for _, o := range s.entries {
-		errs = append(errs, o.parent.Close())
+		errs = append(errs, s.closeHandle("shutdown", o.parent))
 	}
 	s.entries = nil
 	return errors.Join(errs...)
+}
+
+// closeHandle consumes the handle even when Close reports failure. Injected
+// operations have the same ownership contract; callers never retry a close.
+func (s *nativeWriteSet) closeHandle(stage string, f *os.File) error {
+	if s.closeFile != nil {
+		return s.closeFile(stage, f)
+	}
+	return f.Close()
+}
+func (s *nativeWriteSet) statHandle(stage string, f *os.File) (fs.FileInfo, error) {
+	if s.statFile != nil {
+		return s.statFile(stage, f)
+	}
+	return f.Stat()
+}
+func (s *nativeWriteSet) syncHandle(stage string, f *os.File) error {
+	if s.syncFile != nil {
+		return s.syncFile(stage, f)
+	}
+	return f.Sync()
 }
 func (s *nativeWriteSet) at(stage, path string) error {
 	if s.hook != nil {
@@ -461,7 +483,7 @@ func checkpoint(ctx context.Context, b *parser.OperationBudget, n int64) error {
 	}
 	return b.ChargeWork(n)
 }
-func (s *nativeWriteSet) validate(ctx context.Context, o *nativeObservation, b *parser.OperationBudget) error {
+func (s *nativeWriteSet) validate(ctx context.Context, o *nativeObservation, b *parser.OperationBudget) (err error) {
 	if err := checkpoint(ctx, b, int64(o.source.Len())*3+int64(len(o.path))*3+int64(strings.Count(o.path, "/"))*4096+1); err != nil {
 		return err
 	}
@@ -472,7 +494,7 @@ func (s *nativeWriteSet) validate(ctx context.Context, o *nativeObservation, b *
 	if f == nil {
 		return nil
 	}
-	defer func() { _ = f.Close() }()
+	defer func() { err = errors.Join(err, s.closeHandle("revalidation", f)) }()
 	// Bound a growth probe independently of potentially hostile current file size.
 	raw, err := io.ReadAll(io.LimitReader(f, int64(o.source.Len())+1))
 	if err != nil {
@@ -494,7 +516,7 @@ func parentKey(o *nativeObservation) string {
 	st := o.chain[len(o.chain)-1].info.Sys().(*syscall.Stat_t)
 	return fmt.Sprintf("%020d:%020d", st.Dev, st.Ino)
 }
-func (s *nativeWriteSet) locks(ctx context.Context, observations []*nativeObservation, b *parser.OperationBudget) (func(), error) {
+func (s *nativeWriteSet) locks(ctx context.Context, observations []*nativeObservation, b *parser.OperationBudget) (func() error, error) {
 	parents := map[string]*os.File{}
 	for _, o := range observations {
 		parents[parentKey(o)] = o.parent
@@ -505,18 +527,29 @@ func (s *nativeWriteSet) locks(ctx context.Context, observations []*nativeObserv
 	}
 	slices.Sort(keys)
 	var held []*os.File
-	release := func() {
+	release := func() error {
+		var err error
 		for i := len(held) - 1; i >= 0; i-- {
-			_ = syscall.Flock(int(held[i].Fd()), syscall.LOCK_UN)
+			unlock := s.unlock
+			if unlock == nil {
+				unlock = func(f *os.File) error { return syscall.Flock(int(f.Fd()), syscall.LOCK_UN) }
+			}
+			err = errors.Join(err, unlock(held[i]))
 		}
+		held = nil
+		// A failed unlock invalidates the entire acquisition. Closing all retained
+		// parent handles releases kernel ownership; no later publication may reuse it.
+		if err != nil {
+			err = errors.Join(err, s.close())
+		}
+		return err
 	}
 	deadline := time.Now().Add(2 * time.Second)
 	for _, key := range keys {
 		f := parents[key]
 		for {
 			if err := checkpoint(ctx, b, 1); err != nil {
-				release()
-				return nil, err
+				return nil, errors.Join(err, release())
 			}
 			err := syscall.Flock(int(f.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
 			if err == nil {
@@ -524,16 +557,13 @@ func (s *nativeWriteSet) locks(ctx context.Context, observations []*nativeObserv
 				break
 			}
 			if !errors.Is(err, syscall.EWOULDBLOCK) && !errors.Is(err, syscall.EAGAIN) {
-				release()
-				return nil, err
+				return nil, errors.Join(err, release())
 			}
 			if err := s.at("lock-wait", observations[0].path); err != nil {
-				release()
-				return nil, err
+				return nil, errors.Join(err, release())
 			}
 			if time.Now().After(deadline) {
-				release()
-				return nil, errors.New("cooperating parent lock wait expired")
+				return nil, errors.Join(errors.New("cooperating parent lock wait expired"), release())
 			}
 			timer := time.NewTimer(5 * time.Millisecond)
 			select {
@@ -541,8 +571,7 @@ func (s *nativeWriteSet) locks(ctx context.Context, observations []*nativeObserv
 				if !timer.Stop() {
 					<-timer.C
 				}
-				release()
-				return nil, ctx.Err()
+				return nil, errors.Join(ctx.Err(), release())
 			case <-timer.C:
 			}
 		}
@@ -607,7 +636,7 @@ func (s *nativeWriteSet) publish(ctx context.Context, path string, original, can
 		out.Err = err
 		return
 	}
-	defer release()
+	defer func() { out.Err = errors.Join(out.Err, release()) }()
 	if err = s.at("locked", path); err != nil {
 		out.Err = err
 		return
@@ -628,15 +657,20 @@ func (s *nativeWriteSet) publish(ctx context.Context, path string, original, can
 		out.Err = err
 		return
 	}
-	temp, err := nativeOpen(o.parent, name, syscall.O_WRONLY|syscall.O_CREAT|syscall.O_EXCL, 0600)
+	openStage := s.openStage
+	if openStage == nil {
+		openStage = func(parent *os.File, name string) (*os.File, error) {
+			return nativeOpen(parent, name, syscall.O_WRONLY|syscall.O_CREAT|syscall.O_EXCL, 0600)
+		}
+	}
+	temp, err := openStage(o.parent, name)
 	if err != nil {
 		out.Err = err
 		return
 	}
-	createdInfo, createStatErr := temp.Stat()
+	createdInfo, createStatErr := s.statHandle("created", temp)
 	if createStatErr != nil {
-		_ = temp.Close()
-		out.Err = createStatErr
+		out.Err = errors.Join(createStatErr, s.closeHandle("created", temp))
 		out.Leftovers = []string{name}
 		return
 	}
@@ -644,13 +678,13 @@ func (s *nativeWriteSet) publish(ctx context.Context, path string, original, can
 	published := false
 	defer func() {
 		if !closed {
-			out.Err = errors.Join(out.Err, temp.Close())
+			out.Err = errors.Join(out.Err, s.closeHandle("stage", temp))
 		}
 		if !published {
 			if e := s.at("cleanup", path); e != nil {
 				out.Leftovers = append(out.Leftovers, name)
 				out.Err = errors.Join(out.Err, e)
-			} else if e := cleanupNativeStage(o.parent, name, createdInfo); e != nil {
+			} else if e := s.cleanupStage(o.parent, name, createdInfo); e != nil {
 				out.Leftovers = append(out.Leftovers, name)
 				out.Err = errors.Join(out.Err, e)
 			}
@@ -705,7 +739,7 @@ func (s *nativeWriteSet) publish(ctx context.Context, path string, original, can
 		return
 	}
 	if err = s.at("flush", path); err == nil {
-		err = temp.Sync()
+		err = s.syncHandle("stage", temp)
 	}
 	if err != nil {
 		out.Err = err
@@ -716,7 +750,7 @@ func (s *nativeWriteSet) publish(ctx context.Context, path string, original, can
 		out.Err = statErr
 		return
 	}
-	err = temp.Close()
+	err = s.closeHandle("stage", temp)
 	closed = true
 	if err == nil {
 		err = s.at("close", path)
@@ -753,7 +787,7 @@ func (s *nativeWriteSet) publish(ctx context.Context, path string, original, can
 			e = errors.Join(readErr, errors.New("staged content changed"))
 		}
 	}
-	_ = stageCheck.Close()
+	e = errors.Join(e, s.closeHandle("verification", stageCheck))
 	if e != nil {
 		out.Err = e
 		return
@@ -790,7 +824,7 @@ func (s *nativeWriteSet) publish(ctx context.Context, path string, original, can
 				out.Uncertain = true
 				o.uncertain = true
 			}
-			out.Err = renameErr
+			out.Err = errors.Join(renameErr, currentErr, stageErr)
 			return
 		}
 		// An actual failed native call may nevertheless have published. Evidence
@@ -804,7 +838,7 @@ func (s *nativeWriteSet) publish(ctx context.Context, path string, original, can
 	// Observe publication before later flush/cancellation failures. Never rollback.
 	currentParent, currentChain, parentErr := nativeParent(path)
 	if currentParent != nil {
-		_ = currentParent.Close()
+		out.Err = errors.Join(out.Err, s.closeHandle("saved-parent", currentParent))
 	}
 	if parentErr != nil || !sameChain(o.chain, currentChain) {
 		out.Uncertain = true
@@ -830,14 +864,14 @@ func (s *nativeWriteSet) publish(ctx context.Context, path string, original, can
 		} else {
 			e = errors.Join(statErr, errors.New("published entry identity or metadata changed"))
 		}
-		_ = f.Close()
+		out.Err = errors.Join(out.Err, s.closeHandle("saved", f))
 	}
 	if e != nil {
 		out.Uncertain = true
 		out.Err = errors.Join(out.Err, e)
 	}
 	if err = s.at("directory-flush", path); err == nil {
-		err = o.parent.Sync()
+		err = s.syncHandle("directory", o.parent)
 	}
 	out.Err = errors.Join(out.Err, err)
 	if err = checkpoint(ctx, b, 1); err != nil {
@@ -853,7 +887,7 @@ func (s *nativeWriteSet) matches(path string, source parser.Source, absent bool)
 
 // Never remove a detected replacement of our private stage name. The remaining
 // no-CAS check/unlink interval is subject to the documented external-writer gap.
-func cleanupNativeStage(parent *os.File, name string, owned fs.FileInfo) error {
+func (s *nativeWriteSet) cleanupStage(parent *os.File, name string, owned fs.FileInfo) error {
 	f, err := nativeOpen(parent, name, syscall.O_RDONLY|syscall.O_NONBLOCK, 0)
 	if errors.Is(err, fs.ErrNotExist) {
 		return nil
@@ -862,14 +896,18 @@ func cleanupNativeStage(parent *os.File, name string, owned fs.FileInfo) error {
 		return err
 	}
 	actual, err := f.Stat()
-	_ = f.Close()
+	err = errors.Join(err, s.closeHandle("cleanup", f))
 	if err != nil {
 		return err
 	}
 	if !os.SameFile(owned, actual) {
 		return errors.New("staging entry substituted; foreign artifact retained")
 	}
-	return nativeRemove(parent, name)
+	remove := s.removeStage
+	if remove == nil {
+		remove = nativeRemove
+	}
+	return remove(parent, name)
 }
 
 type directoryIdentity struct {

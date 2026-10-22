@@ -6,7 +6,7 @@ implemented in `internal/fix`. Combined candidate semantic validation, mapped
 common protection/directive checks, shared reanalysis and bounded convergence
 with coupled rollback are implemented by its validated-stage API. Rule-specific
 trusted checkers remain required. MD047 supplies the first production producer
-and independent checker, with compiled text/JSON preview acceptance. A native acquisition/stale-protection and publication prototype is implemented;
+and independent checker, with compiled text/JSON preview acceptance. Production native acquisition, stale protection and per-file replacement are implemented;
 CLI publication remains pending. See [native write support](native-writes.md).
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
@@ -207,10 +207,9 @@ saved content, not a promise that external writers cannot change it later.
 
 ### Design status
 
-This decision sets product guarantees and accepted limitations. The #146 Darwin APFS native prototype and its precise metadata/coordination
+This decision sets product guarantees and accepted limitations. The #146/#147 Darwin APFS native adapter and its precise metadata/coordination
 support are implemented and tested; see [native write support](native-writes.md).
-Production lifecycle integration, CLI apply and broader native-platform proof
-remain required before those write-dependent features can claim completion.
+CLI apply and broader native-platform proof remain required before those write-dependent features can claim completion.
 
 
 ## CLI dry-run adapter

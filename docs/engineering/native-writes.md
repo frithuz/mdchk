@@ -1,14 +1,14 @@
-# Native write prototype
+# Native per-file replacement
 
-Issue #146 implements acquisition-bound stale protection and a native publication
-prototype in `internal/files`, with a retained semantic-result adapter in
-`internal/fix`. CLI apply remains unavailable pending the lifecycle and saved-view
-integration in #147 and #148. Dry-run does not call this path, create stages or
-acquire filesystem locks.
+Issues #146 and #147 implement acquisition-bound stale protection and production
+per-file replacement in `internal/files`, with a retained semantic-result adapter
+in `internal/fix`. CLI apply remains unavailable pending command and saved-view
+integration in #148. Dry-run does not call this path, create stages or acquire
+filesystem locks.
 
 ## Verified matrix
 
-The prototype is exercised natively on Darwin arm64 with cgo and local APFS.
+The native adapter is exercised natively on Darwin arm64 with cgo and local APFS.
 Other operating systems and architectures, Darwin without cgo, and other
 filesystem types refuse;
 cross-builds do not establish native guarantees. Linux and Windows remain target
@@ -36,11 +36,11 @@ non-symlink scope; inspection's explicit symlink exception grants no write acces
 
 `WriteSet` owns the observations and residual budget. Fresh equal-byte Sources,
 mutable acquisition descriptions and detached `fix.FileView` values cannot
-manufacture approval. `fix.Validated.PublishPrototype` uses its privately retained
+manufacture approval. `fix.Validated.Publish` uses its privately retained
 original/candidate sources and dependency graph, requiring the same original
 budget. Cancellation of the acquisition context remains binding even if a caller
 passes a fresh context. Both contexts remain binding throughout dependency
-traversal, lock waiting and the last pre-rename checkpoint. `WriteSet.PublishPrototype` is the lower-level native primitive and does
+traversal, lock waiting and the last pre-rename checkpoint. `WriteSet.Publish` is the lower-level native primitive and does
 not itself claim semantic correction approval.
 
 Resource-only acquisitions cannot become publication targets. Content and
@@ -64,7 +64,7 @@ nonblocking polls bounded by two seconds, context cancellation and the same
 residual budget. Locks span final validation and publication; process exit
 releases them. There is no unlocked fallback.
 
-The real prototype creates an unpredictable exclusive sibling with mode 0600,
+The production boundary creates an unpredictable exclusive sibling with mode 0600,
 writes complete candidate bytes, preserves supported metadata, checks staged
 content/identity, syncs and closes it, revalidates original inputs, and publishes
 with parent-relative native rename. It then observes the saved entry and syncs
@@ -87,8 +87,8 @@ retains successful rename evidence even if later sync/cancellation fails;
 `Uncertain` and an absent Saved snapshot describe failed saved-state observation.
 An uncertain state cannot authorize later dependent writes without a new
 operation. Published content is never blindly rolled back over newer content.
-This prototype does not promise whole-operation transactions or power-loss
-survival. #147 completes the production lifecycle; #148 owns final CLI outcomes,
+This boundary does not promise whole-operation transactions or power-loss
+survival. #148 owns final CLI outcomes,
 independent-file continuation and saved-view reanalysis.
 
 ## Accepted concurrent-writer limitation
@@ -115,3 +115,22 @@ provenance. This host silently retains protected provenance after a set request;
 exact mismatch rejection is therefore also independently tested against a native
 observation with a different expected value, without claiming a successful
 native provenance mutation.
+
+## Checked lifecycle
+
+Creation, writes, metadata, flush, close, rename, cleanup and lock release have
+checked outcomes. Primary failures and later close/cleanup failures are joined
+with inspectable error identities. Cleanup validates ownership before unlinking;
+failed validation or removal reports the owned staging name without removing a
+foreign entry. If the initial stage identity cannot be inspected, its name is
+reported and retained rather than guessed safe to remove.
+
+Source and final-stage verification close failures refuse before publication.
+Once the saved bytes and identity have been observed, a later observation-close,
+directory-sync or lock-release failure retains Published and Saved and reports
+the error; that failure alone does not make observed content unknown. A failed
+unlock disposes all retained parent descriptors and invalidates the acquisition,
+preventing reuse of a lock whose release was not confirmed. Close consumes each
+owned descriptor once, even when it returns an error. Cleanup and lock disposal
+are bounded by the already admitted stages and held descriptors and still run
+after cancellation or residual exhaustion. No rollback is attempted.

@@ -22,11 +22,24 @@ func TestRetainedProductionApprovalNativePublication(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	paths := []string{filepath.Join(root, "a.md"), filepath.Join(root, "b.md")}
-	for _, p := range paths {
-		if err := os.WriteFile(p, []byte("hello"), 0640); err != nil { //nolint:gosec // Synthetic fixture deliberately exercises preservation of group-readable mode.
+	inputs := []string{"hello", "hello", "α  \nbody", "α  \r\nbody", "α  \rbody", "α  \r\nbody\r\n\r\n", "α\nβ\r\nbody\r\r"}
+	expected := []string{"hello\n", "hello\n", "α  \nbody\n", "α  \r\nbody\r\n", "α  \rbody\r", "α  \r\nbody\r\n", "α\nβ\r\nbody\r"}
+	paths := make([]string, len(inputs))
+	before := make(map[string]os.FileInfo)
+	for i := range inputs {
+		paths[i] = filepath.Join(root, fmt.Sprintf("%d.md", i))
+	}
+	for i, p := range paths {
+		if err := os.WriteFile(p, []byte(inputs[i]), 0640); err != nil { //nolint:gosec // Synthetic fixture deliberately exercises preservation of group-readable mode.
 			t.Fatal(err)
 		}
+	}
+	for _, p := range paths {
+		info, e := os.Stat(p)
+		if e != nil {
+			t.Fatal(e)
+		}
+		before[p] = info
 	}
 	selected, err := files.Select(files.Options{Paths: paths})
 	if err != nil {
@@ -77,23 +90,37 @@ func TestRetainedProductionApprovalNativePublication(t *testing.T) {
 	if err != nil || !ambiguous.Complete() {
 		t.Fatalf("ambiguous semantic fixture %v", err)
 	}
-	refused := ambiguous.PublishPrototype(context.Background(), native, paths[0])
+	refused := ambiguous.Publish(context.Background(), native, paths[0])
 	if refused.Err == nil || refused.Published || refused.Saved != (parser.Source{}) {
 		t.Fatalf("distinct resource Source overwritten by target binding: %+v", refused)
 	}
-	first := approved.PublishPrototype(context.Background(), native, paths[0])
+	first := approved.Publish(context.Background(), native, paths[0])
 	if first.Err != nil || !first.Published {
 		t.Fatalf("first %+v", first)
 	}
-	second := approved.PublishPrototype(context.Background(), native, paths[1])
+	second := approved.Publish(context.Background(), native, paths[1])
 	if second.Err != nil || !second.Published {
 		t.Fatalf("own saved dependency rejected %+v", second)
 	}
-	for _, p := range paths {
-		raw, e := os.ReadFile(p) //nolint:gosec // The path names an independently created synthetic test fixture.
-		if e != nil || string(raw) != "hello\n" {
-			t.Fatalf("retained bytes %q %v", raw, e)
+	for i, p := range paths {
+		if i > 1 {
+			out := approved.Publish(context.Background(), native, p)
+			if out.Err != nil || !out.Published {
+				t.Fatalf("matrix publication %d: %+v", i, out)
+			}
 		}
+		raw, e := os.ReadFile(p) //nolint:gosec // The path names an independently created synthetic test fixture.
+		if e != nil || string(raw) != expected[i] {
+			t.Fatalf("retained bytes %q %v want %q", raw, e, expected[i])
+		}
+		info, e := os.Stat(p)
+		if e != nil || info.Mode() != before[p].Mode() || os.SameFile(before[p], info) {
+			t.Fatalf("matrix metadata/inode %d: %v", i, e)
+		}
+	}
+	entries, e := os.ReadDir(root)
+	if e != nil || len(entries) != len(paths) {
+		t.Fatalf("unexpected production artifacts %v %v", entries, e)
 	}
 }
 
@@ -189,7 +216,7 @@ func TestUnchangedProductionResultNeverClaimsSaved(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				out := approved.PublishPrototype(caller, native, path)
+				out := approved.Publish(caller, native, path)
 				if out.Published || out.Saved != (parser.Source{}) {
 					t.Fatalf("unconfirmed unchanged source reported saved: %+v", out)
 				}

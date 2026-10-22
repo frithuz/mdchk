@@ -79,7 +79,7 @@ func TestNativePublicationExactBytesMetadataAndHardlinks(t *testing.T) {
 	before, _ := os.Stat(path)
 	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
 	candidate := parser.NewSource([]byte("old\r\nbody\r\n"))
-	out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, candidate, nil)
+	out := set.Publish(context.Background(), path, a.Documents[0].Source, candidate, nil)
 	if out.Err != nil || !out.Published || out.Uncertain || out.Saved != candidate || out.HardLinks != 2 {
 		t.Fatalf("publication %+v", out)
 	}
@@ -162,7 +162,7 @@ func TestNativeStalePreconditions(t *testing.T) {
 				}
 				defer func() { _ = syscall.Chflags(path, 0) }()
 			}
-			out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("candidate\n")), nil)
+			out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("candidate\n")), nil)
 			if out.Err == nil || out.Published {
 				t.Fatalf("accepted stale %s: %+v", kind, out)
 			}
@@ -188,21 +188,21 @@ func TestNativeAuthorityAndReadOnlyResources(t *testing.T) {
 	defer func() { _ = set.Close() }()
 	original := a.Documents[0].Source
 	candidate := parser.NewSource([]byte("candidate\n"))
-	if got := set.PublishPrototype(context.Background(), path, parser.NewSource(original.Bytes()), candidate, nil); got.Err == nil {
+	if got := set.Publish(context.Background(), path, parser.NewSource(original.Bytes()), candidate, nil); got.Err == nil {
 		t.Fatal("foreign source accepted")
 	}
-	if got := set.PublishPrototype(context.Background(), resource, r.Documents[0].Source, candidate, nil); got.Err == nil {
+	if got := set.Publish(context.Background(), resource, r.Documents[0].Source, candidate, nil); got.Err == nil {
 		t.Fatal("resource promoted to target")
 	}
 	a.Documents[0].Path = resource
 	a.Documents[0].Source = parser.NewSource([]byte("forged"))
 	_ = os.WriteFile(missing, []byte("appeared"), 0600)
-	if got := set.PublishPrototype(context.Background(), path, original, candidate, nil); got.Err == nil {
+	if got := set.Publish(context.Background(), path, original, candidate, nil); got.Err == nil {
 		t.Fatal("appeared absence accepted")
 	}
 	_ = os.Remove(missing)
 	_ = os.WriteFile(resource, []byte("changed"), 0600)
-	if got := set.PublishPrototype(context.Background(), path, original, candidate, nil); got.Err == nil {
+	if got := set.Publish(context.Background(), path, original, candidate, nil); got.Err == nil {
 		t.Fatal("changed config accepted")
 	}
 	assertNativeBytes(t, path, original.Bytes())
@@ -222,7 +222,7 @@ func TestNativePublicationFailureBoundaries(t *testing.T) {
 				}
 				return nil
 			}
-			got := set.PublishPrototype(context.Background(), path, original, candidate, nil)
+			got := set.Publish(context.Background(), path, original, candidate, nil)
 			if !errors.Is(got.Err, sentinel) {
 				t.Fatalf("missing injected failure %+v", got)
 			}
@@ -261,7 +261,7 @@ func TestNativeDeterministicRacesAndAcceptedExternalGap(t *testing.T) {
 				}
 				return nil
 			}
-			out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, candidate, nil)
+			out := set.Publish(context.Background(), path, a.Documents[0].Source, candidate, nil)
 			if stage == "after-final-check" {
 				if out.Err != nil || !out.Published {
 					t.Fatalf("accepted gap demonstration %+v", out)
@@ -282,12 +282,12 @@ func TestNativeCancellationAndExhaustedBudget(t *testing.T) {
 	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	out := set.PublishPrototype(ctx, path, a.Documents[0].Source, parser.NewSource([]byte("new")), nil)
+	out := set.Publish(ctx, path, a.Documents[0].Source, parser.NewSource([]byte("new")), nil)
 	if !errors.Is(out.Err, context.Canceled) {
 		t.Fatalf("cancel %+v", out)
 	}
 	_ = set.budget.ChargeWork(set.budget.Limits().WorkUnits + 1)
-	if out = set.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("new")), nil); out.Err == nil {
+	if out = set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("new")), nil); out.Err == nil {
 		t.Fatal("exhausted residual revived")
 	}
 	assertNoStage(t, root)
@@ -295,7 +295,7 @@ func TestNativeCancellationAndExhaustedBudget(t *testing.T) {
 func TestNativeLockSubprocess(t *testing.T) {
 	if path := os.Getenv("MDCHK_NATIVE_LOCK_CHILD"); path != "" {
 		set, a := nativeAcquire(t, []string{path}, WriteOptions{})
-		out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("child\n")), nil)
+		out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("child\n")), nil)
 		if !errors.Is(out.Err, context.DeadlineExceeded) && out.Err == nil {
 			t.Fatal("child bypassed parent lock")
 		}
@@ -319,7 +319,7 @@ func TestNativeLockSubprocess(t *testing.T) {
 		}
 		return nil
 	}
-	out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("parent\n")), nil)
+	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("parent\n")), nil)
 	if out.Err != nil || !out.Published {
 		t.Fatalf("parent %+v", out)
 	}
@@ -377,7 +377,7 @@ func TestNativeLockSurvivesReplacement(t *testing.T) {
 		if err := os.WriteFile(os.Getenv("MDCHK_NATIVE_READY"), []byte("ready"), 0600); err != nil { //nolint:gosec // Private subprocess protocol receives a parent-owned synthetic ready-file path.
 			t.Fatal(err)
 		}
-		out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("child\n")), nil)
+		out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("child\n")), nil)
 		if out.Err == nil || out.Published {
 			t.Fatalf("waiting stale child published %+v", out)
 		}
@@ -405,7 +405,7 @@ func TestNativeLockSurvivesReplacement(t *testing.T) {
 		}
 		return errors.New("child did not acquire original before replacement")
 	}
-	out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("parent\n")), nil)
+	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("parent\n")), nil)
 	if out.Err != nil || !out.Published {
 		t.Fatalf("parent %+v", out)
 	}
@@ -441,11 +441,11 @@ func TestNativeReverseOverlapLockOrderingCancellationAndRelease(t *testing.T) {
 		return nil
 	}
 	go func() {
-		done <- a.PublishPrototype(context.Background(), path, aa.Documents[0].Source, parser.NewSource([]byte("parent\n")), []string{other})
+		done <- a.Publish(context.Background(), path, aa.Documents[0].Source, parser.NewSource([]byte("parent\n")), []string{other})
 	}()
 	<-held
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Millisecond)
-	out := b.PublishPrototype(ctx, other, bb.Documents[1].Source, parser.NewSource([]byte("new other")), []string{path})
+	out := b.Publish(ctx, other, bb.Documents[1].Source, parser.NewSource([]byte("new other")), []string{path})
 	cancel()
 	if !errors.Is(out.Err, context.DeadlineExceeded) || out.Published {
 		t.Fatalf("lock cancellation %+v", out)
@@ -457,7 +457,7 @@ func TestNativeReverseOverlapLockOrderingCancellationAndRelease(t *testing.T) {
 	// A new operation acquires both directories in reverse caller order after the
 	// first completes; no inode-dependent or cancellation-held lock survives.
 	c, cc := nativeAcquire(t, []string{other, path}, WriteOptions{})
-	out = c.PublishPrototype(context.Background(), other, cc.Documents[1].Source, parser.NewSource([]byte("new other")), []string{path})
+	out = c.Publish(context.Background(), other, cc.Documents[1].Source, parser.NewSource([]byte("new other")), []string{path})
 	if out.Err != nil || !out.Published {
 		t.Fatalf("released locks %+v", out)
 	}
@@ -472,7 +472,7 @@ func TestNativePostPublicationUncertaintyNeverRollsBack(t *testing.T) {
 		}
 		return nil
 	}
-	out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("candidate\n")), nil)
+	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("candidate\n")), nil)
 	if !out.Published || !out.Uncertain || out.Err == nil || out.Saved != (parser.Source{}) {
 		t.Fatalf("invented saved state %+v", out)
 	}
@@ -492,7 +492,7 @@ func TestNativeCancelBeforeAndAfterPublication(t *testing.T) {
 				}
 				return nil
 			}
-			out := set.PublishPrototype(ctx, path, a.Documents[0].Source, parser.NewSource([]byte("new\n")), nil)
+			out := set.Publish(ctx, path, a.Documents[0].Source, parser.NewSource([]byte("new\n")), nil)
 			if !errors.Is(out.Err, context.Canceled) || out.Published != (stage == "published") {
 				t.Fatalf("cancellation boundary %+v", out)
 			}
@@ -537,7 +537,7 @@ func TestNativeCrashReleasesDirectoryLock(t *testing.T) {
 	}
 	_ = child.Wait()
 	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
-	out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("after crash\n")), nil)
+	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("after crash\n")), nil)
 	if out.Err != nil || !out.Published {
 		t.Fatalf("crash retained lock %+v", out)
 	}
@@ -551,7 +551,7 @@ func TestNativeParentACLChangeRefused(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ACL setup %v %s", err, raw)
 	}
-	out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("new\n")), nil)
+	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("new\n")), nil)
 	if out.Err == nil || out.Published {
 		t.Fatalf("parent ACL mutation accepted %+v", out)
 	}
@@ -562,7 +562,7 @@ func TestNativeRealShortWriteLeavesOriginal(t *testing.T) {
 	root, path := nativeFixture(t)
 	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
 	set.native.write = func(f *os.File, data []byte) (int, error) { return f.Write(data[:1]) }
-	out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("new content\n")), nil)
+	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("new content\n")), nil)
 	if !errors.Is(out.Err, io.ErrShortWrite) || out.Published {
 		t.Fatalf("short write %+v", out)
 	}
@@ -592,7 +592,7 @@ func TestNativeForeignStageIsNotPublishedOrRemoved(t *testing.T) {
 		}
 		return errors.New("no stage")
 	}
-	out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("new\n")), nil)
+	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("new\n")), nil)
 	if out.Err == nil || out.Published || len(out.Leftovers) != 1 {
 		t.Fatalf("foreign stage mishandled %+v", out)
 	}
@@ -614,7 +614,7 @@ func TestNativeCanceledAcquisitionContextCannotBeRevived(t *testing.T) {
 	}
 	defer func() { _ = set.Close() }()
 	cancel()
-	out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("new\n")), nil)
+	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("new\n")), nil)
 	if !errors.Is(out.Err, context.Canceled) || out.Published {
 		t.Fatalf("canceled acquisition revived %+v", out)
 	}
@@ -639,7 +639,7 @@ func TestNativeRenameErrorReconcilesActualPublication(t *testing.T) {
 				}
 				return syscall.EIO
 			}
-			out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, candidate, nil)
+			out := set.Publish(context.Background(), path, a.Documents[0].Source, candidate, nil)
 			if !errors.Is(out.Err, syscall.EIO) {
 				t.Fatalf("rename error lost %+v", out)
 			}
@@ -689,7 +689,7 @@ func TestOriginCancellationThroughoutPublication(t *testing.T) {
 				}
 				return nil
 			}
-			out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, candidate, nil)
+			out := set.Publish(context.Background(), path, a.Documents[0].Source, candidate, nil)
 			if !errors.Is(out.Err, context.Canceled) || out.Published != (stage == "published") {
 				t.Fatalf("origin cancellation at %s: %+v", stage, out)
 			}
@@ -719,7 +719,7 @@ func TestOriginCancellationDuringRealLockWait(t *testing.T) {
 		return nil
 	}
 	go func() {
-		done <- holding.PublishPrototype(context.Background(), path, heldAcquisition.Documents[0].Source, parser.NewSource([]byte("holder\n")), nil)
+		done <- holding.Publish(context.Background(), path, heldAcquisition.Documents[0].Source, parser.NewSource([]byte("holder\n")), nil)
 	}()
 	<-locked
 	waiting.native.hook = func(stage, _ string) error {
@@ -729,7 +729,7 @@ func TestOriginCancellationDuringRealLockWait(t *testing.T) {
 		return nil
 	}
 	start := time.Now()
-	out := waiting.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("waiter\n")), nil)
+	out := waiting.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("waiter\n")), nil)
 	if !errors.Is(out.Err, context.Canceled) || out.Published || time.Since(start) > time.Second {
 		t.Errorf("origin lock wait cancellation %+v", out)
 	}
@@ -777,7 +777,7 @@ func TestFinalStageSecurityMetadata(t *testing.T) {
 				}
 				return errors.New("stage missing")
 			}
-			out := set.PublishPrototype(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("candidate\n")), nil)
+			out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("candidate\n")), nil)
 			if out.Err == nil || out.Published {
 				t.Fatalf("changed stage %s published %+v", kind, out)
 			}
@@ -796,7 +796,7 @@ func TestNativeNoChangeNeverConfirmsSaved(t *testing.T) {
 			set, a := nativeAcquire(t, []string{path}, WriteOptions{})
 			source := a.Documents[0].Source
 			before, _ := os.Stat(path)
-			out := set.PublishPrototype(context.Background(), path, source, parser.NewSource(source.Bytes()), nil)
+			out := set.Publish(context.Background(), path, source, parser.NewSource(source.Bytes()), nil)
 			if out.Err != nil || !out.NoChange || out.Published || out.Saved != (parser.Source{}) {
 				t.Fatalf("no-change confirmation %+v", out)
 			}
@@ -808,7 +808,7 @@ func TestNativeNoChangeNeverConfirmsSaved(t *testing.T) {
 			if err := os.WriteFile(path, []byte("external"), 0600); err != nil {
 				t.Fatal(err)
 			}
-			out = set.PublishPrototype(context.Background(), path, source, source, nil)
+			out = set.Publish(context.Background(), path, source, source, nil)
 			if out.Published || out.Saved != (parser.Source{}) {
 				t.Fatalf("stale no-change confirmed %+v", out)
 			}

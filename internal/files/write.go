@@ -22,7 +22,7 @@ type WriteOptions struct {
 
 // WriteSet owns native acquisition authority. Descriptive Documents and Sources
 // alone cannot manufacture it. Close releases pinned descriptors; no acquisition
-// creates filesystem artifacts. This prototype is not connected to CLI apply.
+// creates filesystem artifacts. This production boundary is not connected to CLI apply.
 type WriteSet struct {
 	mu     sync.Mutex
 	native *nativeWriteSet
@@ -79,12 +79,12 @@ func (s *WriteSet) Close() error {
 	return err
 }
 
-// PublishPrototype is the native primitive, not semantic correction approval.
+// Publish is the native primitive, not semantic correction approval.
 // The fix.Validated adapter supplies retained, privately owned approved bytes;
 // callers using this low-level primitive must independently establish approval.
 // Original must be the exact acquisition Source, not merely equal bytes. Every
 // dependency must be an acquisition observation. Resource paths cannot be targets.
-func (s *WriteSet) PublishPrototype(ctx context.Context, path string, original, candidate parser.Source, dependencies []string) Publication {
+func (s *WriteSet) Publish(ctx context.Context, path string, original, candidate parser.Source, dependencies []string) Publication {
 	out := Publication{Path: path}
 	if s == nil || ctx == nil {
 		out.Err = errors.New("nil native publication context")

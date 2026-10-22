@@ -11,7 +11,7 @@ import (
 type nativeWriteSet struct{}
 
 func acquireNativeWrite(context.Context, *Selection, WriteOptions) (*nativeWriteSet, *Acquisition, *Acquisition, error) {
-	return nil, nil, nil, errors.New("native write prototype requires verified Darwin arm64 APFS and cgo; this adapter is unsupported")
+	return nil, nil, nil, errors.New("native replacement requires verified Darwin arm64 APFS and cgo; this adapter is unsupported")
 }
 func (*nativeWriteSet) close() error { return nil }
 func (*nativeWriteSet) publish(_ context.Context, path string, _, _ parser.Source, _ []string, _ *parser.OperationBudget) Publication {

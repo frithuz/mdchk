@@ -73,7 +73,7 @@ func TestIndependentPublicationLinearAccounting(t *testing.T) {
 		t.Run(fmt.Sprint(n), func(t *testing.T) {
 			v, native, budget, paths := publicationScalingFixture(t, n)
 			for i, path := range paths {
-				out := v.PublishPrototype(context.Background(), native, path)
+				out := v.Publish(context.Background(), native, path)
 				if out.Err != nil || !out.Published {
 					t.Fatalf("publication %d/%d: %+v", i, n, out)
 				}
@@ -98,7 +98,7 @@ func TestPublicationReachableGraphAndStickyExhaustion(t *testing.T) {
 		for i, path := range paths {
 			v.publicationDependencies[path] = []string{paths[(i+1)%len(paths)], paths[(i+2)%len(paths)]}
 		}
-		out := v.PublishPrototype(context.Background(), native, paths[0])
+		out := v.Publish(context.Background(), native, paths[0])
 		if out.Err != nil || !out.Published {
 			t.Fatalf("coupled closure %+v", out)
 		}
@@ -109,7 +109,7 @@ func TestPublicationReachableGraphAndStickyExhaustion(t *testing.T) {
 		if err := budget.ChargeNodes(budget.Limits().TotalNodes); err == nil {
 			t.Fatal("expected exhausted budget")
 		}
-		out := v.PublishPrototype(context.Background(), native, paths[0])
+		out := v.Publish(context.Background(), native, paths[0])
 		if out.Err == nil || out.Published || out.Saved != (parser.Source{}) {
 			t.Fatalf("exhausted publication revived %+v", out)
 		}

@@ -1011,10 +1011,10 @@ func (v *Validator) component(ctx context.Context, states []validationState, mem
 	return "fix-nonconvergent", nil
 }
 
-// PublishPrototype connects the retained semantic approval to acquisition-owned
+// Publish connects the retained semantic approval to acquisition-owned
 // native authority. Detached FileView mutations cannot select different bytes.
 // CLI apply and saved-view reconciliation remain separate integration work.
-func (v Validated) PublishPrototype(ctx context.Context, native *files.WriteSet, path string) files.Publication {
+func (v Validated) Publish(ctx context.Context, native *files.WriteSet, path string) files.Publication {
 	refused := func(reason string) files.Publication { return files.Publication{Path: path, Err: errors.New(reason)} }
 	if !native.UsesBudget(v.publicationBudget) {
 		return refused("native acquisition and validation must share the original residual budget")
@@ -1087,5 +1087,5 @@ func (v Validated) PublishPrototype(ctx context.Context, native *files.WriteSet,
 			pending = append(pending, next)
 		}
 	}
-	return native.PublishPrototype(ctx, path, target.original, target.candidate, dependencies)
+	return native.Publish(ctx, path, target.original, target.candidate, dependencies)
 }
