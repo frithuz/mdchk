@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
 	"sync"
 
 	"github.com/frithuz/mdchk/internal/parser"
@@ -16,13 +17,23 @@ import (
 type WriteOptions struct {
 	AcquireOptions
 	Resources *Selection
-	Absences  []string
-	Required  map[string][]string
+	// ResourceDocumentBytes allows bounded non-Markdown configuration observations.
+	ResourceDocumentBytes int64
+	Absences              []string
+	Required              map[string][]string
+	Baselines             map[string]WriteBaseline
+}
+
+// WriteBaseline binds configuration resolution to the same native file and bytes.
+type WriteBaseline struct {
+	Info      fs.FileInfo
+	SHA256    string
+	SizeBytes int64
 }
 
 // WriteSet owns native acquisition authority. Descriptive Documents and Sources
 // alone cannot manufacture it. Close releases pinned descriptors; no acquisition
-// creates filesystem artifacts. This production boundary is not connected to CLI apply.
+// creates filesystem artifacts. CLI apply uses this retained authority.
 type WriteSet struct {
 	mu     sync.Mutex
 	native *nativeWriteSet
@@ -37,6 +48,8 @@ type WriteSet struct {
 type Publication struct {
 	// NoChange reports equal retained inputs without confirming current saved bytes.
 	// Saved is empty and no native final validation/publication is implied.
+	// Started records that a private staging file was created.
+	Started   bool
 	NoChange  bool
 	Path      string
 	Published bool

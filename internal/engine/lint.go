@@ -21,6 +21,7 @@ type RunOptions struct {
 	Validation ValidationProviders
 	inspection *InspectionTrace
 	candidate  bool
+	saved      bool
 }
 
 // Lint preflights the complete supplied batch before entering validation. Its
@@ -98,6 +99,9 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 		snap := snapshot(in.source)
 		if options.candidate {
 			snap.View = "candidate"
+		}
+		if options.saved {
+			snap.View = "saved"
 		}
 		file.InputSnapshot = &snap
 		file.Analysis = "complete"

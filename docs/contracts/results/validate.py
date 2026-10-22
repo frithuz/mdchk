@@ -35,7 +35,7 @@ def semantic(x):
         diagnostic=suppressed['diagnostic'];path=diagnostic['path']
         require(path in targets,'suppressed diagnostic lacks target')
         expected=targets[path].get('input_snapshot')
-        if diagnostic['snapshot']['view']=='candidate' and x['operation']=='fix':expected=targets[path].get('result_snapshot')
+        if diagnostic['snapshot']['view'] in ('candidate','saved') and x['operation']=='fix':expected=targets[path].get('result_snapshot')
         require(diagnostic['snapshot']==expected,'suppressed snapshot mismatch')
         if x['operation']=='lint':require('directive_id' not in suppressed['suppressed_by'],'lint lacks directive records for attribution ids')
     for key in ['coverage','deferred_fixes']:

@@ -22,18 +22,20 @@ import (
 	"github.com/frithuz/mdchk/internal/result"
 )
 
-const fixHelp = `Usage: mdchk fix --dry-run [options] [paths...]
+const fixHelp = `Usage: mdchk fix [options] [paths...]
 
-Preview validated corrections without writing files. Apply is not yet supported.
+Apply validated corrections using verified native per-file replacement.
+Use --dry-run to preview without acquiring write locks or creating stages.
 Options may appear before or after paths. Use -- for dash-prefixed paths.
-  --dry-run           Required: report proposals without saving
+  --dry-run           Report proposals without saving
   --config PATH       Select configuration relative to the invocation directory
   --format FORMAT     text (default) or json
   --limit NAME=VALUE  Set a finite applicable resource limit
   --help              Show this help
   --version           Print version
 
-Exit 0/10 describes final candidate content; incomplete analysis returns 15.
+Exit 0/10 describes saved content (candidate content for --dry-run).
+Incomplete analysis returns 15; apply requires Darwin arm64+cgo on local APFS.
 Usage returns 11, configuration 12, I/O 13 and internal failures 14.
 MD047 previews safe final-newline corrections; ambiguous contexts remain manual.
 `
@@ -48,9 +50,6 @@ func parseFix(args []string) (lintOptions, bool, error) {
 		if !inspectLimitApplicable(name) && err == nil {
 			err = fmt.Errorf("limit %q does not apply to fix", name)
 		}
-	}
-	if err == nil && !dry && !opts.help && !opts.version {
-		err = errors.New("fix requires --dry-run; applying corrections is not yet supported")
 	}
 	return opts, dry, err
 }
@@ -103,11 +102,17 @@ func runFix(ctx context.Context, args []string, w io.Writer, version string) int
 }
 
 func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationBudget, registry *engine.Registry, providers engine.ValidationProviders, caps config.Capabilities, validator *fix.Validator, produce fix.Producer) (out result.Result) {
-	out = result.NewFix(true)
+	out = result.NewFix(opts.dryRun)
 	defer func() { setInspectionLimits(&out, opts.limits); engine.FinalizeLintResult(&out) }()
 	fail := func(err error, code string, category result.ErrorCategory) result.Result {
 		if isInspectInterruption(err) {
 			out.Interruptions = append(out.Interruptions, inspectInterruption(err, "configuration"))
+			if category == result.IO {
+				_, effect := publicationFailureKinds(err)
+				if effect {
+					out.Errors = append(out.Errors, result.Error{Category: result.IO, Code: code, Scope: "operation", Message: err.Error()})
+				}
+			}
 			return out
 		}
 		r := failureResult(err, code, category)
@@ -148,7 +153,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 		}
 	}
 	selection.Errors = ordinary
-	manifest := result.NewFix(true)
+	manifest := result.NewFix(opts.dryRun)
 	inv.mergeAcquisition(&manifest, selection, acquisition)
 	engine.FinalizeLintResult(&manifest)
 	if err := fixFeasibility(reserveFixManifest(manifest), opts.format, opts.limits); err != nil && !errors.Is(err, context.DeadlineExceeded) {
@@ -163,10 +168,26 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 		manifest.Interruptions = append(manifest.Interruptions, result.Interruption{Reason: "limit-exceeded", Phase: "discovery", Message: "mandatory target manifest exceeds response-bytes"})
 		return manifest
 	}
-	acquired, err := files.Acquire(ctx, selection, files.AcquireOptions{DocumentBytes: budget.Limits().DocumentBytes, TotalContentBytes: reportLimit(opts.limits, "total-content-bytes"), Budget: budget})
-	if err != nil {
-		return fail(err, "invalid-acquisition", result.Internal)
+	var native *files.WriteSet
+	var acquired *files.Acquisition
+	var resources []fix.ResourceObservation
+	acquireOptions := files.AcquireOptions{DocumentBytes: budget.Limits().DocumentBytes, TotalContentBytes: reportLimit(opts.limits, "total-content-bytes"), Budget: budget}
+	if opts.dryRun {
+		acquired, err = files.Acquire(ctx, selection, acquireOptions)
+	} else {
+		native, acquired, resources, err = acquireFixWrite(ctx, inv, selection, acquireOptions)
 	}
+	if err != nil {
+		return fail(err, "write-acquisition", result.IO)
+	}
+	if native != nil {
+		defer func() {
+			if closeErr := native.Close(); closeErr != nil {
+				out.Errors = append(out.Errors, result.Error{Category: result.IO, Code: "write-shutdown", Scope: "operation", Message: closeErr.Error()})
+			}
+		}()
+	}
+
 	acquired.Interruptions = append(acquired.Interruptions, acquisition.Interruptions...)
 	targets := make([]fix.Target, 0, len(acquired.Documents))
 	if len(acquired.PreflightErrors) == 0 {
@@ -176,7 +197,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	}
 	var validated fix.Validated
 	if len(targets) > 0 {
-		validated, err = validator.Validate(ctx, targets, fix.ValidationOptions{Budget: budget, TotalContentBytes: reportLimit(opts.limits, "total-content-bytes")})
+		validated, err = validator.Validate(ctx, targets, fix.ValidationOptions{Budget: budget, TotalContentBytes: reportLimit(opts.limits, "total-content-bytes"), Resources: resources})
 	}
 	if err != nil {
 		if isInspectInterruption(err) {
@@ -190,19 +211,44 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 			out.Errors = append(out.Errors, result.Error{ID: "fix-validation-cause", Category: category, Code: "validation-failed", Scope: "operation", Message: err.Error()})
 		}
 	}
+	var applied map[string]fixApplied
+	if !opts.dryRun {
+		applied = publishFix(ctx, inv, budget, native, acquired, validated, err, &out)
+	}
+
 	for _, doc := range acquired.Documents {
 		path := inv.logicalPath(doc.Path)
 		original := sourceIdentity(doc.Source, "original")
 		file := result.File{Path: path, Analysis: "not-started", WriteStatus: "not-needed", ReturnStatus: "not-requested", InputSnapshot: &original, ErrorIDs: []string{}, CoverageIDs: []string{}, ChangeIDs: []string{}}
 		if view, ok := validated.File(path); ok && view.AnalysisStarted {
-			mergeFixAnalysis(&out, view.Analysis)
+			analysis := view.Analysis
+			savedAvailable := true
+			if !opts.dryRun {
+				state := applied[path]
+				savedAvailable = state.observed
+				analysis = state.analysis
+			}
+			if savedAvailable {
+				mergeFixAnalysis(&out, analysis)
+			}
 			candidate := sourceIdentity(view.Candidate, "candidate")
-			file.ResultSnapshot = &candidate
+			if opts.dryRun {
+				file.ResultSnapshot = &candidate
+			} else {
+				file.ResultSnapshot = applied[path].snapshot
+			}
 			file.Analysis = "complete"
-			if !view.Analysis.Complete {
+			if !savedAvailable {
+				file.Analysis = "not-started"
+			} else if !analysis.Complete {
 				file.Analysis = "partial"
 			}
-			out.CheckedFiles = append(out.CheckedFiles, path)
+			if !opts.dryRun && !applied[path].analysisStarted {
+				file.Analysis = "not-started"
+			}
+			if savedAvailable && (opts.dryRun || applied[path].analysisStarted) {
+				out.CheckedFiles = append(out.CheckedFiles, path)
+			}
 			for _, reason := range view.Reasons {
 				out.Coverage = append(out.Coverage, result.Coverage{Path: path, Reason: reason, Message: "Correction computation withheld this component; retained content is reported."})
 			}
@@ -259,8 +305,25 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 					change.Diff = &diff
 				}
 				file.WriteStatus = "proposed"
-				file.ChangeIDs = []string{change.ID}
-				out.Changes = append(out.Changes, change)
+				if !opts.dryRun {
+					file.WriteStatus = applied[path].status
+					if file.WriteStatus == "written" {
+						change.Disposition = "written"
+					} else if file.WriteStatus == "unknown" {
+						change.Disposition = "uncertain"
+					}
+				}
+				if change.ID != "" {
+					file.ChangeIDs = []string{change.ID}
+					out.Changes = append(out.Changes, change)
+				}
+			}
+		}
+		if !opts.dryRun {
+			file.WriteStatus = applied[path].status
+			file.Leftovers = applied[path].leftovers
+			if file.WriteStatus == "" {
+				file.WriteStatus = "not-needed"
 			}
 		}
 		if file.Analysis == "not-started" {
@@ -452,6 +515,16 @@ func reserveFixManifest(out result.Result) result.Result {
 		f.ChangeIDs = []string{id}
 		out.CheckedFiles = append(out.CheckedFiles, f.Path)
 		out.Changes = append(out.Changes, result.Change{ID: id, Path: f.Path, Disposition: "proposed", Before: original, Candidate: candidate, Rules: rules, EditCount: int(^uint(0) >> 1)})
+		if out.DryRun != nil && !*out.DryRun {
+			saved := candidate
+			saved.View = "saved"
+			f.ResultSnapshot = &saved
+			f.WriteStatus = "written"
+			f.Leftovers = []string{strings.Repeat("x", 255)}
+			out.Changes[len(out.Changes)-1].Disposition = "written"
+			out.Errors = append(out.Errors, result.Error{ID: fmt.Sprintf("write-error-%d", i), Path: f.Path, Category: result.IO, Code: "publication-failed", Scope: "operation", Message: strings.Repeat("e", 1024)})
+			out.Coverage = append(out.Coverage, result.Coverage{Path: f.Path, Reason: "saved-view-unavailable", Message: strings.Repeat("c", 256)})
+		}
 	}
 	return out
 }

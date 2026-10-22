@@ -248,7 +248,7 @@ validation, parsing and available registered checks. MD047 checks original physi
 endings and assesses context-specific correction eligibility without generating
 edits. Its production dry-run provider supplies independently checked minimal
 terminal corrections through the common fix pipeline; filesystem application
-remains pending. Other missing enabled defaults produce genuine coverage deficits and return
+is available on the verified Darwin arm64+cgo/local APFS adapter. Other missing enabled defaults produce genuine coverage deficits and return
 15. Valid UTF-8 with ordinary rules disabled can return clean 0; available checks
 can produce violations and retained partial findings. Lint emits text by default
 or one schema-v1 JSON object on stdout, with execution logs on stderr. Ordinary

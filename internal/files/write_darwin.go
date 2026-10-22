@@ -46,6 +46,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -313,7 +314,20 @@ func acquireNativeWrite(ctx context.Context, selected *Selection, options WriteO
 	if options.Resources != nil {
 		all.Targets = append(all.Targets, options.Resources.Targets...)
 	}
-	combined, acquisitionErr := acquireFS(ctx, all, options.AcquireOptions, func(t Target) (readHandle, error) {
+	readOptions := options.AcquireOptions
+	if options.ResourceDocumentBytes != 0 {
+		if options.ResourceDocumentBytes < 1 || options.ResourceDocumentBytes > 1<<30 {
+			err = errors.New("unsupported resource document bound")
+			return
+		}
+		readOptions.documentLimits = map[string]int64{}
+		if options.Resources != nil {
+			for _, target := range options.Resources.Targets {
+				readOptions.documentLimits[target.Path] = options.ResourceDocumentBytes
+			}
+		}
+	}
+	combined, acquisitionErr := acquireFS(ctx, all, readOptions, func(t Target) (readHandle, error) {
 		if err := checkpoint(ctx, options.Budget, int64(len(t.Path))*3+int64(strings.Count(t.Path, "/"))*8192+1); err != nil {
 			return nil, err
 		}
@@ -398,6 +412,20 @@ func acquireNativeWrite(ctx context.Context, selected *Selection, options WriteO
 			out.entries[d.Path].original = d.Source
 		}
 	}
+	for path, baseline := range options.Baselines {
+		if err = options.Budget.ChargeWork(int64(baseline.SizeBytes)*3 + int64(len(path)) + 1); err != nil {
+			return
+		}
+		observation := out.entries[path]
+		if observation == nil || baseline.Info == nil || observation.info == nil ||
+			!os.SameFile(baseline.Info, observation.info) || baseline.Info.ModTime() != observation.info.ModTime() ||
+			baseline.SizeBytes != int64(observation.source.Len()) ||
+			baseline.SHA256 != fmt.Sprintf("%x", sha256.Sum256(observation.source.Bytes())) {
+			err = writeError(path, "configuration changed since resolution")
+			return
+		}
+	}
+
 	for _, path := range options.Absences {
 		if e := ctx.Err(); e != nil {
 			err = e
@@ -668,6 +696,7 @@ func (s *nativeWriteSet) publish(ctx context.Context, path string, original, can
 		out.Err = err
 		return
 	}
+	out.Started = true
 	createdInfo, createStatErr := s.statHandle("created", temp)
 	if createStatErr != nil {
 		out.Err = errors.Join(createStatErr, s.closeHandle("created", temp))

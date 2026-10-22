@@ -20,6 +20,9 @@ import (
 type AcquireOptions struct {
 	DocumentBytes, TotalContentBytes int64
 	Budget                           *parser.OperationBudget
+	// ContentLedger shares aggregate read accounting across acquisitions.
+	ContentLedger  *ContentLedger
+	documentLimits map[string]int64
 }
 type Document struct {
 	Path   string
@@ -74,9 +77,21 @@ func acquireFS(ctx context.Context, selection *Selection, options AcquireOptions
 	targets := slices.Clone(selection.Targets)
 	slices.SortFunc(targets, func(a, b Target) int { return strings.Compare(a.Path, b.Path) })
 	var total int64
+	contentTotal := &total
+	if options.ContentLedger != nil {
+		if options.ContentLedger.limit != options.TotalContentBytes {
+			return nil, errors.New("content ledger and acquisition bounds differ")
+		}
+		contentTotal = &options.ContentLedger.used
+	}
 	checkpoint := func() error {
 		if err := ctx.Err(); err != nil {
 			return err
+		}
+		if options.ContentLedger != nil {
+			if err := options.ContentLedger.Check(0); err != nil {
+				return err
+			}
 		}
 		return options.Budget.ChargeWork(0)
 	}
@@ -90,8 +105,15 @@ func acquireFS(ctx context.Context, selection *Selection, options AcquireOptions
 			out.Errors = append(out.Errors, pathError(target.Path, "open", err))
 			continue
 		}
-		data, kind, err := readDocument(file, target, options, &total, checkpoint)
+		perTarget := options
+		if bound, ok := options.documentLimits[target.Path]; ok {
+			perTarget.DocumentBytes = bound
+		}
+		data, kind, err := readDocument(file, target, perTarget, contentTotal, checkpoint)
 		closeErr := file.Close()
+		if options.ContentLedger != nil && *contentTotal > options.TotalContentBytes {
+			_ = options.ContentLedger.Check(0)
+		}
 		if err != nil {
 			switch kind {
 			case "preflight":
@@ -108,10 +130,10 @@ func acquireFS(ctx context.Context, selection *Selection, options AcquireOptions
 		if err == nil && closeErr == nil {
 			out.Documents = append(out.Documents, Document{target.Path, parser.NewSource(data)})
 		}
-		if total > options.TotalContentBytes && kind != "interrupted" {
+		if *contentTotal > options.TotalContentBytes && kind != "interrupted" {
 			// A failing reader can return the quota probe byte alongside its I/O
 			// error. Preserve both outcomes and never start a negative-budget read.
-			out.Interruptions = append(out.Interruptions, Interruption{target.Path, &parser.LimitExceeded{Name: "total-content-bytes", Observed: total, Allowed: options.TotalContentBytes}})
+			out.Interruptions = append(out.Interruptions, Interruption{target.Path, &parser.LimitExceeded{Name: "total-content-bytes", Observed: *contentTotal, Allowed: options.TotalContentBytes}})
 			break
 		}
 		if kind == "interrupted" {

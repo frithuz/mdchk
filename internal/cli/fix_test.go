@@ -39,7 +39,7 @@ func TestFixProductionCorrectionAndArguments(t *testing.T) {
 			t.Fatal(r)
 		}
 	}
-	for _, args := range [][]string{{"fix", "--config=missing.yaml", "doc.md", "--format=json"}, {"fix", "--bad", "--format=json"}, {"fix", "--config", "--dry-run", "doc.md", "--format=json"}, {"fix", "--dry-run", "--limit=workers-per-operation=2", "--format=json"}} {
+	for _, args := range [][]string{{"fix", "--bad", "--format=json"}, {"fix", "--config", "--dry-run", "doc.md", "--format=json"}, {"fix", "--dry-run", "--limit=workers-per-operation=2", "--format=json"}} {
 		var stdout, stderr bytes.Buffer
 		if status := Run(args, &stdout, &stderr, "test"); status != 11 {
 			t.Fatal(status, stdout.String())

@@ -2,8 +2,8 @@
 
 Issues #146 and #147 implement acquisition-bound stale protection and production
 per-file replacement in `internal/files`, with a retained semantic-result adapter
-in `internal/fix`. CLI apply remains unavailable pending command and saved-view
-integration in #148. Dry-run does not call this path, create stages or acquire
+in `internal/fix`. CLI apply uses this retained authority and reports observed
+saved snapshots, partial publication outcomes and remaining saved-content findings. Dry-run does not call this path, create stages or acquire
 filesystem locks.
 
 ## Verified matrix
@@ -134,3 +134,30 @@ preventing reuse of a lock whose release was not confirmed. Close consumes each
 owned descriptor once, even when it returns an error. Cleanup and lock disposal
 are bounded by the already admitted stages and held descriptors and still run
 after cancellation or residual exhaustion. No rollback is attempted.
+
+## CLI apply and observed results
+
+The command validates arguments, selected configuration and all candidate content
+before the first write. Governing definitions retain their same-read native
+identity and byte hash; governing missing names are authoritative absence
+dependencies. A changed definition or appeared ancestor refuses affected writes.
+Logical report paths are explicitly mapped to native acquisition authority.
+
+Per-file publication continues after independent I/O failures. Successful writes
+remain written after a later sync/close/unlock error. Unknown outcomes do not
+become confirmed writes. The command confirms otherwise unobserved targets with
+bounded stable acquisition, then analyzes observed saved snapshots using the
+original residual budget. Unavailable saved content has explicit coverage.
+Candidate identities remain separate from saved result snapshots.
+
+Targets whose retained proof depends on another changed candidate are
+conservatively deferred, including reverse order and cycles. This avoids treating
+a preview overlay as a saved multi-file transaction. Independent changes can
+still be saved. No rollback of earlier publication is attempted.
+
+Before acquisition, response admission reserves every target outcome, original,
+candidate and saved identities, confirmed changes, error categories and one
+owned staging sibling name of up to 255 bytes per target (the current native
+name is 45 bytes). The reporting fallback retains these essential outcomes and
+`files[].leftovers`, omitting only whole optional details with exact counts.
+A too-small mandatory manifest prevents all writes.

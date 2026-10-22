@@ -71,16 +71,22 @@ func validateDefinitionBounded(d *Definition, registry *engine.Registry, provide
 }
 
 type boundedDiscovery struct {
-	access  *rootAccess
-	options *DiscoveryBudget
-	total   int64
+	access   *rootAccess
+	options  *DiscoveryBudget
+	total    int64
+	observed map[string]fs.FileInfo
+	absences []string
 }
 
 func (a *boundedDiscovery) lstat(path string) (fs.FileInfo, error) {
 	if err := a.options.charge(8*int64(len(path)) + 1); err != nil {
 		return nil, err
 	}
-	return a.access.lstat(path)
+	info, err := a.access.lstat(path)
+	if errors.Is(err, fs.ErrNotExist) {
+		a.absences = append(a.absences, path)
+	}
+	return info, err
 }
 func (a *boundedDiscovery) readRegular(path string) ([]byte, error) {
 	b := a.options
@@ -157,6 +163,10 @@ func (a *boundedDiscovery) readRegular(path string) ([]byte, error) {
 	if err := b.charge(0); err != nil {
 		return nil, err
 	}
+	if a.observed == nil {
+		a.observed = map[string]fs.FileInfo{}
+	}
+	a.observed[path] = after
 	return data, nil
 }
 
@@ -216,3 +226,6 @@ func permissionWork(p Permissions) int64 {
 	}
 	return work
 }
+
+// Absences returns the missing names that governed discovery and permissions.
+func (s *Selection) Absences() []string { return slices.Clone(s.absences) }

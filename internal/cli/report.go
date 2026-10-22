@@ -297,6 +297,7 @@ func cloneReport(r result.Result) result.Result {
 	r.EffectiveLimits = slices.Clone(r.EffectiveLimits)
 	r.Files = slices.Clone(r.Files)
 	for i := range r.Files {
+		r.Files[i].Leftovers = slices.Clone(r.Files[i].Leftovers)
 		r.Files[i].ErrorIDs = slices.Clone(r.Files[i].ErrorIDs)
 		r.Files[i].CoverageIDs = slices.Clone(r.Files[i].CoverageIDs)
 		r.Files[i].ChangeIDs = slices.Clone(r.Files[i].ChangeIDs)

@@ -153,9 +153,6 @@ func TestCompiledProductionMD047FixBoundsAndRemainingCoverage(t *testing.T) {
 	if got.Status != 13 || len(got.Result.Changes) != 1 {
 		t.Fatal(got)
 	}
-	if apply := runConfigurationProcess(t, binary, root, "fix", "doc.md", "--format=json"); apply.Status != 11 {
-		t.Fatal(apply)
-	}
 }
 
 func TestCompiledProductionMD047InheritedDirectivePermission(t *testing.T) {

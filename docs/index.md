@@ -31,8 +31,7 @@ explicit availability. Completed observations return inspected/0; runtime or
 reporting interruption returns incomplete/15. See its [command guide](commands/inspect.md).
 `fix --dry-run` uses the same selection/configuration and reports validated
 candidate outcomes in text or JSON without writing files. MD047 supplies the first production correction, with minimal terminal-newline
-changes and conservative protected-content deferrals. Apply without `--dry-run` returns usage/11 before
-project access. MCP remains planned and is rejected by this build.
+changes and conservative protected-content deferrals. Apply uses verified native replacement on Darwin arm64+cgo/local APFS and reports actual saved content; unsupported adapters refuse writes. MCP remains planned and is rejected by this build.
 
 ## Get started (planned execution)
 
@@ -72,7 +71,7 @@ Help and version output do not load project configuration or process Markdown fi
 | Command | Purpose | Guide |
 | --- | --- | --- |
 | `lint` | Report Markdown problems without changing files | [Lint command](commands/lint.md) |
-| `fix` | Preview validated corrections with `--dry-run`; apply is not yet supported | [Fix command](commands/fix.md) |
+| `fix` | Preview with `--dry-run`; apply on the verified native adapter | [Fix command](commands/fix.md) |
 | `inspect` | Reveal processing details for one file or a selected line range | [Inspect command](commands/inspect.md) |
 | `config` | Work with configuration, including project-wide validation | [Config commands](commands/config.md) |
 | `mcp` | Provide lint and fix tools to AI agents in project or standalone mode | [MCP command](commands/mcp.md) |

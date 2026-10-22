@@ -6,7 +6,7 @@ implemented and verified. Config validation text/JSON and its operation-specific
 implemented. Inspection also has operation-specific text/JSON reporting and compiled
 acceptance, including observation versus interruption exits. Fix dry-run text/JSON
 uses the shared candidate validator and typed v1 changes, deferrals and line diffs,
-with compiled production MD047 and synthetic producer acceptance. Apply, MCP and the remaining format
+with compiled production MD047 and synthetic producer acceptance. Apply is implemented on the verified native adapter. MCP and the remaining format
 adapters require their own implementation and end-to-end verification.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
@@ -219,3 +219,9 @@ for source records/details, even if the reporting deadline expires before the
 full fallback exists. It retains any operation interruption and adds reporting
 deadline attribution. The response bound still applies, and actual failed output
 retains IO/internal precedence. See the [reserve timing boundary](limits.md#configuration-emergency-reporting-reserve).
+
+CLI apply exposes optional `files[].leftovers` for owned native staging siblings
+that cleanup could not remove. These names are essential outcome evidence and
+survive reporting deadlines. Saved diagnostic and suppressed-diagnostic positions
+match the exact saved `result_snapshot`; a candidate snapshot is never substituted
+for unavailable saved content.

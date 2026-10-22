@@ -659,6 +659,12 @@
           "items": {
             "type": "string"
           }
+        },
+        "leftovers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [

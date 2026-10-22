@@ -101,6 +101,7 @@ type File struct {
 	Path           string    `json:"path"`
 	Analysis       string    `json:"analysis"`
 	WriteStatus    string    `json:"write_status"`
+	Leftovers      []string  `json:"leftovers,omitempty"`
 	ReturnStatus   string    `json:"return_status"`
 	InputSnapshot  *Snapshot `json:"input_snapshot,omitempty"`
 	ResultSnapshot *Snapshot `json:"result_snapshot,omitempty"`

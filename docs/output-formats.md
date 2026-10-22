@@ -1,11 +1,12 @@
 # mdchk result formats
 
-Choose a result format with `--format`. Lint, fix --dry-run, config validate and inspect currently implement readable text
+Choose a result format with `--format`. Lint, fix, config validate and inspect currently implement readable text
 (the default) and JSON for automation. Results go to stdout; stderr is reserved
 for execution logs. VS Code and GitHub reporters are planned and currently return
-unsupported usage before project access. Apply and MCP remain planned; their
-format behavior below describes the accepted contract. Production MD047 previews report validated terminal-newline proposals and retain
-manual findings for unsafe contexts and other report-only checks.
+unsupported usage before project access. Apply uses the verified native adapter and reports observed saved content; MCP
+remains planned. Production MD047 reports terminal-newline corrections and retains
+manual findings for unsafe contexts and other report-only checks. Dry-run labels
+its candidate changes as proposed.
 
 | Format | Use |
 | --- | --- |
@@ -17,7 +18,8 @@ manual findings for unsafe contexts and other report-only checks.
 Formats change presentation, not the rules, fixes, or [exit codes](exit-codes.md).
 The complete contract gives `lint`, `fix`, and
 [`config validate`](commands/config/validate.md) all four formats; this build
-implements lint, fix --dry-run, config validate and inspect text and JSON.
+implements lint, fix (preview and supported native apply), config validate and
+inspect text and JSON.
 
 [`inspect`](commands/inspect.md) accepts `text` and `json` for its detailed processing report. VS Code and GitHub annotations do not carry its AST and other inspection data.
 

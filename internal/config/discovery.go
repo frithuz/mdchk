@@ -37,6 +37,7 @@ type Selection struct {
 	validated     *Validated
 	inherited     Permissions
 	sources       []SourceSnapshot
+	absences      []string
 	exclusions    []ExclusionScope
 }
 
@@ -326,7 +327,13 @@ func selectFSBounded(access discoveryFS, start, cap, explicit string, registry *
 	if len(validated.settings.Exclude) > 0 {
 		exclusions = append(exclusions, ExclusionScope{cloneOrigin(validated.definition.Provenance["exclude"]), ownedPatterns(validated.exclude)})
 	}
-	return &Selection{exclusions: exclusions, Boundary: boundary, SelectedPath: selected, AncestorPaths: ancestors, validated: validated, inherited: clonePermissions(inherited), sources: slices.Clone(sources)}, nil
+	var absences []string
+	if observed, ok := access.(*boundedDiscovery); ok {
+		absences = slices.Clone(observed.absences)
+		slices.Sort(absences)
+		absences = slices.Compact(absences)
+	}
+	return &Selection{absences: absences, exclusions: exclusions, Boundary: boundary, SelectedPath: selected, AncestorPaths: ancestors, validated: validated, inherited: clonePermissions(inherited), sources: slices.Clone(sources)}, nil
 }
 func validateFileBounded(access discoveryFS, path string, registry *engine.Registry, providers engine.ValidationProviders, inherited Permissions, bounded *DiscoveryBudget) (*Validated, SourceSnapshot, error) {
 	data, err := access.readRegular(path)
@@ -339,6 +346,9 @@ func validateFileBounded(access discoveryFS, path string, registry *engine.Regis
 		}
 	}
 	source := snapshotSource(path, data)
+	if observed, ok := access.(*boundedDiscovery); ok {
+		source.info = observed.observed[path]
+	}
 	var d *Definition
 	if bounded == nil {
 		d, err = DecodeYAML(path, data)

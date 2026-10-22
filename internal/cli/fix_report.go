@@ -92,7 +92,7 @@ func renderFixText(ctx context.Context, w io.Writer, r result.Result) error {
 		return err
 	}
 	for _, c := range r.Changes {
-		if err := line("proposed %s: %d validated edits (%s) %s -> %s\n", textField(c.Path), c.EditCount, textField(joinRules(c.Rules)), c.Before.SHA256, c.Candidate.SHA256); err != nil {
+		if err := line("%s %s: %d validated edits (%s) %s -> %s\n", textField(c.Disposition), textField(c.Path), c.EditCount, textField(joinRules(c.Rules)), c.Before.SHA256, c.Candidate.SHA256); err != nil {
 			return err
 		}
 		if c.Diff == nil {
@@ -132,6 +132,11 @@ func renderFixText(ctx context.Context, w io.Writer, r result.Result) error {
 	for _, f := range r.Files {
 		if err := line("outcome %s: %s\n", textField(f.Path), textField(f.WriteStatus)); err != nil {
 			return err
+		}
+		for _, name := range f.Leftovers {
+			if err := line("owned staging leftover for %s: %s\n", textField(f.Path), textField(name)); err != nil {
+				return err
+			}
 		}
 	}
 	return nil

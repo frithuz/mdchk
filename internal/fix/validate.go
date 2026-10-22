@@ -323,7 +323,8 @@ func (f FileView) Evaluations() []engine.Evaluation {
 	return f.trace.Evaluations()
 }
 func (v Validated) File(path string) (FileView, bool) {
-	for _, f := range v.files {
+	if i, ok := v.publicationIndex[path]; ok && i >= 0 && i < len(v.files) {
+		f := v.files[i]
 		if f.path == path {
 			a := make([]Attempt, len(f.attempts))
 			for i, x := range f.attempts {
@@ -1013,8 +1014,20 @@ func (v *Validator) component(ctx context.Context, states []validationState, mem
 
 // Publish connects the retained semantic approval to acquisition-owned
 // native authority. Detached FileView mutations cannot select different bytes.
-// CLI apply and saved-view reconciliation remain separate integration work.
+// CLI apply uses this boundary before independent saved-view reconciliation.
 func (v Validated) Publish(ctx context.Context, native *files.WriteSet, path string) files.Publication {
+	return v.PublishMapped(ctx, native, path, nil)
+}
+
+// PublishMapped maps logical target names to native paths; exact source ownership
+// remains mandatory, so a mapping cannot authorize foreign or replacement bytes.
+func (v Validated) PublishMapped(ctx context.Context, native *files.WriteSet, path string, names map[string]string) files.Publication {
+	nativeName := func(key string) string {
+		if mapped, ok := names[key]; ok {
+			return mapped
+		}
+		return key
+	}
 	refused := func(reason string) files.Publication { return files.Publication{Path: path, Err: errors.New(reason)} }
 	if !native.UsesBudget(v.publicationBudget) {
 		return refused("native acquisition and validation must share the original residual budget")
@@ -1068,14 +1081,14 @@ func (v Validated) Publish(ctx context.Context, native *files.WriteSet, path str
 		}
 		seen[key] = true
 		observed, ok := v.publicationSources[key]
-		if !ok || observed.State == ResourceUnavailable || !native.MatchesObservation(key, observed.Source, observed.State == ResourceAbsent) {
+		if !ok || observed.State == ResourceUnavailable || !native.MatchesObservation(nativeName(key), observed.Source, observed.State == ResourceAbsent) {
 			return refused("native dependency does not match validated observation: " + key)
 		}
 		if key != path {
 			if err := v.publicationBudget.ChargeNodes(1); err != nil {
 				return files.Publication{Path: path, Err: err}
 			}
-			dependencies = append(dependencies, key)
+			dependencies = append(dependencies, nativeName(key))
 		}
 		for _, next := range v.publicationDependencies[key] {
 			if err := v.publicationBudget.ChargeWork(int64(len(next)) + 2); err != nil {
@@ -1087,5 +1100,46 @@ func (v Validated) Publish(ctx context.Context, native *files.WriteSet, path str
 			pending = append(pending, next)
 		}
 	}
-	return native.Publish(ctx, path, target.original, target.candidate, dependencies)
+	return native.Publish(ctx, nativeName(path), target.original, target.candidate, dependencies)
+}
+
+// ChangedDependency withholds a target whose retained proof consulted another
+// changed candidate. Per-file publication cannot commit such an overlay atomically.
+// Conservative refusal covers reverse edges, transitive dependencies and cycles.
+func (v Validated) ChangedDependency(ctx context.Context, path string) (bool, error) {
+	if ctx == nil || v.publicationBudget == nil {
+		return false, errors.New("invalid dependency query")
+	}
+	if err := v.publicationBudget.ChargeNodes(int64(len(v.publicationDependencies[path])) + 1); err != nil {
+		return false, err
+	}
+	seen := map[string]bool{}
+	pending := append([]string(nil), v.publicationDependencies[path]...)
+	for len(pending) > 0 {
+		if err := ctx.Err(); err != nil {
+			return false, err
+		}
+		key := pending[len(pending)-1]
+		pending = pending[:len(pending)-1]
+		if err := v.publicationBudget.ChargeWork(int64(len(key)) + 1); err != nil {
+			return false, err
+		}
+		if seen[key] {
+			continue
+		}
+		if err := v.publicationBudget.ChargeNodes(1); err != nil {
+			return false, err
+		}
+		seen[key] = true
+		if i, ok := v.publicationIndex[key]; ok && v.files[i].original != v.files[i].candidate {
+			return true, nil
+		}
+		for _, next := range v.publicationDependencies[key] {
+			if err := v.publicationBudget.ChargeNodes(1); err != nil {
+				return false, err
+			}
+			pending = append(pending, next)
+		}
+	}
+	return false, nil
 }

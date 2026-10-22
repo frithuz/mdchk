@@ -1,8 +1,8 @@
 # mdchk fix
 
-Current implementation: `fix --dry-run` supports text and JSON previews and
-writes nothing. Apply without `--dry-run` returns usage status 11 before project
-access. VS Code/GitHub formats are not yet supported. MD047 supplies the first production correction: minimal terminal-newline changes
+Current implementation: `fix` applies validated MD047 corrections on Darwin
+arm64 with cgo and local APFS. Other native adapters refuse writes with I/O
+status 13. `fix --dry-run` supports text and JSON previews and writes nothing. VS Code/GitHub formats are not yet supported. MD047 supplies the first production correction: minimal terminal-newline changes
 with independently checked preservation and shared directive permissions. Unsafe
 protected EOF contexts remain manual, with explicit deferral reasons.
 

@@ -211,7 +211,7 @@ func TestCompiledProductionFixBoundaryAndNoWrites(t *testing.T) {
 	}{
 		{[]string{"fix", "doc.md", "--dry-run", "--format=json"}, 10},
 		{[]string{"fix", "--dry-run", "--format=json", "--", "-dash.md"}, 0},
-		{[]string{"fix", "--config=missing.yaml", "missing.md", "--format=json"}, 11},
+		{[]string{"fix", "--config=missing.yaml", "missing.md", "--format=json"}, 12},
 		{[]string{"fix", "--dry-run", "--config=missing.yaml", "doc.md", "--format=json"}, 12},
 		{[]string{"fix", "--dry-run", "missing.md", "--format=json"}, 13},
 		{[]string{"fix", "--dry-run", "doc.md", "--limit=work-units=1", "--format=json"}, 15},

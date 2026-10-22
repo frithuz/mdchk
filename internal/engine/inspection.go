@@ -261,3 +261,10 @@ func (p *ExecutionPlan) InspectCandidate(ctx context.Context, in Input, options 
 
 // Lines retains the original shared physical-line index without rescanning.
 func (t *InspectionTrace) Lines() parser.LineIndex { return t.lines }
+
+// InspectSaved analyzes an actually observed saved snapshot using the residual
+// operation budget. It does not infer saved bytes from a validated candidate.
+func (p *ExecutionPlan) InspectSaved(ctx context.Context, in Input, options RunOptions) (result.Result, *InspectionTrace, error) {
+	options.saved = true
+	return p.Inspect(ctx, in, options, InspectionOptions{})
+}

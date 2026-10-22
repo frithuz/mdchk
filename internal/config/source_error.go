@@ -3,6 +3,7 @@ package config
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"io/fs"
 	"slices"
 )
 
@@ -12,6 +13,7 @@ type SourceSnapshot struct {
 	Path      string
 	SHA256    string
 	SizeBytes int64
+	info      fs.FileInfo
 }
 
 // SourceError retains acquisition identities for a failed configuration
@@ -42,3 +44,6 @@ func sourceError(err error, sources []SourceSnapshot) error {
 	}
 	return &SourceError{err: err, sources: slices.Clone(sources)}
 }
+
+// FileInfo retains the same-read native identity used for write admission.
+func (s SourceSnapshot) FileInfo() fs.FileInfo { return s.info }
