@@ -42,11 +42,12 @@ return `15`. Disabling all ordinary rules permits a clean `0` for valid UTF-8.
 Available registered checks can return violations (`10`); interruptions retain
 partial findings and known targets, with runtime precedence `14 > 13 > 15 > 10 > 0`.
 Text reports are the default; `--format json` emits one undecorated schema-v1
-result. Results, including usage and configuration errors, go to stdout; stderr
+result. Text/JSON results, including usage and configuration errors, go to stdout; stderr
 is reserved for execution logs. Reports retain available findings, errors, skip
 and coverage reasons, partial file outcomes, interruptions and omissions.
-VS Code and GitHub reporters remain unavailable and return usage `11` before
-project access. Reporter availability does not reduce analysis coverage.
+VS Code and GitHub reporters support the same canonical results and exits.
+Reporter choice does not reduce analysis coverage. Their diagnostic and
+operational streams follow the [result formats contract](../output-formats.md).
 
 Directive state is resolved before scheduling checks. A configured-off rule can
 be enabled by a permitted comment with its original options. Checks receive the
@@ -112,8 +113,8 @@ the requested reduced coverage, rather than full Markdown rule conformance.
 
 Capture `$?` immediately after the executable, as above. `go run` reports a
 wrapper status for nonzero program exits and cannot verify mdchk's semantic
-status. The current executable implements `lint`, help and version. `fix`, GFM,
-Pandoc and VS Code/GitHub reporters remain deferred.
+status. The executable implements lint, fix, config validate, inspect, help and
+version. GFM and Pandoc remain deferred.
 
 ## Select files
 
@@ -134,7 +135,7 @@ Git ignore support for lint and fix is deferred; use configuration exclusions fo
 | --- | --- |
 | `--limit NAME=VALUE` | Set a finite operator [resource limit](../engineering/limits.md); repeat for multiple limits |
 | `--config PATH` | Select a configuration inside the operation's discovery boundary |
-| `--format FORMAT` | Choose `text` or `json`; defaults to `text`. `vscode` and `github` are planned and currently rejected |
+| `--format FORMAT` | Choose `text` (default), `json`, `vscode` or `github` |
 
 `--limit` accepts positive decimal integer counts; bytes accept decimal integers
 in bytes or the exact suffixes `B`, `KiB`, `MiB`, and `GiB`. Durations use explicit

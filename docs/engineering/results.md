@@ -6,8 +6,9 @@ implemented and verified. Config validation text/JSON and its operation-specific
 implemented. Inspection also has operation-specific text/JSON reporting and compiled
 acceptance, including observation versus interruption exits. Fix dry-run text/JSON
 uses the shared candidate validator and typed v1 changes, deferrals and line diffs,
-with compiled production MD047 and synthetic producer acceptance. Apply is implemented on the verified native adapter. MCP and the remaining format
-adapters require their own implementation and end-to-end verification.
+with compiled production MD047 and synthetic producer acceptance. Apply is implemented on the verified native adapter. Lint, fix and config validate also implement
+VS Code/GitHub command reporting; inspect remains text/JSON only. MCP requires
+its own implementation and verification.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
 
@@ -163,15 +164,18 @@ stdout; stderr is reserved for execution logs. Text escapes CR/LF in every
 line-oriented user field and preserves Unicode scalar coordinates. JSON retains
 original strings and same-read source identities. Usage and configuration
 failures retain the selected valid presentation, including format options after
-an earlier malformed option; `--` still ends option recognition. VS Code/GitHub
-format selections are rejected before project access until command activation.
+an earlier malformed option; `--` still ends option recognition. The same recovery
+applies to VS Code/GitHub on applicable commands; inspect recovery retains only
+text/JSON.
 The VS Code adapter is implemented with separate diagnostic stdout and operational
 stderr under one byte budget, preserving canonical scalar coordinates and saved
 snapshot authority. The implemented GitHub renderer emits error annotations with
 explicit trusted repository/CWD/path-flavor context, conservative unlocated
 annotations for outside or unproved paths, and safe partial-write evidence on
 stderr. Both streams share the escaped-byte budget; workflow protocol and human
-field escaping prevent command injection. Its command activation remains planned.
+field escaping prevent command injection. CLI invocation CWD supplies the declared
+checkout-root/public-path authority with native flavor. Neither configuration
+roots nor execution deadlines supply presentation authority or lifetime.
 
 Actual encoded response bytes, including JSON escaping and the final newline,
 are bounded. Whole optional records are reduced deterministically, recording

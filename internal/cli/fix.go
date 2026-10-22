@@ -29,7 +29,7 @@ Use --dry-run to preview without acquiring write locks or creating stages.
 Options may appear before or after paths. Use -- for dash-prefixed paths.
   --dry-run           Report proposals without saving
   --config PATH       Select configuration relative to the invocation directory
-  --format FORMAT     text (default) or json
+  --format FORMAT     text (default), json, vscode or github
   --limit NAME=VALUE  Set a finite applicable resource limit
   --help              Show this help
   --version           Print version
@@ -38,6 +38,9 @@ Exit 0/10 describes saved content (candidate content for --dry-run).
 Incomplete analysis returns 15; apply requires Darwin arm64+cgo on local APFS.
 Usage returns 11, configuration 12, I/O 13 and internal failures 14.
 MD047 corrects safe final-newline changes; ambiguous contexts remain manual.
+Text/JSON include preview diffs; editor formats report remaining findings only.
+VS Code unlocated errors and both editor formats' recovery outcomes use stderr.
+Run GitHub output from the checkout root; invocation CWD declares path authority.
 `
 
 func parseFix(args []string) (lintOptions, bool, error) {
@@ -53,16 +56,16 @@ func parseFix(args []string) (lintOptions, bool, error) {
 	}
 	return opts, dry, err
 }
-func fixFailure(err error, code string, category result.ErrorCategory, dry bool, format string, w io.Writer, limits map[string]int64) int {
-	out := failureResult(err, code, category)
-	out.Operation = "fix"
-	out.DryRun = &dry
-	return reportResult(out, format, w, limits)
-}
-func runFix(ctx context.Context, args []string, w io.Writer, version string) int {
+func runFix(ctx context.Context, args []string, w, stderr io.Writer, presentation context.Context, version string) int {
+	fail := func(err error, code string, category result.ErrorCategory, dry bool, format string, limits map[string]int64) int {
+		out := failureResult(err, code, category)
+		out.Operation = "fix"
+		out.DryRun = &dry
+		return reportResultStreamsContext(presentation, out, format, w, stderr, limits)
+	}
 	opts, dry, err := parseFix(args)
 	if err != nil {
-		return fixFailure(err, "invalid-arguments", result.Usage, dry, recoverFormat(args), w, nil)
+		return fail(err, "invalid-arguments", result.Usage, dry, recoverFormat(args), nil)
 	}
 	if opts.help {
 		return output(w, fixHelp, 0)
@@ -70,35 +73,33 @@ func runFix(ctx context.Context, args []string, w io.Writer, version string) int
 	if opts.version {
 		return output(w, "mdchk "+version+"\n", 0)
 	}
-	if opts.format != "json" && opts.format != "text" {
-		return fixFailure(errors.New("unsupported format; use text or json"), "unsupported-format", result.Usage, dry, "text", w, opts.limits)
-	}
+	opts.presentation = presentation
 	profile := parser.Limits{DocumentBytes: reportLimit(opts.limits, "document-bytes"), SyntaxDepth: reportLimit(opts.limits, "syntax-depth"), DocumentNodes: reportLimit(opts.limits, "document-nodes"), TotalNodes: reportLimit(opts.limits, "total-nodes"), WorkUnits: reportLimit(opts.limits, "work-units"), OperationTime: time.Duration(reportLimit(opts.limits, "operation-time"))}
 	budget, err := parser.NewOperationBudget(profile)
 	if err == nil && (reportLimit(opts.limits, "structured-input-depth") > 4096 || reportLimit(opts.limits, "total-config-bytes") > 1<<30) {
 		err = errors.New("unsupported configuration limits")
 	}
 	if err != nil {
-		return fixFailure(err, "unsupported-limits", result.Usage, dry, opts.format, w, opts.limits)
+		return fail(err, "unsupported-limits", result.Usage, dry, opts.format, opts.limits)
 	}
-	if err = fixFeasibility(result.NewFix(true), opts.format, opts.limits); err != nil && !errors.Is(err, context.DeadlineExceeded) {
-		return fixFailure(err, "response-manifest-too-large", result.Usage, dry, opts.format, w, opts.limits)
+	if err = fixFeasibilityContext(presentation, result.NewFix(true), opts.format, opts.limits); err != nil && !errors.Is(err, context.DeadlineExceeded) {
+		return fail(err, "response-manifest-too-large", result.Usage, dry, opts.format, opts.limits)
 	}
 	if ctx == nil {
-		return fixFailure(errors.New("nil execution context"), "invalid-context", result.Internal, dry, opts.format, w, opts.limits)
+		return fail(errors.New("nil execution context"), "invalid-context", result.Internal, dry, opts.format, opts.limits)
 	}
 	ctx, cancel := context.WithTimeout(ctx, profile.OperationTime)
 	defer cancel()
 	registry, providers, caps, err := configuredProviders()
 	if err != nil {
-		return fixFailure(err, "provider-initialization", result.Internal, dry, opts.format, w, opts.limits)
+		return fail(err, "provider-initialization", result.Internal, dry, opts.format, opts.limits)
 	}
 	validator, produce, err := configuredCorrections(registry)
 	if err != nil {
-		return fixFailure(err, "correction-initialization", result.Internal, dry, opts.format, w, opts.limits)
+		return fail(err, "correction-initialization", result.Internal, dry, opts.format, opts.limits)
 	}
 	out := executeFix(ctx, opts, budget, registry, providers, caps, validator, produce)
-	return reportResult(out, opts.format, w, opts.limits)
+	return reportResultStreamsContext(presentation, out, opts.format, w, stderr, opts.limits)
 }
 
 func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationBudget, registry *engine.Registry, providers engine.ValidationProviders, caps config.Capabilities, validator *fix.Validator, produce fix.Producer) (out result.Result) {
@@ -156,7 +157,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	manifest := result.NewFix(opts.dryRun)
 	inv.mergeAcquisition(&manifest, selection, acquisition)
 	engine.FinalizeLintResult(&manifest)
-	if err := fixFeasibility(reserveFixManifest(manifest), opts.format, opts.limits); err != nil && !errors.Is(err, context.DeadlineExceeded) {
+	if err := fixFeasibilityContext(opts.presentation, reserveFixManifest(manifest), opts.format, opts.limits); err != nil && !errors.Is(err, context.DeadlineExceeded) {
 		if !errors.Is(err, errReportBudget) {
 			return fail(err, "manifest-failed", result.Internal)
 		}
@@ -491,13 +492,13 @@ func roundRelated(round int, ids []string) []string {
 // Admission is operation work, independent of the later reporting timer. Reserve
 // the full worst-case per-target identities and proposed-change metadata before
 // loading bytes; optional diff/detail families use the separate reporting reserve.
-func fixFeasibility(out result.Result, format string, limits map[string]int64) error {
+func fixFeasibilityContext(presentation context.Context, out result.Result, format string, limits map[string]int64) error {
 	admission := make(map[string]int64, len(limits)+1)
 	for k, v := range limits {
 		admission[k] = v
 	}
 	admission["reporting-time"] = limitDefaults["reporting-time"]
-	return reportFeasibility(out, format, admission)
+	return reportFeasibilityContext(presentation, out, format, admission)
 }
 func reserveFixManifest(out result.Result) result.Result {
 	out = cloneReport(out)

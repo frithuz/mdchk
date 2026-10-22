@@ -24,7 +24,7 @@ Subcommands:
 const validateHelp = `Usage: mdchk config validate [options] [project]
 
 The project defaults to the working directory. Use -- for dash-prefixed paths.
-  --format FORMAT     text (default) or json
+  --format FORMAT     text (default), json, vscode or github
   --limit NAME=VALUE  Set a finite applicable resource limit; repeat as needed
   --help              Show this help
   --version           Print version
@@ -32,12 +32,13 @@ The project defaults to the working directory. Use -- for dash-prefixed paths.
 Validation is read-only and stays beneath the selected project.
 Invalid definitions return 12, traversal/ignore I/O 13, internal failures 14,
 and runtime interruption 15. Precedence: 14 > 13 > 12 > 15 > 0.
-The --config and --dry-run options and vscode/github formats are unsupported.
+The --config and --dry-run options are unsupported.
+GitHub paths use invocation CWD as the declared checkout root.
 `
 
 var validationLimitNames = []string{"config-bytes", "total-config-bytes", "directory-entries", "path-bytes", "path-depth", "structured-input-depth", "syntax-depth", "document-nodes", "total-nodes", "work-units", "operation-time", "response-bytes", "reporting-time", "report-reserve-bytes"}
 
-func runConfig(ctx context.Context, args []string, stdout io.Writer, version string) int {
+func runConfig(ctx context.Context, args []string, stdout, stderr io.Writer, presentation context.Context, version string) int {
 	var globals []string
 	for len(args) > 0 && (args[0] == "--help" || args[0] == "--version") {
 		globals = append(globals, args[0])
@@ -58,7 +59,7 @@ func runConfig(ctx context.Context, args []string, stdout io.Writer, version str
 		r := failureResult(err, code, category)
 		r.Operation = "config validate"
 		r.ConfigValidation = &result.ConfigValidation{}
-		return reportResult(r, format, stdout, limits)
+		return reportResultStreamsContext(presentation, r, format, stdout, stderr, limits)
 	}
 	if args[0] != "validate" {
 		return fail(fmt.Errorf("unknown config subcommand %q", args[0]), "invalid-arguments", result.Usage, recoverFormat(args), nil)
@@ -87,11 +88,8 @@ func runConfig(ctx context.Context, args []string, stdout io.Writer, version str
 	if opts.version {
 		return output(stdout, "mdchk "+version+"\n", 0)
 	}
-	if opts.format != "text" && opts.format != "json" {
-		return fail(fmt.Errorf("format %q is not yet supported; use text or json", opts.format), "unsupported-format", result.Usage, "text", opts.limits)
-	}
 	r := result.NewConfigValidation()
-	if err := reportFeasibility(r, opts.format, opts.limits); err != nil && !errors.Is(err, context.DeadlineExceeded) {
+	if err := reportFeasibilityContext(presentation, r, opts.format, opts.limits); err != nil && !errors.Is(err, context.DeadlineExceeded) {
 		return fail(err, "response-manifest-too-large", result.Usage, opts.format, opts.limits)
 	}
 	profile := parser.Limits{DocumentBytes: 1048576, SyntaxDepth: reportLimit(opts.limits, "syntax-depth"), DocumentNodes: reportLimit(opts.limits, "document-nodes"), TotalNodes: reportLimit(opts.limits, "total-nodes"), WorkUnits: reportLimit(opts.limits, "work-units"), OperationTime: time.Duration(reportLimit(opts.limits, "operation-time"))}
@@ -139,7 +137,7 @@ func runConfig(ctx context.Context, args []string, stdout io.Writer, version str
 		}
 		r.EffectiveLimits = append(r.EffectiveLimits, result.EffectiveLimit{Name: name, Value: reportLimit(opts.limits, name), Unit: validationLimitUnit(name), Source: source})
 	}
-	return reportResult(r, opts.format, stdout, opts.limits)
+	return reportResultStreamsContext(presentation, r, opts.format, stdout, stderr, opts.limits)
 }
 func validationLimitApplicable(name string) bool {
 	for _, n := range validationLimitNames {

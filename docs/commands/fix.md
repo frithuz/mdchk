@@ -2,7 +2,9 @@
 
 Current implementation: `fix` applies validated MD047 corrections on Darwin
 arm64 with cgo and local APFS. Other native adapters refuse writes with I/O
-status 13. `fix --dry-run` supports text and JSON previews and writes nothing. VS Code/GitHub formats are not yet supported. MD047 supplies the first production correction: minimal terminal-newline changes
+status 13. `fix --dry-run` supports all four formats and writes nothing. Text/JSON
+include proposed diffs; editor formats report only remaining candidate findings.
+MD047 supplies the first production correction: minimal terminal-newline changes
 with independently checked preservation and shared directive permissions. Unsafe
 protected EOF contexts remain manual, with explicit deferral reasons.
 
@@ -27,7 +29,7 @@ mdchk fix --dry-run README.md docs/
 | --- | --- |
 | `--limit NAME=VALUE` | Set a finite operator [resource limit](../engineering/limits.md); repeat for multiple limits |
 | `--config PATH` | Select a configuration inside the operation's discovery boundary |
-| `--format FORMAT` | Choose implemented `text` (default) or `json`; `vscode` and `github` remain planned |
+| `--format FORMAT` | Choose `text` (default), `json`, `vscode` or `github` |
 | `--dry-run` | Compute corrections and report the predicted result without writing files |
 
 The [global options](../index.md#global-options) also apply. See [configuration](../configuration.md) and [result formats](../output-formats.md) for details.
@@ -41,7 +43,10 @@ mdchk fix docs/ --dry-run --format json
 ```
 
 Text and JSON previews include proposed diffs when a registered correction
-passes shared candidate validation. MD047 final-newline correction is implemented. Other corrections remain planned. Planned VS Code and GitHub reporters will describe findings remaining in proposed content for dry runs; they are currently rejected. Use [lint](lint.md) when highlighted locations must match files currently on disk.
+passes shared candidate validation. MD047 final-newline correction is implemented.
+Other corrections remain planned. VS Code and GitHub describe findings remaining
+in proposed content for dry runs, without diffs or raw corrected Markdown. Use
+[lint](lint.md) when highlighted locations must match files currently on disk.
 
 Corrections preserve meaning and unrelated content. For example, fix can add a missing final newline while preserving intentional hard breaks. It leaves code examples, front matter, and ambiguous changes alone. A skipped heading level or missing code language needs a decision rather than a guessed correction.
 

@@ -20,19 +20,18 @@ the available configuration and remaining execution work. Help and version do
 not access the project. Lint reports readable text by default or one schema-v1
 JSON object with `--format json` on stdout; stderr is reserved for execution logs.
 Reports retain findings, coverage reasons, errors, interruptions and omissions.
-The VS Code renderer is implemented, with command activation still planned.
-VS Code and GitHub format selections are rejected as unsupported usage before
-project access; the GitHub renderer is implemented with trusted repository path
-context and safe workflow command encoding.
+Lint, fix and config validate support VS Code diagnostics and GitHub annotations
+with safe workflow command encoding. Inspect remains text/JSON only.
 `config validate` now scans project definitions read-only and reports bounded
-text/JSON results, including completed validity counts, skipped paths, located
+all four result formats, including completed validity counts, skipped paths, located
 errors and actual scan completeness. See its [command guide](commands/config/validate.md).
 `inspect` reports one immutable target in labeled text or versioned JSON, with
 physical-line selection, AST, effective rule counts, directives, provenance and
 explicit availability. Completed observations return inspected/0; runtime or
 reporting interruption returns incomplete/15. See its [command guide](commands/inspect.md).
 `fix --dry-run` uses the same selection/configuration and reports validated
-candidate outcomes in text or JSON without writing files. MD047 supplies the first production correction, with minimal terminal-newline
+candidate outcomes in all four formats without writing files; only text/JSON
+include preview diffs. MD047 supplies the first production correction, with minimal terminal-newline
 changes and conservative protected-content deferrals. Apply uses verified native replacement on Darwin arm64+cgo/local APFS and reports actual saved content; unsupported adapters refuse writes. MCP remains planned and is rejected by this build.
 
 ## Get started (planned execution)

@@ -266,8 +266,6 @@ func TestConfigurationValidationWorkflow(t *testing.T) {
 			}
 		}
 		for _, tc := range []struct{ extra, message string }{
-			{"--format=vscode", `format "vscode" is not yet supported`},
-			{"--format=github", `format "github" is not yet supported`},
 			{"--config=missing", "does not accept --config"},
 			{"--limit=document-bytes=1", `limit "document-bytes" does not apply`},
 		} {

@@ -15,7 +15,7 @@ import (
 // reserve actual target outcomes only after discovery establishes that list.
 func invocationFeasibility(options lintOptions) error {
 	out := result.NewLint("cli")
-	err := reportFeasibility(out, options.format, options.limits)
+	err := reportFeasibilityContext(options.presentation, out, options.format, options.limits)
 	if errors.Is(err, context.DeadlineExceeded) {
 		return nil
 	}
@@ -29,7 +29,7 @@ func (inv *lintInvocation) selectionFeasibility(selected *files.Selection) (int,
 	out := result.NewLint("cli")
 	inv.mergeAcquisition(&out, selected, &files.Acquisition{})
 	engine.FinalizeLintResult(&out)
-	err := reportFeasibility(out, inv.options.format, inv.options.limits)
+	err := reportFeasibilityContext(inv.options.presentation, out, inv.options.format, inv.options.limits)
 	if err == nil || errors.Is(err, context.DeadlineExceeded) {
 		return 0, false
 	}

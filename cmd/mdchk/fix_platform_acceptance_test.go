@@ -124,7 +124,7 @@ func TestCompiledFixHelpWithoutProject(t *testing.T) {
 		if got.Status != 0 || !strings.Contains(got.Stdout, "--dry-run") {
 			t.Fatal(got)
 		}
-		if len(args) > 1 && (!strings.Contains(got.Stdout, "saved content") || !strings.Contains(got.Stdout, "candidate content") || !strings.Contains(got.Stdout, "text (default) or json")) {
+		if len(args) > 1 && (!strings.Contains(got.Stdout, "saved content") || !strings.Contains(got.Stdout, "candidate content") || !strings.Contains(got.Stdout, "text (default), json, vscode or github")) {
 			t.Fatal(got)
 		}
 	}

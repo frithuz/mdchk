@@ -1,10 +1,10 @@
 # mdchk result formats
 
-Choose a result format with `--format`. Lint, fix, config validate and inspect currently implement readable text
-(the default) and JSON for automation. Results go to stdout; stderr is reserved
-for execution logs. The VS Code renderer is implemented; command selection remains planned.
-Both editor/CI format selections currently return unsupported usage before
-project access. The GitHub renderer is implemented; command activation remains planned. Apply uses the verified native adapter and reports observed saved content; MCP
+Choose a result format with `--format`. Lint, fix (preview and supported native
+apply), and config validate support text (the default), JSON, VS Code and GitHub.
+Inspect supports text and JSON. Text/JSON reports go to stdout; editor formats
+use the diagnostic and operational streams described below.
+Apply uses the verified native adapter and reports observed saved content; MCP
 remains planned. Production MD047 reports terminal-newline corrections and retains
 manual findings for unsafe contexts and other report-only checks. Dry-run labels
 its candidate changes as proposed.
@@ -17,10 +17,8 @@ its candidate changes as proposed.
 | `github` | Annotate files in GitHub Actions workflow results |
 
 Formats change presentation, not the rules, fixes, or [exit codes](exit-codes.md).
-The complete contract gives `lint`, `fix`, and
-[`config validate`](commands/config/validate.md) all four formats; this build
-implements lint, fix (preview and supported native apply), config validate and
-inspect text and JSON.
+`lint`, `fix`, and [`config validate`](commands/config/validate.md) implement
+all four formats; inspect implements text and JSON.
 
 [`inspect`](commands/inspect.md) accepts `text` and `json` for its detailed processing report. VS Code and GitHub annotations do not carry its AST and other inspection data.
 
@@ -118,15 +116,14 @@ Resource coverage belongs to the source document and affected check. Unknown par
 
 Cross-file preview and standalone fix findings use the coordinated candidate view. Project fix findings use the actual saved view after writes, with stale or uncertain dependencies explicitly invalidated. Resource-only content is never returned as corrected target content.
 
-## Highlight findings in VS Code (command activation planned)
+## Highlight findings in VS Code
 
 ```sh
 mdchk lint . --format vscode
 ```
 
-The implemented VS Code adapter emits one plain line per finding. CLI activation
-across lint, fix and config validate remains planned; the command and task below
-describe that integration contract.
+The VS Code adapter emits one plain line per finding across lint, fix and
+config validate.
 
 ```text
 docs/guide.md:18:1: error: MD001: Heading jumps from level 2 to level 4. Choose the intended heading level.
@@ -177,7 +174,7 @@ Configure a VS Code task to parse that pattern and run the command from the proj
 
 This provides findings when the task runs. Use JSON for an integration that needs exact ranges or its own conversion to editor-specific character coordinates.
 
-## Annotate GitHub Actions results (command activation planned)
+## Annotate GitHub Actions results
 
 ```sh
 mdchk lint . --format github
@@ -190,12 +187,15 @@ Run this command after checkout and installation of mdchk, with the repository r
   run: mdchk lint . --format github
 ```
 
-The implemented renderer consumes canonical results without reopening sources or
-changing snapshot authority. Command activation remains planned for lint, fix and
-config validate; the workflow example describes that integration contract.
+The renderer consumes canonical results from lint, fix and config validate
+without reopening sources or changing snapshot authority.
 
-The caller supplies a trusted repository root, the command working directory
-that produced public paths, and an explicit Unix or Windows path flavor. The
+Run the CLI from the checkout root. It captures invocation CWD as both the
+operator-declared repository root and the public-path base, with native Unix or
+Windows flavor. This is presentation authority, not verified Git membership or
+filesystem confinement. It does not discover a root from Git, environment,
+configuration, project arguments or target paths. Internal callers may supply
+distinct explicit repository and working-directory context. The
 renderer performs lexical containment checks without Git discovery or file I/O.
 Contained paths become repository-relative file properties, using forward slashes
 for Windows directory separators; literal Unix backslashes remain filename bytes.

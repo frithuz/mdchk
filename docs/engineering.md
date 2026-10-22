@@ -257,8 +257,8 @@ retain canonical outcomes, snapshot identities, coverage, errors and partial
 observations; encoded-byte limits reduce whole records with explicit omissions.
 The reporting deadline is independent of expired analysis. The VS Code adapter
 implements bounded diagnostic stdout and operational stderr, including actual
-candidate/saved results. Command activation remains planned; VS Code/GitHub
-format selections return unsupported usage before project access. The GitHub
+candidate/saved results. Lint, fix and config validate support all four formats;
+inspect remains text/JSON only. The GitHub
 renderer is implemented with explicit trusted repository/CWD/path-flavor context,
 repository-relative annotations or conservative unlocated findings, independent
 workflow percent encoding and command-safe human stderr. It reuses the bounded

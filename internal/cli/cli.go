@@ -5,7 +5,11 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
+	"runtime"
 	"strings"
+
+	"github.com/frithuz/mdchk/internal/result"
 )
 
 const (
@@ -26,12 +30,15 @@ Commands:
 Global options:
   --help     Show general or selected command help
   --version  Print version
+
+Lint, fix and config validate support text, json, vscode and github.
+Inspect supports text and json.
 `
 const lintHelp = `Usage: mdchk lint [options] [paths...]
 
 Options may appear before or after paths. Use -- for dash-prefixed paths.
   --config PATH       Select project configuration
-  --format FORMAT     text (default) or json
+  --format FORMAT     text (default), json, vscode or github
   --limit NAME=VALUE  Set a finite resource limit; repeat for multiple limits
   --help              Show this help
   --version           Print version
@@ -41,7 +48,9 @@ Unavailable configuration returns 12; target I/O or invalid UTF-8 returns 13.
 No selected files returns 11. Complete clean checks return 0, violations 10,
 and unavailable checks or interrupted analysis 15.
 Text and JSON reports go to stdout; execution logs go to stderr.
-The vscode and github formats are not yet supported.
+VS Code: located diagnostics on stdout, unlocated operational records on stderr.
+GitHub: error annotations on stdout, safe recovery evidence on stderr.
+Run GitHub output from the checkout root; invocation CWD declares path authority.
 `
 
 // Run executes with supplied arguments (excluding argv[0]) and streams. Version
@@ -65,6 +74,10 @@ func run(args []string, stdout, stderr io.Writer, version string, prepare func(l
 }
 
 func runContext(ctx context.Context, args []string, stdout, stderr io.Writer, version string, prepare func(lintOptions) (*lintInvocation, error), execute func(context.Context, *lintInvocation, io.Writer, io.Writer) int) int {
+	presentation := commandPresentation()
+	fail := func(err error, code string, category result.ErrorCategory, format string, limits map[string]int64) int {
+		return reportResultStreamsContext(presentation, failureResult(err, code, category), format, stdout, stderr, limits)
+	}
 	var global []string
 	for len(args) > 0 && (args[0] == "--help" || args[0] == "--version") {
 		global = append(global, args[0])
@@ -83,15 +96,15 @@ func runContext(ctx context.Context, args []string, stdout, stderr io.Writer, ve
 	}
 	switch args[0] {
 	case "fix":
-		return runFix(ctx, append(global, args[1:]...), stdout, version)
+		return runFix(ctx, append(global, args[1:]...), stdout, stderr, presentation, version)
 	case "inspect":
 		return runInspect(ctx, append(global, args[1:]...), stdout, version)
 	case "config":
-		return runConfig(ctx, append(global, args[1:]...), stdout, version)
+		return runConfig(ctx, append(global, args[1:]...), stdout, stderr, presentation, version)
 	case "lint":
 		opts, err := parseLint(append(global, args[1:]...))
 		if err != nil {
-			return reportFailure(err, "invalid-arguments", "usage", recoverFormat(args[1:]), stdout, nil)
+			return fail(err, "invalid-arguments", "usage", recoverFormat(args[1:]), nil)
 		}
 		if opts.help {
 			return output(stdout, lintHelp, 0)
@@ -99,23 +112,21 @@ func runContext(ctx context.Context, args []string, stdout, stderr io.Writer, ve
 		if opts.version {
 			return output(stdout, "mdchk "+version+"\n", 0)
 		}
-		if opts.format == "vscode" || opts.format == "github" {
-			return reportFailure(fmt.Errorf("format %q is not yet supported; use text or json", opts.format), "unsupported-format", "usage", "text", stdout, opts.limits)
-		}
+		opts.presentation = presentation
 		if err := invocationFeasibility(opts); err != nil {
-			return reportFailure(err, "response-manifest-too-large", "usage", opts.format, stdout, opts.limits)
+			return fail(err, "response-manifest-too-large", "usage", opts.format, opts.limits)
 		}
 		invocation, err := prepare(opts)
 		if err != nil {
-			return reportFailure(err, "config-definition", "configuration", opts.format, stdout, opts.limits)
+			return fail(err, "config-definition", "configuration", opts.format, opts.limits)
 		}
 		status := execute(ctx, invocation, stdout, stderr)
 		if invocation.result != nil {
-			return reportResult(*invocation.result, opts.format, stdout, opts.limits)
+			return reportResultStreamsContext(presentation, *invocation.result, opts.format, stdout, stderr, opts.limits)
 		}
 		return status
 	default:
-		return reportFailure(fmt.Errorf("unknown command or global option %q; use --help", args[0]), "unknown-command", "usage", recoverFormat(args), stdout, nil)
+		return fail(fmt.Errorf("unknown command or global option %q; use --help", args[0]), "unknown-command", "usage", recoverFormat(args), nil)
 	}
 }
 
@@ -126,7 +137,24 @@ func output(w io.Writer, message string, status int) int {
 	return status
 }
 
+// commandPresentation has an independent lifetime: expired operation contexts
+// must not consume the reserved reporting budget. CWD is operator-declared
+// checkout authority, not a Git-membership or filesystem-confinement check.
+func commandPresentation() context.Context {
+	ctx := context.Background()
+	cwd, err := os.Getwd()
+	if err != nil {
+		return ctx
+	}
+	flavor := "unix"
+	if runtime.GOOS == "windows" {
+		flavor = "windows"
+	}
+	return withGitHubPaths(ctx, githubPaths{Root: cwd, CWD: cwd, Flavor: flavor})
+}
+
 type lintOptions struct {
+	presentation  context.Context
 	paths         []string
 	config        string
 	lines         string
@@ -256,8 +284,8 @@ func recoverFormat(args []string) string {
 		}
 		if name == "--format" {
 			format = "text"
-			if value == "json" {
-				format = "json"
+			if value == "json" || value == "vscode" || value == "github" {
+				format = value
 			}
 		}
 	}

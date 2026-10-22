@@ -123,8 +123,8 @@ func TestValidateUsageMetadataAndPresentation(t *testing.T) {
 		}
 	}
 	for _, format := range []string{"vscode", "github"} {
-		var out bytes.Buffer
-		if got := Run([]string{"config", "validate", "missing", "--format=" + format}, &out, io.Discard, "test"); got != 11 || !strings.Contains(out.String(), "unsupported-format") {
+		var out, errout bytes.Buffer
+		if got := Run([]string{"config", "validate", "missing", "--format=" + format}, &out, &errout, "test"); got != 11 || !strings.Contains(out.String()+errout.String(), "invalid-project") {
 			t.Fatalf("%s %d %s", format, got, &out)
 		}
 	}

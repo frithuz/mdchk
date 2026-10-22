@@ -80,7 +80,7 @@ func newInspectResult() result.Result {
 func runInspect(ctx context.Context, args []string, stdout io.Writer, version string) int {
 	opts, err := parseInspect(args)
 	if err != nil {
-		return inspectFailure(err, "invalid-arguments", result.Usage, recoverFormat(args), stdout, nil)
+		return inspectFailure(err, "invalid-arguments", result.Usage, recoverInspectFormat(args), stdout, nil)
 	}
 	if opts.help {
 		return output(stdout, inspectHelp, 0)
@@ -383,4 +383,13 @@ func rebaseInspection(out *result.Result, p *inspection.Projection, cwd string) 
 			n.Path = logical(n.Path)
 		}
 	}
+}
+
+// Inspection has no editor projection, including on malformed arguments.
+func recoverInspectFormat(args []string) string {
+	format := recoverFormat(args)
+	if format != "json" {
+		return "text"
+	}
+	return format
 }

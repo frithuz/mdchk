@@ -25,8 +25,8 @@ func reportResult(out result.Result, format string, stdout io.Writer, limits map
 	return reportResultStreams(out, format, stdout, io.Discard, limits)
 }
 
-// reportResultStreams owns both presentation streams. Command selection is wired
-// separately; legacy text/JSON retain their existing stdout-only behavior.
+// reportResultStreams owns both presentation streams without path authority.
+// Commands use the context-bearing variant; legacy text/JSON remain stdout-only.
 func reportResultStreams(out result.Result, format string, stdout, stderr io.Writer, limits map[string]int64) int {
 	return reportResultStreamsContext(context.Background(), out, format, stdout, stderr, limits)
 }
@@ -100,7 +100,13 @@ func reportLimit(limits map[string]int64, name string) int64 {
 // error identities. A caller may use this before acquisition when those records
 // are known. Runtime failure is delivery IO, never a retroactive usage error.
 func reportFeasibility(out result.Result, format string, limits map[string]int64) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(reportLimit(limits, "reporting-time")))
+	return reportFeasibilityContext(context.Background(), out, format, limits)
+}
+func reportFeasibilityContext(presentation context.Context, out result.Result, format string, limits map[string]int64) error {
+	if presentation == nil {
+		presentation = context.Background()
+	}
+	ctx, cancel := context.WithTimeout(presentation, time.Duration(reportLimit(limits, "reporting-time")))
 	defer cancel()
 	// Reserve the minimum envelope/interruption/omission capacity in addition
 	// to the entire known per-target identity/outcome manifest. The final fully

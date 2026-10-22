@@ -69,10 +69,15 @@ func TestReportPresentationRecovery(t *testing.T) {
 			t.Fatalf("%v recovered %s", args, got)
 		}
 	}
-	accessed := false
-	status := run([]string{"lint", "--format=github"}, io.Discard, io.Discard, "test", func(lintOptions) (*lintInvocation, error) { accessed = true; return nil, nil }, func(*lintInvocation, io.Writer, io.Writer) int { return 0 })
-	if status != 11 || accessed {
-		t.Fatalf("unsupported format project access=%v status=%d", accessed, status)
+	for _, format := range []string{"vscode", "github"} {
+		accessed := false
+		status := run([]string{"lint", "--format=" + format}, io.Discard, io.Discard, "test", func(o lintOptions) (*lintInvocation, error) {
+			accessed = true
+			return &lintInvocation{options: o}, nil
+		}, func(*lintInvocation, io.Writer, io.Writer) int { return 0 })
+		if status != 0 || !accessed {
+			t.Fatalf("format %s project access=%v status=%d", format, accessed, status)
+		}
 	}
 }
 func TestReportActualDiagnosticsCoordinatesAndStrings(t *testing.T) {

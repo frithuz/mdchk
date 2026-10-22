@@ -12,10 +12,12 @@ Use the exit code to decide whether a check passed, Markdown problems remain, or
 | `14` | mdchk encountered an internal execution failure. | Keep the error report and command details for a bug report. |
 | `15` | Analysis, inspection or configuration scanning was interrupted or incomplete without an overriding error. | Review coverage reasons and available findings; do not treat the run as a clean CI check. |
 
-The current lint, fix, config validate and inspect commands emit text or schema-v1 JSON on stdout for these
-outcomes, including usage and configuration failures when a valid format is
-selected. Apply uses the verified Darwin arm64+cgo/local APFS adapter; unsupported adapters return I/O/13. MD047 previews safe final-newline corrections and defers unsafe EOF contexts. VS Code/GitHub reporters and MCP remain
-planned.
+Lint, fix and config validate support text, schema-v1 JSON, VS Code and GitHub
+for these outcomes, including usage and configuration failures when a valid
+format is selected. Inspect supports text/JSON. Editor reporters use their
+documented diagnostic and operational streams. Apply uses the verified Darwin
+arm64+cgo/local APFS adapter; unsupported adapters return I/O/13. MD047 previews
+safe final-newline corrections and defers unsafe EOF contexts. MCP remains planned.
 An output-delivery error, including a short write, returns `13` unless a
 previously established internal failure requires `14`; it may prevent a complete
 report from reaching stdout.

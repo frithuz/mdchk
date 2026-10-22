@@ -22,7 +22,7 @@ Each configuration is validated independently. This checks nested definitions wi
 | Option | Effect |
 | --- | --- |
 | `--limit NAME=VALUE` | Set a finite operator [resource limit](../../engineering/limits.md); repeat for multiple limits |
-| `--format FORMAT` | Choose implemented `text` or `json`; defaults to `text` |
+| `--format FORMAT` | Choose `text` (default), `json`, `vscode` or `github` |
 
 The [global options](../../index.md#global-options) also apply. There is no `--config` override: validation discovers all eligible configuration files in the selected project.
 
@@ -42,7 +42,12 @@ Directive restrictions also carry down the scan: ancestor `directives.enabled: f
 
 Validation checks YAML syntax and schema restrictions, the required version, canonical numeric rule IDs, value types, rule-specific options (even on disabled rules), exclusion-pattern syntax, and effective requested capabilities. It reports duplicate settings rather than silently choosing one. It does not require exclusion patterns to match existing files, and it does not lint Markdown or apply corrections. If this build lacks the selected dialect, effectively enabled directive processor, or an explicitly configured enabled rule, validation fails. Unmentioned unavailable default rules alone are not validation failures because this command does not execute their checks.
 
-Problems include the configuration path and a line and column when available. VS Code and GitHub formats remain planned and are rejected before project access. JSON includes problems in the `errors` array with category `configuration`. See [result formats](../../output-formats.md) for integration examples.
+Problems include the configuration path and a line and column when available.
+VS Code and GitHub report located definition errors; unlocated errors use
+VS Code stderr or GitHub annotations. GitHub uses invocation CWD as the declared
+checkout root, not the selected scan directory. JSON includes problems in the
+`errors` array with category `configuration`. See
+[result formats](../../output-formats.md) for integration examples.
 
 ```sh
 mdchk config validate . --format json
@@ -59,7 +64,7 @@ See [configuration](../../configuration.md) for valid definitions and [exit code
 ## Current implementation
 
 The command implements bounded discovery, independent validation, inherited
-policies, scoped exclusions and text/JSON reporting. It does not execute Markdown
+policies, scoped exclusions and all four report formats. It does not execute Markdown
 rules. The compiled workflow acceptance suite verifies actual text/JSON process
 statuses, independent strict validation, source locations and hashes, scoped
 policy failures, Git negation and tracked files, skipped roots, symlinks, empty
