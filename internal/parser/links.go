@@ -202,7 +202,7 @@ func (s *inlineScanner) openBracket(offset, node int, image bool) {
 	if s.delimitersLinked {
 		bottom = s.delimiterTail
 	}
-	s.brackets = meteredAppend(s.ctx, s.brackets, inlineBracket{offset: offset, node: node, bottom: bottom, image: image})
+	s.brackets = meteredAppend(s.ctx, s.brackets, inlineBracket{offset: offset, node: node, bottom: bottom, delimiterStart: len(s.delimiters), image: image})
 }
 
 // Successful inline links/autolinks invalidate earlier link openers. A monotonic
@@ -332,6 +332,23 @@ func (s *inlineScanner) finishLink(bracket inlineBracket, label Value, propertie
 	if err != nil || interruption(s.ctx) != "" {
 		return nil, nil, err
 	}
+	var image *bareImage
+	if bracket.image && s.extendedEnabled() {
+		meterRecords(s.ctx, 1)
+		image = &bareImage{start: start, offset: bracket.offset + 1, parts: label.Segments, flat: children}
+		for _, d := range s.delimiters[bracket.delimiterStart:] {
+			meterWork(s.ctx, 1)
+			if !d.retired {
+				image.delimiters = meteredAppend(s.ctx, image.delimiters, d)
+			}
+		}
+		// Copy indexes are local to the deferred label. Pairing starts from a
+		// fresh linked stack; original logical offsets remain unchanged.
+		for i := range image.delimiters {
+			meterWork(s.ctx, 1)
+			image.delimiters[i].previous, image.delimiters[i].next = 0, 0
+		}
+	}
 	children, err = s.emphasisAbove(label.Segments, children, bracket.bottom, bracket.offset+1)
 	if err != nil || interruption(s.ctx) != "" {
 		return nil, nil, err
@@ -347,5 +364,8 @@ func (s *inlineScanner) finishLink(bracket inlineBracket, label Value, propertie
 		markers = meteredAppend(s.ctx, []Marker{{Role: "image-marker", Source: imageMarker}}, markers...)
 	}
 	link, err = meteredNode(s.ctx, NodeSpec{Kind: kind, Envelope: envelope, Content: label.Segments, Markers: markers, Properties: Properties{Link: properties}, Children: children})
+	if err == nil && image != nil {
+		s.images = meteredAppend(s.ctx, s.images, *image)
+	}
 	return before, link, err
 }

@@ -176,6 +176,12 @@ func (s *inlineScanner) scan(parts []Segment) ([]*Node, error) {
 				continue
 			}
 		}
+		if s.text[offset] == '<' && s.extendedEnabled() {
+			if s.failedAngles == nil {
+				s.failedAngles = meteredSlice[bool](s.ctx, len(s.text))
+			}
+			s.failedAngles[offset] = true
+		}
 		if s.text[offset] == '[' || s.text[offset] == '!' && offset+1 < len(s.text) && s.text[offset+1] == '[' {
 			image := s.text[offset] == '!'
 			if image {

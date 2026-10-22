@@ -345,7 +345,7 @@ func TestStrikeApprovedSupplementalWitnesses(t *testing.T) {
 				}
 				assertStrike(t, ns[0], 0, 15, 2, "*a* [b](/u)")
 			case "combined-all-five":
-				if len(ns) != 1 || len(taskItems(r.Document.root)) != 1 || len(tableNodes(r.Document.root, Table)) != 1 || len(tableNodes(r.Document.root, Link)) != 0 {
+				if len(ns) != 1 || len(taskItems(r.Document.root)) != 1 || len(tableNodes(r.Document.root, Table)) != 1 || len(bareNodes(r.Document.root)) != 1 {
 					t.Fatal("private stage only")
 				}
 				assertStrike(t, ns[0], 6, 19, 2, "www.a.org")

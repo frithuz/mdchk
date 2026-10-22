@@ -391,8 +391,8 @@ func TestTaskSharedInlinesReferencesAndProtection(t *testing.T) {
 		t.Fatal("task marker became reference use")
 	}
 	r = parseTableStage(t, "---\n- [x] ~~gone~~ www.example.com <title>x</title>\n")
-	if r.Document.root.spec.Children[0].Kind() != ThematicBreak || len(taskItems(r.Document.root)) != 1 || len(tableNodes(r.Document.root, Link)) != 0 {
-		t.Fatal("unimplemented extensions/frontmatter activated")
+	if r.Document.root.spec.Children[0].Kind() != ThematicBreak || len(taskItems(r.Document.root)) != 1 || len(bareNodes(r.Document.root)) != 1 {
+		t.Fatal("private stage scope/frontmatter")
 	}
 }
 
@@ -671,7 +671,7 @@ func TestTaskApprovedSupplementalWitnesses(t *testing.T) {
 					t.Fatal("ordinary fixture core changed")
 				}
 			case "combined-all-five":
-				if len(items) != 1 || len(tableNodes(r.Document.root, Table)) != 1 || len(tableNodes(r.Document.root, Link)) != 0 {
+				if len(items) != 1 || len(tableNodes(r.Document.root, Table)) != 1 || len(bareNodes(r.Document.root)) != 1 {
 					t.Fatal("implemented stage scope")
 				}
 				assertTask(t, items[0], 0, 21, 2, 20, 2, 3, 4, 4, 6, "x", "www.a.org")

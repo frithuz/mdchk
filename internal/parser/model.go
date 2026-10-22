@@ -101,6 +101,7 @@ type DelimiterProperties struct {
 type BreakProperties struct{ Origin string }
 
 // LinkProperties keeps visible use syntax separate from reference identifiers.
+// Origin is inline/full/collapsed/shortcut, autolink (angle), or bare-gfm.
 // For resolved reference origins, Destination/Title are spanless semantic
 // projections; NormalizedLabel selects authoritative provenance in the owning
 // document's first-definition lookup. See model.md for exact source/marker roles.
@@ -171,6 +172,9 @@ func NewNode(spec NodeSpec) (*Node, error) {
 		return nil, err
 	}
 	if err := validateValue(spec.Envelope, Value{Segments: spec.Content, Semantic: spec.Properties.Literal}); err != nil {
+		return nil, err
+	}
+	if err := validateBareSpec(spec); err != nil {
 		return nil, err
 	}
 	if err := validateStrikeSpec(spec); err != nil {
@@ -440,7 +444,7 @@ func validateProperties(k Kind, e Span, p Properties) error {
 			return ErrModel
 		}
 		switch p.Link.Origin {
-		case "inline", "full", "collapsed", "shortcut", "autolink":
+		case "inline", "full", "collapsed", "shortcut", "autolink", "bare-gfm":
 		default:
 			return ErrModel
 		}

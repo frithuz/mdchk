@@ -152,3 +152,36 @@ segments/children; it never scans the full envelope across container gaps.
 Strike adds one syntax-depth construct. Overlapping nested raw Content remains
 real retained output and is charged for each owner, rather than asserting an
 unconditional linear bound for arbitrarily large nested output.
+
+
+The private bare-link pass uses one charged endpoint/prefix-fact index per eligible
+original Text interval. Domain/local/resource/path endpoints, dot/underscore and
+empty-label facts, parenthesis counts, unconditional punctuation/entity trim
+endpoints and terminal closing chains make even failed overlapping starts
+constant-work queries. Global closing-parenthesis ordinals select the required
+trim endpoint without walking a shared suffix. Domain validation follows the fully
+trimmed survivor. Successful candidates consume their range monotonically;
+trimming never recounts a whole prefix or copies shrinking strings. Invalid maximal
+email tokens advance past the failed token rather than retrying every suffix.
+All index, match, image-label and delimiter-copy records reserve work/construction
+before allocation; original mappings, semantic prefix builders, replacement Text,
+Link properties, validation and immutable copies are separately charged.
+
+The structural scan records actual failed-angle sites in a charged logical-byte
+bitmap. Deferred image records borrow immutable raw/flat facts and copy only live
+label delimiters; successful enclosing Links exclude their image labels before
+bare recognition. Image reconstruction follows structural closing order and uses
+the shared pairing engine. Delimiter retirement and eligible intervals advance in
+source order. Bare Link adds one real syntax-depth construct; its Text child adds
+zero. Ancestor/subtree checks, shared sticky operations and private final inline
+publication remain unchanged. Nested source payload amplification is charged per
+owner rather than hidden behind an unconditional linear-output claim.
+
+
+Supplied bare-prefix association validation reserves the complete visible-label
+scan bound before checking an email at-sign; it does not run another grammar
+recognizer. Changed Text remainders borrow only the structural scan's terminal
+Normalized/empty discarded-space facts. Their reverse suffix visits and original
+boundary lookup are metered; appending their source records and immutable copies
+charges before allocation. Earlier raw remainder decoding and615 priority remain
+unchanged. This adds no new persistent metadata or mutable scanner cache.

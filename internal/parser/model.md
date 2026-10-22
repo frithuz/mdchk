@@ -1129,7 +1129,7 @@ Roles in Markers identify source spellings; each marker has its exact source spa
 | `SoftBreak`, `HardBreak` | Original line-ending Content; optional Break.Origin (`line-ending`, `spaces`, `backslash`) and `hard-break-marker` as applicable. |
 | `CodeSpan` | Delimiter.Marker/backtick Width; `opening`/`closing` markers, raw Content and separately normalized Literal. |
 | `Emphasis`, `Strong` | Delimiter.Marker/Width, `opening`/`closing` ranges and ordered inline children. |
-| `Link`, `Image` | Link.Origin `inline`/`full`/`collapsed`/`shortcut`/`autolink`; Label/Destination/optional Title Values, optional ReferenceLabel and NormalizedLabel, and explicit Resolution availability. `label-open`, `label-close`, `link-open`, `link-close`, `destination-open`, `destination-close`, `title-open`, `title-close`, `reference-open`, `reference-close`, `image-marker` roles as applicable; label children. |
+| `Link`, `Image` | Link.Origin `inline`/`full`/`collapsed`/`shortcut`/`autolink`/`bare-gfm`; Label/Destination/optional Title Values, optional ReferenceLabel and NormalizedLabel, and explicit Resolution availability. `label-open`, `label-close`, `link-open`, `link-close`, `destination-open`, `destination-close`, `title-open`, `title-close`, `reference-open`, `reference-close`, `image-marker` roles as applicable; label children. |
 
 Property constructors enforce recognized kinds, property-family applicability,
 basic supplied heading/fence/HTML/delimiter/origin values and all source ranges.
@@ -1267,13 +1267,14 @@ capabilities only. Current checks cannot establish syntax conformance,
 general inline/link conformance, full resource enforcement,
 fix safety or CLI/MCP parity.
 
-## Internal GFM table, task and strikethrough syntax stage
+## Internal GFM table, task, strikethrough and bare-link syntax stage
 
 Public `Parse` and `ParseWithBudget` remain CommonMark-only with unchanged
 signatures/defaults. The private `gfmInProgressProfile` selects implemented syntax
 through their shared admission, UTF-8, budgeting, block/inline and recovery body.
 It is an internal development stage, not a selectable or complete GFM profile.
-Its completed status certifies only tables/tasks/strikethrough in the stage it runs. Other extensions, the
+Its completed status certifies tables/tasks/strikethrough/extended autolinks in
+the stage it runs. Tag filtering, the
 full-profile conformance adapter and public activation remain separate work.
 
 `Table` owns `TableProperties` (positive Width and one typed Alignment per
@@ -1390,5 +1391,55 @@ records the chosen behavior where pinned extension prose is incomplete.
 Walk, reference binding, Comments, LiteralSpans and ProtectedNodes reach actual
 inline descendants. Strike itself grants no opaque-source authority. Code and
 raw HTML remain opaque under the shared parser's ordinary boundaries. The stage
-adds neither extended bare autolinks nor tag filtering, a renderer or complete
+adds no tag filtering, renderer or complete
 GFM support; the full adapter, profile activation and consumer gates remain future.
+
+
+### Bare extended links
+
+The private stage adds resolved `LinkProperties.Origin="bare-gfm"`; the existing
+string field and all legacy origins remain unchanged. Angle links retain origin
+`autolink` (the fixture projection calls that origin `angle`). A bare envelope is
+exactly the visible source envelope, without invented angle/bracket markers.
+Content, Label and the single Text child retain the same original mapped
+contributions and visible semantics. Destination is independent: a recognized
+www web form prepends spanless Synthetic `http://`, plain email prepends
+spanless Synthetic `mailto:`,
+and explicit HTTP(S)/mailto/xmpp protocols retain source-backed spelling once.
+Table pipe escapes and normalized NUL retain their atomic original provenance;
+ordinary raw URL escape/entity spellings are not decoded into fresh syntax.
+
+NewNode narrowly checks bare applicability, Available resolution, absent title,
+reference binding and markers, nonempty owned visible payload, ordered nonoverlap,
+aggregate semantic contributions, matching Content/Label/Text child and destination
+contributions with only an allowed supplied source-absent prefix association. A
+www-looking local part can carry mailto when email recognition wins; visible www
+spelling alone does not select the association. Synthetic http requires www,
+Synthetic mailto requires an at-sign in the visible address, and explicit source
+protocols do not acquire another prefix. These checks do not recognize
+Markdown grammar or confer parsed completion/protection/edit authority. Existing
+immutable snapshots and detached accessors apply; equal bytes in another Source
+are not ownership. NewDocument binds only the existing reference origins.
+
+One shared structural inline scan resolves code, HTML, angles, brackets,
+references and images. A dedicated raw extension pass then visits eligible flat
+Text intervals before final emphasis/Strike pairing, retiring only delimiter bytes
+covered by accepted links. Failed raw angle sites are recorded explicitly for
+approved 611; escaped angles never gain that exception. Approved 615 rebuilds its
+remaining raw prefix before decoding once, avoiding an illegal split inside the
+already decoded Escape contribution. Changed nonlink remainders carry the shared
+scan's terminal Normalized/empty discarded-space contributions unchanged, while
+preceding raw escapes/entities decode once. Successful explicit labels remain
+excluded.
+Image labels retain original flat facts and live delimiter copies; only images
+outside successful Links are rebuilt, in closing order, before outer pairing.
+No second Markdown parser or pass over concatenated decoded Text is involved.
+The [compatibility interpretation](../../docs/engineering/gfm-compatibility.md#extended-autolink-interpretation)
+records primary ambiguities, exact classes, trimming and source-priority choices.
+
+Bare links remain transparent to source consumers. Walk/reference traversal and
+protection still reach real code/HTML descendants elsewhere; bare syntax itself
+adds no opaque range. Only complete same-operation documents grant authority.
+Public Parse/ParseWithBudget/zero/core stay CommonMark-only. The four-extension
+private stage does not activate public GFM, tag filtering, rendering, rules or
+actual profile consumers; the 2,117 consumer units remain NOT-RUN.

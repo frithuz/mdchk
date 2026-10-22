@@ -4,8 +4,8 @@ Status: approved on 2026-10-14. The [original published corpus and offline
 extraction tooling](../../internal/parser/testdata/gfm/0.29-gfm/README.md) are
 retained and verified. The [executable profile fixture contract](../../internal/parser/testdata/gfm/profile/README.md)
 now supplies adaptations and independent source expectations. A private parser
-stage now recognizes source-preserving tables, task items and strikethrough and shares the core
-lifecycle and inline machinery. The integrated profile, its conformance
+stage now recognizes source-preserving tables, task items, strikethrough and
+extended autolinks and shares the core lifecycle and inline machinery. The integrated profile, its conformance
 adapter and mdchk conformance verification remain pending. Public parser APIs
 remain CommonMark-only; configuration still rejects unavailable GFM. This contract
 defines the target for [#158](https://github.com/frithuz/mdchk/issues/158), building
@@ -240,6 +240,68 @@ These are explicit technical interpretations of incomplete upstream detail,
 consistent with the approved mixed fixture, not comparison-renderer parity.
 Escapes/entities and opaque syntax use the existing dispatch; decoded tildes
 are never redispatched. Original fixtures and consumer accounting are unchanged.
+
+### Extended-autolink interpretation
+
+The private stage recognizes all published 622–635 forms, including the published
+`xmpp:` resource semantics. It uses the existing structural inline scanner first,
+then recognizes bare candidates in eligible original logical Text before final
+emphasis/Strike pairing. Successful explicit links and opaque code/HTML retain
+priority. URL interior delimiters remain literal; excluded suffix delimiters can
+still pair around a Link. Image labels retain core semantics; only labels outside
+successful explicit Links receive bare recognition, using the same raw boundary
+rules. Neither `[` nor an image-label start adds an opening exception. Unresolved
+brackets release prose but do not change the web opening whitelist.
+
+The pinned extension's global whitespace class is exactly ASCII TAB, LF, VT, FF,
+CR and SPACE. It permits a web opening and terminates its path; `<` also terminates
+paths. Opening otherwise requires logical line start or `*_~(`. NBSP/U+0085
+neither open nor stop a path. Other controls do not gain an added exclusion.
+Composing section 6.9's plain “non-space” with that global class is an explicit
+mdchk interpretation; selected-core Unicode whitespace predicates are unchanged.
+Prefixes are case-sensitive literals. Ambiguous “alphanumeric” means ASCII letters
+and digits in domain, email, resource and entity-resemblance tokens; Unicode path
+bytes remain original content. No DNS, IDNA, URL validation or network lookup runs.
+The domain following `www.` must itself contain a period: `www.a` is ordinary,
+`www.a.b` recognizes. Labels are nonempty and have no imposed DNS length bound.
+
+Web trimming repeats, in order, trailing `?!.,:*_~`, excess final parentheses
+using whole-candidate counts, and one trailing `&` plus ASCII alphanumerics plus
+`;`, until stable. Numeric entity spellings do not match that last pattern.
+Interior surplus parentheses remain when no closing parenthesis is at the end.
+These combined-suffix details are technical interpretations beyond the isolated
+published examples. Email uses maximal raw local/domain tokens, trims terminal
+periods and rejects invalid maximal domains without salvaging their suffixes.
+Email and `mailto:`/`xmpp:` follow the more specific “within any text node” wording
+rather than the web opening whitelist. An optional `xmpp:` resource contains one
+slash and at least one ASCII alphanumeric, `@` or `.`; its terminal dot stays
+included, and a second slash remains outside. These emptiness/dot composition
+choices are explicit interpretations, not expanded RFC grammar.
+
+Approved base 611 exposes the bare HTTP candidate after an actual failed raw
+angle/HTML opener. This is a specific adaptation, not a general `<` whitelist
+addition; an escaped `<` does not grant it. Approved 615 selects the raw maximal
+`+@bar.example.com` over the competing core backslash escape, preserving `<foo\`
+as preceding Text. The pinned extension does not unequivocally order email
+recognition against escapes. This source-priority choice remains explicit and
+uncertain upstream; core 615 still retains its independent escape interpretation.
+Generated escape/entity syntax is never recognized as a new candidate.
+
+`LinkProperties.Origin` adds only `bare-gfm`; existing `autolink` still means
+angle-delimited. Visible envelope/Content/Label remain source-owned, separate from
+Destination. Added `http://` and `mailto:` are spanless Synthetic destination
+contributions; source protocols occur once with real provenance. The supplied
+prefix retains the selected web/email association: a local part beginning www.
+can still select mailto when web recognition fails or cannot open. The constructor
+checks coherent supplied contributions rather than inferring the winner from
+www spelling alone. Changed surrounding Text preserves the shared scan's
+source-owned empty normalization before SoftBreak while reconstructing ordinary
+escapes/entities once and retaining 615's raw priority. Bare FTP remains
+ordinary prose under section 6.9; future MD034 must also inspect eligible FTP
+prose and source context rather than treating every Link as exempt. Angle FTP
+retains its ordinary core origin. MD054 still has exactly five styles and maps
+both recognized origins to its existing autolink style. No rule implementation,
+public partial profile, adapter or completed GFM consumer claim is added here.
 
 ## Rule and operation integration
 

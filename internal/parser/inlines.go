@@ -20,6 +20,7 @@ type inlineDelimiter struct {
 
 type inlineBracket struct {
 	offset, node, bottom int
+	delimiterStart       int
 	image                bool
 }
 
@@ -37,6 +38,8 @@ type inlineScanner struct {
 	backticks        map[int][]int        // raw run starts by width, even after a backslash
 	backtickNext     map[int]int          // monotonic next-closer cursor per width
 	htmlEnds         map[string][]int     // original logical terminators/quotes, indexed once
+	failedAngles     []bool
+	images           []bareImage
 	pending          bool
 }
 
@@ -102,6 +105,9 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState, references *
 		scanner := inlineScanner{ctx: scannerContext, text: text.String(), references: references}
 		scanner.opaqueCandidates()
 		children, err := scanner.scan(spec.Content)
+		if err == nil && interruption(ctx) == "" {
+			children, err = scanner.extendedAutolinks(spec.Content, children)
+		}
 		if err == nil && interruption(ctx) == "" {
 			children, err = scanner.emphasis(spec.Content, children)
 		}

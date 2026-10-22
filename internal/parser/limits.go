@@ -276,6 +276,10 @@ func meteredNode(ctx context.Context, spec NodeSpec) (*Node, error) {
 		meterWork(ctx, 8*(1+len(p.Cell.EscapedPipes)))
 	}
 	if p.Link != nil {
+		if p.Link.Origin == "bare-gfm" {
+			meterRecords(ctx, 1)
+			meterWork(ctx, 32+len(p.Link.Label.Semantic.Value)+8*(len(spec.Content)+len(p.Link.Label.Segments)+len(p.Link.Destination.Segments)+len(spec.Children)))
+		}
 		meterValue(ctx, p.Link.Label)
 		meterValue(ctx, p.Link.Destination)
 		if p.Link.Title != nil {
@@ -324,7 +328,7 @@ func meteredAppend[T any](ctx context.Context, dst []T, values ...T) []T {
 	}
 	var zero T
 	switch any(zero).(type) {
-	case NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair:
+	case NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair, bareIndex, bareMatch, bareImage:
 		meterRecords(ctx, len(values))
 	}
 	return append(dst, values...)
@@ -338,7 +342,7 @@ func meteredSlice[T any](ctx context.Context, n int, capacity ...int) []T {
 	meterWork(ctx, c)
 	var zero T
 	switch any(zero).(type) {
-	case NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair:
+	case NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair, bareIndex, bareMatch, bareImage:
 		meterRecords(ctx, n)
 	}
 	return make([]T, n, c)
