@@ -116,6 +116,27 @@ Resource coverage belongs to the source document and affected check. Unknown par
 
 Cross-file preview and standalone fix findings use the coordinated candidate view. Project fix findings use the actual saved view after writes, with stale or uncertain dependencies explicitly invalidated. Resource-only content is never returned as corrected target content.
 
+## Runnable integration setup
+
+These examples assume an installed `mdchk` on PATH and execution from the
+checkout/workspace root. Copy the [example configuration](examples/editor-ci/.mdchk.yaml)
+to `.mdchk.yaml` there. It selects CommonMark and MD047, explicitly disables
+other ordinary checks, and retains mandatory UTF-8 validation. This reduced
+selection verifies integration with the current build; it is not full catalog
+conformance. Without it, the current default GFM profile fails configuration
+validation; CommonMark alone still has unavailable default checks and exits `15`.
+
+For the exact violating example, copy the [example document](examples/editor-ci/guide.md)
+to `docs/guide.md`. It contains `雪`, a tab, `😀x`, and no terminal newline: MD047 is
+at line 1, scalar column 5. Adding one newline makes the check clean and silent,
+with exit `0`; the original returns `10`. Preserve the process status in CI.
+
+These tasks use `lint` for locations in files on disk. A `fix --dry-run` can
+propose a safe change yet emit no editor findings and return `0`, while leaving
+the file unchanged. Remaining preview findings use candidate positions. Review
+proposed diffs with text or JSON. Inspect supports text/JSON only; requesting
+an editor format is usage error `11` before source access.
+
 ## Highlight findings in VS Code
 
 ```sh
@@ -126,7 +147,7 @@ The VS Code adapter emits one plain line per finding across lint, fix and
 config validate.
 
 ```text
-docs/guide.md:18:1: error: MD001: Heading jumps from level 2 to level 4. Choose the intended heading level.
+docs/guide.md:1:5: error: MD047: File must end with a line-ending sequence.
 ```
 
 Lines use `path:line:column: severity: rule: message`. There are no colors, headings, summaries, or diffs on stdout. A clean check emits no diagnostic lines. Execution errors appear on stderr; capture the exit code so a failed check is not mistaken for a clean one.
@@ -210,7 +231,7 @@ repository root.
 The format emits GitHub Actions [error annotations](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#setting-an-error-message) with repository-relative file paths, line numbers, and rule titles:
 
 ```text
-::error file=docs/guide.md,line=18,title=MD001::Heading jumps from level 2 to level 4. Choose the intended heading level.
+::error file=docs/guide.md,line=1,title=MD047::File must end with a line-ending sequence.
 ```
 
 GitHub associates annotations with files in the workflow results. Findings use line locations so GitHub can highlight the affected lines. Execution errors also produce error annotations, without an invented source location. mdchk escapes annotation values so file names and messages are treated as data.
@@ -242,6 +263,19 @@ encoded response budget.
 The exit code controls whether the workflow step succeeds; annotations provide locations and explanations. A clean check emits no error annotations. After `fix`, annotations describe remaining problems; use `lint` to annotate committed content without changing it. GitHub controls how many annotations are displayed, so retain JSON results if you need a complete machine-readable report.
 
 ## Output streams and previews
+
+Use the same root and setup to validate definitions independently:
+
+```sh
+mdchk config validate . --format vscode
+mdchk config validate . --format github
+```
+
+A valid definition is silent with exit `0` in these formats. An invalid rule
+option returns `12`, with its definition location and stable `config-definition`
+identifier. An ignore-file read failure is an unlocated operational error (`13`).
+Available findings remain visible on partial failure, and unavailable analysis
+remains non-clean (`15`); neither is a successful empty check.
 
 For `config validate`, JSON uses operation `config validate` and reports definition errors in `errors` with category `configuration`; `diagnostics` and `coverage` remain empty because it does not execute Markdown checks. Located configuration errors also appear as VS Code problem-matcher lines and GitHub annotations, using identifiers such as `config-definition`. Errors without source locations remain stderr messages in VS Code output. Text includes validation counts, including successful scans with no configuration files.
 

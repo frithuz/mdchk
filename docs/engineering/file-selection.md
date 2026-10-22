@@ -5,7 +5,7 @@
 selection and acquisition to the admitted engine plan after configuration
 preparation. The plan owns mandatory UTF-8 validation, parsing and registered
 checks. Lint text and JSON reporters present the finalized shared result;
-VS Code/GitHub reporters remain pending.
+Lint, fix and config validate also support VS Code/GitHub reporters; inspect remains text/JSON only.
 Selection does not read document contents, label targets as checked, discover
 configuration, interpret Git ignores, access linked resources, or write files.
 
