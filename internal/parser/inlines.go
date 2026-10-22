@@ -37,6 +37,7 @@ type inlineScanner struct {
 	bareLinkEnds     []int                // lazily indexed raw destination endpoints; -1 means unbalanced
 	backticks        map[int][]int        // raw run starts by width, even after a backslash
 	backtickNext     map[int]int          // monotonic next-closer cursor per width
+	filterTagCache   map[int]int          // optional shared-lexer suffix results for raw filter inventory
 	htmlEnds         map[string][]int     // original logical terminators/quotes, indexed once
 	failedAngles     []bool
 	images           []bareImage

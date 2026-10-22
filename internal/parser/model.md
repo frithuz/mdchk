@@ -1267,15 +1267,15 @@ capabilities only. Current checks cannot establish syntax conformance,
 general inline/link conformance, full resource enforcement,
 fix safety or CLI/MCP parity.
 
-## Internal GFM table, task, strikethrough and bare-link syntax stage
+## Internal GFM syntax stage
 
 Public `Parse` and `ParseWithBudget` remain CommonMark-only with unchanged
 signatures/defaults. The private `gfmInProgressProfile` selects implemented syntax
 through their shared admission, UTF-8, budgeting, block/inline and recovery body.
 It is an internal development stage, not a selectable or complete GFM profile.
-Its completed status certifies tables/tasks/strikethrough/extended autolinks in
-the stage it runs. Tag filtering, the
-full-profile conformance adapter and public activation remain separate work.
+Its completed status certifies the five syntax extensions in the private
+stage it runs. The full-profile conformance adapter, public activation and
+actual profile consumers remain separate work.
 
 `Table` owns `TableProperties` (positive Width and one typed Alignment per
 column), and source-ordered `TableRow` children: one header, one delimiter, then
@@ -1390,9 +1390,8 @@ records the chosen behavior where pinned extension prose is incomplete.
 
 Walk, reference binding, Comments, LiteralSpans and ProtectedNodes reach actual
 inline descendants. Strike itself grants no opaque-source authority. Code and
-raw HTML remain opaque under the shared parser's ordinary boundaries. The stage
-adds no tag filtering, renderer or complete
-GFM support; the full adapter, profile activation and consumer gates remain future.
+raw HTML remain opaque under the shared parser's ordinary boundaries. The stage adds no renderer or complete GFM conformance claim; the full adapter,
+profile activation and consumer gates remain future.
 
 
 ### Bare extended links
@@ -1440,6 +1439,44 @@ records primary ambiguities, exact classes, trimming and source-priority choices
 Bare links remain transparent to source consumers. Walk/reference traversal and
 protection still reach real code/HTML descendants elsewhere; bare syntax itself
 adds no opaque range. Only complete same-operation documents grant authority.
-Public Parse/ParseWithBudget/zero/core stay CommonMark-only. The four-extension
-private stage does not activate public GFM, tag filtering, rendering, rules or
+Public Parse/ParseWithBudget/zero/core stay CommonMark-only. The five-extension
+private stage does not activate public GFM, rendering, rules or
 actual profile consumers; the 2,117 consumer units remain NOT-RUN.
+
+
+### Disallowed raw HTML metadata
+
+Existing `HTMLProperties.FilteredTags` contains source-ordered `HTMLFilteredTag`
+records on the actual `HTMLBlock` or `InlineHTML` owner. No new Kind, nested
+syntax, source rewriting or sanitizer is introduced. Each record has canonical
+lowercase `Name`, `Closing`, an always-present mapped `Prefix` for original
+`<[/]name` excluding the boundary, and one-byte original `Affected` angle.
+Optional `Tag` selects a complete construct only when the shared HTML lexer
+proves it. A malformed raw prefix such as `</script/>` or unfinished `<script `
+can have a fact with nil Tag. EOF immediately after the name does not qualify.
+Valid published fixtures retain full tag ranges, including multiline attributes.
+The [explicit filter interpretation](../../docs/engineering/gfm-compatibility.md#disallowed-html-interpretation)
+defines exact boundaries and actual comment ownership.
+
+The owning raw node's unchanged envelope is the protected owner. Logical Content
+and its omitted container gaps remain authoritative; a fact cannot select an
+angle merely because it is inside the envelope. NewNode validates canonical
+identity, physically contiguous original fixed prefix and immediate boundary,
+exact angle, strict affected ordering,
+and indexed same-snapshot Content contributions. Prefix contributions are Exact;
+Tag contributions preserve complete atomic NUL/table Escape/PartialTab mappings
+where supplied. Overlapping complete Tag ranges are allowed, independently of
+strictly increasing affected positions. Constructors validate supplied coherence,
+not shared-lexer recognition or private parse completion. Legacy absent/empty
+HTML properties retain their existing behavior. Outer slices, Prefix/Tag segment
+slices and optional Tag pointers are deeply detached at construction and access.
+
+A private post-syntax pass adds metadata without changing Children, raw forms,
+comment markers, private tail inventories, reference binding or literal/protected
+consumer authority. InlineHTML is atomic; HTMLBlock visits its logical payload,
+excluding only existing confirmed comments through their actual close or EOF.
+Tail facts occur once on the enclosing block. Opaque comment-looking strings do
+not acquire comment ownership or directive eligibility. Public Parse and
+ParseWithBudget remain CommonMark-only. The five-extension private stage is not
+adapter #234, activation #235 or completed #161 consumer integration; all 2,117
+actual profile consumer units remain NOT-RUN.

@@ -109,7 +109,7 @@ func TestStrikePairingAndLiteralGrammar(t *testing.T) {
 				t.Fatal("literal acquired strike")
 			}
 			core := Parse(context.Background(), r.Source)
-			if len(tableNodes(r.Document.root, Table)) == 0 && !reflect.DeepEqual(core.Document.root, r.Document.root) {
+			if len(tableNodes(r.Document.root, Table)) == 0 && !reflect.DeepEqual(core.Document.root, withoutFilteredFacts(r.Document.root)) {
 				t.Fatal("literal lost ordinary tree")
 			}
 		})

@@ -303,6 +303,47 @@ retains its ordinary core origin. MD054 still has exactly five styles and maps
 both recognized origins to its existing autolink style. No rule implementation,
 public partial profile, adapter or completed GFM consumer claim is added here.
 
+### Disallowed-HTML interpretation
+
+The private syntax stage adds immutable `HTMLProperties.FilteredTags` on existing
+raw owners. The pinned section 6.11 lists the nine names and leading-angle
+escaping, but does not spell out all malformed-prefix and ownership composition
+cases. The following are explicit mdchk technical interpretations, consistent
+with the approved fixtures, rather than unequivocal upstream prose or website
+sanitization behavior. The retained supplied-fact validator is not an exhaustive
+recognizer and its permissive slash check does not define lone-slash recognition.
+
+A candidate is original logical `<`, optionally one immediate `/`, followed by
+exactly one of the nine names with ASCII case folding only. Immediately after
+the name require TAB, LF, CR, SPACE, `>`, or `/` immediately followed by `>`.
+EOF immediately after the name, VT/FF, Unicode whitespace, NUL and name suffixes
+fail. `<script/>` qualifies; `<script/x>`, `<script/` and `<script` at EOF do
+not. In established raw payload `<script ` qualifies even without a complete
+tag. `</script/>` qualifies as a prefix with no complete core closing-tag claim.
+The optional full Tag range comes from the shared HTML lexer; it is never a
+guessed scan to the next angle. Prefix and original affected angle remain
+independent source facts when full grammar fails. Filtering cannot create a raw
+owner from Text or reparse its interior as Markdown.
+
+Ordinary InlineHTML tests only its construct start: comments, PI, CDATA,
+declarations and quoted attribute interiors gain no nested facts. HTMLBlock
+visits its whole logical raw payload, including quoted/PI/CDATA/declaration and
+literal/comment-looking substrings. Only existing actual confirmed comments are
+excluded through their real close or EOF. A form-2 comment's physical closing
+line can contain subsequent eligible tags. Existing private htmlTail comments
+remain exclusions; tail tags contribute once to the enclosing HTMLBlock.
+Comment-looking strings inside opaque form-1/6/7 interiors do not acquire new
+comment/directive authority merely to suppress filtering. This owner-sensitive
+composition preserves both the approved comment-protection witness and case657's
+inner xmp facts. Core classification, textarea blank-line opacity, rawTag
+transitions, references, literal/protected inventories and directive eligibility
+remain unchanged. Code and generated/escaped angles gain no filter facts.
+
+No public selector, renderer, source fix, sanitizer or production GFM admission
+is added. Private recognition of five syntax extensions does not establish full
+profile conformance; the adapter, activation and actual consumer gates remain
+separate, with all 2,117 actual profile consumer units still NOT-RUN.
+
 ## Rule and operation integration
 
 - [MD055](../rules/tables/md055.md) and [MD060](../rules/tables/md060.md) use

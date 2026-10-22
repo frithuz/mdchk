@@ -43,6 +43,9 @@ func (s *inlineScanner) htmlEnd(token string, from int) int {
 		return -1
 	}
 	ends := s.htmlEnds[token]
+	for size := len(ends); size > 0; size >>= 1 {
+		meterWork(s.ctx, 1)
+	}
 	i, _ := slices.BinarySearch(ends, from)
 	if i == len(ends) {
 		return -1
@@ -102,33 +105,61 @@ func (s *inlineScanner) inlineHTMLEnd(start int) (end, closing int) {
 			return 0, 0
 		}
 	}
+	return s.inlineHTMLTagEnd(i, closeTag), 0
+}
+
+// Opening-tag attribute suffixes have context-independent grammar. The filter
+// raw-payload pass can encounter overlapping tags inside quoted values. Cache
+// both successful and failed suffix states in that pass so each is parsed once;
+// no nested attribute suffix is repeatedly scanned for later prefix candidates.
+func (s *inlineScanner) inlineHTMLTagEnd(i int, closeTag bool) (end int) {
+	text := s.text
+	var visited []int
+	if s.filterTagCache != nil && !closeTag {
+		defer func() {
+			meterRecords(s.ctx, len(visited))
+			meterWork(s.ctx, len(visited))
+			for j, at := range visited {
+				if j%256 == 0 && interruption(s.ctx) != "" {
+					return
+				}
+				s.filterTagCache[at] = end
+			}
+		}()
+	}
 	for {
 		meterWork(s.ctx, 1)
+		if s.filterTagCache != nil && !closeTag {
+			if cached, ok := s.filterTagCache[i]; ok {
+				return cached
+			}
+			visited = meteredAppend(s.ctx, visited, i)
+		}
 		if interruption(s.ctx) != "" {
-			return 0, 0
+			return 0
 		}
 		before := i
 		var ok bool
 		i, ok = s.htmlSpace(i)
 		if !ok || i >= len(text) {
-			return 0, 0
+			return 0
 		}
 		if !closeTag && text[i] == '/' {
 			i++
 			if i >= len(text) || text[i] != '>' {
-				return 0, 0
+				return 0
 			}
 		}
 		if i < len(text) && text[i] == '>' {
-			return i + 1, 0
+			return i + 1
 		}
 		if closeTag || i == before || i >= len(text) || !htmlAttributeStart(text[i]) {
-			return 0, 0
+			return 0
 		}
 		for i++; i < len(text) && (htmlAttributeStart(text[i]) || asciiDigit(text[i]) || text[i] == '.' || text[i] == '-'); i++ {
 			meterWork(s.ctx, 1)
 			if i%256 == 0 && interruption(s.ctx) != "" {
-				return 0, 0
+				return 0
 			}
 		}
 		// Whitespace without '=' belongs to the next attribute or tag ending.
@@ -140,12 +171,12 @@ func (s *inlineScanner) inlineHTMLEnd(start int) (end, closing int) {
 		}
 		i, ok = s.htmlSpace(i + 1)
 		if !ok || i >= len(text) {
-			return 0, 0
+			return 0
 		}
 		if text[i] == '\'' || text[i] == '"' {
 			end := s.htmlEnd(text[i:i+1], i+1)
 			if end < 0 {
-				return 0, 0
+				return 0
 			}
 			i = end + 1
 			continue
@@ -154,12 +185,12 @@ func (s *inlineScanner) inlineHTMLEnd(start int) (end, closing int) {
 		for i < len(text) && !meteredContainsRune(s.ctx, " \t\r\n\"'=<>`", rune(text[i])) {
 			meterWork(s.ctx, 1)
 			if i%256 == 0 && interruption(s.ctx) != "" {
-				return 0, 0
+				return 0
 			}
 			i++
 		}
 		if i == value {
-			return 0, 0
+			return 0
 		}
 	}
 }

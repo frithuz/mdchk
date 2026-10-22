@@ -196,6 +196,17 @@ func parseWithProfile(ctx context.Context, source Source, budget *OperationBudge
 		r.Failure = &Failure{Code: InternalFailure, Message: "construct inline model: " + err.Error()}
 		return r
 	}
+	if profile == gfmInProgressProfile && r.Phases.Inlines == PhaseComplete && interruption(ctx) == "" {
+		root, filterErr := filterHTMLTree(ctx, r.Document.root)
+		if filterErr != nil {
+			r.Status, r.AST, r.Document = Failed, Unavailable, nil
+			r.Failure = &Failure{Code: InternalFailure, Message: "construct filtered HTML model: " + filterErr.Error()}
+			return r
+		}
+		if interruption(ctx) == "" {
+			r.Document.root = root
+		}
+	}
 	if reason := interruption(ctx); reason != "" {
 		return interruptedResult(r, reason, span)
 	}

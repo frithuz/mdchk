@@ -185,3 +185,33 @@ Normalized/empty discarded-space facts. Their reverse suffix visits and original
 boundary lookup are metered; appending their source records and immutable copies
 charges before allocation. Earlier raw remainder decoding and615 priority remain
 unchanged. This adds no new persistent metadata or mutable scanner cache.
+
+
+The private HTML filter metadata pass runs after both syntax phases and before
+final completion authority. It scans logical raw payload monotonically with a
+fixed nine-name comparison bound, retaining original mappings and actual comment
+exclusions. Inline owners test only their start; private tail nodes are never
+visited again as filter owners. Mapping uses indexed original Content; no copied
+Source or full-envelope rescan per fact is used. The shared HTML lexer indexes
+quotes/terminators once and optionally caches opening-tag attribute suffix
+successes and failures for raw-prefix queries. Each uncached suffix state advances
+or terminates; later overlapping queries reuse it. Index searches, cache records,
+failed candidates, source slices, property/Value/segment copies, validation and
+freezing are charged before allocation or bulk comparison. Both generic record
+inventories include HTMLFilteredTag. New HTML validation costs convert lengths
+to int64 before scaling or addition, use checked saturation and charge the same
+shared operation without narrowing back to a host int. Saturation exceeds every
+validated work allowance and fails closed. Pure arithmetic controls exercise
+32-bit admission/NUL expansion and overflow boundaries without huge allocations
+or claiming actual 32-bit runtime verification. Content association is indexed and visits
+only the supplied contributions; fixed prefixes/boundaries need no general
+constructor grammar parse. Optional overlapping full Tag metadata is metered per
+retained owner/fact extent rather than hidden behind a linear-output claim.
+
+Filtering adds no syntax depth. Tree replacement preserves private HTML/comment/
+tail facts and publishes only after the shared final interruption checkpoint.
+Incomplete metadata never grants authoritative comments, references, literals or
+protected nodes. Exact budget boundaries, sticky operations, doubled finite
+success/failure families, mapping/freezing cancellation/deadline sweeps and
+same-operation/independent concurrency are tested. These finite checks do not
+promise hard RSS bounds, OS preemption or an arbitrary-input complexity proof.

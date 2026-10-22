@@ -285,7 +285,7 @@ func TestTaskContextAndOrdinaryCore(t *testing.T) {
 				t.Fatal("invalid context recognized")
 			}
 			core := Parse(context.Background(), r.Source)
-			if !reflect.DeepEqual(core.Document.root, r.Document.root) {
+			if !reflect.DeepEqual(core.Document.root, withoutFilteredFacts(r.Document.root)) {
 				t.Fatal("invalid task changed ordinary core tree")
 			}
 		})

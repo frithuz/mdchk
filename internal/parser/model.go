@@ -93,7 +93,21 @@ type CodeProperties struct {
 	Width Optional[int]
 	Info  *Value
 }
-type HTMLProperties struct{ BlockForm Optional[int] }
+type HTMLProperties struct {
+	BlockForm    Optional[int]
+	FilteredTags []HTMLFilteredTag
+}
+
+// HTMLFilteredTag identifies an original raw prefix, not a new syntax owner.
+// Prefix selects <[/]name without its boundary; Affected is its original '<'.
+// Tag is present only when the shared HTML lexer proves a complete construct.
+type HTMLFilteredTag struct {
+	Name     string
+	Closing  bool
+	Prefix   Value
+	Affected Span
+	Tag      *Value
+}
 type DelimiterProperties struct {
 	Marker byte
 	Width  int
@@ -175,6 +189,9 @@ func NewNode(spec NodeSpec) (*Node, error) {
 		return nil, err
 	}
 	if err := validateBareSpec(spec); err != nil {
+		return nil, err
+	}
+	if err := validateFilteredSpec(spec); err != nil {
 		return nil, err
 	}
 	if err := validateStrikeSpec(spec); err != nil {
@@ -529,6 +546,14 @@ func cloneProperties(p Properties) Properties {
 	}
 	p.Code = clonePointer(p.Code)
 	p.HTML = clonePointer(p.HTML)
+	if p.HTML != nil {
+		p.HTML.FilteredTags = slices.Clone(p.HTML.FilteredTags)
+		for i := range p.HTML.FilteredTags {
+			f := &p.HTML.FilteredTags[i]
+			f.Prefix = cloneValue(f.Prefix)
+			f.Tag = cloneValuePointer(f.Tag)
+		}
+	}
 	p.Delimiter = clonePointer(p.Delimiter)
 	p.Break = clonePointer(p.Break)
 	p.Link = clonePointer(p.Link)

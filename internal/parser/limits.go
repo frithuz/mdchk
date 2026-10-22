@@ -207,6 +207,38 @@ func meterWork(ctx context.Context, n int) {
 		}
 	}
 }
+
+// New HTML cost expressions can exceed a host int even for admitted input.
+// Keep their checked costs wide through the shared operation charge.
+func meterHTMLWork(ctx context.Context, n int64) {
+	if n < 0 {
+		panic("parser: negative HTML work charge")
+	}
+	if b := currentBudget(ctx); b != nil {
+		if e := b.operation.chargeLocked("work-units", n); e != nil {
+			panic(budgetStop{e})
+		}
+	}
+}
+
+// filteredValueWork reserves the extra supplied-fact validation and deep-copy
+// work. Saturation fails closed against every validated WorkUnits allowance.
+// Convert lengths before arithmetic: a 32-bit MaxInt/16 source admission bound
+// alone does not cover NUL expansion times eight or the indexed-search factor.
+func filteredValueWork(semanticBytes, segments int64, searchBits int) int64 {
+	if semanticBytes < 0 || segments < 0 || searchBits < 0 {
+		return math.MaxInt64
+	}
+	scale := func(n, factor int64) int64 {
+		if n > math.MaxInt64/factor {
+			return math.MaxInt64
+		}
+		return n * factor
+	}
+	factor := addBounded(32, int64(searchBits))
+	return addBounded(scale(semanticBytes, 8), scale(segments, factor))
+}
+
 func meterRecords(ctx context.Context, n int) {
 	if b := currentBudget(ctx); b != nil {
 		observed := addBounded(b.nodes, int64(n))
@@ -275,6 +307,24 @@ func meteredNode(ctx context.Context, spec NodeSpec) (*Node, error) {
 		meterRecords(ctx, 1+len(p.Cell.EscapedPipes))
 		meterWork(ctx, 8*(1+len(p.Cell.EscapedPipes)))
 	}
+	if p.HTML != nil && len(p.HTML.FilteredTags) != 0 {
+		meterRecords(ctx, 1+len(p.HTML.FilteredTags))
+		// Bound indexed Content association, fixed prefix/boundary checks,
+		// semantic comparisons and recursive immutable copies before NewNode.
+		bits := 1
+		for size := len(spec.Content); size > 0; size >>= 1 {
+			bits++
+		}
+		for _, f := range p.HTML.FilteredTags {
+			meterHTMLWork(ctx, addBounded(256, filteredValueWork(int64(len(f.Prefix.Semantic.Value)), int64(len(f.Prefix.Segments)), bits)))
+			meterValue(ctx, f.Prefix)
+			if f.Tag != nil {
+				meterRecords(ctx, 1)
+				meterHTMLWork(ctx, addBounded(32, filteredValueWork(int64(len(f.Tag.Semantic.Value)), int64(len(f.Tag.Segments)), bits)))
+				meterValue(ctx, *f.Tag)
+			}
+		}
+	}
 	if p.Link != nil {
 		if p.Link.Origin == "bare-gfm" {
 			meterRecords(ctx, 1)
@@ -328,7 +378,7 @@ func meteredAppend[T any](ctx context.Context, dst []T, values ...T) []T {
 	}
 	var zero T
 	switch any(zero).(type) {
-	case NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair, bareIndex, bareMatch, bareImage:
+	case NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair, bareIndex, bareMatch, bareImage, HTMLFilteredTag:
 		meterRecords(ctx, len(values))
 	}
 	return append(dst, values...)
@@ -342,7 +392,7 @@ func meteredSlice[T any](ctx context.Context, n int, capacity ...int) []T {
 	meterWork(ctx, c)
 	var zero T
 	switch any(zero).(type) {
-	case NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair, bareIndex, bareMatch, bareImage:
+	case NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair, bareIndex, bareMatch, bareImage, HTMLFilteredTag:
 		meterRecords(ctx, n)
 	}
 	return make([]T, n, c)
