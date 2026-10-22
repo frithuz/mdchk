@@ -267,3 +267,94 @@ func TestCompiledApplyTextManifestAdmissionBeforeWrites(t *testing.T) {
 		t.Fatal("text manifest admission allowed a write", got)
 	}
 }
+
+// A real acquisition refusal must not turn independent native writes into a
+// whole-operation transaction, including when all files depend on configuration.
+func TestCompiledApplyContinuesAfterReadOnlyAcquisition(t *testing.T) {
+	binary := buildConfigurationExecutable(t, "")
+	for _, format := range []string{"json", "text"} {
+		t.Run(format, func(t *testing.T) {
+			root := configurationProject(t)
+			putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
+			before := map[string]os.FileInfo{}
+			for _, name := range []string{"a.md", "b.md", "c.md"} {
+				putConfigurationFile(t, root, name, name)
+				path := filepath.Join(root, name)
+				mode := os.FileMode(0640)
+				if name == "b.md" {
+					mode = 0444
+				}
+				if err := os.Chmod(path, mode); err != nil {
+					t.Fatal(err)
+				}
+				info, err := os.Stat(path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				before[name] = info
+			}
+			inventory := configurationBytes(t, root)
+			got := runAppliedFix(t, binary, root, "fix", "a.md", "b.md", "c.md", "--format="+format)
+			if got.Status != 13 {
+				t.Fatal(got)
+			}
+			for _, name := range []string{"a.md", "b.md", "c.md"} {
+				path := filepath.Join(root, name)
+				want := name + "\n"
+				if name == "b.md" {
+					want = name
+				}
+				//nolint:gosec // Read only independently created synthetic target files.
+				data, err := os.ReadFile(path)
+				if err != nil || string(data) != want {
+					t.Fatal(name, string(data), err, got)
+				}
+				after, err := os.Stat(path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if after.Mode() != before[name].Mode() || os.SameFile(before[name], after) != (name == "b.md") {
+					t.Fatal("wrong identity or permissions", name)
+				}
+				if name == "b.md" && !before[name].ModTime().Equal(after.ModTime()) {
+					t.Fatal("failed target mtime changed")
+				}
+				inventory[path] = sha256.Sum256([]byte(want))
+				if format == "json" {
+					found := false
+					for _, f := range got.Result.Files {
+						if f.Path != name {
+							continue
+						}
+						found = true
+						if name == "b.md" {
+							if f.Analysis != "failed" || f.WriteStatus != "not-requested" || f.InputSnapshot != nil || f.ResultSnapshot != nil || len(f.ErrorIDs) == 0 || len(f.ChangeIDs) != 0 {
+								t.Fatal("invented acquisition/write state", f)
+							}
+						} else if f.WriteStatus != "written" || f.Analysis != "complete" || f.ResultSnapshot == nil || f.ResultSnapshot.View != "saved" || f.ResultSnapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256(data)) {
+							t.Fatal("missing saved authority", f)
+						}
+					}
+					if !found {
+						t.Fatal("lost target", name, got)
+					}
+				}
+			}
+			if !reflect.DeepEqual(inventory, configurationBytes(t, root)) {
+				t.Fatal("unexpected artifact or sibling mutation")
+			}
+			if format == "json" {
+				if len(got.Result.Changes) != 2 || len(got.Result.Errors) != 1 || got.Result.Errors[0].Path != "b.md" || got.Result.Errors[0].Category != "io" {
+					t.Fatal(got)
+				}
+				for _, change := range got.Result.Changes {
+					if change.Path == "b.md" || change.Disposition != "written" {
+						t.Fatal(change)
+					}
+				}
+			} else if !strings.Contains(got.Stdout, "written a.md") || !strings.Contains(got.Stdout, "written c.md") || strings.Contains(got.Stdout, "written b.md") || !strings.Contains(got.Stdout, "b.md") {
+				t.Fatal(got.Stdout)
+			}
+		})
+	}
+}

@@ -456,6 +456,12 @@ func acquireNativeWrite(ctx context.Context, selected *Selection, options WriteO
 		}
 	}
 	for path, deps := range options.Required {
+		// Failed selected targets retain their acquisition outcomes but have no
+		// observation that could authorize publication. Keep independent owners
+		// eligible without weakening their required dependency checks.
+		if writable[path] && out.entries[path] == nil {
+			continue
+		}
 		if out.entries[path] == nil || !out.entries[path].target {
 			err = writeError(path, "unknown dependency owner")
 			return
