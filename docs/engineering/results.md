@@ -164,7 +164,10 @@ line-oriented user field and preserves Unicode scalar coordinates. JSON retains
 original strings and same-read source identities. Usage and configuration
 failures retain the selected valid presentation, including format options after
 an earlier malformed option; `--` still ends option recognition. VS Code/GitHub
-formats are rejected before project access until their adapters are implemented.
+format selections are rejected before project access until command activation.
+The VS Code adapter is implemented with separate diagnostic stdout and operational
+stderr under one byte budget, preserving canonical scalar coordinates and saved
+snapshot authority. GitHub rendering remains planned.
 
 Actual encoded response bytes, including JSON escaping and the final newline,
 are bounded. Whole optional records are reduced deterministically, recording

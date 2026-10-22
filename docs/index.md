@@ -20,8 +20,9 @@ the available configuration and remaining execution work. Help and version do
 not access the project. Lint reports readable text by default or one schema-v1
 JSON object with `--format json` on stdout; stderr is reserved for execution logs.
 Reports retain findings, coverage reasons, errors, interruptions and omissions.
-VS Code and GitHub reporters remain planned and are rejected as unsupported usage
-before project access.
+The VS Code renderer is implemented, with command activation still planned.
+VS Code and GitHub format selections are rejected as unsupported usage before
+project access; the GitHub renderer remains planned.
 `config validate` now scans project definitions read-only and reports bounded
 text/JSON results, including completed validity counts, skipped paths, located
 errors and actual scan completeness. See its [command guide](commands/config/validate.md).

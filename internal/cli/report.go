@@ -22,12 +22,20 @@ var errReportBudget = errors.New("essential result manifest exceeds response-byt
 // reportResult owns presentation only. Its cleanup deadline starts after analysis;
 // an expired analysis context cannot consume this independently reserved budget.
 func reportResult(out result.Result, format string, stdout io.Writer, limits map[string]int64) int {
+	return reportResultStreams(out, format, stdout, io.Discard, limits)
+}
+
+// reportResultStreams owns both presentation streams. Command selection is wired
+// separately; legacy text/JSON retain their existing stdout-only behavior.
+func reportResultStreams(out result.Result, format string, stdout, stderr io.Writer, limits map[string]int64) int {
 	// Encode a fixed-work emergency reserve before starting the operator's
 	// timed full-fallback/detail construction. It uses only precomputed counts
 	// and bounded categories, never walks the potentially large source manifest.
 	var reserve encodedReport
 	var reserveErr error
-	if out.Operation == "config validate" {
+	if format == "vscode" {
+		reserve, reserveErr = emergencyVSCodeReport(out, limits)
+	} else if out.Operation == "config validate" {
 		reserve, reserveErr = emergencyConfigReport(out, format, limits)
 	} else if out.Operation == "fix" {
 		reserve, reserveErr = emergencyFixReport(out, format, limits)
@@ -35,11 +43,11 @@ func reportResult(out result.Result, format string, stdout io.Writer, limits map
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(reportLimit(limits, "reporting-time")))
 	defer cancel()
 	encoded, err := buildReport(ctx, out, format, limits)
-	if err != nil && ctx.Err() != nil && (out.Operation == "config validate" || out.Operation == "fix") && reserveErr == nil {
+	if err != nil && ctx.Err() != nil && (format == "vscode" || out.Operation == "config validate" || out.Operation == "fix") && reserveErr == nil {
 		encoded, err = reserve, nil
 	}
 	status := 0
-	if (out.Operation == "config validate" || out.Operation == "fix") && reserveErr == nil {
+	if (format == "vscode" || out.Operation == "config validate" || out.Operation == "fix") && reserveErr == nil {
 		status = lintExit(reserve.out)
 	} else {
 		status = lintExit(out)
@@ -51,8 +59,15 @@ func reportResult(out result.Result, format string, stdout io.Writer, limits map
 		return exitIO
 	}
 	status = lintExit(encoded.out)
-	n, err := stdout.Write(encoded.data)
-	if err != nil || n != len(encoded.data) {
+	n, m := 0, 0
+	var stderrErr error
+	if len(encoded.data) > 0 {
+		n, err = stdout.Write(encoded.data)
+	}
+	if len(encoded.stderr) > 0 {
+		m, stderrErr = stderr.Write(encoded.stderr)
+	}
+	if err != nil || n != len(encoded.data) || stderrErr != nil || m != len(encoded.stderr) {
 		if status == 14 {
 			return status
 		}
@@ -62,8 +77,9 @@ func reportResult(out result.Result, format string, stdout io.Writer, limits map
 }
 
 type encodedReport struct {
-	data []byte
-	out  result.Result
+	data   []byte
+	stderr []byte
+	out    result.Result
 }
 
 func reportLimit(limits map[string]int64, name string) int64 {
@@ -109,6 +125,9 @@ func reportFeasibility(out result.Result, format string, limits map[string]int64
 }
 
 func buildReport(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+	if format == "vscode" {
+		return buildVSCodeReport(ctx, original, limits)
+	}
 	// Construct the reserved partial envelope before spending the remaining time
 	// on optional detail counting. If counting/encoding reaches the deadline,
 	// this complete, already encoded envelope remains available for delivery.
@@ -121,6 +140,9 @@ func buildReport(ctx context.Context, original result.Result, format string, lim
 }
 
 func buildReportCore(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+	if format == "vscode" {
+		return buildVSCodeReport(ctx, original, limits)
+	}
 	if err := ctx.Err(); err != nil {
 		return encodedReport{}, err
 	}
@@ -487,6 +509,12 @@ func summarizeErrors(out *result.Result) {
 }
 
 func deadlineReport(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+	if format == "vscode" {
+		if err := ctx.Err(); err != nil {
+			return encodedReport{}, err
+		}
+		return reservedVSCodeReport(ctx, original, limits)
+	}
 	if err := ctx.Err(); err != nil {
 		return encodedReport{}, err
 	}
@@ -627,6 +655,9 @@ func reduceConfigManifest(ctx context.Context, out *result.Result, format string
 // Source identities and prose are replaced by exact omissions; actual scan and
 // validity counts and every encountered error category remain authoritative.
 func emergencyConfigReport(original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+	if format == "vscode" {
+		return emergencyVSCodeReport(original, limits)
+	}
 	out := newReportOperation(original)
 	out.Errors = original.ReportingErrorSummaries()
 	omit := func(section string, count int) {

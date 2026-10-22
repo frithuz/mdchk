@@ -2,8 +2,9 @@
 
 Choose a result format with `--format`. Lint, fix, config validate and inspect currently implement readable text
 (the default) and JSON for automation. Results go to stdout; stderr is reserved
-for execution logs. VS Code and GitHub reporters are planned and currently return
-unsupported usage before project access. Apply uses the verified native adapter and reports observed saved content; MCP
+for execution logs. The VS Code renderer is implemented; command selection remains planned.
+Both editor/CI format selections currently return unsupported usage before
+project access. The GitHub renderer remains planned. Apply uses the verified native adapter and reports observed saved content; MCP
 remains planned. Production MD047 reports terminal-newline corrections and retains
 manual findings for unsafe contexts and other report-only checks. Dry-run labels
 its candidate changes as proposed.
@@ -117,19 +118,32 @@ Resource coverage belongs to the source document and affected check. Unknown par
 
 Cross-file preview and standalone fix findings use the coordinated candidate view. Project fix findings use the actual saved view after writes, with stale or uncertain dependencies explicitly invalidated. Resource-only content is never returned as corrected target content.
 
-## Highlight findings in VS Code (planned)
+## Highlight findings in VS Code (command activation planned)
 
 ```sh
 mdchk lint . --format vscode
 ```
 
-The VS Code format emits one plain line per finding:
+The implemented VS Code adapter emits one plain line per finding. CLI activation
+across lint, fix and config validate remains planned; the command and task below
+describe that integration contract.
 
 ```text
 docs/guide.md:18:1: error: MD001: Heading jumps from level 2 to level 4. Choose the intended heading level.
 ```
 
 Lines use `path:line:column: severity: rule: message`. There are no colors, headings, summaries, or diffs on stdout. A clean check emits no diagnostic lines. Execution errors appear on stderr; capture the exit code so a failed check is not mistaken for a clean one.
+
+Messages visibly encode every colon as `\x3a`, preventing message text such as
+`hostile:99:2: error: MD002: replacement` from being parsed as a second diagnostic
+header. Paths preserve ordinary colons and backslashes, including Windows drive
+names. All fields visibly escape CR/LF, terminal controls, Unicode line separators
+and bidi controls. The one-based columns count Unicode scalars, with tabs counting
+one; no editor-specific UTF-16 conversion is applied. Located configuration
+errors use their stable public error code; located coverage uses `coverage`.
+Location-free errors and coverage, interruptions, omissions, incomplete status,
+and necessary partial-write/recovery evidence go to stderr. Both output streams
+share one escaped-byte budget and keep operation-specific exit precedence.
 
 Configure a VS Code task to parse that pattern and run the command from the project's root. VS Code [problem matchers](https://code.visualstudio.com/docs/debugtest/tasks#_defining-a-problem-matcher) can display matched findings inline and in the Problems panel. For example, add this task to `.vscode/tasks.json`:
 

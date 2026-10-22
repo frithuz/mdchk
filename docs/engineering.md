@@ -255,9 +255,11 @@ or one schema-v1 JSON object on stdout, with execution logs on stderr. Ordinary
 usage/configuration errors preserve a valid selected JSON presentation. Reporters
 retain canonical outcomes, snapshot identities, coverage, errors and partial
 observations; encoded-byte limits reduce whole records with explicit omissions.
-The reporting deadline is independent of expired analysis. VS Code/GitHub
-reporters return unsupported usage before project access; other commands remain
-planned.
+The reporting deadline is independent of expired analysis. The VS Code adapter
+implements bounded diagnostic stdout and operational stderr, including actual
+candidate/saved results. Command activation remains planned; VS Code/GitHub
+format selections return unsupported usage before project access. The GitHub
+renderer remains planned.
 
 ## CLI and result schema
 
