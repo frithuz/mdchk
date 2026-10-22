@@ -168,6 +168,11 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 		manifest.Interruptions = append(manifest.Interruptions, result.Interruption{Reason: "limit-exceeded", Phase: "discovery", Message: "mandatory target manifest exceeds response-bytes"})
 		return manifest
 	}
+	// Discovery already owns the terminal outcome when there is no target.
+	// In particular, no native write authority is needed for empty work.
+	if selection.Empty() {
+		return manifest
+	}
 	var native *files.WriteSet
 	var acquired *files.Acquisition
 	var resources []fix.ResourceObservation

@@ -241,3 +241,63 @@ func TestFixSelectionParityAndResidualConfigurationBudget(t *testing.T) {
 		t.Fatal(out)
 	}
 }
+
+// Empty discovery must retain its own cause before requesting native authority.
+func TestFixEmptyDiscoveryCausePrecedence(t *testing.T) {
+	for _, mixed := range []bool{false, true} {
+		t.Run(fmt.Sprint(mixed), func(t *testing.T) {
+			root := project(t)
+			put(t, filepath.Join(root, ".mdchk.yaml"), fixConfiguration())
+			for i := 0; i < 1100; i++ {
+				put(t, filepath.Join(root, "z-directory", fmt.Sprintf("%04d.txt", i)), "untouched")
+			}
+			paths := []string{"z-directory"}
+			if mixed {
+				paths = append(paths, "a-missing.md")
+			}
+			for _, dry := range []bool{false, true} {
+				opts, _, err := parseFix(paths)
+				if err != nil {
+					t.Fatal(err)
+				}
+				opts.dryRun = dry
+				limits := parser.DefaultLimits()
+				limits.TotalNodes = 1000
+				limits.DocumentNodes = 1000
+				budget, err := parser.NewOperationBudget(limits)
+				if err != nil {
+					t.Fatal(err)
+				}
+				registry, providers, caps, err := configuredProviders()
+				if err != nil {
+					t.Fatal(err)
+				}
+				validator, produce, err := configuredCorrections(registry)
+				if err != nil {
+					t.Fatal(err)
+				}
+				out := executeFix(context.Background(), opts, budget, registry, providers, caps, validator, produce)
+				want := 15
+				if mixed {
+					want = 13
+				}
+				if lintExit(out) != want || out.Complete || len(out.Interruptions) == 0 || len(out.CheckedFiles) != 0 || len(out.Changes) != 0 {
+					t.Fatalf("exit=%d result=%+v", lintExit(out), out)
+				}
+				for _, e := range out.Errors {
+					if e.Code != "selection-failed" {
+						t.Fatal(e)
+					}
+				}
+				if (len(out.Errors) > 0) != mixed {
+					t.Fatal(out.Errors)
+				}
+				var stdout bytes.Buffer
+				if status := reportResult(out, "json", &stdout, nil); status != want {
+					t.Fatal(status, stdout.String())
+				}
+				validateEmitted(t, t.TempDir(), stdout.Bytes())
+			}
+		})
+	}
+}
