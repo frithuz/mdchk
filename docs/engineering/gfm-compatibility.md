@@ -1,7 +1,9 @@
 # GFM compatibility and corpus contract
 
-Status: approved on 2026-10-14. Corpus vendoring, extraction tooling, parser
-implementation, and mdchk conformance verification remain pending. This contract
+Status: approved on 2026-10-14. The [original published corpus and offline
+extraction tooling](../../internal/parser/testdata/gfm/0.29-gfm/README.md) are
+retained and verified. Profile adaptations, parser implementation, and mdchk
+conformance verification remain pending. This contract
 defines the target for [#158](https://github.com/frithuz/mdchk/issues/158), building
 on the [verified core parser contract](https://github.com/frithuz/mdchk/issues/32).
 

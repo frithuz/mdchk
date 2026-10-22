@@ -35,6 +35,10 @@ jobs:
         run: sh tools/lint.sh --self-test
       - name: Check CommonMark corpus
         run: python3 -B tools/commonmark_corpus.py --check
+      - name: Check pinned published GFM corpus
+        run: python3 -B tools/gfm_corpus.py --check
+      - name: Test published GFM corpus ingestion
+        run: python3 -B -m unittest discover -s tools -p 'test_gfm_corpus.py' -v
       - name: Check pinned Unicode folding table
         run: python3 -B tools/unicode_casefold.py --check
       - name: Check pinned HTML entity table

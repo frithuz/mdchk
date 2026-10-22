@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "format": "Published GFM 0.29-gfm (2019-04-06)",
+  "approved_snapshot_retrieved_at": "2026-10-14",
+  "inputs": {
+    "upstream/spec.html": {
+      "origin_url": "https://github.github.io/gfm/",
+      "repository": null,
+      "commit": null,
+      "retrieved_at": "2026-10-22",
+      "byte_count": 508310,
+      "sha256": "b153d814fdfc8624bb6da7449162c1cd707a637f7d1c1b636eb44b9cf63fa220",
+      "license": "CC-BY-SA-4.0",
+      "role": "Unmodified normative published extension specification and all original examples; matching source commit unknown",
+      "modifications": "none",
+      "git_mode": "100644"
+    },
+    "upstream/cmark-gfm-COPYING": {
+      "origin_url": "https://raw.githubusercontent.com/github/cmark-gfm/587a12bb54d95ac37241377e6ddc93ea0e45439b/COPYING",
+      "repository": "https://github.com/github/cmark-gfm",
+      "commit": "587a12bb54d95ac37241377e6ddc93ea0e45439b",
+      "retrieved_at": "2026-10-22",
+      "byte_count": 7567,
+      "sha256": "c22e885f33b821bddb24cf007145e5540655b6c0f403e49e6c76a93c28e6d9a9",
+      "license": "CC-BY-SA-4.0 AND BSD-2-Clause AND MIT",
+      "role": "Unmodified comparison-project notices only; not the source revision or extraction software for the published page",
+      "modifications": "none",
+      "git_mode": "100644"
+    }
+  },
+  "generator": {
+    "path": "tools/gfm_corpus.py",
+    "version": 1,
+    "python": "3.9+; standard library only",
+    "byte_count": 9348,
+    "sha256": "063cc0beda99e0072d8f03af00b12a4525ff9678f0883257358f313fc4e4cfd0",
+    "serialization": "UTF-8, ensure_ascii=false, indent=2, LF terminated; insertion-ordered fields"
+  },
+  "generated": {
+    "path": "examples.json",
+    "byte_count": 286174,
+    "sha256": "7b00f9e874d952f0680f50f2d596ba79bdbda8df736f7ad7828b98778e75e91c",
+    "license": "CC-BY-SA-4.0",
+    "modifications": "Extract original code fields, remove only presentation space spans, decode entities once, convert tab arrows; add identity, location, hash and scope metadata; original expectations unchanged"
+  }
+}

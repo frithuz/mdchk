@@ -1,0 +1,6 @@
+# Retain exact corpus bytes on every checkout, including Windows.
+internal/parser/testdata/gfm/0.29-gfm/upstream/spec.html -text -whitespace
+internal/parser/testdata/gfm/0.29-gfm/upstream/cmark-gfm-COPYING -text
+internal/parser/testdata/gfm/0.29-gfm/examples.json -text
+# Provenance pins this extractor's bytes; keep its source LF on every host.
+tools/gfm_corpus.py text eol=lf
