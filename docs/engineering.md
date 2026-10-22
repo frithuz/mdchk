@@ -259,7 +259,10 @@ The reporting deadline is independent of expired analysis. The VS Code adapter
 implements bounded diagnostic stdout and operational stderr, including actual
 candidate/saved results. Command activation remains planned; VS Code/GitHub
 format selections return unsupported usage before project access. The GitHub
-renderer remains planned.
+renderer is implemented with explicit trusted repository/CWD/path-flavor context,
+repository-relative annotations or conservative unlocated findings, independent
+workflow percent encoding and command-safe human stderr. It reuses the bounded
+two-stream count, omission and emergency reserve paths.
 
 ## CLI and result schema
 

@@ -22,7 +22,8 @@ JSON object with `--format json` on stdout; stderr is reserved for execution log
 Reports retain findings, coverage reasons, errors, interruptions and omissions.
 The VS Code renderer is implemented, with command activation still planned.
 VS Code and GitHub format selections are rejected as unsupported usage before
-project access; the GitHub renderer remains planned.
+project access; the GitHub renderer is implemented with trusted repository path
+context and safe workflow command encoding.
 `config validate` now scans project definitions read-only and reports bounded
 text/JSON results, including completed validity counts, skipped paths, located
 errors and actual scan completeness. See its [command guide](commands/config/validate.md).

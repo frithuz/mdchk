@@ -152,12 +152,19 @@ func vscodeField(ctx context.Context, w io.Writer, s string, message bool) error
 	return flush()
 }
 
+type editorEncoder func(context.Context, result.Result, int64) (encodedReport, error)
+type editorRenderer func(context.Context, io.Writer, io.Writer, result.Result) error
+
 func encodeVSCode(ctx context.Context, out result.Result, bound int64) (encodedReport, error) {
+	return encodeEditor(ctx, out, bound, renderVSCode)
+}
+
+func encodeEditor(ctx context.Context, out result.Result, bound int64, render editorRenderer) (encodedReport, error) {
 	if bound < 0 {
 		return encodedReport{}, errReportBudget
 	}
 	counter := &reportCounter{limit: max(bound, 1)}
-	if err := renderVSCode(ctx, counter, counter, out); err != nil {
+	if err := render(ctx, counter, counter, out); err != nil {
 		return encodedReport{}, err
 	}
 	if err := ctx.Err(); err != nil {
@@ -168,7 +175,7 @@ func encodeVSCode(ctx context.Context, out result.Result, bound int64) (encodedR
 	}
 	var stdout, stderr bytes.Buffer
 	// The counting pass admits both streams before allocating either payload.
-	if err := renderVSCode(ctx, &stdout, &stderr, out); err != nil {
+	if err := render(ctx, &stdout, &stderr, out); err != nil {
 		return encodedReport{}, err
 	}
 	if err := ctx.Err(); err != nil {
@@ -191,6 +198,10 @@ func emergencyVSCodeReport(original result.Result, limits map[string]int64) (enc
 }
 
 func reservedVSCodeReport(ctx context.Context, original result.Result, limits map[string]int64) (encodedReport, error) {
+	return reservedEditorReport(ctx, original, limits, encodeVSCode)
+}
+
+func reservedEditorReport(ctx context.Context, original result.Result, limits map[string]int64, encode editorEncoder) (encodedReport, error) {
 	if err := ctx.Err(); err != nil {
 		return encodedReport{}, err
 	}
@@ -227,10 +238,14 @@ func reservedVSCodeReport(ctx context.Context, original result.Result, limits ma
 	out.Interruptions = append(out.Interruptions, result.Interruption{Phase: "reporting", Reason: "deadline-exceeded", Message: "reporting-time exhausted while constructing result details"})
 	// Preserve canonical status/categories without re-finalizing borrowed data.
 	markVSCodeIncomplete(&out)
-	return encodeVSCode(ctx, out, reportLimit(limits, "response-bytes"))
+	return encode(ctx, out, reportLimit(limits, "response-bytes"))
 }
 
 func buildVSCodeReport(ctx context.Context, original result.Result, limits map[string]int64) (encodedReport, error) {
+	return buildEditorReport(ctx, original, limits, encodeVSCode)
+}
+
+func buildEditorReport(ctx context.Context, original result.Result, limits map[string]int64, encode editorEncoder) (encodedReport, error) {
 	if err := ctx.Err(); err != nil {
 		return encodedReport{}, err
 	}
@@ -240,7 +255,7 @@ func buildVSCodeReport(ctx context.Context, original result.Result, limits map[s
 	out.EffectiveLimits = slices.Clone(original.EffectiveLimits)
 	setReportLimits(&out, limits)
 	bound := reportLimit(limits, "response-bytes")
-	full, err := encodeVSCode(ctx, out, bound)
+	full, err := encode(ctx, out, bound)
 	if err == nil || ctx.Err() != nil {
 		return full, err
 	}
@@ -270,14 +285,14 @@ func buildVSCodeReport(ctx context.Context, original result.Result, limits map[s
 		vscodeOmit(&out, section, length)
 		index := len(out.Omissions) - 1
 		markVSCodeIncomplete(&out)
-		if _, e := encodeVSCode(ctx, out, bound); e == nil {
+		if _, e := encode(ctx, out, bound); e == nil {
 			lo, hi := 0, length
 			for lo < hi {
 				mid := lo + (hi-lo+1)/2
 				trim(mid)
 				count := length - mid
 				out.Omissions[index].Count = &count
-				if _, e = encodeVSCode(ctx, out, bound); e == nil {
+				if _, e = encode(ctx, out, bound); e == nil {
 					lo = mid
 				} else if ctx.Err() != nil {
 					return encodedReport{}, e
@@ -289,7 +304,7 @@ func buildVSCodeReport(ctx context.Context, original result.Result, limits map[s
 			count := length - lo
 			out.Omissions[index].Count = &count
 			markVSCodeIncomplete(&out)
-			return encodeVSCode(ctx, out, bound)
+			return encode(ctx, out, bound)
 		} else if ctx.Err() != nil {
 			return encodedReport{}, e
 		}
@@ -299,7 +314,7 @@ func buildVSCodeReport(ctx context.Context, original result.Result, limits map[s
 	out.Errors = vscodeErrorSummaries(original)
 	vscodeOmit(&out, "/errors", len(original.Errors))
 	markVSCodeIncomplete(&out)
-	return encodeVSCode(ctx, out, bound)
+	return encode(ctx, out, bound)
 }
 
 // Existing operational errors keep their operation-specific precedence. Reporting

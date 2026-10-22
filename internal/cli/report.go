@@ -28,26 +28,33 @@ func reportResult(out result.Result, format string, stdout io.Writer, limits map
 // reportResultStreams owns both presentation streams. Command selection is wired
 // separately; legacy text/JSON retain their existing stdout-only behavior.
 func reportResultStreams(out result.Result, format string, stdout, stderr io.Writer, limits map[string]int64) int {
+	return reportResultStreamsContext(context.Background(), out, format, stdout, stderr, limits)
+}
+
+// The presentation context carries caller-supplied GitHub path authority.
+func reportResultStreamsContext(parent context.Context, out result.Result, format string, stdout, stderr io.Writer, limits map[string]int64) int {
 	// Encode a fixed-work emergency reserve before starting the operator's
 	// timed full-fallback/detail construction. It uses only precomputed counts
 	// and bounded categories, never walks the potentially large source manifest.
 	var reserve encodedReport
 	var reserveErr error
-	if format == "vscode" {
+	if format == "github" {
+		reserve, reserveErr = reservedEditorReport(parent, out, limits, encodeGitHub)
+	} else if format == "vscode" {
 		reserve, reserveErr = emergencyVSCodeReport(out, limits)
 	} else if out.Operation == "config validate" {
 		reserve, reserveErr = emergencyConfigReport(out, format, limits)
 	} else if out.Operation == "fix" {
 		reserve, reserveErr = emergencyFixReport(out, format, limits)
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(reportLimit(limits, "reporting-time")))
+	ctx, cancel := context.WithTimeout(parent, time.Duration(reportLimit(limits, "reporting-time")))
 	defer cancel()
 	encoded, err := buildReport(ctx, out, format, limits)
-	if err != nil && ctx.Err() != nil && (format == "vscode" || out.Operation == "config validate" || out.Operation == "fix") && reserveErr == nil {
+	if err != nil && ctx.Err() != nil && (format == "github" || format == "vscode" || out.Operation == "config validate" || out.Operation == "fix") && reserveErr == nil {
 		encoded, err = reserve, nil
 	}
 	status := 0
-	if (format == "vscode" || out.Operation == "config validate" || out.Operation == "fix") && reserveErr == nil {
+	if (format == "github" || format == "vscode" || out.Operation == "config validate" || out.Operation == "fix") && reserveErr == nil {
 		status = lintExit(reserve.out)
 	} else {
 		status = lintExit(out)
@@ -125,6 +132,9 @@ func reportFeasibility(out result.Result, format string, limits map[string]int64
 }
 
 func buildReport(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+	if format == "github" {
+		return buildEditorReport(ctx, original, limits, encodeGitHub)
+	}
 	if format == "vscode" {
 		return buildVSCodeReport(ctx, original, limits)
 	}
@@ -140,6 +150,9 @@ func buildReport(ctx context.Context, original result.Result, format string, lim
 }
 
 func buildReportCore(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+	if format == "github" {
+		return buildEditorReport(ctx, original, limits, encodeGitHub)
+	}
 	if format == "vscode" {
 		return buildVSCodeReport(ctx, original, limits)
 	}
@@ -509,6 +522,9 @@ func summarizeErrors(out *result.Result) {
 }
 
 func deadlineReport(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+	if format == "github" {
+		return reservedEditorReport(ctx, original, limits, encodeGitHub)
+	}
 	if format == "vscode" {
 		if err := ctx.Err(); err != nil {
 			return encodedReport{}, err
@@ -655,6 +671,9 @@ func reduceConfigManifest(ctx context.Context, out *result.Result, format string
 // Source identities and prose are replaced by exact omissions; actual scan and
 // validity counts and every encountered error category remain authoritative.
 func emergencyConfigReport(original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+	if format == "github" {
+		return reservedEditorReport(context.Background(), original, limits, encodeGitHub)
+	}
 	if format == "vscode" {
 		return emergencyVSCodeReport(original, limits)
 	}

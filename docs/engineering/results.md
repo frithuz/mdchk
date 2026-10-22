@@ -167,7 +167,11 @@ an earlier malformed option; `--` still ends option recognition. VS Code/GitHub
 format selections are rejected before project access until command activation.
 The VS Code adapter is implemented with separate diagnostic stdout and operational
 stderr under one byte budget, preserving canonical scalar coordinates and saved
-snapshot authority. GitHub rendering remains planned.
+snapshot authority. The implemented GitHub renderer emits error annotations with
+explicit trusted repository/CWD/path-flavor context, conservative unlocated
+annotations for outside or unproved paths, and safe partial-write evidence on
+stderr. Both streams share the escaped-byte budget; workflow protocol and human
+field escaping prevent command injection. Its command activation remains planned.
 
 Actual encoded response bytes, including JSON escaping and the final newline,
 are bounded. Whole optional records are reduced deterministically, recording

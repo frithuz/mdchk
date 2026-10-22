@@ -32,6 +32,9 @@ func omitFixDeferred(out *result.Result) {
 // never clones diff hunks, walks diagnostic strings, or marshals the full result.
 // The outcome/proposal manifest was admitted before acquisition.
 func emergencyFixReport(original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+	if format == "github" {
+		return reservedEditorReport(context.Background(), original, limits, encodeGitHub)
+	}
 	if format == "vscode" {
 		return emergencyVSCodeReport(original, limits)
 	}

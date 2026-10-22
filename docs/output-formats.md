@@ -4,7 +4,7 @@ Choose a result format with `--format`. Lint, fix, config validate and inspect c
 (the default) and JSON for automation. Results go to stdout; stderr is reserved
 for execution logs. The VS Code renderer is implemented; command selection remains planned.
 Both editor/CI format selections currently return unsupported usage before
-project access. The GitHub renderer remains planned. Apply uses the verified native adapter and reports observed saved content; MCP
+project access. The GitHub renderer is implemented; command activation remains planned. Apply uses the verified native adapter and reports observed saved content; MCP
 remains planned. Production MD047 reports terminal-newline corrections and retains
 manual findings for unsafe contexts and other report-only checks. Dry-run labels
 its candidate changes as proposed.
@@ -177,7 +177,7 @@ Configure a VS Code task to parse that pattern and run the command from the proj
 
 This provides findings when the task runs. Use JSON for an integration that needs exact ranges or its own conversion to editor-specific character coordinates.
 
-## Annotate GitHub Actions results (planned)
+## Annotate GitHub Actions results (command activation planned)
 
 ```sh
 mdchk lint . --format github
@@ -190,6 +190,23 @@ Run this command after checkout and installation of mdchk, with the repository r
   run: mdchk lint . --format github
 ```
 
+The implemented renderer consumes canonical results without reopening sources or
+changing snapshot authority. Command activation remains planned for lint, fix and
+config validate; the workflow example describes that integration contract.
+
+The caller supplies a trusted repository root, the command working directory
+that produced public paths, and an explicit Unix or Windows path flavor. The
+renderer performs lexical containment checks without Git discovery or file I/O.
+Contained paths become repository-relative file properties, using forward slashes
+for Windows directory separators; literal Unix backslashes remain filename bytes.
+Outside-repository, unknown-root and ambiguous paths retain an error annotation
+with an explicit location-unavailable explanation and no file or coordinates.
+A proved repository target without a source line retains its safe relative path
+in annotation message data, while omitting file and coordinate properties.
+Windows drive-relative and cross-volume paths are not guessed. Running from the
+checkout root gives the simplest caller context; config roots do not establish a
+repository root.
+
 The format emits GitHub Actions [error annotations](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#setting-an-error-message) with repository-relative file paths, line numbers, and rule titles:
 
 ```text
@@ -197,6 +214,30 @@ The format emits GitHub Actions [error annotations](https://docs.github.com/en/a
 ```
 
 GitHub associates annotations with files in the workflow results. Findings use line locations so GitHub can highlight the affected lines. Execution errors also produce error annotations, without an invented source location. mdchk escapes annotation values so file names and messages are treated as data.
+
+Annotation data encodes percent, CR and LF as `%25`, `%0D` and `%0A`;
+properties additionally encode colons and commas as `%3A` and `%2C`. Literal
+percent sequences stay literal after one decode. Each annotation occupies one
+physical line. Terminal controls, Unicode line separators and all twelve Unicode
+Bidi_Control characters use visible escapes, separate from this protocol codec.
+Human stderr fields visibly escape colons and opening brackets too, preventing
+both modern `::` and legacy `##[` workflow commands on either stream. Suppressed
+findings, notes, diffs and raw Markdown do not become workflow commands.
+
+All operational errors, coverage gaps, interruptions, omissions and incomplete
+status produce error annotations, with source coordinates only when established.
+Partial-write outcomes and owned staging leftovers remain safe human stderr.
+Both streams share the exact escaped-byte bound, and deadline reserves preserve
+operation causes separately from reporting causes and keep essential write
+outcomes. Rendering preserves canonical results and operation-specific exit
+precedence.
+
+The independent test grammar follows the official
+[runner parser at b6d10b5](https://github.com/actions/runner/blob/b6d10b59c178914d331bcf03823133d5f9e366bb/src/Runner.Common/ActionCommand.cs)
+and the [toolkit codec at 0c3a9c3](https://github.com/actions/toolkit/blob/0c3a9c332b678ff1e776f93d728a4ad279803abe/packages/core/src/command.ts).
+These tests establish parser compatibility, not execution by a hosted Actions
+runner. GitHub controls its annotation display limits independently of mdchk's
+encoded response budget.
 
 The exit code controls whether the workflow step succeeds; annotations provide locations and explanations. A clean check emits no error annotations. After `fix`, annotations describe remaining problems; use `lint` to annotate committed content without changing it. GitHub controls how many annotations are displayed, so retain JSON results if you need a complete machine-readable report.
 

@@ -22,6 +22,10 @@ func reportSize(ctx context.Context, r result.Result, format string) (int64, err
 		return n + 1, err
 	}
 	w := &reportCounter{}
+	if format == "github" {
+		err := renderGitHub(ctx, w, w, r)
+		return w.n, err
+	}
 	if format == "vscode" {
 		err := renderVSCode(ctx, w, w, r)
 		return w.n, err
