@@ -46,6 +46,7 @@ type blockParser struct {
 	code                      *indentedCode
 	fence                     *fencedCode
 	html                      *htmlBlock
+	table                     *tableBuilder
 	hooks                     []blockStartHook
 	ctx                       context.Context
 	definitions               []*ReferenceDefinition
@@ -111,6 +112,33 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		for i := 1; i < p.containerDepth(); i++ {
 			meterWork(ctx, 1)
 			p.stack[i].end = physical.next
+		}
+		if p.table != nil {
+			_, listStart := classifyListStart(line, false)
+			if line.contentStart != line.end && !p.interruptsParagraph(line) && !listStart && p.htmlOpening(line, false) == 0 {
+				checkDepth(p.ctx, p.containerSyntaxDepth()+3)
+				row, _, _, err := p.splitTableRow(line, "body", p.table.width)
+				if err != nil {
+					return Pending, err
+				}
+				if row == nil {
+					state = Interrupted
+					break
+				}
+				frozen, err := p.freezeTableRow(row)
+				if err != nil {
+					return Pending, err
+				}
+				if frozen == nil {
+					state = Interrupted
+					break
+				}
+				p.appendTableRow(frozen)
+				continue
+			}
+			if err := p.closeTable(); err != nil {
+				return Pending, err
+			}
 		}
 		if p.html != nil {
 			if p.html.form >= 6 && line.contentStart == line.end {
@@ -223,6 +251,13 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 			continue
 		}
+		promoted, err := p.promoteTable(line)
+		if err != nil {
+			return Pending, err
+		}
+		if promoted {
+			continue
+		}
 		setext, err := p.setextHeading(line)
 		if err != nil {
 			return Pending, err
@@ -308,7 +343,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		// An unfinished container is not a normal unclosed-EOF result. Only root
 		// children already attached before interruption survive.
 		p.stack = p.stack[:1]
-		p.code, p.fence, p.html = nil, nil, nil
+		p.code, p.fence, p.html, p.table = nil, nil, nil, nil
 	}
 	if err := p.closeLeaves(); err != nil {
 		return Pending, err

@@ -82,7 +82,10 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState, references *
 	checkDepth(ctx, ancestorDepth(ctx))
 	spec := node.spec // borrow immutable blocks; NewNode freezes changed children
 	switch spec.Kind {
-	case Paragraph, Heading:
+	case Paragraph, Heading, TableCell:
+		if spec.Kind == TableCell && spec.Properties.Cell.Alignment.Present {
+			return node, nil
+		}
 		var text strings.Builder
 		for _, part := range spec.Content {
 			meterWork(ctx, 1)
@@ -112,7 +115,7 @@ func inlineTree(ctx context.Context, node *Node, state *PhaseState, references *
 			*state = Pending
 		}
 		spec.Children = children
-	case DocumentKind, BlockQuote, List, ListItem:
+	case DocumentKind, BlockQuote, List, ListItem, Table, TableRow:
 		spec.Children = meteredSlice[*Node](ctx,
 
 			len(node.spec.Children))

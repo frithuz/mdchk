@@ -22,12 +22,12 @@
       "modifications": "Add stable original-case metadata and explicitly resolved expectation references; original data is not changed"
     },
     "tools/gfm_profile.py": {
-      "sha256": "83bffc35784445e61bb6b72ab922138fc6425771873ce5bfb2767c3d39044ed2",
-      "byte_count": 36203,
+      "sha256": "afae858e6cd400e38378fe23e13aab25259864f0cf303341741dba0fd0ee6102",
+      "byte_count": 37238,
       "license": "repository-authored software; no imported upstream software",
       "origin": "mdchk repository",
       "role": "Offline schema, source, provenance and actual-consumer accounting validator",
-      "modifications": "New stdlib-only validator; no comparison implementation imported"
+      "modifications": "Stdlib-only validator; odd/even table backslash-run interpretation aligned with staged parser; no comparison implementation imported"
     }
   }
 }

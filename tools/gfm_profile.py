@@ -103,6 +103,26 @@ def positions(source, values):
                 'position: expected one-based scalar coordinates (tab counts one)')
 
 
+def table_pipe_offsets(raw):
+    """Original byte offsets under the approved odd/even run interpretation.
+
+    GFM 4.10 requires escaped cell pipes but does not explicitly order longer
+    backslash runs. mdchk chooses core punctuation-escape grouping: pairs escape
+    each other, and an odd remaining backslash escapes the pipe. This is a
+    recorded compatibility interpretation, not an unequivocal upstream mandate.
+    """
+    separators, escapes = [], []
+    slashes = 0
+    for offset, byte in enumerate(raw):
+        if byte == ord('|'):
+            if slashes % 2:
+                escapes.append(offset-1)
+            else:
+                separators.append(offset)
+        slashes = slashes+1 if byte == ord('\\') else 0
+    return separators, escapes
+
+
 def check_table(source, envelope, facts):
     fields(facts, ('rows', 'width'), 'table facts')
     integer(facts['width'], 'table width')
@@ -141,18 +161,25 @@ def check_table(source, envelope, facts):
                 all(x in ('none', 'left', 'right', 'center') for x in row['alignment']),
                 'table: invalid alignment')
         spans(source, row['separators'], bounds)
-        expected = [bounds[0]+m.start() for m in re.finditer(rb'(?<!\\)\|', row['span'][2].encode())]
+        structural, escaped = table_pipe_offsets(row['span'][2].encode())
+        expected = [bounds[0]+offset for offset in structural]
         require([x[0] for x in row['separators']] == expected and
                 all(x[2] == '|' for x in row['separators']), 'table: actual separator inventory differs')
         require(type(row['outer']) is list and len(row['outer']) == 2 and
                 all(type(x) is bool for x in row['outer']), 'table: outer pipe flags')
-        require(row['outer'] == [row['span'][2].startswith('|'), row['span'][2].rstrip().endswith('|')],
-                'table: outer pipe spelling')
+        raw_bytes = row['span'][2].encode().rstrip(b'\r\n')
+        first, last = 0, len(structural)
+        leading = bool(structural and structural[0] == len(raw_bytes)-len(raw_bytes.lstrip(b' \t')))
+        if leading:
+            first += 1
+        trailing = first < last and structural[-1] == len(raw_bytes.rstrip(b' \t'))-1
+        if trailing:
+            last -= 1
+        require(row['outer'] == [leading, trailing], 'table: outer pipe spelling')
         # Original cell fields exhaust the row between actual separators,
         # including whitespace and every excess source cell.
-        raw_bytes = row['span'][2].encode().rstrip(b'\r\n')
-        left = bounds[0] + int(row['outer'][0])
-        right = bounds[0] + len(raw_bytes) - int(row['outer'][1])
+        left = bounds[0] + (structural[0]+1 if leading else 0)
+        right = bounds[0] + (structural[-1] if trailing else len(raw_bytes))
         interior = [x[0] for x in row['separators'] if left <= x[0] < right]
         starts, ends = [left]+[x+1 for x in interior], interior+[right]
         require([(x['span'][0], x['span'][1]) for x in row['cells']] == list(zip(starts, ends)),
@@ -165,7 +192,7 @@ def check_table(source, envelope, facts):
             require(padding == {'span': None, 'value': '', 'padding': True},
                     'table: semantic padding must be spanless')
         spans(source, row['escaped_pipes'], bounds)
-        expected = [bounds[0]+m.start() for m in re.finditer(rb'\\\|', row['span'][2].encode())]
+        expected = [bounds[0]+offset for offset in escaped]
         require([x[0] for x in row['escaped_pipes']] == expected and
                 all(x[2] == '\\|' for x in row['escaped_pipes']), 'table: escaped-pipe inventory differs')
     for column, cell in enumerate(rows[1]['cells']):

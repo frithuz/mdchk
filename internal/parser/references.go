@@ -41,6 +41,7 @@ func normalizeReferenceLabelContext(ctx context.Context, raw string) string {
 // indentation. The builder grows once; extraction advances offsets without
 // rematerializing each suffix. Original coordinates always come from parts.
 type referenceParagraph struct {
+	tableProbe   tableReferenceProbe
 	ctx          context.Context
 	text         strings.Builder
 	parts        []referencePart

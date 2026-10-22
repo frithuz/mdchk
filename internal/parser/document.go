@@ -148,8 +148,40 @@ func referenceIdentifier(v Value, collapsed bool) bool {
 	if !v.Semantic.Present || len(v.Segments) == 0 || (v.Semantic.Value == "") != collapsed {
 		return false
 	}
+	mappedPipe := false
 	for _, s := range v.Segments {
-		if !s.Source.Present() || s.Transformation != Exact && s.Transformation != Normalized && s.Transformation != PartialTab {
+		if !s.Source.Present() {
+			return false
+		}
+		switch s.Transformation {
+		case Exact, Normalized, PartialTab:
+		case Escape:
+			// Table row mapping contributes a pipe while retaining its complete
+			// original spelling. Ordinary core identifiers keep raw escapes;
+			// no other decoded punctuation becomes an identifier mapping here.
+			if s.Source.End()-s.Source.Start() != 2 || s.Semantic != Some("|") {
+				return false
+			}
+			raw, err := s.Source.source.Text(s.Source)
+			if err != nil || raw != "\\|" {
+				return false
+			}
+			mappedPipe = true
+		default:
+			return false
+		}
+	}
+	if mappedPipe {
+		// A caller cannot use an allowed pipe record to justify an unrelated
+		// aggregate identifier. Compare contributions without allocating a copy.
+		offset := 0
+		for _, s := range v.Segments {
+			if !s.Semantic.Present || len(s.Semantic.Value) > len(v.Semantic.Value)-offset || v.Semantic.Value[offset:offset+len(s.Semantic.Value)] != s.Semantic.Value {
+				return false
+			}
+			offset += len(s.Semantic.Value)
+		}
+		if offset != len(v.Semantic.Value) {
 			return false
 		}
 	}

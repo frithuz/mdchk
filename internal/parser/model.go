@@ -5,7 +5,7 @@ import (
 	"slices"
 )
 
-// Kind names the core CommonMark model, not implemented recognition capabilities.
+// Kind names model syntax, not the availability of a complete dialect profile.
 type Kind string
 
 const (
@@ -27,6 +27,9 @@ const (
 	Strong        Kind = "strong"
 	Link          Kind = "link"
 	Image         Kind = "image"
+	Table         Kind = "table"
+	TableRow      Kind = "table-row"
+	TableCell     Kind = "table-cell"
 )
 
 // Transformation states how semantic content relates to original source. Exact
@@ -115,6 +118,9 @@ type LinkProperties struct {
 // Properties are typed, kind-specific metadata. Nil means inapplicable/absent,
 // not a known zero. Source segments are validated against the node envelope.
 type Properties struct {
+	Table     *TableProperties
+	Row       *TableRowProperties
+	Cell      *TableCellProperties
 	Heading   *HeadingProperties
 	List      *ListProperties
 	Code      *CodeProperties
@@ -163,6 +169,9 @@ func NewNode(spec NodeSpec) (*Node, error) {
 		return nil, err
 	}
 	if err := validateValue(spec.Envelope, Value{Segments: spec.Content, Semantic: spec.Properties.Literal}); err != nil {
+		return nil, err
+	}
+	if err := validateTableSpec(spec); err != nil {
 		return nil, err
 	}
 	previous := -1
@@ -229,7 +238,7 @@ func Walk(root *Node, visit func(*Node) bool) {
 
 func validKind(k Kind) bool {
 	switch k {
-	case DocumentKind, Paragraph, Heading, ThematicBreak, BlockQuote, List, ListItem, CodeBlock, HTMLBlock, InlineHTML, Text, SoftBreak, HardBreak, CodeSpan, Emphasis, Strong, Link, Image:
+	case DocumentKind, Paragraph, Heading, ThematicBreak, BlockQuote, List, ListItem, CodeBlock, HTMLBlock, InlineHTML, Text, SoftBreak, HardBreak, CodeSpan, Emphasis, Strong, Link, Image, Table, TableRow, TableCell:
 		return true
 	}
 	return false
@@ -482,6 +491,18 @@ func cloneValuePointer(p *Value) *Value {
 	return &v
 }
 func cloneProperties(p Properties) Properties {
+	p.Table = clonePointer(p.Table)
+	if p.Table != nil {
+		p.Table.Alignments = slices.Clone(p.Table.Alignments)
+	}
+	p.Row = clonePointer(p.Row)
+	if p.Row != nil {
+		p.Row.Separators = slices.Clone(p.Row.Separators)
+	}
+	p.Cell = clonePointer(p.Cell)
+	if p.Cell != nil {
+		p.Cell.EscapedPipes = slices.Clone(p.Cell.EscapedPipes)
+	}
 	p.Heading = clonePointer(p.Heading)
 	p.List = clonePointer(p.List)
 	if p.List != nil {

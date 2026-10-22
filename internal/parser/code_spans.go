@@ -7,7 +7,7 @@ import (
 
 // inlineContent borrows immutable logical Content. Its cursor moves forward
 // through each original segment once, splitting only identity contributions.
-// Nonidentity contributions (NUL/partial tabs) cannot contain syntax boundaries.
+// Nonidentity contributions (NUL, partial tabs and table pipe escapes) are atomic.
 type inlineContent struct {
 	ctx                   context.Context
 	parts                 []Segment

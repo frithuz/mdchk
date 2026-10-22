@@ -41,6 +41,9 @@ func (p *blockParser) closeLeaves() error {
 	if err := p.closeFence(); err != nil {
 		return err
 	}
+	if err := p.closeTable(); err != nil {
+		return err
+	}
 	return p.closeCode()
 }
 

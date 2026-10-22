@@ -170,11 +170,12 @@ type parserContext struct {
 	context.Context
 	budget    *parseBudget
 	ancestors int
+	profile   parserProfile
 }
 
 func withAncestor(ctx context.Context, n int) context.Context {
 	if p, ok := ctx.(*parserContext); ok {
-		return &parserContext{Context: p.Context, budget: p.budget, ancestors: n}
+		return &parserContext{Context: p.Context, budget: p.budget, ancestors: n, profile: p.profile}
 	}
 	return ctx
 }
@@ -249,6 +250,20 @@ func meteredNode(ctx context.Context, spec NodeSpec) (*Node, error) {
 	meterWork(ctx, 8*(1+len(spec.Markers)+len(spec.Content)+len(spec.Children)))
 	meterValue(ctx, Value{Segments: spec.Content, Semantic: spec.Properties.Literal})
 	p := spec.Properties
+	if p.Table != nil {
+		meterRecords(ctx, 1+len(p.Table.Alignments))
+		meterWork(ctx, 8*(1+len(p.Table.Alignments)))
+	}
+	if p.Row != nil {
+		meterWork(ctx, spec.Envelope.End()-spec.Envelope.Start())
+		meterRecords(ctx, 1+len(p.Row.Separators))
+		meterWork(ctx, 8*(1+len(p.Row.Separators)))
+	}
+	if p.Cell != nil {
+		meterWork(ctx, spec.Envelope.End()-spec.Envelope.Start())
+		meterRecords(ctx, 1+len(p.Cell.EscapedPipes))
+		meterWork(ctx, 8*(1+len(p.Cell.EscapedPipes)))
+	}
 	if p.Link != nil {
 		meterValue(ctx, p.Link.Label)
 		meterValue(ctx, p.Link.Destination)
@@ -298,7 +313,7 @@ func meteredAppend[T any](ctx context.Context, dst []T, values ...T) []T {
 	}
 	var zero T
 	switch any(zero).(type) {
-	case Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair:
+	case NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair:
 		meterRecords(ctx, len(values))
 	}
 	return append(dst, values...)
@@ -312,7 +327,7 @@ func meteredSlice[T any](ctx context.Context, n int, capacity ...int) []T {
 	meterWork(ctx, c)
 	var zero T
 	switch any(zero).(type) {
-	case Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair:
+	case NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair:
 		meterRecords(ctx, n)
 	}
 	return make([]T, n, c)

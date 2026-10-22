@@ -819,7 +819,10 @@ registry completes. Inline scanners borrow that private registry across blocks;
 no detached public collection copy, rebuild or definition scan occurs per use.
 The shared raw-label normalizer retains full pinned Unicode folding and the
 999-character pre-fold eligibility bound, with only space/tab/ending collapse.
-Escapes/entities do not become matching characters. A valid explicit second label
+In core parsing, escapes/entities do not become matching characters. The private
+table stage supplies its narrowly mapped escaped-pipe contribution before this
+shared resolver: original backslash-pipe bytes contribute logical pipe to the
+lookup identifier. A valid explicit second label
 precludes shortcut fallback even if its lookup misses. Failed inline recognition,
 including 568, can fall back to references; valid inline 567 still takes priority.
 Resolved references share scoped emphasis and earlier-opener deactivation with
@@ -833,6 +836,12 @@ the second-bracket interior: raw key for `full`, a present-empty Value with one
 Exact zero-width segment at the second closing bracket for `collapsed`, nil for
 `shortcut` (and for inline/autolink). Source-backed components use the existing
 NUL/tab/container/physical-ending mappings and stay inside the use envelope.
+The table stage additionally permits Escape only for the complete original
+backslash-pipe spelling with semantic pipe. A full ReferenceLabel retains those
+raw bytes and that mapped semantic contribution; its aggregate must equal its
+segment contributions. Other decoded escape/entity mappings remain invalid
+identifier provenance, and ordinary core identifiers retain raw escape spelling.
+Generic envelope ownership still rejects absent or foreign-source components.
 `label-open`/`label-close` mark the first pair, `reference-open`/`reference-close`
 the immediately adjacent second pair for full/collapsed. No destination/title
 marker is invented at a reference use.
@@ -1257,3 +1266,46 @@ character fixtures and actual helper provenance tests establish scanner
 capabilities only. Current checks cannot establish syntax conformance,
 general inline/link conformance, full resource enforcement,
 fix safety or CLI/MCP parity.
+
+## Internal GFM table syntax stage
+
+Public `Parse` and `ParseWithBudget` remain CommonMark-only with unchanged
+signatures/defaults. The private `gfmInProgressProfile` selects implemented syntax
+through their shared admission, UTF-8, budgeting, block/inline and recovery body.
+It is an internal development stage, not a selectable or complete GFM profile.
+Its completed status certifies only the stage it runs. Other extensions, the
+full-profile conformance adapter and public activation remain separate work.
+
+`Table` owns `TableProperties` (positive Width and one typed Alignment per
+column), and source-ordered `TableRow` children: one header, one delimiter, then
+zero or more body rows. Each row's envelope includes its original physical
+ending and begins after enclosing container prefixes. Table Content retains
+one exact logical source segment per row, omitting later container prefixes;
+the table envelope still covers the complete original block, including gaps.
+Tables and rows add no copied container payload to their descendants.
+
+`TableRowProperties` retains Role, RawCells, Padding, every one-byte actual
+separator and optional LeadingPipe/TrailingPipe spans. Original `TableCell`
+children retain every field between separators, including ASCII whitespace,
+actual empty zero-width fields and excess cells. Padding is a spanless count;
+there are no invented source cells or truncated source children. Rendering
+consumers may project Width cells and Padding empty values independently.
+
+Cell Content trims ASCII space/tab edges. `TableCellProperties.EscapedPipes`
+retains each complete original backslash-pipe spelling. An odd immediately
+preceding backslash run escapes a pipe under mdchk's explicit compatibility
+interpretation, chosen consistently with core punctuation-escape grouping;
+GFM 4.10 does not unequivocally order longer runs. Unescaped pipes split before
+inline interpretation, even between backticks or emphasis markers. Mapped Escape segments contribute `|` while owning both raw
+bytes. The shared scanner, code normalization, decoder, HTML and link/reference
+handlers consume those mappings without a rewritten Source or second parser.
+Delimiter cells have no inline content: their Alignment is present, and exact
+ordered `left-colon`, `dash-run`, `right-colon` markers select only real syntax.
+Ordinary cells have absent Alignment and no delimiter markers.
+
+Constructors validate roles, counts, width/alignment consistency, source owners,
+separator/field relationships and exact delimiter markers; accessors snapshot
+all nested mutable properties. Ordinary walkers, reference validation, comments,
+literal spans and protected-node collection reach inlines in every cell,
+including excess cells. Table, row and cell each add one syntax-depth construct.
+The full operation accounting is documented in the parser limits specification.

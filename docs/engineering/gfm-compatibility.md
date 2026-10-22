@@ -3,8 +3,11 @@
 Status: approved on 2026-10-14. The [original published corpus and offline
 extraction tooling](../../internal/parser/testdata/gfm/0.29-gfm/README.md) are
 retained and verified. The [executable profile fixture contract](../../internal/parser/testdata/gfm/profile/README.md)
-now supplies adaptations and independent source expectations. Parser implementation
-and mdchk conformance verification remain pending. This contract
+now supplies adaptations and independent source expectations. A private parser
+stage now recognizes source-preserving tables and shares the core lifecycle and
+inline machinery. The integrated profile, its conformance
+adapter and mdchk conformance verification remain pending. Public parser APIs
+remain CommonMark-only; configuration still rejects unavailable GFM. This contract
 defines the target for [#158](https://github.com/frithuz/mdchk/issues/158), building
 on the [verified core parser contract](https://github.com/frithuz/mdchk/issues/32).
 
@@ -199,6 +202,19 @@ excess cells. A padded semantic cell has no original cell bytes; an excess sourc
 cell still needs a range and original content. Unequal header/delimiter widths
 prevent GFM table recognition altogether. An unescaped pipe splits a GFM row even
 between backticks; cell-content pipes must be escaped in that context.
+
+For multiple immediately preceding backslashes, mdchk explicitly chooses
+odd/even grouping: an odd run escapes the pipe, while an even run leaves a
+structural separator. This technical compatibility interpretation follows the
+core rule that an escaped backslash does not escape the next character
+([retained CommonMark 0.31.2, Backslash escapes](../../internal/parser/testdata/commonmark/0.31.2/upstream/spec.txt),
+lines 485–552). The [retained GFM table section](../../internal/parser/testdata/gfm/0.29-gfm/upstream/spec.html)
+requires escaped pipes even inside code (example 200), but does not expressly
+order longer backslash runs. This is an explicit mdchk choice, not an
+unequivocal upstream multi-run mandate or a comparison-renderer oracle. The
+source parser and profile validator share this interpretation. Existing original
+examples and the 93 authored source fixtures remain unchanged; independent local
+controls cover longer runs without adding profile consumer units or passes.
 
 ## Rule and operation integration
 

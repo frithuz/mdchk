@@ -61,6 +61,9 @@ soft/hard breaks add zero; paragraph/heading/code/HTML and each quote, list,
 list item, emphasis, strong, link, image and code span add one. A paragraph
 containing 255 nested Strong nodes is depth 256; 256 quotes containing a
 paragraph is depth 257. A list plus its item contributes two ancestors.
+The private GFM-in-progress stage counts Table, TableRow and TableCell as one
+construct each; inline syntax adds to those three ancestors and any enclosing
+quotes/lists/items. Delimiter cells occupy the same depth as ordinary cells.
 Reference definitions occupy a leaf's construct position while recognized.
 Unmatched bracket/delimiter runs are candidates, not fabricated syntax depth.
 Container and leaf admission checks run before stack pushes/leaf metadata;
@@ -112,3 +115,13 @@ invalid profiles/overflow and deterministic elapsed-time expiry. The
 [benchmark record](parser-performance.md) includes reproducible timings,
 allocations and measured hardening overhead; no machine-specific threshold is
 claimed.
+
+The private table stage uses the same admission, validation, phase recovery and
+operation as public core parsing. It charges provisional row/cell specifications,
+separator/escape spans, alignment and property records, raw mapping segments and
+immutable copies, including failed delimiter/width candidates. Complete source
+cells are retained even beyond semantic table width. Padding is one spanless
+count per row, avoiding width-times-row synthetic allocations. Candidate rows
+freeze only after header/delimiter equality and combined depth admission. Public
+entry points keep their existing core-only behavior; this internal stage does
+not establish complete GFM capability or full-profile conformance.

@@ -113,14 +113,27 @@ func Parse(ctx context.Context, source Source) ParseResult {
 // adapter work. The source must already be an immutable snapshot. Document-size
 // admission precedes scanning, even for malformed or cancelled oversized input.
 // Within admitted input, UTF-8 failure precedes context interruption.
-func ParseWithBudget(ctx context.Context, source Source, budget *OperationBudget) (r ParseResult) {
+func ParseWithBudget(ctx context.Context, source Source, budget *OperationBudget) ParseResult {
+	return parseWithProfile(ctx, source, budget, coreProfile)
+}
+
+// parserProfile is deliberately private. The staged profile exercises implemented
+// GFM syntax during development; it does not certify the integrated GFM profile.
+type parserProfile uint8
+
+const (
+	coreProfile parserProfile = iota
+	gfmInProgressProfile
+)
+
+func parseWithProfile(ctx context.Context, source Source, budget *OperationBudget, profile parserProfile) (r ParseResult) {
 
 	if ctx == nil || budget == nil {
 		panic("parser: nil context or operation budget")
 	}
 	budget.mu.Lock()
 	defer budget.mu.Unlock()
-	ctx = &parserContext{Context: ctx, budget: &parseBudget{operation: budget}}
+	ctx = &parserContext{Context: ctx, budget: &parseBudget{operation: budget}, profile: profile}
 	r = ParseResult{
 		Source: source, Status: Failed, AST: Unavailable,
 		Phases:          PhaseProgress{Blocks: NotStarted, Inlines: NotStarted},

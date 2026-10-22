@@ -33,6 +33,52 @@ class ProfileTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, message):
             p.validate_fixtures(dict(self.data, fixtures=[fixture]))
 
+    def test_table_backslash_run_offsets(self):
+        # Independent byte literals pin the approved technical interpretation;
+        # these are validator controls, not new normative/profile consumer cases.
+        cases = [
+            (b'a|b', [1], []),
+            (rb'a\|b', [], [1]),
+            (rb'a\\|b', [3], []),
+            (rb'a\\\|b', [], [3]),
+            (rb'a\\\\|b', [5], []),
+            ('é'.encode()+rb'\|x|', [5], [2]),
+            (rb'|a\|', [0], [2]),
+        ]
+        for raw, structural, escaped in cases:
+            with self.subTest(raw=raw):
+                self.assertEqual(p.table_pipe_offsets(raw), (structural, escaped))
+
+    def test_table_backslash_run_source_validation(self):
+        for raw, cells, pipes, escaped in [
+            ('| a\\\\|b | c |\n', [(21,25),(26,28),(29,32)], [20,25,28,32], []),
+            ('| a\\\\\\|b | c |\n', [(21,29),(30,33)], [20,29,33], [25]),
+        ]:
+            source = '| a | b |\n| - | - |\n'+raw
+            def span(a, b):
+                return [a, b, source[a:b]]
+            def row(role, a, b, fields, separators, escapes):
+                return dict(role=role, span=span(a,b),
+                            cells=[dict(span=span(x,y), value=source[x:y].strip(' \t').replace('\\|','|'), padding=False)
+                                   for x,y in fields],
+                            source_count=len(fields), semantic_count=2,
+                            alignment=['none','none'], separators=[span(x,x+1) for x in separators],
+                            outer=[True,True], padding=[], escaped_pipes=[span(x,x+2) for x in escapes])
+            facts = dict(width=2, rows=[
+                row('header',0,10,[(1,4),(5,8)],[0,4,8],[]),
+                row('delimiter',10,20,[(11,14),(15,18)],[10,14,18],[]),
+                row('body',20,len(source),cells,pipes,escaped)])
+            p.check_table(source,(0,len(source)),facts)
+            wrong=copy.deepcopy(facts)
+            if escaped:
+                wrong['rows'][2]['escaped_pipes']=[]
+                message='escaped-pipe inventory differs'
+            else:
+                wrong['rows'][2]['separators'].pop(1)
+                message='actual separator inventory differs'
+            with self.assertRaisesRegex(ValueError,message):
+                p.check_table(source,(0,len(source)),wrong)
+
     def test_complete_scopes_and_immutable_originals(self):
         p.validate_ledger(self.ledger, self.originals, self.fixtures)
         self.assertEqual(len(self.ledger['cases']), 677)

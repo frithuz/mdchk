@@ -66,7 +66,8 @@ func decodeTokenContext(ctx context.Context, text string) (string, int, Transfor
 
 // decodeValue borrows parser-owned source segments and returns private segment
 // storage. Tokens cannot cross physical endings, NUL or partial-tab contributions;
-// the block/reference producers split only at those boundaries. Each ordinary
+// the block/reference producers split only at those boundaries. Already mapped
+// escapes are atomic contributions and are never decoded a second time. Each ordinary
 // run and each transformation retains its own original-byte range, never an
 // offset inferred from semantic length. References also normalize physical CRs.
 // An interrupted value is withheld; callers discard their unfinished phase.
@@ -79,7 +80,7 @@ func decodeValue(ctx context.Context, parts []Segment, normalizeEndings bool) Va
 		if interruption(ctx) != "" {
 			return Value{}
 		}
-		if part.Transformation == PartialTab {
+		if part.Transformation == PartialTab || part.Transformation == Escape {
 			out.Segments = meteredAppend(ctx, out.Segments, part)
 			meteredWriteString(ctx, &semantic, part.Semantic.Value)
 			continue
