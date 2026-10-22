@@ -1267,13 +1267,13 @@ capabilities only. Current checks cannot establish syntax conformance,
 general inline/link conformance, full resource enforcement,
 fix safety or CLI/MCP parity.
 
-## Internal GFM table and task syntax stage
+## Internal GFM table, task and strikethrough syntax stage
 
 Public `Parse` and `ParseWithBudget` remain CommonMark-only with unchanged
 signatures/defaults. The private `gfmInProgressProfile` selects implemented syntax
 through their shared admission, UTF-8, budgeting, block/inline and recovery body.
 It is an internal development stage, not a selectable or complete GFM profile.
-Its completed status certifies only tables/tasks in the stage it runs. Other extensions, the
+Its completed status certifies only tables/tasks/strikethrough in the stage it runs. Other extensions, the
 full-profile conformance adapter and public activation remain separate work.
 
 `Table` owns `TableProperties` (positive Width and one typed Alignment per
@@ -1366,3 +1366,29 @@ binding, Comments, LiteralSpans and ProtectedNodes continue through the real
 paragraph inline children. Checkbox rendering belongs to the future test adapter;
 the product parser emits no HTML. Task metadata adds records/work, not a syntax
 construct beyond the existing list/item/paragraph/inline depth.
+
+
+### Strikethrough nodes
+
+`Strike` (`strike`) is transparent inline formatting. It reuses
+`DelimiterProperties` with Marker `~` and Width 1 or 2, exact `opening`/`closing`
+Markers, ordered inline Children and original logical Content between markers.
+Content retains nested markup and actual physical endings, excluding stripped
+container prefixes; it has no aggregate Literal. Unmatched tildes remain Text.
+Both arities add one syntax-depth construct. Public core parsing remains unchanged.
+
+NewNode requires delimiter metadata, exactly two correctly spelled same-arity
+markers at the envelope endpoints, and same-source Content/children inside the
+marker interior. Nonempty interiors require Content reaching both boundaries;
+container gaps between segments remain permitted. Payload segments cannot
+reorder/overlap or be spanless. Construction snapshots the existing mutable
+metadata, markers, Content and child handles. These checks validate supplied facts,
+not Markdown flanking, recognition, completed availability or edit authority.
+The [explicit pairing interpretation](../../docs/engineering/gfm-compatibility.md#strikethrough-pairing-interpretation)
+records the chosen behavior where pinned extension prose is incomplete.
+
+Walk, reference binding, Comments, LiteralSpans and ProtectedNodes reach actual
+inline descendants. Strike itself grants no opaque-source authority. Code and
+raw HTML remain opaque under the shared parser's ordinary boundaries. The stage
+adds neither extended bare autolinks nor tag filtering, a renderer or complete
+GFM support; the full adapter, profile activation and consumer gates remain future.

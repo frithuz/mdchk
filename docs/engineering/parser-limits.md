@@ -137,3 +137,18 @@ failed candidates. Fixed token validation checks at most two bytes per token and
 three canonical marker segments; it never scans an aggregate marker's source gap.
 Task metadata adds no syntax-depth construct. Real list/item/paragraph and shared
 inline descendants keep their existing combined depth and operation authority.
+
+
+The private strikethrough stage shares the existing inline scanner, delimiter
+stack and pair forest. Maximal tilde runs are scanned once; runs of three or more
+create no delimiter records. Single/double failures use separate arity floors,
+independent of core modulo-three classes. Successful matches consume complete
+runs and retire intervening records; label-local cleanup never revives retired
+candidates. Pair/forest/source records and new Strike construction frames are
+charged before allocation. Temporary delimiter metadata/markers and frozen
+metadata/marker/Content copies are charged before construction. Narrow Strike
+validation inspects at most four marker bytes and visits only supplied payload
+segments/children; it never scans the full envelope across container gaps.
+Strike adds one syntax-depth construct. Overlapping nested raw Content remains
+real retained output and is charged for each owner, rather than asserting an
+unconditional linear bound for arbitrarily large nested output.

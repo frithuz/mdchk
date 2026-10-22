@@ -25,6 +25,7 @@ const (
 	CodeSpan      Kind = "code-span"
 	Emphasis      Kind = "emphasis"
 	Strong        Kind = "strong"
+	Strike        Kind = "strike"
 	Link          Kind = "link"
 	Image         Kind = "image"
 	Table         Kind = "table"
@@ -172,6 +173,9 @@ func NewNode(spec NodeSpec) (*Node, error) {
 	if err := validateValue(spec.Envelope, Value{Segments: spec.Content, Semantic: spec.Properties.Literal}); err != nil {
 		return nil, err
 	}
+	if err := validateStrikeSpec(spec); err != nil {
+		return nil, err
+	}
 	if err := validateTaskSpec(spec); err != nil {
 		return nil, err
 	}
@@ -242,7 +246,7 @@ func Walk(root *Node, visit func(*Node) bool) {
 
 func validKind(k Kind) bool {
 	switch k {
-	case DocumentKind, Paragraph, Heading, ThematicBreak, BlockQuote, List, ListItem, CodeBlock, HTMLBlock, InlineHTML, Text, SoftBreak, HardBreak, CodeSpan, Emphasis, Strong, Link, Image, Table, TableRow, TableCell:
+	case DocumentKind, Paragraph, Heading, ThematicBreak, BlockQuote, List, ListItem, CodeBlock, HTMLBlock, InlineHTML, Text, SoftBreak, HardBreak, CodeSpan, Emphasis, Strong, Strike, Link, Image, Table, TableRow, TableCell:
 		return true
 	}
 	return false
@@ -398,13 +402,16 @@ func validateProperties(k Kind, e Span, p Properties) error {
 		}
 	}
 	if p.Delimiter != nil {
-		if k != CodeSpan && k != Emphasis && k != Strong {
+		if k != CodeSpan && k != Emphasis && k != Strong && k != Strike {
 			return ErrModel
 		}
 		if p.Delimiter.Width < 1 {
 			return ErrModel
 		}
 		if k == CodeSpan && p.Delimiter.Marker != '`' {
+			return ErrModel
+		}
+		if k == Strike && (p.Delimiter.Marker != '~' || p.Delimiter.Width > 2) {
 			return ErrModel
 		}
 		if k == Emphasis || k == Strong {

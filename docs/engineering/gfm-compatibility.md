@@ -4,7 +4,7 @@ Status: approved on 2026-10-14. The [original published corpus and offline
 extraction tooling](../../internal/parser/testdata/gfm/0.29-gfm/README.md) are
 retained and verified. The [executable profile fixture contract](../../internal/parser/testdata/gfm/profile/README.md)
 now supplies adaptations and independent source expectations. A private parser
-stage now recognizes source-preserving tables and task items and shares the core
+stage now recognizes source-preserving tables, task items and strikethrough and shares the core
 lifecycle and inline machinery. The integrated profile, its conformance
 adapter and mdchk conformance verification remain pending. Public parser APIs
 remain CommonMark-only; configuration still rejects unavailable GFM. This contract
@@ -215,6 +215,31 @@ unequivocal upstream multi-run mandate or a comparison-renderer oracle. The
 source parser and profile validator share this interpretation. Existing original
 examples and the 93 authored source fixtures remain unchanged; independent local
 controls cover longer runs without adding profile consumer units or passes.
+
+### Strikethrough pairing interpretation
+
+The private syntax stage recognizes `Strike` using the shared inline delimiter
+scanner, scoped pairing and noncrossing tree construction. The retained
+[published section 6.5](../../internal/parser/testdata/gfm/0.29-gfm/upstream/spec.html)
+requires matching one/two-tilde pairs, paragraph termination and literal inline
+runs of three or more. It does not expressly specify every flanking condition,
+mixed-run search order or partial-consumption rule. mdchk explicitly chooses
+CommonMark 0.31.2 star-style Unicode left/right flanking on original logical
+neighbors, including intraword eligibility. Underscore restrictions and the core
+modulo-three rule do not apply to tildes.
+
+Only maximal eligible unescaped original runs of length one or two can pair,
+with exactly equal arity and whole-run consumption. Three-or-more runs stay
+wholly literal; ordinary block tilde fences retain block-first precedence.
+Source-order closers select the nearest compatible opener within the current
+bracket scope and retire intervening candidates, preventing crossing pairs.
+Failed searches have independent arity classes. Thus `~a~~` is literal, while
+`~a~~b~` pairs the outside single tildes with raw payload `a~~b`; in
+`~a ~~b~ c~~` the first single closer wins and retires the inside double opener.
+These are explicit technical interpretations of incomplete upstream detail,
+consistent with the approved mixed fixture, not comparison-renderer parity.
+Escapes/entities and opaque syntax use the existing dispatch; decoded tildes
+are never redispatched. Original fixtures and consumer accounting are unchanged.
 
 ## Rule and operation integration
 

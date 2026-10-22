@@ -150,7 +150,13 @@ func (s *inlineScanner) dispatch(offset int) int {
 		return offset + width // generated characters never enter syntax dispatch
 	}
 	switch c := s.text[offset]; c {
-	case '*', '_':
+	case '*', '_', '~':
+		if c == '~' {
+			profile, ok := s.ctx.(*parserContext)
+			if !ok || profile.profile != gfmInProgressProfile {
+				return offset + 1
+			}
+		}
 		end := offset + 1
 		for end < len(s.text) && s.text[end] == c {
 			meterWork(s.ctx, 1)
@@ -158,6 +164,10 @@ func (s *inlineScanner) dispatch(offset int) int {
 				return len(s.text)
 			}
 			end++
+		}
+		// Ineligible maximal runs remain wholly literal; never peel a legal suffix.
+		if c == '~' && end-offset > 2 {
+			return end
 		}
 		before, after := rune(' '), rune(' ')
 		if offset > 0 {

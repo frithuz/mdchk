@@ -19,6 +19,10 @@ func delimiterFlanking(marker byte, before, after rune) (open, close bool) {
 }
 
 func delimitersMatch(open, close inlineDelimiter) bool {
+	if open.marker == '~' || close.marker == '~' {
+		return open.marker == close.marker && open.canOpen && close.canClose &&
+			open.original == close.original && open.original >= 1 && open.original <= 2
+	}
 	return open.marker == close.marker && open.canOpen && close.canClose &&
 		(!(open.canClose || close.canOpen) || (open.original+close.original)%3 != 0 ||
 			open.original%3 == 0 && close.original%3 == 0)
@@ -65,6 +69,10 @@ func (s *inlineScanner) emphasisPairs(bottom int) ([]emphasisPair, error) {
 			}
 		}
 	}
+	// Tilde failures are partitioned by exact arity, independently of the core
+	// modulo-three classes. Initialize lazily to preserve core-only accounting.
+	var strikeFloors [2][2]int
+	strikeFloorsReady := false
 	remove := func(i int) {
 		d[i].retired = true
 		if d[i].previous >= 0 {
@@ -103,6 +111,14 @@ func (s *inlineScanner) emphasisPairs(bottom int) ([]emphasisPair, error) {
 			dual = 1
 		}
 		floor := &floors[marker][closer.original%3][dual]
+		if closer.marker == '~' {
+			if !strikeFloorsReady {
+				meterWork(s.ctx, 4)
+				strikeFloors = [2][2]int{{bottom, bottom}, {bottom, bottom}}
+				strikeFloorsReady = true
+			}
+			floor = &strikeFloors[closer.original-1][dual]
+		}
 		opener := closer.previous
 		for opener > *floor {
 			meterWork(s.ctx, 1)
@@ -363,6 +379,9 @@ func (s *inlineScanner) emphasisAbove(parts []Segment, flat []*Node, bottom, sta
 			if _, err := nodes.take(op.end); err != nil || interruption(s.ctx) != "" {
 				return nil, err
 			}
+			if pair.marker == '~' {
+				meterRecords(s.ctx, 1) // new explicit Strike construction frame
+			}
 			stack = meteredAppend(s.ctx, stack, frame{index: index, opening: op})
 			continue
 		}
@@ -392,11 +411,16 @@ func (s *inlineScanner) emphasisAbove(parts []Segment, flat []*Node, bottom, sta
 			return nil, err
 		}
 		kind := Emphasis
-		if pair.width == 2 {
+		if pair.marker == '~' {
+			kind = Strike
+		} else if pair.width == 2 {
 			kind = Strong
 		}
 		envelope := top.opening
 		envelope.end = cl.end
+		if kind == Strike {
+			meterRecords(s.ctx, 3) // property and two transient opening/closing markers
+		}
 		n, err := meteredNode(s.ctx, NodeSpec{Kind: kind, Envelope: envelope, Content: payload, Children: top.children,
 			Markers:    []Marker{{Role: "opening", Source: top.opening}, {Role: "closing", Source: cl}},
 			Properties: Properties{Delimiter: &DelimiterProperties{Marker: pair.marker, Width: pair.width}}})

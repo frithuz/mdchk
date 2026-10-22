@@ -674,7 +674,7 @@ func TestTaskApprovedSupplementalWitnesses(t *testing.T) {
 				if len(items) != 1 || len(tableNodes(r.Document.root, Table)) != 1 || len(tableNodes(r.Document.root, Link)) != 0 {
 					t.Fatal("implemented stage scope")
 				}
-				assertTask(t, items[0], 0, 21, 2, 20, 2, 3, 4, 4, 6, "x", "~~www.a.org~~")
+				assertTask(t, items[0], 0, 21, 2, 20, 2, 3, 4, 4, 6, "x", "www.a.org")
 				html := tableNodes(r.Document.root, InlineHTML)
 				if len(html) != 1 {
 					t.Fatal("raw HTML lost")

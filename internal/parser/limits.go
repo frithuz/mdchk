@@ -250,6 +250,12 @@ func meteredNode(ctx context.Context, spec NodeSpec) (*Node, error) {
 	meterWork(ctx, 8*(1+len(spec.Markers)+len(spec.Content)+len(spec.Children)))
 	meterValue(ctx, Value{Segments: spec.Content, Semantic: spec.Properties.Literal})
 	p := spec.Properties
+	if spec.Kind == Strike {
+		// Narrow marker spelling, payload/child containment and metadata copy.
+		// Never scan the aggregate envelope across container gaps.
+		meterRecords(ctx, 1)
+		meterWork(ctx, 16+len(spec.Content)+len(spec.Children))
+	}
 	if p.Task != nil {
 		// Fixed token validation, association comparison and immutable copies.
 		meterRecords(ctx, 7+len(p.Task.Segments))
