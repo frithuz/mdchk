@@ -1,5 +1,12 @@
 # mdchk fix
 
+Current implementation: `fix --dry-run` supports text and JSON previews and
+writes nothing. Apply without `--dry-run` returns usage status 11 before project
+access. VS Code/GitHub formats are not yet supported. Production correction
+providers are currently empty; MD047 analysis reports missing/excess endings
+with `fix_available: false`. The correction implementation follows separately.
+
+
 Apply safe corrections to Markdown files and report problems that still need attention. Preview changes with `--dry-run` before saving them.
 
 ```text
@@ -11,7 +18,7 @@ mdchk fix [options] [paths...]
 Pass one or more files or directories. Directories are searched recursively for `.md` and `.markdown` files. With no paths, fix processes the working directory. It uses the same selection and exclusion behavior as [lint](lint.md).
 
 ```sh
-mdchk fix README.md docs/
+mdchk fix --dry-run README.md docs/
 ```
 
 ## Options
@@ -33,7 +40,8 @@ mdchk fix docs/
 mdchk fix docs/ --dry-run --format json
 ```
 
-Text and JSON previews include proposed diffs. VS Code and GitHub output show only findings remaining in the proposed content, so use [lint](lint.md) when highlighted locations must match files currently on disk.
+Text and JSON previews include proposed diffs when a registered correction
+passes shared candidate validation. Current builds have no production corrections. VS Code and GitHub output show only findings remaining in the proposed content, so use [lint](lint.md) when highlighted locations must match files currently on disk.
 
 Corrections preserve meaning and unrelated content. For example, fix can add a missing final newline while preserving intentional hard breaks. It leaves code examples, front matter, and ambiguous changes alone. A skipped heading level or missing code language needs a decision rather than a guessed correction.
 

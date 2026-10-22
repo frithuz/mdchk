@@ -140,11 +140,12 @@ type ConfigValidation struct {
 	SkippedDefinitions int  `json:"skipped_definitions"`
 }
 
-// Result is the existing shared v1 envelope. Lint populates notes and suppressed
-// diagnostics; correction and returned-document collections remain empty.
+// Result is the shared v1 envelope. Read-only lint and inspection leave correction
+// arrays empty; validated fix previews publish typed proposals and deferrals.
 // Operation-specific records must follow the same normative schema. RawMessage
 // here is not an extension bag: producers must validate against that schema.
 type Result struct {
+	DryRun                *bool           `json:"dry_run,omitempty"`
 	Inspection            json.RawMessage `json:"inspection,omitempty"`
 	reportingErrorCounts  [4]int
 	ConfigValidation      *ConfigValidation `json:"config_validation,omitempty"`
@@ -162,8 +163,8 @@ type Result struct {
 	Errors                []Error           `json:"errors"`
 	Interruptions         []Interruption    `json:"interruptions"`
 	EffectiveLimits       []EffectiveLimit  `json:"effective_limits"`
-	Changes               []json.RawMessage `json:"changes"`
-	DeferredFixes         []json.RawMessage `json:"deferred_fixes"`
+	Changes               []Change          `json:"changes"`
+	DeferredFixes         []DeferredFix     `json:"deferred_fixes"`
 	Notes                 []json.RawMessage `json:"notes"`
 	Omissions             []Omission        `json:"omissions"`
 	Documents             []json.RawMessage `json:"documents"`
@@ -171,7 +172,7 @@ type Result struct {
 }
 
 func NewLint(mode string) Result {
-	return Result{SchemaVersion: 1, Operation: "lint", Mode: mode, Status: "clean", Complete: true, CheckedFiles: []string{}, SkippedFiles: []SkippedFile{}, Files: []File{}, Diagnostics: []Diagnostic{}, Coverage: []Coverage{}, Errors: []Error{}, Interruptions: []Interruption{}, EffectiveLimits: []EffectiveLimit{}, Changes: []json.RawMessage{}, DeferredFixes: []json.RawMessage{}, Notes: []json.RawMessage{}, Omissions: []Omission{}, Documents: []json.RawMessage{}, SuppressedDiagnostics: []json.RawMessage{}}
+	return Result{SchemaVersion: 1, Operation: "lint", Mode: mode, Status: "clean", Complete: true, CheckedFiles: []string{}, SkippedFiles: []SkippedFile{}, Files: []File{}, Diagnostics: []Diagnostic{}, Coverage: []Coverage{}, Errors: []Error{}, Interruptions: []Interruption{}, EffectiveLimits: []EffectiveLimit{}, Changes: []Change{}, DeferredFixes: []DeferredFix{}, Notes: []json.RawMessage{}, Omissions: []Omission{}, Documents: []json.RawMessage{}, SuppressedDiagnostics: []json.RawMessage{}}
 }
 
 // NewConfigValidation starts an empty read-only project scan.

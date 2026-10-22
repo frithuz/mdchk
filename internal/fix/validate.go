@@ -197,6 +197,7 @@ type Observation struct {
 	Analysis result.Result
 }
 type validatedFile struct {
+	runtimeRollback     bool
 	observations        []observation
 	path                string
 	original, candidate parser.Source
@@ -226,6 +227,12 @@ func (v Validated) Paths() []string {
 }
 
 type FileView struct {
+	// AnalysisStarted distinguishes an entered shared analysis from a preinitialized
+	// target retained after an earlier failure. Empty findings do not identify it.
+	AnalysisStarted bool
+	// RuntimeRollback identifies accepted attempts discarded by the returned
+	// runtime failure. Completed intrinsic deferrals retain their own causes.
+	RuntimeRollback     bool
 	Path                string
 	Original, Candidate parser.Source
 	Analysis            result.Result
@@ -265,7 +272,7 @@ func (v Validated) File(path string) (FileView, bool) {
 			for i, o := range f.observations {
 				obs[i] = Observation{o.source, retainedAnalysis(o.analysis, o.retained)}
 			}
-			return FileView{f.path, f.original, f.candidate, retainedAnalysis(f.analysis, f.retained), a, slices.Clone(f.reasons), f.rounds, obs, f.trace}, true
+			return FileView{AnalysisStarted: f.retained != nil, RuntimeRollback: f.runtimeRollback, Path: f.path, Original: f.original, Candidate: f.candidate, Analysis: retainedAnalysis(f.analysis, f.retained), Attempts: a, Reasons: slices.Clone(f.reasons), ChangingRounds: f.rounds, Observations: obs, trace: f.trace}, true
 		}
 	}
 	return FileView{}, false
@@ -609,6 +616,9 @@ func (v *Validator) Validate(ctx context.Context, targets []Target, options Vali
 				}
 			}
 			for _, j := range members {
+				if err != nil {
+					out.files[j].runtimeRollback = true
+				}
 				states[j] = initial[j]
 				out.files[j].candidate = targets[j].Source
 				out.files[j].analysis = initial[j].analysis
@@ -647,6 +657,9 @@ func (v *Validator) Validate(ctx context.Context, targets []Target, options Vali
 		if err != nil {
 			out.complete = false
 			for j := range out.files {
+				if out.files[j].candidate != targets[j].Source {
+					out.files[j].runtimeRollback = true
+				}
 				out.files[j].candidate = targets[j].Source
 				out.files[j].analysis = initial[j].analysis
 				out.files[j].retained = initial[j].retained
@@ -659,6 +672,9 @@ func (v *Validator) Validate(ctx context.Context, targets []Target, options Vali
 	if err := m.work(0); err != nil {
 		out.complete = false
 		for i := range out.files {
+			if out.files[i].candidate != targets[i].Source {
+				out.files[i].runtimeRollback = true
+			}
 			out.files[i].candidate = targets[i].Source
 			out.files[i].analysis = initial[i].analysis
 			out.files[i].retained = initial[i].retained

@@ -460,6 +460,15 @@ func FinalizeLintResult(out *result.Result) {
 		}
 		out.Interruptions[i].ID = id
 	}
+	// Deferred correction causes may refer to shared runtime validation failures.
+	// Preserve those links through the same canonical error/interruption IDs.
+	for i := range out.DeferredFixes {
+		for j, id := range out.DeferredFixes[i].CauseIDs {
+			if canonical, ok := causeIDs[id]; ok {
+				out.DeferredFixes[i].CauseIDs[j] = canonical
+			}
+		}
+	}
 	// Index once after canonical sorting/ID assignment. Linking is linear in
 	// records plus emitted references, rather than scanning every error and
 	// coverage record again for every target.

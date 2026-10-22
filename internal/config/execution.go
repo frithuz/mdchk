@@ -95,3 +95,13 @@ func (p *ExecutionPlan) NewSourceInput(path string, source parser.Source) (engin
 	}
 	return p.engine.NewSourceInput(path, source)
 }
+
+// CandidatePlan supplies the identical admitted immutable engine plan to the
+// shared correction validator. It retains selected configuration and registry
+// authority; callers cannot alter its private state or admit alternate settings.
+func (p *ExecutionPlan) CandidatePlan() *engine.ExecutionPlan {
+	if p == nil {
+		return nil
+	}
+	return p.engine
+}

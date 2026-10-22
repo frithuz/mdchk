@@ -12,9 +12,11 @@ Use the exit code to decide whether a check passed, Markdown problems remain, or
 | `14` | mdchk encountered an internal execution failure. | Keep the error report and command details for a bug report. |
 | `15` | Analysis, inspection or configuration scanning was interrupted or incomplete without an overriding error. | Review coverage reasons and available findings; do not treat the run as a clean CI check. |
 
-The current lint, config validate and inspect commands emit text or schema-v1 JSON on stdout for these
+The current lint, fix --dry-run, config validate and inspect commands emit text or schema-v1 JSON on stdout for these
 outcomes, including usage and configuration failures when a valid format is
-selected. VS Code/GitHub reporters, fix and MCP remain planned.
+selected. Apply without `--dry-run` returns 11 before project access. Production
+correction providers are currently empty. VS Code/GitHub reporters and MCP remain
+planned.
 An output-delivery error, including a short write, returns `13` unless a
 previously established internal failure requires `14`; it may prevent a complete
 report from reaching stdout.
@@ -25,7 +27,8 @@ For `lint`, `0` means the selected files pass the enabled rules; `10` means prob
 
 For `fix`, the code describes the files after corrections: `0` means no violations remain, and `10` means some still need attention. A violation that cannot be safely fixed is a finding, not an execution error.
 
-For `fix --dry-run`, the code describes the predicted result after the proposed corrections. A `0` can therefore accompany a diff that still needs to be applied. No files are written; inspect the preview before running `fix` to apply it.
+For `fix --dry-run`, the code describes the predicted result after the proposed corrections. A `0` can therefore accompany a diff that still needs to be applied. No files are written. Apply remains unavailable in this build; fix without
+`--dry-run` returns 11 before project access.
 
 An error during fixing can occur after other files have already changed. Check both the changes and failures in the report before retrying. A failed write returns `13`, even if the proposed correction would have resolved the violation.
 

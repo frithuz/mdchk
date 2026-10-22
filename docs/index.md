@@ -29,7 +29,11 @@ errors and actual scan completeness. See its [command guide](commands/config/val
 physical-line selection, AST, effective rule counts, directives, provenance and
 explicit availability. Completed observations return inspected/0; runtime or
 reporting interruption returns incomplete/15. See its [command guide](commands/inspect.md).
-Fix and MCP remain planned and are rejected by this build.
+`fix --dry-run` uses the same selection/configuration and reports validated
+candidate outcomes in text or JSON without writing files. The production
+correction provider list is currently empty; MD047 findings remain manual until
+its correction is delivered. Apply without `--dry-run` returns usage/11 before
+project access. MCP remains planned and is rejected by this build.
 
 ## Get started (planned execution)
 
@@ -69,7 +73,7 @@ Help and version output do not load project configuration or process Markdown fi
 | Command | Purpose | Guide |
 | --- | --- | --- |
 | `lint` | Report Markdown problems without changing files | [Lint command](commands/lint.md) |
-| `fix` | Apply safe corrections and report remaining problems | [Fix command](commands/fix.md) |
+| `fix` | Preview validated corrections with `--dry-run`; apply is not yet supported | [Fix command](commands/fix.md) |
 | `inspect` | Reveal processing details for one file or a selected line range | [Inspect command](commands/inspect.md) |
 | `config` | Work with configuration, including project-wide validation | [Config commands](commands/config.md) |
 | `mcp` | Provide lint and fix tools to AI agents in project or standalone mode | [MCP command](commands/mcp.md) |

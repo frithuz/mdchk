@@ -151,3 +151,13 @@ copying unused complete edit sets. Typed accessors return detached collections;
 source handles are immutable.
 No CLI records, filesystem effects, positive fix flags or production producers
 are added by this validated-stage API. #144 and #145 consume it separately.
+
+
+`FileView.RuntimeRollback` distinguishes accepted attempts discarded by the
+returned runtime failure from completed intrinsic decisions in independent
+components. Component errors mark their affected files; a final reanalysis or
+checkpoint failure marks still-retained candidates actually rolled back by that
+failure. Already rolled-back intrinsic components do not inherit the later
+failure. Reporting can link synthesized accepted-group deferrals to that runtime
+cause; existing conflict/preservation/nonconvergence decisions keep their own
+provenance. An operation-wide error alone is not per-group causal authority.

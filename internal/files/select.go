@@ -219,6 +219,16 @@ func (s *selector) fail(path, op string, err error) {
 	}
 	s.failures[failureKey{path, op, err.Error()}] = &fs.PathError{Op: op, Path: path, Err: err}
 }
+
+// Bounded effects also supply semantic matching under the identical operation.
+func (s *selector) excludes(path string, isDir bool) (bool, error) {
+	if matcher, ok := s.access.(interface {
+		excludes(string, string, bool, *config.Patterns) (bool, error)
+	}); ok {
+		return matcher.excludes(s.options.ExclusionBase, path, isDir, s.options.Exclusions)
+	}
+	return Excludes(s.options.ExclusionBase, path, isDir, s.options.Exclusions)
+}
 func (s *selector) skip(path string, reason SkipReason) { s.skips[Skipped{path, reason}] = true }
 
 // gitMetadata skips the literal marker without probing it. For alternate case
@@ -291,7 +301,7 @@ func (s *selector) checkComponents(raw string) (string, bool) {
 				s.fail(current, "traverse", fmt.Errorf("not a directory"))
 				return "", false
 			}
-			blocked, err := Excludes(s.options.ExclusionBase, current, true, s.options.Exclusions)
+			blocked, err := s.excludes(current, true)
 			if err != nil {
 				s.fail(current, "exclude", err)
 				return "", false
@@ -335,7 +345,7 @@ func (s *selector) walk(root string, explicit bool) {
 			s.skip(p, SkipSymlink)
 			continue
 		}
-		excluded, err := Excludes(s.options.ExclusionBase, p, info.IsDir(), s.options.Exclusions)
+		excluded, err := s.excludes(p, info.IsDir())
 		if err != nil {
 			s.fail(p, "exclude", err)
 			continue
@@ -392,6 +402,12 @@ func eligible(p string, quarto bool) bool {
 // all pattern escapes remain untouched. Outside-base entries are unmatched.
 // Both paths must be absolute; this function performs no filesystem access.
 func Excludes(base, target string, isDir bool, patterns *config.Patterns) (bool, error) {
+	if patterns == nil {
+		patterns = &config.Patterns{}
+	}
+	return excludesMatching(base, target, isDir, patterns.Excludes)
+}
+func excludesMatching(base, target string, isDir bool, match func(string, bool, bool) (bool, error)) (bool, error) {
 	if !filepath.IsAbs(base) || !filepath.IsAbs(target) {
 		return false, fmt.Errorf("exclusion paths must be absolute")
 	}
@@ -407,10 +423,7 @@ func Excludes(base, target string, isDir bool, patterns *config.Patterns) (bool,
 	if rel == "." {
 		name = ""
 	}
-	if patterns == nil {
-		patterns = &config.Patterns{}
-	}
-	matched, err := patterns.Excludes(name, isDir, inBase)
+	matched, err := match(name, isDir, inBase)
 	if err != nil {
 		return false, fmt.Errorf("exclusions for %q: %w", target, err)
 	}

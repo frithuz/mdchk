@@ -18,6 +18,7 @@ const (
 const generalHelp = `Usage: mdchk [global options] <command> [options] [paths...]
 
 Commands:
+  fix        Preview validated corrections without writing files
   lint       Check Markdown with available registered rules
   config     Validate project configuration
   inspect    Reveal processing details for one Markdown file
@@ -81,6 +82,8 @@ func runContext(ctx context.Context, args []string, stdout, stderr io.Writer, ve
 		return output(stdout, generalHelp, 0)
 	}
 	switch args[0] {
+	case "fix":
+		return runFix(ctx, append(global, args[1:]...), stdout, version)
 	case "inspect":
 		return runInspect(ctx, append(global, args[1:]...), stdout, version)
 	case "config":
@@ -130,6 +133,7 @@ type lintOptions struct {
 	format        string
 	limits        map[string]int64
 	help, version bool
+	dryRun        bool
 }
 
 func parseLint(args []string) (lintOptions, error) { return parseOptions(args, false) }
@@ -139,6 +143,9 @@ func parseOptions(args []string, validation bool) (lintOptions, error) {
 }
 
 func parseCommandOptions(args []string, validation, inspect bool) (lintOptions, error) {
+	return parseCommandOptionsWithFix(args, validation, inspect, false)
+}
+func parseCommandOptionsWithFix(args []string, validation, inspect, fix bool) (lintOptions, error) {
 	opts := lintOptions{format: "text", limits: make(map[string]int64)}
 	literal := false
 	for i := 0; i < len(args); i++ {
@@ -149,6 +156,10 @@ func parseCommandOptions(args []string, validation, inspect bool) (lintOptions, 
 		}
 		if arg == "--" {
 			literal = true
+			continue
+		}
+		if fix && arg == "--dry-run" {
+			opts.dryRun = true
 			continue
 		}
 		if arg == "--help" {

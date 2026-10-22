@@ -29,15 +29,17 @@ func reportResult(out result.Result, format string, stdout io.Writer, limits map
 	var reserveErr error
 	if out.Operation == "config validate" {
 		reserve, reserveErr = emergencyConfigReport(out, format, limits)
+	} else if out.Operation == "fix" {
+		reserve, reserveErr = emergencyFixReport(out, format, limits)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(reportLimit(limits, "reporting-time")))
 	defer cancel()
 	encoded, err := buildReport(ctx, out, format, limits)
-	if err != nil && ctx.Err() != nil && out.Operation == "config validate" && reserveErr == nil {
+	if err != nil && ctx.Err() != nil && (out.Operation == "config validate" || out.Operation == "fix") && reserveErr == nil {
 		encoded, err = reserve, nil
 	}
 	status := 0
-	if out.Operation == "config validate" && reserveErr == nil {
+	if (out.Operation == "config validate" || out.Operation == "fix") && reserveErr == nil {
 		status = lintExit(reserve.out)
 	} else {
 		status = lintExit(out)
@@ -145,12 +147,18 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 			return encodedReport{}, sizeErr
 		}
 		out.Interruptions = append(out.Interruptions, result.Interruption{Reason: "limit-exceeded", Phase: "reporting", Message: "result details exceed response-bytes", Limit: &result.LimitObservation{Name: "response-bytes", Observed: observed, Allowed: bound, Unit: "bytes"}})
+		if out.Operation == "fix" {
+			omitFixDiffs(&out)
+			engine.FinalizeLintResult(&out)
+		}
 		notes, suppressed, diagnostics, coverage, skipped := out.Notes, out.SuppressedDiagnostics, out.Diagnostics, out.Coverage, out.SkippedFiles
+		deferred := out.DeferredFixes
 		families := []struct {
 			section string
 			length  int
 			trim    func(int)
 		}{
+			{"/deferred_fixes", len(out.DeferredFixes), func(n int) { out.DeferredFixes = deferred[:n] }},
 			{"/notes", len(out.Notes), func(n int) { out.Notes = notes[:n] }},
 			{"/suppressed_diagnostics", len(out.SuppressedDiagnostics), func(n int) { out.SuppressedDiagnostics = suppressed[:n] }},
 			{"/diagnostics", len(out.Diagnostics), func(n int) { out.Diagnostics = diagnostics[:n] }},
@@ -158,6 +166,11 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 			{"/skipped_files", len(out.SkippedFiles), func(n int) { out.SkippedFiles = skipped[:n] }},
 		}
 		for _, f := range families {
+			if fitsNow, e := fits(); e != nil {
+				return encodedReport{}, e
+			} else if fitsNow {
+				break
+			}
 			if f.length == 0 {
 				continue
 			}
@@ -248,6 +261,23 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 }
 
 func cloneReport(r result.Result) result.Result {
+	r.Changes = slices.Clone(r.Changes)
+	for i := range r.Changes {
+		r.Changes[i].Rules = slices.Clone(r.Changes[i].Rules)
+		if r.Changes[i].Diff != nil {
+			d := *r.Changes[i].Diff
+			d.Hunks = slices.Clone(d.Hunks)
+			for j := range d.Hunks {
+				d.Hunks[j].Lines = slices.Clone(d.Hunks[j].Lines)
+			}
+			r.Changes[i].Diff = &d
+		}
+	}
+	r.DeferredFixes = slices.Clone(r.DeferredFixes)
+	for i := range r.DeferredFixes {
+		r.DeferredFixes[i].CauseIDs = slices.Clone(r.DeferredFixes[i].CauseIDs)
+		r.DeferredFixes[i].ConflictGroupIDs = slices.Clone(r.DeferredFixes[i].ConflictGroupIDs)
+	}
 	if r.ConfigValidation != nil {
 		summary := *r.ConfigValidation
 		r.ConfigValidation = &summary
@@ -309,6 +339,11 @@ func terminalControl(r rune) bool {
 }
 
 func renderText(ctx context.Context, w io.Writer, r result.Result) error {
+	if r.Operation == "fix" {
+		if err := renderFixText(ctx, w, r); err != nil {
+			return err
+		}
+	}
 	if r.Operation == "inspect" && len(r.Inspection) > 0 {
 		if err := renderInspectionRawText(ctx, w, r.Inspection); err != nil {
 			return err
@@ -395,7 +430,7 @@ func renderText(ctx context.Context, w io.Writer, r result.Result) error {
 		}
 	}
 	for _, f := range r.Files {
-		if f.Analysis != "complete" || r.Operation == "config validate" {
+		if f.Analysis != "complete" || r.Operation == "config validate" || r.Operation == "fix" {
 			kind := "file"
 			if r.Operation == "config validate" {
 				kind = "definition"
@@ -468,6 +503,10 @@ func deadlineReport(ctx context.Context, original result.Result, format string, 
 			out.Omissions = append(out.Omissions, result.Omission{Section: family.section, Reason: "output-limit", Message: "reserved partial report omits whole detail records", Count: &count})
 		}
 	}
+	if out.Operation == "fix" {
+		omitFixDiffs(&out)
+		omitFixDeferred(&out)
+	}
 	out.Diagnostics = []result.Diagnostic{}
 	out.Coverage = []result.Coverage{}
 	out.Notes = []json.RawMessage{}
@@ -518,6 +557,9 @@ func deadlineReport(ctx context.Context, original result.Result, format string, 
 }
 
 func newReportOperation(out result.Result) result.Result {
+	if out.Operation == "fix" {
+		return result.NewFix(out.DryRun != nil && *out.DryRun)
+	}
 	if out.Operation == "config validate" {
 		r := result.NewConfigValidation()
 		if out.ConfigValidation != nil {

@@ -209,3 +209,65 @@ saved content, not a promise that external writers cannot change it later.
 This decision sets product guarantees and accepted limitations. The #146 native prototype,
 metadata/coordination details and Linux/macOS/Windows failure/race tests remain required
 implementation work before write-dependent issues can claim completion.
+
+
+## CLI dry-run adapter
+
+The `fix --dry-run` adapter resolves invocation-directory configuration with the
+bounded resolver before target access, then shares one context and residual
+operation budget through selection, acquisition, `Validator.Validate`, and diff
+construction. It does not run an initial adapter lint pass or reopen targets.
+Production correction providers remain empty until the initial MD047 correction
+is delivered. Build-time synthetic providers exercise the real compiled adapter;
+there is no runtime fixture switch.
+
+Each changed file publishes one `Change` from original to retained final
+candidate, with sorted contributing rule IDs and the number of accepted atomic
+distinct applied edit records across validated rounds (identical shared edits
+count once and byte-identical edits do not count). Deferred groups retain round-qualified
+producer IDs, actual round source snapshots, anchors and conflict group links.
+The authoritative final candidate findings retain candidate coordinates and
+identities. Reliable rejected-source observations are explicitly identified by a
+`provisional-observation` note and never authorize candidate content or changes.
+Unchanged file write outcomes use schema-v1 `not-needed`; changed dry-run files
+use `proposed`. CLI returned documents stay empty.
+
+Final line diffs preserve LF, CRLF, lone CR and absent terminators independently
+of text. A linear-space patience algorithm anchors unique common physical lines
+and preserves common edges; unmatched regions become whole replacements. It uses
+O(n log n) structural work and O(n) storage, avoiding a quadratic edit-distance
+matrix. Three context lines surround each hunk. Diff byte scans, hash comparisons,
+anchor searches and constructed records share the operation meter. An interrupted
+diff is wholly omitted with an explicit interruption and exact section omission;
+validated candidate identities remain available. Text escapes terminal controls
+and marks absent final endings.
+
+Before acquiring targets the adapter reserves their complete outcome and
+worst-case proposal-identity manifest. Reporting omits whole diffs first, then
+whole ordered detail records with exact known counts. It retains all target
+outcomes and proposal identities. Before the independent reporting timer starts,
+a pre-encoded essential envelope reserves those outcomes and at most four error
+category summaries. Nanosecond reporting deadlines therefore deliver truthful
+incomplete results rather than a synthetic output failure. Actual failed/short
+writes return I/O status 13 unless an established internal failure requires 14.
+No temporary files, locks, filesystem report spool or writes are created.
+
+
+The correction adapter distinguishes preinitialized validator targets from targets
+whose shared analysis actually started. An acquired but unstarted target keeps
+its original identity, a `not-started` analysis outcome and explicit retry
+coverage; it has no candidate snapshot and is absent from `checked_files`.
+Accepted attempts later discarded by component rollback remain deferred groups
+with their actual round snapshots, anchors and rollback reason. Only accepted
+attempts discarded by the actual runtime rollback inherit its canonical
+interruption/error links; completed intrinsic conflict, preservation
+and nonconvergence decisions retain their own reasons and links. If the exhausted
+meter prevents located detail construction, exact known whole-group omissions replace those
+records. Independently converged candidates retain their proposed disposition.
+
+Bounded selection uses the same residual matcher budget and context for both
+ancestor and discovered-entry exclusions. Directory enumeration admits each
+single-entry `File.ReadDir(1)` batch before constructing/retaining it, with a
+fixed native buffering overhead; it never uses whole-directory `os.ReadDir`.
+An EOF probe may consume one unused construction reservation, without refunds.
+Only admitted entries reach deterministic ordering and later target selection.
