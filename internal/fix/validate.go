@@ -11,6 +11,7 @@ import (
 	"slices"
 
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/files"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/result"
 )
@@ -269,8 +270,12 @@ type validatedFile struct {
 // describes fix computation, independently of unavailable lint implementations.
 // On interruption, affected candidates roll back and the typed error is returned.
 type Validated struct {
-	files    []validatedFile
-	complete bool
+	publicationBudget       *parser.OperationBudget
+	publicationIndex        map[string]int
+	publicationDependencies map[string][]string
+	publicationSources      map[string]ResourceObservation
+	files                   []validatedFile
+	complete                bool
 }
 
 func (v Validated) Complete() bool { return v.complete }
@@ -589,7 +594,41 @@ func (v *Validator) Validate(ctx context.Context, targets []Target, options Vali
 	}
 	states := make([]validationState, len(targets))
 	initial := make([]validationState, len(targets))
-	out := Validated{files: make([]validatedFile, len(targets)), complete: true}
+	publicationWork := int64(len(targets))*16 + int64(len(resources))*8 + 8
+	publicationNodes := int64(len(targets))*4 + int64(len(resources)) + 4
+	if err := m.work(int64(len(targets)+len(resources)) + 1); err != nil {
+		return Validated{}, err
+	}
+	for _, t := range targets {
+		edges := int64(len(t.Dependencies) + len(t.ResourceDependencies) + len(t.UnavailableResources))
+		publicationNodes += edges
+		publicationWork += int64(len(t.Path))*4 + edges*3
+	}
+	for key := range resources {
+		publicationWork += int64(len(key))
+	}
+	if err := m.reserve(publicationWork, publicationNodes); err != nil {
+		return Validated{}, err
+	}
+	out := Validated{files: make([]validatedFile, len(targets)), complete: true, publicationBudget: budget, publicationIndex: map[string]int{}, publicationDependencies: map[string][]string{}, publicationSources: map[string]ResourceObservation{}}
+	for key, r := range resources {
+		out.publicationSources[key] = r
+	}
+	for i, t := range targets {
+		out.publicationIndex[t.Path] = i
+		deps := make([]string, 0, len(t.Dependencies)+len(t.ResourceDependencies)+len(t.UnavailableResources))
+		deps = append(deps, t.Dependencies...)
+		deps = append(deps, t.ResourceDependencies...)
+		deps = append(deps, t.UnavailableResources...)
+		out.publicationDependencies[t.Path] = deps
+		if existing, ok := out.publicationSources[t.Path]; ok && (existing.State != ResourceContent || existing.Source != t.Source) {
+			// Different observations cannot share one native logical path. Keep
+			// semantic validation independent, but refuse ambiguous publication.
+			out.publicationSources[t.Path] = ResourceObservation{Key: t.Path, State: ResourceUnavailable}
+		} else {
+			out.publicationSources[t.Path] = ResourceObservation{Key: t.Path, State: ResourceContent, Source: t.Source}
+		}
+	}
 	for i, t := range targets {
 		out.files[i] = validatedFile{path: t.Path, original: t.Source, candidate: t.Source}
 	}
@@ -970,4 +1009,83 @@ func (v *Validator) component(ctx context.Context, states []validationState, mem
 		}
 	}
 	return "fix-nonconvergent", nil
+}
+
+// PublishPrototype connects the retained semantic approval to acquisition-owned
+// native authority. Detached FileView mutations cannot select different bytes.
+// CLI apply and saved-view reconciliation remain separate integration work.
+func (v Validated) PublishPrototype(ctx context.Context, native *files.WriteSet, path string) files.Publication {
+	refused := func(reason string) files.Publication { return files.Publication{Path: path, Err: errors.New(reason)} }
+	if !native.UsesBudget(v.publicationBudget) {
+		return refused("native acquisition and validation must share the original residual budget")
+	}
+	if ctx == nil {
+		return refused("nil publication context")
+	}
+	if err := v.publicationBudget.ChargeWork(int64(len(path))*3 + 3); err != nil {
+		return files.Publication{Path: path, Err: err}
+	}
+	var target *validatedFile
+	if i, ok := v.publicationIndex[path]; ok && i >= 0 && i < len(v.files) && v.files[i].path == path {
+		target = &v.files[i]
+	}
+	if target == nil || target.trace == nil || target.runtimeRollback || len(target.reasons) != 0 {
+		return refused("no retained semantic approval for target")
+	}
+	if target.original == target.candidate {
+		return files.Publication{Path: path, NoChange: true}
+	}
+	if ctx == nil {
+		return refused("nil publication context")
+	}
+	if err := ctx.Err(); err != nil {
+		return files.Publication{Path: path, Err: err}
+	}
+
+	if err := v.publicationBudget.ChargeNodes(1); err != nil {
+		return files.Publication{Path: path, Err: err}
+	}
+	pending := []string{path}
+	var dependencies []string
+	seen := map[string]bool{}
+	for len(pending) > 0 {
+		if err := native.Checkpoint(ctx); err != nil {
+			return files.Publication{Path: path, Err: err}
+		}
+		if err := ctx.Err(); err != nil {
+			return files.Publication{Path: path, Err: err}
+		}
+		key := pending[len(pending)-1]
+		pending = pending[:len(pending)-1]
+		if err := v.publicationBudget.ChargeWork(int64(len(key))*12 + 12); err != nil {
+			return files.Publication{Path: path, Err: err}
+		}
+		if seen[key] {
+			continue
+		}
+		if err := v.publicationBudget.ChargeNodes(1); err != nil {
+			return files.Publication{Path: path, Err: err}
+		}
+		seen[key] = true
+		observed, ok := v.publicationSources[key]
+		if !ok || observed.State == ResourceUnavailable || !native.MatchesObservation(key, observed.Source, observed.State == ResourceAbsent) {
+			return refused("native dependency does not match validated observation: " + key)
+		}
+		if key != path {
+			if err := v.publicationBudget.ChargeNodes(1); err != nil {
+				return files.Publication{Path: path, Err: err}
+			}
+			dependencies = append(dependencies, key)
+		}
+		for _, next := range v.publicationDependencies[key] {
+			if err := v.publicationBudget.ChargeWork(int64(len(next)) + 2); err != nil {
+				return files.Publication{Path: path, Err: err}
+			}
+			if err := v.publicationBudget.ChargeNodes(1); err != nil {
+				return files.Publication{Path: path, Err: err}
+			}
+			pending = append(pending, next)
+		}
+	}
+	return native.PublishPrototype(ctx, path, target.original, target.candidate, dependencies)
 }
