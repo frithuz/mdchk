@@ -118,7 +118,7 @@ func ParseWithBudget(ctx context.Context, source Source, budget *OperationBudget
 }
 
 // parserProfile is deliberately private. The staged profile exercises implemented
-// GFM syntax during development; it does not certify the integrated GFM profile.
+// GFM syntax for verification; it does not activate the public GFM flavor.
 type parserProfile uint8
 
 const (

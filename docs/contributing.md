@@ -1008,3 +1008,20 @@ corpus entry. Do not delete a failing corpus entry to make CI pass. Longer local
 campaigns use the same command with an explicit `-fuzztime=5m` or longer chosen
 budget. See [recorded timing/allocation baselines](engineering/parser-performance.md)
 for fixture sizes, host, measurement limits and profiling investigation.
+
+### Verify the private integrated GFM parser
+
+```sh
+python3 -B tools/gfm_profile.py --run --require-approved-profile
+go test ./internal/parser -run '^TestGFMVerified' -count=1 -v
+go test -race ./internal/parser -run '^TestGFMVerified' -count=1
+go test -tags mdchk_conformance ./internal/cli -run '^TestGFMPrivateScopesPreserveProductionAdmission$' -count=1
+go test ./internal/parser -run '^$' -fuzz '^FuzzGFMProfile$' -fuzztime=10s -parallel=2 -timeout=2m
+```
+
+The new native fuzz target runs alongside the six core targets in the CI smoke
+and scheduled matrix. Inputs above 64 KiB are explicitly skipped in fuzzing;
+each arbitrary parse has finite 2,000,000 work, 30,000 document-construction and
+100,000 total-construction allowances. Those fuzz bounds do not filter the
+2,117-unit conformance gate. Read the [verification record](engineering/gfm-verification.md)
+and [measured baseline](engineering/parser-performance.md) for scope and limitations.

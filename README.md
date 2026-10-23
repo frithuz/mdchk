@@ -4,6 +4,12 @@ mdchk helps people and AI agents keep Markdown files consistent with their proje
 
 Start with the [documentation index](docs/index.md) for global options, commands, and integration guides.
 
+The private GFM parser profile is verified against CommonMark 0.31.2 and all five
+pinned extensions: 2,117 approved comparison units pass, including every published
+case. Independent source, isolation and finite resource checks complement HTML
+comparison. Public GFM remains unavailable; consumer integration and production
+rules remain separate. See the [parser verification record](docs/engineering/gfm-verification.md).
+
 ## Check Markdown
 
 First follow the [current-build quick start](docs/index.md#get-started-with-this-build):

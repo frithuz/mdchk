@@ -4,9 +4,10 @@ This directory retains the exact published GFM `0.29-gfm (2019-04-06)` page,
 508,310 bytes, SHA-256
 `b153d814fdfc8624bb6da7449162c1cd707a637f7d1c1b636eb44b9cf63fa220`.
 The [approved compatibility contract](../../../../../docs/engineering/gfm-compatibility.md)
-uses CommonMark 0.31.2 plus all five published extensions. This delivery supplies
-corpus infrastructure only. It establishes no GFM parser capability, conformance,
-profile adaptations, or GitHub website rendering parity. Configuration still
+uses CommonMark 0.31.2 plus all five published extensions. This directory supplies
+immutable corpus infrastructure. The separately retained [profile](../profile/README.md)
+contains reviewed adaptations and verified actual private parser execution; neither
+claims historical 0.29-gfm or GitHub website rendering parity. Configuration still
 rejects unavailable GFM, including the default. The existing CommonMark 652-case
 pin and tooling remain separate and unchanged.
 
@@ -24,7 +25,7 @@ task list items 279–280, strikethrough 491–493, extended autolinks 622–635
 disallowed raw HTML 657. There are no skips, automatic-success expectations,
 footnotes or comparison-renderer substitutions. Original HTML expectations are
 immutable; newer-core and integrated-profile adaptations belong to separate
-future metadata, as specified by issue 228.
+profile metadata delivered by issue 228.
 
 Each record contains the original `example`, `section`, `markdown`, `html`,
 `start_line`, `end_line`, plus `snapshot_sha256`, `input_sha256`, and `scope`.

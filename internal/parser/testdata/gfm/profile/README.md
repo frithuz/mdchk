@@ -174,9 +174,12 @@ are explicit errors; unfinished syntax remains pending. No partial output passes
 The separately pinned optional diagnostic programs remain cmark-gfm
 0.29.0.gfm.13 at 587a12bb54d95ac37241377e6ddc93ea0e45439b and cmark 0.31.2
 at eec0eeba6d31189fd828314576494566d539b1e3. They are not required or invoked by
-this runner and cannot supply targets. Actual adapter conformance does not close
-the separate full profile/resource verification or real lint/fix/inspect consumer
-integration gates and does not activate production GFM.
+this runner and cannot supply targets. The independent parser verification suite now covers mixed AST/source/protection,
+excluded syntax, scope isolation, concurrency and finite resource behavior.
+`TestGFMVerified`, `FuzzGFMProfile` and `BenchmarkGFMProfile` exercise the actual
+private parser independently of this adapter. See the [verification record](../../../../../docs/engineering/gfm-verification.md).
+Real lint/fix/inspect consumers (#161), named production rules (#236), frontmatter
+and production GFM activation remain separate.
 
 ## Attribution
 

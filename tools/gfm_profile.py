@@ -661,7 +661,7 @@ def main():
         else:
             print(f'GFM profile fixture integrity: 677 original/core/integrated expectations; '
                   f'{len(fixtures)} source contracts valid; actual consumers: '
-                  f'{len(actual)} NOT-RUN (no GFM consumer integration)')
+                  f'{len(actual)} NOT-RUN (integrity-only invocation; use --run for actual parser)')
         if args.require_complete:
             results(derived, originals, fixtures, require_complete=True)
     except (OSError, ValueError, KeyError, TypeError) as error:

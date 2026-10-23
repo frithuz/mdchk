@@ -59,8 +59,8 @@ Acquire an immutable snapshot with `parser.NewSource(content)`, then call
 `Source.Bytes` returns a copy. Parse has no flavor or frontmatter option: it
 recognizes core syntax with extensions/frontmatter disabled. Configuration-driven
 selection and bounded read-only acquisition are connected to CLI lint, including
-the shared mandatory UTF-8 gate, parser and registered-rule engine. GFM/Pandoc
-extensions, frontmatter, production rules, MCP integration and production rendering remain
+the shared mandatory UTF-8 gate, parser and registered-rule engine. Public GFM/Pandoc
+integration, frontmatter, production rules, MCP integration and production rendering remain
 separate deliveries. The configuration examples in
 the format guide describe those future adapters.
 
@@ -107,6 +107,12 @@ UTF-8 validation is itself work-budgeted. Once malformed encoding is established
 its typed original-byte failure precedes cancellation/deadline. Prior exhaustion
 or insufficient validation work can stop before encoding is established. MD094
 controls downstream attribution, never whether admitted bytes are validated.
+
+The private GFM parser profile is verified against CommonMark 0.31.2 and all five
+pinned extensions: 2,117 approved comparison units pass, including every published
+case. Independent source, isolation and finite resource checks complement HTML
+comparison. Public GFM remains unavailable; consumer integration and production
+rules remain separate. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 

@@ -1272,13 +1272,14 @@ fix safety or CLI/MCP parity.
 Public `Parse` and `ParseWithBudget` remain CommonMark-only with unchanged
 signatures/defaults. The private `gfmInProgressProfile` selects implemented syntax
 through their shared admission, UTF-8, budgeting, block/inline and recovery body.
-It is an internal development stage, not a selectable or complete GFM profile.
+It is a verified private parser profile, unavailable as a product flavor.
 Its completed status certifies the five syntax extensions in the private
 stage it runs. The [tagged test adapter](testdata/gfm/profile/README.md#execute-the-actual-adapter-offline)
 executes all 2,117 comparison units with separate immutable raw historical and
-approved modern-target axes. Broader profile/resource verification (#235), public
-activation and real lint/fix/inspect consumer integration (#161) remain separate
-work; adapter success does not grant production GFM availability.
+approved modern-target axes. Independent mixed AST/source/protection, exclusion, scope isolation, concurrency,
+finite resource and semantic fuzz verification complement the complete approved
+profile gate (#235). Public activation, real lint/fix/inspect consumer integration
+(#161) and named production rules (#236) remain separate work.
 
 `Table` owns `TableProperties` (positive Width and one typed Alignment per
 column), and source-ordered `TableRow` children: one header, one delimiter, then
@@ -1367,7 +1368,7 @@ item/actual-first-child agreement. Nested metadata/slices are copied at construc
 and access. As with other model facts, valid construction does not prove parser
 recognition or grant source-edit/protection authority. Ordinary walkers, reference
 binding, Comments, LiteralSpans and ProtectedNodes continue through the real
-paragraph inline children. Checkbox rendering belongs to the future test adapter;
+paragraph inline children. Checkbox rendering belongs to the tagged test adapter;
 the product parser emits no HTML. Task metadata adds records/work, not a syntax
 construct beyond the existing list/item/paragraph/inline depth.
 
@@ -1393,8 +1394,9 @@ records the chosen behavior where pinned extension prose is incomplete.
 
 Walk, reference binding, Comments, LiteralSpans and ProtectedNodes reach actual
 inline descendants. Strike itself grants no opaque-source authority. Code and
-raw HTML remain opaque under the shared parser's ordinary boundaries. The stage adds no renderer or complete GFM conformance claim; the full adapter,
-profile activation and consumer gates remain future.
+raw HTML remain opaque under the shared parser's ordinary boundaries. The tagged
+test adapter renders Strike; public profile activation and consumer gates remain
+separate from verified parser conformance.
 
 
 ### Bare extended links
@@ -1447,8 +1449,8 @@ private stage does not activate public GFM, production rendering, rules or real
 operation consumers. The tagged test adapter executes all 2,117 comparison units
 with separate raw historical and approved modern-target results; see the
 [actual-run contract](testdata/gfm/profile/README.md#execute-the-actual-adapter-offline).
-Broader profile/resource verification (#235) and real consumer integration (#161)
-remain separate gates.
+Independent profile/resource verification (#235) complements this adapter. Real
+consumer integration (#161) remains a separate gate.
 
 
 ### Disallowed raw HTML metadata
@@ -1484,9 +1486,9 @@ consumer authority. InlineHTML is atomic; HTMLBlock visits its logical payload,
 excluding only existing confirmed comments through their actual close or EOF.
 Tail facts occur once on the enclosing block. Opaque comment-looking strings do
 not acquire comment ownership or directive eligibility. Public Parse and
-ParseWithBudget remain CommonMark-only. The five-extension private stage does not
-establish full profile/resource verification (#235), public activation or completed
-real consumer integration (#161). The delivered tagged adapter (#234) executes
+ParseWithBudget remain CommonMark-only. Independent profile/resource verification (#235) now complements the private
+stage. It does not establish public activation or completed real consumer
+integration (#161). The delivered tagged adapter (#234) executes
 all 2,117 units with separate immutable raw and approved modern-target comparisons;
 its [actual-run contract](testdata/gfm/profile/README.md#execute-the-actual-adapter-offline)
 retains these boundaries and distinguishes integrity-only NOT-RUN checks.

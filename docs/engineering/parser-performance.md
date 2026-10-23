@@ -218,3 +218,51 @@ workloads must not replace the current completed-parse fixtures.
 Finite byte, depth, construction, and work limits bound accepted work; they do
 not establish a universal linear-time complexity guarantee. Recheck both the
 explicit outcome and output growth whenever changing limits or workloads.
+
+## Integrated GFM initial baseline
+
+Measured on the #235 candidate based on `db897be92028f33d8bb8b1bac8eb3e0a4048b3c9`,
+after the R2 independent mutation-oracle repair, on Apple M1 Max, 64 GiB,
+Darwin 27.2.0 arm64, Go 1.27.3 darwin/arm64.
+Local serial closed-loop microbenchmarks used GOMAXPROCS=1 and default GC settings;
+no concurrent fuzz/test campaign or external service ran. Snapshot creation,
+fixture generation, initial outcome/tree inspection, export and I/O are excluded.
+Operation creation and actual integrated parsing are timed. Source identity below
+is SHA-256 of the sorted JSON mapping from every `internal/parser/*.go` path to
+its SHA-256, including test fixtures.
+
+`536e221376ebd520c257b4504a77d2e2fbb8894eaf2a3c169807d58309048973`
+
+```sh
+GOMAXPROCS=1 go test -run '^$' -bench '^BenchmarkGFMProfile$' \
+  -benchmem -benchtime=50ms -count=3 ./internal/parser
+```
+
+Values are medians of three short calibration samples, an initial observation,
+not a throughput threshold, regression claim or comparison with the historical
+core baseline above. All complete rows use default finite limits. The last row
+uses 10,000 work units, asserts work-units exhaustion (observed > allowed
+10,000), and reports no completed throughput. Work below is admitted accounting;
+construction differs from retained AST nodes.
+
+| Fixture | Input bytes | Outcome | ns/op | B/op | allocs/op | Nodes | Work | Construction |
+| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| mixed | 193 | Complete | 126912 | 139088 | 981 | 47 | 16164 | 668 |
+| url-suffix | 1570 | Complete | 525722 | 594064 | 2663 | 240 | 177998 | 3243 |
+| html-tail | 1288 | Complete | 202289 | 171352 | 1196 | 48 | 183364 | 874 |
+| explicit-work-limit | 3137 | work-units limit | 9039 | 7136 | 38 | 1 | 9937 | 59 |
+
+The mixed 193-byte literal combines all five extensions, quote/list/task, a
+two-column table with short/excess cells, nested emphasis, code/comment protection
+and reference links. URL and HTML families append 32 adversarial units; the
+limited fixture appends 128 inline units. Exact source literals/generators remain
+in `gfm_verification_test.go` and `gfm_performance_test.go`. Finite adversarial
+resource tests separately record doubled sizes 16/32/64. Neither elapsed growth
+nor these bounded counters prove arbitrary-input complexity or OS RSS limits.
+
+The prior R1 short sample preceded the test-oracle repair. Its parser-Go digest
+was `815355048fc27ef3b102b1df0c0ca10410c999fb87bd7fe45867fac36bcf3bc4`;
+median ns/op were 153235 / 600562 / 233038 / 10497 for mixed, URL suffix,
+HTML tail and explicit work limit respectively. The repair changes verification,
+not production parsing or benchmark inputs. Both observations are retained as
+initial samples; their difference is not a claimed optimization or regression.

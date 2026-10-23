@@ -7,8 +7,8 @@ now supplies adaptations and independent source expectations. A private parser
 stage recognizes all five source-preserving extensions and shares the core
 lifecycle and inline machinery. A build-tagged test adapter and offline runner
 now execute all 2,117 profile comparison units with separate raw historical and
-approved-target axes. Full profile/resource verification and real consumer
-integration remain separate gates. Public parser APIs
+approved-target axes. Independent full private-profile/resource verification is
+delivered; real consumer integration remains a separate gate. Public parser APIs
 remain CommonMark-only; configuration still rejects unavailable GFM. This contract
 defines the target for [#158](https://github.com/frithuz/mdchk/issues/158), building
 on the [verified core parser contract](https://github.com/frithuz/mdchk/issues/32).
@@ -345,8 +345,9 @@ No public selector, renderer, source fix, sanitizer or production GFM admission
 is added. Private recognition alone does not establish profile support. The
 [test-only actual adapter](../../internal/parser/testdata/gfm/profile/README.md#execute-the-actual-adapter-offline)
 executes all 2,117 units, preserving raw historical 649/650 differences separately
-from reviewed modern targets. Full profile/resource verification, activation and
-actual lint/fix/inspect consumer gates remain separate.
+from reviewed modern targets. Independent private-profile/resource verification
+complements the adapter; activation and actual lint/fix/inspect consumers remain
+separate gates.
 
 ## Rule and operation integration
 
@@ -401,3 +402,12 @@ corpus contract and retains its formal dependency on
 extensions; [#161](https://github.com/frithuz/mdchk/issues/161) validates conformance
 and consumer integrations. Approval of this contract does not establish parser
 completion or justify closing those implementation gates.
+
+## Delivered private parser verification
+
+The [verification record](gfm-verification.md) records complete approved-target
+execution and independent mixed source, protection, exclusion, concurrency, resource
+and semantic fuzz checks. The private profile retains the newer CommonMark core
+and the exact frozen extension pin above. Raw historical originals 649/650 remain
+explicit differences. Public GFM admission, actual operation consumers (#161),
+named rules (#236) and independently optional frontmatter remain separate gates.

@@ -22,12 +22,12 @@
       "modifications": "Add stable original-case metadata and explicitly resolved expectation references; original data is not changed"
     },
     "tools/gfm_profile.py": {
-      "sha256": "1d3d50755e74127b5fcb3e2aa0061b7b7afdbb1dcedca65d367e5bfc193d0ba8",
-      "byte_count": 37468,
+      "sha256": "d4f3b548800603cd37b9e4f54ebbcb726c7c415d6bb7ee32367e0c099d2c5a38",
+      "byte_count": 37495,
       "license": "repository-authored software; no imported upstream software",
       "origin": "mdchk repository",
       "role": "Offline schema, source, provenance and actual-consumer accounting validator",
-      "modifications": "Stdlib-only validator; odd/even table backslash-run interpretation aligned with staged parser; no comparison implementation imported Issue 234: delegate explicit actual-run flags to the offline actual AST conformance runner; legacy validation and exact comparison APIs retained."
+      "modifications": "Stdlib-only validator; odd/even table backslash-run interpretation aligned with staged parser; no comparison implementation imported Issue 234: delegate explicit actual-run flags to the offline actual AST conformance runner; legacy validation and exact comparison APIs retained. Issue 235: clarify that integrity-only NOT-RUN describes this invocation; actual tagged parser execution is available with --run."
     }
   }
 }

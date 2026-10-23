@@ -215,3 +215,13 @@ protected nodes. Exact budget boundaries, sticky operations, doubled finite
 success/failure families, mapping/freezing cancellation/deadline sweeps and
 same-operation/independent concurrency are tested. These finite checks do not
 promise hard RSS bounds, OS preemption or an arbitrary-input complexity proof.
+
+## Integrated GFM verification
+
+`go test ./internal/parser -run '^TestGFMVerified' -count=1 -v` exercises the
+private all-five profile with exact work/construction boundaries, cumulative
+protection and core reparses, sticky exhaustion, mixed depth, cancellation and
+deadline checkpoints, and finite adversarial families. Incomplete parses deny
+Comments, LiteralSpans and ProtectedNodes authority; this does not prove later
+operation consumers obey that refusal. The [GFM verification record](gfm-verification.md)
+describes the semantic fuzz bounds and remaining limits.
