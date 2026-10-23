@@ -310,6 +310,28 @@ func meteredNode(ctx context.Context, spec NodeSpec) (*Node, error) {
 	meterPandocWork(ctx, pandocWork(8, int64(len(spec.Markers)), 8, int64(len(spec.Content)), 8, int64(len(spec.Children)), 8))
 	meterValue(ctx, Value{Segments: spec.Content, Semantic: spec.Properties.Literal})
 	p := spec.Properties
+	if a := p.Attributes; a != nil {
+		meterRecords(ctx, 1+len(a.Occurrences)+len(a.Classes)+len(a.KeyValues))
+		meterValue(ctx, a.Raw)
+		// Reserve grammar reconstruction, mapping, effective fold and immutable copy.
+		meterPandocWork(ctx, pandocWork(64, int64(len(a.Raw.Semantic.Value)), 32, pandocWork(0, int64(len(a.Raw.Segments)), addBounded(1, int64(len(a.Occurrences)))), 16))
+		for _, o := range a.Occurrences {
+			meterValue(ctx, o.Raw)
+			meterValue(ctx, o.Value)
+		}
+	}
+	if p.Div != nil {
+		meterRecords(ctx, 1)
+	}
+	if f := p.PandocFence; f != nil {
+		meterRecords(ctx, 1+len(f.Classes))
+		meterPandocWork(ctx, pandocWork(0, int64(len(f.Classes)), 8))
+		meterValue(ctx, f.Info)
+		meterPandocWork(ctx, pandocWork(128, int64(len(f.Info.Semantic.Value)), 64, pandocWork(0, int64(len(f.Info.Segments)), addBounded(1, int64(len(f.Info.Semantic.Value)))), 16))
+		if f.RawFormat != nil {
+			meterValue(ctx, *f.RawFormat)
+		}
+	}
 	if p.Definition != nil {
 		meterRecords(ctx, 1)
 		meterWork(ctx, 8)
@@ -450,7 +472,7 @@ func meteredAppend[T any](ctx context.Context, dst []T, values ...T) []T {
 	}
 	var zero T
 	switch any(zero).(type) {
-	case NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair, bareIndex, bareMatch, bareImage, HTMLFilteredTag:
+	case AttributeOccurrence, AttributeKeyValue, NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair, bareIndex, bareMatch, bareImage, HTMLFilteredTag:
 		meterRecords(ctx, len(values))
 	}
 	return append(dst, values...)
@@ -464,7 +486,7 @@ func meteredSlice[T any](ctx context.Context, n int, capacity ...int) []T {
 	meterWork(ctx, c)
 	var zero T
 	switch any(zero).(type) {
-	case NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair, bareIndex, bareMatch, bareImage, HTMLFilteredTag:
+	case AttributeOccurrence, AttributeKeyValue, NodeSpec, Segment, Marker, Span, physicalLine, referencePart, openBlock, parsedBlock, inlineDelimiter, inlineBracket, emphasisPair, bareIndex, bareMatch, bareImage, HTMLFilteredTag:
 		meterRecords(ctx, n)
 	}
 	return make([]T, n, c)

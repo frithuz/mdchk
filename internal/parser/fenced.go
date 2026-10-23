@@ -5,6 +5,8 @@ import "strings"
 // One private builder owns an active fence. Payload is acquired once per line;
 // only closure (including normal EOF) freezes the source-bound immutable node.
 type fencedCode struct {
+	attributes *Attributes
+	pandoc     *PandocFenceProperties
 	start, end int
 	indent     int
 	character  byte
@@ -15,6 +17,9 @@ type fencedCode struct {
 }
 
 func (p *blockParser) fenceOpening(line blockLine) *fencedCode {
+	return p.fenceOpeningAt(line, p.containerDepth())
+}
+func (p *blockParser) fenceOpeningAt(line blockLine, depth int) *fencedCode {
 	meterWork(p.ctx, 1)
 	if line.indent >= 4 || line.first != '`' && line.first != '~' {
 		return nil
@@ -25,7 +30,7 @@ func (p *blockParser) fenceOpening(line blockLine) *fencedCode {
 		meterWork(p.ctx, 1)
 		end++
 	}
-	if end-line.contentStart < 3 || line.first == '`' && meteredContainsRune(p.ctx, text[end:line.end], '`') {
+	if end-line.contentStart < 3 || !p.pandoc() && line.first == '`' && meteredContainsRune(p.ctx, text[end:line.end], '`') {
 		return nil
 	}
 	startInfo, endInfo := end, line.end
@@ -38,16 +43,22 @@ func (p *blockParser) fenceOpening(line blockLine) *fencedCode {
 		endInfo--
 	}
 	info := decodeValue(p.ctx, p.index.semanticText(startInfo, endInfo).Segments, false)
-	return &fencedCode{
+	f := &fencedCode{
 		start: line.start, end: line.next, indent: line.indent,
 		character: line.first, width: end - line.contentStart, info: info,
 		markers: []Marker{{Role: "opening", Source: p.index.span(line.contentStart, end)}},
 	}
+	if p.pandoc() {
+		return p.pandocFenceOpening(line, f, depth)
+	}
+	return f
 }
 
 func (p *blockParser) fenceClosing(line blockLine) Span {
+	return p.fenceClosingFor(line, p.fence)
+}
+func (p *blockParser) fenceClosingFor(line blockLine, fence *fencedCode) Span {
 	meterWork(p.ctx, 1)
-	fence := p.fence
 	if line.indent >= 4 || line.first != fence.character {
 		return Span{}
 	}
@@ -99,15 +110,25 @@ func (p *blockParser) closeFence() error {
 	if fence == nil {
 		return nil
 	}
+	if fence.pandoc != nil && len(fence.content) > 0 {
+		last := &fence.content[len(fence.content)-1]
+		last.Semantic = Some("")
+		last.Transformation = Normalized
+	}
 	var literal strings.Builder
 	for _, segment := range fence.content {
 		meterWork(p.ctx, 1)
 		meteredWriteString(p.ctx, &literal, segment.Semantic.Value)
 	}
+	kind := CodeBlock
+	if fence.pandoc != nil && fence.pandoc.RawFormat != nil {
+		kind = RawBlock
+	}
 	node, err := meteredNode(p.ctx, NodeSpec{
-		Kind: CodeBlock, Envelope: p.index.span(fence.start, fence.end),
+		Kind: kind, Envelope: p.index.span(fence.start, fence.end),
 		Content: fence.content, Markers: fence.markers,
 		Properties: Properties{
+			Attributes: fence.attributes, PandocFence: fence.pandoc,
 			Code:    &CodeProperties{Style: "fenced", Fence: Some(fence.character), Width: Some(fence.width), Info: &fence.info},
 			Literal: Some(literal.String()),
 		},

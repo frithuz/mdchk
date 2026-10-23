@@ -172,6 +172,9 @@ func (s listStart) openItem() (openBlock, error) {
 func (p *blockParser) matchContainer(depth int, physical physicalLine, cursor Indentation) (Indentation, bool) {
 	meterWork(p.ctx, 1)
 	block := &p.stack[depth]
+	if block.kind == Div {
+		return cursor, true
+	}
 	if block.kind == BlockQuote {
 		next, prefix, ok := p.quotePrefix(cursor)
 		if ok {
@@ -185,7 +188,7 @@ func (p *blockParser) matchContainer(depth int, physical physicalLine, cursor In
 	}
 	line := p.logicalLine(physical, cursor)
 	if p.pandoc() {
-		match := p.pandocItemLine(line, block.list.ContentIndent.Value, block.pandocItem)
+		match := p.pandocItemLine(line, block.list.ContentIndent.Value, block.pandocItem, depth)
 		if !match.ok {
 			return cursor, false
 		}

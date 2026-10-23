@@ -85,7 +85,7 @@ func pandocColumn(source Source, offset int) int {
 	return col
 }
 func validatePandocSpec(s NodeSpec) error {
-	if s.Properties.PandocList != nil || s.Kind == DefinitionList || s.Kind == DefinitionItem || s.Kind == DefinitionBody || s.Kind == LineBlock {
+	if s.Properties.PandocList != nil || s.Kind == DefinitionList || s.Kind == DefinitionItem || s.Kind == DefinitionBody || s.Kind == LineBlock || s.Kind == Div {
 		previous := s.Envelope.start
 		for _, child := range s.Children {
 			if child == nil || !validPandocSpan(s.Envelope, child.Span()) || child.Span().start < previous {

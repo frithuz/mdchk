@@ -9,11 +9,11 @@ import (
 // Outer quote extraction uses the context captured before recursively parsing
 // its payload. Inner items/leaves cannot decide whether the quote owns a line.
 func (p *blockParser) pandocQuoteContinuation(depth int, line blockLine) bool {
-	if line.contentStart == line.end {
+	if line.contentStart == line.end || p.divInFrame(depth) > 0 && p.divCloser(line).Present() {
 		return false
 	}
 	c := line.cursor
-	if c.tabRemaining == 0 && c.offset < c.end && p.index.source.content[c.offset] == '`' && p.fenceOpening(line) != nil {
+	if c.tabRemaining == 0 && c.offset < c.end && p.index.source.content[c.offset] == '`' && p.fenceOpeningAt(line, depth) != nil {
 		return false
 	}
 	if p.stack[depth].quoteInList {
@@ -64,6 +64,9 @@ func (p *blockParser) pandocReplayCursor(physical physicalLine, states []pandocI
 	for j := 1; j < len(states); j++ {
 		meterWork(p.ctx, 1)
 		b := p.stack[j]
+		if b.kind == Div {
+			continue
+		}
 		if b.kind == BlockQuote {
 			next, _, ok := p.quotePrefix(c)
 			if !ok {
@@ -75,7 +78,7 @@ func (p *blockParser) pandocReplayCursor(physical physicalLine, states []pandocI
 			}
 			c = next
 		} else {
-			match := p.pandocItemLine(p.logicalLine(physical, c), b.list.ContentIndent.Value, states[j])
+			match := p.pandocItemLine(p.logicalLine(physical, c), b.list.ContentIndent.Value, states[j], j)
 			if !match.ok {
 				return c, false
 			}

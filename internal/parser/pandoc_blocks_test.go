@@ -448,6 +448,12 @@ func TestPandocLimitsAndCancellation(t *testing.T) {
 }
 
 func FuzzPandocBlockSourceProperties(f *testing.F) {
+	for _, input := range []string{"# `x`{#inline} {#heading}\n", "# <https://example.com>{#inline}\n", "# <@>{#heading}\n", "> # `x`{#inline\r\n> .X} {#heading}\r\n", "``` {k=\"a}\nb\" .X}\nx\n```\n", "``` {k=\"a}\n .X}\nx\n```\n"} {
+		f.Add(input)
+	}
+	for _, input := range []string{"``` {.X #a #b k='&amp;'}\nx\n```\n", "> ``` {#é\r\n> .X}\r\n> x\r\n> ```\r\n", "::: {}\n::: inner\n```{=html}\n::: fake\n```\n:::\n:::\n", "# H {#a\n .X}\n", "```{python}\n# heading\n\n- item\n"} {
+		f.Add(input)
+	}
 	for _, input := range []string{"(12.  é\n", "- # heading\n(2. prose\n", "(9@bad. prose\n\n(@) valid\n", "> - # heading\r\n> (2. prose\r\n"} {
 		f.Add(input)
 	}
@@ -461,6 +467,9 @@ func FuzzPandocBlockSourceProperties(f *testing.F) {
 		f.Add(input)
 	}
 	for _, input := range []string{"Term\n: - [X] é\r\n  - second\n", "(@bird) example\n\n    continued\n\n(@bird) reuse\n", "|   line\n  wrap\n|\n", "> prose\n> > continuation\n", "i. one\nii. two\n#. next\n", "-", "> \tcode\n", "Term\n: [x] body\n", "one\ntwo\n---\n"} {
+		f.Add(input)
+	}
+	for _, input := range []string{"# [$a]b$]{#inline}\n", "# [<i title=']'>x</i>]{#inline}\n", "# <http:a<b>{#inline}\n", "# [<i title='{#wrong}\nx'>y</i>]{#inline}\n", "# [`x {#wrong}\ny`]{#inline}\n", "> # <a\r\n> # <a\r\n"} {
 		f.Add(input)
 	}
 	f.Fuzz(func(t *testing.T, input string) {

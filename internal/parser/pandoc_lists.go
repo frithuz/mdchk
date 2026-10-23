@@ -447,7 +447,10 @@ type pandocItemMatch struct {
 	blank, ok bool
 }
 
-func (p *blockParser) pandocItemLine(line blockLine, indent int, state pandocItemState) pandocItemMatch {
+func (p *blockParser) pandocItemLine(line blockLine, indent int, state pandocItemState, depth int) pandocItemMatch {
+	if p.divInFrame(depth) > 0 && p.divCloser(line).Present() {
+		return pandocItemMatch{}
+	}
 	next := line.cursor
 	consumed, _ := next.Consume(indent)
 	full := consumed.Columns == indent
@@ -470,7 +473,7 @@ func (p *blockParser) pandocItemLine(line blockLine, indent int, state pandocIte
 			return pandocItemMatch{}
 		}
 		if !state.continuation {
-			fence := p.fenceOpening(line) != nil
+			fence := p.fenceOpeningAt(line, depth) != nil
 			if fence && !full {
 				return pandocItemMatch{}
 			}

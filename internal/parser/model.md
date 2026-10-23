@@ -1645,3 +1645,130 @@ CRLF, malformed fallback, immutable metadata and deterministic limits/cancellati
 This is section execution only. The 543-case target-data tool and ledger continue
 to report full-profile execution as NOT-RUN, zero actual passes and false
 conformance until the remaining syntax and complete verification gates run.
+
+
+### Pandoc fences, attributes and native divisions
+
+Issue #239 extends the same private block stage with the selected backtick/tilde
+fence grammar, header attributes and native fenced divisions. It executes 52
+additional retained inputs independently of the full-profile NOT-RUN ledger.
+The block stage remains incomplete with pending inlines, unavailable references
+and no complete-operation consumer authority. Public Pandoc admission remains
+unavailable; no downstream rule or full HTML-origin provider is enabled.
+
+`Attributes` retain the entire source group and every ordered
+`AttributeOccurrence`, including duplicate IDs, classes and ordinary key/value
+pairs. Each occurrence has raw spelling and a separately mapped semantic value.
+The ID projection distinguishes absent from explicitly empty and selects the
+last `#id` or `id=` occurrence. Classes append, including `class=` words and `-`
+as `unnumbered`; ordinary key/value pairs append without deduplication. The
+shared scanner preserves Unicode predicates, the selected quoted/unquoted
+escape and entity distinction, and multiline `spnl` with original container gaps
+and atomic CRLF provenance. Bare Div classes have explicit `BareClass` origin.
+Construction and accessors snapshot all nested mutable collections; supplied
+metadata is checked against original source, including legitimate prefix gaps.
+
+`PandocFenceProperties.Info` owns the full original suffix after the opening
+marker, including whitespace and multiline attributes. `Language` is distinct
+from raw info, IDs and key/value attributes. `Classes` retains the combined
+reader projection: normalized bare language first, then literal attribute
+classes. An attribute-only language uses its first class without bare-language
+normalization. The pinned bare helper maps exact `c++`/`objective-c` before
+lowercasing (thus bare `C++` lowercases to `c++`). `RawFormat` identifies a
+`RawBlock` and supplies no code language. Both code and raw fences retain their
+actual opening/closing marker spelling and original payload contributions.
+A valid opener plus a real matching closer is required; malformed or unclosed
+candidates backtrack to ordinary block syntax without publishing attributes or
+changing list/example state. Source scans and speculative reconstruction retain
+cumulative budget charges. Their outer extraction probes use strictly decreasing
+reader depths. A physical closer at EOF retains only actual original bytes.
+
+Pandoc fence `Literal` joins payload lines with intervening newlines. The final
+physical payload ending stays in `Content` with an empty normalized semantic
+contribution. CommonMark/GFM retain their existing final-newline and EOF closure
+behavior. Code/raw payload has no interpreted inline children.
+
+`Div` is a normal recursive container with `DivProperties.Origin` equal to
+`fenced-native`, separate from future HTML-origin conversion. A colon-only line
+closes the innermost native Div in its recursive frame; delimiter widths are
+independent. EOF may end a Div without a physical closing marker. Nested code,
+raw and literal HTML children shield their payload; ordinary textual children
+remain pending inline content. Quote/list extraction still owns its original
+prefixes and native Div frames do not transfer across those boundaries. Full
+HTML Markdown-child semantics remain later work.
+
+
+Heading suffix cursors preserve complete inline-owned code/span/link attribute
+groups in pending `Content`, including regular/reference/image/autolink paths.
+A separately supplied heading group retains its own block ownership. The cursor
+uses the selected URI scheme/prefix and email-prefix predicates for angle links;
+punctuation-shaped angle text alone does not establish that owner. Citation and
+inline-note post-body guards still control their bracketed-span fallbacks. These
+are bounded source-boundary facts, not a completed inline tree or reference
+resolution provider.
+
+Multiline opener completion retains its progress at atomic attribute/whitespace
+boundaries without reconstructing all previous occurrence Values on each line.
+An unfinished quoted alternative can retry its current token; final unquoted
+fallback retains the actual physical opener boundary. Materialization uses an
+indexed mapping from logical offsets to original segments. Provisional work and
+records remain charged, default limits are unchanged, and this does not claim
+arbitrary-input linearity or a hard memory bound.
+
+Heading label endpoints use the selected raw prescan's escapes, code, dollar
+math, inline HTML and raw TeX boundaries before counting brackets. Links/images
+inside that raw prescan are not whole-consumer shields. Successful opaque tokens
+can consume physical continuations; existing container replay retains prefix gaps
+and atomic endings. Retained ownership stops on the completed token's physical
+line.
+Malformed tokens fall back without acquiring later blocks. Backtick-run, balanced
+label and angle endpoints retain failures as well as successes within one logical
+heading, and reset when its source extends. A frame-specific future-closer index
+excludes removed quote/list prefixes and is shared by that frame's headings.
+Integer indexes charge construction/copy work rather than semantic node records.
+This removes the measured repeated failed suffix visits and repeated short-heading
+continuation materialization; it is not an arbitrary-input complexity guarantee.
+Autolinks still require an actual selected URI/email prefix. Once established,
+their extra bytes can include '<', NBSP, vertical tab and form feed; only ASCII
+space/tab/CR/LF terminate that extra production. URI prefix punctuation retains
+its separate Unicode-space predicate. None of these boundaries creates inline
+nodes, resolves references or grants complete-operation authority.
+
+Regular-link source endpoints follow the selected `litChar`, parenthesized,
+angle, data-URI and quoted-title alternatives, including permitted nonblank
+physical newlines. Complete owners retain their original pending source and
+attached attributes; malformed sources retain ordinary block fallback. Earlier
+unfinished alternatives remain provisional before a successful short fallback
+is accepted. Collection commits only the physical extent actually consumed.
+Per-spelling suffix endpoints share successful and failed destination work,
+including title lookahead and failed balanced-group fallback, and invalidate
+when logical source extends. Storage and work remain metered. These internal
+boundaries create no inline AST or public parser authority; finite scaling
+checks do not establish arbitrary-input linearity or live-memory guarantees.
+
+A Setext eligibility underline is lookahead rather than a committed marker.
+Complete selected owners can consume that line; the actual following underline
+must still succeed before heading metadata is frozen. Whole-attempt failure
+keeps the complete original ordinary paragraph owner and publishes no provisional
+heading attributes. Source, ending and recursive-prefix contributions remain
+separate from the actual underline marker.
+
+Physical continuation acquisition and complete boundary endpoints are shared
+within one immutable logical container replay frame. Failed overlapping starts
+query that same spelling instead of rebuilding growing prefixes. Only a selected
+successful owner's consumed physical extent is materialized into heading text.
+Code retains its separate blank-line and in-list list-start admission guards;
+ordinary source/title/data/math/HTML/TeX use their own selected newline grammar.
+Original replay cursors and copied extraction states determine the frame extent;
+these caches create no inline AST, semantic depth or completed-operation authority.
+
+Raw-label suffix states are evaluated lazily from the actual initiating start.
+Escapes and successful selected owners determine the next reachable position;
+skipped bytes do not invoke opaque helpers or create pending candidates. Shared
+success/failure/pending dependencies use a metered explicit integer work stack,
+without text-length Go recursion or invented semantic depth. Independent later
+labels still enter their own state even inside previously consumed source.
+A continuation commits only after that initiating label/source succeeds in the
+full replay spelling. Failure leaves ordinary outer-cursor fallback available.
+Code's optional attributes participate in the complete raw-label owner, including
+permitted attribute newlines after the backtick itself has already closed.

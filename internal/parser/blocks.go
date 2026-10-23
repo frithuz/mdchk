@@ -23,6 +23,7 @@ type blockLine struct {
 type blockStartHook func(blockLine, bool) bool
 
 type openBlock struct {
+	attributes  *Attributes
 	kind        Kind
 	quoteInList bool // reader context captured before extracting this quote
 	quoteColumn int
@@ -62,7 +63,11 @@ type blockParser struct {
 	exampleNext               int
 	exampleStarted            bool
 	exampleOverflow           bool
+	skipUntil                 int
+	openerEnd                 int
 	lineBlock                 *pandocLineBlock
+	headingFuture             map[pandocHeadingFutureKey]pandocHeadingFutureIndex
+	headingContinuations      map[pandocHeadingFutureKey]*pandocHeadingReplay
 }
 
 func parseBlocks(ctx context.Context, document *Document) (PhaseState, error) {
@@ -121,6 +126,9 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		for i := 1; i < p.containerDepth(); i++ {
 			meterWork(ctx, 1)
 			p.stack[i].end = physical.next
+		}
+		if physical.start < p.skipUntil {
+			continue
 		}
 		if p.lineBlock != nil {
 			handled, err := p.continuePandocLineBlock(line)
@@ -203,6 +211,21 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 				return Pending, err
 			}
 		}
+		if p.pandoc() && p.divCloser(line).Present() {
+			divDepth := p.activeDiv()
+			if divDepth > 0 {
+				if err := p.closeTo(divDepth + 1); err != nil {
+					return Pending, err
+				}
+				b := &p.stack[divDepth]
+				b.markers = meteredAppend(ctx, b.markers, Marker{Role: "closing", Source: p.divCloser(line)})
+				b.end = line.next
+				if err := p.closeTo(divDepth); err != nil {
+					return Pending, err
+				}
+				continue
+			}
+		}
 	dispatch:
 		if p.pandoc() {
 			line = p.logicalLine(physical, cursor)
@@ -259,10 +282,21 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 			checkDepth(p.ctx, p.syntaxDepth()+1)
 			p.fence = fence
+			if p.pandoc() {
+				p.skipUntil = fence.end
+			}
 			if !fence.info.Semantic.Present {
 				state = Pending // interrupted info decoding cannot establish semantics.
 			}
 			continue
+		}
+		if p.pandoc() && !p.paragraphOpen() {
+			if attrs, markers := p.divOpening(line); attrs != nil {
+				checkDepth(ctx, p.syntaxDepth()+1)
+				p.skipUntil = p.openerEnd
+				p.stack = meteredAppend(ctx, p.stack, openBlock{kind: Div, start: line.start, end: p.openerEnd, attributes: attrs, markers: markers})
+				continue
+			}
 		}
 		if form := p.htmlOpening(line, p.paragraphOpen()); form != 0 {
 			if err := p.closeTo(depth); err != nil {
@@ -302,6 +336,9 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		if p.referenceInterrupted {
 			state = Interrupted
 			break
+		}
+		if p.pandoc() && setext == nil && p.skipUntil >= line.next {
+			continue // whole Setext try fell back to a complete ordinary owner
 		}
 		// Promote marked, eligible paragraphs before thematic/list dispatch.
 		if setext != nil {
@@ -484,12 +521,21 @@ func (p *blockParser) atxHeading(line blockLine) (*Node, error) {
 		end--
 	}
 	markers := []Marker{{Role: "opening", Source: p.index.span(line.contentStart, openingEnd)}}
+	var attributes *Attributes
+	var headingContent []Segment
+	if p.pandoc() {
+		var closing Span
+		headingContent, attributes, closing, _ = p.pandocHeadingSuffix(line, start, end, true)
+		if closing.Present() {
+			markers = meteredAppend(p.ctx, markers, Marker{Role: "closing", Source: closing})
+		}
+	}
 	closingStart := end
 	for closingStart > start && text[closingStart-1] == '#' {
 		meterWork(p.ctx, 1)
 		closingStart--
 	}
-	if closingStart < end && (text[closingStart-1] == ' ' || text[closingStart-1] == '\t') {
+	if !p.pandoc() && closingStart < end && (text[closingStart-1] == ' ' || text[closingStart-1] == '\t') {
 		markers = meteredAppend(p.ctx, markers, Marker{Role: "closing", Source: p.index.span(closingStart, end)})
 		end = closingStart
 		for end > start && (text[end-1] == ' ' || text[end-1] == '\t') {
@@ -497,10 +543,13 @@ func (p *blockParser) atxHeading(line blockLine) (*Node, error) {
 			end--
 		}
 	}
+	if !p.pandoc() {
+		headingContent = p.index.semanticText(start, end).Segments
+	}
 	return meteredNode(p.ctx, NodeSpec{
-		Kind: Heading, Envelope: p.index.span(line.start, line.next), Markers: markers,
-		Content:    p.index.semanticText(start, end).Segments,
-		Properties: Properties{Heading: &HeadingProperties{Level: openingEnd - line.contentStart, Style: "atx"}},
+		Kind: Heading, Envelope: p.index.span(line.start, max(line.next, p.skipUntil)), Markers: markers,
+		Content:    headingContent,
+		Properties: Properties{Attributes: attributes, Heading: &HeadingProperties{Level: openingEnd - line.contentStart, Style: "atx"}},
 	})
 }
 
@@ -526,11 +575,48 @@ func (p *blockParser) setextHeading(line blockLine) (*Node, error) {
 	if p.pandoc() && len(paragraph.content) != 0 {
 		return nil, nil
 	}
+	content := p.paragraphContent(paragraph)
+	var attributes *Attributes
+	if p.pandoc() {
+		oldSkip := p.skipUntil
+		var last physicalLine
+		content, attributes, _, last = p.pandocHeadingSuffix(paragraph.last, paragraph.last.contentStart, paragraph.last.end, false)
+		if last.next > paragraph.last.next {
+			replay := p.pandocHeadingReplay(paragraph.last)
+			at := sort.Search(len(replay.lines), func(i int) bool { meterWork(p.ctx, 1); return replay.lines[i].next > last.next })
+			for at < len(replay.lines) && replay.lines[at].contentStart == replay.lines[at].end {
+				meterWork(p.ctx, 1)
+				at++
+			}
+			actualEnd, actualLevel := 0, 0
+			if at < len(replay.lines) {
+				actualEnd, actualLevel = p.setextUnderline(replay.lines[at])
+			}
+			if actualLevel == 0 {
+				// The complete inline owner consumed the eligibility underline, but
+				// the whole header try failed. Keep original paragraph contributions;
+				// no provisional heading ID/content/marker escapes this rollback.
+				p.skipUntil = oldSkip
+				first := sort.Search(len(replay.lines), func(i int) bool { meterWork(p.ctx, 1); return replay.lines[i].next > paragraph.last.next })
+				for _, continued := range replay.lines[first:] {
+					meterWork(p.ctx, 1)
+					if continued.next > last.next {
+						break
+					}
+					p.appendParagraph(continued)
+				}
+				p.skipUntil = max(oldSkip, last.next)
+				return nil, nil
+			}
+			line, end, level = replay.lines[at], actualEnd, actualLevel
+			p.skipUntil = max(p.skipUntil, line.next)
+		}
+	}
 	return meteredNode(p.ctx, NodeSpec{
 		Kind: Heading, Envelope: p.index.span(paragraph.start, line.next),
-		Content:    p.paragraphContent(paragraph),
+		Content:    content,
 		Markers:    []Marker{{Role: "underline", Source: p.index.span(line.contentStart, end)}},
-		Properties: Properties{Heading: &HeadingProperties{Level: level, Style: "setext"}},
+		Properties: Properties{Attributes: attributes, Heading: &HeadingProperties{Level: level, Style: "setext"}},
 	})
 }
 
@@ -676,6 +762,10 @@ func (p *blockParser) closeTo(depth int) error {
 			return err
 		}
 		spec := NodeSpec{Kind: block.kind, Envelope: p.index.span(block.start, block.end), Markers: block.markers, Children: blockNodesContext(p.ctx, children)}
+		if block.kind == Div {
+			spec.Properties.Attributes = block.attributes
+			spec.Properties.Div = &DivProperties{Origin: "fenced-native"}
+		}
 		if block.list != nil {
 			if block.kind == ListItem {
 				spec.Properties.List = block.list

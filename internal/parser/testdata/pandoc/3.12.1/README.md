@@ -6,8 +6,8 @@ These original mdchk fixtures freeze the approved
 `pandoc-3.12.1-mdchk-1`. They specify the complete target. Integrity success
 means the authored data is consistent: **actual full-profile mdchk Pandoc parsing
 is NOT-RUN/unimplemented, zero passes, conformance_complete=false**. A private
-[block stage](../../../model.md#pandoc-block-stage) executes 74 retained cases
-(72 cases for nine selected switches and two source-loss witnesses) separately;
+[block stage](../../../model.md#pandoc-block-stage) executes 126 retained cases
+(74 list/container cases plus 52 fence/attribute/Div/raw boundary cases) separately;
 its partial block results do not change this full-profile ledger. Production
 capability admission still rejects unavailable Pandoc with exit 12.
 

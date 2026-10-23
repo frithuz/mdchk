@@ -85,6 +85,9 @@ func (p *blockParser) interruptsParagraph(line blockLine) bool {
 		return false
 	}
 	if p.pandoc() {
+		if p.activeDiv() > 0 && p.divCloser(line).Present() {
+			return true
+		}
 		if p.paragraphOpen() && len(p.stack[len(p.stack)-1].content) == 0 {
 			if _, level := p.setextUnderline(line); level != 0 {
 				return true
