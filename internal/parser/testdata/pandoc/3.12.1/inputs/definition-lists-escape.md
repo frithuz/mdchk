@@ -1,0 +1,2 @@
+Bird
+\: winged animal

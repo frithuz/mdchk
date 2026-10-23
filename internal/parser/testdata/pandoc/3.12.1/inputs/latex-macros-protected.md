@@ -1,0 +1,5 @@
+~~~~
+\newcommand{\bird}{expanded}
+
+$\bird$
+~~~~

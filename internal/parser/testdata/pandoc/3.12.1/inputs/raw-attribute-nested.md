@@ -1,0 +1,3 @@
+> ```{=latex}
+> \alpha [^hidden]
+> ```

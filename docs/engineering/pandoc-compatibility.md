@@ -1,7 +1,7 @@
 # Pandoc compatibility and corpus contract
 
-Status: approved on 2026-10-14. Parser implementation, corpus tooling, and mdchk
-conformance verification remain pending. This defines the target for
+Status: approved on 2026-10-14. Offline fixture tooling is delivered; parser
+implementation and mdchk conformance verification remain pending. This defines the target for
 [#162](https://github.com/frithuz/mdchk/issues/162) and implementation in #163–#165.
 
 ## Compatibility profile
@@ -253,6 +253,11 @@ regions from fixes. Intentionally excluded syntax and unavailable rule
 implementations retain #124's separate applicability/coverage treatment.
 
 ## Corpus, licenses, and completion requirements
+
+The [original fixture targets](../../internal/parser/testdata/pandoc/3.12.1/README.md)
+provide offline integrity, complete extension ownership and independent source
+assertions. Their integrity checks report actual parser execution as NOT-RUN;
+they do not establish Pandoc support or consumer conformance.
 
 Start the mdchk fixture corpus with original inputs and independently reviewed
 semantic expectations. Retain raw oracle outputs separately from expectations.

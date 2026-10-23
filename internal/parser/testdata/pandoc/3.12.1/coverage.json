@@ -1,0 +1,4766 @@
+{
+  "schema_version": 1,
+  "extensions": [
+    {
+      "extension": "abbreviations",
+      "enabled": false,
+      "cases": [
+        "abbreviations-excluded",
+        "abbreviations-crlf",
+        "abbreviations-unicode",
+        "abbreviations-nested",
+        "abbreviations-protected",
+        "abbreviations-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "abbreviations-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "abbreviations-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "abbreviations-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "abbreviations-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "abbreviations-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "abbreviations-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "abbreviations-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "abbreviations-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Abbreviation definition-looking text remains paragraph text; HTML is not expanded."
+    },
+    {
+      "extension": "alerts",
+      "enabled": false,
+      "cases": [
+        "alerts-excluded",
+        "alerts-crlf",
+        "alerts-unicode",
+        "alerts-nested",
+        "alerts-protected",
+        "alerts-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "alerts-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "alerts-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "alerts-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "alerts-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "alerts-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "alerts-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "alerts-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "alerts-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Ordinary quote with literal [!TIP]; no alert node."
+    },
+    {
+      "extension": "all_symbols_escapable",
+      "enabled": true,
+      "cases": [
+        "all-symbols-escapable-positive",
+        "all-symbols-escapable-fallback",
+        "all-symbols-escapable-escape",
+        "all-symbols-escapable-protected",
+        "all-symbols-escapable-nested",
+        "all-symbols-escapable-crlf",
+        "all-symbols-escapable-unicode",
+        "all-symbols-escapable-precedence"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "all-symbols-escapable-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "all-symbols-escapable-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "all-symbols-escapable-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "all-symbols-escapable-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "all-symbols-escapable-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "all-symbols-escapable-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "all-symbols-escapable-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "all-symbols-escapable-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Escaped symbols contribute @ ! <x> as text; generated angles do not initiate HTML."
+    },
+    {
+      "extension": "angle_brackets_escapable",
+      "enabled": false,
+      "cases": [
+        "angle-brackets-escapable-excluded",
+        "angle-brackets-escapable-crlf",
+        "angle-brackets-escapable-unicode",
+        "angle-brackets-escapable-nested",
+        "angle-brackets-escapable-protected",
+        "angle-brackets-escapable-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "angle-brackets-escapable-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "angle-brackets-escapable-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "angle-brackets-escapable-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "angle-brackets-escapable-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "angle-brackets-escapable-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "angle-brackets-escapable-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "angle-brackets-escapable-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "angle-brackets-escapable-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Disabled narrow switch is superseded by enabled all_symbols_escapable: escaped angles still contribute literal text."
+    },
+    {
+      "extension": "ascii_identifiers",
+      "enabled": false,
+      "cases": [
+        "ascii-identifiers-excluded",
+        "ascii-identifiers-crlf",
+        "ascii-identifiers-unicode",
+        "ascii-identifiers-nested",
+        "ascii-identifiers-protected",
+        "ascii-identifiers-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "ascii-identifiers-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "ascii-identifiers-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "ascii-identifiers-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "ascii-identifiers-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "ascii-identifiers-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "ascii-identifiers-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "ascii-identifiers-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "ascii-identifiers-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "No automatic heading ID is generated, ASCII transliteration does not run."
+    },
+    {
+      "extension": "auto_identifiers",
+      "enabled": false,
+      "cases": [
+        "auto-identifiers-excluded",
+        "auto-identifiers-crlf",
+        "auto-identifiers-unicode",
+        "auto-identifiers-nested",
+        "auto-identifiers-protected",
+        "auto-identifiers-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "auto-identifiers-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "auto-identifiers-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "auto-identifiers-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "auto-identifiers-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "auto-identifiers-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "auto-identifiers-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "auto-identifiers-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "auto-identifiers-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Heading has no implicit ID."
+    },
+    {
+      "extension": "autolink_bare_uris",
+      "enabled": false,
+      "cases": [
+        "autolink-bare-uris-excluded",
+        "autolink-bare-uris-crlf",
+        "autolink-bare-uris-unicode",
+        "autolink-bare-uris-nested",
+        "autolink-bare-uris-protected",
+        "autolink-bare-uris-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "autolink-bare-uris-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "autolink-bare-uris-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "autolink-bare-uris-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "autolink-bare-uris-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "autolink-bare-uris-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "autolink-bare-uris-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "autolink-bare-uris-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "autolink-bare-uris-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Bare absolute URI remains text, not link."
+    },
+    {
+      "extension": "backtick_code_blocks",
+      "enabled": true,
+      "cases": [
+        "backtick-code-blocks-positive",
+        "backtick-code-blocks-fallback",
+        "backtick-code-blocks-protected",
+        "backtick-code-blocks-nested",
+        "backtick-code-blocks-crlf",
+        "backtick-code-blocks-unicode",
+        "backtick-code-blocks-precedence",
+        "backtick-code-blocks-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "backtick-code-blocks-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "backtick-code-blocks-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "backtick-code-blocks-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "backtick-code-blocks-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "backtick-code-blocks-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "backtick-code-blocks-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "backtick-code-blocks-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "backtick-code-blocks-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Tested triple backticks adjacent to prose are recognized; payload is protected."
+    },
+    {
+      "extension": "blank_before_blockquote",
+      "enabled": true,
+      "cases": [
+        "blank-before-blockquote-positive",
+        "blank-before-blockquote-fallback",
+        "blank-before-blockquote-protected",
+        "blank-before-blockquote-nested",
+        "blank-before-blockquote-crlf",
+        "blank-before-blockquote-unicode",
+        "blank-before-blockquote-precedence",
+        "blank-before-blockquote-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "blank-before-blockquote-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "blank-before-blockquote-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "blank-before-blockquote-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "blank-before-blockquote-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "blank-before-blockquote-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "blank-before-blockquote-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "blank-before-blockquote-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "blank-before-blockquote-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Without a blank line, greater-than line continues prose rather than starting a quote."
+    },
+    {
+      "extension": "blank_before_header",
+      "enabled": true,
+      "cases": [
+        "blank-before-header-positive",
+        "blank-before-header-fallback",
+        "blank-before-header-protected",
+        "blank-before-header-nested",
+        "blank-before-header-crlf",
+        "blank-before-header-unicode",
+        "blank-before-header-precedence",
+        "blank-before-header-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "blank-before-header-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "blank-before-header-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "blank-before-header-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "blank-before-header-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "blank-before-header-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "blank-before-header-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "blank-before-header-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "blank-before-header-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "ATX-looking line without preceding blank continues prose."
+    },
+    {
+      "extension": "bracketed_spans",
+      "enabled": true,
+      "cases": [
+        "bracketed-spans-positive",
+        "bracketed-spans-fallback",
+        "bracketed-spans-escape",
+        "bracketed-spans-protected",
+        "bracketed-spans-nested",
+        "bracketed-spans-crlf",
+        "bracketed-spans-unicode",
+        "bracketed-spans-precedence",
+        "raw-ids-span"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "bracketed-spans-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "bracketed-spans-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "bracketed-spans-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "bracketed-spans-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "bracketed-spans-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "bracketed-spans-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "bracketed-spans-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "bracketed-spans-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Bracketed text becomes span; both raw IDs retained; two effective."
+    },
+    {
+      "extension": "citations",
+      "enabled": true,
+      "cases": [
+        "citations-positive",
+        "citations-fallback",
+        "citations-protected",
+        "citations-nested",
+        "citations-crlf",
+        "citations-unicode",
+        "citations-precedence",
+        "protected-citation",
+        "citations-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "citations-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "citations-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "citations-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "citations-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "citations-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "citations-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "citations-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "citations-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Citation control is protected; no bibliography or citeproc lookup."
+    },
+    {
+      "extension": "definition_lists",
+      "enabled": true,
+      "cases": [
+        "definition-lists-positive",
+        "definition-lists-fallback",
+        "definition-lists-protected",
+        "definition-lists-nested",
+        "definition-lists-crlf",
+        "definition-lists-unicode",
+        "definition-lists-precedence",
+        "definition-lists-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "definition-lists-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "definition-lists-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "definition-lists-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "definition-lists-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "definition-lists-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "definition-lists-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "definition-lists-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "definition-lists-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Bird is term; winged animal is definition."
+    },
+    {
+      "extension": "east_asian_line_breaks",
+      "enabled": false,
+      "cases": [
+        "east-asian-line-breaks-excluded",
+        "east-asian-line-breaks-crlf",
+        "east-asian-line-breaks-unicode",
+        "east-asian-line-breaks-nested",
+        "east-asian-line-breaks-protected",
+        "east-asian-line-breaks-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "east-asian-line-breaks-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "east-asian-line-breaks-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "east-asian-line-breaks-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "east-asian-line-breaks-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "east-asian-line-breaks-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "east-asian-line-breaks-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "east-asian-line-breaks-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "east-asian-line-breaks-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Physical line break remains soft break; no East Asian deletion."
+    },
+    {
+      "extension": "emoji",
+      "enabled": false,
+      "cases": [
+        "emoji-excluded",
+        "emoji-crlf",
+        "emoji-unicode",
+        "emoji-nested",
+        "emoji-protected",
+        "emoji-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "emoji-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "emoji-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "emoji-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "emoji-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "emoji-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "emoji-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "emoji-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "emoji-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Colon name remains text, no emoji expansion."
+    },
+    {
+      "extension": "escaped_line_breaks",
+      "enabled": true,
+      "cases": [
+        "escaped-line-breaks-positive",
+        "escaped-line-breaks-fallback",
+        "escaped-line-breaks-protected",
+        "escaped-line-breaks-nested",
+        "escaped-line-breaks-crlf",
+        "escaped-line-breaks-unicode",
+        "escaped-line-breaks-precedence",
+        "escaped-line-breaks-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "escaped-line-breaks-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "escaped-line-breaks-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "escaped-line-breaks-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "escaped-line-breaks-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "escaped-line-breaks-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "escaped-line-breaks-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "escaped-line-breaks-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "escaped-line-breaks-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Backslash plus physical LF is one hard break between a and b."
+    },
+    {
+      "extension": "example_lists",
+      "enabled": true,
+      "cases": [
+        "example-lists-positive",
+        "example-lists-fallback",
+        "example-lists-escape",
+        "example-lists-protected",
+        "example-lists-nested",
+        "example-lists-crlf",
+        "example-lists-unicode",
+        "example-lists-precedence"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "example-lists-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "example-lists-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "example-lists-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "example-lists-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "example-lists-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "example-lists-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "example-lists-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "example-lists-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Example bird receives first example number; reference keeps original (@bird) source."
+    },
+    {
+      "extension": "fancy_lists",
+      "enabled": true,
+      "cases": [
+        "fancy-lists-positive",
+        "fancy-lists-fallback",
+        "fancy-lists-protected",
+        "fancy-lists-nested",
+        "fancy-lists-crlf",
+        "fancy-lists-unicode",
+        "fancy-lists-precedence",
+        "fancy-lists-escape",
+        "list-markers-original"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "fancy-lists-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "fancy-lists-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "fancy-lists-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "fancy-lists-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "fancy-lists-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "fancy-lists-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "fancy-lists-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "fancy-lists-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Lower Roman marker iv. starts ordered list at four; retain nondecimal spelling."
+    },
+    {
+      "extension": "fenced_code_attributes",
+      "enabled": true,
+      "cases": [
+        "fenced-code-attributes-positive",
+        "fenced-code-attributes-fallback",
+        "fenced-code-attributes-escape",
+        "fenced-code-attributes-protected",
+        "fenced-code-attributes-nested",
+        "fenced-code-attributes-crlf",
+        "fenced-code-attributes-unicode",
+        "fenced-code-attributes-precedence",
+        "raw-ids-block-code"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "fenced-code-attributes-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "fenced-code-attributes-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "fenced-code-attributes-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "fenced-code-attributes-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "fenced-code-attributes-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "fenced-code-attributes-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "fenced-code-attributes-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "fenced-code-attributes-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "First class python is language; raw IDs one and two retained; two effective."
+    },
+    {
+      "extension": "fenced_code_blocks",
+      "enabled": true,
+      "cases": [
+        "fenced-code-blocks-positive",
+        "fenced-code-blocks-fallback",
+        "fenced-code-blocks-escape",
+        "fenced-code-blocks-protected",
+        "fenced-code-blocks-nested",
+        "fenced-code-blocks-crlf",
+        "fenced-code-blocks-unicode",
+        "fenced-code-blocks-precedence"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "fenced-code-blocks-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "fenced-code-blocks-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "fenced-code-blocks-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "fenced-code-blocks-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "fenced-code-blocks-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "fenced-code-blocks-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "fenced-code-blocks-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "fenced-code-blocks-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Blank-document tilde fence with bare text language protects payload."
+    },
+    {
+      "extension": "fenced_divs",
+      "enabled": true,
+      "cases": [
+        "fenced-divs-positive",
+        "fenced-divs-fallback",
+        "fenced-divs-escape",
+        "fenced-divs-protected",
+        "fenced-divs-nested",
+        "fenced-divs-crlf",
+        "fenced-divs-unicode",
+        "fenced-divs-precedence",
+        "raw-ids-div"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "fenced-divs-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "fenced-divs-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "fenced-divs-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "fenced-divs-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "fenced-divs-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "fenced-divs-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "fenced-divs-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "fenced-divs-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Fenced division has Markdown child and effective ID two."
+    },
+    {
+      "extension": "footnotes",
+      "enabled": true,
+      "cases": [
+        "footnotes-positive",
+        "footnotes-fallback",
+        "footnotes-protected",
+        "footnotes-nested",
+        "footnotes-crlf",
+        "footnotes-unicode",
+        "footnotes-precedence",
+        "notes-all-records",
+        "footnotes-escape",
+        "notes-unicode-space"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "footnotes-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "footnotes-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "footnotes-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "footnotes-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "footnotes-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "footnotes-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "footnotes-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "footnotes-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Eligible body reference binds exact label a."
+    },
+    {
+      "extension": "four_space_rule",
+      "enabled": false,
+      "cases": [
+        "four-space-rule-excluded",
+        "four-space-rule-crlf",
+        "four-space-rule-unicode",
+        "four-space-rule-nested",
+        "four-space-rule-protected",
+        "four-space-rule-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "four-space-rule-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "four-space-rule-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "four-space-rule-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "four-space-rule-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "four-space-rule-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "four-space-rule-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "four-space-rule-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "four-space-rule-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Modern item continuation uses two-column marker content indentation, not forced four spaces."
+    },
+    {
+      "extension": "gfm_auto_identifiers",
+      "enabled": false,
+      "cases": [
+        "gfm-auto-identifiers-excluded",
+        "gfm-auto-identifiers-crlf",
+        "gfm-auto-identifiers-unicode",
+        "gfm-auto-identifiers-nested",
+        "gfm-auto-identifiers-protected",
+        "gfm-auto-identifiers-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "gfm-auto-identifiers-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "gfm-auto-identifiers-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "gfm-auto-identifiers-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "gfm-auto-identifiers-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "gfm-auto-identifiers-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "gfm-auto-identifiers-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "gfm-auto-identifiers-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "gfm-auto-identifiers-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "No GFM automatic slug is generated."
+    },
+    {
+      "extension": "grid_tables",
+      "enabled": false,
+      "cases": [
+        "grid-tables-excluded",
+        "grid-tables-crlf",
+        "grid-tables-unicode",
+        "grid-tables-nested",
+        "grid-tables-protected",
+        "grid-tables-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "grid-tables-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "grid-tables-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "grid-tables-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "grid-tables-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "grid-tables-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "grid-tables-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "grid-tables-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "grid-tables-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Grid-looking layout is ordinary body content, not a grid table."
+    },
+    {
+      "extension": "gutenberg",
+      "enabled": false,
+      "cases": [
+        "gutenberg-excluded",
+        "gutenberg-crlf",
+        "gutenberg-unicode",
+        "gutenberg-nested",
+        "gutenberg-protected",
+        "gutenberg-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "gutenberg-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "gutenberg-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "gutenberg-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "gutenberg-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "gutenberg-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "gutenberg-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "gutenberg-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "gutenberg-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Reader retains strong/emphasis structure; plain-writer Gutenberg conventions have no reader effect."
+    },
+    {
+      "extension": "hard_line_breaks",
+      "enabled": false,
+      "cases": [
+        "hard-line-breaks-excluded",
+        "hard-line-breaks-crlf",
+        "hard-line-breaks-unicode",
+        "hard-line-breaks-nested",
+        "hard-line-breaks-protected",
+        "hard-line-breaks-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "hard-line-breaks-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "hard-line-breaks-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "hard-line-breaks-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "hard-line-breaks-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "hard-line-breaks-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "hard-line-breaks-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "hard-line-breaks-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "hard-line-breaks-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Unmarked physical LF is soft, not hard."
+    },
+    {
+      "extension": "header_attributes",
+      "enabled": true,
+      "cases": [
+        "header-attributes-positive",
+        "header-attributes-fallback",
+        "header-attributes-escape",
+        "header-attributes-protected",
+        "header-attributes-nested",
+        "header-attributes-crlf",
+        "header-attributes-unicode",
+        "header-attributes-precedence",
+        "raw-ids-heading"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "header-attributes-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "header-attributes-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "header-attributes-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "header-attributes-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "header-attributes-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "header-attributes-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "header-attributes-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "header-attributes-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Explicit raw heading IDs retained; two effective; no automatic ID."
+    },
+    {
+      "extension": "ignore_line_breaks",
+      "enabled": false,
+      "cases": [
+        "ignore-line-breaks-excluded",
+        "ignore-line-breaks-crlf",
+        "ignore-line-breaks-unicode",
+        "ignore-line-breaks-nested",
+        "ignore-line-breaks-protected",
+        "ignore-line-breaks-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "ignore-line-breaks-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "ignore-line-breaks-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "ignore-line-breaks-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "ignore-line-breaks-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "ignore-line-breaks-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "ignore-line-breaks-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "ignore-line-breaks-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "ignore-line-breaks-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Unmarked physical LF is retained as soft break, not deleted."
+    },
+    {
+      "extension": "implicit_figures",
+      "enabled": false,
+      "cases": [
+        "implicit-figures-excluded",
+        "implicit-figures-crlf",
+        "implicit-figures-unicode",
+        "implicit-figures-nested",
+        "implicit-figures-protected",
+        "implicit-figures-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "implicit-figures-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "implicit-figures-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "implicit-figures-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "implicit-figures-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "implicit-figures-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "implicit-figures-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "implicit-figures-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "implicit-figures-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Standalone image remains image paragraph, no figure promotion."
+    },
+    {
+      "extension": "implicit_header_references",
+      "enabled": false,
+      "cases": [
+        "implicit-header-references-excluded",
+        "implicit-header-references-crlf",
+        "implicit-header-references-unicode",
+        "implicit-header-references-nested",
+        "implicit-header-references-protected",
+        "implicit-header-references-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "implicit-header-references-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "implicit-header-references-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "implicit-header-references-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "implicit-header-references-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "implicit-header-references-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "implicit-header-references-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "implicit-header-references-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "implicit-header-references-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "No explicit definition exists: heading does not create shortcut target."
+    },
+    {
+      "extension": "inline_code_attributes",
+      "enabled": true,
+      "cases": [
+        "inline-code-attributes-positive",
+        "inline-code-attributes-fallback",
+        "inline-code-attributes-escape",
+        "inline-code-attributes-protected",
+        "inline-code-attributes-nested",
+        "inline-code-attributes-crlf",
+        "inline-code-attributes-unicode",
+        "inline-code-attributes-precedence",
+        "raw-ids-inline-code"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "inline-code-attributes-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "inline-code-attributes-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "inline-code-attributes-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "inline-code-attributes-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "inline-code-attributes-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "inline-code-attributes-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "inline-code-attributes-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "inline-code-attributes-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Inline code attributes retain both IDs and select two."
+    },
+    {
+      "extension": "inline_notes",
+      "enabled": true,
+      "cases": [
+        "inline-notes-positive",
+        "inline-notes-fallback",
+        "inline-notes-protected",
+        "inline-notes-nested",
+        "inline-notes-crlf",
+        "inline-notes-unicode",
+        "inline-notes-precedence",
+        "inline-notes-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "inline-notes-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "inline-notes-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "inline-notes-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "inline-notes-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "inline-notes-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "inline-notes-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "inline-notes-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "inline-notes-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Anonymous inline note owns small note content; no movable named definition."
+    },
+    {
+      "extension": "intraword_underscores",
+      "enabled": true,
+      "cases": [
+        "intraword-underscores-positive",
+        "intraword-underscores-fallback",
+        "intraword-underscores-protected",
+        "intraword-underscores-nested",
+        "intraword-underscores-crlf",
+        "intraword-underscores-unicode",
+        "intraword-underscores-precedence",
+        "intraword-underscores-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "intraword-underscores-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "intraword-underscores-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "intraword-underscores-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "intraword-underscores-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "intraword-underscores-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "intraword-underscores-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "intraword-underscores-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "intraword-underscores-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Both intraword underscores remain text; no emphasis."
+    },
+    {
+      "extension": "latex_macros",
+      "enabled": false,
+      "cases": [
+        "latex-macros-excluded",
+        "latex-macros-crlf",
+        "latex-macros-unicode",
+        "latex-macros-nested",
+        "latex-macros-protected",
+        "latex-macros-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "latex-macros-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "latex-macros-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "latex-macros-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "latex-macros-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "latex-macros-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "latex-macros-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "latex-macros-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "latex-macros-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Raw macro definition retained; math payload still \\bird, never expanded."
+    },
+    {
+      "extension": "line_blocks",
+      "enabled": true,
+      "cases": [
+        "line-blocks-positive",
+        "line-blocks-fallback",
+        "line-blocks-escape",
+        "line-blocks-protected",
+        "line-blocks-nested",
+        "line-blocks-crlf",
+        "line-blocks-unicode",
+        "line-blocks-precedence"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "line-blocks-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "line-blocks-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "line-blocks-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "line-blocks-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "line-blocks-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "line-blocks-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "line-blocks-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "line-blocks-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Two line-block lines preserve their explicit line separation."
+    },
+    {
+      "extension": "link_attributes",
+      "enabled": true,
+      "cases": [
+        "link-attributes-positive",
+        "link-attributes-fallback",
+        "link-attributes-escape",
+        "link-attributes-protected",
+        "link-attributes-nested",
+        "link-attributes-crlf",
+        "link-attributes-unicode",
+        "link-attributes-precedence",
+        "raw-ids-link",
+        "raw-ids-image"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "link-attributes-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "link-attributes-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "link-attributes-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "link-attributes-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "link-attributes-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "link-attributes-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "link-attributes-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "link-attributes-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Link explicit ID is two; both occurrences retained."
+    },
+    {
+      "extension": "lists_without_preceding_blankline",
+      "enabled": false,
+      "cases": [
+        "lists-without-preceding-blankline-excluded",
+        "lists-without-preceding-blankline-crlf",
+        "lists-without-preceding-blankline-unicode",
+        "lists-without-preceding-blankline-nested",
+        "lists-without-preceding-blankline-protected",
+        "lists-without-preceding-blankline-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "lists-without-preceding-blankline-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "lists-without-preceding-blankline-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "lists-without-preceding-blankline-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "lists-without-preceding-blankline-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "lists-without-preceding-blankline-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "lists-without-preceding-blankline-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "lists-without-preceding-blankline-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "lists-without-preceding-blankline-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Bullet-looking continuation without blank does not interrupt paragraph."
+    },
+    {
+      "extension": "literate_haskell",
+      "enabled": false,
+      "cases": [
+        "literate-haskell-excluded",
+        "literate-haskell-crlf",
+        "literate-haskell-unicode",
+        "literate-haskell-nested",
+        "literate-haskell-protected",
+        "literate-haskell-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "literate-haskell-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "literate-haskell-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "literate-haskell-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "literate-haskell-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "literate-haskell-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "literate-haskell-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "literate-haskell-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "literate-haskell-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Greater-than starts an ordinary quote, not Bird-style Haskell code."
+    },
+    {
+      "extension": "mark",
+      "enabled": false,
+      "cases": [
+        "mark-excluded",
+        "mark-crlf",
+        "mark-unicode",
+        "mark-nested",
+        "mark-protected",
+        "mark-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "mark-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "mark-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "mark-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "mark-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "mark-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "mark-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "mark-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "mark-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Equals delimiters remain literal, no highlighted span."
+    },
+    {
+      "extension": "markdown_attribute",
+      "enabled": false,
+      "cases": [
+        "markdown-attribute-excluded",
+        "markdown-attribute-crlf",
+        "markdown-attribute-unicode",
+        "markdown-attribute-nested",
+        "markdown-attribute-protected",
+        "markdown-attribute-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "markdown-attribute-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "markdown-attribute-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "markdown-attribute-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "markdown-attribute-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "markdown-attribute-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "markdown-attribute-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "markdown-attribute-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "markdown-attribute-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Markdown child remains eligible without markdown=1; disabled switch does not restrict enabled markdown_in_html_blocks."
+    },
+    {
+      "extension": "markdown_in_html_blocks",
+      "enabled": true,
+      "cases": [
+        "markdown-in-html-blocks-positive",
+        "markdown-in-html-blocks-fallback",
+        "markdown-in-html-blocks-escape",
+        "markdown-in-html-blocks-protected",
+        "markdown-in-html-blocks-nested",
+        "markdown-in-html-blocks-crlf",
+        "markdown-in-html-blocks-unicode",
+        "markdown-in-html-blocks-precedence"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "markdown-in-html-blocks-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "markdown-in-html-blocks-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "markdown-in-html-blocks-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "markdown-in-html-blocks-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "markdown-in-html-blocks-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "markdown-in-html-blocks-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "markdown-in-html-blocks-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "markdown-in-html-blocks-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Physical div exposes Markdown child emphasis without markdown attribute."
+    },
+    {
+      "extension": "mmd_header_identifiers",
+      "enabled": false,
+      "cases": [
+        "mmd-header-identifiers-excluded",
+        "mmd-header-identifiers-crlf",
+        "mmd-header-identifiers-unicode",
+        "mmd-header-identifiers-nested",
+        "mmd-header-identifiers-protected",
+        "mmd-header-identifiers-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "mmd-header-identifiers-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "mmd-header-identifiers-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "mmd-header-identifiers-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "mmd-header-identifiers-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "mmd-header-identifiers-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "mmd-header-identifiers-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "mmd-header-identifiers-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "mmd-header-identifiers-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Square bracket suffix is heading content, not explicit ID."
+    },
+    {
+      "extension": "mmd_link_attributes",
+      "enabled": false,
+      "cases": [
+        "mmd-link-attributes-excluded",
+        "mmd-link-attributes-crlf",
+        "mmd-link-attributes-unicode",
+        "mmd-link-attributes-nested",
+        "mmd-link-attributes-protected",
+        "mmd-link-attributes-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "mmd-link-attributes-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "mmd-link-attributes-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "mmd-link-attributes-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "mmd-link-attributes-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "mmd-link-attributes-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "mmd-link-attributes-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "mmd-link-attributes-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "mmd-link-attributes-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "MultiMarkdown width assignment is not recognized as a link attribute; ordinary reference syntax/fallback applies."
+    },
+    {
+      "extension": "mmd_title_block",
+      "enabled": false,
+      "cases": [
+        "mmd-title-block-excluded",
+        "mmd-title-block-crlf",
+        "mmd-title-block-unicode",
+        "mmd-title-block-nested",
+        "mmd-title-block-protected",
+        "mmd-title-block-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "mmd-title-block-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "mmd-title-block-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "mmd-title-block-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "mmd-title-block-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "mmd-title-block-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "mmd-title-block-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "mmd-title-block-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "mmd-title-block-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Title and Author are body prose, no metadata."
+    },
+    {
+      "extension": "multiline_tables",
+      "enabled": false,
+      "cases": [
+        "multiline-tables-excluded",
+        "multiline-tables-crlf",
+        "multiline-tables-unicode",
+        "multiline-tables-nested",
+        "multiline-tables-protected",
+        "multiline-tables-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "multiline-tables-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "multiline-tables-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "multiline-tables-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "multiline-tables-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "multiline-tables-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "multiline-tables-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "multiline-tables-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "multiline-tables-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Spaced multiline layout stays body syntax, no multiline table."
+    },
+    {
+      "extension": "native_divs",
+      "enabled": true,
+      "cases": [
+        "native-divs-positive",
+        "native-divs-fallback",
+        "native-divs-escape",
+        "native-divs-protected",
+        "native-divs-nested",
+        "native-divs-crlf",
+        "native-divs-unicode",
+        "native-divs-precedence",
+        "html-origin-div"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "native-divs-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "native-divs-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "native-divs-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "native-divs-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "native-divs-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "native-divs-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "native-divs-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "native-divs-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Native Div retains physical opening/closing origin and ordinary child."
+    },
+    {
+      "extension": "native_spans",
+      "enabled": true,
+      "cases": [
+        "native-spans-positive",
+        "native-spans-fallback",
+        "native-spans-escape",
+        "native-spans-protected",
+        "native-spans-nested",
+        "native-spans-crlf",
+        "native-spans-unicode",
+        "native-spans-precedence",
+        "html-origin-span"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "native-spans-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "native-spans-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "native-spans-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "native-spans-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "native-spans-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "native-spans-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "native-spans-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "native-spans-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Native Span retains both physical tags and lintable child."
+    },
+    {
+      "extension": "old_dashes",
+      "enabled": false,
+      "cases": [
+        "old-dashes-excluded",
+        "old-dashes-crlf",
+        "old-dashes-unicode",
+        "old-dashes-nested",
+        "old-dashes-protected",
+        "old-dashes-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "old-dashes-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "old-dashes-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "old-dashes-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "old-dashes-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "old-dashes-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "old-dashes-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "old-dashes-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "old-dashes-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Smart is also disabled; dash bytes stay unchanged."
+    },
+    {
+      "extension": "pandoc_title_block",
+      "enabled": false,
+      "cases": [
+        "pandoc-title-block-excluded",
+        "pandoc-title-block-crlf",
+        "pandoc-title-block-unicode",
+        "pandoc-title-block-nested",
+        "pandoc-title-block-protected",
+        "pandoc-title-block-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "pandoc-title-block-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "pandoc-title-block-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "pandoc-title-block-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "pandoc-title-block-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "pandoc-title-block-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "pandoc-title-block-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "pandoc-title-block-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "pandoc-title-block-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Percent title lines remain body paragraph; no metadata."
+    },
+    {
+      "extension": "pipe_tables",
+      "enabled": true,
+      "cases": [
+        "pipe-tables-positive",
+        "pipe-tables-fallback",
+        "pipe-tables-escape",
+        "pipe-tables-protected",
+        "pipe-tables-nested",
+        "pipe-tables-crlf",
+        "pipe-tables-unicode",
+        "pipe-tables-precedence",
+        "table-loss-short",
+        "table-loss-excess"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "pipe-tables-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "pipe-tables-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "pipe-tables-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "pipe-tables-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "pipe-tables-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "pipe-tables-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "pipe-tables-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "pipe-tables-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Delimiter width two pads short body and truncates semantic excess header/body while retaining all raw fields."
+    },
+    {
+      "extension": "raw_attribute",
+      "enabled": true,
+      "cases": [
+        "raw-attribute-positive",
+        "raw-attribute-fallback",
+        "raw-attribute-escape",
+        "raw-attribute-protected",
+        "raw-attribute-nested",
+        "raw-attribute-crlf",
+        "raw-attribute-unicode",
+        "raw-attribute-precedence",
+        "protected-raw-format"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "raw-attribute-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "raw-attribute-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "raw-attribute-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "raw-attribute-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "raw-attribute-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "raw-attribute-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "raw-attribute-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "raw-attribute-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Raw-format fence protects exact latex payload; no missing-language inference."
+    },
+    {
+      "extension": "raw_html",
+      "enabled": true,
+      "cases": [
+        "raw-html-positive",
+        "raw-html-fallback",
+        "raw-html-escape",
+        "raw-html-protected",
+        "raw-html-nested",
+        "raw-html-crlf",
+        "raw-html-unicode",
+        "raw-html-precedence",
+        "html-origin-script",
+        "html-origin-style",
+        "html-origin-pre",
+        "html-origin-textarea"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "raw-html-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "raw-html-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "raw-html-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "raw-html-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "raw-html-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "raw-html-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "raw-html-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "raw-html-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Physical b tags remain raw/protected; bird remains ordinary inline content."
+    },
+    {
+      "extension": "raw_tex",
+      "enabled": true,
+      "cases": [
+        "raw-tex-positive",
+        "raw-tex-fallback",
+        "raw-tex-escape",
+        "raw-tex-protected",
+        "raw-tex-nested",
+        "raw-tex-crlf",
+        "raw-tex-unicode",
+        "raw-tex-precedence",
+        "protected-tex"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "raw-tex-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "raw-tex-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "raw-tex-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "raw-tex-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "raw-tex-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "raw-tex-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "raw-tex-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "raw-tex-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Recognized TeX environment remains protected, with original pipe."
+    },
+    {
+      "extension": "rebase_relative_paths",
+      "enabled": false,
+      "cases": [
+        "rebase-relative-paths-excluded",
+        "rebase-relative-paths-crlf",
+        "rebase-relative-paths-unicode",
+        "rebase-relative-paths-nested",
+        "rebase-relative-paths-protected",
+        "rebase-relative-paths-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "rebase-relative-paths-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "rebase-relative-paths-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "rebase-relative-paths-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "rebase-relative-paths-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "rebase-relative-paths-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "rebase-relative-paths-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "rebase-relative-paths-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "rebase-relative-paths-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Relative destination remains ../nest.md without rebasing."
+    },
+    {
+      "extension": "short_subsuperscripts",
+      "enabled": false,
+      "cases": [
+        "short-subsuperscripts-excluded",
+        "short-subsuperscripts-crlf",
+        "short-subsuperscripts-unicode",
+        "short-subsuperscripts-nested",
+        "short-subsuperscripts-protected",
+        "short-subsuperscripts-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "short-subsuperscripts-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "short-subsuperscripts-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "short-subsuperscripts-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "short-subsuperscripts-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "short-subsuperscripts-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "short-subsuperscripts-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "short-subsuperscripts-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "short-subsuperscripts-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Unclosed short forms remain text, no sub/superscript."
+    },
+    {
+      "extension": "shortcut_reference_links",
+      "enabled": true,
+      "cases": [
+        "shortcut-reference-links-positive",
+        "shortcut-reference-links-fallback",
+        "shortcut-reference-links-escape",
+        "shortcut-reference-links-protected",
+        "shortcut-reference-links-nested",
+        "shortcut-reference-links-crlf",
+        "shortcut-reference-links-unicode",
+        "shortcut-reference-links-precedence"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "shortcut-reference-links-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "shortcut-reference-links-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "shortcut-reference-links-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "shortcut-reference-links-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "shortcut-reference-links-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "shortcut-reference-links-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "shortcut-reference-links-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "shortcut-reference-links-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Shortcut bird resolves to the explicit /nest definition."
+    },
+    {
+      "extension": "simple_tables",
+      "enabled": false,
+      "cases": [
+        "simple-tables-excluded",
+        "simple-tables-crlf",
+        "simple-tables-unicode",
+        "simple-tables-nested",
+        "simple-tables-protected",
+        "simple-tables-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "simple-tables-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "simple-tables-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "simple-tables-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "simple-tables-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "simple-tables-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "simple-tables-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "simple-tables-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "simple-tables-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Space-delimited layout remains body syntax; not a pipe table."
+    },
+    {
+      "extension": "smart",
+      "enabled": false,
+      "cases": [
+        "smart-excluded",
+        "smart-crlf",
+        "smart-unicode",
+        "smart-nested",
+        "smart-protected",
+        "smart-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "smart-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "smart-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "smart-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "smart-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "smart-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "smart-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "smart-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "smart-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Quote/dot/dash punctuation preserved without smart substitutions."
+    },
+    {
+      "extension": "space_in_atx_header",
+      "enabled": true,
+      "cases": [
+        "space-in-atx-header-positive",
+        "space-in-atx-header-fallback",
+        "space-in-atx-header-escape",
+        "space-in-atx-header-protected",
+        "space-in-atx-header-nested",
+        "space-in-atx-header-crlf",
+        "space-in-atx-header-unicode",
+        "space-in-atx-header-precedence"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "space-in-atx-header-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "space-in-atx-header-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "space-in-atx-header-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "space-in-atx-header-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "space-in-atx-header-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "space-in-atx-header-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "space-in-atx-header-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "space-in-atx-header-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Space after hash permits ATX heading."
+    },
+    {
+      "extension": "spaced_reference_links",
+      "enabled": false,
+      "cases": [
+        "spaced-reference-links-excluded",
+        "spaced-reference-links-crlf",
+        "spaced-reference-links-unicode",
+        "spaced-reference-links-nested",
+        "spaced-reference-links-protected",
+        "spaced-reference-links-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "spaced-reference-links-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "spaced-reference-links-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "spaced-reference-links-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "spaced-reference-links-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "spaced-reference-links-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "spaced-reference-links-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "spaced-reference-links-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "spaced-reference-links-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Spaced components do not combine: bird stays literal, r independently resolves as shortcut."
+    },
+    {
+      "extension": "startnum",
+      "enabled": true,
+      "cases": [
+        "startnum-positive",
+        "startnum-fallback",
+        "startnum-protected",
+        "startnum-nested",
+        "startnum-crlf",
+        "startnum-unicode",
+        "startnum-precedence",
+        "startnum-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "startnum-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "startnum-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "startnum-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "startnum-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "startnum-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "startnum-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "startnum-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "startnum-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Decimal ordered list starts at seven, retaining original marker."
+    },
+    {
+      "extension": "strikeout",
+      "enabled": true,
+      "cases": [
+        "strikeout-positive",
+        "strikeout-fallback",
+        "strikeout-escape",
+        "strikeout-protected",
+        "strikeout-nested",
+        "strikeout-crlf",
+        "strikeout-unicode",
+        "strikeout-precedence"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "strikeout-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "strikeout-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "strikeout-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "strikeout-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "strikeout-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "strikeout-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "strikeout-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "strikeout-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Paired double tildes surround lintable old text."
+    },
+    {
+      "extension": "subscript",
+      "enabled": true,
+      "cases": [
+        "subscript-positive",
+        "subscript-fallback",
+        "subscript-protected",
+        "subscript-nested",
+        "subscript-crlf",
+        "subscript-unicode",
+        "subscript-precedence",
+        "subscript-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "subscript-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "subscript-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "subscript-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "subscript-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "subscript-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "subscript-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "subscript-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "subscript-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Delimited 2 is subscript."
+    },
+    {
+      "extension": "superscript",
+      "enabled": true,
+      "cases": [
+        "superscript-positive",
+        "superscript-fallback",
+        "superscript-protected",
+        "superscript-nested",
+        "superscript-crlf",
+        "superscript-unicode",
+        "superscript-precedence",
+        "superscript-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "superscript-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "superscript-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "superscript-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "superscript-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "superscript-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "superscript-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "superscript-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "superscript-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Delimited 2 is superscript."
+    },
+    {
+      "extension": "table_attributes",
+      "enabled": true,
+      "cases": [
+        "table-attributes-positive",
+        "table-attributes-fallback",
+        "table-attributes-escape",
+        "table-attributes-protected",
+        "table-attributes-nested",
+        "table-attributes-crlf",
+        "table-attributes-unicode",
+        "table-attributes-precedence",
+        "raw-ids-table"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "table-attributes-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "table-attributes-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "table-attributes-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "table-attributes-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "table-attributes-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "table-attributes-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "table-attributes-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "table-attributes-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Caption attributes attach to table; raw IDs retained, two effective."
+    },
+    {
+      "extension": "table_captions",
+      "enabled": true,
+      "cases": [
+        "table-captions-positive",
+        "table-captions-fallback",
+        "table-captions-escape",
+        "table-captions-protected",
+        "table-captions-nested",
+        "table-captions-crlf",
+        "table-captions-unicode",
+        "table-captions-precedence"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "table-captions-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "table-captions-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "table-captions-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "table-captions-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "table-captions-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "table-captions-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "table-captions-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "table-captions-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Attached Table caption extends table through Birds."
+    },
+    {
+      "extension": "task_lists",
+      "enabled": true,
+      "cases": [
+        "task-lists-positive",
+        "task-lists-fallback",
+        "task-lists-escape",
+        "task-lists-protected",
+        "task-lists-nested",
+        "task-lists-crlf",
+        "task-lists-unicode",
+        "task-lists-precedence",
+        "tasks-original-crlf"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "task-lists-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "task-lists-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "task-lists-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "task-lists-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "task-lists-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "task-lists-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "task-lists-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "task-lists-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Original X/x/space spellings remain; first two checked, last unchecked."
+    },
+    {
+      "extension": "tex_math_dollars",
+      "enabled": true,
+      "cases": [
+        "tex-math-dollars-positive",
+        "tex-math-dollars-fallback",
+        "tex-math-dollars-escape",
+        "tex-math-dollars-protected",
+        "tex-math-dollars-nested",
+        "tex-math-dollars-crlf",
+        "tex-math-dollars-unicode",
+        "tex-math-dollars-precedence",
+        "protected-math"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "tex-math-dollars-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "tex-math-dollars-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "tex-math-dollars-fallback"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "tex-math-dollars-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "tex-math-dollars-positive"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "tex-math-dollars-precedence"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "tex-math-dollars-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "tex-math-dollars-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Dollar-delimited inline and display math protect original pipe payloads."
+    },
+    {
+      "extension": "tex_math_double_backslash",
+      "enabled": false,
+      "cases": [
+        "tex-math-double-backslash-excluded",
+        "tex-math-double-backslash-crlf",
+        "tex-math-double-backslash-unicode",
+        "tex-math-double-backslash-nested",
+        "tex-math-double-backslash-protected",
+        "tex-math-double-backslash-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "tex-math-double-backslash-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "tex-math-double-backslash-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "tex-math-double-backslash-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "tex-math-double-backslash-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "tex-math-double-backslash-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "tex-math-double-backslash-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "tex-math-double-backslash-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "tex-math-double-backslash-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Double-backslash delimiters do not create math; ordinary escape interpretation applies."
+    },
+    {
+      "extension": "tex_math_single_backslash",
+      "enabled": false,
+      "cases": [
+        "tex-math-single-backslash-excluded",
+        "tex-math-single-backslash-crlf",
+        "tex-math-single-backslash-unicode",
+        "tex-math-single-backslash-nested",
+        "tex-math-single-backslash-protected",
+        "tex-math-single-backslash-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "tex-math-single-backslash-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "tex-math-single-backslash-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "tex-math-single-backslash-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "tex-math-single-backslash-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "tex-math-single-backslash-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "tex-math-single-backslash-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "tex-math-single-backslash-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "tex-math-single-backslash-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Single-backslash parentheses follow punctuation escape semantics, no math."
+    },
+    {
+      "extension": "wikilinks_title_after_pipe",
+      "enabled": false,
+      "cases": [
+        "wikilinks-title-after-pipe-excluded",
+        "wikilinks-title-after-pipe-crlf",
+        "wikilinks-title-after-pipe-unicode",
+        "wikilinks-title-after-pipe-nested",
+        "wikilinks-title-after-pipe-protected",
+        "wikilinks-title-after-pipe-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "wikilinks-title-after-pipe-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "wikilinks-title-after-pipe-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "wikilinks-title-after-pipe-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "wikilinks-title-after-pipe-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "wikilinks-title-after-pipe-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "wikilinks-title-after-pipe-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "wikilinks-title-after-pipe-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "wikilinks-title-after-pipe-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Wiki brackets/pipe remain text without wiki target/title interpretation."
+    },
+    {
+      "extension": "wikilinks_title_before_pipe",
+      "enabled": false,
+      "cases": [
+        "wikilinks-title-before-pipe-excluded",
+        "wikilinks-title-before-pipe-crlf",
+        "wikilinks-title-before-pipe-unicode",
+        "wikilinks-title-before-pipe-nested",
+        "wikilinks-title-before-pipe-protected",
+        "wikilinks-title-before-pipe-escape"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "wikilinks-title-before-pipe-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "wikilinks-title-before-pipe-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "wikilinks-title-before-pipe-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "wikilinks-title-before-pipe-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "wikilinks-title-before-pipe-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "wikilinks-title-before-pipe-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "wikilinks-title-before-pipe-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "wikilinks-title-before-pipe-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Wiki brackets/pipe remain text without wiki title/target interpretation."
+    },
+    {
+      "extension": "yaml_metadata_block",
+      "enabled": false,
+      "cases": [
+        "yaml-metadata-block-excluded",
+        "yaml-metadata-block-crlf",
+        "yaml-metadata-block-unicode",
+        "yaml-metadata-block-nested",
+        "yaml-metadata-block-protected",
+        "yaml-metadata-block-escape",
+        "toml-looking-ordinary"
+      ],
+      "dimensions": {
+        "crlf": {
+          "cases": [
+            "yaml-metadata-block-crlf"
+          ],
+          "not_applicable": null
+        },
+        "escape": {
+          "cases": [
+            "yaml-metadata-block-escape"
+          ],
+          "not_applicable": null
+        },
+        "fallback": {
+          "cases": [
+            "yaml-metadata-block-excluded"
+          ],
+          "not_applicable": null
+        },
+        "nested": {
+          "cases": [
+            "yaml-metadata-block-nested"
+          ],
+          "not_applicable": null
+        },
+        "positive": {
+          "cases": [
+            "yaml-metadata-block-excluded"
+          ],
+          "not_applicable": null
+        },
+        "precedence": {
+          "cases": [
+            "yaml-metadata-block-excluded"
+          ],
+          "not_applicable": null
+        },
+        "protected": {
+          "cases": [
+            "yaml-metadata-block-protected"
+          ],
+          "not_applicable": null
+        },
+        "unicode": {
+          "cases": [
+            "yaml-metadata-block-unicode"
+          ],
+          "not_applicable": null
+        }
+      },
+      "rationale": "Both start and mid-document YAML-looking bytes use thematic-break and setext-heading body semantics; no metadata."
+    }
+  ]
+}

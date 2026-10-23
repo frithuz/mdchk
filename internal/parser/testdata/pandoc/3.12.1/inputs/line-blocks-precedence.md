@@ -1,0 +1,7 @@
+~~~~
+| north
+| south
+~~~~
+
+| north
+| south

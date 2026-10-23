@@ -1,0 +1,7 @@
+~~~~
+before
+``` text
+[^hidden]
+```
+after
+~~~~
