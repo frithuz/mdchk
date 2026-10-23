@@ -4,9 +4,11 @@ Status: approved on 2026-10-14. The [original published corpus and offline
 extraction tooling](../../internal/parser/testdata/gfm/0.29-gfm/README.md) are
 retained and verified. The [executable profile fixture contract](../../internal/parser/testdata/gfm/profile/README.md)
 now supplies adaptations and independent source expectations. A private parser
-stage now recognizes source-preserving tables, task items, strikethrough and
-extended autolinks and shares the core lifecycle and inline machinery. The integrated profile, its conformance
-adapter and mdchk conformance verification remain pending. Public parser APIs
+stage recognizes all five source-preserving extensions and shares the core
+lifecycle and inline machinery. A build-tagged test adapter and offline runner
+now execute all 2,117 profile comparison units with separate raw historical and
+approved-target axes. Full profile/resource verification and real consumer
+integration remain separate gates. Public parser APIs
 remain CommonMark-only; configuration still rejects unavailable GFM. This contract
 defines the target for [#158](https://github.com/frithuz/mdchk/issues/158), building
 on the [verified core parser contract](https://github.com/frithuz/mdchk/issues/32).
@@ -340,9 +342,11 @@ transitions, references, literal/protected inventories and directive eligibility
 remain unchanged. Code and generated/escaped angles gain no filter facts.
 
 No public selector, renderer, source fix, sanitizer or production GFM admission
-is added. Private recognition of five syntax extensions does not establish full
-profile conformance; the adapter, activation and actual consumer gates remain
-separate, with all 2,117 actual profile consumer units still NOT-RUN.
+is added. Private recognition alone does not establish profile support. The
+[test-only actual adapter](../../internal/parser/testdata/gfm/profile/README.md#execute-the-actual-adapter-offline)
+executes all 2,117 units, preserving raw historical 649/650 differences separately
+from reviewed modern targets. Full profile/resource verification, activation and
+actual lint/fix/inspect consumer gates remain separate.
 
 ## Rule and operation integration
 

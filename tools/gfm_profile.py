@@ -629,6 +629,9 @@ def load():
 
 
 def main():
+    if any(x.split('=', 1)[0] in ('--run', '--require-approved-profile', '--adapter', '--examples', '--section', '--scope', '--fixture') for x in sys.argv[1:]):
+        import gfm_conformance
+        return gfm_conformance.main()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true', help='read-only ledger validation')
     parser.add_argument('--require-complete', action='store_true', help='require all actual consumers; currently refuses')

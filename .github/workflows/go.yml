@@ -27,6 +27,8 @@ jobs:
           cache: false
       - name: Test
         run: go test ./...
+      - name: Test actual GFM AST adapter and scope controls
+        run: go test -tags mdchk_conformance ./internal/conformance/... -count=1 -v
       - name: Vet
         run: go vet ./...
       - name: Lint
@@ -43,6 +45,8 @@ jobs:
         run: python3 -B tools/gfm_profile.py --check
       - name: Test GFM profile source contracts and refusal controls
         run: python3 -B -m unittest discover -s tools -p 'test_gfm_profile.py' -v
+      - name: Test actual GFM runner and strict comparator regressions
+        run: python3 -B -m unittest discover -s tools -p 'test_gfm_conformance.py' -v
       - name: Check pinned Unicode folding table
         run: python3 -B tools/unicode_casefold.py --check
       - name: Check pinned HTML entity table
@@ -128,6 +132,8 @@ jobs:
           cache: false
       - name: Test with race detector
         run: go test -race ./...
+      - name: Test actual GFM AST adapter with race detector
+        run: go test -race -tags mdchk_conformance ./internal/conformance/... -count=1
 
   fuzz:
     runs-on: ubuntu-24.04

@@ -160,7 +160,7 @@ func (s *inlineScanner) dispatch(offset int) int {
 	case '*', '_', '~':
 		if c == '~' {
 			profile, ok := s.ctx.(*parserContext)
-			if !ok || profile.profile != gfmInProgressProfile {
+			if !ok || !profile.profile.enabled(strikeOnlyProfile) {
 				return offset + 1
 			}
 		}

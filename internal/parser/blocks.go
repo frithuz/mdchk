@@ -614,7 +614,7 @@ func (p *blockParser) closeTo(depth int) error {
 			p.inlinePayload = true
 			spec.Envelope = p.index.span(block.start, block.last.next)
 			spec.Content = p.paragraphContent(block)
-			if p.stagedGFM() && len(p.stack) >= 2 {
+			if p.extensionEnabled(tasksOnlyProfile) && len(p.stack) >= 2 {
 				parent := p.stack[len(p.stack)-2]
 				if parent.kind == ListItem && len(parent.children) == 0 {
 					p.recognizeTask(&spec, block)

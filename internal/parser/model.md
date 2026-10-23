@@ -1274,8 +1274,11 @@ signatures/defaults. The private `gfmInProgressProfile` selects implemented synt
 through their shared admission, UTF-8, budgeting, block/inline and recovery body.
 It is an internal development stage, not a selectable or complete GFM profile.
 Its completed status certifies the five syntax extensions in the private
-stage it runs. The full-profile conformance adapter, public activation and
-actual profile consumers remain separate work.
+stage it runs. The [tagged test adapter](testdata/gfm/profile/README.md#execute-the-actual-adapter-offline)
+executes all 2,117 comparison units with separate immutable raw historical and
+approved modern-target axes. Broader profile/resource verification (#235), public
+activation and real lint/fix/inspect consumer integration (#161) remain separate
+work; adapter success does not grant production GFM availability.
 
 `Table` owns `TableProperties` (positive Width and one typed Alignment per
 column), and source-ordered `TableRow` children: one header, one delimiter, then
@@ -1440,8 +1443,12 @@ Bare links remain transparent to source consumers. Walk/reference traversal and
 protection still reach real code/HTML descendants elsewhere; bare syntax itself
 adds no opaque range. Only complete same-operation documents grant authority.
 Public Parse/ParseWithBudget/zero/core stay CommonMark-only. The five-extension
-private stage does not activate public GFM, rendering, rules or
-actual profile consumers; the 2,117 consumer units remain NOT-RUN.
+private stage does not activate public GFM, production rendering, rules or real
+operation consumers. The tagged test adapter executes all 2,117 comparison units
+with separate raw historical and approved modern-target results; see the
+[actual-run contract](testdata/gfm/profile/README.md#execute-the-actual-adapter-offline).
+Broader profile/resource verification (#235) and real consumer integration (#161)
+remain separate gates.
 
 
 ### Disallowed raw HTML metadata
@@ -1477,6 +1484,9 @@ consumer authority. InlineHTML is atomic; HTMLBlock visits its logical payload,
 excluding only existing confirmed comments through their actual close or EOF.
 Tail facts occur once on the enclosing block. Opaque comment-looking strings do
 not acquire comment ownership or directive eligibility. Public Parse and
-ParseWithBudget remain CommonMark-only. The five-extension private stage is not
-adapter #234, activation #235 or completed #161 consumer integration; all 2,117
-actual profile consumer units remain NOT-RUN.
+ParseWithBudget remain CommonMark-only. The five-extension private stage does not
+establish full profile/resource verification (#235), public activation or completed
+real consumer integration (#161). The delivered tagged adapter (#234) executes
+all 2,117 units with separate immutable raw and approved modern-target comparisons;
+its [actual-run contract](testdata/gfm/profile/README.md#execute-the-actual-adapter-offline)
+retains these boundaries and distinguishes integrity-only NOT-RUN checks.

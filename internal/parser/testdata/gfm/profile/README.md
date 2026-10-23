@@ -1,8 +1,9 @@
 # Approved GFM profile fixtures
 
 These fixtures encode CommonMark 0.31.2 plus all five published GFM extensions.
-They validate expected data and source contracts. The GFM parser and consumer
-integration remain unavailable; configuration continues to reject unavailable GFM.
+They validate expected data and source contracts. The test-only tagged adapter
+executes the real private parser stage; production consumer integration remains
+unavailable and configuration continues to reject unavailable GFM.
 The separate actual CommonMark conformance gate remains 652 unchanged cases.
 
 `ledger.json` resolves every one of the 677 retained published cases under three
@@ -19,7 +20,7 @@ governing section and exact source projections for every changed interpretation,
 plus non-adoption and supplemental regressions. The selected projections are
 required ordered node facts, not exhaustive whole production trees. A document
 projection asserts the source envelope only. Core projections do not pretend that
-extension nodes were recognized. Future adapters must publish the required
+extension nodes were recognized. The adapter publishes the required
 projection from actual syntax while independently rejecting extra forbidden
 extension recognition in core mode. No fake production AST is constructed here.
 
@@ -92,16 +93,90 @@ the fixture, interpretation scope and nested node path while retaining the
 semantic assertion reason. Provenance verifies per-artifact
 hashes as well as semantic checks; tests exercise semantics beyond the hash gate.
 
-Machine-readable `expected_validity` is separate from `actual_consumers`. There
-are 2,031 published scope units (677 × 3) plus two units per supplemental fixture.
-Published source fixtures are not double-counted. Every current consumer unit is
-explicitly `not-run`: fixture integrity is not a GFM conformance pass. The future
-consumer comparison API separately reports pass/fail/error/not-run/unimplemented;
-wrong HTML, wrong source structure, missing scopes and subsets cannot establish
-complete conformance. Fake consumers in tests exercise these refusals only.
-`--require-complete` currently exits 1 because no GFM consumer integration ran.
-It never skips or counts pending data as a pass. Phase 09 owns real consumers and
-extension recognizers; this delivery activates no production behavior.
+Machine-readable `expected_validity` is separate from actual conformance.
+`--check` validates fixtures and reports its 2,117 consumer units as `not-run`;
+this integrity-only command never claims execution. The legacy exact
+`consumer_result`/`results` APIs and `--require-complete` refusal retain their
+meaning. Fake consumers in tests exercise rejection only.
+
+## Execute the actual adapter offline
+
+Go 1.27.2+ and Python 3.9+ are required, with the declared Go module dependencies
+already available for an offline build. No cmark executable, network, external
+spec checkout or Working-directory artifact is needed:
+
+```sh
+go build -tags mdchk_conformance -o /tmp/mdchk-specadapter ./internal/conformance/cmd/specadapter
+python3 -B tools/gfm_profile.py --run --adapter /tmp/mdchk-specadapter --json
+python3 -B tools/gfm_profile.py --run --require-approved-profile
+python3 -B tools/gfm_profile.py --run --examples 198,649 --scope original
+python3 -B tools/gfm_profile.py --run --section 'Tables (extension)'
+python3 -B tools/gfm_profile.py --run --fixture combined-all-five
+go test -tags mdchk_conformance ./internal/conformance/...
+python3 -B -m unittest discover -s tools -p 'test_gfm_conformance.py' -v
+```
+
+`tools/gfm_conformance.py` is the same actual-run entry point. Without `--adapter`
+it builds a temporary tagged executable from this checkout. Relative prebuilt
+adapter paths resolve from the invocation directory; corpus paths resolve from
+the retained checkout, independently of CWD. Filters combine by intersection and
+unknown or empty selections fail. Inventory validation always precedes filtering.
+
+The closed test-build scopes are core, tables-only, tasks-only, strike-only,
+bare-only, filter-only and integrated. They reuse the same parser lifecycle and
+finite operation; ordinary untagged Parse and product builds remain core-only.
+Original base units execute modern core; original extension units execute only
+their named section extension. Core units execute core, and integrated units
+execute all five. No public configuration extension switches are added.
+
+Every run reports selected/executed/filtered counts against the complete 2,117
+units: 677 published inputs including 28 extensions, each under three scopes,
+plus 43 supplemental fixtures under two scopes. Published source fixtures attach
+to existing units. Each unit carries source pin/hash/section/lines, execution
+scope, immutable raw reference, approved target reference and adaptation reason.
+The actual catalog comes only from parser syntax/metadata and completed
+same-operation protection consumers. The matcher selects ordered exact witnesses
+with real ancestry; empty fixture content/children are unasserted. Actual content
+coalesces adjacent source spans for this assertion view; transformations remain
+explicit in every actual fact's mappings, text/link parts and typed table/filter
+facts. Original marker roles are retained alongside that mapping inventory. Disabled extensions are
+checked over the complete actual catalog, including document-only expectations.
+
+Strict deterministic HTML equality applies, with raw byte spellings and unified
+HTML/fact differences retained. There is no GFM HTML normalization. Per-axis
+pass/fail/error/pending counts are explicit. `raw_declared` compares immutable
+historical expectations; `approved_target` selects an original base unit's
+reviewed core reference before execution, and otherwise retains its declared
+scope. Therefore original 649/650 honestly fail raw historical equality while
+passing their approved modern comment targets. No fixture is rewritten, skipped
+or automatically accepted. The legacy `conformance_complete` and explicit
+`raw_historical_conformance_complete` require all 2,117 raw passes.
+`approved_profile_conformance_complete` and `--require-approved-profile` require
+all 2,117 approved target passes with no errors/pending/missing units. A subset
+can establish neither completion. `--run --require-complete` gates historical raw
+equality and therefore fails on the deliberate modern-comment differences.
+
+The tagged executable admits at most 1 MiB before copying into Source, and the
+actual-export protocol additionally bounds source coordinates to 16,384 bytes,
+20,000 facts and 16 MiB output. The runner also bounds retained actual responses
+to 32 MiB cumulatively, reporting further oversized retention as explicit errors
+while preserving unit accounting. JSON rejects duplicate keys, floating/nonfinite
+numbers, excessive nesting/records and invalid Unicode; typed assertions do not
+equate booleans and integers. Shared sticky work/time/node accounting covers
+parse, protection, rendering, coordinates, catalog copies and serialization.
+These are finite application bounds, not an OS RSS or hard preemption guarantee.
+Each runner subprocess has a finite timeout (default 65 seconds, maximum 120),
+bounded stdout/stderr acquisition and owned process-tree cleanup. On POSIX it
+owns a new process group; on Windows cleanup uses the system taskkill tree command.
+Unknown protocol/kinds/outcomes, malformed responses, timeout and missing output
+are explicit errors; unfinished syntax remains pending. No partial output passes.
+
+The separately pinned optional diagnostic programs remain cmark-gfm
+0.29.0.gfm.13 at 587a12bb54d95ac37241377e6ddc93ea0e45439b and cmark 0.31.2
+at eec0eeba6d31189fd828314576494566d539b1e3. They are not required or invoked by
+this runner and cannot supply targets. Actual adapter conformance does not close
+the separate full profile/resource verification or real lint/fix/inspect consumer
+integration gates and does not activate production GFM.
 
 ## Attribution
 

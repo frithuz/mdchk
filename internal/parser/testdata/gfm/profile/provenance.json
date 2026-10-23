@@ -22,12 +22,12 @@
       "modifications": "Add stable original-case metadata and explicitly resolved expectation references; original data is not changed"
     },
     "tools/gfm_profile.py": {
-      "sha256": "afae858e6cd400e38378fe23e13aab25259864f0cf303341741dba0fd0ee6102",
-      "byte_count": 37238,
+      "sha256": "1d3d50755e74127b5fcb3e2aa0061b7b7afdbb1dcedca65d367e5bfc193d0ba8",
+      "byte_count": 37468,
       "license": "repository-authored software; no imported upstream software",
       "origin": "mdchk repository",
       "role": "Offline schema, source, provenance and actual-consumer accounting validator",
-      "modifications": "Stdlib-only validator; odd/even table backslash-run interpretation aligned with staged parser; no comparison implementation imported"
+      "modifications": "Stdlib-only validator; odd/even table backslash-run interpretation aligned with staged parser; no comparison implementation imported Issue 234: delegate explicit actual-run flags to the offline actual AST conformance runner; legacy validation and exact comparison APIs retained."
     }
   }
 }

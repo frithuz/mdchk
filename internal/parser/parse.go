@@ -124,7 +124,17 @@ type parserProfile uint8
 const (
 	coreProfile parserProfile = iota
 	gfmInProgressProfile
+	tablesOnlyProfile
+	tasksOnlyProfile
+	strikeOnlyProfile
+	bareOnlyProfile
+	filterOnlyProfile
 )
+
+// enabled keeps section execution closed and preserves the integrated stage.
+func (p parserProfile) enabled(extension parserProfile) bool {
+	return p == gfmInProgressProfile || p == extension
+}
 
 func parseWithProfile(ctx context.Context, source Source, budget *OperationBudget, profile parserProfile) (r ParseResult) {
 
@@ -196,7 +206,7 @@ func parseWithProfile(ctx context.Context, source Source, budget *OperationBudge
 		r.Failure = &Failure{Code: InternalFailure, Message: "construct inline model: " + err.Error()}
 		return r
 	}
-	if profile == gfmInProgressProfile && r.Phases.Inlines == PhaseComplete && interruption(ctx) == "" {
+	if profile.enabled(filterOnlyProfile) && r.Phases.Inlines == PhaseComplete && interruption(ctx) == "" {
 		root, filterErr := filterHTMLTree(ctx, r.Document.root)
 		if filterErr != nil {
 			r.Status, r.AST, r.Document = Failed, Unavailable, nil

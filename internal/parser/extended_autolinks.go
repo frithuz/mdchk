@@ -23,7 +23,7 @@ type bareImage struct {
 
 func (s *inlineScanner) extendedEnabled() bool {
 	p, ok := s.ctx.(*parserContext)
-	return ok && p.profile == gfmInProgressProfile
+	return ok && p.profile.enabled(bareOnlyProfile)
 }
 func bareWhitespace(c byte) bool { return c == ' ' || c >= '\t' && c <= '\r' }
 func bareDomain(c byte) bool     { return asciiAlphanumeric(c) || c == '_' || c == '-' || c == '.' }
