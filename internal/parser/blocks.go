@@ -24,6 +24,9 @@ type blockStartHook func(blockLine, bool) bool
 
 type openBlock struct {
 	kind        Kind
+	quoteInList bool // reader context captured before extracting this quote
+	quoteColumn int
+	pandocItem  pandocItemState // outer extraction precedes recursive children
 	start       int
 	last        blockLine
 	content     []Segment
@@ -31,6 +34,7 @@ type openBlock struct {
 	markers     []Marker
 	children    []parsedBlock
 	list        *ListProperties
+	pandocList  *PandocListProperties
 	empty       bool // an item whose opening line was blank and has no later content
 	partial     bool // an unavailable suffix prevents final list interpretation
 	reference   *referenceParagraph
@@ -54,6 +58,11 @@ type blockParser struct {
 	referenceSemanticsPending bool
 	referenceInterrupted      bool
 	deferred                  bool
+	examples                  map[string]int
+	exampleNext               int
+	exampleStarted            bool
+	exampleOverflow           bool
+	lineBlock                 *pandocLineBlock
 }
 
 func parseBlocks(ctx context.Context, document *Document) (PhaseState, error) {
@@ -93,7 +102,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		if matched < p.containerDepth() {
 			// Unmatched containers may still own paragraph continuation text. In
 			// particular an unmarked equals underline cannot promote a lazy paragraph.
-			if p.paragraphOpen() && line.contentStart != line.end && !p.siblingItem(matched, line) && !p.interruptsParagraph(line) && p.paragraphAllowsLazy(physical) {
+			if !p.pandoc() && p.paragraphOpen() && line.contentStart != line.end && !p.siblingItem(matched, line) && !p.interruptsParagraph(line) && p.paragraphAllowsLazy(physical) {
 				for i := 1; i < p.containerDepth(); i++ {
 					meterWork(ctx, 1)
 					p.stack[i].end = physical.next
@@ -113,8 +122,20 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			meterWork(ctx, 1)
 			p.stack[i].end = physical.next
 		}
+		if p.lineBlock != nil {
+			handled, err := p.continuePandocLineBlock(line)
+			if err != nil {
+				return Pending, err
+			}
+			if handled {
+				continue
+			}
+			if err := p.closePandocLineBlock(); err != nil {
+				return Pending, err
+			}
+		}
 		if p.table != nil {
-			_, listStart := classifyListStart(line, false)
+			_, listStart := p.classifyListStart(line, false)
 			if line.contentStart != line.end && !p.interruptsParagraph(line) && !listStart && p.htmlOpening(line, false) == 0 {
 				checkDepth(p.ctx, p.containerSyntaxDepth()+3)
 				row, _, _, err := p.splitTableRow(line, "body", p.table.width)
@@ -183,10 +204,26 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 		}
 	dispatch:
+		if p.pandoc() {
+			line = p.logicalLine(physical, cursor)
+		}
+		if p.pandoc() && p.paragraphOpen() && line.contentStart != line.end && !p.interruptsParagraph(line) && !p.pandocDefinitionBoundary(line) {
+			p.appendParagraph(line)
+			continue
+		}
+		// Header precedes quote/line/ordered-list dispatch in the selected reader,
+		// while fences and bullet lists retain their earlier priority.
+		if p.pandoc() && !p.paragraphOpen() && p.pandocSetextAhead(line) {
+			p.appendParagraph(line)
+			continue
+		}
 		// Continuing leaves have already consumed this line. A dedented code
 		// line is reprocessed here too, so it can open a new quote container.
 		for {
 			meterWork(ctx, 1)
+			if p.pandoc() && p.paragraphOpen() {
+				break
+			}
 			next, prefix, ok := p.quotePrefix(cursor)
 			if !ok {
 				break
@@ -195,7 +232,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 				return Pending, err
 			}
 			checkDepth(ctx, p.syntaxDepth()+1)
-			p.stack = meteredAppend(ctx, p.stack, openBlock{kind: BlockQuote, start: cursor.Offset(), end: physical.next,
+			p.stack = meteredAppend(ctx, p.stack, openBlock{kind: BlockQuote, start: cursor.Offset(), end: physical.next, quoteInList: p.pandoc() && p.inPandocItem(), quoteColumn: cursor.column,
 				markers: []Marker{{Role: "quote-prefix", Source: prefix}}})
 			cursor = next
 		}
@@ -299,7 +336,21 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			}
 			continue
 		}
-		if start, ok := classifyListStart(line, p.paragraphOpen()); ok {
+
+		if start, ok := p.classifyListStart(line, p.paragraphOpen()); ok {
+			if p.pandoc() && p.inPandocItem() && !start.sibling && start.properties.Ordered && start.properties.Start.Value != 1 {
+				p.appendParagraph(line)
+				continue
+			}
+			if !p.resolvePandocExample(&start) {
+				p.deferred = true
+				state = Pending
+				p.stack = p.stack[:depth]
+				for i := range p.stack {
+					p.stack[i].partial = true
+				}
+				break
+			}
 			if err := p.closeTo(depth); err != nil {
 				return Pending, err
 			}
@@ -309,10 +360,24 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 				return Pending, err
 			}
 			p.stack = meteredAppend(ctx, p.stack, item)
-			cursor = start.content
+			cursor = start.payloadCursor()
 			// The first payload can itself open another item/quote, or any leaf.
 			// Completed siblings are grouped once when their parent closes.
 			goto dispatch
+		}
+		if p.pandoc() {
+			handled, next, err := p.dispatchPandocSpecial(line)
+			if err != nil {
+				return Pending, err
+			}
+			if next != nil {
+				cursor = *next
+				line = p.logicalLine(physical, cursor)
+				goto dispatch
+			}
+			if handled {
+				continue
+			}
 		}
 		deferred := false
 		for _, hook := range p.hooks {
@@ -344,6 +409,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		// children already attached before interruption survive.
 		p.stack = p.stack[:1]
 		p.code, p.fence, p.html, p.table = nil, nil, nil, nil
+		p.lineBlock = nil
 	}
 	if err := p.closeLeaves(); err != nil {
 		return Pending, err
@@ -392,7 +458,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 // raw content for the later inline decoder. All trimming is ASCII space/tab.
 func (p *blockParser) atxHeading(line blockLine) (*Node, error) {
 	meterWork(p.ctx, 1)
-	if line.indent >= 4 || line.first != '#' {
+	if line.indent >= 4 || line.first != '#' || p.pandoc() && line.cursor.offset != line.contentStart {
 		return nil, nil
 	}
 	text := p.index.source.content
@@ -457,6 +523,9 @@ func (p *blockParser) setextHeading(line blockLine) (*Node, error) {
 		return nil, nil
 	}
 	paragraph := p.stack[len(p.stack)-1]
+	if p.pandoc() && len(paragraph.content) != 0 {
+		return nil, nil
+	}
 	return meteredNode(p.ctx, NodeSpec{
 		Kind: Heading, Envelope: p.index.span(paragraph.start, line.next),
 		Content:    p.paragraphContent(paragraph),
@@ -469,7 +538,7 @@ func (p *blockParser) setextHeading(line blockLine) (*Node, error) {
 // promotion, it does not extract definitions or mutate the open paragraph.
 func (p *blockParser) setextUnderline(line blockLine) (end, level int) {
 	meterWork(p.ctx, 1)
-	if line.indent >= 4 || line.first != '=' && line.first != '-' {
+	if line.indent >= 4 || line.first != '=' && line.first != '-' || p.pandoc() && line.cursor.offset != line.contentStart {
 		return 0, 0
 	}
 	text := p.index.source.content
@@ -568,7 +637,7 @@ func (p *blockParser) appendParagraph(line blockLine) {
 	if !p.paragraphOpen() {
 		checkDepth(p.ctx, p.syntaxDepth()+1)
 		block := openBlock{kind: Paragraph, start: line.start, last: line}
-		if line.first == '[' {
+		if line.first == '[' && !p.pandoc() {
 			block.reference = &referenceParagraph{}
 			block.reference.append(p.index.source, line)
 		}
@@ -608,12 +677,21 @@ func (p *blockParser) closeTo(depth int) error {
 		}
 		spec := NodeSpec{Kind: block.kind, Envelope: p.index.span(block.start, block.end), Markers: block.markers, Children: blockNodesContext(p.ctx, children)}
 		if block.list != nil {
-			spec.Properties.List = block.list
+			if block.kind == ListItem {
+				spec.Properties.List = block.list
+			}
+			spec.Properties.PandocList = block.pandocList
 		}
 		if block.kind == Paragraph {
 			p.inlinePayload = true
 			spec.Envelope = p.index.span(block.start, block.last.next)
 			spec.Content = p.paragraphContent(block)
+			if p.pandoc() && len(p.stack) >= 2 {
+				parent := p.stack[len(p.stack)-2]
+				if (parent.kind == ListItem || parent.kind == DefinitionBody) && len(parent.children) == 0 {
+					p.recognizePandocTask(&spec)
+				}
+			}
 			if p.extensionEnabled(tasksOnlyProfile) && len(p.stack) >= 2 {
 				parent := p.stack[len(p.stack)-2]
 				if parent.kind == ListItem && len(parent.children) == 0 {
@@ -621,8 +699,9 @@ func (p *blockParser) closeTo(depth int) error {
 				}
 			}
 		}
-		if block.kind == ListItem && len(spec.Children) > 0 && spec.Children[0].Kind() == Paragraph {
+		if (block.kind == ListItem || block.kind == DefinitionBody) && len(spec.Children) > 0 && spec.Children[0].Kind() == Paragraph {
 			spec.Properties.Task = spec.Children[0].spec.Properties.Task
+			spec.Properties.PandocTask = spec.Children[0].spec.Properties.PandocTask
 		}
 		node, err := meteredNode(p.ctx, spec)
 		if err != nil {
@@ -630,7 +709,7 @@ func (p *blockParser) closeTo(depth int) error {
 		}
 		p.stack = p.stack[:len(p.stack)-1]
 		closed := parsedBlock{node: node, partial: block.partial}
-		if block.kind == ListItem {
+		if block.kind == ListItem || block.kind == DefinitionBody {
 			closed.loose, closed.trailingBlank = itemBlankBoundariesContext(p.ctx, block, children)
 		}
 		p.attachBlock(closed)
@@ -661,6 +740,9 @@ func (p *blockParser) syntaxDepth() int {
 		}
 		if b.kind == ListItem {
 			depth++
+		}
+		if b.kind == DefinitionBody {
+			depth += 2
 		}
 	}
 	return depth

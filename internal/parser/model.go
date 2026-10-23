@@ -9,28 +9,34 @@ import (
 type Kind string
 
 const (
-	DocumentKind  Kind = "document"
-	Paragraph     Kind = "paragraph"
-	Heading       Kind = "heading"
-	ThematicBreak Kind = "thematic-break"
-	BlockQuote    Kind = "block-quote"
-	List          Kind = "list"
-	ListItem      Kind = "list-item"
-	CodeBlock     Kind = "code-block"
-	HTMLBlock     Kind = "html-block"
-	InlineHTML    Kind = "inline-html"
-	Text          Kind = "text"
-	SoftBreak     Kind = "soft-break"
-	HardBreak     Kind = "hard-break"
-	CodeSpan      Kind = "code-span"
-	Emphasis      Kind = "emphasis"
-	Strong        Kind = "strong"
-	Strike        Kind = "strike"
-	Link          Kind = "link"
-	Image         Kind = "image"
-	Table         Kind = "table"
-	TableRow      Kind = "table-row"
-	TableCell     Kind = "table-cell"
+	DocumentKind   Kind = "document"
+	Paragraph      Kind = "paragraph"
+	Heading        Kind = "heading"
+	ThematicBreak  Kind = "thematic-break"
+	BlockQuote     Kind = "block-quote"
+	List           Kind = "list"
+	ListItem       Kind = "list-item"
+	CodeBlock      Kind = "code-block"
+	HTMLBlock      Kind = "html-block"
+	InlineHTML     Kind = "inline-html"
+	Text           Kind = "text"
+	SoftBreak      Kind = "soft-break"
+	HardBreak      Kind = "hard-break"
+	CodeSpan       Kind = "code-span"
+	Emphasis       Kind = "emphasis"
+	Strong         Kind = "strong"
+	Strike         Kind = "strike"
+	Link           Kind = "link"
+	Image          Kind = "image"
+	Table          Kind = "table"
+	TableRow       Kind = "table-row"
+	TableCell      Kind = "table-cell"
+	DefinitionList Kind = "definition-list"
+	DefinitionItem Kind = "definition-item"
+	DefinitionTerm Kind = "definition-term"
+	DefinitionBody Kind = "definition-body"
+	LineBlock      Kind = "line-block"
+	LineBlockLine  Kind = "line-block-line"
 )
 
 // Transformation states how semantic content relates to original source. Exact
@@ -134,18 +140,22 @@ type LinkProperties struct {
 // Properties are typed, kind-specific metadata. Nil means inapplicable/absent,
 // not a known zero. Source segments are validated against the node envelope.
 type Properties struct {
-	Task      *TaskProperties
-	Table     *TableProperties
-	Row       *TableRowProperties
-	Cell      *TableCellProperties
-	Heading   *HeadingProperties
-	List      *ListProperties
-	Code      *CodeProperties
-	HTML      *HTMLProperties
-	Delimiter *DelimiterProperties
-	Break     *BreakProperties
-	Link      *LinkProperties
-	Literal   Optional[string]
+	Definition *DefinitionProperties
+	PandocList *PandocListProperties
+	PandocTask *PandocTaskProperties
+	PandocLine *PandocLineProperties
+	Task       *TaskProperties
+	Table      *TableProperties
+	Row        *TableRowProperties
+	Cell       *TableCellProperties
+	Heading    *HeadingProperties
+	List       *ListProperties
+	Code       *CodeProperties
+	HTML       *HTMLProperties
+	Delimiter  *DelimiterProperties
+	Break      *BreakProperties
+	Link       *LinkProperties
+	Literal    Optional[string]
 }
 
 // NodeSpec is construction input. NewNode snapshots every mutable slice/pointer;
@@ -195,6 +205,9 @@ func NewNode(spec NodeSpec) (*Node, error) {
 		return nil, err
 	}
 	if err := validateStrikeSpec(spec); err != nil {
+		return nil, err
+	}
+	if err := validatePandocSpec(spec); err != nil {
 		return nil, err
 	}
 	if err := validateTaskSpec(spec); err != nil {
@@ -267,7 +280,7 @@ func Walk(root *Node, visit func(*Node) bool) {
 
 func validKind(k Kind) bool {
 	switch k {
-	case DocumentKind, Paragraph, Heading, ThematicBreak, BlockQuote, List, ListItem, CodeBlock, HTMLBlock, InlineHTML, Text, SoftBreak, HardBreak, CodeSpan, Emphasis, Strong, Strike, Link, Image, Table, TableRow, TableCell:
+	case DefinitionList, DefinitionItem, DefinitionTerm, DefinitionBody, LineBlock, LineBlockLine, DocumentKind, Paragraph, Heading, ThematicBreak, BlockQuote, List, ListItem, CodeBlock, HTMLBlock, InlineHTML, Text, SoftBreak, HardBreak, CodeSpan, Emphasis, Strong, Strike, Link, Image, Table, TableRow, TableCell:
 		return true
 	}
 	return false
@@ -352,7 +365,7 @@ func validateProperties(k Kind, e Span, p Properties) error {
 	if p.List != nil && k != List && k != ListItem {
 		return ErrModel
 	}
-	if p.List != nil {
+	if p.List != nil && p.PandocList == nil {
 		item := p.List
 		if k != ListItem && (item.MarkerWidth.Present || item.Padding.Present || item.ContentIndent.Present || item.Prefix != nil) {
 			return ErrModel
@@ -523,6 +536,7 @@ func cloneValuePointer(p *Value) *Value {
 	return &v
 }
 func cloneProperties(p Properties) Properties {
+	clonePandocProperties(&p)
 	p.Task = clonePointer(p.Task)
 	if p.Task != nil {
 		p.Task.Segments = slices.Clone(p.Task.Segments)

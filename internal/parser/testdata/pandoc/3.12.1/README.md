@@ -3,9 +3,12 @@
 These original mdchk fixtures freeze the approved
 [Pandoc contract](../../../../../docs/engineering/pandoc-compatibility.md) and
 [profile](../../../../../docs/engineering/pandoc-profile.json), revision
-`pandoc-3.12.1-mdchk-1`. They specify future parser behavior. Integrity success
-means the authored data is consistent: **actual mdchk Pandoc parsing is
-NOT-RUN/unimplemented, zero passes, conformance_complete=false**. Production
+`pandoc-3.12.1-mdchk-1`. They specify the complete target. Integrity success
+means the authored data is consistent: **actual full-profile mdchk Pandoc parsing
+is NOT-RUN/unimplemented, zero passes, conformance_complete=false**. A private
+[block stage](../../../model.md#pandoc-block-stage) executes 74 retained cases
+(72 cases for nine selected switches and two source-loss witnesses) separately;
+its partial block results do not change this full-profile ledger. Production
 capability admission still rejects unavailable Pandoc with exit 12.
 
 From the repository root, using Python 3.9+ and its standard library:
@@ -24,11 +27,14 @@ directories. Ordinary commands need no network, Pandoc, developer `Working/`
 directory, Go compiler or application parser. Python must already be installed.
 CI runs integrity and the semantic mutation/offline unit suite.
 
-`--require-complete` always fails until actual parser execution exists. There is
-no actual-output import or adapter that can echo expectations into passes. This
-issue does not deliver parser recognition, rule callbacks, fix/reparse safety,
-MCP, frontmatter, Quarto, automatic IDs, slug policy or configuration switches.
-Those remain the later issues named by the compatibility contract.
+`--require-complete` fails until complete selected-profile parser execution and
+verification exist. There is no actual-output import or adapter that can echo
+expectations into passes. The original target tooling does not run the Go block
+stage; run `go test ./internal/parser -run '^TestPandoc' -count=1` for that
+separate stage, which retains pending inline semantics and unavailable complete
+consumer authority. Full-profile recognition, rule callbacks, fix/reparse safety,
+MCP, frontmatter, Quarto, automatic IDs, slug policy and configuration switches
+remain subject to their later gates.
 
 ## Authored data and source schema
 

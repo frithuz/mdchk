@@ -51,6 +51,8 @@ jobs:
         run: python3 -B -m unittest discover -s tools -p 'test_gfm_conformance.py' -v
       - name: Require complete approved GFM parser profile
         run: python3 -B tools/gfm_profile.py --run --require-approved-profile
+      - name: Test Pandoc block-stage source contracts (full profile unavailable)
+        run: go test ./internal/parser -run '^TestPandoc' -count=1 -v
       - name: Check approved Pandoc target integrity (parser remains unavailable)
         run: python3 -B tools/pandoc_profile.py --check
       - name: Test Pandoc target source contracts and offline refusal controls
@@ -155,6 +157,7 @@ jobs:
       matrix:
         target:
           - FuzzParse
+          - FuzzPandocBlockSourceProperties
           - FuzzGFMProfile
           - FuzzInlineTextProvenance
           - FuzzReferenceRegistry

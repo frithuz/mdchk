@@ -38,7 +38,7 @@ func (d *Document) LiteralSpans(ctx context.Context, budget *OperationBudget) ([
 			}
 		case HTMLBlock, InlineHTML:
 			out = append(out, n.Span())
-		case DocumentKind, Paragraph, Heading, ThematicBreak, BlockQuote, List, ListItem, Text, SoftBreak, HardBreak, Emphasis, Strong, Strike, Link, Image, Table, TableRow, TableCell:
+		case DefinitionList, DefinitionItem, DefinitionTerm, DefinitionBody, LineBlock, LineBlockLine, DocumentKind, Paragraph, Heading, ThematicBreak, BlockQuote, List, ListItem, Text, SoftBreak, HardBreak, Emphasis, Strong, Strike, Link, Image, Table, TableRow, TableCell:
 			// These nodes do not themselves establish opaque literal bytes.
 		}
 		stack = append(stack, n.htmlTail...)
@@ -75,7 +75,7 @@ func (d *Document) ProtectedNodes(ctx context.Context, budget *OperationBudget) 
 		switch n.Kind() {
 		case CodeBlock, CodeSpan, HTMLBlock, InlineHTML:
 			out = append(out, cloneNode(n))
-		case DocumentKind, Paragraph, Heading, ThematicBreak, BlockQuote, List, ListItem, Text, SoftBreak, HardBreak, Emphasis, Strong, Strike, Link, Image, Table, TableRow, TableCell:
+		case DefinitionList, DefinitionItem, DefinitionTerm, DefinitionBody, LineBlock, LineBlockLine, DocumentKind, Paragraph, Heading, ThematicBreak, BlockQuote, List, ListItem, Text, SoftBreak, HardBreak, Emphasis, Strong, Strike, Link, Image, Table, TableRow, TableCell:
 		}
 		stack = append(stack, n.htmlTail...)
 		stack = append(stack, n.spec.Children...)

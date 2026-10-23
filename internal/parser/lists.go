@@ -10,6 +10,8 @@ type listStart struct {
 	marker, after, content Indentation
 	properties             ListProperties
 	prefixSegments         int
+	pandoc                 *PandocListProperties
+	sibling                bool
 }
 
 // classifyListStart is shared by ordinary dispatch and quote interruption. It
@@ -159,7 +161,7 @@ func (s listStart) openItem() (openBlock, error) {
 			{Role: "item-prefix", Source: c.index.span(s.line.start, prefixEnd)},
 			{Role: "item-marker", Source: markerSpan},
 		},
-		list: &s.properties, empty: s.content.offset == s.content.end,
+		list: &s.properties, pandocList: s.pandoc, empty: s.content.offset == s.content.end,
 	}, nil
 }
 
@@ -175,9 +177,30 @@ func (p *blockParser) matchContainer(depth int, physical physicalLine, cursor In
 		if ok {
 			block.markers = meteredAppend(p.ctx, block.markers, Marker{Role: "quote-prefix", Source: prefix})
 		}
+		if !ok && p.pandoc() && p.pandocQuoteContinuation(depth, p.logicalLine(physical, cursor)) {
+			next, ok = cursor, true
+			next.column = block.quoteColumn
+		}
 		return next, ok
 	}
 	line := p.logicalLine(physical, cursor)
+	if p.pandoc() {
+		match := p.pandocItemLine(line, block.list.ContentIndent.Value, block.pandocItem)
+		if !match.ok {
+			return cursor, false
+		}
+		block.pandocItem = match.state
+		if len(match.consumed.Content.Segments) != 0 {
+			end := match.consumed.Content.Segments[len(match.consumed.Content.Segments)-1].Source.End()
+			block.markers = meteredAppend(p.ctx, block.markers, Marker{Role: "item-indent", Source: p.index.span(cursor.offset, end)})
+		}
+		if match.blank {
+			block.markers = meteredAppend(p.ctx, block.markers, Marker{Role: "item-blank", Source: p.index.span(cursor.offset, physical.next)})
+		} else {
+			block.empty = false
+		}
+		return match.cursor, true
+	}
 	blank := line.contentStart == line.end
 	if blank && block.empty {
 		return cursor, false
@@ -185,6 +208,7 @@ func (p *blockParser) matchContainer(depth int, physical physicalLine, cursor In
 	next := cursor
 	consumed, _ := next.Consume(block.list.ContentIndent.Value)
 	if !blank && consumed.Columns != block.list.ContentIndent.Value {
+
 		return cursor, false
 	}
 	if len(consumed.Content.Segments) != 0 {
@@ -206,8 +230,15 @@ func (p *blockParser) matchContainer(depth int, physical physicalLine, cursor In
 func (p *blockParser) siblingItem(depth int, line blockLine) bool {
 	meterWork(p.ctx, 1)
 	block := &p.stack[depth]
-	if block.kind != ListItem {
+	if block.kind != ListItem && block.kind != DefinitionBody {
 		return false
+	}
+	if p.pandoc() && (block.kind == ListItem || block.kind == DefinitionBody) {
+		start, ok := p.pandocActualListStart(line, block.pandocList, block.kind == DefinitionBody)
+		if !ok {
+			return false
+		}
+		return block.kind == DefinitionBody || start.pandoc.Style == block.pandocList.Style
 	}
 	start, ok := classifyListStart(line, false)
 	if !ok {

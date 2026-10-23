@@ -208,6 +208,34 @@ func meterWork(ctx context.Context, n int) {
 	}
 }
 
+// pandocWork keeps all scaled reservations wide before arithmetic. Negative
+// inputs or overflow saturate, exceeding every validated operation allowance.
+// Each pair is a count and its per-unit work factor.
+func pandocWork(base int64, terms ...int64) int64 {
+	if base < 0 || len(terms)%2 != 0 {
+		return math.MaxInt64
+	}
+	cost := base
+	for i := 0; i+1 < len(terms); i += 2 {
+		n, factor := terms[i], terms[i+1]
+		if n < 0 || factor < 0 || factor != 0 && n > math.MaxInt64/factor {
+			return math.MaxInt64
+		}
+		cost = addBounded(cost, n*factor)
+	}
+	return cost
+}
+func meterPandocWork(ctx context.Context, n int64) {
+	if n < 0 {
+		n = math.MaxInt64
+	}
+	if b := currentBudget(ctx); b != nil {
+		if e := b.operation.chargeLocked("work-units", n); e != nil {
+			panic(budgetStop{e})
+		}
+	}
+}
+
 // New HTML cost expressions can exceed a host int even for admitted input.
 // Keep their checked costs wide through the shared operation charge.
 func meterHTMLWork(ctx context.Context, n int64) {
@@ -279,9 +307,53 @@ func meteredNode(ctx context.Context, spec NodeSpec) (*Node, error) {
 	checkDepth(ctx, ancestorDepth(ctx)+depth)
 	meterRecords(ctx, 1+len(spec.Markers))
 	// Reserve structural validation and freezing visits, including empty values.
-	meterWork(ctx, 8*(1+len(spec.Markers)+len(spec.Content)+len(spec.Children)))
+	meterPandocWork(ctx, pandocWork(8, int64(len(spec.Markers)), 8, int64(len(spec.Content)), 8, int64(len(spec.Children)), 8))
 	meterValue(ctx, Value{Segments: spec.Content, Semantic: spec.Properties.Literal})
 	p := spec.Properties
+	if p.Definition != nil {
+		meterRecords(ctx, 1)
+		meterWork(ctx, 8)
+		if len(spec.Children) >= 2 {
+			meterWork(ctx, spec.Children[1].Span().Start()-spec.Children[0].Span().End())
+		}
+	}
+	if p.PandocList != nil {
+		if p.PandocList.Marker.Present() {
+			marker := p.PandocList.Marker
+			start := marker.Start()
+			for start > 0 && marker.source.content[start-1] != '\n' && marker.source.content[start-1] != '\r' {
+				meterWork(ctx, 1)
+				start--
+			}
+			// Validate raw marker family/conversion, prefix projections and at most
+			// eight physical-column prefix walks before the immutable constructor.
+			meterPandocWork(ctx, pandocWork(64, int64(marker.End())-int64(marker.Start()), 64, int64(marker.Start())-int64(start), 8))
+		}
+		meterRecords(ctx, 5)
+		meterWork(ctx, 64)
+		if p.PandocList.Decimal.Present() {
+			meterWork(ctx, p.PandocList.Decimal.End()-p.PandocList.Decimal.Start())
+		}
+		if p.PandocList.Separator.Present() {
+			meterWork(ctx, p.PandocList.Separator.End()-p.PandocList.Separator.Start())
+		}
+	}
+	if p.PandocTask != nil {
+		meterRecords(ctx, 4+len(p.PandocTask.Segments)+len(p.PandocTask.CheckSegments))
+		meterPandocWork(ctx, pandocWork(64, int64(len(p.PandocTask.Segments)), 8, int64(len(p.PandocTask.CheckSegments)), 8, int64(p.PandocTask.Marker.End())-int64(p.PandocTask.Marker.Start()), 8))
+		// Reconstruct the candidate from actual logical Content, not supplied token gaps.
+		for _, part := range spec.Content {
+			meterPandocWork(ctx, pandocWork(0, int64(part.Source.End())-int64(part.Source.Start()), 8))
+		}
+	}
+	if p.PandocLine != nil {
+		meterRecords(ctx, 1)
+		meterPandocWork(ctx, pandocWork(0, int64(len(p.PandocLine.Indentation.Semantic.Value)), 8))
+		for _, part := range p.PandocLine.Indentation.Segments {
+			meterPandocWork(ctx, pandocWork(0, int64(part.Source.End())-int64(part.Source.Start()), 4))
+		}
+		meterValue(ctx, p.PandocLine.Indentation)
+	}
 	if spec.Kind == Strike {
 		// Narrow marker spelling, payload/child containment and metadata copy.
 		// Never scan the aggregate envelope across container gaps.
@@ -353,9 +425,9 @@ func meteredNode(ctx context.Context, spec NodeSpec) (*Node, error) {
 }
 func meterValue(ctx context.Context, v Value) {
 	meterRecords(ctx, len(v.Segments))
-	meterWork(ctx, 8*len(v.Segments)+len(v.Semantic.Value))
+	meterPandocWork(ctx, pandocWork(int64(len(v.Semantic.Value)), int64(len(v.Segments)), 8))
 	for _, part := range v.Segments {
-		meterWork(ctx, len(part.Semantic.Value)+part.Source.end-part.Source.start)
+		meterPandocWork(ctx, pandocWork(int64(len(part.Semantic.Value)), int64(part.Source.end)-int64(part.Source.start), 1))
 	}
 }
 func meteredReference(ctx context.Context, spec ReferenceSpec) (*ReferenceDefinition, error) {

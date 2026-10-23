@@ -136,6 +136,7 @@ const (
 	strikeOnlyProfile
 	bareOnlyProfile
 	filterOnlyProfile
+	pandocBlocksProfile
 )
 
 // enabled keeps section execution closed and preserves the integrated stage.
@@ -207,6 +208,11 @@ func parseWithProfile(ctx context.Context, source Source, budget *OperationBudge
 		return r
 	}
 	r.Phases.Inlines = Pending
+	if profile == pandocBlocksProfile {
+		r.Document.references = ReferenceCollection{Availability: Unavailable, LookupAvailability: Unavailable}
+		r.Uncertainty = []Uncertainty{{Region: span, Reason: SyntaxUnimplemented}}
+		return r
+	}
 	r.Phases.Inlines, err = parseInlines(ctx, r.Document, r.Phases.Blocks)
 	if err != nil {
 		r.Status, r.AST, r.Document = Failed, Unavailable, nil

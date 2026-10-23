@@ -1,7 +1,10 @@
 # Pandoc compatibility and corpus contract
 
 Status: approved on 2026-10-14. Offline fixture tooling is delivered; parser
-implementation and mdchk conformance verification remain pending. This defines the target for
+implementation of the complete profile and mdchk conformance verification remain
+pending. The private [block stage](../../internal/parser/model.md#pandoc-block-stage)
+implements selected list/container recognition with pending inline semantics;
+it does not make the complete flavor available. This defines the target for
 [#162](https://github.com/frithuz/mdchk/issues/162) and implementation in #163–#165.
 
 ## Compatibility profile

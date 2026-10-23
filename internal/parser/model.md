@@ -1508,3 +1508,140 @@ source authority. The delivered tagged adapter (#234) executes
 all 2,117 units with separate immutable raw and approved modern-target comparisons;
 its [actual-run contract](testdata/gfm/profile/README.md#execute-the-actual-adapter-offline)
 retains these boundaries and distinguishes integrity-only NOT-RUN checks.
+
+
+## Pandoc block stage
+
+Issue #238 adds a private `pandocBlocksProfile` through the existing indexed,
+budgeted block lifecycle. It implements the fixed profile's blank-before-heading
+and blank-before-quote boundaries, space-after-ATX-hash requirement, definition
+lists, line blocks, fancy/start-number/example lists and literal task source facts.
+`Parse` and `ParseWithBudget` remain CommonMark; `ParseGFMWithBudget` remains the
+approved complete GFM profile. No public partial-profile switch or production
+Pandoc provider is enabled. Selecting unavailable Pandoc still fails configuration
+admission with exit 12.
+
+The private stage returns `Incomplete`/`Partial`, complete block progress when its
+owned stage finishes, pending inlines, and unavailable reference records/lookup.
+It never sets complete-document consumer authority, including on empty input.
+Raw paragraph, heading, definition-term and logical-line payloads are retained for
+later inline providers; CommonMark reference extraction is deliberately bypassed.
+In particular `[a]: /url` and note-like definitions are not consumed under the
+wrong reference grammar. Later syntax stages own their selected recognition.
+Paragraph continuation follows this reader rather than core interruption: a
+multi-line paragraph followed by a thematic-looking line remains one paragraph;
+only an initially single-line term can become a Setext heading. ATX markers and
+Setext underlines begin at the recursive reader line start. The approved adjacent
+fence exception is backtick-only; unseparated tilde-looking lines remain payload.
+Blank-separated rules/fences retain their normal block recognition.
+The shared snapshot, strict UTF-8/admission precedence, cumulative work/node/depth
+budgets and closed-prefix cancellation behavior still apply. Exhausting the
+bounded example-number range stops the stage pending rather than wrapping or
+silently assigning duplicate numbers.
+
+`PandocListProperties` supplement the existing `ListProperties` on recognized
+Lists/ListItems. Their style distinguishes bullet, decimal, lower/upper alphabetic,
+lower/upper Roman, default and example numbering. Delimiters distinguish period,
+one-parenthesis, two-parentheses and the default marker convention. The grouped
+List retains the initial semantic start and selected family; each item retains
+its own original marker, raw `MarkerStyle`, optional decimal prefix, exact
+separator and example label/reset. Only a decimal prefix grants MD029 numeric rewrite input. A default
+`#` continuation in another family has no decimal prefix. MD030 obtains real
+separator spans and consumed columns for every recognized family. Old core model
+bounds remain in force when no Pandoc metadata is supplied.
+
+Generic list-start probes serve extraction and interruption boundaries. Actual
+ordered items must also pass the selected-style delimiter consumer. An opening
+parenthesis with a terminal period can stop an existing item during lookahead,
+but cannot publish an ordered item, Decimal span or example-state change. Its
+ordinary payload is retained; only the paired-parenthesis family consumes an
+opening parenthesis. Supplied ordered metadata enforces the same actual spelling.
+
+Marker/content/container columns are zero-based reader visual columns with tab
+stops four. Recursive quote/list/definition payloads restore the pinned reader's
+container position rather than inheriting CommonMark's physical tab phase.
+`SourceMarkerColumn` and `SourceContentColumn` separately identify original
+physical visual columns; public positions remain one-based scalar coordinates.
+The latter content column identifies the first original payload byte, which may
+be a shared tab. `SeparatorColumns` and `SeparatorPartialTab` record consumed
+reader whitespace while original one-byte tab provenance can be shared by prefix
+and payload. An EOF marker can have an absent source separator while retaining
+virtual one-column continuation padding. Quote syntax removes an optional literal
+ASCII space; a fresh following tab belongs to the recursive payload.
+Example-list continuation is always four columns, independently of a long label.
+An unrepresentable numeric example prefix retains its raw spelling but has no
+effective reset; decimal-list overflow independently retains the reader fallback
+to one. Numbering is document-wide, respects valid explicit numeric resets and exact repeated
+labels, and is never advanced by speculative or malformed marker lookahead.
+Example labels use the pinned alphanumeric grammar: composed letters can be valid,
+whereas a decomposed combining mark is not normalized into a valid label.
+
+`DefinitionList` contains `DefinitionItem` nodes, each with one source-backed
+`DefinitionTerm` and one or more complete `DefinitionBody` containers. Bodies keep
+original marker/prefix/continuation metadata and nested blocks. Item
+`DefinitionProperties.Tight` distinguishes a compact first body from a physical
+blank separator, without mistaking quote/list prefixes for blank lines. New terms
+and bodies preserve source order and ordinary malformed fallbacks. Ordinary list
+and line-block dispatch precedes definition-term lookahead.
+
+`LineBlock` contains separate `LineBlockLine` nodes. Each logical line retains its
+pipe prefix, physical continuation markers and inline payload segments; a wrapped
+physical line does not create a new logical line. Original leading whitespace is
+retained separately in `PandocLineProperties.Indentation`, with its NBSP semantic
+projection. Whitespace-only pipe lines retain original whitespace with `Blank`
+and empty semantic indentation; they do not acquire hard-wrap continuations.
+A continuation requires a logical initial ASCII space after enclosing
+container prefixes. Residual spaces from a tab already expanded by an enclosing
+item qualify; a fresh raw tab does not. Block-looking payload stays inline
+payload and cannot become nested blocks. Inline interpretation remains pending at logical-line boundaries.
+
+`PandocTaskProperties` retain literal candidates on a ListItem or DefinitionBody
+and its first direct Paragraph, with exact original marker/check contributions, X/x/whitespace
+spelling and candidate checked state. `CheckSegments` and `Segments` omit physical
+container-prefix gaps while their envelopes retain original extent. `Separator`
+selects a logical whitespace contribution following the closing bracket and can
+be absent for a terminal marker; physical trailing whitespace/endings remain in
+the paragraph envelope. `InlinePending` withholds final reference/entity/escape
+interpretation. No task marker is removed from the raw inline payload or used to
+reparse the suffix as blocks. The separate GFM task contract, including literal
+EOF behavior, is unchanged.
+
+Item extraction owns qualifying nonblank ordinary lines before recursive child
+interpretation, including after headings, thematic breaks and line blocks. Full
+continuation indentation is optional within a raw group; absent optional
+indentation leaves the original cursor unchanged. After a physical blank, the
+first nonblank continuation line requires full indentation, while subsequent
+ordinary lines may omit it. List/fence stopping rules distinguish the initial raw
+group from subsequent continuation groups. Actual prefix gaps and shared partial
+tabs retain original provenance; CommonMark/GFM matching is independent.
+
+Quote extraction owns eligible unprefixed continuations before its recursive
+items and leaves are interpreted. Its list-context guard uses the enclosing
+context captured when the quote opens, rather than a list subsequently opened
+inside it. Setext lookahead precedes quote, line-block and ordered-list dispatch;
+fences and bullet lists retain their earlier priority. A bullet item can itself
+own a Setext heading with an unprefixed original underline. The paragraph
+backtick guard tests the actual reader cursor before arbitrary indentation.
+
+New metadata is validated against source spelling, kind, family, ranges, columns,
+child association and immutable ownership. Definition bodies require definition
+marker families, labels require the exact occurrence after `@`, and task token
+contributions must match the leading logical Content without omitting ordinary
+bytes. Physical container-prefix gaps remain permitted. Scaled work reservations
+use wide saturating arithmetic before multiplication or addition, including
+semantic whitespace expansion. Constructors and accessors snapshot
+all new pointers/slices; supplied model construction never establishes parser
+recognition. Parser construction charges validation and copying before publishing
+nodes. The dedicated deterministic fuzz target checks source bounds, model
+validity and refusal to certify this partial profile.
+
+`TestPandocRetainedBlockFixtures` executes all 74 original retained cases in this
+stage (72 cases for the nine switches plus `tasks-original-crlf` and
+`list-markers-original`). Literal block shapes are independent expectations; no
+actual output populates them. Focused tests additionally cover all numbering
+families, delimiter/style changes, example reset/reuse/overflow, complete nested
+and multi-paragraph definitions, priority, terminal tasks, partial tabs, Unicode,
+CRLF, malformed fallback, immutable metadata and deterministic limits/cancellation.
+This is section execution only. The 543-case target-data tool and ledger continue
+to report full-profile execution as NOT-RUN, zero actual passes and false
+conformance until the remaining syntax and complete verification gates run.
