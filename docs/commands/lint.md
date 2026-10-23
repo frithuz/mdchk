@@ -16,10 +16,9 @@ and ancestor permissions, and checks selected capabilities before target access.
 Invalid or unreadable configuration returns `12`. Help and version need no
 project access.
 
-This build supports CommonMark configuration and directive processing. GFM,
-optional contexts and resource handling remain unavailable. Built-in defaults
-still select GFM and therefore return `12` when no configuration exists. A
-configuration with `flavor: commonmark` can complete preparation.
+This build supports CommonMark, the full GFM profile and directive processing.
+Omitted flavor, including no configuration, selects GFM. Optional contexts and
+resource handling remain unavailable. Both supported flavors complete preparation.
 Explicitly enabled unavailable rules fail preparation; unmentioned default rules
 remain in the complete catalog for coverage reporting. Preparation retains an
 immutable admitted execution plan for the shared engine.
@@ -99,7 +98,7 @@ the current CommonMark parser, while many enabled ordinary defaults still lack
 production implementations. MD047 terminating-newline analysis is available. The catalog contains 89 entries, with 59 enabled
 and 30 disabled by default; the mandatory UTF-8 gate is available independently
 of ordinary checks. Explicitly requesting an unavailable rule returns `12`.
-Omitting configuration selects unavailable default GFM and also returns `12`.
+Omitting configuration selects GFM and also retains missing default-rule coverage (`15`).
 
 For a runnable reduced selection, use the published
 [CommonMark+MD047 configuration](../examples/editor-ci/.mdchk.yaml) and
@@ -120,7 +119,7 @@ the requested reduced coverage, rather than full Markdown rule conformance.
 Capture `$?` immediately after the executable, as above. `go run` reports a
 wrapper status for nonzero program exits and cannot verify mdchk's semantic
 status. The executable implements lint, fix, config validate, inspect, help and
-version. GFM and Pandoc remain deferred.
+version. Pandoc remains deferred.
 
 The selection and option examples below assume the
 [current reduced setup](../index.md#get-started-with-this-build) and readable

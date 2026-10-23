@@ -1186,6 +1186,58 @@
           "type": "object",
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
+          },
+          "properties": {
+            "task": {
+              "$ref": "#/$defs/ProjectionTask"
+            },
+            "filtered_tags": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ProjectionFilteredTag"
+              }
+            },
+            "alignments": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "none",
+                  "left",
+                  "center",
+                  "right"
+                ]
+              }
+            },
+            "separators": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ByteRange"
+              }
+            },
+            "escaped_pipes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ByteRange"
+              }
+            },
+            "leading_pipe": {
+              "$ref": "#/$defs/ByteRange"
+            },
+            "trailing_pipe": {
+              "$ref": "#/$defs/ByteRange"
+            },
+            "raw_cells": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "alignment": {
+              "enum": [
+                "none",
+                "left",
+                "center",
+                "right"
+              ]
+            }
           }
         },
         "raw_attributes": {
@@ -2909,6 +2961,91 @@
         "byte_range",
         "raw_base64",
         "context"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectionTask": {
+      "type": "object",
+      "properties": {
+        "paragraph": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "marker": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "opening": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "check": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "closing": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "separator": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ByteRange"
+          },
+          "minItems": 1
+        },
+        "checked": {
+          "type": "boolean"
+        },
+        "check_spelling": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "paragraph",
+        "marker",
+        "opening",
+        "check",
+        "closing",
+        "separator",
+        "segments",
+        "checked",
+        "check_spelling"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectionFilteredTag": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "enum": [
+            "title",
+            "textarea",
+            "style",
+            "xmp",
+            "iframe",
+            "noembed",
+            "noframes",
+            "script",
+            "plaintext"
+          ]
+        },
+        "closing": {
+          "type": "boolean"
+        },
+        "prefix": {
+          "$ref": "#/$defs/ProjectionValue"
+        },
+        "affected": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "tag": {
+          "$ref": "#/$defs/ProjectionValue"
+        }
+      },
+      "required": [
+        "name",
+        "closing",
+        "prefix",
+        "affected"
       ],
       "additionalProperties": false
     }

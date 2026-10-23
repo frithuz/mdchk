@@ -90,10 +90,44 @@ def inspection_semantic(x):
     ast=section('ast')
     if ast:
         require(ast['snapshot']==snapshot,'AST snapshot identity mismatch')
+        if section('flavor') is not None:require(ast['profile']==section('flavor'),'AST profile differs from selected flavor')
         node_ids=set()
         def walk(n,parent=None):
             require(n['id'] not in node_ids,'duplicate AST node id');node_ids.add(n['id']);bounded(n['byte_range'])
             if parent:require(parent['start']<=n['byte_range']['start']<=n['byte_range']['end']<=parent['end'],'AST child outside parent')
+            facts=n['properties'];envelope=n['byte_range']
+            def owned(r):
+                bounded(r);require(envelope['start']<=r['start']<=r['end']<=envelope['end'],'GFM fact outside owner')
+            def value_facts(v):
+                for segment in v['segments']:
+                    if 'byte_range' in segment:owned(segment['byte_range'])
+            if 'alignments' in facts:
+                require(n['kind']=='table' and facts.get('width',0)>0 and len(facts['alignments'])==facts['width'],'invalid GFM table width/alignment')
+            if 'raw_cells' in facts:
+                require(n['kind']=='table-row' and facts.get('role') in ('header','delimiter','body') and facts.get('padding',-1)>=0,'invalid GFM row facts')
+                require(facts['raw_cells']>=len(n['children']),'GFM row lost original cell count')
+            for key in ('separators','escaped_pipes'):
+                if key in facts:
+                    require(n['kind']==('table-row' if key=='separators' else 'table-cell'),'GFM facts on wrong kind')
+                    previous_end=-1
+                    for span in facts[key]:
+                        owned(span);require(span['start']>=previous_end and span['end']-span['start']==(1 if key=='separators' else 2),'invalid GFM source tokens');previous_end=span['end']
+            for key in ('leading_pipe','trailing_pipe'):
+                if key in facts:
+                    owned(facts[key]);require(facts[key] in facts.get('separators',[]),'outer pipe lacks original separator')
+            if 'task' in facts:
+                require(n['kind'] in ('list-item','paragraph'),'task on wrong kind');task=facts['task']
+                for key in ('paragraph','marker','opening','check','closing','separator'):owned(task[key])
+                require(task['marker']['start']==task['opening']['start'] and task['marker']['end']==task['closing']['end'],'invalid task marker envelope')
+                require(task['checked']==(task['check_spelling'] in ('x','X')),'task state/spelling mismatch')
+                for span in task['segments']:
+                    owned(span);require(task['marker']['start']<=span['start']<=span['end']<=task['marker']['end'],'task contribution outside marker')
+            if 'filtered_tags' in facts:
+                require(n['kind'] in ('html-block','inline-html'),'filtered tag on wrong owner');last=-1
+                for tag in facts['filtered_tags']:
+                    owned(tag['affected']);require(tag['affected']['end']==tag['affected']['start']+1 and tag['affected']['start']>last,'invalid filtered angle');last=tag['affected']['start']
+                    value_facts(tag['prefix'])
+                    if 'tag' in tag:value_facts(tag['tag'])
             previous=-1
             for child in n['children']:
                 require(child['byte_range']['start']>=previous,'AST children out of source order');previous=child['byte_range']['start'];walk(child,n['byte_range'])

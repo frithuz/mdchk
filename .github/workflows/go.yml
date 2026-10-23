@@ -91,6 +91,8 @@ jobs:
         run: go env GOOS GOARCH CGO_ENABLED
       - name: Verify compiled native paths, streams, real interrupts and capabilities
         run: go test ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryUnsupportedApply|TestCompiledApplyNoCGOClearlyRefuses|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -v -timeout=15m
+      - name: Verify compiled GFM selection, consumers and native publication
+        run: go test ./cmd/mdchk -run "^TestCompiledGFM" -count=1 -v -timeout=5m
       - name: Verify compiled editor and documented integration contracts
         run: go test ./internal/cli -run "^(TestCompiledEditor.*|TestDocumented.*|TestEditorRealCommandWriterFailuresAndBounds|TestEditorCommandArgumentsAndIndependentLifetime|TestValidateActualTinyReportingDeadline|TestValidateCompletedReportingAssertions|TestValidateExpiredReportingContextPreservesActualCounts)$" -count=1 -v -timeout=15m
 

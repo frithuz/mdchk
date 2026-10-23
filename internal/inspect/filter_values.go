@@ -2,6 +2,8 @@ package inspect
 
 import (
 	"encoding/json"
+
+	"github.com/frithuz/mdchk/internal/result"
 )
 
 // The owned JSON authority has the same stable wire representation as the
@@ -60,7 +62,37 @@ func (b *builder) restoreProjectionValues(p *Projection, s *Snapshot) error {
 						return err
 					}
 					n.Properties[key] = v
-				case "level", "start", "marker_width", "padding", "content_indent", "width", "block_form":
+				case "alignments":
+					var v []string
+					if err := decode(value, &v); err != nil {
+						return err
+					}
+					n.Properties[key] = v
+				case "separators", "escaped_pipes":
+					var v []result.ByteRange
+					if err := decode(value, &v); err != nil {
+						return err
+					}
+					n.Properties[key] = v
+				case "leading_pipe", "trailing_pipe":
+					var v result.ByteRange
+					if err := decode(value, &v); err != nil {
+						return err
+					}
+					n.Properties[key] = v
+				case "task":
+					var v Task
+					if err := decode(value, &v); err != nil {
+						return err
+					}
+					n.Properties[key] = v
+				case "filtered_tags":
+					var v []FilteredTag
+					if err := decode(value, &v); err != nil {
+						return err
+					}
+					n.Properties[key] = v
+				case "raw_cells", "level", "start", "marker_width", "padding", "content_indent", "width", "block_form":
 					var v int
 					if err := decode(value, &v); err != nil {
 						return err

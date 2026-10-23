@@ -1,6 +1,6 @@
 # Configuring mdchk
 
-Use `.mdchk.yaml` to define your project's Markdown expectations. Lint and fix use the same rules and exclusions from the terminal; the planned MCP modes share this contract. Without a configuration file, mdchk uses its defaults, including GFM, which is currently unavailable and returns configuration error `12`.
+Use `.mdchk.yaml` to define your project's Markdown expectations. Lint and fix use the same rules and exclusions from the terminal; the planned MCP modes share this contract. Without a configuration file, mdchk uses its defaults, including the supported GFM profile. Missing default rule implementations produce incomplete analysis (`15`).
 
 This is the approved configuration contract. Lint loads and validates configuration before target access, then acquires source snapshots and executes the shared parser and available registered checks. Lint, fix and config validate support text, schema-v1 JSON, VS Code and GitHub reports; inspect supports text/JSON. MD047 terminating-newline analysis, safe previews and apply on the verified Darwin arm64+cgo/local APFS adapter are implemented; other ordinary rule implementations remain pending. Missing enabled defaults produce coverage deficits rather than clean results; valid UTF-8 with all ordinary rules disabled can return clean `0`. See [initial capability handling](#initial-capability-handling) for how development builds must report unavailable behavior.
 
@@ -13,7 +13,7 @@ alone still returns incomplete/`15` for unavailable defaults; this reduced
 selection is not full Markdown conformance.
 
 The following is an accepted schema example, not a runnable configuration for
-this build: GFM and the explicitly enabled MD001/MD004 are unavailable (`12`).
+this build: the explicitly enabled MD001/MD004 are unavailable (`12`).
 
 ```yaml
 version: 1
@@ -166,7 +166,7 @@ An explicit entry such as `MD001: {}` still selects that rule's default enableme
 
 Lint, fix, and previews return exit `15` and status `incomplete` for reduced analysis coverage unless an operational error takes precedence. Available findings remain in the report. They must not claim a complete clean result or automatically fix uncertain regions. See [exit codes](exit-codes.md) and [structured coverage results](output-formats.md#incomplete-analysis).
 
-Unavailable dialects are configuration errors, including an omitted `flavor` resolving to unavailable default GFM. The loader never silently substitutes CommonMark. The CommonMark lint engine now processes directives with their inherited global and per-rule permissions. Selecting the supported parser requires an explicit configuration such as:
+Unavailable dialects such as Pandoc are configuration errors. Omitted `flavor` selects the supported full GFM profile; the loader never substitutes CommonMark. Both supported profiles share directive processing and inherited permissions. To select core-only parsing explicitly:
 
 ```yaml
 version: 1

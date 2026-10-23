@@ -6,7 +6,10 @@ status 13. `fix --dry-run` supports all four formats and writes nothing. Text/JS
 include proposed diffs; editor formats report only remaining candidate findings.
 MD047 supplies the first production correction: minimal terminal-newline changes
 with independently checked preservation and shared directive permissions. Unsafe
-protected EOF contexts remain manual, with explicit deferral reasons.
+protected EOF contexts remain manual, with explicit deferral reasons. In GFM,
+adding an ending to literal task spelling such as `- [x]` at EOF would turn
+visible text into task syntax. MD047 leaves that case manual with false
+`fix_available`; choose the intended text or task meaning before editing.
 
 
 Apply safe corrections to Markdown files and report problems that still need attention. Preview changes with `--dry-run` before saving them.
@@ -17,8 +20,7 @@ mdchk fix [options] [paths...]
 
 The examples below assume the [current reduced setup](../index.md#get-started-with-this-build):
 a CommonMark+MD047 configuration and readable fixture paths. Without it,
-unavailable default GFM returns `12`; CommonMark alone retains missing default
-coverage (`15`). Apply additionally requires the verified native adapter above.
+default GFM and CommonMark both retain missing default-rule coverage (`15`). Apply additionally requires the verified native adapter above.
 
 ## Select files
 

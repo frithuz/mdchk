@@ -3,13 +3,13 @@
 Status: approved on 2026-10-14. The [original published corpus and offline
 extraction tooling](../../internal/parser/testdata/gfm/0.29-gfm/README.md) are
 retained and verified. The [executable profile fixture contract](../../internal/parser/testdata/gfm/profile/README.md)
-now supplies adaptations and independent source expectations. A private parser
-stage recognizes all five source-preserving extensions and shares the core
+now supplies adaptations and independent source expectations. The parser
+recognizes all five source-preserving extensions and shares the core
 lifecycle and inline machinery. A build-tagged test adapter and offline runner
 now execute all 2,117 profile comparison units with separate raw historical and
-approved-target axes. Independent full private-profile/resource verification is
-delivered; real consumer integration remains a separate gate. Public parser APIs
-remain CommonMark-only; configuration still rejects unavailable GFM. This contract
+approved-target axes. Independent full-profile/resource verification and actual lint/fix/inspection
+consumer integration are delivered. Legacy Parse APIs remain core-only; the
+whole-profile internal entry point supplies default and explicit GFM selection. This contract
 defines the target for [#158](https://github.com/frithuz/mdchk/issues/158), building
 on the [verified core parser contract](https://github.com/frithuz/mdchk/issues/32).
 
@@ -302,8 +302,8 @@ escapes/entities once and retaining 615's raw priority. Bare FTP remains
 ordinary prose under section 6.9; future MD034 must also inspect eligible FTP
 prose and source context rather than treating every Link as exempt. Angle FTP
 retains its ordinary core origin. MD054 still has exactly five styles and maps
-both recognized origins to its existing autolink style. No rule implementation,
-public partial profile, adapter or completed GFM consumer claim is added here.
+both recognized origins to its existing autolink style. These source facts do not implement the named rules; public partial profiles
+remain unsupported.
 
 ### Disallowed-HTML interpretation
 
@@ -341,13 +341,13 @@ inner xmp facts. Core classification, textarea blank-line opacity, rawTag
 transitions, references, literal/protected inventories and directive eligibility
 remain unchanged. Code and generated/escaped angles gain no filter facts.
 
-No public selector, renderer, source fix, sanitizer or production GFM admission
-is added. Private recognition alone does not establish profile support. The
+Filtering introduces no renderer, source rewrite or sanitizer. The complete
+profile is admitted only through the shared whole-profile operation path. The
 [test-only actual adapter](../../internal/parser/testdata/gfm/profile/README.md#execute-the-actual-adapter-offline)
 executes all 2,117 units, preserving raw historical 649/650 differences separately
-from reviewed modern targets. Independent private-profile/resource verification
-complements the adapter; activation and actual lint/fix/inspect consumers remain
-separate gates.
+from reviewed modern targets. Independent profile/resource verification and
+actual lint/fix/inspect consumer tests complement the adapter. Named production
+rule analyses remain a separate gate.
 
 ## Rule and operation integration
 
@@ -409,5 +409,6 @@ The [verification record](gfm-verification.md) records complete approved-target
 execution and independent mixed source, protection, exclusion, concurrency, resource
 and semantic fuzz checks. The private profile retains the newer CommonMark core
 and the exact frozen extension pin above. Raw historical originals 649/650 remain
-explicit differences. Public GFM admission, actual operation consumers (#161),
-named rules (#236) and independently optional frontmatter remain separate gates.
+explicit differences. Default/explicit GFM now use the real shared operation
+pipeline, inspection and candidate/saved reparsing. Named rules (#236), MCP and
+independently optional frontmatter remain separate gates.

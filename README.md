@@ -4,19 +4,19 @@ mdchk helps people and AI agents keep Markdown files consistent with their proje
 
 Start with the [documentation index](docs/index.md) for global options, commands, and integration guides.
 
-The private GFM parser profile is verified against CommonMark 0.31.2 and all five
-pinned extensions: 2,117 approved comparison units pass, including every published
-case. Independent source, isolation and finite resource checks complement HTML
-comparison. Public GFM remains unavailable; consumer integration and production
-rules remain separate. See the [parser verification record](docs/engineering/gfm-verification.md).
+GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
+comparison units pass, including every published case. Default and explicit GFM
+selection share the real lint, fix and inspection pipeline, including source
+facts, directives, protected regions and candidate reparsing. MD047 is the first
+production rule and correction; other named rules remain unavailable. See the [parser verification record](docs/engineering/gfm-verification.md).
 
 ## Check Markdown
 
 First follow the [current-build quick start](docs/index.md#get-started-with-this-build):
 use the published CommonMark+MD047 configuration, which explicitly disables other
 ordinary checks. This reduced selection is not full Markdown conformance.
-Without configuration, unavailable default GFM returns `12`; CommonMark alone
-leaves unavailable default checks and returns `15`.
+Without configuration, GFM is selected and missing default checks return `15`.
+CommonMark has the same missing-rule limitation.
 
 Run `lint` on a file or directory to find problems without modifying files:
 
@@ -84,7 +84,7 @@ mdchk provides file and directory checks, safe fixes with previews, project conf
 
 The [ruleset to implement](docs/rules/index.md) defines 89 checks with stable numeric IDs and reserved gaps. Rule pages are grouped by focus area. Each page specifies behavior, default enablement, options, examples, and correction policies.
 
-The approved [format contracts](docs/markdown-formats.md) define CommonMark 0.31.2, the fixed GFM profile, and the fixed Pandoc 3.12.1 profile. The [resource contract](docs/engineering/resources.md) defines bounded link/anchor lookup and standalone context. The internal CommonMark core passes all 652 specification examples in normalized and strict comparisons. CLI lint now selects and acquires immutable source snapshots, runs mandatory UTF-8 validation, parses Markdown, resolves inherited directive permissions and suppression, and executes available registered checks. It emits readable text by default or one bounded schema-v1 JSON result on stdout, including errors and partial outcomes. Lint, fix and config validate support all four reporters; inspect supports text/JSON. MD047 is the first production ordinary rule and correction, with native application bounded as above. Missing default rule implementations remain explicit coverage deficits. GFM/Pandoc extensions, frontmatter, other ordinary rules, MCP integration and production rendering remain separate deliveries; see the [delivered parser contract](docs/engineering.md#delivered-commonmark-core).
+The approved [format contracts](docs/markdown-formats.md) define CommonMark 0.31.2, the fixed GFM profile, and the fixed Pandoc 3.12.1 profile. The [resource contract](docs/engineering/resources.md) defines bounded link/anchor lookup and standalone context. The internal CommonMark core passes all 652 specification examples in normalized and strict comparisons. CLI lint now selects and acquires immutable source snapshots, runs mandatory UTF-8 validation, parses Markdown, resolves inherited directive permissions and suppression, and executes available registered checks. It emits readable text by default or one bounded schema-v1 JSON result on stdout, including errors and partial outcomes. Lint, fix and config validate support all four reporters; inspect supports text/JSON. MD047 is the first production ordinary rule and correction, with native application bounded as above. Missing default rule implementations remain explicit coverage deficits. GFM's five extensions use the shared lint, fix and inspection pipeline. Pandoc, frontmatter, other ordinary and named rules, MCP integration and production rendering remain separate deliveries; see the [delivered parser contract](docs/engineering.md#delivered-commonmark-core).
 
 Full-document formatting, prose rewriting, remote link checks, dedicated editor extensions, and third-party rules are outside mdchk's scope.
 

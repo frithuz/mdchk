@@ -315,7 +315,7 @@ func testConfigurationStrict(t *testing.T, binary string) {
 		for _, tc := range []configurationNegative{
 			{"explicit enabled default", availableConfiguration + "rules: {MD001: {}}\n", "rules.MD001", "explicitly enabled rule is unavailable", 4, 16},
 			{"explicit enabled unavailable", availableConfiguration + "rules: {MD013: {enabled: true}}\n", "rules.MD013", "explicitly enabled rule is unavailable", 4, 16},
-			{"default GFM", "version: 1\ndirectives: {enabled: false}\n", "flavor", "selected Markdown profile is unavailable", 1, 8},
+			{"unavailable Pandoc", "version: 1\nflavor: pandoc\ndirectives: {enabled: false}\n", "flavor", "selected Markdown profile is unavailable", 2, 9},
 			{"frontmatter unavailable", availableConfiguration + "frontmatter: {enabled: true}\n", "frontmatter.enabled", "selected frontmatter recognition is unavailable", 4, 24},
 			{"Quarto unavailable", availableConfiguration + "integrations: {quarto: {enabled: true}}\n", "integrations.quarto.enabled", "Quarto recognition is unavailable", 4, 34},
 			{"slides unavailable", availableConfiguration + "documents: {slides: ['talk/**']}\n", "documents.slides", "slide annotation is unavailable", 4, 21},
@@ -332,7 +332,7 @@ func testConfigurationStrict(t *testing.T, binary string) {
 	})
 	// Corrected semantic controls must reach target processing. Keeping the same
 	// invalid UTF-8/missing targets demonstrates admission without a clean-result
-	// shortcut, and proves that the negatives cannot pass via default GFM.
+	// shortcut, and proves that the negatives cannot pass via an unrelated capability.
 	t.Run("corrected semantic controls", func(t *testing.T) {
 		for _, rules := range []string{"rules: {MD013: {enabled: false, length: 100}}\n", "rules: {MD013: {enabled: false, length: 80}}\n", "rules: {MD013: {}}\n"} {
 			root := configurationProject(t)

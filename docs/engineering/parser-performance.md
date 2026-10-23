@@ -221,6 +221,9 @@ explicit outcome and output growth whenever changing limits or workloads.
 
 ## Integrated GFM initial baseline
 
+This historical #235 baseline is retained unchanged. The later GFM operation
+dispatch integration adds no new performance measurement or speedup claim.
+
 Measured on the #235 candidate based on `db897be92028f33d8bb8b1bac8eb3e0a4048b3c9`,
 after the R2 independent mutation-oracle repair, on Apple M1 Max, 64 GiB,
 Darwin 27.2.0 arm64, Go 1.27.3 darwin/arm64.

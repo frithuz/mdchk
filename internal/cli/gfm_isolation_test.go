@@ -5,7 +5,6 @@ package cli
 import (
 	"bytes"
 	"context"
-	"io"
 	"path/filepath"
 	"reflect"
 	"testing"
@@ -17,11 +16,12 @@ import (
 // Exercise production admission before and after every closed test-only scope.
 func TestGFMPrivateScopesPreserveProductionAdmission(t *testing.T) {
 	root := project(t)
+	put(t, filepath.Join(root, "doc.md"), "- [X] ~~www.a.b~~\n\n| a |\n| - |\n\n<title>x</title>\n")
 	_, _, baseline, err := configuredProviders()
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(baseline, config.Capabilities{CommonMark: true, DirectiveProcessing: true}) {
+	if !reflect.DeepEqual(baseline, config.Capabilities{CommonMark: true, GFM: true, DirectiveProcessing: true}) {
 		t.Fatal("production capabilities changed", baseline)
 	}
 	check := func() {
@@ -30,18 +30,18 @@ func TestGFMPrivateScopesPreserveProductionAdmission(t *testing.T) {
 			body string
 			want int
 		}{
-			{"version: 1\n", 12}, {"version: 1\nflavor: gfm\n", 12},
-			{availableConfig, 0}, {availableConfig + "frontmatter: {enabled: false}\n", 0},
+			{"version: 1\n", 15}, {"version: 1\nflavor: gfm\n", 15},
+			{availableConfig, 15}, {availableConfig + "frontmatter: {enabled: false}\n", 15},
 			{availableConfig + "frontmatter: {enabled: true}\n", 12},
 			{availableConfig + "extensions: {tables: true}\n", 12},
 			{"version: 1\nflavor: tables-only\n", 12},
 		} {
 			put(t, filepath.Join(root, config.Filename), c.body)
-			called := 0
 			var out, stderr bytes.Buffer
-			got := run([]string{"lint", "not-opened.md"}, &out, &stderr, "dev", prepareLint, func(*lintInvocation, io.Writer, io.Writer) int { called++; return 0 })
-			if got != c.want || called != map[bool]int{true: 1, false: 0}[c.want == 0] {
-				t.Fatalf("admission after scope: body=%q status=%d called=%d out=%s", c.body, got, called, &out)
+			got := Run([]string{"lint", "doc.md", "--format=json"}, &out, &stderr, "dev")
+			actual := validateEmitted(t, t.TempDir(), out.Bytes())
+			if got != c.want || (got == 15 && (len(actual.CheckedFiles) != 1 || len(actual.Coverage) == 0 || len(actual.Errors) != 0)) || (got == 12 && len(actual.CheckedFiles) != 0) {
+				t.Fatalf("admission after scope: body=%q status=%d checked=%v", c.body, got, actual.CheckedFiles)
 			}
 		}
 		_, _, after, err := configuredProviders()

@@ -105,6 +105,30 @@ type Value struct {
 	Segments []Segment `json:"segments"`
 	Semantic *string   `json:"semantic,omitempty"`
 }
+
+// Task retains original token spellings and discontiguous marker contributions.
+// Paragraph identifies the first direct paragraph, independently of its content.
+type Task struct {
+	Paragraph     result.ByteRange   `json:"paragraph"`
+	Marker        result.ByteRange   `json:"marker"`
+	Opening       result.ByteRange   `json:"opening"`
+	Check         result.ByteRange   `json:"check"`
+	Closing       result.ByteRange   `json:"closing"`
+	Separator     result.ByteRange   `json:"separator"`
+	Segments      []result.ByteRange `json:"segments"`
+	Checked       bool               `json:"checked"`
+	CheckSpelling string             `json:"check_spelling"`
+}
+
+// FilteredTag describes a fact on its unchanged raw HTML owner. A nil Tag
+// means no complete tag was proved; Prefix and Affected still retain authority.
+type FilteredTag struct {
+	Name     string           `json:"name"`
+	Closing  bool             `json:"closing"`
+	Prefix   Value            `json:"prefix"`
+	Affected result.ByteRange `json:"affected"`
+	Tag      *Value           `json:"tag,omitempty"`
+}
 type Reference struct {
 	ByteRange       result.ByteRange `json:"byte_range"`
 	Markers         []Marker         `json:"markers"`
@@ -352,6 +376,7 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 		}
 		p.Configuration = available(shared)
 		p.Flavor = available(configuration.Settings.Flavor)
+		build.profile = configuration.Settings.Flavor
 	}
 	if s.configErr != nil || s.plan == nil {
 		reason := "configuration-invalid"
@@ -556,6 +581,7 @@ type builder struct {
 	nextNode     int
 	positions    map[int]parser.Position
 	selectedPath string
+	profile      string
 	knownRules   map[string]engine.ResolvedRule
 }
 
@@ -589,6 +615,20 @@ func (b *builder) rangeOf(start, end int) (result.Range, error) {
 	return result.Range{Start: a, End: z}, err
 }
 func bytesOf(s parser.Span) result.ByteRange { return result.ByteRange{Start: s.Start(), End: s.End()} }
+func byteRanges(parts []parser.Span) []result.ByteRange {
+	out := make([]result.ByteRange, 0, len(parts))
+	for _, span := range parts {
+		out = append(out, bytesOf(span))
+	}
+	return out
+}
+func optionalSpan(s parser.Span) *result.ByteRange {
+	if !s.Present() {
+		return nil
+	}
+	out := bytesOf(s)
+	return &out
+}
 func optional[T any](v parser.Optional[T]) *T {
 	if !v.Present {
 		return nil
@@ -636,6 +676,33 @@ func (b *builder) node(n *parser.Node) (Node, error) {
 	b.nextNode++
 	out := Node{ID: fmt.Sprintf("node-%d", b.nextNode), Kind: string(n.Kind()), Range: r, ByteRange: bytesOf(n.Span()), Properties: map[string]any{}, RawAttributes: []json.RawMessage{}, Children: []Node{}}
 	p := n.Properties()
+	// Reserve extension projection records before constructing owned slices and
+	// Values. The enclosing source precharge covers their byte copies; semantic
+	// padding is a count and never reserves fabricated source cells.
+	records := int64(0)
+	if p.Table != nil {
+		records += int64(len(p.Table.Alignments))
+	}
+	if p.Row != nil {
+		records += int64(len(p.Row.Separators)) + 2
+	}
+	if p.Cell != nil {
+		records += int64(len(p.Cell.EscapedPipes)) + 1
+	}
+	if p.Task != nil {
+		records += int64(len(p.Task.Segments)) + 8
+	}
+	if p.HTML != nil && b.profile == "gfm" {
+		for _, tag := range p.HTML.FilteredTags {
+			records += 3 + int64(len(tag.Prefix.Segments))
+			if tag.Tag != nil {
+				records += 1 + int64(len(tag.Tag.Segments))
+			}
+		}
+	}
+	if err := b.budget.ChargeNodes(records); err != nil {
+		return Node{}, err
+	}
 	props := out.Properties
 	props["markers"] = markers(n.Markers())
 	props["content"] = segments(n.Content())
@@ -685,8 +752,46 @@ func (b *builder) node(n *parser.Node) (Node, error) {
 			props["info"] = value(*c.Info)
 		}
 	}
-	if h := p.HTML; h != nil && h.BlockForm.Present {
-		props["block_form"] = h.BlockForm.Value
+	if h := p.HTML; h != nil {
+		if h.BlockForm.Present {
+			props["block_form"] = h.BlockForm.Value
+		}
+		if b.profile == "gfm" {
+			tags := make([]FilteredTag, 0, len(h.FilteredTags))
+			for _, tag := range h.FilteredTags {
+				tags = append(tags, FilteredTag{tag.Name, tag.Closing, value(tag.Prefix), bytesOf(tag.Affected), valuePointer(tag.Tag)})
+			}
+			props["filtered_tags"] = tags
+		}
+	}
+	if t := p.Table; t != nil {
+		props["width"] = t.Width
+		alignments := make([]string, 0, len(t.Alignments))
+		for _, a := range t.Alignments {
+			alignments = append(alignments, string(a))
+		}
+		props["alignments"] = alignments
+	}
+	if row := p.Row; row != nil {
+		props["role"] = row.Role
+		props["raw_cells"] = row.RawCells
+		props["padding"] = row.Padding
+		props["separators"] = byteRanges(row.Separators)
+		if r := optionalSpan(row.LeadingPipe); r != nil {
+			props["leading_pipe"] = *r
+		}
+		if r := optionalSpan(row.TrailingPipe); r != nil {
+			props["trailing_pipe"] = *r
+		}
+	}
+	if cell := p.Cell; cell != nil {
+		props["escaped_pipes"] = byteRanges(cell.EscapedPipes)
+		if cell.Alignment.Present {
+			props["alignment"] = string(cell.Alignment.Value)
+		}
+	}
+	if task := p.Task; task != nil {
+		props["task"] = Task{bytesOf(task.Paragraph), bytesOf(task.Marker), bytesOf(task.Opening), bytesOf(task.Check), bytesOf(task.Closing), bytesOf(task.Separator), byteRanges(task.Segments), task.Checked, task.CheckSpelling}
 	}
 	if d := p.Delimiter; d != nil {
 		props["marker"] = string(d.Marker)
@@ -724,7 +829,7 @@ func (b *builder) ast(d *parser.Document, snap result.Snapshot) (AST, error) {
 	if err != nil {
 		return AST{}, err
 	}
-	out := AST{ProjectionVersion: 1, Profile: "commonmark", Snapshot: snap, Root: root, References: []Reference{}}
+	out := AST{ProjectionVersion: 1, Profile: b.profile, Snapshot: snap, Root: root, References: []Reference{}}
 	if err := b.charge(128 * int64(b.source.Len()+1)); err != nil {
 		return AST{}, err
 	}

@@ -134,6 +134,12 @@ func (c RoundContext) Lines() parser.LineIndex { return c.trace.Lines() }
 func (c RoundContext) TerminalEditEligible(ctx context.Context, id string, span parser.Span) (bool, error) {
 	return engine.TerminalEditEligible(ctx, c.Parsed(), c.Directives(), id, span, c.meter.budget)
 }
+
+// TerminalTaskSourcesPreserved compares both actual round parses on the same
+// residual operation. Callers must separately prove their exact suffix edit.
+func (c CheckContext) TerminalTaskSourcesPreserved(ctx context.Context) (bool, error) {
+	return engine.TerminalTaskSourcesPreserved(ctx, c.Before.Parsed(), c.After.Parsed(), c.Before.meter.budget)
+}
 func (c RoundContext) Parsed() parser.ParseResult         { return c.trace.Parsed() }
 func (c RoundContext) Directives() engine.DirectiveResult { return c.trace.Directives() }
 func (c RoundContext) Source(path string) (parser.Source, bool) {
@@ -832,7 +838,7 @@ func (v *Validator) component(ctx context.Context, states []validationState, mem
 			if t.Produce == nil {
 				continue
 			}
-			if t.Plan.Context().Flavor != "commonmark" || s.trace.Parsed().Status != parser.Complete || !s.trace.Directives().Complete() {
+			if (t.Plan.Context().Flavor != "commonmark" && t.Plan.Context().Flavor != "gfm") || s.trace.Parsed().Status != parser.Complete || !s.trace.Directives().Complete() {
 				unavailable = true
 				out.files[j].reasons = append(out.files[j].reasons, "parser-uncertain")
 				continue

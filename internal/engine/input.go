@@ -9,7 +9,7 @@ import (
 )
 
 // DocumentContext carries explicit adapter-resolved context, not guessed
-// filename dialects. The parser provider here recognizes CommonMark only;
+// filename dialects. The parser provider recognizes CommonMark and full GFM;
 // requesting another flavor leaves syntax-dependent rules unassessed.
 type DocumentContext struct {
 	Flavor  string
@@ -91,5 +91,12 @@ func (c RuleContext) TerminalEditEligible(ctx context.Context, id string, span p
 	if !c.syntaxReliable {
 		return false, c.Checkpoint(ctx, 1)
 	}
-	return TerminalEditEligible(ctx, c.parsed, c.directives, id, span, c.budget)
+	eligible, err := TerminalEditEligible(ctx, c.parsed, c.directives, id, span, c.budget)
+	if err != nil || !eligible {
+		return false, err
+	}
+	if c.input.documentContext.Flavor == "gfm" && span.Start() == span.End() {
+		return terminalGFMEndingEligible(ctx, c.parsed, c.budget)
+	}
+	return true, nil
 }

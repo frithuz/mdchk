@@ -187,6 +187,8 @@ func TestExecutionContextFailurePreservesFindingAndOperationalError(t *testing.T
 	}
 }
 
+// A test-only claimed Pandoc capability cannot supply the still-unimplemented
+// parser. Production providers never advertise it; real GFM is covered separately.
 func TestExecutionSyntaxAvailabilityIsNotPromisedByAdmission(t *testing.T) {
 	catalog := engine.Catalog()
 	for i := range catalog {
@@ -222,8 +224,8 @@ func TestExecutionSyntaxAvailabilityIsNotPromisedByAdmission(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	v := executionValidated(t, r, "version: 1\nflavor: gfm\ndirectives: {enabled: false}\n", engine.ValidationProviders{})
-	resolved, err := v.Admit(config.Capabilities{GFM: true}, config.Permissions{})
+	v := executionValidated(t, r, "version: 1\nflavor: pandoc\ndirectives: {enabled: false}\n", engine.ValidationProviders{})
+	resolved, err := v.Admit(config.Capabilities{Pandoc3121FullProfile: true}, config.Permissions{})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -130,7 +130,11 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			out.Files = append(out.Files, file)
 			continue
 		}
-		parsed := parser.ParseWithBudget(ctx, in.source, budget)
+		parse := parser.ParseWithBudget
+		if in.documentContext.Flavor == "gfm" {
+			parse = parser.ParseGFMWithBudget
+		}
+		parsed := parse(ctx, in.source, budget)
 		if options.inspection != nil {
 			options.inspection.parsed = parsed
 			options.inspection.lines = index
@@ -155,7 +159,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			out.Files = append(out.Files, file)
 			continue
 		}
-		syntaxReliable := parsed.Status == parser.Complete && parsed.AST == parser.Available && len(parsed.Uncertainty) == 0 && in.documentContext.Flavor == "commonmark"
+		syntaxReliable := parsed.Status == parser.Complete && parsed.AST == parser.Available && len(parsed.Uncertainty) == 0 && (in.documentContext.Flavor == "commonmark" || in.documentContext.Flavor == "gfm")
 		if !syntaxReliable {
 			out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Reason: result.ParserUncertain, Message: "The requested syntax is not completely recognized."})
 		}

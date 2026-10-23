@@ -10,7 +10,7 @@ mandatory UTF-8 validation, parsing, inherited directive suppression and
 registered-rule execution. Build it from a checkout with
 `go build -o mdchk ./cmd/mdchk`. Lint loads and validates the selected configuration
 before target access; invalid or unavailable settings return `12`. This build's
-available flavor is CommonMark; unavailable default GFM is never substituted.
+available flavors are CommonMark and GFM; omission selects the full GFM profile.
 After preparation, target I/O and invalid UTF-8 return `13`; successful empty
 selection returns `11`. MD047 terminating-newline analysis is implemented; missing
 enabled defaults for other rules still return `15`. Valid UTF-8 with all ordinary rules disabled can
@@ -55,8 +55,11 @@ unchanged. Apply saves that newline on the verified Darwin arm64+cgo/local APFS
 adapter; unsupported adapters refuse with `13` and leave the file unchanged.
 After a successful apply, lint returns `0`.
 
-Without configuration, the default remains GFM, which this build rejects with
-`12`. CommonMark alone still leaves unavailable default checks and returns `15`.
+Without configuration, the supported default GFM profile analyzes the document,
+but unavailable default checks make lint and fix incomplete (`15`). CommonMark
+alone has the same missing-rule coverage. Inspect can complete its observation
+with exit `0` while reporting that coverage; unavailable selected contexts or
+explicit rules fail configuration with `12`.
 See the [configuration guide](configuration.md) before choosing another rule
 selection, and the [runnable integration setup](output-formats.md#runnable-integration-setup)
 for editor and CI examples.

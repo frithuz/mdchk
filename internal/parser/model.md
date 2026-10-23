@@ -1272,14 +1272,15 @@ fix safety or CLI/MCP parity.
 Public `Parse` and `ParseWithBudget` remain CommonMark-only with unchanged
 signatures/defaults. The private `gfmInProgressProfile` selects implemented syntax
 through their shared admission, UTF-8, budgeting, block/inline and recovery body.
-It is a verified private parser profile, unavailable as a product flavor.
-Its completed status certifies the five syntax extensions in the private
-stage it runs. The [tagged test adapter](testdata/gfm/profile/README.md#execute-the-actual-adapter-offline)
+`ParseGFMWithBudget` selects this exact whole profile for admitted GFM operations;
+no partial profile or mutable selection is exposed. Completed status certifies
+all five extensions with the same source authority and operation budget. The [tagged test adapter](testdata/gfm/profile/README.md#execute-the-actual-adapter-offline)
 executes all 2,117 comparison units with separate immutable raw historical and
 approved modern-target axes. Independent mixed AST/source/protection, exclusion, scope isolation, concurrency,
 finite resource and semantic fuzz verification complement the complete approved
-profile gate (#235). Public activation, real lint/fix/inspect consumer integration
-(#161) and named production rules (#236) remain separate work.
+profile gate (#235). Real lint/fix/inspect integration (#161) uses this lifecycle
+for original, candidate and saved snapshots. Named production rules (#236), MCP
+and independently optional frontmatter remain separate work.
 
 `Table` owns `TableProperties` (positive Width and one typed Alignment per
 column), and source-ordered `TableRow` children: one header, one delimiter, then
@@ -1373,6 +1374,21 @@ the product parser emits no HTML. Task metadata adds records/work, not a syntax
 construct beyond the existing list/item/paragraph/inline depth.
 
 
+`Document.TaskSources(ctx, budget)` collects one source-ordered record per actual
+task Paragraph from a completed parse in the same operation. Each owned record
+contains copied TaskProperties (including marker segments) and logical Content
+contributions. Core parses return a known empty inventory. Constructed models,
+partial parses and foreign operations cannot grant this authority. Traversal,
+stack and record construction use that operation's work/node quotas and context.
+
+MD047 consumers use these real facts to prevent a newly inserted EOF ending
+from adopting literal task spelling. Eligibility parses a prospective ending
+with the actual whole GFM profile on the same budget. Candidate validation
+independently compares the actual before/after inventories, marker coordinates
+and spelling, and visible Content coordinates, transformations and semantics,
+alongside its exact suffix/body and common protection/directive proofs. Paragraph
+envelope endings may extend, but task tokens and visible body cannot change.
+
 ### Strikethrough nodes
 
 `Strike` (`strike`) is transparent inline formatting. It reuses
@@ -1395,8 +1411,8 @@ records the chosen behavior where pinned extension prose is incomplete.
 Walk, reference binding, Comments, LiteralSpans and ProtectedNodes reach actual
 inline descendants. Strike itself grants no opaque-source authority. Code and
 raw HTML remain opaque under the shared parser's ordinary boundaries. The tagged
-test adapter renders Strike; public profile activation and consumer gates remain
-separate from verified parser conformance.
+test adapter renders Strike. Real operation consumers use its original facts;
+named rule coverage remains separate from verified parser conformance.
 
 
 ### Bare extended links
@@ -1445,12 +1461,12 @@ Bare links remain transparent to source consumers. Walk/reference traversal and
 protection still reach real code/HTML descendants elsewhere; bare syntax itself
 adds no opaque range. Only complete same-operation documents grant authority.
 Public Parse/ParseWithBudget/zero/core stay CommonMark-only. The five-extension
-private stage does not activate public GFM, production rendering, rules or real
-operation consumers. The tagged test adapter executes all 2,117 comparison units
+whole-profile entry point supplies GFM to real operation consumers, without
+production rendering or additional rules. The tagged test adapter executes all 2,117 comparison units
 with separate raw historical and approved modern-target results; see the
 [actual-run contract](testdata/gfm/profile/README.md#execute-the-actual-adapter-offline).
-Independent profile/resource verification (#235) complements this adapter. Real
-consumer integration (#161) remains a separate gate.
+Independent profile/resource verification (#235) and real operation-consumer
+integration (#161) complement this adapter.
 
 
 ### Disallowed raw HTML metadata
@@ -1487,8 +1503,8 @@ excluding only existing confirmed comments through their actual close or EOF.
 Tail facts occur once on the enclosing block. Opaque comment-looking strings do
 not acquire comment ownership or directive eligibility. Public Parse and
 ParseWithBudget remain CommonMark-only. Independent profile/resource verification (#235) now complements the private
-stage. It does not establish public activation or completed real consumer
-integration (#161). The delivered tagged adapter (#234) executes
+stage. Real consumer integration (#161) now uses the same whole profile and
+source authority. The delivered tagged adapter (#234) executes
 all 2,117 units with separate immutable raw and approved modern-target comparisons;
 its [actual-run contract](testdata/gfm/profile/README.md#execute-the-actual-adapter-offline)
 retains these boundaries and distinguishes integrity-only NOT-RUN checks.

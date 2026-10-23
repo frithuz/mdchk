@@ -61,7 +61,7 @@ soft/hard breaks add zero; paragraph/heading/code/HTML and each quote, list,
 list item, emphasis, strong, link, image and code span add one. A paragraph
 containing 255 nested Strong nodes is depth 256; 256 quotes containing a
 paragraph is depth 257. A list plus its item contributes two ancestors.
-The private GFM-in-progress stage counts Table, TableRow and TableCell as one
+The GFM profile counts Table, TableRow and TableCell as one
 construct each; inline syntax adds to those three ancestors and any enclosing
 quotes/lists/items. Delimiter cells occupy the same depth as ordinary cells.
 Reference definitions occupy a leaf's construct position while recognized.
@@ -123,8 +123,8 @@ immutable copies, including failed delimiter/width candidates. Complete source
 cells are retained even beyond semantic table width. Padding is one spanless
 count per row, avoiding width-times-row synthetic allocations. Candidate rows
 freeze only after header/delimiter equality and combined depth admission. Public
-entry points keep their existing core-only behavior; this internal stage does
-not establish complete GFM capability or full-profile conformance.
+legacy entry points keep their existing core-only behavior; `ParseGFMWithBudget`
+selects the complete approved profile through this same budgeted lifecycle.
 
 
 Task recognition inspects at most four original logical tokens on the first
@@ -222,6 +222,24 @@ promise hard RSS bounds, OS preemption or an arbitrary-input complexity proof.
 private all-five profile with exact work/construction boundaries, cumulative
 protection and core reparses, sticky exhaustion, mixed depth, cancellation and
 deadline checkpoints, and finite adversarial families. Incomplete parses deny
-Comments, LiteralSpans and ProtectedNodes authority; this does not prove later
-operation consumers obey that refusal. The [GFM verification record](gfm-verification.md)
+Comments, LiteralSpans and ProtectedNodes authority. Separate real engine,
+inspection and fix integration tests verify consumers obey that refusal. The [GFM verification record](gfm-verification.md)
 describes the semantic fuzz bounds and remaining limits.
+
+## Terminal task preservation consumers
+
+GFM MD047 insertion eligibility charges source copying and construction before
+parsing one prospective LF ending with the unchanged whole-profile parser on
+its existing operation budget. LF, CRLF and CR all supply task whitespace; the
+candidate checker compares the actual chosen ending's actual parse. This extra
+parse is cumulative, including source admission, work, nodes, depth and time;
+exhaustion or cancellation cannot publish an eligible or corrected result.
+No suffix recognizer or alternate grammar decides task adoption.
+
+The completed same-operation TaskSources inventory charges traversal, stack
+storage and detached task/Content records before construction. Comparison charges
+original source reads and visits; it compares task classification, original token
+spans/spelling and visible paragraph contributions. Candidate validation obtains
+both real round parses independently of producer eligibility. This is a narrow
+suffix preservation proof alongside existing exact body, protection, binding and
+directive checks, rather than a general semantic equivalence claim.

@@ -315,6 +315,24 @@ p=Path('../../docs/contracts/results/validate.py')
 s=importlib.util.spec_from_file_location('contract',p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
 x=json.load(sys.stdin);m.validator.validate(x);m.semantic(x)
 import copy
+def nodes(n):
+ yield n
+ for child in n['children']:yield from nodes(child)
+ast=x['inspection']['ast'].get('data')
+if ast:
+ for index,node in enumerate(nodes(ast['root'])):
+  props=node['properties']
+  for key in ('alignments','raw_cells','task','filtered_tags','separators','escaped_pipes'):
+   if key not in props or key in ('filtered_tags','separators','escaped_pipes') and not props[key]:continue
+   bad=copy.deepcopy(x);target=list(nodes(bad['inspection']['ast']['data']['root']))[index]['properties']
+   if key=='alignments':target[key]=[]
+   elif key=='raw_cells':target[key]=-1
+   elif key=='task':target[key]['checked']=not target[key]['checked']
+   elif key=='filtered_tags':target[key][0]['affected']['end']=x['inspection']['file']['size_bytes']+1
+   else:target[key][0]['end']=x['inspection']['file']['size_bytes']+1
+   try:m.validator.validate(bad);m.semantic(bad)
+   except Exception:pass
+   else:raise AssertionError('invalid actual GFM '+key+' accepted')
 rules=x['inspection']['rules'].get('data',[])
 if rules:
  bad=copy.deepcopy(x);bad['inspection']['rules']['data'][0]['source_coverage']['active']={'availability':'complete','ranges':[],'byte_ranges':[{'start':0,'end':x['inspection']['file']['size_bytes']+1}]}

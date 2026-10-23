@@ -1,4 +1,4 @@
-# Private GFM parser verification
+# GFM parser and consumer verification
 
 The verified parser target is CommonMark **0.31.2** plus all five published GFM
 extensions. The retained extension page, retrieved 2026-10-14, is 508,310 bytes,
@@ -53,8 +53,8 @@ YAML/TOML-looking headers receive positive ordinary core interpretations in both
 profiles, without uncertainty. All seven closed scopes run with synchronized
 concurrent starts and independent/shared finite operations; public core remains
 identical to its pre-profile baseline. A tagged CLI test runs real production
-admission before and after every closed scope: default/explicit GFM, invented
-partial profiles/extension keys and enabled frontmatter remain rejected.
+execution before and after every closed scope: default/explicit GFM are admitted;
+invented partial profiles/extension keys and enabled frontmatter remain rejected.
 
 Mixed resource tests measure accounting boundaries at used-1/used/used+1, carry
 real protection charges and core/integrated reparses through one operation, and
@@ -88,8 +88,23 @@ process-level network denial, with local toolchain and proxy/sumdb/workspace off
 This does not claim an empty dependency cache can build without acquisition.
 
 Public `Parse`/`ParseWithBudget` remain core-only. The closed tagged bridge is
-verification infrastructure. GFM/default configuration remains unavailable (12).
-Actual operation integration (#161), named production rules (#236), frontmatter,
-Pandoc, production rendering and broader interface availability remain separate.
-Parser results establish neither historical 0.29 equality, GitHub website or
-sanitization parity, safe-fix consumer behavior nor whole-product readiness.
+verification infrastructure. `ParseGFMWithBudget` exposes only the whole profile
+within the internal package boundary and shares the existing parse lifecycle.
+Default/explicit GFM now drive actual lint, inspect and fix, including candidate
+and saved analysis, with the same immutable plan and residual operation budget.
+
+Permanent consumer fixtures assert independently specified LF/CRLF/UTF-8 source
+facts, exact diagnostic coordinates, genuine versus opaque directives, protected
+edits, foreign/partial authority refusal and controlled preservation/idempotence.
+Inspection projects original table cells/counts/separators/padding, task tokens,
+strike markers, destination provenance and filtered HTML facts; selected views
+retain their original ownership. Actual producer schema/semantic controls reject
+corrupted extension facts. Compiled MD047 tests cover preview, supported native
+saved bytes and ordinary unsupported-platform refusal.
+
+Named production rules (#236), frontmatter, Pandoc, MCP and production rendering
+remain separate. Full catalog defaults still yield incomplete/15 for missing
+checks; explicitly enabling an unavailable rule fails configuration/12. Reduced
+MD047 configurations can complete with either supported flavor. These checks do
+not claim historical 0.29 equality, GitHub website/sanitization parity or whole
+product readiness.

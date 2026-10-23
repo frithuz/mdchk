@@ -306,9 +306,9 @@ through `engine.FinalizeLintResult`, which regenerates canonical IDs, cause link
 and per-file references before deriving the shared outcome. Public CLI paths
 are relative to the invocation directory; acquisition keeps native names private.
 Lint text and JSON reporters present the canonical result without rereading
-configuration sources or target documents. Production rule callbacks, GFM/Pandoc
-parsers, optional contexts and VS Code/GitHub reporters remain separate
-deliveries. Directive recognition and shared suppression are implemented.
+configuration sources or target documents. CommonMark/GFM, MD047, directives,
+shared suppression and VS Code/GitHub reporters are implemented. Other rule
+callbacks, Pandoc and optional contexts remain separate deliveries.
 
 ## Confirmed requirements
 

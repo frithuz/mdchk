@@ -22,12 +22,13 @@ Analyze supplies full-document data with counts `not-requested`. Filter adds
 contextual selection and counts as described below. The inspect CLI renders this
 projection in text/JSON and preserves its identities and causal links. It implements neither
 MD087 counterfactual conclusions nor additional rule implementations. Resource,
-frontmatter, slide, GFM and Pandoc processing retain their own admission gates;
+frontmatter, slide and Pandoc processing retain their own admission gates;
 no CommonMark substitute or guessed document context is supplied.
 
 ## AST catalog
 
-The current profile is `commonmark`, using the actual CommonMark 0.31.2 parse.
+The profile is the actual admitted `commonmark` or `gfm` selection. GFM uses
+CommonMark 0.31.2 plus all five frozen extensions; legacy Parse APIs stay core-only.
 The document root covers every original byte, including empty input. Node IDs
 are deterministic pre-order `node-N` identifiers; children retain parser source
 order and all actual inline children. Coordinates use the shared one-based
@@ -52,11 +53,29 @@ used below contain `segments` and optional `semantic`, preserving this distincti
 | `heading` | `level`, `style` (`atx` or `setext`); actual inline children remain present. |
 | `list`, `list-item` | `ordered`; optional `start`, `delimiter`, `bullet`, `tight`; item-only `marker_width`, `padding`, `content_indent`, `prefix` Value. |
 | `code-block` | `style` (`fenced`/`indented`), optional `fence`, `width`, `info` Value and `literal`. |
-| `html-block`, `inline-html` | Optional `block_form` only for block origins; raw content is retained. |
+| `html-block`, `inline-html` | Optional `block_form` only for block origins; raw content is retained. GFM adds `filtered_tags`, including a known-empty array for an owner with no affected tags. |
 | `text` | Optional semantic `literal`, independently of original content. |
 | `soft-break`, `hard-break` | `origin` (`line-ending`, `spaces`, `backslash`); original physical ending remains content. |
-| `code-span`, `emphasis`, `strong` | `marker`, `width`; code spans may have normalized `literal`, emphasis/strong retain inline children. |
+| `code-span`, `emphasis`, `strong`, `strike` | `marker`, `width`; code spans may have normalized `literal`, emphasis/strong retain inline children. |
 | `link`, `image` | `origin`, `label`, `destination`, `resolution`; optional `reference_label`, `normalized_label`, `title`, with source-backed visible children. |
+
+GFM adds these source facts without changing the version 1 envelope:
+
+| Owner | Properties |
+| --- | --- |
+| `table` | Positive `width` and ordered `alignments` (`none`, `left`, `center`, `right`). |
+| `table-row` | `role` (`header`, `delimiter`, `body`), original `raw_cells`, spanless semantic `padding`, all original `separators`; optional `leading_pipe`/`trailing_pipe`. |
+| `table-cell` | Original complete backslash-pipe spans in `escaped_pipes` (including known empty); optional delimiter `alignment`. Every original cell, including empty/excess cells, remains a child. Padding creates no source cell. |
+| `list-item`, first direct `paragraph` | Identical `task` object with original `paragraph`, `marker`, `opening`, `check`, `closing`, `separator` byte ranges, ordered marker `segments` excluding container gaps, semantic `checked`, and exact `check_spelling`. Existing list/container facts retain their own owners. |
+| `html-block`, `inline-html` | `filtered_tags` contains ordered `name`, `closing`, original `prefix` Value and one-byte `affected` angle. Optional `tag` Value exists only for a proved complete tag. The unchanged node is the protected owner. |
+
+Separator, escaped-pipe and task ranges use original half-open byte coordinates;
+the owning nodes additionally retain public scalar coordinates. Task marker
+segments can be discontinuous. Absent optional values remain distinct from known
+empty Values, zero-width original cells and spanless padding. `bare-gfm` retains
+visible source in the ordinary link fields; only injected destination prefixes
+are spanless synthetic segments. Selected views preserve these original facts
+and canonical Go types, with no clipping or synthesized source authority.
 
 `raw_attributes` is empty for the current CommonMark profile, which has no
 attribute extension. It does not invent effective attributes from raw HTML.
@@ -68,9 +87,9 @@ the definition retains their original spelling.
 
 A future profile must extend this catalog with documented source-backed kinds,
 properties, attributes, original/effective distinctions and independent parser
-and producer acceptance. The illustrative GFM AST fixture is a serialization
-example; it neither enables GFM nor permits omission of real inline children.
-Pandoc footnotes, attributes, cells/separators and HTML-origin distinctions remain
+and producer acceptance. The illustrative GFM AST fixture remains a serialization
+example; real producer tests independently verify the catalog and inline children.
+Pandoc footnotes, attributes and additional HTML-origin distinctions remain
 future profile obligations rather than invented nodes in this projection.
 
 ## Rule records and source coverage

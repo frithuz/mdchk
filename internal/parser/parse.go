@@ -117,8 +117,15 @@ func ParseWithBudget(ctx context.Context, source Source, budget *OperationBudget
 	return parseWithProfile(ctx, source, budget, coreProfile)
 }
 
-// parserProfile is deliberately private. The staged profile exercises implemented
-// GFM syntax for verification; it does not activate the public GFM flavor.
+// ParseGFMWithBudget recognizes the complete approved GFM profile: CommonMark
+// 0.31.2 and all five pinned extensions. It shares admission, source authority,
+// recovery and the caller's cumulative operation with ParseWithBudget. No partial
+// extension selection is exposed. The legacy Parse APIs remain core-only.
+func ParseGFMWithBudget(ctx context.Context, source Source, budget *OperationBudget) ParseResult {
+	return parseWithProfile(ctx, source, budget, gfmInProgressProfile)
+}
+
+// parserProfile keeps section-scoped verification controls private.
 type parserProfile uint8
 
 const (

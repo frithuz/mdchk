@@ -7,8 +7,9 @@ The [approved compatibility contract](../../../../../docs/engineering/gfm-compat
 uses CommonMark 0.31.2 plus all five published extensions. This directory supplies
 immutable corpus infrastructure. The separately retained [profile](../profile/README.md)
 contains reviewed adaptations and verified actual private parser execution; neither
-claims historical 0.29-gfm or GitHub website rendering parity. Configuration still
-rejects unavailable GFM, including the default. The existing CommonMark 652-case
+claims historical 0.29-gfm or GitHub website rendering parity. Default/explicit
+GFM now use the whole profile in the shared operation pipeline; missing rule
+implementations remain independently unavailable. The existing CommonMark 652-case
 pin and tooling remain separate and unchanged.
 
 `upstream/spec.html` is the unmodified normative page from

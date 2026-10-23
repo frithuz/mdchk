@@ -59,10 +59,9 @@ Acquire an immutable snapshot with `parser.NewSource(content)`, then call
 `Source.Bytes` returns a copy. Parse has no flavor or frontmatter option: it
 recognizes core syntax with extensions/frontmatter disabled. Configuration-driven
 selection and bounded read-only acquisition are connected to CLI lint, including
-the shared mandatory UTF-8 gate, parser and registered-rule engine. Public GFM/Pandoc
-integration, frontmatter, production rules, MCP integration and production rendering remain
-separate deliveries. The configuration examples in
-the format guide describe those future adapters.
+the shared mandatory UTF-8 gate, parser and registered-rule engine. GFM uses the
+same lifecycle through `ParseGFMWithBudget`; the legacy Parse APIs stay core-only.
+Pandoc, frontmatter, other production rules, MCP and rendering remain separate.
 
 The first phase identifies paragraphs, ATX/Setext headings, fenced/indented code,
 thematic breaks, all seven HTML-block forms and nested quotes/lists, and completes
@@ -108,11 +107,11 @@ its typed original-byte failure precedes cancellation/deadline. Prior exhaustion
 or insufficient validation work can stop before encoding is established. MD094
 controls downstream attribution, never whether admitted bytes are validated.
 
-The private GFM parser profile is verified against CommonMark 0.31.2 and all five
-pinned extensions: 2,117 approved comparison units pass, including every published
-case. Independent source, isolation and finite resource checks complement HTML
-comparison. Public GFM remains unavailable; consumer integration and production
-rules remain separate. See the [parser verification record](engineering/gfm-verification.md).
+GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
+comparison units pass, including every published case. Default and explicit GFM
+selection share the real lint, fix and inspection pipeline, including source
+facts, directives, protected regions and candidate reparsing. MD047 is the first
+production rule and correction; other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -237,8 +236,8 @@ perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
 assembly uses the complete catalog with the MD047 read-only analysis callback
-and asserts CommonMark and shared directive-processing capabilities. No configuration still selects built-in
-GFM, which fails admission rather than falling back. Configuration and read
+and asserts CommonMark, GFM and shared directive-processing capabilities. No
+configuration selects built-in GFM through the same whole-profile parser. Configuration and read
 failures return 12; output failures return 13.
 
 Preparation retains the full owned selection, resolution and admitted execution

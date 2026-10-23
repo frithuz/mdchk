@@ -2,8 +2,9 @@
 
 These fixtures encode CommonMark 0.31.2 plus all five published GFM extensions.
 They validate expected data and source contracts. The test-only tagged adapter
-executes the real private parser stage; production consumer integration remains
-unavailable and configuration continues to reject unavailable GFM.
+executes the real parser lifecycle. Production GFM selection now uses that same
+whole profile through lint, inspection and fix; named missing rules remain
+unavailable independently of syntax support.
 The separate actual CommonMark conformance gate remains 652 unchanged cases.
 
 `ledger.json` resolves every one of the 677 retained published cases under three
@@ -177,9 +178,10 @@ at eec0eeba6d31189fd828314576494566d539b1e3. They are not required or invoked by
 this runner and cannot supply targets. The independent parser verification suite now covers mixed AST/source/protection,
 excluded syntax, scope isolation, concurrency and finite resource behavior.
 `TestGFMVerified`, `FuzzGFMProfile` and `BenchmarkGFMProfile` exercise the actual
-private parser independently of this adapter. See the [verification record](../../../../../docs/engineering/gfm-verification.md).
-Real lint/fix/inspect consumers (#161), named production rules (#236), frontmatter
-and production GFM activation remain separate.
+whole-profile parser independently of this adapter. See the [verification record](../../../../../docs/engineering/gfm-verification.md).
+The supported default/explicit production GFM selection now feeds real lint,
+fix and inspect consumers (#161). Named production rules (#236), frontmatter,
+Pandoc and MCP remain separate; this profile does not implement them.
 
 ## Attribution
 

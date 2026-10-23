@@ -57,8 +57,8 @@ The version preserves Go main-module build metadata, including a release or
 pseudo-version. Empty, absent or `(devel)` metadata uses `dev`; an ordinary
 checkout build can have a synthesized pseudo-version. See the [version policy](index.md#global-options). Help and version do not access the project. Lint
 parses arguments and loads and admits configuration before target access;
-configuration failures return `12`, including unavailable default GFM when no
-configuration exists. A valid CommonMark configuration completes preparation, selects targets and acquires immutable
+configuration failures return `12`. Default GFM and explicit CommonMark both
+complete preparation, select targets and acquire immutable
 source snapshots. The mandatory UTF-8 gate reports malformed source as I/O (`13`),
 independently of rule enablement; successful empty selection returns `11`. Acquired
 snapshots enter the shared parser and available registered checks. Missing

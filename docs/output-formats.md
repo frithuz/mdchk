@@ -127,8 +127,10 @@ checkout/workspace root. Copy the [example configuration](examples/editor-ci/.md
 to `.mdchk.yaml` there. It selects CommonMark and MD047, explicitly disables
 other ordinary checks, and retains mandatory UTF-8 validation. This reduced
 selection verifies integration with the current build; it is not full catalog
-conformance. Without it, the current default GFM profile fails configuration
-validation; CommonMark alone still has unavailable default checks and exits `15`.
+conformance. Without it, supported default GFM and CommonMark both analyze
+with unavailable default checks, so lint and fix exit `15`. Inspect retains its
+independent completed-observation exit `0` while exposing missing coverage.
+Explicit unavailable rules or contexts fail configuration with `12`.
 
 For the exact violating example, copy the [example document](examples/editor-ci/guide.md)
 to `docs/guide.md`. It contains `雪`, a tab, `😀x`, and no terminal newline: MD047 is

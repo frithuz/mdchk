@@ -78,6 +78,7 @@ Readiness is bounded by the [current capabilities](../index.md) and
 establishes core syntax conformance, not every consumer or rule. MD047 is the
 current ordinary production rule and correction. Unavailable implicit rules
 remain coverage gaps (15), explicit unavailable rules reject configuration (12),
-and the default GFM flavor still rejects (12). GFM/Pandoc extensions, optional
-contexts/resources, MCP delivery, broader traversal accounting, the remaining
+and default GFM now uses the verified whole profile. Actual GFM lint/fix/inspect
+consumer journeys include source facts and native saved-byte checks. Pandoc,
+optional contexts/resources, MCP delivery, broader traversal accounting, the remaining
 rules and release/install artifacts are separate work.

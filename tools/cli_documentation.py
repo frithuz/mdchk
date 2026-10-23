@@ -293,9 +293,11 @@ def semantic_examples(ex, base):
     print(f"PASS native apply status={applied.returncode}; supported exact save/idempotence or unsupported refusal")
     config = project / ".mdchk.yaml"
     config.unlink()
-    ex.run(project, ["lint", "docs/guide.md", "--format", "json"], 12, json_result=True)
+    default = ex.run(project, ["lint", "docs/guide.md", "--format", "json"], 15, json_result=True)
+    require(default["coverage"] and not default["errors"] and default["checked_files"], "default GFM did not execute")
     config.write_text("version: 1\n")
-    ex.run(project, ["lint", "docs/guide.md", "--format", "json"], 12, json_result=True)
+    omitted = ex.run(project, ["lint", "docs/guide.md", "--format", "json"], 15, json_result=True)
+    require(omitted["coverage"] and not omitted["errors"] and omitted["checked_files"], "omitted GFM did not execute")
     config.write_text("version: 1\nflavor: commonmark\n")
     incomplete = ex.run(project, ["lint", "docs/guide.md", "--format", "json"], 15, json_result=True)
     require(incomplete["coverage"] and not incomplete["complete"], "missing default coverage")

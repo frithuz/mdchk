@@ -95,6 +95,15 @@ func checkTerminalNewline(ctx context.Context, c fix.CheckContext) (fix.Proof, e
 	if len(after) != len(body)+len(replacement) || after[:len(body)] != body || after[len(body):] != string(replacement) {
 		return fix.Unsafe, nil
 	}
+	// Independently inspect the ACTUAL candidate's task source facts. Neither the
+	// producer nor a serialized fix_available flag can authorize task adoption.
+	preserved, err := c.TerminalTaskSourcesPreserved(ctx)
+	if err != nil {
+		return fix.Unknown, err
+	}
+	if !preserved {
+		return fix.Unsafe, nil
+	}
 	if err := c.Before.Checkpoint(ctx, 0); err != nil {
 		return fix.Unknown, err
 	}

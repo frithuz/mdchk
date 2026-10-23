@@ -90,7 +90,7 @@ flavor: commonmark
 
 This configuration works with the current production executable: CommonMark
 0.31.2, directive processing and MD047 analysis/correction are available, while
-GFM, Pandoc and other ordinary rule implementations remain unavailable. Lint parses
+GFM is also available; Pandoc and other ordinary rule implementations remain unavailable. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
 as `rule-unavailable`, sets `status: incomplete` and `complete: false`, and exits
 15. The complete 89-rule catalog remains intact: MD001 is default-enabled and
@@ -196,7 +196,8 @@ processor rows describe capability-bound adapter fixtures.
 
 | Definition or condition | Capability setup | Expected outcome |
 | --- | --- | --- |
-| `version: 1`, flavor omitted | GFM unavailable | Configuration error; no CommonMark fallback |
+| `version: 1`, flavor omitted | Production GFM available | Real GFM analysis; missing default rules yield incomplete/15 |
+| `version: 1`, flavor omitted | Build without GFM | Configuration error; no CommonMark fallback |
 | `flavor: pandoc` | Pandoc unavailable | Configuration error |
 | Global directives effectively true | Processor unavailable | Configuration error |
 | Child directives true beneath valid ancestor false | Processor unavailable | Effective false; no processor capability error |

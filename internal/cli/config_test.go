@@ -44,12 +44,10 @@ func validProject(t *testing.T) string {
 
 func TestLintConfigurationStopsBeforeTargets(t *testing.T) {
 	for _, tc := range []struct{ name, body, explicit, want string }{
-		{"missing defaults", "", "", "flavor"},
 		{"invalid nearest", "version: 2\n", "", "version"},
 		{"missing explicit", availableConfig, "missing.yaml", "missing.yaml"},
 		{"explicit unavailable rule", availableConfig + "rules: {MD013: {enabled: true}}\n", "", "MD013"},
 		{"invalid disabled options", availableConfig + "rules: {MD013: {enabled: false, length: -1}}\n", "", "length"},
-		{"unavailable GFM", "version: 1\n", "", "flavor"},
 		{"unavailable Pandoc", "version: 1\nflavor: pandoc\n", "", "flavor"},
 		{"invalid pattern", availableConfig + "exclude: ['bad/**x']\n", "", "exclude"},
 		{"disabled hostname provider", availableConfig + "rules: {MD095: {enabled: false, allowed_hosts: [example.com]}}\n", "", "allowed_hosts"},
@@ -234,8 +232,7 @@ func TestLintPreparationPreservesConfigurationCause(t *testing.T) {
 }
 
 func TestLintExclusionBaseWithoutFile(t *testing.T) {
-	// Admission currently rejects the unavailable default GFM before reaching
-	// this continuation. The binding still defines the no-file selection base.
+	// No-file selection binds exclusions to the invocation directory.
 	root := project(t)
 	patterns, err := config.CompilePatterns([]string{"generated/"})
 	if err != nil {
