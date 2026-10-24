@@ -4,11 +4,13 @@ Status: approved on 2026-10-14. This defines resource inputs, policies, snapshot
 and outcomes for [#170](https://github.com/frithuz/mdchk/issues/170). The shared
 engine contract (#123) is delivered. Issue #249 adds the typed read-only request,
 observation and immutable view contracts with result/coverage fixtures in
-[internal/resource](../../internal/resource/README.md). Production normalization,
-adapters, acquisition/cache, anchor indexes and consumers remain pending; these
+[internal/resource](../../internal/resource/README.md). Production adapters,
+acquisition/cache, anchor indexes and consumers remain pending; these
 types do not advertise resource lookup as implemented. Issue #170 adds the shared
 strict supplied-inventory input boundary and embeddable schema; inventory lookup
-and MCP argument integration remain pending.
+and MCP argument integration remain pending. Issue #250 adds shared portable
+destination normalization, independent fragment facts and a one-level index plan;
+it performs no resource acquisition or production consumer registration.
 
 Resource lookup is read-only, confined, and shared by CLI, inspect, project MCP,
 and standalone consumers. Lint selection is separate from resource permission.

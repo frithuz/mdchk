@@ -2,8 +2,8 @@
 
 Issue #249 establishes engine-facing types and fixtures. This package is not a
 production resource resolver, and no engine callback or advertised capability is
-registered. Normalization, adapters, bounded acquisition/cache, anchor indexes,
-rule consumers and coordinated fix execution remain issues #250–#260.
+registered. Adapters, bounded acquisition/cache, anchor indexes,
+rule consumers and coordinated fix execution remain issues #251–#260.
 
 A caller supplies an opaque root identity, immutable parser/index/anchor policy,
 a shared operation context and budget, and explicit selected target snapshots.
@@ -66,8 +66,9 @@ resets it. Immutable snapshots/views/observations support concurrent reads. Resu
 projection after an interruption does not create a new execution budget. Concrete
 acquisition checkpoints, aggregate content/cache bounds, singleflight, confined
 filesystem operations and cancellation of actual resource work remain downstream.
-The types cannot prove adapter truthfulness, inventory completeness, confinement
-or normalization correctness; those are explicit future adapter obligations.
+The types cannot prove adapter truthfulness, inventory completeness or native
+confinement; those remain explicit future adapter obligations. Adapters must use
+the shared normalization pipeline below rather than reinterpret destinations.
 
 ## Supplied input boundary
 
@@ -116,3 +117,70 @@ those scalars. Python JSON Schema validation uses a different regex dialect and
 cannot replace this gate. CI runs the command unconditionally; a missing Node
 runtime fails the gate rather than silently skipping it. Node is verification
 tooling only, not a runtime dependency of mdchk.
+
+## Destination normalization
+
+Issue #250 adds the single `NewNormalizer(view, PathLimits, NamePolicy)` /
+`Normalize(Link)` pipeline for future project and supplied-map adapters. It starts
+with the parser-semantic destination and retains the exact original Link/span.
+It classifies raw schemes/native forms, splits raw path/query/fragment, discards
+the query, and path-unescapes path and fragment independently once. Literal plus,
+case, Unicode and percent data are preserved. Remote/protocol-relative references
+are ignored; unsupported local/native forms, encoded separators and above-root
+traversal are blocked. Invalid path encoding or controls are invalid-reference
+facts. Fragment errors remain separate and do not erase a valid file path.
+Nonlocal raw paths leave any present fragment `unchecked`; consumers need not
+interpret irrelevant remote fragments.
+
+`NormalizedLink` is an immutable decision, not evidence of resource existence.
+Its `Location` distinguishes a root directory from an ordinary canonical Key;
+the zero location means neither. Never submit `.` or an empty file Key to express
+the root. `DirectoryHint` retains a directory type requirement even if the spelling
+matches the source. `SameSource` exposes the exact selected original/candidate/
+saved snapshot only when proven, without content reacquisition. Empty/query/
+fragment-only paths work for selected sources outside the namespace, but have no
+resource Location. Nonempty paths from those sources are blocked; this API accepts
+no unverified self-alias proof and never derives authority from report names.
+
+A project `NamePolicy` is required and checks representability of the complete
+canonical key before a new lookup; it is a pure, bounded, concurrency-safe trusted
+adapter predicate. It does not establish actual spelling, type or confinement.
+Known selected-file identity needs no fresh native name lookup. This includes a
+source-equal directory hint: keep its Local locator and DirectoryType requirement,
+but do not claim SameSource directory success. A selected configured index likewise
+reuses the exact available view Source before a new-lookup name predicate.
+Supplied roots never call this predicate and do not inherit server-OS filename aliases. Actual native
+path rules and confined acquisition remain #251. Literal supplied keys from #170
+are never passed back through URL decoding.
+
+After establishing directory existence, call `DirectoryIndex` once. Its
+`IndexLookup` names only the configured basename with `RegularFile` required,
+retains active-adapter representability, and exposes no recursive index planner
+or fallback list. A directory hint alone is not existence evidence; check its
+`DirectoryType` requirement before using the plan. A known regular file where a
+directory is required, or a directory at the index key, remains a type mismatch.
+Retain the original NormalizedLink for source attribution and fragment state.
+Root existence and actual directory/index facts belong to the authorized adapter;
+unknown directories never imply absent indexes.
+
+`PathLimits` uses the shared operator path-byte/depth defaults, while the existing
+operation document-byte limit bounds a semantic destination. Normalization reserves
+16 work units per destination/source-key byte before scans, decoding, name-policy
+checks and joins, charges constructed decisions/segments to the same node meter,
+and checks cancellation/time between bounded segments and around whole decisions.
+The standard unescape/UTF-8 routines are size-bounded, not asynchronously preempted.
+Runtime stops return their original context/quota errors, never absence or malformed
+URL facts. Completed decisions remain readable after a stop; new index planning
+still requires execution budget. Exported handle replacement cannot mutate a
+previously returned decision.
+
+The exact 80-row outcome table, source/view/result fixtures and
+`FuzzNormalizeDestination` exercise this boundary. The required schema ECMAScript
+gate from #170 remains unchanged. No native root selection, supplied inventory
+lookup, cache, anchor interpretation, production rule consumer or runtime resource
+capability is enabled here.
+
+Run a bounded normalization campaign with
+`GOMAXPROCS=2 go test ./internal/resource -run '^$' -fuzz '^FuzzNormalizeDestination$' -fuzztime=20s -parallel=2`.
+Fuzz oracles preserve logical confinement and once-only percent data; they do not
+re-feed literal output keys as URLs and incorrectly demand decode idempotence.
