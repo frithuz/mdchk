@@ -5,9 +5,11 @@ import io
 import sys
 import json
 import os
+import signal
 from pathlib import Path
 import subprocess
 import tempfile
+import time
 import unittest
 from unittest import mock
 
@@ -160,14 +162,99 @@ class ActualConformance(unittest.TestCase):
                 script.write_text('#!/usr/bin/env python3\n'+code+'\n');script.chmod(0o700)
                 result = runner.execute(script, unit, .2)
                 self.assertEqual(result['status'], 'error', code)
-            pidfile = Path(temp)/'pid'
-            script.write_text('#!/usr/bin/env python3\nimport subprocess,time\np=subprocess.Popen(["sleep","30"])\n'
-                              f'open({str(pidfile)!r},"w").write(str(p.pid))\ntime.sleep(30)\n')
-            self.assertEqual(runner.execute(script, unit, .3)['status'], 'error')
-            pid = int(pidfile.read_text())
-            # A zombie has exited; Darwin reaps these immediately in normal runs.
-            state = subprocess.run(['ps', '-o', 'stat=', '-p', str(pid)], capture_output=True, text=True).stdout.strip()
-            self.assertTrue(not state or state.startswith('Z'), state)
+            for delayed in (False, True):
+                with self.subTest(delayed_start=delayed):
+                    pidfile = Path(temp)/f'pid-{delayed}'
+                    gate = Path(temp)/'gate'
+                    script.write_text('#!/usr/bin/env python3\nimport os,subprocess,time\n'
+                                      + (f'while not os.path.exists({str(gate)!r}): time.sleep(.01)\n' if delayed else '')
+                                      + 'p=subprocess.Popen(["sleep","30"])\n'
+                                      + f'with open({str(pidfile)+".tmp"!r},"w") as f: f.write(str(p.pid))\n'
+                                      + f'os.replace({str(pidfile)+".tmp"!r},{str(pidfile)!r})\ntime.sleep(30)\n')
+
+                    def release_start(process):
+                        if delayed:
+                            # Establish setup lasting longer than the real .3s
+                            # execution timeout without guessing startup speed.
+                            with self.assertRaises(subprocess.TimeoutExpired):
+                                process.wait(timeout=.6)
+                            self.assertFalse(pidfile.exists())
+                            gate.touch()
+
+                    result = self.execute_ready_child(script, unit, pidfile, release_start)
+                    self.assertEqual(result['status'], 'error')
+                    self.assertEqual(result['reason'], 'adapter-execution')
+                    self.assertIn('timed out after 0.3 seconds', result['message'])
+                    self.assert_child_exited(int(pidfile.read_text()))
+
+    @staticmethod
+    def wait_for_child_marker(process, marker, timeout=30):
+        deadline = time.monotonic()+timeout
+        while not marker.exists():
+            if process.poll() is not None:
+                raise AssertionError('adapter exited before child readiness')
+            if time.monotonic() >= deadline:
+                raise AssertionError('adapter child readiness timed out')
+            time.sleep(.01)
+
+    def execute_ready_child(self, script, unit, marker, before_ready=lambda process: None, readiness_timeout=30):
+        # Only setup is synchronized. The runner receives a real isolated Popen
+        # and still owns its unchanged .3s execution timeout and group cleanup.
+        original_popen = subprocess.Popen
+
+        def ready_popen(*args, **kwargs):
+            process = original_popen(*args, **kwargs)
+            try:
+                before_ready(process)
+                self.wait_for_child_marker(process, marker, readiness_timeout)
+                self.assertGreater(int(marker.read_text()), 0)
+                return process
+            except BaseException:
+                # Until Popen returns, execute has no process handle to clean.
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                finally:
+                    try:
+                        process.wait(timeout=5)
+                    finally:
+                        for stream in (process.stdin, process.stdout, process.stderr):
+                            if stream is not None:
+                                stream.close()
+                raise
+
+        with mock.patch.object(runner.subprocess, 'Popen', side_effect=ready_popen):
+            return runner.execute(script, unit, .3)
+
+    def assert_child_exited(self, pid):
+        # A zombie has exited; Darwin reaps these immediately in normal runs.
+        state = subprocess.run(['ps', '-o', 'stat=', '-p', str(pid)], capture_output=True, text=True).stdout.strip()
+        self.assertTrue(not state or state.startswith('Z'), state)
+
+    @unittest.skipUnless(os.name == 'posix', 'executable fault injection uses POSIX script')
+    def test_child_readiness_failure_cleans_owned_group(self):
+        unit = self.unit('published:198:integrated')
+        with tempfile.TemporaryDirectory() as temp:
+            script, owned, missing = (Path(temp)/name for name in ('adapter', 'owned', 'missing'))
+            script.write_text('#!/usr/bin/env python3\nimport os,subprocess,time\n'
+                              'p=subprocess.Popen(["sleep","30"])\n'
+                              f'with open({str(owned)+".tmp"!r},"w") as f: f.write(str(p.pid))\n'
+                              f'os.replace({str(owned)+".tmp"!r},{str(owned)!r})\ntime.sleep(30)\n')
+            script.chmod(0o700)
+            started = []
+
+            def record_owned(process):
+                started.append(process)
+                self.wait_for_child_marker(process, owned)
+
+            with self.assertRaisesRegex(AssertionError, 'child readiness timed out'):
+                self.execute_ready_child(script, unit, missing, record_owned, readiness_timeout=.1)
+            self.assertEqual(len(started), 1)
+            self.assertIsNotNone(started[0].poll())
+            self.assertTrue(all(stream.closed for stream in
+                                (started[0].stdin, started[0].stdout, started[0].stderr)))
+            self.assert_child_exited(int(owned.read_text()))
 
     def test_cumulative_retention_is_explicit_error(self):
         u, a = self.actual('published:198:integrated')
