@@ -159,7 +159,7 @@ func TestCompiledGFMSelectionAndConsumers(t *testing.T) {
 			}
 		}
 	}
-	for _, extra := range []string{"frontmatter: {enabled: true}\n", "extensions: {tables: true}\n", "unknown: true\n", "rules: {MD055: {enabled: true}}\n"} {
+	for _, extra := range []string{"extensions: {tables: true}\n", "unknown: true\n", "rules: {MD055: {enabled: true}}\n"} {
 		root := configurationProject(t)
 		putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\nflavor: gfm\n"+extra)
 		putConfigurationFile(t, root, "doc.md", gfmConsumerSource)

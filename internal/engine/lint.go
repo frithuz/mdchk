@@ -130,11 +130,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			out.Files = append(out.Files, file)
 			continue
 		}
-		parse := parser.ParseWithBudget
-		if in.documentContext.Flavor == "gfm" {
-			parse = parser.ParseGFMWithBudget
-		}
-		parsed := parse(ctx, in.source, budget)
+		parsed := parser.ParseWithOptions(ctx, in.source, budget, in.documentContext.ParseOptions())
 		if options.inspection != nil {
 			options.inspection.parsed = parsed
 			options.inspection.lines = index
@@ -164,6 +160,14 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Reason: result.ParserUncertain, Message: "The requested syntax is not completely recognized."})
 		}
 		projection := projector{ctx: ctx, budget: budget, reporting: reporting, source: in.source, index: index}
+		for _, uncertainty := range parsed.Uncertainty {
+			if uncertainty.Reason == parser.UnterminatedFrontmatter {
+				if err := appendDirectiveNote(&out, in.path, snap, &projection, DirectiveNote{Code: string(parser.UnterminatedFrontmatter), Message: "Frontmatter has no closing delimiter; its original region remains protected and analysis is incomplete.", Span: uncertainty.Region}); err != nil {
+					count := 1
+					out.Omissions = append(out.Omissions, result.Omission{Section: "/notes", Reason: "output-limit", Path: in.path, Count: &count, Message: err.Error()})
+				}
+			}
+		}
 		policy := DirectivePolicy(ruleDirectivePolicy{rules: settings[i]})
 		if in.plan != nil && in.plan.directivePolicy != nil {
 			policy = in.plan.directivePolicy
@@ -251,6 +255,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				continue
 			}
 			rc.options = state.Options
+			rc.frontmatterAware = m.UsesFrontmatter
 			// A source-only callback cannot accidentally trust a partial syntax tree.
 			rc.document = parsed.Document
 			if !syntaxReliable {
@@ -262,7 +267,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				if recorded.Err == nil {
 					recorded.Err = rc.Checkpoint(ctx, 0)
 				}
-				options.inspection.ran(id, recorded, false, in.source.Len())
+				options.inspection.ran(id, recorded, false, in.source.Len(), m.UsesFrontmatter)
 			}
 			if isInterruption(outcome.Err) {
 				projection.stop = outcome.Err
@@ -280,6 +285,9 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 					}
 					out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "invalid-finding", Scope: "operation", Path: in.path, Rule: id, Message: err.Error()})
 					out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: "Rule returned an invalid finding."})
+					continue
+				}
+				if !frontmatterFindingAllowed(in.source, parsed, m, finding) {
 					continue
 				}
 				effective, stateErr := directives.StateAt(id, finding.Span.Start())
@@ -612,4 +620,22 @@ func errorKey(e result.Error) string {
 func interruptionKey(i result.Interruption) string {
 	b, _ := json.Marshal(i)
 	return string(b)
+}
+
+// Invalid findings still reach ordinary validation. A valid ordinary finding
+// may not lie in or cross the opaque header; its end boundary belongs to the
+// body, so a physical EOF observation can remain report-only for header-only
+// files. Explicit source-metadata rules retain their own header observations.
+func frontmatterFindingAllowed(source parser.Source, parsed parser.ParseResult, metadata Metadata, finding Finding) bool {
+	if metadata.UsesFrontmatter || parsed.Document == nil {
+		return true
+	}
+	if _, err := source.Text(finding.Span); err != nil {
+		return true
+	}
+	header, present := parsed.Document.Frontmatter()
+	if !present {
+		return true
+	}
+	return finding.Span.Start() >= header.BodyOffset()
 }

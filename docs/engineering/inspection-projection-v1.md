@@ -22,7 +22,7 @@ Analyze supplies full-document data with counts `not-requested`. Filter adds
 contextual selection and counts as described below. The inspect CLI renders this
 projection in text/JSON and preserves its identities and causal links. It implements neither
 MD087 counterfactual conclusions nor additional rule implementations. Resource,
-frontmatter and slide processing retain their own admission gates;
+semantic metadata and slide processing retain their own admission gates;
 no CommonMark substitute or guessed document context is supplied.
 
 ## AST catalog
@@ -89,6 +89,44 @@ A future profile must extend this catalog with documented source-backed kinds,
 properties, attributes, original/effective distinctions and independent parser
 and producer acceptance. The illustrative GFM AST fixture remains a serialization
 example; real producer tests independently verify the catalog and inline children.
+
+## Opaque frontmatter source record
+
+When recognition is enabled, optional `ast.data.frontmatter` records the
+recognized YAML/TOML header separately from the ordinary body-only root children.
+It contains `format`, full original `range`/`byte_range`, `opener` and
+`content` source regions, optional `closer`, `body_offset`, `context_only`
+and optional `extends_region`. Each component region contains public scalar
+`range` and original `byte_range`. No decoded metadata values are implied.
+
+The envelope includes an optional BOM, delimiters and their original endings.
+Marker regions omit BOM/endings and retain trailing ASCII spaces/tabs. Content
+excludes delimiter lines; an empty payload is a present zero-width region.
+`body_offset` equals the envelope's exclusive end. All root children and
+reference definitions begin at or after it, while the root still spans the
+entire original snapshot.
+
+An absent record in an available AST proves no recognized header for the
+effective settings. Disabled recognition and enabled recognition without a
+matching header remain distinguishable through configuration values/provenance;
+unavailable AST data does not prove absence. An absent closer means a recognized
+unterminated header through EOF. Its AST section is partial, its reliable source
+record remains visible, and a located `unterminated-frontmatter` parsing note
+explains the incomplete result. This does not manufacture completed directive
+or ordinary rule context. Metadata decoding/title/order semantics remain unavailable.
+
+Line selection retains the complete header as source context, marking it
+`context_only` when it does not intersect selected lines and `extends_region`
+when its original span extends beyond them. No header node, clipped region or
+invented byte is inserted into the body tree. Raw directive-looking spellings
+inside the opaque header can be displayed as literal context; they never own
+directive transitions.
+
+This is an optional additive result/projection version 1 field. The schema
+bounds its component records; the semantic validator additionally checks envelope,
+body offset, termination, body/reference exclusion and selected-context agreement.
+Producer tests mutate actual emitted header records to verify rejection of
+out-of-snapshot, inconsistent body-offset and contradictory closer states.
 
 ## Rule records and source coverage
 

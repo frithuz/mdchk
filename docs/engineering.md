@@ -63,7 +63,8 @@ same lifecycle through `ParseGFMWithBudget`; the legacy Parse APIs stay core-onl
 `ParseWithOptions` additionally accepts immutable frontmatter recognition settings
 and independent complete GFM selection. Recognized headers are opaque typed
 document records, with body parsing against the same original snapshot; legacy
-entry points remain unchanged. Frontmatter CLI/protection/inspection integration,
+entry points remain unchanged. Shared CLI consumers preserve recognition settings,
+protect header envelopes and project source-backed records. Semantic metadata,
 other production rules, MCP and rendering remain separate.
 
 The first phase identifies paragraphs, ATX/Setext headings, fenced/indented code,

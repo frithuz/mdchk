@@ -93,7 +93,7 @@ func TerminalTaskSourcesPreserved(ctx context.Context, before, after parser.Pars
 // marker at EOF. Ask the existing whole-profile parser, never another recognizer.
 // LF, CRLF and CR are all task whitespace; the independent candidate checker
 // additionally compares the actual chosen ending and actual candidate parse.
-func terminalGFMEndingEligible(ctx context.Context, before parser.ParseResult, budget *parser.OperationBudget) (bool, error) {
+func terminalGFMEndingEligible(ctx context.Context, before parser.ParseResult, budget *parser.OperationBudget, frontmatter parser.FrontmatterOptions) (bool, error) {
 	if err := budget.ChargeWork(int64(before.Source.Len())*4 + 4); err != nil {
 		return false, err
 	}
@@ -101,7 +101,7 @@ func terminalGFMEndingEligible(ctx context.Context, before parser.ParseResult, b
 		return false, err
 	}
 	content := append(before.Source.Bytes(), '\n')
-	after := parser.ParseGFMWithBudget(ctx, parser.NewSource(content), budget)
+	after := parser.ParseWithOptions(ctx, parser.NewSource(content), budget, parser.ParseOptions{GFM: true, Frontmatter: frontmatter})
 	if after.Limit != nil {
 		return false, after.Limit
 	}

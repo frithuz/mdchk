@@ -188,6 +188,10 @@ func Filter(ctx context.Context, s *Snapshot, full Analysis, lines string) (Anal
 		if err != nil {
 			return full, err
 		}
+		if header := p.AST.Data.Frontmatter; header != nil {
+			header.ContextOnly = selection != nil && !region.intersects(header.ByteRange)
+			header.ExtendsRegion = selection != nil && region.extends(header.ByteRange)
+		}
 		for i := range p.AST.Data.References {
 			ref := &p.AST.Data.References[i]
 			ref.ContextOnly = !region.intersects(ref.ByteRange)

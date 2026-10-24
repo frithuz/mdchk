@@ -30,6 +30,14 @@ func TerminalEditEligible(ctx context.Context, parsed parser.ParseResult, state 
 	if err != nil || !permission.Allowed {
 		return false, err
 	}
+	if header, present := parsed.Document.Frontmatter(); present {
+		if err := budget.ChargeWork(1); err != nil {
+			return false, err
+		}
+		if header.Span().End() > span.Start() || (span.Start() == span.End() && header.Span().End() == span.Start()) {
+			return false, nil
+		}
+	}
 	protected, err := parsed.Document.ProtectedNodes(ctx, budget)
 	if err != nil {
 		return false, err

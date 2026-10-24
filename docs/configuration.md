@@ -103,10 +103,10 @@ These settings do not grant access or select lint targets. Excluded or unselecte
 
 ## Optional document contexts
 
-Availability: frontmatter recognition, Quarto, slides and MkDocs consumers are
-not implemented in this build. Their schema and accepted behavior below remain
-the contract; explicitly enabling unavailable context returns `12`. Disabled
-settings do not enable these capabilities.
+Availability: independently enabled YAML/TOML frontmatter recognition is implemented
+in shared lint, inspection and fix processing. Headers remain opaque; semantic
+metadata decoding and title options remain unavailable. Quarto, slides and MkDocs
+consumers are not implemented; explicitly enabling unavailable context returns `12`.
 
 ```yaml
 version: 1

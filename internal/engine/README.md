@@ -180,3 +180,19 @@ permission fields; suppressed lint records carry only declared attribution kind,
 with no dangling directive IDs. Report omission never destroys internal analysis.
 Inspection commands, observational disabled-rule evaluation, edit-span safety and
 MD087 counterfactual execution remain later consumers of these observations.
+
+## Opaque frontmatter
+
+DocumentContext carries immutable parser.FrontmatterOptions independently of
+flavor. Every original, candidate and saved-view parse uses that selection.
+Root/Walk and comment/reference inventories contain the Markdown body only.
+The original Source is retained for coordinates and genuine file-byte checks;
+this is not a semantic sandbox for trusted rule callbacks.
+
+Ordinary valid findings within or crossing the header are excluded after normal
+finding validation. Their coverage starts at the body boundary. Catalog metadata
+UsesFrontmatter explicitly enables RuleContext.Frontmatter and source-header
+observations; it grants neither decoded values nor edits. MD094 still validates
+all original UTF-8 bytes. A physical EOF observation can remain report-only when
+a complete header ends at EOF. Unterminated headers retain located uncertainty,
+withhold ordinary execution and cannot acquire completed directive authority.

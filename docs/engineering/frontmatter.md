@@ -1,7 +1,8 @@
 # Frontmatter and metadata contract
 
-Status: accepted on 2026-10-15. Opaque parser recognition is delivered; shared
-consumer integration, structured metadata and end-to-end verification remain pending.
+Status: accepted on 2026-10-15. Opaque recognition, shared protection and source
+inspection are implemented; structured metadata interpretation and corrections
+remain pending. The full cross-operation verification matrix is owned by #169.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
 
@@ -45,7 +46,14 @@ Recognized; original bytes preserved.
 
 ### Protection
 
-Header remains opaque to ordinary Markdown rules and directives.
+Header remains opaque to ordinary Markdown rules and directives. Shared analysis
+filters ordinary findings located within or crossing the header. Explicit
+source-metadata rule access is opt-in and does not grant decoding or edits.
+The entire header envelope, including BOM and delimiter endings, is protected.
+A physical-file MD047 observation at a complete header-only EOF can remain
+report-only; an insertion touching that opaque EOF is ineligible. Body fixes
+retain the selected recognition settings through candidate and saved reparses
+and independently preserve header bytes, format and delimiter binding.
 
 ### Unterminated
 
@@ -70,9 +78,10 @@ The full root/source and body coordinates retain the original snapshot. Enabled
 entry-point tests reuse this matrix and check body/reference/comment isolation,
 selected flavor, ownership, cancellation and limits. Unterminated records remain
 available with explicit incomplete uncertainty, without a completed-parse handoff.
-Protection and inspection remain separate integration work. Enabled frontmatter
-remains unavailable to CLI operations until those consumers are integrated;
-parser recognition alone does not establish end-to-end frontmatter support.
+Shared CLI lint/fix/inspect preserve the same independently selected recognition
+settings. Inspection exposes source records separately from the body AST, and
+incidental edits cannot alter header bytes or recognition. Structured metadata
+interpretation remains unavailable; the broader operation matrix is verified by #169.
 
 ## Metadata values and corrections
 

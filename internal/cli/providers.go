@@ -12,5 +12,5 @@ import (
 // production has no runtime provider switches or placeholder callbacks.
 func configuredProviders() (*engine.Registry, engine.ValidationProviders, config.Capabilities, error) {
 	registry, err := engine.NewCatalogRegistry(rules.Registrations())
-	return registry, engine.ValidationProviders{}, config.Capabilities{CommonMark: true, GFM: true, DirectiveProcessing: true}, err
+	return registry, engine.ValidationProviders{}, config.Capabilities{CommonMark: true, GFM: true, DirectiveProcessing: true, FrontmatterYAML: true, FrontmatterTOML: true}, err
 }

@@ -31,7 +31,10 @@ type Metadata struct {
 	Options        OptionSchema
 	Fix            FixSupport
 	RequiresSyntax bool
-	AppliesTo      func(DocumentContext) bool
+	// UsesFrontmatter explicitly permits source-metadata observations in headers.
+	// It grants neither metadata decoding nor correction eligibility.
+	UsesFrontmatter bool
+	AppliesTo       func(DocumentContext) bool
 }
 type Registration struct {
 	ID    string

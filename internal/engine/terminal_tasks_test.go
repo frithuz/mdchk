@@ -19,7 +19,7 @@ func TestGFMTerminalTaskProofAuthorityAndInterruptions(t *testing.T) {
 		if err != nil || preserved != want {
 			t.Fatal(text, preserved, err)
 		}
-		prospective, err := terminalGFMEndingEligible(ctx, before, budget)
+		prospective, err := terminalGFMEndingEligible(ctx, before, budget, parser.FrontmatterOptions{})
 		if err != nil || prospective != want {
 			t.Fatal("actual prospective classification", text, prospective, err)
 		}
@@ -29,13 +29,15 @@ func TestGFMTerminalTaskProofAuthorityAndInterruptions(t *testing.T) {
 		}
 		canceled, cancel := context.WithCancel(ctx)
 		cancel()
-		if ok, err := terminalGFMEndingEligible(canceled, before, budget); ok || !errors.Is(err, context.Canceled) {
+		if ok, err := terminalGFMEndingEligible(canceled, before, budget, parser.FrontmatterOptions{}); ok || !errors.Is(err, context.Canceled) {
 			t.Fatal("cancellation", ok, err)
 		}
 		if err := budget.ChargeWork(1 << 60); err == nil {
 			t.Fatal("expected exhaustion")
 		}
-		for _, proof := range []func() (bool, error){func() (bool, error) { return TerminalTaskSourcesPreserved(ctx, before, after, budget) }, func() (bool, error) { return terminalGFMEndingEligible(ctx, before, budget) }} {
+		for _, proof := range []func() (bool, error){func() (bool, error) { return TerminalTaskSourcesPreserved(ctx, before, after, budget) }, func() (bool, error) {
+			return terminalGFMEndingEligible(ctx, before, budget, parser.FrontmatterOptions{})
+		}} {
 			ok, err := proof()
 			var limit *parser.LimitExceeded
 			if ok || !errors.As(err, &limit) || limit.Name != "work-units" {

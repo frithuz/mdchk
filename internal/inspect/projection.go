@@ -80,7 +80,29 @@ type AST struct {
 	Snapshot          result.Snapshot `json:"snapshot"`
 	Root              Node            `json:"root"`
 	References        []Reference     `json:"references,omitempty"`
+	Frontmatter       *Frontmatter    `json:"frontmatter,omitempty"`
 }
+
+// SourceRegion retains original byte and public scalar coordinates.
+type SourceRegion struct {
+	Range     result.Range     `json:"range"`
+	ByteRange result.ByteRange `json:"byte_range"`
+}
+
+// Frontmatter is the opaque source record, separate from ordinary body nodes.
+// An absent Closer identifies an unterminated protected header, not empty data.
+type Frontmatter struct {
+	Format        string           `json:"format"`
+	Range         result.Range     `json:"range"`
+	ByteRange     result.ByteRange `json:"byte_range"`
+	Opener        SourceRegion     `json:"opener"`
+	Content       SourceRegion     `json:"content"`
+	Closer        *SourceRegion    `json:"closer,omitempty"`
+	BodyOffset    int              `json:"body_offset"`
+	ContextOnly   bool             `json:"context_only"`
+	ExtendsRegion bool             `json:"extends_region,omitempty"`
+}
+
 type Node struct {
 	ID            string            `json:"id"`
 	Kind          string            `json:"kind"`
@@ -426,15 +448,13 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 				return err
 			}
 			p.AST = available(ast)
-		}
-		notes := []result.Note{}
-		for i, uncertainty := range parsed.Uncertainty {
-			span, err := build.rangeOf(uncertainty.Region.Start(), uncertainty.Region.End())
-			if err != nil {
-				return err
+			if parsed.Status != parser.Complete || parsed.AST != parser.Available || len(parsed.Uncertainty) > 0 {
+				p.AST.Availability, p.AST.Reasons = "partial", []string{"parser-uncertain"}
 			}
-			br := bytesOf(uncertainty.Region)
-			notes = append(notes, result.Note{ID: "parsing-note-" + strconv.Itoa(i+1), Code: string(uncertainty.Reason), Message: "Parser interpretation is incomplete in this original source region.", Path: f.Path, Range: &span, ByteRange: &br, Snapshot: &snap})
+		}
+		notes, err := build.parsingNotes(parsed, f.Path, snap)
+		if err != nil {
+			return err
 		}
 		p.ParsingNotes = available(notes)
 		prepared = true
@@ -490,6 +510,27 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 			cause = errors.New(string(parsed.Interruption))
 		}
 		return finish(cause)
+	}
+	if !prepared && parsed.Document != nil && len(parsed.Uncertainty) > 0 {
+		ast, err := build.ast(parsed.Document, snap)
+		if err != nil {
+			return stop(err)
+		}
+		p.AST = Section[AST]{Availability: "partial", Reasons: []string{"parser-uncertain"}, Data: &ast}
+		notes, err := build.parsingNotes(parsed, f.Path, snap)
+		if err != nil {
+			return stop(err)
+		}
+		p.ParsingNotes = available(notes)
+		if header, present := parsed.Document.Frontmatter(); present {
+			for i := range rawCandidates {
+				span := rawCandidates[i].ByteRange
+				if header.Span().Start() <= span.Start && span.End <= header.Span().End() {
+					rawCandidates[i].Context = "literal"
+				}
+			}
+			p.RawCandidates = available(rawCandidates)
+		}
 	}
 	if prepared {
 		for i, evaluation := range trace.Evaluations() {
@@ -833,6 +874,13 @@ func (b *builder) ast(d *parser.Document, snap result.Snapshot) (AST, error) {
 	if err := b.charge(128 * int64(b.source.Len()+1)); err != nil {
 		return AST{}, err
 	}
+	if header, present := d.Frontmatter(); present {
+		projected, err := b.frontmatter(header)
+		if err != nil {
+			return AST{}, err
+		}
+		out.Frontmatter = projected
+	}
 	refs := d.References()
 	for i, r := range refs.Definitions {
 		p := r.Properties()
@@ -845,6 +893,59 @@ func (b *builder) ast(d *parser.Document, snap result.Snapshot) (AST, error) {
 	}
 	return out, nil
 }
+func (b *builder) parsingNotes(parsed parser.ParseResult, path string, snap result.Snapshot) ([]result.Note, error) {
+	notes := []result.Note{}
+	for i, uncertainty := range parsed.Uncertainty {
+		if err := b.charge(1); err != nil {
+			return nil, err
+		}
+		if err := b.budget.ChargeNodes(1); err != nil {
+			return nil, err
+		}
+		span, err := b.rangeOf(uncertainty.Region.Start(), uncertainty.Region.End())
+		if err != nil {
+			return nil, err
+		}
+		br := bytesOf(uncertainty.Region)
+		notes = append(notes, result.Note{ID: "parsing-note-" + strconv.Itoa(i+1), Code: string(uncertainty.Reason), Message: "Parser interpretation is incomplete in this original source region.", Path: path, Range: &span, ByteRange: &br, Snapshot: &snap})
+	}
+	return notes, nil
+}
+
+func (b *builder) frontmatter(header parser.Frontmatter) (*Frontmatter, error) {
+	if err := b.charge(16); err != nil {
+		return nil, err
+	}
+	if err := b.budget.ChargeNodes(12); err != nil {
+		return nil, err
+	}
+	region := func(span parser.Span) (SourceRegion, error) {
+		r, err := b.rangeOf(span.Start(), span.End())
+		return SourceRegion{Range: r, ByteRange: bytesOf(span)}, err
+	}
+	whole, err := region(header.Span())
+	if err != nil {
+		return nil, err
+	}
+	opener, err := region(header.Opener())
+	if err != nil {
+		return nil, err
+	}
+	content, err := region(header.Content())
+	if err != nil {
+		return nil, err
+	}
+	out := &Frontmatter{Format: header.Format(), Range: whole.Range, ByteRange: whole.ByteRange, Opener: opener, Content: content, BodyOffset: header.BodyOffset()}
+	if header.Closer().Present() {
+		closer, err := region(header.Closer())
+		if err != nil {
+			return nil, err
+		}
+		out.Closer = &closer
+	}
+	return out, nil
+}
+
 func directiveID(index int) string { return "directive-" + strconv.Itoa(index+1) }
 func (b *builder) directives(state engine.DirectiveResult) ([]Directive, error) {
 	if err := b.charge(64 * int64(b.source.Len()+1)); err != nil {

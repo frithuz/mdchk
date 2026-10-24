@@ -24,6 +24,14 @@ Use the shared configuration loader and precedence, with discovery starting at t
 
 Expose a versioned AST projection with node kind, source span, relevant attributes, and children. Preserve byte offsets and documented public coordinates. Include a full document root and source-backed nodes without generating an HTML representation. Ancestors included only for context must be explicitly marked. Do not recursively serialize private Go structs, pointer addresses, or unstable implementation fields.
 
+Recognized frontmatter is a separate source-backed record beside the body AST.
+Expose its format, envelope, delimiter/payload spans and original body offset
+without decoding metadata. Preserve the record and a located parsing note when
+an unterminated header makes the AST partial; do not turn unavailable directive
+or rule state into completed context. Selected views retain the whole header
+with explicit context/extent flags. Effective recognition settings and their
+provenance come from configuration independently of header presence.
+
 Instrument rule execution independently of findings. Record known catalog IDs, implementation availability, configured enablement, directive suppression spans, eligibility in the selected area, actual execution or skip status, and skip reasons. Do not infer that a rule ran because a finding exists, or report that it did not run merely because there are no findings. Unavailable implementations remain visible through catalog metadata.
 
 Use the same directive recognition, scopes, and suppression decisions as lint and fix. Preserve raw directive text, resolved rule IDs, source location, effective ranges, and links from suppressed findings to the responsible directives. Keep suppressed observations separate from emitted findings. Unknown directives and unresolved rule references produce notes. Raw candidates within code or other protected syntax must be distinguished from effective directives.

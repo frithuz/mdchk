@@ -21,7 +21,7 @@ func TestGFMPrivateScopesPreserveProductionAdmission(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(baseline, config.Capabilities{CommonMark: true, GFM: true, DirectiveProcessing: true}) {
+	if !reflect.DeepEqual(baseline, config.Capabilities{CommonMark: true, GFM: true, DirectiveProcessing: true, FrontmatterYAML: true, FrontmatterTOML: true}) {
 		t.Fatal("production capabilities changed", baseline)
 	}
 	check := func() {
@@ -32,7 +32,7 @@ func TestGFMPrivateScopesPreserveProductionAdmission(t *testing.T) {
 		}{
 			{"version: 1\n", 15}, {"version: 1\nflavor: gfm\n", 15},
 			{availableConfig, 15}, {availableConfig + "frontmatter: {enabled: false}\n", 15},
-			{availableConfig + "frontmatter: {enabled: true}\n", 12},
+			{availableConfig + "frontmatter: {enabled: true}\n", 15},
 			{availableConfig + "extensions: {tables: true}\n", 12},
 			{"version: 1\nflavor: tables-only\n", 12},
 		} {

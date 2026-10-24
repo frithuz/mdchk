@@ -333,6 +333,17 @@ if ast:
    try:m.validator.validate(bad);m.semantic(bad)
    except Exception:pass
    else:raise AssertionError('invalid actual GFM '+key+' accepted')
+if ast and ast.get('frontmatter'):
+ for mutation in ('outside','body-offset','closer','coordinate'):
+  bad=copy.deepcopy(x);header=bad['inspection']['ast']['data']['frontmatter']
+  if mutation=='outside':header['content']['byte_range']['end']=x['inspection']['file']['size_bytes']+1
+  elif mutation=='body-offset':header['body_offset']+=1
+  elif mutation=='coordinate':header['opener']['range']['start']['column']+=1
+  elif 'closer' in header:del header['closer']
+  else:header['closer']=copy.deepcopy(header['opener'])
+  try:m.validator.validate(bad);m.semantic(bad)
+  except Exception:pass
+  else:raise AssertionError('invalid actual frontmatter '+mutation+' accepted')
 rules=x['inspection']['rules'].get('data',[])
 if rules:
  bad=copy.deepcopy(x);bad['inspection']['rules']['data'][0]['source_coverage']['active']={'availability':'complete','ranges':[],'byte_ranges':[{'start':0,'end':x['inspection']['file']['size_bytes']+1}]}

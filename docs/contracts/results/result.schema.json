@@ -1288,6 +1288,9 @@
           "items": {
             "$ref": "#/$defs/ProjectionReference"
           }
+        },
+        "frontmatter": {
+          "$ref": "#/$defs/FrontmatterProjection"
         }
       },
       "required": [
@@ -3045,6 +3048,68 @@
         "closing",
         "prefix",
         "affected"
+      ],
+      "additionalProperties": false
+    },
+    "OpaqueSourceRegion": {
+      "type": "object",
+      "properties": {
+        "range": {
+          "$ref": "#/$defs/Range"
+        },
+        "byte_range": {
+          "$ref": "#/$defs/ByteRange"
+        }
+      },
+      "required": [
+        "range",
+        "byte_range"
+      ],
+      "additionalProperties": false
+    },
+    "FrontmatterProjection": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "enum": [
+            "yaml",
+            "toml"
+          ]
+        },
+        "range": {
+          "$ref": "#/$defs/Range"
+        },
+        "byte_range": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "opener": {
+          "$ref": "#/$defs/OpaqueSourceRegion"
+        },
+        "content": {
+          "$ref": "#/$defs/OpaqueSourceRegion"
+        },
+        "closer": {
+          "$ref": "#/$defs/OpaqueSourceRegion"
+        },
+        "body_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "context_only": {
+          "type": "boolean"
+        },
+        "extends_region": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "format",
+        "range",
+        "byte_range",
+        "opener",
+        "content",
+        "body_offset",
+        "context_only"
       ],
       "additionalProperties": false
     }

@@ -1,8 +1,8 @@
 # Supported Markdown formats
 
-mdchk's confirmed format scope is CommonMark and GitHub Flavored Markdown (GFM), with independently optional frontmatter support. The internal CommonMark 0.31.2 core is delivered and verified: all **652/652** unchanged specification examples pass normalized and strict comparisons without exemptions. Direct upstream runs in both modes report 652 passed and zero failed, errored or skipped. CLI lint/fix/inspect integrate this core and directive suppression, and MD047 is the first production ordinary rule and correction. GFM also integrates this pipeline. Frontmatter, other ordinary callbacks, MCP integration and production rendering remain separate deliveries.
+mdchk's confirmed format scope is CommonMark and GitHub Flavored Markdown (GFM), with independently optional frontmatter support. The internal CommonMark 0.31.2 core is delivered and verified: all **652/652** unchanged specification examples pass normalized and strict comparisons without exemptions. Direct upstream runs in both modes report 652 passed and zero failed, errored or skipped. CLI lint/fix/inspect integrate this core and directive suppression, and MD047 is the first production ordinary rule and correction. GFM and independently selected opaque YAML/TOML frontmatter integrate this pipeline. Structured metadata decoding, other ordinary callbacks, MCP integration and production rendering remain separate deliveries.
 
-The current Go `Parse` API has no flavor or configuration option. CLI `flavor: commonmark` selection is delivered; it does not add a switch to that Go API. GFM is available, including selection by omission. Enabled frontmatter remains unavailable (`12`). CommonMark alone still leaves missing default-rule coverage (`15`); use the [current reduced setup](index.md#get-started-with-this-build) for a complete MD047-only run. See the [delivered core contract](engineering.md#delivered-commonmark-core) for APIs, source guarantees, UTF-8/resource outcomes and [reproduction commands](engineering.md#reproduce-the-core-delivery).
+The current Go `Parse` API has no flavor or configuration option. CLI `flavor: commonmark` selection is delivered; it does not add a switch to that Go API. GFM is available, including selection by omission. Enabled YAML/TOML frontmatter is recognized and protected in shared lint/fix/inspect; semantic metadata interpretation remains unavailable. CommonMark alone still leaves missing default-rule coverage (`15`); use the [current reduced setup](index.md#get-started-with-this-build) for a complete MD047-only run. See the [delivered core contract](engineering.md#delivered-commonmark-core) for APIs, source guarantees, UTF-8/resource outcomes and [reproduction commands](engineering.md#reproduce-the-core-delivery).
 
 GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
@@ -44,8 +44,9 @@ In CommonMark mode, the same source follows CommonMark 0.31.2 interpretation wit
 
 The internal `ParseWithOptions` API recognizes opaque YAML/TOML headers before
 body parsing, retaining exact source ranges and an explicit incomplete outcome
-for unterminated headers. CLI protection and inspection integration remain pending;
-enabled CLI frontmatter still returns configuration error `12` in this build.
+for unterminated headers. CLI lint, fix and inspection share the same effective
+recognition settings, header protection and source-backed inspection records.
+Metadata values are not decoded by this delivery.
 
 Frontmatter is disabled by default, independently of `commonmark` or `gfm`. Set `frontmatter.enabled: true`; `frontmatter.formats` defaults to
 `[yaml, toml]`. JSON headers are outside the initial contract.

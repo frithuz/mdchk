@@ -10,6 +10,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/parser"
 )
 
 // ValidationError is a semantic or capability error at a supplied field. Err
@@ -331,7 +332,11 @@ func (v *Validated) Admit(c Capabilities, inherited Permissions) (*Resolution, e
 			denied[id] = true
 		}
 	}
-	plan, err := v.selection.Plan(engine.DocumentContext{Flavor: b.Flavor}, denied)
+	frontmatter, err := parser.NewFrontmatterOptions(b.FrontmatterEnabled, b.FrontmatterFormats)
+	if err != nil {
+		return nil, located(d, "frontmatter", err)
+	}
+	plan, err := v.selection.Plan(engine.DocumentContext{Flavor: b.Flavor, Frontmatter: frontmatter}, denied)
 	if err != nil {
 		return nil, located(d, "rules", err)
 	}

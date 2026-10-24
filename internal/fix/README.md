@@ -24,8 +24,11 @@ The original diagnostic start must be enabled, every replaced byte must avoid
 disabled intervals, and insertion permissions use the exact position, including
 the last instruction owning EOF. Read-only engine queries retain the disabling
 instruction/token. Opaque code payloads, raw HTML and confirmed directive-comment
-bytes cannot be incidentally rewritten. Insertions inside protected spans are
-blocked; boundary insertions still require semantic and directive revalidation.
+bytes cannot be incidentally rewritten. Recognized frontmatter protects its full
+envelope, including BOM, delimiters and physical endings. Insertions inside
+protected spans are blocked; a header's document-start boundary and its EOF
+boundary on a header-only file are blocked too. Body-boundary insertions after a
+complete header still require semantic and directive revalidation.
 Fence delimiters are distinct from opaque code payload; any coordinated delimiter
 change remains subject to the later combined-candidate proof.
 
@@ -105,6 +108,12 @@ remains byte-exact. Code retains exact mapped body/info source facts and semanti
 values; delimiter changes need trusted rule proof and cannot close on an interior
 fence or change payload bindings. This supports a future specialized paired-fence
 checker without implementing MD070 or authorizing changes through declarations.
+The separate opaque frontmatter record must retain its presence, format, exact
+mapped envelope/opener/content/closer and original bytes; this also preserves its
+body boundary. Ordinary corrections cannot create or remove header recognition,
+even when a producer's checker claims that its own rule meaning is preserved.
+Unterminated headers never supply the completed parse authority needed to plan
+or publish corrections.
 Parser uncertainty likewise withholds correction.
 
 Targets declare source dependencies; the transitive undirected closure defines

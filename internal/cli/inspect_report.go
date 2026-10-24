@@ -409,6 +409,11 @@ func renderInspectionText(ctx context.Context, w io.Writer, p *inspection.Projec
 		if err := walk(p.AST.Data.Root, 0); err != nil {
 			return err
 		}
+		if p.AST.Data.Frontmatter != nil {
+			if err := section("  Opaque frontmatter", p.AST.Data.Frontmatter); err != nil {
+				return err
+			}
+		}
 		if len(p.AST.Data.References) > 0 {
 			if err := section("  Reference definitions", p.AST.Data.References); err != nil {
 				return err

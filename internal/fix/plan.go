@@ -208,6 +208,13 @@ func Plan(ctx context.Context, parsed parser.ParseResult, state engine.Directive
 	if parsed.Document.Source() != source {
 		return StructuralPlan{}, errors.New("foreign parsed source")
 	}
+	header, hasHeader := parsed.Document.Frontmatter()
+	if hasHeader {
+		if err := m.reserve(1, 1); err != nil {
+			return StructuralPlan{}, err
+		}
+		protected = append(protected, header.Span())
+	}
 	comments, err := state.CandidateSpans(ctx, budget)
 	if err != nil {
 		return StructuralPlan{}, err
@@ -347,6 +354,13 @@ func Plan(ctx context.Context, parsed parser.ParseResult, state engine.Directive
 					return StructuralPlan{}, err
 				}
 				if blocked {
+					code = "protected-syntax"
+				}
+				// Prefix insertion can remove document-start recognition. An EOF
+				// insertion on a header-only document changes its opaque ending.
+				// A body-boundary insertion after a complete header is permitted
+				// provisionally, subject to the independent mapped binding check.
+				if hasHeader && e.Span.Start() == e.Span.End() && (e.Span.Start() == header.Span().Start() || e.Span.Start() == header.Span().End() && header.Span().End() == source.Len()) {
 					code = "protected-syntax"
 				}
 

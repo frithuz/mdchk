@@ -3,7 +3,7 @@
 The accepted schema-1 producer contract uses JSON Schema 2020-12. The
 [semantic contract](../../engineering/results.md) supplies cross-record,
 byte-identity, completeness, and operation-specific requirements beyond JSON Schema.
-`fixtures.json` identifies the 17 result/projection fixtures and expected CLI exits.
+`fixtures.json` identifies the 18 result/projection fixtures and expected CLI exits.
 
 Validate in an isolated Python environment:
 
@@ -37,3 +37,8 @@ has no serialized directive collection. Exact ownership and permission origins
 remain in immutable shared analysis observations; lint notes identify permission
 fields without exposing native configuration paths. Whole-record omissions in
 either collection make the result incomplete, with exact retained/omitted counts.
+
+The opaque frontmatter projection fixture retains original YAML delimiter and
+payload ranges separately from body nodes. Actual inspection producer tests also
+reject mutated header regions outside the snapshot, inconsistent body offsets,
+and contradictory termination. This is source metadata, not structured decoding.

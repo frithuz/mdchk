@@ -12,9 +12,17 @@ import (
 // filename dialects. The parser provider recognizes CommonMark and full GFM;
 // requesting another flavor leaves syntax-dependent rules unassessed.
 type DocumentContext struct {
-	Flavor  string
-	Project string
+	Flavor      string
+	Project     string
+	Frontmatter parser.FrontmatterOptions
 }
+
+// ParseOptions preserves the exact immutable recognition selection for every
+// original, candidate and saved-view parse.
+func (c DocumentContext) ParseOptions() parser.ParseOptions {
+	return parser.ParseOptions{GFM: c.Flavor == "gfm", Frontmatter: c.Frontmatter}
+}
+
 type RuleSetting struct {
 	Enabled         *bool
 	AllowDirectives *bool
@@ -62,14 +70,25 @@ func (in Input) Source() parser.Source { return in.source }
 // observes cancellation; providers must use it for their own bounded loops.
 // It must not be retained after the callback returns.
 type RuleContext struct {
-	input          Input
-	index          parser.LineIndex
-	document       *parser.Document
-	options        Options
-	budget         *parser.OperationBudget
-	parsed         parser.ParseResult
-	directives     DirectiveResult
-	syntaxReliable bool
+	input            Input
+	index            parser.LineIndex
+	document         *parser.Document
+	options          Options
+	budget           *parser.OperationBudget
+	parsed           parser.ParseResult
+	directives       DirectiveResult
+	syntaxReliable   bool
+	frontmatterAware bool
+}
+
+// Frontmatter exposes opaque source metadata only to a rule whose catalog
+// metadata explicitly opts in. It never decodes metadata values. Source and
+// Document remain immutable original evidence, not a semantic sandbox.
+func (c RuleContext) Frontmatter() (parser.Frontmatter, bool) {
+	if !c.frontmatterAware || c.parsed.Document == nil {
+		return parser.Frontmatter{}, false
+	}
+	return c.parsed.Document.Frontmatter()
 }
 
 func (c RuleContext) Source() parser.Source      { return c.input.source }
@@ -96,7 +115,7 @@ func (c RuleContext) TerminalEditEligible(ctx context.Context, id string, span p
 		return false, err
 	}
 	if c.input.documentContext.Flavor == "gfm" && span.Start() == span.End() {
-		return terminalGFMEndingEligible(ctx, c.parsed, c.budget)
+		return terminalGFMEndingEligible(ctx, c.parsed, c.budget, c.input.documentContext.Frontmatter)
 	}
 	return true, nil
 }

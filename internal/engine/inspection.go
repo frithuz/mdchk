@@ -11,7 +11,9 @@ import (
 )
 
 // Evaluation records actual callback execution independently of findings. Only
-// a successful complete callback proves full original-source coverage. A callback
+// a successful complete callback proves its eligible original-source coverage.
+// Ordinary coverage excludes an opaque header; explicit metadata coverage can
+// include it. A callback
 // with incomplete context or failure supplies no affirmative coverage claim.
 type Evaluation struct {
 	Rule, Active, Observational           string
@@ -127,7 +129,7 @@ func (t *InspectionTrace) encoding(err *result.Error, source parser.Source) {
 	}
 }
 func (t *InspectionTrace) skip(id, reason string) { e := t.entry(id); e.Reasons = []string{reason} }
-func (t *InspectionTrace) ran(id string, outcome RuleOutcome, observational bool, size int) {
+func (t *InspectionTrace) ran(id string, outcome RuleOutcome, observational bool, size int, usesFrontmatter bool) {
 	e := t.entry(id)
 	if outcome.Err != nil {
 		t.failures = append(t.failures, outcome.Err)
@@ -148,7 +150,13 @@ func (t *InspectionTrace) ran(id string, outcome RuleOutcome, observational bool
 	}
 	coverage := []parser.Span{}
 	if status == "complete" {
-		span, _ := t.parsed.Source.Span(0, size)
+		start := 0
+		if !usesFrontmatter && t.parsed.Document != nil {
+			if header, present := t.parsed.Document.Frontmatter(); present {
+				start = header.BodyOffset()
+			}
+		}
+		span, _ := t.parsed.Source.Span(start, size)
 		coverage = append(coverage, span)
 	}
 	if observational {
@@ -186,6 +194,7 @@ func (t *InspectionTrace) observe(ctx context.Context, r *Registry, rc RuleConte
 			return
 		}
 		rc.options = directives.rules[id].Options
+		rc.frontmatterAware = m.UsesFrontmatter
 		rc.document = parsed.Document
 		if !reliable {
 			rc.document = nil
@@ -195,7 +204,7 @@ func (t *InspectionTrace) observe(ctx context.Context, r *Registry, rc RuleConte
 		if recorded.Err == nil {
 			recorded.Err = rc.Checkpoint(ctx, 0)
 		}
-		t.ran(id, recorded, true, rc.Source().Len())
+		t.ran(id, recorded, true, rc.Source().Len(), m.UsesFrontmatter)
 		for _, f := range outcome.Findings {
 			d, err := makeDiagnostic(rc.input, projection, snap, m, f)
 			if err != nil {
@@ -205,6 +214,9 @@ func (t *InspectionTrace) observe(ctx context.Context, r *Registry, rc RuleConte
 				}
 				t.invalid(id, true)
 				t.errors = append(t.errors, result.Error{Category: result.Internal, Code: "invalid-finding", Scope: "operation", Path: rc.Path(), Rule: id, Message: err.Error()})
+				continue
+			}
+			if !frontmatterFindingAllowed(rc.Source(), parsed, m, f) {
 				continue
 			}
 			state, err := directives.StateAt(id, f.Span.Start())

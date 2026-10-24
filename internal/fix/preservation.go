@@ -84,6 +84,9 @@ func commonPreservation(ctx context.Context, before, after validationState, p St
 	if err := m.reserve(int64(old.Source.Len()+new.Source.Len())*8+16, 0); err != nil {
 		return false, err
 	}
+	if ok, err := sameFrontmatter(mapping, old.Document, new.Document); err != nil || !ok {
+		return false, err
+	}
 	oc, err := old.Document.Comments(ctx, m.budget)
 	if err != nil {
 		return false, err
@@ -159,6 +162,45 @@ func commonPreservation(ctx context.Context, before, after validationState, p St
 	}
 	return true, m.work(0)
 }
+
+// Opaque metadata is a document-owned record rather than a body node. Protect
+// its complete spelling and recognition binding independently of producer and
+// rule-specific meaning checks, including recognition created by a body edit.
+func sameFrontmatter(m editMapping, before, after *parser.Document) (bool, error) {
+	a, presentA := before.Frontmatter()
+	b, presentB := after.Frontmatter()
+	if err := m.meter.work(1); err != nil {
+		return false, err
+	}
+	if presentA != presentB {
+		return false, nil
+	}
+	if !presentA {
+		return true, nil
+	}
+	if a.Format() != b.Format() {
+		return false, nil
+	}
+	for i, x := range []parser.Span{a.Span(), a.Opener(), a.Content(), a.Closer()} {
+		y := []parser.Span{b.Span(), b.Opener(), b.Content(), b.Closer()}[i]
+		if ok, err := sameMapped(m, x, y); err != nil || !ok {
+			return false, err
+		}
+	}
+	x, err := m.before.Text(a.Span())
+	if err != nil {
+		return false, err
+	}
+	y, err := m.after.Text(b.Span())
+	if err != nil {
+		return false, err
+	}
+	if err := m.meter.work(int64(len(x)+len(y)) + 1); err != nil {
+		return false, err
+	}
+	return x == y, nil
+}
+
 func sameDirectives(m editMapping, old, new engine.DirectiveResult, rules map[string]engine.ResolvedRule) (bool, error) {
 	if err := old.ReservePreservationViews(m.meter.ctx, m.meter.budget); err != nil {
 		return false, err

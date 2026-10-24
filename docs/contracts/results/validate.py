@@ -133,6 +133,43 @@ def inspection_semantic(x):
                 require(child['byte_range']['start']>=previous,'AST children out of source order');previous=child['byte_range']['start'];walk(child,n['byte_range'])
         walk(ast['root']);require(ast['root']['kind']=='document' and ast['root']['byte_range']=={'start':0,'end':size},'AST lacks full document root')
         for reference in ast.get('references',[]):bounded(reference['byte_range'])
+        header=ast.get('frontmatter')
+        if header:
+            envelope=header['byte_range'];bounded(envelope)
+            require(envelope['start']==0 and envelope['end']==header['body_offset'],'frontmatter body offset differs from envelope')
+            require(header['range']['start']=={'line':1,'column':1},'frontmatter does not start at document origin')
+            for key in ('opener','content','closer'):
+                if key in header:
+                    region=header[key]['byte_range'];bounded(region)
+                    require(envelope['start']<=region['start']<=region['end']<=envelope['end'],'frontmatter component outside envelope')
+            opener=header['opener']['byte_range'];content=header['content']['byte_range']
+            require(opener['start'] in (0,3) and opener['end']-opener['start']>=3,'invalid frontmatter opener')
+            require(0<=content['start']-opener['end']<=2,'invalid frontmatter opening ending')
+            def point(value):return (value['line'],value['column'])
+            def after_ending(value, width):return value if width==0 else {'line':value['line']+1,'column':1}
+            require(header['opener']['range']['start']=={'line':1,'column':1+(opener['start']==3)},'invalid frontmatter opener coordinate')
+            require(header['opener']['range']['end']=={'line':1,'column':header['opener']['range']['start']['column']+opener['end']-opener['start']},'frontmatter opener coordinate width mismatch')
+            require(header['content']['range']['start']==after_ending(header['opener']['range']['end'],content['start']-opener['end']),'frontmatter payload start coordinate mismatch')
+            for key in ('opener','content','closer'):
+                if key in header:
+                    location=header[key]['range']
+                    require(point(header['range']['start'])<=point(location['start'])<=point(location['end'])<=point(header['range']['end']),'frontmatter coordinates outside envelope')
+
+            if 'closer' in header:
+                closer=header['closer']['byte_range']
+                require(content['end']==closer['start'] and closer['end']-closer['start']>=3 and 0<=envelope['end']-closer['end']<=2,'invalid frontmatter closer boundary')
+                require(header['content']['range']['end']==header['closer']['range']['start'],'frontmatter payload end coordinate mismatch')
+                require(header['closer']['range']['start']['column']==1 and header['closer']['range']['end']=={'line':header['closer']['range']['start']['line'],'column':1+closer['end']-closer['start']},'frontmatter closer coordinate width mismatch')
+                require(header['range']['end']==after_ending(header['closer']['range']['end'],envelope['end']-closer['end']),'frontmatter envelope ending coordinate mismatch')
+
+            else:
+                require(content['end']==envelope['end']==size,'unterminated frontmatter does not reach EOF')
+                require(header['content']['range']['end']==header['range']['end'],'unterminated frontmatter coordinate mismatch')
+                require(p['ast']['availability']=='partial' and not x['complete'],'unterminated frontmatter claims complete parse')
+                require(any(n.get('code')=='unterminated-frontmatter' and n.get('byte_range')==envelope for n in (section('parsing_notes') or [])),'unterminated frontmatter lacks parsing note')
+            require(all(n['byte_range']['start']>=header['body_offset'] for n in ast['root']['children']),'header leaked into body AST')
+            require(all(n['byte_range']['start']>=header['body_offset'] for n in ast.get('references',[])),'header leaked into body references')
+
     selected_region=p['file'].get('selected_region')
     if 'selected_lines' in p['file']:
         selected=p['file']['selected_lines']
@@ -144,6 +181,12 @@ def inspection_semantic(x):
     if selected_region:
         bounded(selected_region['byte_range'])
         require(not selected_region['includes_eof'] or selected_region['byte_range']['end']==size,'selection claims nonterminal EOF')
+    if ast and ast.get('frontmatter'):
+        header=ast['frontmatter']
+        expected_context=bool(selected_region and not intersects(header['byte_range']))
+        require(header['context_only']==expected_context,'frontmatter selection context mismatch')
+        expected_extends=bool(selected_region and (header['byte_range']['start']<selected_region['byte_range']['start'] or header['byte_range']['end']>selected_region['byte_range']['end']))
+        require(header.get('extends_region',False)==expected_extends,'frontmatter selected extent mismatch')
     rules=section('rules') or []
     require(len({r['rule'] for r in rules})==len(rules),'duplicate inspected rule')
     for r in rules:

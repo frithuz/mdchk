@@ -81,5 +81,10 @@
     "file": "violations-lint.json",
     "kind": "result",
     "expected_cli_exit": 10
+  },
+  {
+    "file": "frontmatter-projection.json",
+    "kind": "definition",
+    "definition": "AstProjection"
   }
 ]

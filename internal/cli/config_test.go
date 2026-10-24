@@ -51,7 +51,7 @@ func TestLintConfigurationStopsBeforeTargets(t *testing.T) {
 		{"removed flavor", "version: 1\nflavor: pandoc\n", "", "flavor"},
 		{"invalid pattern", availableConfig + "exclude: ['bad/**x']\n", "", "exclude"},
 		{"disabled hostname provider", availableConfig + "rules: {MD095: {enabled: false, allowed_hosts: [example.com]}}\n", "", "allowed_hosts"},
-		{"frontmatter", availableConfig + "frontmatter: {enabled: true}\n", "", "frontmatter"},
+		{"unsupported frontmatter", availableConfig + "frontmatter: {enabled: true, formats: [json]}\n", "", "frontmatter"},
 		{"quarto", availableConfig + "integrations: {quarto: {enabled: true}}\n", "", "quarto"},
 		{"slides", availableConfig + "documents: {slides: ['talk/**']}\n", "", "slides"},
 		{"explicit resource default", availableConfig + "resources: {index_file: index.md}\n", "", "index_file"},
