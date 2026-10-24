@@ -15,6 +15,46 @@ every listed kind.
 
 ## Parse outcomes
 
+### Optional opaque frontmatter
+
+`ParseWithOptions(ctx, source, budget, ParseOptions{...})` is additive: its zero
+options match `ParseWithBudget`, and legacy entry points continue with headers
+disabled. `ParseOptions.GFM` selects the complete approved GFM profile independently
+of `Frontmatter`. `NewFrontmatterOptions(enabled, formats)` constructs an immutable
+selection; nil formats means `[yaml, toml]`, while an explicit empty, duplicate or
+unsupported selection is rejected even when disabled. No caller slice is retained.
+The parser imports no configuration adapter and does not enable CLI capabilities.
+
+Recognition runs over admitted original physical lines before block/reference
+recognition. `Document.Frontmatter()` returns an immutable typed header record and
+a presence boolean. This record is separate from the ordinary body AST, like the
+non-rendered reference inventory: `Root` still spans `[0,N)`, but its children and
+`Walk` visit only Markdown body syntax. Header contents contribute no inline nodes,
+reference definitions or comment facts. Later body delimiters are ordinary Markdown.
+No YAML/TOML semantic decoding, validation or rewriting occurs.
+
+The record's `Format`, `Span`, `Opener`, `Content`, `Closer` and `BodyOffset`
+accessors retain original snapshot ownership. `Span` includes optional BOM and
+physical delimiter endings. Marker spans omit BOM/endings and retain trailing
+ASCII spaces/tabs. `Content` excludes delimiter lines and can be present empty;
+absent `Closer` means unterminated, not an empty header. `BodyOffset` equals the
+header envelope's exclusive end. Body parsing keeps the same Source, line index
+and original coordinates. Replacing a returned record cannot mutate its Document.
+Only parsing establishes this record; `NewDocument` does not infer it from an
+unoccupied prefix in a constructed tree.
+
+A complete header and complete body report normal `Complete`/`Available`. An
+unterminated header consumes through EOF and retains its reliable record, with
+`Incomplete`/`Partial` and `unterminated-frontmatter` uncertainty over its envelope.
+Its block/inline traversal can be complete without establishing the private
+completed-parse handoff; `Interruption` remains empty unless work was interrupted.
+Existing completed-only comment/protection APIs retain their guards. Consumer
+protection of complete and incomplete header envelopes, inspection and CLI
+availability are the separate #168 integration. Structured metadata is later work.
+Size/UTF-8/context precedence and shared operation accounting are unchanged.
+
+### Core source and outcome guarantees
+
 Acquire a snapshot with `NewSource(content)`, then call `Parse(ctx, source)` with
 a non-nil context. Both operations stay in memory. `Source` retains arbitrary
 bytes; Parse validates strict UTF-8 before any normal Markdown work. Malformed

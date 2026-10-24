@@ -77,6 +77,9 @@ type ReferenceCollection struct {
 type Document struct {
 	root       *Node
 	references ReferenceCollection
+	// A recognized header is separate from the ordinary body AST, like the
+	// non-rendered reference inventory. Only parsing can establish this record.
+	frontmatter Frontmatter
 	// Set only by a finished block pass that accounted for the entire source
 	// without inline payload. Constructed nodes or available references alone
 	// cannot establish this private parse handoff.
@@ -90,7 +93,8 @@ type Document struct {
 
 // NewDocument binds a complete source envelope to records. It validates supplied
 // normalized-label selection and resolved reference-Link/Image bindings/projections,
-// but neither recognizes syntax nor normalizes labels.
+// but neither recognizes syntax nor normalizes labels. It does not establish or
+// inherit a parsed frontmatter record from gaps in the supplied body tree.
 func NewDocument(root *Node, references ReferenceCollection) (*Document, error) {
 	if root == nil || root.Kind() != DocumentKind || !root.Span().Present() {
 		return nil, ErrModel
@@ -245,3 +249,12 @@ func cloneReferences(r ReferenceCollection) ReferenceCollection {
 func (d *Document) Source() Source                  { return d.root.Span().source }
 func (d *Document) Root() *Node                     { return cloneNode(d.root) }
 func (d *Document) References() ReferenceCollection { return cloneReferences(d.references) }
+
+// Frontmatter returns the opaque header established before body recognition.
+// The boolean distinguishes absence from a present empty payload. The returned
+// value has no mutable storage, and its spans belong to the original Source.
+// It remains reliable when a recognized unterminated header makes ParseResult
+// incomplete; callers must still honor the result's uncertainty and interruption.
+func (d *Document) Frontmatter() (Frontmatter, bool) {
+	return d.frontmatter, d.frontmatter.boundary.region.Present()
+}

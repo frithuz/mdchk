@@ -42,6 +42,11 @@ In CommonMark mode, the same source follows CommonMark 0.31.2 interpretation wit
 
 ## Optional frontmatter headers
 
+The internal `ParseWithOptions` API recognizes opaque YAML/TOML headers before
+body parsing, retaining exact source ranges and an explicit incomplete outcome
+for unterminated headers. CLI protection and inspection integration remain pending;
+enabled CLI frontmatter still returns configuration error `12` in this build.
+
 Frontmatter is disabled by default, independently of `commonmark` or `gfm`. Set `frontmatter.enabled: true`; `frontmatter.formats` defaults to
 `[yaml, toml]`. JSON headers are outside the initial contract.
 

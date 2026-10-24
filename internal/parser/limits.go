@@ -168,14 +168,15 @@ func (b *OperationBudget) ChargeNodes(records int64) error {
 type budgetKey struct{}
 type parserContext struct {
 	context.Context
-	budget    *parseBudget
-	ancestors int
-	profile   parserProfile
+	budget      *parseBudget
+	ancestors   int
+	profile     parserProfile
+	frontmatter FrontmatterOptions
 }
 
 func withAncestor(ctx context.Context, n int) context.Context {
 	if p, ok := ctx.(*parserContext); ok {
-		return &parserContext{Context: p.Context, budget: p.budget, ancestors: n, profile: p.profile}
+		return &parserContext{Context: p.Context, budget: p.budget, ancestors: n, profile: p.profile, frontmatter: p.frontmatter}
 	}
 	return ctx
 }

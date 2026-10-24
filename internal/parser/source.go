@@ -3,6 +3,9 @@
 // Parse validates UTF-8, recognizes core block structure and constructs
 // source-preserving inline children in paragraphs and headings. Complete results
 // affirm all core syntax and reference resolution; interruption remains explicit.
+// ParseWithOptions adds independent opaque YAML/TOML header recognition and
+// full GFM selection while preserving legacy entry-point defaults. Headers retain
+// original source ranges in Document.Frontmatter, outside the ordinary body AST.
 // NewLineIndex indexes original bytes, including malformed input, without changing
 // Source ownership. Text mapping and semantic helpers require strict UTF-8.
 // See model.md for the catalog, outcome contract and source ownership.

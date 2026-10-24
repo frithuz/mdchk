@@ -70,12 +70,36 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		return Interrupted, nil
 	}
 	p := blockParser{index: newLineIndex(ctx, document.Source()), stack: []openBlock{{kind: DocumentKind}}, hooks: hooks, ctx: ctx}
+	bodyOffset := 0
+	if settings, ok := ctx.(*parserContext); ok && settings.frontmatter.enabled {
+		var selected [2]string
+		count := 0
+		if settings.frontmatter.yaml {
+			selected[count], count = "yaml", count+1
+		}
+		if settings.frontmatter.toml {
+			selected[count], count = "toml", count+1
+		}
+		header, err := detectFrontmatter(p.index, true, selected[:count])
+		if err != nil || interruption(ctx) != "" {
+			return Interrupted, nil
+		}
+		if header.region.Present() {
+			meterRecords(ctx, 1)
+			meterWork(ctx, 6) // fixed record and source-span copies
+			document.frontmatter = Frontmatter{boundary: header}
+			bodyOffset = header.region.End()
+		}
+	}
 	state := PhaseComplete
 	for _, physical := range p.index.lines {
 		meterWork(ctx, 1)
 		if interruption(ctx) != "" {
 			state = Interrupted
 			break
+		}
+		if physical.start < bodyOffset {
+			continue
 		}
 		cursor := Indentation{index: p.index, offset: physical.start, end: physical.end}
 		matched := 1

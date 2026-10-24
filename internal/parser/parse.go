@@ -28,10 +28,11 @@ type PhaseProgress struct{ Blocks, Inlines PhaseState }
 type Reason string
 
 const (
-	SyntaxUnimplemented Reason = "syntax-unimplemented"
-	Cancelled           Reason = "cancelled"
-	DeadlineExceeded    Reason = "deadline-exceeded"
-	LimitExceededReason Reason = "limit-exceeded"
+	SyntaxUnimplemented     Reason = "syntax-unimplemented"
+	Cancelled               Reason = "cancelled"
+	DeadlineExceeded        Reason = "deadline-exceeded"
+	LimitExceededReason     Reason = "limit-exceeded"
+	UnterminatedFrontmatter Reason = "unterminated-frontmatter"
 )
 
 // Uncertainty excludes its original-byte region from syntax-dependent work.
@@ -125,6 +126,22 @@ func ParseGFMWithBudget(ctx context.Context, source Source, budget *OperationBud
 	return parseWithProfile(ctx, source, budget, gfmInProgressProfile)
 }
 
+// ParseWithOptions is the additive configured parser entry point. Zero options
+// preserve ParseWithBudget behavior; GFM selects all five approved extensions,
+// independently of frontmatter recognition. Legacy entry points keep recognition
+// disabled. Admission, UTF-8, cancellation and cumulative budgets are unchanged.
+// Recognized headers are source-owned opaque records, never ordinary body AST
+// children. An unterminated header retains its record and reports incomplete
+// analysis with UnterminatedFrontmatter uncertainty, without a completed-parse
+// protection handoff. Consumer availability remains the caller's responsibility.
+func ParseWithOptions(ctx context.Context, source Source, budget *OperationBudget, options ParseOptions) ParseResult {
+	profile := coreProfile
+	if options.GFM {
+		profile = gfmInProgressProfile
+	}
+	return parseConfigured(ctx, source, budget, profile, options.Frontmatter)
+}
+
 // parserProfile keeps section-scoped verification controls private.
 type parserProfile uint8
 
@@ -143,14 +160,18 @@ func (p parserProfile) enabled(extension parserProfile) bool {
 	return p == gfmInProgressProfile || p == extension
 }
 
-func parseWithProfile(ctx context.Context, source Source, budget *OperationBudget, profile parserProfile) (r ParseResult) {
+func parseWithProfile(ctx context.Context, source Source, budget *OperationBudget, profile parserProfile) ParseResult {
+	return parseConfigured(ctx, source, budget, profile, FrontmatterOptions{})
+}
+
+func parseConfigured(ctx context.Context, source Source, budget *OperationBudget, profile parserProfile, frontmatter FrontmatterOptions) (r ParseResult) {
 
 	if ctx == nil || budget == nil {
 		panic("parser: nil context or operation budget")
 	}
 	budget.mu.Lock()
 	defer budget.mu.Unlock()
-	ctx = &parserContext{Context: ctx, budget: &parseBudget{operation: budget}, profile: profile}
+	ctx = &parserContext{Context: ctx, budget: &parseBudget{operation: budget}, profile: profile, frontmatter: frontmatter}
 	r = ParseResult{
 		Source: source, Status: Failed, AST: Unavailable,
 		Phases:          PhaseProgress{Blocks: NotStarted, Inlines: NotStarted},
@@ -229,6 +250,11 @@ func parseWithProfile(ctx context.Context, source Source, budget *OperationBudge
 	}
 	meterWork(ctx, 0)
 	if r.Phases.Inlines == PhaseComplete {
+		if header, present := r.Document.Frontmatter(); present && !header.Closer().Present() {
+			meterRecords(ctx, 1)
+			r.Uncertainty = []Uncertainty{{Region: header.Span(), Reason: UnterminatedFrontmatter}}
+			return r
+		}
 		r.Status, r.AST = Complete, Available
 		r.Document.parsedComplete = true
 		r.Document.commentOperation = budget.identity

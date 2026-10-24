@@ -1,6 +1,7 @@
 # Frontmatter and metadata contract
 
-Status: accepted on 2026-10-15; implementation and end-to-end verification remain pending.
+Status: accepted on 2026-10-15. Opaque parser recognition is delivered; shared
+consumer integration, structured metadata and end-to-end verification remain pending.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
 
@@ -63,10 +64,15 @@ formats, format selection, disabled recognition, BOM/start restrictions, exact
 markers, physical endings/EOF, empty/malformed payloads and deferred JSON.
 Parser tests exercise the matrix alongside both supported flavors; configuration
 tests verify independent defaults and selection across all acquisition paths.
-The private boundary helper is delivered separately from opaque AST blocks,
-protection and inspection. Enabled frontmatter remains unavailable to CLI
-operations until those consumers are integrated; boundary tests alone do not
-establish end-to-end frontmatter support.
+`ParseWithOptions` now uses the boundary helper before body recognition, retaining
+an immutable typed `Document.Frontmatter` record outside the ordinary body AST.
+The full root/source and body coordinates retain the original snapshot. Enabled
+entry-point tests reuse this matrix and check body/reference/comment isolation,
+selected flavor, ownership, cancellation and limits. Unterminated records remain
+available with explicit incomplete uncertainty, without a completed-parse handoff.
+Protection and inspection remain separate integration work. Enabled frontmatter
+remains unavailable to CLI operations until those consumers are integrated;
+parser recognition alone does not establish end-to-end frontmatter support.
 
 ## Metadata values and corrections
 

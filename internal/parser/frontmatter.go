@@ -16,11 +16,35 @@ type frontmatterBoundary struct {
 	region, opener, content, closer Span
 }
 
+// Frontmatter is an immutable opaque header record owned by a parsed Document.
+// It is separate from Root's ordinary body children and contributes no Markdown
+// nodes, references or comments. Its zero value is absent. All source spans
+// retain the original snapshot, including exact physical line endings.
+type Frontmatter struct{ boundary frontmatterBoundary }
+
+func (h Frontmatter) Format() string { return h.boundary.format }
+
+// Span includes the optional BOM and both delimiter lines with their endings.
+func (h Frontmatter) Span() Span { return h.boundary.region }
+
+// Opener and Closer omit the BOM and physical ending, retaining trailing tabs
+// and spaces. An absent Closer means the recognized header reaches EOF without
+// termination; it never means an empty complete header.
+func (h Frontmatter) Opener() Span { return h.boundary.opener }
+func (h Frontmatter) Closer() Span { return h.boundary.closer }
+
+// Content is the exact opaque payload between delimiter lines; an empty payload
+// is a present zero-width span. No metadata decoding or normalization occurs.
+func (h Frontmatter) Content() Span { return h.boundary.content }
+
+// BodyOffset is the first original byte after the header, or EOF when unclosed.
+func (h Frontmatter) BodyOffset() int { return h.boundary.region.End() }
+
 // detectFrontmatter borrows already validated configuration fields without
 // retaining or changing formats. Flavor is intentionally not an input: enabling
 // recognition and selecting formats are independent of Markdown interpretation.
 // The caller must perform source admission before constructing the line index.
-// This helper does not enable recognition in any production parser entry point.
+// Public parsing invokes this only through explicit frontmatter options.
 func detectFrontmatter(index LineIndex, enabled bool, formats []string) (frontmatterBoundary, error) {
 	if !enabled || len(index.lines) == 0 {
 		return frontmatterBoundary{}, nil

@@ -60,7 +60,11 @@ recognizes core syntax with extensions/frontmatter disabled. Configuration-drive
 selection and bounded read-only acquisition are connected to CLI lint, including
 the shared mandatory UTF-8 gate, parser and registered-rule engine. GFM uses the
 same lifecycle through `ParseGFMWithBudget`; the legacy Parse APIs stay core-only.
-Frontmatter, other production rules, MCP and rendering remain separate.
+`ParseWithOptions` additionally accepts immutable frontmatter recognition settings
+and independent complete GFM selection. Recognized headers are opaque typed
+document records, with body parsing against the same original snapshot; legacy
+entry points remain unchanged. Frontmatter CLI/protection/inspection integration,
+other production rules, MCP and rendering remain separate.
 
 The first phase identifies paragraphs, ATX/Setext headings, fenced/indented code,
 thematic breaks, all seven HTML-block forms and nested quotes/lists, and completes

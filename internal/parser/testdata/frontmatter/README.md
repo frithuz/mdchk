@@ -20,7 +20,10 @@ matching and mismatched closers, LF/CRLF/CR/mixed/EOF endings, malformed metadat
 later header-looking body text and deferred JSON. Recognition is lexical and
 does not decode or validate metadata values.
 
-`TestFrontmatterBoundaryFixtures` uses the same matrix alongside CommonMark and
-GFM. The private helper deliberately takes no flavor parameter. The production
-parser assertions currently prove ordinary interpretation remains unchanged;
-opaque AST recognition, protection and inspection are separate deliveries.
+`TestFrontmatterBoundaryFixtures` uses the same matrix alongside legacy CommonMark
+and GFM entry points, proving that ordinary interpretation remains unchanged.
+The private helper deliberately takes no flavor parameter.
+`TestFrontmatterEnabledBoundaryFixtures` reuses the matrix through the additive
+`ParseWithOptions` entry point for both flavors, checking the document-owned
+opaque record, body-only AST/reference ranges, exact offsets and unterminated
+uncertainty. Shared consumer protection and inspection remain separate deliveries.
