@@ -2,7 +2,8 @@
 
 Status: accepted on 2026-10-15. Opaque recognition, shared protection and source
 inspection are implemented; structured metadata interpretation and corrections
-remain pending. The full cross-operation verification matrix is owned by #169.
+remain pending. The cross-operation recognition matrix is verified for both
+supported flavors; see [operation parity fixtures](../../internal/testutil/frontmatter/README.md).
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
 

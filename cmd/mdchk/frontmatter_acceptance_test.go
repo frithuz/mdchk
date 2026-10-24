@@ -9,8 +9,11 @@ import (
 
 func TestCompiledFrontmatterConsumers(t *testing.T) {
 	binary := buildConfigurationExecutable(t, "")
-	for _, tc := range []struct{ flavor, format, marker string }{{"commonmark", "yaml", "---"}, {"gfm", "toml", "+++"}} {
-		t.Run(tc.flavor, func(t *testing.T) {
+	for _, tc := range []struct{ flavor, format, marker string }{
+		{"commonmark", "yaml", "---"}, {"commonmark", "toml", "+++"},
+		{"gfm", "yaml", "---"}, {"gfm", "toml", "+++"},
+	} {
+		t.Run(tc.flavor+"/"+tc.format, func(t *testing.T) {
 			root := configurationProject(t)
 			configuration := strings.Replace(md047Configuration(true, true), "flavor: commonmark", "flavor: "+tc.flavor, 1) + "frontmatter: {enabled: true, formats: [" + tc.format + "]}\n"
 			putConfigurationFile(t, root, ".mdchk.yaml", configuration)

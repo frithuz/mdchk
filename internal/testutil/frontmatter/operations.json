@@ -1,0 +1,421 @@
+[
+  {
+    "id": "yaml-default-formats",
+    "source": "---\n<!-- mdchk:disable MD047 -->\n---\nbody",
+    "frontmatter": {
+      "enabled": true
+    },
+    "header": {
+      "format": "yaml",
+      "region": [
+        0,
+        37
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        33
+      ],
+      "closer": [
+        33,
+        36
+      ],
+      "body_offset": 37
+    },
+    "complete": true,
+    "diagnostics": 1,
+    "diagnostic_position": [
+      4,
+      5
+    ],
+    "fix": true,
+    "candidate": "---\n<!-- mdchk:disable MD047 -->\n---\nbody\n"
+  },
+  {
+    "id": "yaml-disabled",
+    "source": "---\n<!-- mdchk:disable MD047 -->\n---\nbody",
+    "frontmatter": {
+      "enabled": false
+    },
+    "header": null,
+    "complete": true,
+    "diagnostics": 0,
+    "diagnostic_position": [
+      4,
+      5
+    ],
+    "fix": false,
+    "candidate": "---\n<!-- mdchk:disable MD047 -->\n---\nbody"
+  },
+  {
+    "id": "yaml-unselected",
+    "source": "---\n<!-- mdchk:disable MD047 -->\n---\nbody",
+    "frontmatter": {
+      "enabled": true,
+      "formats": [
+        "toml"
+      ]
+    },
+    "header": null,
+    "complete": true,
+    "diagnostics": 0,
+    "diagnostic_position": [
+      4,
+      5
+    ],
+    "fix": false,
+    "candidate": "---\n<!-- mdchk:disable MD047 -->\n---\nbody"
+  },
+  {
+    "id": "yaml-omitted",
+    "source": "---\n<!-- mdchk:disable MD047 -->\n---\nbody",
+    "frontmatter": null,
+    "header": null,
+    "complete": true,
+    "diagnostics": 0,
+    "diagnostic_position": [
+      4,
+      5
+    ],
+    "fix": false,
+    "candidate": "---\n<!-- mdchk:disable MD047 -->\n---\nbody"
+  },
+  {
+    "id": "toml-both-formats",
+    "source": "+++\n<!-- mdchk:disable MD047 -->\n+++\nbody",
+    "frontmatter": {
+      "enabled": true,
+      "formats": [
+        "yaml",
+        "toml"
+      ]
+    },
+    "header": {
+      "format": "toml",
+      "region": [
+        0,
+        37
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        33
+      ],
+      "closer": [
+        33,
+        36
+      ],
+      "body_offset": 37
+    },
+    "complete": true,
+    "diagnostics": 1,
+    "diagnostic_position": [
+      4,
+      5
+    ],
+    "fix": true,
+    "candidate": "+++\n<!-- mdchk:disable MD047 -->\n+++\nbody\n"
+  },
+  {
+    "id": "toml-disabled",
+    "source": "+++\n<!-- mdchk:disable MD047 -->\n+++\nbody",
+    "frontmatter": {
+      "enabled": false
+    },
+    "header": null,
+    "complete": true,
+    "diagnostics": 0,
+    "diagnostic_position": [
+      4,
+      5
+    ],
+    "fix": false,
+    "candidate": "+++\n<!-- mdchk:disable MD047 -->\n+++\nbody"
+  },
+  {
+    "id": "toml-unselected",
+    "source": "+++\n<!-- mdchk:disable MD047 -->\n+++\nbody",
+    "frontmatter": {
+      "enabled": true,
+      "formats": [
+        "yaml"
+      ]
+    },
+    "header": null,
+    "complete": true,
+    "diagnostics": 0,
+    "diagnostic_position": [
+      4,
+      5
+    ],
+    "fix": false,
+    "candidate": "+++\n<!-- mdchk:disable MD047 -->\n+++\nbody"
+  },
+  {
+    "id": "yaml-malformed-bom-crlf",
+    "source": "﻿---\r\nbad: [\r\n---\r\n雪body",
+    "frontmatter": {
+      "enabled": true,
+      "formats": [
+        "yaml"
+      ]
+    },
+    "header": {
+      "format": "yaml",
+      "region": [
+        0,
+        21
+      ],
+      "opener": [
+        3,
+        6
+      ],
+      "content": [
+        8,
+        16
+      ],
+      "closer": [
+        16,
+        19
+      ],
+      "body_offset": 21
+    },
+    "complete": true,
+    "diagnostics": 1,
+    "diagnostic_position": [
+      4,
+      6
+    ],
+    "fix": true,
+    "candidate": "﻿---\r\nbad: [\r\n---\r\n雪body\r\n"
+  },
+  {
+    "id": "toml-malformed-cr",
+    "source": "+++\rbad = [\r+++\rbody",
+    "frontmatter": {
+      "enabled": true,
+      "formats": [
+        "toml"
+      ]
+    },
+    "header": {
+      "format": "toml",
+      "region": [
+        0,
+        16
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        12
+      ],
+      "closer": [
+        12,
+        15
+      ],
+      "body_offset": 16
+    },
+    "complete": true,
+    "diagnostics": 1,
+    "diagnostic_position": [
+      4,
+      5
+    ],
+    "fix": true,
+    "candidate": "+++\rbad = [\r+++\rbody\r"
+  },
+  {
+    "id": "yaml-empty",
+    "source": "---\n---\nbody",
+    "frontmatter": {
+      "enabled": true
+    },
+    "header": {
+      "format": "yaml",
+      "region": [
+        0,
+        8
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        4
+      ],
+      "closer": [
+        4,
+        7
+      ],
+      "body_offset": 8
+    },
+    "complete": true,
+    "diagnostics": 1,
+    "diagnostic_position": [
+      3,
+      5
+    ],
+    "fix": true,
+    "candidate": "---\n---\nbody\n"
+  },
+  {
+    "id": "yaml-opener-eof",
+    "source": "---",
+    "frontmatter": {
+      "enabled": true
+    },
+    "header": {
+      "format": "yaml",
+      "region": [
+        0,
+        3
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        3,
+        3
+      ],
+      "closer": null,
+      "body_offset": 3
+    },
+    "complete": false,
+    "diagnostics": 0,
+    "diagnostic_position": [
+      4,
+      5
+    ],
+    "fix": false,
+    "candidate": "---"
+  },
+  {
+    "id": "toml-unterminated",
+    "source": "+++\nbad = [\n",
+    "frontmatter": {
+      "enabled": true
+    },
+    "header": {
+      "format": "toml",
+      "region": [
+        0,
+        12
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        12
+      ],
+      "closer": null,
+      "body_offset": 12
+    },
+    "complete": false,
+    "diagnostics": 0,
+    "diagnostic_position": [
+      4,
+      5
+    ],
+    "fix": false,
+    "candidate": "+++\nbad = [\n"
+  },
+  {
+    "id": "yaml-header-only-eof",
+    "source": "---\nbad: [\n---",
+    "frontmatter": {
+      "enabled": true
+    },
+    "header": {
+      "format": "yaml",
+      "region": [
+        0,
+        14
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        11
+      ],
+      "closer": [
+        11,
+        14
+      ],
+      "body_offset": 14
+    },
+    "complete": true,
+    "diagnostics": 1,
+    "diagnostic_position": [
+      3,
+      4
+    ],
+    "fix": false,
+    "candidate": "---\nbad: [\n---"
+  },
+  {
+    "id": "toml-header-only-eof",
+    "source": "+++\nbad = [\n+++",
+    "frontmatter": {
+      "enabled": true
+    },
+    "header": {
+      "format": "toml",
+      "region": [
+        0,
+        15
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        12
+      ],
+      "closer": [
+        12,
+        15
+      ],
+      "body_offset": 15
+    },
+    "complete": true,
+    "diagnostics": 1,
+    "diagnostic_position": [
+      3,
+      4
+    ],
+    "fix": false,
+    "candidate": "+++\nbad = [\n+++"
+  },
+  {
+    "id": "json-deferred",
+    "source": "{\"title\":\"x\"}\nbody",
+    "frontmatter": {
+      "enabled": true
+    },
+    "header": null,
+    "complete": true,
+    "diagnostics": 1,
+    "diagnostic_position": [
+      2,
+      5
+    ],
+    "fix": true,
+    "candidate": "{\"title\":\"x\"}\nbody\n"
+  }
+]

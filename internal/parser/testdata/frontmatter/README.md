@@ -27,3 +27,8 @@ The private helper deliberately takes no flavor parameter.
 `ParseWithOptions` entry point for both flavors, checking the document-owned
 opaque record, body-only AST/reference ranges, exact offsets and unterminated
 uncertainty. Shared consumer protection and inspection remain separate deliveries.
+
+The complementary [operation parity ledger](../../../testutil/frontmatter/README.md)
+reuses these boundary contracts across shared in-memory analysis, lint, inspection,
+preview and supported native apply for both flavors. It supplies neutral fixtures
+for future MCP adapters without claiming runtime MCP coverage.
