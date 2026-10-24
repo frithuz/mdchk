@@ -11,8 +11,6 @@ import (
 // preserve their settings and catalog defaults rather than activate related
 // contexts or rules merely because a dialect or annotation is supported.
 func TestOptionalContextIndependence(t *testing.T) {
-	pandoc := DefaultSettings()
-	pandoc.Flavor = "pandoc"
 	quarto := DefaultSettings()
 	quarto.QuartoEnabled = true
 	slides := DefaultSettings()
@@ -29,13 +27,6 @@ func TestOptionalContextIndependence(t *testing.T) {
 		want     Builtins
 		explicit map[string]bool
 	}{
-		{
-			name:     "Pandoc does not enable frontmatter or Quarto",
-			body:     "flavor: pandoc\n",
-			caps:     Capabilities{Pandoc3121FullProfile: true, DirectiveProcessing: true},
-			want:     pandoc,
-			explicit: map[string]bool{"flavor": true},
-		},
 		{
 			name:     "Quarto does not enable frontmatter or integration rules",
 			body:     "integrations: {quarto: {enabled: true}}\n",

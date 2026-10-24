@@ -35,9 +35,6 @@ func (p *blockParser) attachBlock(block parsedBlock) {
 
 func (p *blockParser) closeLeaves() error {
 	meterWork(p.ctx, 1)
-	if err := p.closePandocLineBlock(); err != nil {
-		return err
-	}
 	if err := p.closeHTML(); err != nil {
 		return err
 	}
@@ -61,20 +58,10 @@ func (p *blockParser) quotePrefix(cursor Indentation) (Indentation, Span, bool) 
 		return cursor, Span{}, false
 	}
 	_, _ = c.AdvanceMarker()
-	optionalDelimiter := true
-	if p.pandoc() {
-		optionalDelimiter = c.tabRemaining > 0 || c.offset < c.end && c.index.source.content[c.offset] == ' '
-	}
-	var delimiter IndentationConsumption
-	if optionalDelimiter {
-		delimiter, _ = c.Consume(1)
-	}
+	delimiter, _ := c.Consume(1)
 	end := c.offset
 	if len(delimiter.Content.Segments) != 0 {
 		end = delimiter.Content.Segments[len(delimiter.Content.Segments)-1].Source.End()
-	}
-	if p.pandoc() {
-		c.column = cursor.column
 	}
 	return c, p.index.span(cursor.Offset(), end), true
 }
@@ -84,28 +71,6 @@ func (p *blockParser) interruptsParagraph(line blockLine) bool {
 	if line.indent >= 4 {
 		return false
 	}
-	if p.pandoc() {
-		if p.activeDiv() > 0 && p.divCloser(line).Present() {
-			return true
-		}
-		if p.paragraphOpen() && len(p.stack[len(p.stack)-1].content) == 0 {
-			if _, level := p.setextUnderline(line); level != 0 {
-				return true
-			}
-		}
-		if line.cursor.tabRemaining == 0 && line.cursor.offset < line.end && p.index.source.content[line.cursor.offset] == '`' && p.fenceOpening(line) != nil {
-			return true
-		}
-		if p.inPandocItem() {
-			_, ok := p.pandocListStart(line, nil, false)
-			if ok {
-				return true
-			}
-			_, ok = p.pandocListStart(line, nil, true)
-			return ok
-		}
-		return false
-	}
 	if _, _, ok := p.quotePrefix(line.cursor); ok {
 		return true
 	}
@@ -113,7 +78,7 @@ func (p *blockParser) interruptsParagraph(line blockLine) bool {
 		return true
 	}
 	heading, _ := p.atxHeading(line)
-	_, list := p.classifyListStart(line, true)
+	_, list := classifyListStart(line, true)
 	return heading != nil || list
 }
 

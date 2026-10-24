@@ -61,7 +61,7 @@ func TestYAMLContractPresenceAndPresentation(t *testing.T) {
 	}
 	d := decodeContractYAML(t, `# ordinary presentation forms
 version: 1 # schema
-flavor: "pandoc"
+flavor: "commonmark"
 rules: {MD001: {}, MD013: {enabled: false, allow_directives: false}}
 exclude: []
 resources: {index_file: 'README.md', anchor_style: explicit}
@@ -73,7 +73,7 @@ integrations: {quarto: {enabled: false}}
 directives: {enabled: false}
 allow_nested_excludes: false
 `)
-	if *d.Version != 1 || *d.Flavor != "pandoc" || d.Rules["MD001"].Enabled != nil || d.Rules["MD013"].Enabled == nil || *d.Rules["MD013"].Enabled || *d.Rules["MD013"].AllowDirectives {
+	if *d.Version != 1 || *d.Flavor != "commonmark" || d.Rules["MD001"].Enabled != nil || d.Rules["MD013"].Enabled == nil || *d.Rules["MD013"].Enabled || *d.Rules["MD013"].AllowDirectives {
 		t.Fatalf("presence lost: %+v", d)
 	}
 	if d.Exclude == nil || len(*d.Exclude) != 0 || d.Documents.Slides == nil || len(*d.Documents.Slides) != 0 || *d.Frontmatter.Enabled || *d.Integrations.Quarto.Enabled || *d.Directives.Enabled || *d.AllowNestedExcludes {

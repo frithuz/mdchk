@@ -1,4 +1,0 @@
-~~~~
-Bird
-: winged animal
-~~~~

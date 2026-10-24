@@ -100,18 +100,18 @@ func TestConfigurationValidationWorkflow(t *testing.T) {
 	t.Run("ancestor execution settings are not merged", func(t *testing.T) {
 		root := configurationProject(t)
 		putConfigurationFile(t, root, ".mdchk.yaml", availableConfiguration)
-		putConfigurationFile(t, root, "child/.mdchk.yaml", "version: 1\nflavor: pandoc\n")
+		putConfigurationFile(t, root, "child/.mdchk.yaml", "version: 1\nflavor: unknown\n")
 		got := run(t, root, root, "config", "validate", "--format=json")
 		assertValidationSummary(t, got, 12, true, 2, 1, 1, 0)
 		requireDiscoveryErrorSource(t, got, root, "child/.mdchk.yaml", 2, 9)
-		if len(got.Result.Errors) != 1 || !strings.Contains(got.Result.Errors[0].Message, "selected Markdown profile is unavailable") {
+		if len(got.Result.Errors) != 1 || !strings.Contains(got.Result.Errors[0].Message, "expected commonmark or gfm") {
 			t.Fatalf("ancestor flavor leaked into child: %+v", got.Result)
 		}
 	})
 	t.Run("invalid definition activates neither exclusions nor restrictions", func(t *testing.T) {
 		for _, invalid := range []string{
 			"version: 1\nflavor: commonmark\nexclude: ['**']\nallow_nested_excludes: false\nunknown: true\n",
-			"version: 1\nflavor: pandoc\nexclude: ['**']\nallow_nested_excludes: false\n",
+			"version: 1\nflavor: unknown\nexclude: ['**']\nallow_nested_excludes: false\n",
 			"version: 1\nexclude: [\n",
 		} {
 			root := configurationProject(t)

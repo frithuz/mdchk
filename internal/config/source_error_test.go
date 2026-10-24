@@ -54,7 +54,7 @@ func TestResolveFailureRetainsTypedCausesAndExactSources(t *testing.T) {
 	}{
 		{name: "setting", source: "version: 1\r\n# 雪\r\nrules:\r\n  MD013: {length: -1}\r\n", setting: true},
 		{name: "provider", source: "version: 1\nrules:\n  MD095:\n    enabled: false\n    allowed_hosts: [example.com]\n", providers: engine.ValidationProviders{ValidateHostname: func(string) error { return sentinel }}, cause: sentinel, setting: true},
-		{name: "capability", source: "version: 1\nflavor: pandoc\n"},
+		{name: "unknown flavor", source: "version: 1\nflavor: unknown\n"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			root := discoveryRoot(t)

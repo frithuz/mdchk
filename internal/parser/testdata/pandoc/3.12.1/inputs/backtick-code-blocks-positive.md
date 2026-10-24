@@ -1,5 +1,0 @@
-before
-``` text
-[^hidden]
-```
-after

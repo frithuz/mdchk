@@ -285,7 +285,7 @@ func TestUnsupportedSyntaxCannotLookClean(t *testing.T) {
 		t.Fatal("syntax rule ran without provider")
 		return engine.RuleOutcome{}
 	}})
-	in, err := engine.NewInput("a", []byte("text"), nil, engine.DocumentContext{Flavor: "pandoc"})
+	in, err := engine.NewInput("a", []byte("text"), nil, engine.DocumentContext{Flavor: "unknown"})
 	if err != nil {
 		t.Fatal(err)
 	}

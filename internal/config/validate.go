@@ -23,11 +23,10 @@ func (e *ValidationError) Error() string { return fmt.Sprintf("%s: %v", formatOr
 func (e *ValidationError) Unwrap() error { return e.Err }
 
 // Capabilities describes implemented behavior, independently of configuration
-// defaults. Pandoc3121FullProfile asserts the complete pinned fixed profile;
-// generic dialect support or partial extensions cannot assert this capability.
+// defaults. A dialect capability asserts the complete supported profile.
 // RepresentIndexFile is a pure active-adapter representability predicate, not IO.
 type Capabilities struct {
-	CommonMark, GFM, Pandoc3121FullProfile                   bool
+	CommonMark, GFM                                          bool
 	DirectiveProcessing                                      bool
 	FrontmatterYAML, FrontmatterTOML, MetadataInterpretation bool
 	QuartoRecognition, SlideAnnotation                       bool
@@ -115,8 +114,8 @@ func ValidateDefinition(input *Definition, registry *engine.Registry, providers 
 	if d.Flavor != nil {
 		b.Flavor = *d.Flavor
 	}
-	if !slices.Contains([]string{"commonmark", "gfm", "pandoc"}, b.Flavor) {
-		return nil, at("flavor", errors.New("expected commonmark, gfm, or pandoc"))
+	if !slices.Contains([]string{"commonmark", "gfm"}, b.Flavor) {
+		return nil, at("flavor", errors.New("expected commonmark or gfm"))
 	}
 	if d.Resources != nil {
 		if p := d.Resources.IndexFile; p != nil {
@@ -262,7 +261,7 @@ func (v *Validated) Admit(c Capabilities, inherited Permissions) (*Resolution, e
 	b := v.settings
 	p := v.Permissions(inherited)
 	fail := func(path, message string) (*Resolution, error) { return nil, located(d, path, errors.New(message)) }
-	supported := b.Flavor == "commonmark" && c.CommonMark || b.Flavor == "gfm" && c.GFM || b.Flavor == "pandoc" && c.Pandoc3121FullProfile
+	supported := b.Flavor == "commonmark" && c.CommonMark || b.Flavor == "gfm" && c.GFM
 	if !supported {
 		return fail("flavor", "selected Markdown profile is unavailable")
 	}

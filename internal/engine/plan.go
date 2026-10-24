@@ -59,7 +59,7 @@ func (s *RuleSelection) Plan(dc DocumentContext, deniedDirectives map[string]boo
 	if s == nil || s.registry == nil {
 		return nil, fmt.Errorf("nil rule selection")
 	}
-	if dc.Flavor != "commonmark" && dc.Flavor != "gfm" && dc.Flavor != "pandoc" {
+	if dc.Flavor != "commonmark" && dc.Flavor != "gfm" {
 		return nil, fmt.Errorf("invalid Markdown flavor %q", dc.Flavor)
 	}
 	rules := copyRules(s.rules)

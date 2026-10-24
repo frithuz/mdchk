@@ -90,7 +90,7 @@ flavor: commonmark
 
 This configuration works with the current production executable: CommonMark
 0.31.2, directive processing and MD047 analysis/correction are available, while
-GFM is also available; Pandoc and other ordinary rule implementations remain unavailable. Lint parses
+GFM is also available; other ordinary rule implementations remain unavailable. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
 as `rule-unavailable`, sets `status: incomplete` and `complete: false`, and exits
 15. The complete 89-rule catalog remains intact: MD001 is default-enabled and
@@ -198,7 +198,6 @@ processor rows describe capability-bound adapter fixtures.
 | --- | --- | --- |
 | `version: 1`, flavor omitted | Production GFM available | Real GFM analysis; missing default rules yield incomplete/15 |
 | `version: 1`, flavor omitted | Build without GFM | Configuration error; no CommonMark fallback |
-| `flavor: pandoc` | Pandoc unavailable | Configuration error |
 | Global directives effectively true | Processor unavailable | Configuration error |
 | Child directives true beneath valid ancestor false | Processor unavailable | Effective false; no processor capability error |
 | Explicit MD001 entry, enabled or default-enabled | MD001 unavailable | Configuration error |
@@ -276,14 +275,14 @@ incorrect types, and invalid option values. Match YAML outcomes for equivalent
 values. Errors identify property paths when byte/line locations are unavailable.
 No submitted name or setting causes a server-local configuration read.
 
-## Pandoc and shared resource policy
+## Shared resource policy
 
 This YAML and JSON pair select the same approved settings once their capabilities
 are implemented. All other rule defaults remain unchanged.
 
 ```yaml
 version: 1
-flavor: pandoc
+flavor: gfm
 resources:
   index_file: README.md
   anchor_style: explicit
@@ -295,7 +294,7 @@ rules:
 ```json
 {
   "version": 1,
-  "flavor": "pandoc",
+  "flavor": "gfm",
   "resources": {"index_file": "README.md", "anchor_style": "explicit"},
   "rules": {"MD051": {"cross_file": true}}
 }
@@ -309,13 +308,10 @@ rules:
 | `resources: null`, a sequence, or an unknown resource field | Configuration error |
 | `resources: {index_file: docs/index.md}` | Configuration error: filename only |
 | Empty index filename, `.`/`..`, a glob, URL, query/fragment, drive prefix, backslash, or control character | Configuration error |
-| `resources: {anchor_style: pandoc}` | Configuration error: only `github` or `explicit` |
+| `resources: {anchor_style: renderer}` | Configuration error: only `github` or `explicit` |
 | `rules: {MD051: {anchor_style: github}}` | Configuration error: removed rule option |
 | `rules: {MD080: {enabled: false, anchor_style: explicit}}` | Configuration error even though disabled |
 | `rules: {MD057: {index_file: index.md}}` | Configuration error: removed rule option |
-| `flavor: pandoc+footnotes` | Configuration error: invalid flavor value |
-| Top-level `pandoc_extensions` or `pandoc` mapping | Configuration error: no extension controls |
-| `flavor: pandoc` with any selected profile capability unavailable | Configuration error; no partial-profile fallback |
 | Explicit shared resource setting with required implementation unavailable | Configuration error before analysis |
 | Unmentioned default resource behavior unavailable for an applicable check | Incomplete coverage when required, not a false clean result |
 | An ancestor sets different shared resource options | Selected definition and built-ins supply policy; no ancestor option merge |

@@ -11,7 +11,7 @@ See the [contract index](contracts.md) for related specifications and issue owne
 integrations.quarto.enabled defaults false, independent of Markdown flavor, frontmatter and rule
 enablement. When true it applies to selected documents and adds .qmd to directory-scan extensions
 with existing case-insensitive matching; explicit file selection remains extension-independent. No
-automatic activation from a filename or Pandoc attributes.
+automatic activation from a filename or renderer attributes.
 
 ### Initial scope
 
@@ -38,7 +38,7 @@ declarations within the same source level remain incomplete.
 
 ### Recognition exceptions
 
-Ordinary language fences, Pandoc class-attribute fences, double-brace escaped examples and syntax
+Ordinary language fences, double-brace escaped examples, and syntax
 inside enclosing code examples are not executable cells. eval:false or output-hiding flags do not
 exempt a syntactically executable cell from label checks.
 

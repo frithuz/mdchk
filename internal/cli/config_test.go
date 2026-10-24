@@ -48,7 +48,7 @@ func TestLintConfigurationStopsBeforeTargets(t *testing.T) {
 		{"missing explicit", availableConfig, "missing.yaml", "missing.yaml"},
 		{"explicit unavailable rule", availableConfig + "rules: {MD013: {enabled: true}}\n", "", "MD013"},
 		{"invalid disabled options", availableConfig + "rules: {MD013: {enabled: false, length: -1}}\n", "", "length"},
-		{"unavailable Pandoc", "version: 1\nflavor: pandoc\n", "", "flavor"},
+		{"removed flavor", "version: 1\nflavor: pandoc\n", "", "flavor"},
 		{"invalid pattern", availableConfig + "exclude: ['bad/**x']\n", "", "exclude"},
 		{"disabled hostname provider", availableConfig + "rules: {MD095: {enabled: false, allowed_hosts: [example.com]}}\n", "", "allowed_hosts"},
 		{"frontmatter", availableConfig + "frontmatter: {enabled: true}\n", "", "frontmatter"},
@@ -122,7 +122,7 @@ func TestLintPreparationRetainsOwnedSelection(t *testing.T) {
 func TestLintSelectedSettingsAndAncestorDenials(t *testing.T) {
 	root := project(t)
 	// Ancestors validate without requesting execution and supply permissions only.
-	put(t, filepath.Join(root, config.Filename), "version: 1\nflavor: pandoc\ndirectives: {enabled: false}\nrules: {MD013: {length: 99}}\nexclude: ['parent/']\n")
+	put(t, filepath.Join(root, config.Filename), "version: 1\nflavor: commonmark\ndirectives: {enabled: false}\nrules: {MD013: {length: 99}}\nexclude: ['parent/']\n")
 	child := filepath.Join(root, "child")
 	put(t, filepath.Join(child, config.Filename), "version: 1\nflavor: commonmark\ndirectives: {enabled: true}\nexclude: ['child/']\n")
 	t.Chdir(child)

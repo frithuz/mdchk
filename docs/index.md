@@ -117,7 +117,7 @@ The [ruleset to implement](rules/index.md) covers 89 rules, grouped by focus are
 
 ## Understand and integrate results
 
-- [Markdown formats](markdown-formats.md) defines CommonMark, GFM, Pandoc Markdown, and independently optional frontmatter support.
+- [Markdown formats](markdown-formats.md) defines CommonMark, GFM, and independently optional frontmatter support.
 - [File selection](file-selection.md) explains target paths, exclusions, Git ignores, and pattern syntax and cross-platform selection.
 - [Troubleshooting](troubleshooting.md) pairs common symptoms with diagnostic commands and remedies.
 - [Result formats](output-formats.md) explains readable text, JSON, VS Code problem matcher output, and GitHub Actions annotations.
@@ -133,7 +133,6 @@ The [configuration validation design](engineering/configuration.md) covers proje
 
 The [GFM compatibility contract](engineering/gfm-compatibility.md) defines the CommonMark 0.31.2 foundation, pinned extension sources, corpus ingestion, source spans, and conformance requirements.
 
-The [Pandoc compatibility contract](engineering/pandoc-compatibility.md) and [extension manifest](engineering/pandoc-profile.json) define the fixed reader target, source preservation, and rule-consumer requirements.
 
 The [resource contract](engineering/resources.md) defines project boundaries, standalone inventories, shared anchor/index settings, lookup outcomes, and fix snapshots.
 

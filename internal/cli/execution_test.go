@@ -167,30 +167,6 @@ func TestExecutionCancellationRetainsFindingAndStopsLaterWork(t *testing.T) {
 	assertReadOnlyResult(t, inv.result)
 }
 
-func TestExecutionUncertainParserBlocksSyntaxAndKeepsSourceOnly(t *testing.T) {
-	root := project(t)
-	put(t, filepath.Join(root, config.Filename), "version: 1\nflavor: pandoc\ndirectives: {enabled: false}\n")
-	put(t, filepath.Join(root, "doc.md"), "# heading\n")
-	sourceCalls := 0
-	registry := executionRegistry(t, map[string]engine.Check{
-		"MD001": func(context.Context, engine.RuleContext) engine.RuleOutcome {
-			t.Fatal("syntax callback ran with unsupported parser profile")
-			return engine.RuleOutcome{}
-		},
-		"MD009": func(_ context.Context, c engine.RuleContext) engine.RuleOutcome {
-			sourceCalls++
-			if c.Document() != nil {
-				t.Fatal("partial tree escaped to source-only callback")
-			}
-			return engine.RuleOutcome{}
-		},
-	}, true)
-	status, inv, stderr := executeFixture(t, context.Background(), registry, config.Capabilities{Pandoc3121FullProfile: true}, "doc.md")
-	if status != 15 || sourceCalls != 1 || len(inv.result.Coverage) == 0 || inv.result.Complete {
-		t.Fatalf("uncertainty: status=%d calls=%d stderr=%s result=%+v", status, sourceCalls, stderr, inv.result)
-	}
-}
-
 func TestExecutionRuleFailureOutranksIO(t *testing.T) {
 	root := validProject(t)
 	put(t, filepath.Join(root, "doc.md"), "# heading\n")

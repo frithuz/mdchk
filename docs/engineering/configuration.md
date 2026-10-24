@@ -246,10 +246,7 @@ Global directive processing is required unless an own or inherited global false
 is effective; per-rule permission denials do not substitute for that global gate.
 
 `Capabilities` is an explicit trusted assertion by the build adapter, independent
-of default settings. `Pandoc3121FullProfile` specifically asserts the complete
-pinned 3.12.1 profile, including all 37 enabled and 37 disabled extension states;
-generic Pandoc or partial extension support cannot set it. Separate dimensions
-cover CommonMark/GFM, directive processing, YAML and TOML recognition, metadata
+of default settings. Separate dimensions cover CommonMark/GFM, directive processing, YAML and TOML recognition, metadata
 interpretation, Quarto recognition, slide annotation, index handling and each
 anchor style. An explicit index basename also requires the pure active-adapter
 `RepresentIndexFile` predicate. No capability flag implements those features or
@@ -296,7 +293,7 @@ Resolved defaults are not converted into supplied settings: absent enabled
 implementations still produce `rule-unavailable`, while explicit enabled absent
 implementations fail admission before target access. Disabled and positively
 dialect-inapplicable checks do not reduce coverage. Catalog table rules apply to
-GFM and Pandoc; footnote rules apply to Pandoc. Missing optional resource or
+GFM; footnote contracts are inactive for both supported profiles. Missing optional resource or
 integration context never establishes dialect inapplicability.
 
 CLI preparation retains this plan and execution passes acquired snapshots to it
@@ -308,7 +305,7 @@ are relative to the invocation directory; acquisition keeps native names private
 Lint text and JSON reporters present the canonical result without rereading
 configuration sources or target documents. CommonMark/GFM, MD047, directives,
 shared suppression and VS Code/GitHub reporters are implemented. Other rule
-callbacks, Pandoc and optional contexts remain separate deliveries.
+callbacks and optional contexts remain separate deliveries.
 
 ## Confirmed requirements
 
@@ -346,7 +343,7 @@ Separate schema/policy validation from selected-operation capability validation.
 
 Accept optional top-level `resources` with only `index_file` and `anchor_style`, using the domains and defaults in the [configuration guide](../configuration.md#shared-resource-settings). Validate both even if no enabled rule consumes them. Reject the removed per-rule options `MD057.index_file`, `MD051.anchor_style`, and `MD080.anchor_style`, including on disabled rules. Keep schema version 1 and all catalog rule enablement defaults unchanged.
 
-Track explicit shared settings for capability validation. Unsupported requested behavior is a configuration error; unavailable unmentioned defaults create coverage deficits only when applicable analysis requires them. A selected `pandoc` flavor requires the whole [pinned profile](pandoc-compatibility.md); no extension-option mapping is accepted.
+Track explicit shared settings for capability validation. Unsupported requested behavior is a configuration error; unavailable unmentioned defaults create coverage deficits only when applicable analysis requires them.
 
 Resource roots, lookups, snapshots, and standalone maps follow the [resource contract](resources.md). They do not change config discovery or introduce per-resource settings. Only the selected definition supplies resource policy over built-in defaults; ancestor resource settings are not inherited.
 

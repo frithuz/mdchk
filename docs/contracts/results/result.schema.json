@@ -1848,8 +1848,7 @@
             "data": {
               "enum": [
                 "commonmark",
-                "gfm",
-                "pandoc"
+                "gfm"
               ]
             },
             "cause_ids": {

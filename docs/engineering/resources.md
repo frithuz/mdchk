@@ -285,10 +285,6 @@ options. MD080 still compares unsuffixed heading bases; MD073 still includes onl
 eligible headings, not every arbitrary ID-bearing node. Duplicate suffix allocation
 must respect occupied explicit targets deterministically under #172's contract.
 
-The approved [Pandoc contract](pandoc-compatibility.md#ids-containers-html-and-remaining-consumers)
-adds explicit IDs on supported ID-bearing nodes. Neither this contract nor
-`flavor: pandoc` selects an automatic Pandoc anchor style.
-
 MD074 consumes the shared index policy.
 Its configured docs root is a subroot of authorized resource access. The [MkDocs integration](integrations.md#mkdocs-navigation)
 defines nav URLs, absolute-path handling and omitted-file inventories; generic lookup does not infer MkDocs plugins,

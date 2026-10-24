@@ -27,7 +27,7 @@ func policyDefinition(t *testing.T, path, body string) *Definition {
 func TestEffectivePolicyConsumers(t *testing.T) {
 	root := discoveryRoot(t)
 	discoveryDir(t, root, ".git")
-	a := discoveryFile(t, root, Filename, "version: 1\nflavor: pandoc\ndirectives: {enabled: false}\nallow_nested_excludes: false\nrules: {MD013: {allow_directives: false, length: 50}}\n")
+	a := discoveryFile(t, root, Filename, "version: 1\nflavor: commonmark\ndirectives: {enabled: false}\nallow_nested_excludes: false\nrules: {MD013: {allow_directives: false, length: 50}}\n")
 	middle := discoveryDir(t, root, "middle")
 	b := discoveryFile(t, middle, Filename, "version: 1\ndirectives: {enabled: false}\nallow_nested_excludes: false\nrules: {MD013: {allow_directives: false}}\n")
 	leaf := discoveryDir(t, middle, "leaf")
@@ -192,7 +192,7 @@ func TestPreAdmissionBoundariesAndUnavailableSelection(t *testing.T) {
 	discoveryFile(t, root, Filename, "version: broken\n")
 	cap := discoveryDir(t, root, "project")
 	start := discoveryDir(t, cap, "target")
-	path := discoveryFile(t, start, Filename, "version: 1\nflavor: pandoc\nrules: {MD013: {enabled: true}}\n")
+	path := discoveryFile(t, start, Filename, "version: 1\nflavor: commonmark\nrules: {MD013: {enabled: true}}\n")
 	s, err := ResolveValidated(SelectionOptions{WorkingDirectory: root, StartDirectory: start, BoundaryDirectory: cap}, registryFor(t), engine.ValidationProviders{})
 	if err != nil || s.SelectedPath != path {
 		t.Fatalf("bounded target inspection %v %v", s, err)

@@ -12,7 +12,7 @@ import (
 func TestCatalogDialectApplicability(t *testing.T) {
 	tables := map[string]bool{"MD055": true, "MD056": true, "MD058": true, "MD060": true, "MD075": true}
 	footnotes := map[string]bool{"MD066": true, "MD067": true, "MD068": true}
-	for _, flavor := range []string{"commonmark", "gfm", "pandoc", "", "unknown"} {
+	for _, flavor := range []string{"commonmark", "gfm", "", "unknown"} {
 		t.Run(flavor, func(t *testing.T) {
 			for _, m := range engine.Catalog() {
 				want := !(tables[m.ID] && flavor == "commonmark" || footnotes[m.ID] && (flavor == "commonmark" || flavor == "gfm"))
@@ -44,7 +44,6 @@ func TestFullCatalogUnavailableCoverageRespectsDialect(t *testing.T) {
 	}{
 		{"commonmark", map[string]bool{"MD055": true, "MD056": true, "MD058": true, "MD066": true, "MD067": true, "MD068": true, "MD075": true}, 51},
 		{"gfm", map[string]bool{"MD066": true, "MD067": true, "MD068": true}, 55},
-		{"pandoc", map[string]bool{}, 58},
 	}
 	reg, err := engine.NewCatalogRegistry(nil)
 	if err != nil {
@@ -97,7 +96,7 @@ func catalogMetadataEqual(a, b []engine.Metadata) bool {
 		if (a[i].AppliesTo == nil) != (b[i].AppliesTo == nil) {
 			return false
 		}
-		for _, flavor := range []string{"commonmark", "gfm", "pandoc", "", "unknown"} {
+		for _, flavor := range []string{"commonmark", "gfm", "", "unknown"} {
 			for _, project := range []string{"", "project"} {
 				dc := engine.DocumentContext{Flavor: flavor, Project: project}
 				if a[i].AppliesTo != nil && a[i].AppliesTo(dc) != b[i].AppliesTo(dc) {

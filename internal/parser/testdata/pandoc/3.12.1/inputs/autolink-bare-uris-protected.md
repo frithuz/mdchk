@@ -1,3 +1,0 @@
-~~~~
-https://bird.example/a
-~~~~

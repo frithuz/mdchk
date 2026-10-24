@@ -22,7 +22,7 @@ Analyze supplies full-document data with counts `not-requested`. Filter adds
 contextual selection and counts as described below. The inspect CLI renders this
 projection in text/JSON and preserves its identities and causal links. It implements neither
 MD087 counterfactual conclusions nor additional rule implementations. Resource,
-frontmatter, slide and Pandoc processing retain their own admission gates;
+frontmatter and slide processing retain their own admission gates;
 no CommonMark substitute or guessed document context is supplied.
 
 ## AST catalog
@@ -89,8 +89,6 @@ A future profile must extend this catalog with documented source-backed kinds,
 properties, attributes, original/effective distinctions and independent parser
 and producer acceptance. The illustrative GFM AST fixture remains a serialization
 example; real producer tests independently verify the catalog and inline children.
-Pandoc footnotes, attributes and additional HTML-origin distinctions remain
-future profile obligations rather than invented nodes in this projection.
 
 ## Rule records and source coverage
 

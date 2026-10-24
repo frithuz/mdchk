@@ -106,7 +106,7 @@ func TestExplicitRules(t *testing.T) {
 	}
 }
 func TestSchemaDomainsEvenDisabled(t *testing.T) {
-	for _, tt := range []struct{ body, path string }{{"rules: {md001: {}}", "rules.md001"}, {"rules: {MD002: {}}", "rules.MD002"}, {"rules: {MD051: {enabled: false, anchor_style: github}}", "rules.MD051.anchor_style"}, {"rules: {MD080: {enabled: false, anchor_style: explicit}}", "rules.MD080.anchor_style"}, {"rules: {MD057: {enabled: false, index_file: index.md}}", "rules.MD057.index_file"}, {"rules: {MD013: {enabled: false, length: -1}}", "rules.MD013.length"}, {"rules: {MD013: {length: 99999999999999999999999999999}}", "rules.MD013.length"}, {"rules: {MD093: {allowed_constructs: [emphasis, wrong]}}", "rules.MD093.allowed_constructs[1]"}, {"rules: {MD093: {allowed_constructs: [emphasis, 1]}}", "rules.MD093.allowed_constructs[1]"}, {"frontmatter: {enabled: false, formats: []}", "frontmatter.formats"}, {"frontmatter: {formats: [yaml, yaml]}", "frontmatter.formats[1]"}, {"exclude: [good, '[']", "exclude[1]"}, {"documents: {slides: [good, '[']}", "documents.slides[1]"}, {"resources: {anchor_style: pandoc}", "resources.anchor_style"}, {"flavor: pandoc+footnotes", "flavor"}} {
+	for _, tt := range []struct{ body, path string }{{"rules: {md001: {}}", "rules.md001"}, {"rules: {MD002: {}}", "rules.MD002"}, {"rules: {MD051: {enabled: false, anchor_style: github}}", "rules.MD051.anchor_style"}, {"rules: {MD080: {enabled: false, anchor_style: explicit}}", "rules.MD080.anchor_style"}, {"rules: {MD057: {enabled: false, index_file: index.md}}", "rules.MD057.index_file"}, {"rules: {MD013: {enabled: false, length: -1}}", "rules.MD013.length"}, {"rules: {MD013: {length: 99999999999999999999999999999}}", "rules.MD013.length"}, {"rules: {MD093: {allowed_constructs: [emphasis, wrong]}}", "rules.MD093.allowed_constructs[1]"}, {"rules: {MD093: {allowed_constructs: [emphasis, 1]}}", "rules.MD093.allowed_constructs[1]"}, {"frontmatter: {enabled: false, formats: []}", "frontmatter.formats"}, {"frontmatter: {formats: [yaml, yaml]}", "frontmatter.formats[1]"}, {"exclude: [good, '[']", "exclude[1]"}, {"documents: {slides: [good, '[']}", "documents.slides[1]"}, {"resources: {anchor_style: unknown}", "resources.anchor_style"}, {"flavor: unsupported+extension", "flavor"}} {
 		t.Run(tt.body, func(t *testing.T) {
 			_, e := ValidateDefinition(yamlFor(t, "version: 1\n"+tt.body+"\n"), registryFor(t), engine.ValidationProviders{})
 			assertPath(t, e, tt.path)
@@ -115,7 +115,7 @@ func TestSchemaDomainsEvenDisabled(t *testing.T) {
 }
 func TestSelectedCapabilitiesAndPolicy(t *testing.T) {
 	r := registryFor(t, "MD001")
-	ancestor := schemaFor(t, "version: 1\nflavor: pandoc\nfrontmatter: {enabled: true}\nrules: {MD003: {}, MD001: {allow_directives: false}}\ndirectives: {enabled: false}\nresources: {index_file: README.md, anchor_style: explicit}\n", r)
+	ancestor := schemaFor(t, "version: 1\nflavor: gfm\nfrontmatter: {enabled: true}\nrules: {MD003: {}, MD001: {allow_directives: false}}\ndirectives: {enabled: false}\nresources: {index_file: README.md, anchor_style: explicit}\n", r)
 	if _, e := ancestor.Admit(baseCaps(), Permissions{}); e == nil {
 		t.Fatal("ancestor unavailable selected profile accepted")
 	}
@@ -142,7 +142,7 @@ func TestOptionalCapabilities(t *testing.T) {
 	for _, tt := range []struct {
 		body, path string
 		caps       Capabilities
-	}{{"", "flavor", Capabilities{CommonMark: true, DirectiveProcessing: true}}, {"flavor: pandoc", "flavor", baseCaps()}, {"frontmatter: {enabled: true, formats: [yaml]}", "frontmatter.enabled", baseCaps()}, {"frontmatter: {enabled: true}", "frontmatter.enabled", func() Capabilities { c := baseCaps(); c.FrontmatterYAML = true; return c }()}, {"integrations: {quarto: {enabled: true}}", "integrations.quarto.enabled", baseCaps()}, {"documents: {slides: ['slides/**']}", "documents.slides", baseCaps()}, {"rules: {MD001: {frontmatter_title: true}}", "rules.MD001.frontmatter_title", baseCaps()}, {"resources: {index_file: index.md}", "resources.index_file", baseCaps()}, {"resources: {anchor_style: github}", "resources.anchor_style", baseCaps()}} {
+	}{{"", "flavor", Capabilities{CommonMark: true, DirectiveProcessing: true}}, {"frontmatter: {enabled: true, formats: [yaml]}", "frontmatter.enabled", baseCaps()}, {"frontmatter: {enabled: true}", "frontmatter.enabled", func() Capabilities { c := baseCaps(); c.FrontmatterYAML = true; return c }()}, {"integrations: {quarto: {enabled: true}}", "integrations.quarto.enabled", baseCaps()}, {"documents: {slides: ['slides/**']}", "documents.slides", baseCaps()}, {"rules: {MD001: {frontmatter_title: true}}", "rules.MD001.frontmatter_title", baseCaps()}, {"resources: {index_file: index.md}", "resources.index_file", baseCaps()}, {"resources: {anchor_style: github}", "resources.anchor_style", baseCaps()}} {
 		t.Run(tt.body, func(t *testing.T) {
 			v := schemaFor(t, "version: 1\n"+tt.body+"\n", registryFor(t, "MD001"))
 			_, e := v.Admit(tt.caps, Permissions{})
@@ -150,7 +150,6 @@ func TestOptionalCapabilities(t *testing.T) {
 		})
 	}
 	c := baseCaps()
-	c.Pandoc3121FullProfile = true
 	c.FrontmatterYAML = true
 	c.MetadataInterpretation = true
 	c.QuartoRecognition = true
@@ -163,7 +162,7 @@ func TestOptionalCapabilities(t *testing.T) {
 		}
 		return nil
 	}
-	v := schemaFor(t, "version: 1\nflavor: pandoc\nfrontmatter: {enabled: true, formats: [yaml]}\nintegrations: {quarto: {enabled: true}}\ndocuments: {slides: ['s/**']}\nresources: {index_file: README.md, anchor_style: explicit}\nrules: {MD001: {frontmatter_title: true}}\n", registryFor(t, "MD001"))
+	v := schemaFor(t, "version: 1\nflavor: gfm\nfrontmatter: {enabled: true, formats: [yaml]}\nintegrations: {quarto: {enabled: true}}\ndocuments: {slides: ['s/**']}\nresources: {index_file: README.md, anchor_style: explicit}\nrules: {MD001: {frontmatter_title: true}}\n", registryFor(t, "MD001"))
 	if _, e := v.Admit(c, Permissions{}); e != nil {
 		t.Fatal(e)
 	}
@@ -232,7 +231,7 @@ func TestSemanticYAMLObjectParity(t *testing.T) {
 		path   string
 	}{
 		{"version: 1\nrules: {MD013: {length: -1}}", map[string]any{"version": 1, "rules": map[string]any{"MD013": map[string]any{"length": -1}}}, "rules.MD013.length"},
-		{"version: 1\nresources: {anchor_style: pandoc}", map[string]any{"version": 1, "resources": map[string]any{"anchor_style": "pandoc"}}, "resources.anchor_style"},
+		{"version: 1\nresources: {anchor_style: unknown}", map[string]any{"version": 1, "resources": map[string]any{"anchor_style": "unknown"}}, "resources.anchor_style"},
 		{"version: 1\nexclude: [good, '[']", map[string]any{"version": 1, "exclude": []any{"good", "["}}, "exclude[1]"},
 		{"version: 1\nfrontmatter: {formats: [yaml, json]}", map[string]any{"version": 1, "frontmatter": map[string]any{"formats": []string{"yaml", "json"}}}, "frontmatter.formats[1]"},
 		{"version: 1\nrules: {MD013: {length: 100}}\nresources: {}", map[string]any{"version": 1, "rules": map[string]any{"MD013": map[string]any{"length": 100}}, "resources": map[string]any{}}, ""},

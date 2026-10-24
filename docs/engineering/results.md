@@ -203,7 +203,7 @@ state, ID and hash invariants.
 
 - Extend schema-backed producer and semantic tests to every remaining operation
   and reporter; preserve cross-record/state/hash invariants.
-- Complete the stable AST node/property catalog within #139 using the established CommonMark/GFM/Pandoc source contracts; validate representative dialect projection fixtures.
+- Complete the stable AST node/property catalog within #139 using the established CommonMark/GFM source contracts; validate representative dialect projection fixtures.
 
 
 Extend the implemented bounded lint serialization to the remaining adapters

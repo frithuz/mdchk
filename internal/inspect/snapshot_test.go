@@ -106,7 +106,7 @@ func TestCanonicalTargetConfigurationExclusionAndOwnedViews(t *testing.T) {
 	project := filepath.Join(root, "project")
 	target := filepath.Join(project, "docs", "file.md")
 	write(t, target, []byte("original\n"))
-	ancestor := []byte("version: 1\nflavor: pandoc\nexclude: ['docs/**']\ndirectives:\n  enabled: false\n")
+	ancestor := []byte("version: 1\nflavor: commonmark\nexclude: ['docs/**']\ndirectives:\n  enabled: false\n")
 	write(t, filepath.Join(project, config.Filename), ancestor)
 	write(t, filepath.Join(project, "docs", config.Filename), []byte("version: 1\nflavor: commonmark\nexclude: [file.md]\ndirectives:\n  enabled: true\nrules:\n  MD013:\n    length: 91\n"))
 	if err := os.Mkdir(filepath.Join(project, ".git"), 0700); err != nil {
@@ -133,7 +133,7 @@ func TestCanonicalTargetConfigurationExclusionAndOwnedViews(t *testing.T) {
 	if len(s.Sources()) != 2 {
 		t.Fatal(s.Sources())
 	}
-	c.Settings.Flavor = "pandoc"
+	c.Settings.Flavor = "gfm"
 	c.Rules["MD013"].Options["length"] = 1
 	c.EffectivePermissions.Directives[0].Path = "changed"
 	ex := s.Exclusion()

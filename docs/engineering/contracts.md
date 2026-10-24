@@ -2,7 +2,7 @@
 
 The following 21 policy groups were accepted on 2026-10-15, including the final
 1 MiB resource revision. They complement the previously approved configuration,
-GFM, Pandoc and resource contracts. Implementation issues remain open until their
+GFM and resource contracts. Implementation issues remain open until their
 code and verification criteria are satisfied; acceptance of policy is not a
 conformance claim.
 

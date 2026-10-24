@@ -102,7 +102,7 @@ retain their original ownership. Actual producer schema/semantic controls reject
 corrupted extension facts. Compiled MD047 tests cover preview, supported native
 saved bytes and ordinary unsupported-platform refusal.
 
-Named production rules (#236), frontmatter, Pandoc, MCP and production rendering
+Named production rules (#236), frontmatter, MCP and production rendering
 remain separate. Full catalog defaults still yield incomplete/15 for missing
 checks; explicitly enabling an unavailable rule fails configuration/12. Reduced
 MD047 configurations can complete with either supported flavor. These checks do

@@ -2,7 +2,7 @@
 
 This directory retains all 652 examples across 26 sections from the original
 CommonMark 0.31.2 specification. It is test infrastructure; ingestion does not
-establish parser, correction, GFM, or Pandoc conformance.
+establish parser, correction, or GFM conformance.
 
 `upstream/` contains unmodified files from
 [commonmark/commonmark-spec at 9103e341a973013013bb1a80e13567007c5cef6f](https://github.com/commonmark/commonmark-spec/tree/9103e341a973013013bb1a80e13567007c5cef6f).

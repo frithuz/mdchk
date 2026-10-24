@@ -113,7 +113,7 @@ func testConfigurationDiscovery(t *testing.T, binary string) {
 	})
 	t.Run("ancestor execution settings are not admitted or merged", func(t *testing.T) {
 		root := configurationProject(t)
-		putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\nflavor: pandoc\nrules: {MD001: {}, MD013: {enabled: true, length: 99}}\nexclude: ['child/']\n")
+		putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\nflavor: commonmark\nrules: {MD001: {}, MD013: {enabled: true, length: 99}}\nexclude: ['child/']\n")
 		putConfigurationFile(t, root, "child/.mdchk.yaml", availableConfiguration)
 		putConfigurationFile(t, root, "child/guide.md", "# untouched\n")
 		got := runConfiguration(t, binary, filepath.Join(root, "child"), root, "lint", "--format=json", "guide.md")

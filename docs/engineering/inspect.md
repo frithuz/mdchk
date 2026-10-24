@@ -20,7 +20,7 @@ Inspection follows explicitly named symlinks for read-only analysis; directory s
 
 ## Configuration and parser instrumentation
 
-Use the shared configuration loader and precedence, with discovery starting at the canonical target's parent directory rather than the invocation directory. Record configuration provenance, effective flavor, and rule options. Include effective global and per-rule directive permissions and the configuration paths and fields imposing restrictions, including ancestors. Distinguish an inherited permission denial from configured rule disablement. Add a validated `flavor` setting with values `commonmark`, `gfm`, and `pandoc`, defaulting to `gfm`; the parser and all operations must use the same flavor selection.
+Use the shared configuration loader and precedence, with discovery starting at the canonical target's parent directory rather than the invocation directory. Record configuration provenance, effective flavor, and rule options. Include effective global and per-rule directive permissions and the configuration paths and fields imposing restrictions, including ancestors. Distinguish an inherited permission denial from configured rule disablement. Add a validated `flavor` setting with values `commonmark` and `gfm`, defaulting to `gfm`; the parser and all operations must use the same flavor selection.
 
 Expose a versioned AST projection with node kind, source span, relevant attributes, and children. Preserve byte offsets and documented public coordinates. Include a full document root and source-backed nodes without generating an HTML representation. Ancestors included only for context must be explicitly marked. Do not recursively serialize private Go structs, pointer addresses, or unstable implementation fields.
 
@@ -31,8 +31,6 @@ Use the same directive recognition, scopes, and suppression decisions as lint an
 The [directive processing design](directives.md) defines grammar and scoping. Inspect exposes the engine's shared semantics rather than implementing a separate suppression interpreter.
 
 Resource inspection uses the same [root and lookup contract](resources.md) as analysis, starting root discovery from the canonical target's parent. Record root/policy provenance, logical target identity, lookup outcome, and coverage without exposing unrelated contents or resolving blocked paths beyond the permitted context. The explicit-target symlink exception applies only to acquisition of that target.
-
-For Pandoc, expose source-backed footnote references and definitions independently of resolved note bodies, raw and effective attributes/IDs, original table cells and separators, and HTML-origin/container distinctions. The [Pandoc source contract](pandoc-compatibility.md) applies to the versioned projection; semantic normalization must not erase source facts required by rules.
 
 ## Line ranges
 

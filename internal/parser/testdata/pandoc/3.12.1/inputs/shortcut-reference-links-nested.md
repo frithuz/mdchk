@@ -1,3 +1,0 @@
-> [bird]
-> 
-> [bird]: /nest

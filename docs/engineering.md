@@ -9,7 +9,7 @@ mdchk uses one Markdown analysis and correction engine for both its command-line
 - Implement the project in Go.
 - Build and maintain an internal Markdown parser instead of using a third-party parser.
 - Minimize third-party dependencies across the project.
-- Use CommonMark 0.31.2 as the base syntax and support GitHub Flavored Markdown and Pandoc Markdown.
+- Use CommonMark 0.31.2 as the base syntax and support GitHub Flavored Markdown.
 - Adopt the [GFM compatibility contract](engineering/gfm-compatibility.md): the shared CommonMark 0.31.2 core plus all five published GFM extensions, with pinned sources, documented differences, source-preserving representations, and explicit conformance gates.
 - Make frontmatter recognition independently optional for every supported Markdown format.
 - Provide a read-only `lint` subcommand that reports problems.
@@ -26,7 +26,6 @@ mdchk uses one Markdown analysis and correction engine for both its command-line
 - Inherit ancestor directive prohibitions without permitting descendant relaxation; retain independent child rule settings.
 - Use configuration for whole-file exclusion from all rule linting, and allow higher-level configuration to prohibit lower-level exclusion additions.
 
-- Adopt the [fixed Pandoc profile](engineering/pandoc-compatibility.md), including source-preserving footnotes, tables, attributes, and rule-consumer behavior.
 - Adopt the [resource contract](engineering/resources.md): bounded read-only adapters, partial standalone inventories, shared anchor/index policy, immutable observations, and coordinated fix views.
 
 The [accepted contract index](engineering/contracts.md) records the additional 21 policy groups, including optional contexts, exact rule behavior, fixes, results, limits, MCP and HTTP. Package layout suggestions remain implementation guidance; accepted behavior is normative.
@@ -41,7 +40,7 @@ Choose a supported Go version and record the minimum version in `go.mod`. Pin de
 
 ## Markdown support and parsing
 
-Use [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/) as the shared core for CommonMark and GFM. The approved [GFM compatibility contract](engineering/gfm-compatibility.md) adds tables, task lists, single/double-tilde strikethrough, extended autolinks, and disallowed raw HTML handling from a frozen specification snapshot. It defines a profile with documented differences from the older `0.29-gfm` base. The approved [Pandoc contract](engineering/pandoc-compatibility.md) pins the Pandoc 3.12.1 `markdown` reader and all 74 extension states: 37 enabled and 37 disabled. Pandoc has its own block and inline interpretation. The configuration contract selects `commonmark`, `gfm`, or `pandoc`, defaulting to `gfm`. See [Markdown formats](markdown-formats.md) for the confirmed scope and current conformance status. Do not imply compatibility with every Markdown renderer.
+Use [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/) as the shared core for CommonMark and GFM. The approved [GFM compatibility contract](engineering/gfm-compatibility.md) adds tables, task lists, single/double-tilde strikethrough, extended autolinks, and disallowed raw HTML handling from a frozen specification snapshot. It defines a profile with documented differences from the older `0.29-gfm` base. The configuration contract selects `commonmark` or `gfm`, defaulting to `gfm`. See [Markdown formats](markdown-formats.md) for the confirmed scope and current conformance status. Do not imply compatibility with every Markdown renderer.
 
 Implement the parser in `internal/parser` using the Go standard library. Use the Markdown specifications as references for syntax behavior; do not depend on a third-party parser at runtime. Owning the parser also means owning its correctness, compatibility, and performance tests.
 
@@ -61,7 +60,7 @@ recognizes core syntax with extensions/frontmatter disabled. Configuration-drive
 selection and bounded read-only acquisition are connected to CLI lint, including
 the shared mandatory UTF-8 gate, parser and registered-rule engine. GFM uses the
 same lifecycle through `ParseGFMWithBudget`; the legacy Parse APIs stay core-only.
-Pandoc, frontmatter, other production rules, MCP and rendering remain separate.
+Frontmatter, other production rules, MCP and rendering remain separate.
 
 The first phase identifies paragraphs, ATX/Setext headings, fenced/indented code,
 thematic breaks, all seven HTML-block forms and nested quotes/lists, and completes
@@ -297,7 +296,6 @@ Maintain parser fixtures derived from specification examples, respecting their l
 
 The [GFM corpus contract](engineering/gfm-compatibility.md#corpus-ingestion-and-expectations) requires offline, reproducible ingestion of pinned inputs, all 652 CommonMark 0.31.2 cases, all 28 published GFM extension cases, and explicit accounting for all 677 published GFM cases. Preserve upstream expectations separately from reviewed profile adaptations. Neither silently skipped examples nor agreement with cmark-gfm establishes conformance. An HTML adapter may be used in tests without adding a production renderer or parser dependency.
 
-The [Pandoc corpus contract](engineering/pandoc-compatibility.md#corpus-licenses-and-completion-requirements) requires pinned offline fixtures, independent source-ledger assertions, and consumer preservation checks. Oracle agreement alone cannot prove retention of unused notes, duplicate IDs, or excess cells. Verify the entire fixed profile before advertising it.
 
 Test engine properties: lint leaves bytes unchanged; fixing preserves protected content; fixes are idempotent; conflicting edits are reported; invalid configuration produces no writes; changed source snapshots are rejected. Add integration tests for CLI exit codes, JSON contracts, MCP parity, root boundaries, cancellation, and partial write failures.
 

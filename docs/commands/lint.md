@@ -119,7 +119,7 @@ the requested reduced coverage, rather than full Markdown rule conformance.
 Capture `$?` immediately after the executable, as above. `go run` reports a
 wrapper status for nonzero program exits and cannot verify mdchk's semantic
 status. The executable implements lint, fix, config validate, inspect, help and
-version. Pandoc remains deferred.
+version.
 
 The selection and option examples below assume the
 [current reduced setup](../index.md#get-started-with-this-build) and readable

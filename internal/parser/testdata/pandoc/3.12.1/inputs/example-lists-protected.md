@@ -1,5 +1,0 @@
-~~~~
-(@bird) example
-
-See (@bird).
-~~~~

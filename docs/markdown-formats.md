@@ -1,8 +1,8 @@
 # Supported Markdown formats
 
-mdchk's confirmed format scope is CommonMark, GitHub Flavored Markdown (GFM), and Pandoc Markdown, with independently optional frontmatter support. The internal CommonMark 0.31.2 core is delivered and verified: all **652/652** unchanged specification examples pass normalized and strict comparisons without exemptions. Direct upstream runs in both modes report 652 passed and zero failed, errored or skipped. CLI lint/fix/inspect integrate this core and directive suppression, and MD047 is the first production ordinary rule and correction. GFM also integrates this pipeline. Pandoc, frontmatter, other ordinary callbacks, MCP integration and production rendering remain separate deliveries.
+mdchk's confirmed format scope is CommonMark and GitHub Flavored Markdown (GFM), with independently optional frontmatter support. The internal CommonMark 0.31.2 core is delivered and verified: all **652/652** unchanged specification examples pass normalized and strict comparisons without exemptions. Direct upstream runs in both modes report 652 passed and zero failed, errored or skipped. CLI lint/fix/inspect integrate this core and directive suppression, and MD047 is the first production ordinary rule and correction. GFM also integrates this pipeline. Frontmatter, other ordinary callbacks, MCP integration and production rendering remain separate deliveries.
 
-The current Go `Parse` API has no flavor or configuration option. CLI `flavor: commonmark` selection is delivered; it does not add a switch to that Go API. GFM is available, including selection by omission. Pandoc and enabled frontmatter remain unavailable (`12`). CommonMark alone still leaves missing default-rule coverage (`15`); use the [current reduced setup](index.md#get-started-with-this-build) for a complete MD047-only run. See the [delivered core contract](engineering.md#delivered-commonmark-core) for APIs, source guarantees, UTF-8/resource outcomes and [reproduction commands](engineering.md#reproduce-the-core-delivery).
+The current Go `Parse` API has no flavor or configuration option. CLI `flavor: commonmark` selection is delivered; it does not add a switch to that Go API. GFM is available, including selection by omission. Enabled frontmatter remains unavailable (`12`). CommonMark alone still leaves missing default-rule coverage (`15`); use the [current reduced setup](index.md#get-started-with-this-build) for a complete MD047-only run. See the [delivered core contract](engineering.md#delivered-commonmark-core) for APIs, source guarantees, UTF-8/resource outcomes and [reproduction commands](engineering.md#reproduce-the-core-delivery).
 
 GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
@@ -40,25 +40,9 @@ The published specification is labeled `0.29-gfm`. mdchk deliberately uses the n
 
 In CommonMark mode, the same source follows CommonMark 0.31.2 interpretation without GFM extensions. The GFM profile does not add footnotes, GitHub alerts, emoji expansion, math, or automatic frontmatter recognition. Syntax outside the profile follows ordinary interpretation. GitHub website rendering, post-processing, and sanitization are outside this contract; disallowed raw HTML handling does not make mdchk an HTML sanitizer.
 
-## Pandoc Markdown
-
-Pandoc Markdown is also approved for support. Its reference is the [Pandoc User’s Guide](https://pandoc.org/MANUAL.html#pandocs-markdown). Select it with `flavor: pandoc`:
-
-```yaml
-version: 1
-flavor: pandoc
-```
-
-The approved target is Pandoc 3.12.1's `markdown` reader with a fixed set of 37 enabled and 37 disabled extensions. It has its own block and inline interpretation, including lists, footnotes, pipe tables, attributes, math, and raw content. It is not the `commonmark_x` reader. The [compatibility contract](engineering/pandoc-compatibility.md) and [machine-readable profile](engineering/pandoc-profile.json) pin every extension state and the source revision. No individual extension switches are exposed.
-
-Automatic Pandoc identifiers, implicit header references, smart typography, LaTeX macro expansion, implicit figures, metadata/title blocks, and non-pipe table forms are disabled. Shared `resources.anchor_style` controls heading anchors; supported explicit IDs remain targets. Frontmatter is independently optional under its [accepted contract](engineering/frontmatter.md). Pandoc attributes do not automatically enable Quarto chunk interpretation.
-
-All enabled features and their source-preservation requirements must be verified before a build advertises this flavor. The contract does not add a renderer, filters, citeproc, a runtime Pandoc dependency, or compatibility with every Pandoc extension.
-
 ## Optional frontmatter headers
 
-Frontmatter is disabled by default, independently of `commonmark`, `gfm`, or
-`pandoc`. Set `frontmatter.enabled: true`; `frontmatter.formats` defaults to
+Frontmatter is disabled by default, independently of `commonmark` or `gfm`. Set `frontmatter.enabled: true`; `frontmatter.formats` defaults to
 `[yaml, toml]`. JSON headers are outside the initial contract.
 
 The opener is on the first line after an optional preserved UTF-8 BOM, with no
@@ -70,7 +54,7 @@ through EOF, with affected incomplete coverage and no edits in that region.
 Ordinary Markdown rules and directives cannot interpret recognized header content.
 Metadata-aware checks decode on demand under the [metadata contract](engineering/frontmatter.md).
 With recognition disabled, source follows ordinary flavor parsing. Selecting YAML
-configuration or Pandoc does not enable headers. Explicitly enabled but unavailable
+configuration does not enable headers. Explicitly enabled but unavailable
 recognition is a configuration error, never a silent fallback.
 
 ## Consistent interpretation
@@ -78,3 +62,7 @@ recognition is a configuration error, never a silent fallback.
 Lint, fix, inspect, and both MCP modes must use the same selected flavor and frontmatter option. Format selection controls parsing; rule settings separately control which checks run.
 
 Support claims must describe verified syntax and known gaps. Format conformance must be backed by specification examples. Uncertain parsing reduces rule coverage and prevents automatic fixes in affected regions. Lint/fix report that deficit as `incomplete` with exit 15 unless an operational error takes precedence. Syntax intentionally outside a selected dialect follows ordinary interpretation and does not by itself create missing coverage. See the [engineering design](engineering.md#markdown-support-and-parsing) for the parser and correction contract.
+
+## Removed format
+
+Pandoc support has been canceled. `flavor: pandoc` is rejected as an invalid flavor; select `commonmark` or `gfm`.

@@ -181,7 +181,7 @@ excluded syntax, scope isolation, concurrency and finite resource behavior.
 whole-profile parser independently of this adapter. See the [verification record](../../../../../docs/engineering/gfm-verification.md).
 The supported default/explicit production GFM selection now feeds real lint,
 fix and inspect consumers (#161). Named production rules (#236), frontmatter,
-Pandoc and MCP remain separate; this profile does not implement them.
+MCP remains separate; this profile does not implement it.
 
 ## Attribution
 

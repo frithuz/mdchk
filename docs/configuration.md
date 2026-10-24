@@ -33,7 +33,7 @@ rules:
 
 `version` identifies the configuration schema and is required. Use the integer `1`, not the string `"1"` or the number `1.0`.
 
-`flavor` selects Markdown interpretation: `commonmark`, `gfm`, or `pandoc`. CommonMark 0.31.2 is the base for CommonMark and GFM; the default is `gfm`. Pandoc uses its own pinned reader profile. It applies consistently to lint, fix, inspect, and MCP operations. See [Markdown formats](markdown-formats.md) for the support contract and conformance status.
+`flavor` selects Markdown interpretation: `commonmark` or `gfm`. CommonMark 0.31.2 is the base for CommonMark and GFM; the default is `gfm`. It applies consistently to lint, fix, inspect, and MCP operations. See [Markdown formats](markdown-formats.md) for the support contract and conformance status.
 
 Frontmatter recognition is independently disabled by default for every flavor. Enable `frontmatter.enabled` to recognize YAML/TOML headers. See [optional contexts](#optional-document-contexts) and the [recognition contract](engineering/frontmatter.md).
 
@@ -60,7 +60,7 @@ Types are strict: strings do not become booleans or numbers, numbers do not beco
 | Top-level setting | Type | Default when omitted |
 | --- | --- | --- |
 | `version` | Integer, exactly `1` | Required in a present file or supplied object |
-| `flavor` | `commonmark`, `gfm`, or `pandoc` | `gfm` |
+| `flavor` | `commonmark` or `gfm` | `gfm` |
 | `resources` | Shared resource policy mapping | `index_file: index.md`, `anchor_style: github` |
 | `frontmatter` | Mapping with `enabled` and `formats` | `enabled: false`, `formats: [yaml, toml]` |
 | `integrations` | Mapping with `quarto.enabled` | `quarto.enabled: false` |
@@ -76,7 +76,7 @@ Standalone MCP configuration is a JSON object with the same semantic schema and 
 
 ## Shared resource settings
 
-Availability: resource consumers, cross-file checks, Pandoc and MCP remain
+Availability: resource consumers, cross-file checks and MCP remain
 planned. The following describes their accepted policy, not current CLI resource
 execution. Explicitly requesting unavailable capabilities returns `12`.
 
@@ -84,7 +84,7 @@ Set resource policy once for the operation:
 
 ```yaml
 version: 1
-flavor: pandoc
+flavor: gfm
 resources:
   index_file: README.md
   anchor_style: explicit
@@ -95,13 +95,11 @@ rules:
 
 `resources.index_file` defaults to `index.md`. It is a single nonempty filename, not a path, glob, URL, `.` or `..`; separators, query/fragment delimiters, drive prefixes, and control characters are invalid. The active adapter must be able to represent it. Directory references try exactly that filename once, without fallback or recursive index lookup.
 
-`resources.anchor_style` is `github` (default) or `explicit`. MD051, MD073, and MD080 share this policy, including anchors in referenced documents. Pandoc does not add another automatic slug convention. `MD051.cross_file` remains false by default; same-document references are checked independently of that switch.
+`resources.anchor_style` is `github` (default) or `explicit`. MD051, MD073, and MD080 share this policy, including anchors in referenced documents. `MD051.cross_file` remains false by default; same-document references are checked independently of that switch.
 
 The former `MD051.anchor_style`, `MD080.anchor_style`, and `MD057.index_file` options are removed and rejected as unknown keys, even on disabled rules. There are no aliases. This is a preimplementation schema-1 amendment; catalog rule enablement stays unchanged.
 
 These settings do not grant access or select lint targets. Excluded or unselected files within the resource root may supply read-only existence or anchor information. Standalone MCP's request-level `resources` object supplies that context; it is distinct from this configuration mapping. See the [resource contract](engineering/resources.md) for roots, URL resolution, partial inventories, and failure outcomes.
-
-`flavor: pandoc` selects the complete [fixed Pandoc profile](engineering/pandoc-compatibility.md). No per-extension configuration switches are accepted. Frontmatter and Quarto are independently configured; neither is enabled by choosing Pandoc.
 
 ## Optional document contexts
 
@@ -166,7 +164,7 @@ An explicit entry such as `MD001: {}` still selects that rule's default enableme
 
 Lint, fix, and previews return exit `15` and status `incomplete` for reduced analysis coverage unless an operational error takes precedence. Available findings remain in the report. They must not claim a complete clean result or automatically fix uncertain regions. See [exit codes](exit-codes.md) and [structured coverage results](output-formats.md#incomplete-analysis).
 
-Unavailable dialects such as Pandoc are configuration errors. Omitted `flavor` selects the supported full GFM profile; the loader never substitutes CommonMark. Both supported profiles share directive processing and inherited permissions. To select core-only parsing explicitly:
+Unsupported flavor values are configuration errors. Omitted `flavor` selects the supported full GFM profile; the loader never substitutes CommonMark. Both supported profiles share directive processing and inherited permissions. To select core-only parsing explicitly:
 
 ```yaml
 version: 1

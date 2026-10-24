@@ -7,7 +7,7 @@ Directives are intended for exceptions to specific rules within a document. To e
 Current availability: CommonMark directive processing is delivered in lint, fix
 and inspect. MD047 is the ordinary production check; the MD001/MD040 examples
 below illustrate rule-state syntax, not delivered checks. Permitted directives
-that enable unavailable rules produce incomplete coverage. Pandoc, frontmatter,
+that enable unavailable rules produce incomplete coverage. Frontmatter,
 resource consumers, MCP and MD087 counterfactual checks remain planned; their
 semantics below describe the accepted future contract.
 
@@ -40,7 +40,7 @@ Directives can be standalone comments or appear between other content on a line.
 
 Rules start each file with the state selected by configuration. Process directives in source order: the last allowed directive for a rule determines its state at each later location. Repeating an enable or disable is harmless. Directives do not form a stack and do not automatically end at a heading, paragraph, code block, or directory boundary. State never carries into another file.
 
-Only actual Markdown HTML comments in the selected flavor act as directives. Pandoc math, raw content, attributes, citation control syntax, and literal HTML interiors remain protected; eligible Markdown children of HTML containers use ordinary comment recognition. Resource-document directives never change the source document, resource root, anchor/index policy, or operation limits.
+Only actual Markdown HTML comments in the selected flavor act as directives. Resource-document directives never change the source document, resource root, anchor/index policy, or operation limits.
 
 Text inside code blocks, code spans, front matter, or other literal content does not change rule state. If parsing cannot establish that a comment is a directive, mdchk leaves it inactive and reports the uncertainty.
 

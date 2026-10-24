@@ -1,7 +1,0 @@
-~~~~
-before
-``` text
-[^hidden]
-```
-after
-~~~~

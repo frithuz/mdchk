@@ -1,3 +1,0 @@
-~~~~
-`code`{#one #two .lang}
-~~~~

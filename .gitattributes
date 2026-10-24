@@ -7,9 +7,3 @@ tools/gfm_corpus.py text eol=lf
 # Profile data and its pinned validator retain reviewed bytes across hosts.
 internal/parser/testdata/gfm/profile/*.json -text
 tools/gfm_profile.py text eol=lf
-# Pandoc target hashes and original byte spans include intentional CRLF/tabs.
-internal/parser/testdata/pandoc/3.12.1/inputs/** -text -whitespace
-internal/parser/testdata/pandoc/3.12.1/*.json -text
-internal/parser/testdata/pandoc/3.12.1/upstream/** -text -whitespace
-tools/pandoc_profile.py text eol=lf
-tools/test_pandoc_profile.py text eol=lf

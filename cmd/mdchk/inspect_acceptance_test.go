@@ -112,7 +112,7 @@ func TestCompiledInspectionObservationsBoundsAndAccess(t *testing.T) {
 		{"no newline", "a", "version: 1\nflavor: commonmark\n", "1", 0, "available"},
 		{"invalid UTF8", "bad\xff", "version: 1\nflavor: commonmark\n", "", 0, "unavailable"},
 		{"default GFM", "a\n", "version: 1\n", "", 0, "available"},
-		{"unavailable Pandoc", "a\n", "version: 1\nflavor: pandoc\n", "", 0, "unavailable"},
+		{"removed flavor", "a\n", "version: 1\nflavor: pandoc\n", "", 0, "unavailable"},
 		{"invalid config", "a\n", "unknown: [", "", 0, "unavailable"},
 		{"excluded explicit", "a\n", "version: 1\nflavor: commonmark\nexclude: ['**']\n", "", 0, "available"},
 		{"empty range", "", "version: 1\nflavor: commonmark\n", "1", 11, ""},

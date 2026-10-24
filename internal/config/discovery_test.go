@@ -210,7 +210,7 @@ func TestDiscoveryInvalidNearestAndAncestorsNeverFallback(t *testing.T) {
 func TestDiscoveryAncestorSchemasWithoutExecutionAdmission(t *testing.T) {
 	root := discoveryRoot(t)
 	discoveryDir(t, root, ".git")
-	parent := discoveryFile(t, root, Filename, "version: 1\nflavor: pandoc\nresources: {index_file: custom.md, anchor_style: explicit}\nfrontmatter: {enabled: true}\nrules: {MD001: {enabled: true}, MD013: {length: 80}}\nexclude: [parent-only]\n")
+	parent := discoveryFile(t, root, Filename, "version: 1\nflavor: commonmark\nresources: {index_file: custom.md, anchor_style: explicit}\nfrontmatter: {enabled: true}\nrules: {MD001: {enabled: true}, MD013: {length: 80}}\nexclude: [parent-only]\n")
 	child := discoveryDir(t, root, "child")
 	discoveryFile(t, child, Filename, "version: 1\nrules: {MD013: {length: 99}}\n")
 	got := discoveryResolve(t, SelectionOptions{WorkingDirectory: child}, baseCaps())
@@ -225,10 +225,10 @@ func TestDiscoveryAncestorSchemasWithoutExecutionAdmission(t *testing.T) {
 	_ = discoveryReject(t, SelectionOptions{WorkingDirectory: child})
 	// The same unavailable execution request is an error when selected.
 	discoveryFile(t, root, Filename, "version: 1\n")
-	discoveryFile(t, child, Filename, "version: 1\nflavor: pandoc\n")
+	discoveryFile(t, child, Filename, "version: 1\nfrontmatter: {enabled: true}\n")
 	err := discoveryReject(t, SelectionOptions{WorkingDirectory: child})
 	var at *ValidationError
-	if !errors.As(err, &at) || at.Origin.Path != filepath.Join(child, Filename) || at.Origin.PropertyPath != "flavor" {
+	if !errors.As(err, &at) || at.Origin.Path != filepath.Join(child, Filename) || at.Origin.PropertyPath != "frontmatter.enabled" {
 		t.Fatalf("wrong selected capability origin: %v", err)
 	}
 }

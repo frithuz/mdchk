@@ -1,1 +1,0 @@
-![bird](bird.png "caption")

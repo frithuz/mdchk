@@ -187,64 +187,6 @@ func TestExecutionContextFailurePreservesFindingAndOperationalError(t *testing.T
 	}
 }
 
-// A test-only claimed Pandoc capability cannot supply the still-unimplemented
-// parser. Production providers never advertise it; real GFM is covered separately.
-func TestExecutionSyntaxAvailabilityIsNotPromisedByAdmission(t *testing.T) {
-	catalog := engine.Catalog()
-	for i := range catalog {
-		if catalog[i].ID == "MD003" {
-			catalog[i].RequiresSyntax = false
-		}
-	}
-	syntaxCalls, sourceCalls := 0, 0
-	var registrations []engine.Registration
-	for _, m := range catalog {
-		if m.ID == "MD094" {
-			continue
-		}
-		check := func(context.Context, engine.RuleContext) engine.RuleOutcome { return engine.RuleOutcome{} }
-		if m.ID == "MD001" {
-			check = func(context.Context, engine.RuleContext) engine.RuleOutcome {
-				syntaxCalls++
-				return engine.RuleOutcome{}
-			}
-		}
-		if m.ID == "MD003" {
-			check = func(_ context.Context, c engine.RuleContext) engine.RuleOutcome {
-				sourceCalls++
-				if c.Document() != nil {
-					t.Error("source-only rule received untrusted tree")
-				}
-				return engine.RuleOutcome{}
-			}
-		}
-		registrations = append(registrations, engine.Registration{ID: m.ID, Check: check})
-	}
-	r, err := engine.NewRegistry(catalog, registrations)
-	if err != nil {
-		t.Fatal(err)
-	}
-	v := executionValidated(t, r, "version: 1\nflavor: pandoc\ndirectives: {enabled: false}\n", engine.ValidationProviders{})
-	resolved, err := v.Admit(config.Capabilities{Pandoc3121FullProfile: true}, config.Permissions{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	p := resolved.ExecutionPlan()
-	out := executionLint(t, p, context.Background(), executionInput(t, p, "a.md", []byte("| a | b |\n| - | - |\n")))
-	if out.Complete || syntaxCalls != 0 || sourceCalls != 1 {
-		t.Fatalf("syntax coverage=%+v calls=%d/%d", out.Coverage, syntaxCalls, sourceCalls)
-	}
-	found := false
-	for _, c := range out.Coverage {
-		if c.Rule == "MD001" && c.Reason == result.ParserUncertain {
-			found = true
-		}
-	}
-	if !found {
-		t.Fatal("syntax callback skipped without coverage")
-	}
-}
-
 func TestExecutionCommonMarkExtensionLikeTextIsOrdinaryComplete(t *testing.T) {
 	calls := 0
 	r := executionRegistry(t, nil, map[string]engine.Check{"MD001": func(_ context.Context, c engine.RuleContext) engine.RuleOutcome {
@@ -359,7 +301,7 @@ func TestExecutionPlanOwnsAuthorityAndDoesNotRepeatSemanticProviders(t *testing.
 	if origin.Path != ".mdchk.yaml" || origin.PropertyPath != "directives.enabled" || origin.Position == nil || origin.Position.Line != 2 {
 		t.Fatalf("ancestor permission lost provenance: %+v", origin)
 	}
-	view.Settings.Flavor = "pandoc"
+	view.Settings.Flavor = "gfm"
 	view.Settings.FrontmatterFormats[0] = "changed"
 	view.EffectivePermissions.Directives[0].Position.Line = 99
 	view.EffectivePermissions.Directives[0].Path = "changed"

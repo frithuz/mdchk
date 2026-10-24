@@ -63,7 +63,7 @@ func (v *Validated) configuration(c Capabilities, inherited Permissions) *Config
 		view.Provenance[path] = SettingProvenance{Explicit: explicit, Origin: cloneOrigin(o), Available: available}
 	}
 	add("version", true)
-	add("flavor", b.Flavor == "commonmark" && c.CommonMark || b.Flavor == "gfm" && c.GFM || b.Flavor == "pandoc" && c.Pandoc3121FullProfile)
+	add("flavor", b.Flavor == "commonmark" && c.CommonMark || b.Flavor == "gfm" && c.GFM)
 	add("resources.index_file", c.ResourceIndex && c.RepresentIndexFile != nil)
 	add("resources.anchor_style", b.AnchorStyle == "github" && c.GitHubAnchors || b.AnchorStyle == "explicit" && c.ExplicitAnchors)
 	formats := true

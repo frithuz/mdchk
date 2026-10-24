@@ -315,7 +315,7 @@ func testConfigurationStrict(t *testing.T, binary string) {
 		for _, tc := range []configurationNegative{
 			{"explicit enabled default", availableConfiguration + "rules: {MD001: {}}\n", "rules.MD001", "explicitly enabled rule is unavailable", 4, 16},
 			{"explicit enabled unavailable", availableConfiguration + "rules: {MD013: {enabled: true}}\n", "rules.MD013", "explicitly enabled rule is unavailable", 4, 16},
-			{"unavailable Pandoc", "version: 1\nflavor: pandoc\ndirectives: {enabled: false}\n", "flavor", "selected Markdown profile is unavailable", 2, 9},
+			{"removed flavor", "version: 1\nflavor: pandoc\ndirectives: {enabled: false}\n", "flavor", "expected commonmark or gfm", 2, 9},
 			{"frontmatter unavailable", availableConfiguration + "frontmatter: {enabled: true}\n", "frontmatter.enabled", "selected frontmatter recognition is unavailable", 4, 24},
 			{"Quarto unavailable", availableConfiguration + "integrations: {quarto: {enabled: true}}\n", "integrations.quarto.enabled", "Quarto recognition is unavailable", 4, 34},
 			{"slides unavailable", availableConfiguration + "documents: {slides: ['talk/**']}\n", "documents.slides", "slide annotation is unavailable", 4, 21},

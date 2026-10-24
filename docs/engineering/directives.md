@@ -19,7 +19,7 @@ Preserve raw text, comment span, closing-marker offset, operation, named and res
 
 If global directives are disabled, retain candidates for inspection but do not interpret their syntax as directive violations. Valid directives naming protected rules produce blocked-effect notes for those rules while allowed effects are applied. Protection is not a syntax error. Uncertain parser context produces a parsing note and no transition. In incomplete or unresolved configuration, do not guess directive permissions.
 
-Use the selected flavor's source spans. In Pandoc, protect math, raw syntax, attributes, citation control syntax, and literal HTML interiors; parse permitted Markdown children of native HTML containers normally. Keep HTML origin metadata even when the semantic node is a native Div or Span. A resource's directives never alter its referring source, resource access, shared anchor/index policy, or execution budgets.
+Use the selected flavor's source spans. A resource's directives never alter its referring source, resource access, shared anchor/index policy, or execution budgets.
 
 ## State and configuration
 

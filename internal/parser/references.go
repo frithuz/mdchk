@@ -359,10 +359,6 @@ func (r *referenceParagraph) definition(ctx context.Context, index LineIndex, sy
 // stripReferences runs only at closure/promotion. Mutable registry and boundary
 // accumulation stay private until the entire block scan succeeds.
 func (p *blockParser) stripReferences() error {
-	if p.pandoc() {
-		return nil
-	}
-
 	meterWork(p.ctx, 1)
 	block := &p.stack[len(p.stack)-1]
 	r := block.reference
@@ -429,10 +425,6 @@ func (p *blockParser) stripReferences() error {
 // The decision is cached once proved ordinary, and no lookahead nodes, markers,
 // container ends or registry entries are published.
 func (p *blockParser) paragraphAllowsLazy(physical physicalLine) bool {
-	if p.pandoc() {
-		return true
-	}
-
 	meterWork(p.ctx, 1)
 	paragraph := p.stack[len(p.stack)-1].reference
 	if paragraph == nil || paragraph.lazyOrdinary {

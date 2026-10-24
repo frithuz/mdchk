@@ -32,13 +32,6 @@ func blockNodesContext(ctx context.Context, blocks []parsedBlock) []*Node {
 // Descendants already carry their own local boundary summaries.
 func (p *blockParser) groupLists(children []parsedBlock) ([]parsedBlock, error) {
 	meterWork(p.ctx, 1)
-	if p.pandoc() {
-		var err error
-		children, err = p.groupPandocDefinitions(children)
-		if err != nil {
-			return nil, err
-		}
-	}
 	grouped := children[:0]
 	for i := 0; i < len(children); {
 		meterWork(p.ctx, 1)
@@ -50,7 +43,7 @@ func (p *blockParser) groupLists(children []parsedBlock) ([]parsedBlock, error) 
 		}
 		props := first.node.spec.Properties.List
 		end := i + 1
-		for end < len(children) && p.compatibleItems(first.node, children[end].node) {
+		for end < len(children) && compatibleItems(first.node, children[end].node) {
 			meterWork(p.ctx, 1)
 			end++
 		}
@@ -64,24 +57,6 @@ func (p *blockParser) groupLists(children []parsedBlock) ([]parsedBlock, error) 
 				loose = loose || item.trailingBlank || p.blankItemGap(item.node.Span().End(), children[j+1].node.Span().Start())
 			}
 		}
-		pandocProps := clonePointer(first.node.spec.Properties.PandocList)
-		if pandocProps != nil {
-			pandocProps.Reset = Optional[int]{}
-			pandocProps.MarkerStyle = ""
-			pandocProps.Marker = Span{}
-			pandocProps.Decimal = Span{}
-			pandocProps.Separator = Span{}
-			pandocProps.Label = Span{}
-			pandocProps.MarkerColumn = 0
-			pandocProps.ContentColumn = 0
-			pandocProps.SeparatorColumns = 0
-			pandocProps.SeparatorPartialTab = false
-			pandocProps.ContainerColumn = 0
-			pandocProps.LeadingColumns = 0
-			pandocProps.SourceMarkerColumn = 0
-			pandocProps.SourceContentColumn = 0
-			pandocProps.ContinuationIndent = 0
-		}
 		listProps := &ListProperties{Ordered: props.Ordered, Start: props.Start, Bullet: props.Bullet, Delimiter: props.Delimiter}
 		if !partial {
 			listProps.Tight = Some(!loose)
@@ -89,7 +64,7 @@ func (p *blockParser) groupLists(children []parsedBlock) ([]parsedBlock, error) 
 		last := children[end-1]
 		list, err := meteredNode(p.ctx, NodeSpec{Kind: List,
 			Envelope: p.index.span(first.node.Span().Start(), last.node.Span().End()),
-			Children: blockNodesContext(p.ctx, children[i:end]), Properties: Properties{List: listProps, PandocList: pandocProps}})
+			Children: blockNodesContext(p.ctx, children[i:end]), Properties: Properties{List: listProps}})
 		if err != nil {
 			return nil, err
 		}
@@ -99,17 +74,7 @@ func (p *blockParser) groupLists(children []parsedBlock) ([]parsedBlock, error) 
 	return grouped, nil
 }
 
-func (p *blockParser) compatibleItems(a, b *Node) bool {
-	if p.pandoc() {
-		if b.Kind() != ListItem {
-			return false
-		}
-		x, y := a.spec.Properties.PandocList, b.spec.Properties.PandocList
-		return x != nil && y != nil && x.Style == y.Style && x.Delimiter == y.Delimiter
-	}
-	return compatibleCoreItems(a, b)
-}
-func compatibleCoreItems(a, b *Node) bool {
+func compatibleItems(a, b *Node) bool {
 	if b.Kind() != ListItem {
 		return false
 	}
