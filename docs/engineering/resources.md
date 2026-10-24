@@ -1,9 +1,12 @@
 # Project and logical-resource contract
 
 Status: approved on 2026-10-14. This defines resource inputs, policies, snapshots,
-and outcomes for [#170](https://github.com/frithuz/mdchk/issues/170); implementation
-and conformance checks remain pending. Align the shared engine contract in
-[#123](https://github.com/frithuz/mdchk/issues/123) before closing its formal gate.
+and outcomes for [#170](https://github.com/frithuz/mdchk/issues/170). The shared
+engine contract (#123) is delivered. Issue #249 adds the typed read-only request,
+observation and immutable view contracts with result/coverage fixtures in
+[internal/resource](../../internal/resource/README.md). Production normalization,
+adapters, acquisition/cache, anchor indexes and consumers remain pending; these
+types do not advertise resource lookup as implemented.
 
 Resource lookup is read-only, confined, and shared by CLI, inspect, project MCP,
 and standalone consumers. Lint selection is separate from resource permission.
