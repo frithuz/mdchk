@@ -1,0 +1,1200 @@
+[
+  {
+    "id": "yaml-lf",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---\ntitle: hello\n---\nbody\n",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        21
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        17
+      ],
+      "closer": [
+        17,
+        20
+      ]
+    }
+  },
+  {
+    "id": "yaml-crlf",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---\r\ntitle: hello\r\n---\r\nbody\r\n",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        24
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        5,
+        19
+      ],
+      "closer": [
+        19,
+        22
+      ]
+    }
+  },
+  {
+    "id": "yaml-cr",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---\rtitle: hello\r---\rbody\r",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        21
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        17
+      ],
+      "closer": [
+        17,
+        20
+      ]
+    }
+  },
+  {
+    "id": "yaml-bom",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "﻿---\r\nx = \"ü\"\r---\nbody",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        21
+      ],
+      "opener": [
+        3,
+        6
+      ],
+      "content": [
+        8,
+        17
+      ],
+      "closer": [
+        17,
+        20
+      ]
+    }
+  },
+  {
+    "id": "yaml-empty",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---\n---\nbody",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        8
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        4
+      ],
+      "closer": [
+        4,
+        7
+      ]
+    }
+  },
+  {
+    "id": "yaml-closer-eof",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---\nx\n---",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        9
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        6
+      ],
+      "closer": [
+        6,
+        9
+      ]
+    }
+  },
+  {
+    "id": "yaml-spaces-tabs",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "--- \t\r\nx\n---\t \rbody",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        15
+      ],
+      "opener": [
+        0,
+        5
+      ],
+      "content": [
+        7,
+        9
+      ],
+      "closer": [
+        9,
+        14
+      ]
+    }
+  },
+  {
+    "id": "yaml-unterminated",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---\nbroken: [\nbody\n",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        19
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        19
+      ],
+      "closer": null
+    }
+  },
+  {
+    "id": "yaml-opener-eof",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        3
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        3,
+        3
+      ],
+      "closer": null
+    }
+  },
+  {
+    "id": "yaml-unterminated-bom",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "﻿---\r\nbad",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        11
+      ],
+      "opener": [
+        3,
+        6
+      ],
+      "content": [
+        8,
+        11
+      ],
+      "closer": null
+    }
+  },
+  {
+    "id": "yaml-malformed-opaque",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---\n[[not valid metadata\n---\nbody",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        29
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        25
+      ],
+      "closer": [
+        25,
+        28
+      ]
+    }
+  },
+  {
+    "id": "yaml-selected-only",
+    "enabled": true,
+    "formats": [
+      "yaml"
+    ],
+    "input": "---\nx\n---\n",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        10
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        6
+      ],
+      "closer": [
+        6,
+        9
+      ]
+    }
+  },
+  {
+    "id": "yaml-unselected",
+    "enabled": true,
+    "formats": [
+      "toml"
+    ],
+    "input": "---\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-disabled",
+    "enabled": false,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-later-header-is-body",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---\nx\n---\n---\ny\n---\n",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        10
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        6
+      ],
+      "closer": [
+        6,
+        9
+      ]
+    }
+  },
+  {
+    "id": "yaml-indent",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": " ---\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-tab-indent",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "\t---\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-blank",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "\n---\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-comment",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "<!-- c -->\n---\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-preamble",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "text\n---\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-quote",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "> ---\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-list",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "- ---\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-double-bom",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "﻿﻿---\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-text",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---x\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-comment-suffix",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "--- #comment\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-extra-marker",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "----\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-unicode-space",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "--- \nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "yaml-nonclosers-retained",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---\n+++\n--- #not-close\n ---\n--- \n---\nbody",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        38
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        34
+      ],
+      "closer": [
+        34,
+        37
+      ]
+    }
+  },
+  {
+    "id": "yaml-mismatched-only",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---\n+++\n",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        8
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        8
+      ],
+      "closer": null
+    }
+  },
+  {
+    "id": "toml-lf",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++\ntitle: hello\n+++\nbody\n",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        21
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        17
+      ],
+      "closer": [
+        17,
+        20
+      ]
+    }
+  },
+  {
+    "id": "toml-crlf",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++\r\ntitle: hello\r\n+++\r\nbody\r\n",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        24
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        5,
+        19
+      ],
+      "closer": [
+        19,
+        22
+      ]
+    }
+  },
+  {
+    "id": "toml-cr",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++\rtitle: hello\r+++\rbody\r",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        21
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        17
+      ],
+      "closer": [
+        17,
+        20
+      ]
+    }
+  },
+  {
+    "id": "toml-bom",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "﻿+++\r\nx = \"ü\"\r+++\nbody",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        21
+      ],
+      "opener": [
+        3,
+        6
+      ],
+      "content": [
+        8,
+        17
+      ],
+      "closer": [
+        17,
+        20
+      ]
+    }
+  },
+  {
+    "id": "toml-empty",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++\n+++\nbody",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        8
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        4
+      ],
+      "closer": [
+        4,
+        7
+      ]
+    }
+  },
+  {
+    "id": "toml-closer-eof",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++\nx\n+++",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        9
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        6
+      ],
+      "closer": [
+        6,
+        9
+      ]
+    }
+  },
+  {
+    "id": "toml-spaces-tabs",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++ \t\r\nx\n+++\t \rbody",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        15
+      ],
+      "opener": [
+        0,
+        5
+      ],
+      "content": [
+        7,
+        9
+      ],
+      "closer": [
+        9,
+        14
+      ]
+    }
+  },
+  {
+    "id": "toml-unterminated",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++\nbroken: [\nbody\n",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        19
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        19
+      ],
+      "closer": null
+    }
+  },
+  {
+    "id": "toml-opener-eof",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        3
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        3,
+        3
+      ],
+      "closer": null
+    }
+  },
+  {
+    "id": "toml-unterminated-bom",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "﻿+++\r\nbad",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        11
+      ],
+      "opener": [
+        3,
+        6
+      ],
+      "content": [
+        8,
+        11
+      ],
+      "closer": null
+    }
+  },
+  {
+    "id": "toml-malformed-opaque",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++\n[[not valid metadata\n+++\nbody",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        29
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        25
+      ],
+      "closer": [
+        25,
+        28
+      ]
+    }
+  },
+  {
+    "id": "toml-selected-only",
+    "enabled": true,
+    "formats": [
+      "toml"
+    ],
+    "input": "+++\nx\n+++\n",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        10
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        6
+      ],
+      "closer": [
+        6,
+        9
+      ]
+    }
+  },
+  {
+    "id": "toml-unselected",
+    "enabled": true,
+    "formats": [
+      "yaml"
+    ],
+    "input": "+++\nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-disabled",
+    "enabled": false,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++\nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-later-header-is-body",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++\nx\n+++\n+++\ny\n+++\n",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        10
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        6
+      ],
+      "closer": [
+        6,
+        9
+      ]
+    }
+  },
+  {
+    "id": "toml-indent",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": " +++\nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-tab-indent",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "\t+++\nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-blank",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "\n+++\nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-comment",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "<!-- c -->\n+++\nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-preamble",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "text\n+++\nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-quote",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "> +++\nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-list",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "- +++\nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-double-bom",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "﻿﻿+++\nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-text",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++x\nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-comment-suffix",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++ #comment\nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-extra-marker",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "++++\nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-unicode-space",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++ \nx\n+++\n",
+    "want": null
+  },
+  {
+    "id": "toml-nonclosers-retained",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++\n---\n+++ #not-close\n +++\n+++ \n+++\nbody",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        38
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        34
+      ],
+      "closer": [
+        34,
+        37
+      ]
+    }
+  },
+  {
+    "id": "toml-mismatched-only",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "+++\n...\n",
+    "want": {
+      "format": "toml",
+      "region": [
+        0,
+        8
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        8
+      ],
+      "closer": null
+    }
+  },
+  {
+    "id": "yaml-dot-closer",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---\nx\n...\nbody",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        10
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        6
+      ],
+      "closer": [
+        6,
+        9
+      ]
+    }
+  },
+  {
+    "id": "yaml-lexical-quoted-content",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "---\nx: \"multiline\n---\nstill quoted\"\n",
+    "want": {
+      "format": "yaml",
+      "region": [
+        0,
+        22
+      ],
+      "opener": [
+        0,
+        3
+      ],
+      "content": [
+        4,
+        18
+      ],
+      "closer": [
+        18,
+        21
+      ]
+    }
+  },
+  {
+    "id": "yaml-end-is-not-opener",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "...\nx\n---\n",
+    "want": null
+  },
+  {
+    "id": "json-deferred",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "{\"title\": \"hello\"}\nbody",
+    "want": null
+  },
+  {
+    "id": "empty",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "",
+    "want": null
+  },
+  {
+    "id": "bom-only",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "﻿",
+    "want": null
+  },
+  {
+    "id": "marker-too-short",
+    "enabled": true,
+    "formats": [
+      "yaml",
+      "toml"
+    ],
+    "input": "--\nx\n---\n",
+    "want": null
+  }
+]

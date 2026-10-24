@@ -19,11 +19,24 @@ JSON recognition is deferred. The configuration guide defines strict field types
 ### Start
 
 First line only, after an optional preserved UTF-8 BOM; no preceding blanks or comments.
+Only one BOM may precede the opener. A second BOM, indentation, container prefix,
+or any other preceding text prevents recognition.
 
 ### Delimiters
 
 YAML opens --- and closes --- or ...; TOML opens/closes +++; unindented delimiter-only lines,
 optional trailing spaces/tabs.
+The marker must contain exactly three identical ASCII characters. Comments, extra
+marker characters and non-ASCII whitespace invalidate a delimiter. The first
+subsequent matching closer ends the header; another format's marker is content.
+Recognition is lexical: malformed or quoted metadata does not change delimiter
+matching. YAML `...` cannot open a header.
+
+Physical lines use LF, CRLF or CR, including mixed endings. EOF can terminate a
+delimiter line without a final newline. A recognized region includes the optional
+BOM, opener line, payload and closer line through its original ending; the body
+starts immediately afterward. Marker spans omit the BOM and line endings but
+retain trailing spaces/tabs. Payload spans exclude both delimiter lines.
 
 ### Empty header
 
@@ -37,6 +50,23 @@ Header remains opaque to ordinary Markdown rules and directives.
 
 Protect from recognized opener to EOF, report incomplete analysis, and prohibit edits in that
 region.
+An opener alone at EOF is unterminated; a subsequent closer with no intervening
+payload is an empty complete header. Invalid openers and unselected formats use
+ordinary Markdown interpretation. Disabled recognition does the same for both
+CommonMark and GFM. Selecting a flavor never enables recognition.
+
+### Boundary verification
+
+`internal/parser/testdata/frontmatter/boundaries.json` records original byte
+ranges for absent, complete and unterminated lexical headers. It covers both
+formats, format selection, disabled recognition, BOM/start restrictions, exact
+markers, physical endings/EOF, empty/malformed payloads and deferred JSON.
+Parser tests exercise the matrix alongside both supported flavors; configuration
+tests verify independent defaults and selection across all acquisition paths.
+The private boundary helper is delivered separately from opaque AST blocks,
+protection and inspection. Enabled frontmatter remains unavailable to CLI
+operations until those consumers are integrated; boundary tests alone do not
+establish end-to-end frontmatter support.
 
 ## Metadata values and corrections
 
