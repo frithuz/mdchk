@@ -38,16 +38,33 @@ func (e *Error) Error() string { return fmt.Sprintf("JSON %s: %s", e.Path, e.Mes
 // Duplicate decoded names, malformed UTF-8 and unpaired surrogate escapes are
 // rejected before ordinary decoding can discard or replace their evidence.
 func Decode(content []byte, maxBytes int) (Value, error) {
+	return DecodeMetered(content, maxBytes, nil)
+}
+
+// DecodeMetered adds caller-owned cumulative accounting and cancellation. check
+// receives constructed records and work units before bounded inspections. Raw
+// bytes reserve three inspections (UTF-8, JSON tokenization and escape checking);
+// record/name/path visits are charged separately. It is called between tokens
+// and at most 4096 escape-inspection bytes apart. A single encoding/json token
+// operation remains bounded by maxBytes, not asynchronously interruptible.
+// The fixed depth/node/work safety caps of Decode still apply independently;
+// these are implementation ceilings, not configurable operator limits.
+func DecodeMetered(content []byte, maxBytes int, check func(nodes, work int64) error) (Value, error) {
 	fail := func(s string) (Value, error) { return Value{}, &Error{Message: s} }
 	if maxBytes <= 0 || len(content) > maxBytes {
 		return fail("input-bytes limit exceeded")
+	}
+	if check != nil {
+		if err := check(0, int64(len(content))*3+1); err != nil {
+			return Value{}, err
+		}
 	}
 	if !utf8.Valid(content) {
 		return fail("input must be UTF-8")
 	}
 	d := json.NewDecoder(bytes.NewReader(content))
 	d.UseNumber()
-	p := decoder{d: d, raw: content}
+	p := decoder{d: d, raw: content, check: check}
 	v, err := p.value("", 0)
 	if err != nil {
 		return Value{}, err
@@ -58,6 +75,11 @@ func Decode(content []byte, maxBytes int) (Value, error) {
 		}
 		return fail(err.Error())
 	}
+	if check != nil {
+		if err := check(0, 0); err != nil {
+			return Value{}, err
+		}
+	}
 	return v, nil
 }
 
@@ -66,9 +88,15 @@ type decoder struct {
 	raw   []byte
 	nodes int
 	work  int64
+	check func(nodes, work int64) error
 }
 
 func (p *decoder) charge(path string, amount int) error {
+	if p.check != nil {
+		if err := p.check(1, int64(len(path))+int64(amount)+1); err != nil {
+			return err
+		}
+	}
 	p.nodes++
 	p.work += int64(len(path)) + int64(amount) + 1
 	if p.nodes > 250000 {
@@ -173,17 +201,28 @@ func (p *decoder) value(path string, depth int) (Value, error) {
 }
 
 func (p *decoder) unicode(start int64, path string) error {
-	if err := unicodeEscapes(p.raw[start:p.d.InputOffset()]); err != nil {
-		return &Error{Path: path, Message: err.Message}
+	if err := unicodeEscapesChecked(p.raw[start:p.d.InputOffset()], p.check); err != nil {
+		var syntax *Error
+		if errors.As(err, &syntax) {
+			return &Error{Path: path, Message: syntax.Message}
+		}
+		return err
 	}
 	return nil
 }
 
 // Inspect only actual string escapes: consuming escaped backslashes prevents
 // text such as "\\\\ud800" from being confused with a surrogate escape.
-func unicodeEscapes(b []byte) *Error {
+func unicodeEscapesChecked(b []byte, check func(nodes, work int64) error) error {
 	in := false
+	nextCheck := 0
 	for i := 0; i < len(b); i++ {
+		if check != nil && i >= nextCheck {
+			if err := check(0, 0); err != nil {
+				return err
+			}
+			nextCheck = i + 4096
+		}
 		if b[i] == '"' {
 			in = !in
 			continue

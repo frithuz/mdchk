@@ -25,6 +25,8 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+      - name: Check resource schema with ECMAScript regex engine
+        run: node tools/resource_schema.mjs
       - name: Test
         run: go test ./...
       - name: Test actual GFM AST adapter and scope controls

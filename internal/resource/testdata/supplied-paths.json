@@ -1,0 +1,246 @@
+[
+  {
+    "path": "Guide.md",
+    "valid": true
+  },
+  {
+    "path": "guide.md",
+    "valid": true
+  },
+  {
+    "path": "\u00e9.md",
+    "valid": true
+  },
+  {
+    "path": "e\u0301.md",
+    "valid": true
+  },
+  {
+    "path": "a%20b.md",
+    "valid": true
+  },
+  {
+    "path": "a b.md",
+    "valid": true
+  },
+  {
+    "path": "docs/a:b.md",
+    "valid": true
+  },
+  {
+    "path": "replacement-\ufffd.md",
+    "valid": true
+  },
+  {
+    "path": "",
+    "valid": false
+  },
+  {
+    "path": ".",
+    "valid": false
+  },
+  {
+    "path": "..",
+    "valid": false
+  },
+  {
+    "path": "/a",
+    "valid": false
+  },
+  {
+    "path": "a/",
+    "valid": false
+  },
+  {
+    "path": "a//b",
+    "valid": false
+  },
+  {
+    "path": "a/./b",
+    "valid": false
+  },
+  {
+    "path": "a/../b",
+    "valid": false
+  },
+  {
+    "path": "a\\b",
+    "valid": false
+  },
+  {
+    "path": "C:relative",
+    "valid": false
+  },
+  {
+    "path": "C:/a",
+    "valid": false
+  },
+  {
+    "path": "a\u2028b.md",
+    "valid": true
+  },
+  {
+    "path": "a\u2028",
+    "valid": true
+  },
+  {
+    "path": "\u2028",
+    "valid": true
+  },
+  {
+    "path": "dir/\u2028",
+    "valid": true
+  },
+  {
+    "path": ".\u2028",
+    "valid": true
+  },
+  {
+    "path": "..\u2028",
+    "valid": true
+  },
+  {
+    "path": "a\u2028/b",
+    "valid": true
+  },
+  {
+    "path": "a\u2028%2Fb",
+    "valid": true
+  },
+  {
+    "path": "a\u2028\\bad",
+    "valid": false
+  },
+  {
+    "path": "a\u2028//bad",
+    "valid": false
+  },
+  {
+    "path": "a\u2028/./bad",
+    "valid": false
+  },
+  {
+    "path": "a\u2028/../bad",
+    "valid": false
+  },
+  {
+    "path": "a\u2028/",
+    "valid": false
+  },
+  {
+    "path": "a\u2028\u0000",
+    "valid": false
+  },
+  {
+    "path": "a\u2028\n",
+    "valid": false
+  },
+  {
+    "path": "a\u2028\r",
+    "valid": false
+  },
+  {
+    "path": "a\u2028\t",
+    "valid": false
+  },
+  {
+    "path": "a\u2028\u0085",
+    "valid": false
+  },
+  {
+    "path": "a\u2028/.",
+    "valid": false
+  },
+  {
+    "path": "a\u2028/..",
+    "valid": false
+  },
+  {
+    "path": "a\u2028/b/",
+    "valid": false
+  },
+  {
+    "path": "a\u2029b.md",
+    "valid": true
+  },
+  {
+    "path": "a\u2029",
+    "valid": true
+  },
+  {
+    "path": "\u2029",
+    "valid": true
+  },
+  {
+    "path": "dir/\u2029",
+    "valid": true
+  },
+  {
+    "path": ".\u2029",
+    "valid": true
+  },
+  {
+    "path": "..\u2029",
+    "valid": true
+  },
+  {
+    "path": "a\u2029/b",
+    "valid": true
+  },
+  {
+    "path": "a\u2029%2Fb",
+    "valid": true
+  },
+  {
+    "path": "a\u2029\\bad",
+    "valid": false
+  },
+  {
+    "path": "a\u2029//bad",
+    "valid": false
+  },
+  {
+    "path": "a\u2029/./bad",
+    "valid": false
+  },
+  {
+    "path": "a\u2029/../bad",
+    "valid": false
+  },
+  {
+    "path": "a\u2029/",
+    "valid": false
+  },
+  {
+    "path": "a\u2029\u0000",
+    "valid": false
+  },
+  {
+    "path": "a\u2029\n",
+    "valid": false
+  },
+  {
+    "path": "a\u2029\r",
+    "valid": false
+  },
+  {
+    "path": "a\u2029\t",
+    "valid": false
+  },
+  {
+    "path": "a\u2029\u0085",
+    "valid": false
+  },
+  {
+    "path": "a\u2029/.",
+    "valid": false
+  },
+  {
+    "path": "a\u2029/..",
+    "valid": false
+  },
+  {
+    "path": "a\u2029/b/",
+    "valid": false
+  }
+]

@@ -68,3 +68,51 @@ acquisition checkpoints, aggregate content/cache bounds, singleflight, confined
 filesystem operations and cancellation of actual resource work remain downstream.
 The types cannot prove adapter truthfulness, inventory completeness, confinement
 or normalization correctness; those are explicit future adapter obligations.
+
+## Supplied input boundary
+
+`DecodeSupplied` validates the raw optional resource argument and all submitted
+`SuppliedFile` snapshots before exclusions. Nil raw input means an omitted partial
+inventory; a present object requires `entries`, and `complete` defaults to false.
+`SuppliedInput` retains these facts and immutable file/entry snapshots. File entry
+content may be omitted; a supplied empty string retains a real empty Source.
+Entries cannot register targets or perform filesystem/network operations.
+
+Reuse `SuppliedSchema()` when embedding the closed object shape in future tool
+schemas. Schema validation alone cannot recover malformed raw Unicode or duplicate
+object names, enforce operator limits, or compare different records. The shared
+raw decoder uses `strictjson.DecodeMetered` before ordinary decoding can discard
+evidence. It also rejects noncanonical literal keys, duplicate paths/target
+overlap, and declarations below file/missing/unavailable ancestors. It does not
+build implied directories or interpret completeness as lookup outcomes (#252).
+No case folding, URL decoding, native alias interpretation or filesystem fallback
+occurs. MCP #189 must preserve raw arguments and bound the complete request before
+calling this boundary; this package does not implement a transport.
+
+`InputLimits` are explicit operator-owned finite preflight bounds, aligned with
+the accepted shared profile. They bound raw argument bytes, all submitted targets,
+explicit combined identities, path bytes/depth and aggregate supplied content;
+per-text bounds use the existing operation budget. Submitted excluded snapshots
+still count. Inferred and queried identities/acquired content require additional
+accounting by #252/#253. A typed `InputError` identifies malformed/known oversized
+input before analysis; runtime shared quota/deadline/cancellation errors retain
+their original identity. Callers own protocol/status mapping.
+
+Raw decoding reserves three byte inspections, meters record/name/path visits,
+and checks the existing cumulative budget and context between tokens and each
+4096 bytes of escape inspection. `encoding/json` token operations are bounded by
+raw input size and are not asynchronously interruptible. Its independent fixed
+64-container/250000-record/250000000-work safety ceilings still apply; accepting
+an operator input bound does not promise those ceilings can be raised. Shape,
+content copy/UTF-8 validation and bounded declared-ancestor walks are also charged.
+No validation call resets the operation budget or advertises full resource support.
+
+Schema validation also requires `node tools/resource_schema.mjs` (Node.js 18 or
+newer, built-in modules only). This separate required local/CI gate runs both
+published path patterns in an actual ECMAScript engine, with and without Unicode
+mode. It shares `testdata/supplied-paths.json` with the ordinary Go suite and
+covers U+2028/U+2029 plus forbidden controls, separators and dot segments after
+those scalars. Python JSON Schema validation uses a different regex dialect and
+cannot replace this gate. CI runs the command unconditionally; a missing Node
+runtime fails the gate rather than silently skipping it. Node is verification
+tooling only, not a runtime dependency of mdchk.

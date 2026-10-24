@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Supplied resources input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "entries"
+  ],
+  "properties": {
+    "complete": {
+      "type": "boolean",
+      "default": false
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "kind"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?![A-Za-z]:)(?![\\s\\S]*\\\\)(?!/)(?![\\s\\S]*//)(?![\\s\\S]*(?:^|/)\\.{1,2}(?:/|$))(?![\\s\\S]*\\/$)(?![\\s\\S]*[\\u0000-\\u001f\\u007f-\\u009f])[\\s\\S]+$"
+              },
+              "kind": {
+                "enum": [
+                  "file"
+                ]
+              },
+              "content": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "kind"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?![A-Za-z]:)(?![\\s\\S]*\\\\)(?!/)(?![\\s\\S]*//)(?![\\s\\S]*(?:^|/)\\.{1,2}(?:/|$))(?![\\s\\S]*\\/$)(?![\\s\\S]*[\\u0000-\\u001f\\u007f-\\u009f])[\\s\\S]+$"
+              },
+              "kind": {
+                "enum": [
+                  "directory",
+                  "missing",
+                  "unavailable"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

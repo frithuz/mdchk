@@ -1,5 +1,5 @@
 // Package resource defines read-only resource contracts. It performs no name
-// normalization, filesystem/network access, parsing, linting or target discovery.
+// normalization, filesystem/network access, Markdown parsing, linting or target discovery.
 package resource
 
 import (

@@ -3,6 +3,7 @@ package strictjson
 import (
 	"encoding/json"
 	"errors"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -67,5 +68,45 @@ func TestRawWorkBudgetAndUnicodeProperty(t *testing.T) {
 	ok := errors.As(err, &e)
 	if !ok || e.Path != "resources.index_file" {
 		t.Fatal(err)
+	}
+}
+
+func TestMeteredDecodeKeepsCallerStopsAndFacts(t *testing.T) {
+	input := []byte(`{"x":["雪","\ud83d\ude00",true]}`)
+	want, err := Decode(input, 1024)
+	if err != nil {
+		t.Fatal(err)
+	}
+	nodes, work := int64(0), int64(0)
+	got, err := DecodeMetered(input, 1024, func(n, w int64) error { nodes += n; work += w; return nil })
+	if err != nil || !reflect.DeepEqual(got, want) || nodes != 6 || work < int64(len(input))*3 {
+		t.Fatal(got, err, nodes, work)
+	}
+	stop := errors.New("caller stop")
+	for _, after := range []int{1, 4, 8} {
+		calls := 0
+		_, err := DecodeMetered(input, 1024, func(_, _ int64) error {
+			calls++
+			if calls == after {
+				return stop
+			}
+			return nil
+		})
+		if !errors.Is(err, stop) {
+			t.Fatal("lost stop", after, calls, err)
+		}
+	}
+	// A large single token is followed by bounded escape-loop checkpoints. The
+	// fixed decoder caps remain independent from the caller's cumulative meter.
+	calls := 0
+	_, err = DecodeMetered([]byte(`"`+strings.Repeat("x", 20000)+`"`), 30000, func(_, _ int64) error {
+		calls++
+		if calls == 5 {
+			return stop
+		}
+		return nil
+	})
+	if !errors.Is(err, stop) {
+		t.Fatal("no intra-token escape checkpoint", calls, err)
 	}
 }
