@@ -12,7 +12,12 @@ inapplicable overrides. Fix shares candidate, reparse, preservation, diff and
 saved-content accounting, and admits the mandatory write-outcome manifest before
 native publication. Native writes require the verified Darwin arm64+cgo/local
 APFS adapter. Remaining traversal, resource and MCP adapter/application limits
-and their end-to-end verification remain pending.
+and their end-to-end verification remain pending. Issue #251 adds internal raw
+native acquisition counters for path/depth, directory entries, actual content
+bytes and bounded retries using the existing operation budget. It does not enable
+CLI/MCP resource lookup; cache/service composition and complete replacement-overlay
+admission remain downstream. Its Linux/Windows hosted native checks are still a
+required delivery gate at this candidate stage.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
 

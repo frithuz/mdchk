@@ -1,9 +1,11 @@
 # Read-only resource contracts
 
-Issue #249 establishes engine-facing types and fixtures. This package is not a
-production resource resolver, and no engine callback or advertised capability is
-registered. Adapters, bounded acquisition/cache, anchor indexes,
-rule consumers and coordinated fix execution remain issues #251–#260.
+Issue #249 establishes engine-facing types and fixtures. Issues #170/#250 add
+the strict supplied-input boundary and shared destination normalization. Issue
+#251 adds root selection and an internal raw native read adapter. Higher-level
+supplied-map lookup, first-observation caching, anchors, production consumers and
+coordinated fixes remain downstream. No CLI/MCP resource capability or engine rule
+callback is enabled by these internal APIs.
 
 A caller supplies an opaque root identity, immutable parser/index/anchor policy,
 a shared operation context and budget, and explicit selected target snapshots.
@@ -57,18 +59,22 @@ projected independently of the requested capability: a satisfied existence query
 retains a later I/O error/stop without falsely acquiring a coverage deficit.
 Monotonic per-prefix cause ordinals preserve existing-ID collisions without
 rescanning prior assigned ordinals for every resource. Projection never adds
-checked files, file records, returned documents, diagnostics or changes. Call it once with the complete view's
-request batch, then use the existing engine finalizer. Existing exit precedence is
-unchanged. Result mutation itself is caller-owned and must be serialized.
+checked files, file records, returned documents, diagnostics or changes. Direct
+users call it once with the complete view's request batch, then use the existing
+engine finalizer. Native-reader users instead submit complete batches through
+`FilesystemReport` below, which owns both these effects and native failure
+projection. Existing exit precedence is unchanged. Result mutation must be
+serialized.
 
 Construction and request projection charge the supplied shared budget; no query
 resets it. Immutable snapshots/views/observations support concurrent reads. Result
-projection after an interruption does not create a new execution budget. Concrete
-acquisition checkpoints, aggregate content/cache bounds, singleflight, confined
-filesystem operations and cancellation of actual resource work remain downstream.
-The types cannot prove adapter truthfulness, inventory completeness or native
-confinement; those remain explicit future adapter obligations. Adapters must use
-the shared normalization pipeline below rather than reinterpret destinations.
+projection after an interruption does not create a new execution budget. The native
+adapter below implements bounded acquisition and shared operation accounting;
+first-observation retention, cache bounds, singleflight and queried-identity service
+composition remain #253. The types alone do not authenticate adapter truthfulness,
+inventory completeness or native confinement. Each concrete producer owns those
+guarantees and must use the shared normalization pipeline below rather than
+reinterpret destinations.
 
 ## Supplied input boundary
 
@@ -149,9 +155,9 @@ Known selected-file identity needs no fresh native name lookup. This includes a
 source-equal directory hint: keep its Local locator and DirectoryType requirement,
 but do not claim SameSource directory success. A selected configured index likewise
 reuses the exact available view Source before a new-lookup name predicate.
-Supplied roots never call this predicate and do not inherit server-OS filename aliases. Actual native
-path rules and confined acquisition remain #251. Literal supplied keys from #170
-are never passed back through URL decoding.
+Supplied roots never call this predicate and do not inherit server-OS filename
+aliases. Issue #251 supplies the native path policy and raw acquisition boundary
+below. Literal supplied keys from #170 are never passed back through URL decoding.
 
 After establishing directory existence, call `DirectoryIndex` once. Its
 `IndexLookup` names only the configured basename with `RegularFile` required,
@@ -176,11 +182,123 @@ previously returned decision.
 
 The exact 80-row outcome table, source/view/result fixtures and
 `FuzzNormalizeDestination` exercise this boundary. The required schema ECMAScript
-gate from #170 remains unchanged. No native root selection, supplied inventory
-lookup, cache, anchor interpretation, production rule consumer or runtime resource
-capability is enabled here.
+gate from #170 remains unchanged. Supplied inventory lookup, first-observation
+cache, anchor interpretation, production rule consumers and runtime resource
+capability remain downstream of normalization and raw native acquisition.
 
 Run a bounded normalization campaign with
 `GOMAXPROCS=2 go test ./internal/resource -run '^$' -fuzz '^FuzzNormalizeDestination$' -fuzztime=20s -parallel=2`.
 Fuzz oracles preserve logical confinement and once-only percent data; they do not
 re-feed literal output keys as URLs and incorrectly demand decode idempotence.
+
+## Native root selection and raw reads
+
+Issue #251 implements `SelectFilesystemRoot` with explicit CLI, inspect and
+project modes. CLI selects the nearest repository/worktree root from cwd, then
+uses a containing selected-config directory or cwd outside repositories. Inspect
+applies that selection from the already acquired canonical target's parent.
+Project mode retains its validated startup root exactly, including a narrow root
+inside a repository.
+A configuration discovery cap is never resource permission; below/beside/external
+configuration facts do not enlarge the root and are not newly probed for fallback.
+Standalone callers have no native-root mode or filesystem fallback.
+
+`OpenFilesystemRoot` pins a canonical native anchor and exposes an opaque Root,
+not descriptors, a generic filesystem or a writer. `BindTarget` obtains an opaque
+membership receipt for an already acquired canonical target path and its original
+Source before constructing the Operation. Report IDs and plausible Key strings
+alone cannot prove membership. `FilesystemKey` is only lexical mapping; actual
+entry spelling, metadata aliases and native identity require the concrete adapter.
+Outside/unproved/metadata targets retain their independent same-document snapshots
+without a cross-file ResourceKey. The original source's acquisition/provenance is
+still the caller's responsibility; binding never rereads its contents.
+
+Construct `FilesystemReader` for the exact Operation with those receipts. It
+returns the bound view's original/candidate/saved selected snapshots directly,
+including explicit unavailable saved state, rather than reopening candidate or
+saved targets as fresh disk data. Other in-root names go through raw native
+acquisition. Excluded/unselected files may supply read-only context; they never
+become lint targets, corrected returns, writes, nested configuration or recursive
+outgoing-link checks. A directory and its one configured index-file attempt retain
+the separate type requirements from the shared normalizer.
+
+The native backend uses checked single-component operations relative to pinned
+parent handles: true no-follow `openat` on Linux/macOS and strict directory-relative
+NT/reparse handling on Windows. Passing `O_NOFOLLOW` to `os.Root.OpenFile` is not
+this guarantee: that resolver deliberately follows contained links. Resource reads
+reject contained, escaping and dangling links, Git metadata identities and
+unsupported types, with no weaker fallback. Actual entry names are compared exactly
+before lookup; only a complete stable parent scan can prove an exact spelling
+absent. A wrong-case native alias is never opened as the requested logical name.
+Windows device/stream/trailing-dot aliases are blocked separately from absence.
+
+Windows anchors are limited to admitted local drive paths. UNC, device and raw
+extended namespaces are refused before canonicalization or metadata probing;
+reparse anchors and mapped network drives are also refused. Trusted Unix host
+aliases may establish an operation anchor before strict pinning, but no resource
+key passes through that canonicalization. Unix filesystems may themselves be
+network-backed; this code does not claim physically network-free kernel I/O.
+There is no URL fetching or transport/network-client fallback.
+
+`FilesystemLimits` shares operator-owned path/depth, directory-entry, byte and
+retry allowances with the existing operation context/budget. All reads, failed
+attempts and retries count; constructing another Reader cannot reset them. Root,
+Operation and individual caller cancellation each stop affected new work, including
+waiting for the serialized acquisition gate. Bounded enumeration, reads and
+stability checks preserve actual I/O failures separately from established absence
+and runtime stops. The initial attempt permits at most two instability retries.
+Checkpoints do not asynchronously interrupt an unresponsive native filesystem.
+
+Original selected-source bytes are admitted once into native session accounting;
+newly read resource bytes are cumulative. Individual original/candidate/saved texts
+still obey `document-bytes`. Admission of an entire candidate/saved overlay against
+its separate aggregate limit belongs to the overlay producer/#258, not this raw
+reader. `Session` accepts a distinct operation budget and creates a new identity
+over the retained startup anchor without sharing contents, misses or settings. It
+is not a cache or an atomic whole-tree snapshot; #253 must retain first
+observations and coordinate concurrent duplicate lookups above this raw
+acquisition boundary.
+
+`Read` can return a valid partial `ObservationSpec` together with an error. Keep
+both and bind the Spec with `Operation.Record`. Native result projection uses an
+explicit report owner:
+
+```go
+report, err := NewFilesystemReport(operation, initial)
+// Handle err before continuing.
+err = report.Append(view, observations, []FilesystemFailure{
+    {Reader: reader, Request: request, Err: readErr},
+})
+// Handle err before continuing; append further complete view batches as needed.
+out, err := report.Finish()
+// Handle err, then pass out to the existing shared finalizer.
+```
+
+`NewFilesystemReport` takes an initial `result.Result` value, not a caller Result
+pointer. The caller transfers ownership of that value, including its slices, and
+must not mutate or finalize it while the report owns it. `Append` validates the
+entire complete-view batch, including its observations and failures, before
+mutating the report. Append
+Original, Candidate and Saved batches through the same owner when they belong to
+one report; failures from different Reader handles share that owner's incremental
+cause indexes and collision-aware monotonic IDs. Projection has no mutable
+Reader-local cache and does not scan the growing Result for every error.
+
+`Finish` consumes the owner and transfers its `result.Result` value back for shared
+finalization. Copies share the consuming guard; zero or consumed owners reject
+`Append` and `Finish` with `ErrContract`. Construct a fresh report explicitly for
+each independent result;
+reusing the same caller `out` variable for successive finished reports is supported.
+No wire fields are added. This ownership boundary preserves late close errors and
+simultaneous I/O/quota causes, exact per-view source attribution and already
+acquired File/content facts without inventing a coverage deficit for a satisfied
+capability. Report use remains serialized by its caller. The raw reader does not
+parse anchors; later producers must still use the operation ParseOptions and
+retain validated ContentEvidence across later stops.
+
+Local Darwin native no-follow, root, stability and lifecycle tests have passed.
+Linux and Windows backends are implemented, but their hosted native execution is
+pending at this candidate stage. The required three-platform native CI suite must
+pass before completion or portability verification is recorded. Cross-vet,
+cross-compilation or a mocked backend is not that proof. No new CLI/MCP capability
+or broader native writer support is advertised by the read adapter.

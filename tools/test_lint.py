@@ -35,6 +35,7 @@ def main():
             for path, version, directory in (
                 ("github.com/goccy/go-yaml", "v1.19.2", "yaml"),
                 ("github.com/modelcontextprotocol/go-sdk", "v1.8.0", "sdk"),
+                ("golang.org/x/sys", "v0.49.0", "sys"),
                 ("example.invalid/unapproved", "v1.0.0", "unapproved"),
             ):
                 module.write(f"\nrequire {path} {version}\nreplace {path} => ./_dependencies/{directory}\n")
@@ -43,6 +44,8 @@ def main():
                 write(root, f"_dependencies/{directory}/helper.go", source)
                 if directory == "sdk":
                     write(root, "_dependencies/sdk/mcp/helper.go", source)
+                if directory == "sys":
+                    write(root, "_dependencies/sys/unix/helper.go", source)
         # All probes are valid Go; each checks a separately enabled analyzer.
         write(root, "internal/probe/probe.go", '''// Package probe exercises static analysis.
 package probe
@@ -84,8 +87,9 @@ import (
  sdk "github.com/modelcontextprotocol/go-sdk/mcp"
  unapproved "example.invalid/unapproved"
  "github.com/frithuz/mdchk/internal/conformance"
+ unix "golang.org/x/sys/unix"
 )
-func Dependencies() { yaml.Helper(); sdk.Helper(); unapproved.Helper(); conformance.Helper() }
+func Dependencies() { yaml.Helper(); sdk.Helper(); unapproved.Helper(); conformance.Helper(); unix.Helper() }
 ''')
         code, output = run(binary, root, "run", "--config", ".golangci.yml", "./...")
         if code != 1:
@@ -96,7 +100,8 @@ func Dependencies() { yaml.Helper(); sdk.Helper(); unapproved.Helper(); conforma
             if f"({analyzer})" not in output:
                 raise AssertionError(f"missing {analyzer} detection:\n{output}")
         for boundary in ("parser-standard-library", "test-only-renderer",
-                         "configuration-adapter", "mcp-adapter", "approved-dependencies"):
+                         "configuration-adapter", "mcp-adapter", "approved-dependencies",
+                         "native-resource-adapter"):
             if boundary not in output:
                 raise AssertionError(f"missing {boundary} detection:\n{output}")
         if "G401" not in output or "Fatal" not in output:
@@ -116,6 +121,11 @@ func Decode() { yaml.Helper() }
 package mcp
 import sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 func Adapt() { sdk.Helper() }
+''')
+        write(root, "internal/resource/native_probe.go", '''// Package resource owns native read adaptation.
+package resource
+import unix "golang.org/x/sys/unix"
+func Native() { unix.Helper() }
 ''')
         write(root, "internal/parser/probe_test.go", '''package parser_test
 import (

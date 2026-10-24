@@ -35,6 +35,8 @@ linters:
             - github.com/goccy/go-yaml$
             - github.com/goccy/go-yaml/
             - github.com/modelcontextprotocol/go-sdk/
+            - golang.org/x/sys/unix$
+            - golang.org/x/sys/windows$
         parser-standard-library:
           files:
             - '${base-path}/internal/parser/*.go'
@@ -43,6 +45,12 @@ linters:
           list-mode: strict
           allow:
             - $gostd
+        native-resource-adapter:
+          files:
+            - '!${base-path}/internal/resource/native_*.go'
+          deny:
+            - pkg: golang.org/x/sys
+              desc: keep native operating-system calls behind internal/resource native backends
         configuration-adapter:
           files:
             - '!${base-path}/internal/config/**'

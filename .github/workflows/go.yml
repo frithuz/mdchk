@@ -91,6 +91,8 @@ jobs:
           cache: false
       - name: Identify actual runtime and native adapter prerequisites
         run: go env GOOS GOARCH CGO_ENABLED
+      - name: Verify native confined resource reads and root selection
+        run: go test ./internal/resource -run "^(TestFilesystem|TestNative)" -count=1 -v -timeout=5m
       - name: Verify compiled native paths, streams, real interrupts and capabilities
         run: go test ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryUnsupportedApply|TestCompiledApplyNoCGOClearlyRefuses|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -v -timeout=15m
       - name: Verify compiled GFM selection, consumers and native publication

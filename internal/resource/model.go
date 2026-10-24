@@ -1,6 +1,6 @@
-// Package resource defines read-only resource contracts and portable destination
-// normalization. It performs no filesystem/network access, Markdown parsing,
-// linting or target discovery.
+// Package resource defines read-only resource contracts, destination normalization
+// and native filesystem acquisition. It does not fetch URLs, parse Markdown,
+// execute lint rules, discover lint targets or write resources.
 package resource
 
 import (
