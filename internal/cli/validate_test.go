@@ -572,30 +572,135 @@ func TestValidateEmergencyReportingRetainsCategoriesAndDelivery(t *testing.T) {
 
 func TestValidateActualLargeReportingDeadline(t *testing.T) {
 	root := validationProject(t)
-	put(t, filepath.Join(root, ".mdchk.yaml"), "version: 2\n")
-	for i := 0; i < 1000; i++ {
-		put(t, filepath.Join(root, fmt.Sprintf("%04d-%s", i, strings.Repeat("x", 180)), ".mdchk.yaml"), "version: 1\nflavor: commonmark\n")
+	expected := map[string]result.Snapshot{}
+	add := func(path, source string) {
+		put(t, filepath.Join(root, filepath.FromSlash(path)), source)
+		expected[path] = result.Snapshot{View: "original", SHA256: fmt.Sprintf("%x", sha256.Sum256([]byte(source))), SizeBytes: len(source)}
 	}
-	for _, format := range []string{"json", "text"} {
-		var out, logs bytes.Buffer
-		status := Run([]string{"config", "validate", root, "--format=" + format, "--limit=reporting-time=1us", "--limit=work-units=500000000"}, &out, &logs, "test")
-		if status != 12 || out.Len() == 0 || logs.Len() != 0 {
-			t.Fatalf("large actual command status=%d stdout bytes=%d stderr=%s", status, out.Len(), &logs)
+	add(".mdchk.yaml", "version: 2\n")
+	for i := 0; i < 1000; i++ {
+		add(fmt.Sprintf("%04d-%s/.mdchk.yaml", i, strings.Repeat("x", 180)), "version: 1\nflavor: commonmark\n")
+	}
+	for _, forced := range []bool{false, true} {
+		name := "positive"
+		if forced {
+			name = "expired"
 		}
-		if format == "json" {
-			r := validateEmitted(t, t.TempDir(), out.Bytes())
-			if !r.ConfigValidation.ScanComplete || r.ConfigValidation.DefinitionsChecked != 1001 || r.ConfigValidation.ValidDefinitions != 1000 || r.ConfigValidation.InvalidDefinitions != 1 || r.Complete || len(r.Errors) == 0 || len(r.Interruptions) == 0 || len(r.Omissions) == 0 {
-				t.Fatalf("large actual deadline lost outcomes: %+v", r.ConfigValidation)
+		t.Run(name, func(t *testing.T) {
+			for _, format := range []string{"json", "text"} {
+				var out, logs bytes.Buffer
+				args := []string{"validate", root, "--format=" + format, "--limit=reporting-time=1us", "--limit=work-units=500000000"}
+				var status int
+				if forced {
+					// Real scanning uses a live execution context. An already expired
+					// presentation parent forces the actual reporter synchronously, without
+					// depending on delivery of a newly created one-microsecond timer.
+					presentation, cancel := context.WithDeadline(context.Background(), time.Unix(1, 0))
+					defer cancel()
+					if presentation.Err() != context.DeadlineExceeded {
+						t.Fatal("presentation did not expire")
+					}
+					status = runConfig(context.Background(), args, &out, &logs, presentation, "test")
+				} else {
+					status = Run(append([]string{"config"}, args...), &out, &logs, "test")
+				}
+				if status != 12 || out.Len() == 0 || logs.Len() != 0 {
+					t.Fatalf("large actual command status=%d stdout bytes=%d stderr=%s", status, out.Len(), &logs)
+				}
+				if format == "json" {
+					r := validateEmitted(t, t.TempDir(), out.Bytes())
+					assertLargeValidationDeadlineJSON(t, r, expected, forced)
+				} else {
+					text := out.String()
+					interrupted := strings.Contains(text, "reporting-time exhausted")
+					if forced && !interrupted || interrupted && (!strings.Contains(text, "deadline-exceeded") || !strings.Contains(text, "omitted ")) {
+						t.Fatal("large actual text deadline evidence missing", text)
+					}
+					suffix := fmt.Sprintf("Checked 1001 definitions: 1000 valid, 1 invalid, 0 known definitions skipped. 1 skipped paths, 1 errors; error (scan complete: true, complete: %t).\n", !interrupted)
+					emergencySuffix := strings.Replace(suffix, "1 skipped paths", "0 skipped paths", 1)
+					if !strings.Contains(text, "configuration") || !strings.HasSuffix(text, suffix) && !(interrupted && strings.HasSuffix(text, emergencySuffix)) {
+						t.Fatal("large actual text lost outcomes", text)
+					}
+					count := 0
+					seen := map[string]bool{}
+					for _, line := range strings.Split(text, "\n") {
+						if strings.HasPrefix(line, "definition ") {
+							path := strings.TrimSuffix(strings.TrimPrefix(line, "definition "), ": analysis complete")
+							if _, ok := expected[path]; !ok || seen[path] {
+								t.Fatal("large text changed source identity", path)
+							}
+							seen[path] = true
+							count++
+						}
+						var omitted int
+						var section string
+						if _, err := fmt.Sscanf(line, "omitted %d %s", &omitted, &section); err == nil && section == "/files" {
+							count += omitted
+						}
+					}
+					if count != len(expected) {
+						t.Fatal("large text lost source conservation", count)
+					}
+				}
 			}
-			found := false
-			for _, stop := range r.Interruptions {
-				found = found || stop.Phase == "reporting" && stop.Reason == "deadline-exceeded"
-			}
-			if !found {
-				t.Fatal("actual reporting deadline did not occur")
-			}
-		} else if !strings.Contains(out.String(), "Checked 1001 definitions: 1000 valid, 1 invalid") || !strings.Contains(out.String(), "reporting-time exhausted") {
-			t.Fatalf("large actual text omitted authoritative outcome: %s", &out)
+		})
+	}
+}
+
+func assertLargeValidationDeadlineJSON(t *testing.T, r result.Result, expected map[string]result.Snapshot, forced bool) {
+	t.Helper()
+	want := result.ConfigValidation{ScanComplete: true, DefinitionsChecked: 1001, ValidDefinitions: 1000, InvalidDefinitions: 1}
+	if r.ConfigValidation == nil || *r.ConfigValidation != want || r.Operation != "config validate" || r.Status != "error" || lintExit(r) != 12 || len(r.Errors) != 1 || r.Errors[0].Category != result.Configuration {
+		t.Fatalf("large actual command lost decisions: summary=%+v status=%s errors=%+v", r.ConfigValidation, r.Status, r.Errors)
+	}
+	// A positive interval may finish before timer delivery, as with the tiny
+	// reporting tests. Assert the complete and partial outcomes independently;
+	// the forced actual-command branch below guarantees deadline coverage.
+	if forced && (r.Complete || len(r.Interruptions) != 1 || r.Interruptions[0].Phase != "reporting" || r.Interruptions[0].Reason != "deadline-exceeded") {
+		t.Fatal("large actual reporting deadline evidence missing", r.Complete, r.Interruptions)
+	}
+	if r.Complete {
+		if forced || len(r.Interruptions)+len(r.Omissions) != 0 || len(r.Files) != len(expected) || len(r.CheckedFiles) != len(expected) {
+			t.Fatal("incoherent completed large report", r.Complete, len(r.Interruptions), len(r.Omissions))
 		}
+	} else {
+		if len(r.Interruptions) != 1 || r.Interruptions[0].Phase != "reporting" || r.Interruptions[0].Reason != "deadline-exceeded" || len(r.Omissions) == 0 {
+			t.Fatal("large actual reporting deadline evidence missing", r.Interruptions, r.Omissions)
+		}
+	}
+	files, checked, skipped := len(r.Files), len(r.CheckedFiles), len(r.SkippedFiles)
+	for _, omission := range r.Omissions {
+		switch omission.Section {
+		case "/files", "/checked_files", "/skipped_files":
+			if omission.Count == nil || *omission.Count < 0 {
+				t.Fatal("unquantified known source omission", omission)
+			}
+			switch omission.Section {
+			case "/files":
+				files += *omission.Count
+			case "/checked_files":
+				checked += *omission.Count
+			case "/skipped_files":
+				skipped += *omission.Count
+			}
+		}
+	}
+	if files != len(expected) || checked != len(expected) || skipped != 1 {
+		t.Fatal("large report lost source conservation", files, checked, skipped)
+	}
+	seen := map[string]bool{}
+	for _, file := range r.Files {
+		snapshot, ok := expected[file.Path]
+		if !ok || seen[file.Path] || file.Analysis != "complete" || file.InputSnapshot == nil || file.ResultSnapshot == nil || *file.InputSnapshot != snapshot || *file.ResultSnapshot != snapshot {
+			t.Fatal("large report changed original source identity", file.Path, file.InputSnapshot, file.ResultSnapshot)
+		}
+		seen[file.Path] = true
+	}
+	seen = map[string]bool{}
+	for _, path := range r.CheckedFiles {
+		if _, ok := expected[path]; !ok || seen[path] {
+			t.Fatal("large checked source identity changed", path)
+		}
+		seen[path] = true
 	}
 }

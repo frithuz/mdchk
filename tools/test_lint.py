@@ -74,7 +74,8 @@ func Unexplained() { os.Chdir(".") }
 ''')
         write(root, "internal/conformance/helper.go", "// Package conformance supplies a test renderer.\npackage conformance\nfunc Helper() {}\n")
         write(root, "internal/helper/helper.go", "// Package helper supplies a dependency probe.\npackage helper\nfunc Helper() {}\n")
-        write(root, "internal/parser/probe.go", '''package parser
+        write(root, "internal/parser/probe.go", '''// Package parser owns core syntax.
+package parser
 import (
  "github.com/frithuz/mdchk/internal/conformance"
  "github.com/frithuz/mdchk/internal/helper"
@@ -117,6 +118,11 @@ package config
 import yaml "github.com/goccy/go-yaml"
 func Decode() { yaml.Helper() }
 ''')
+        write(root, "internal/integration/quarto_options.go", '''// Package integration owns bounded Quarto option adaptation.
+package integration
+import yaml "github.com/goccy/go-yaml"
+func DecodeOptions() { yaml.Helper() }
+''')
         write(root, "internal/mcp/probe.go", '''// Package mcp owns SDK adaptation.
 package mcp
 import sdk "github.com/modelcontextprotocol/go-sdk/mcp"
@@ -140,6 +146,31 @@ func TestAdapter(t *testing.T) { conformance.Helper() }
         if code:
             raise AssertionError(f"legitimate tests/entry points rejected:\n{output}")
         print("External parser tests and both process entry points pass.")
+
+        # The integration exception names exactly one bounded adapter. Neither
+        # another integration file nor the core parser inherits YAML access.
+        write(root, "internal/integration/other.go", '''package integration
+import yaml "github.com/goccy/go-yaml"
+func OtherOptions() { yaml.Helper() }
+''')
+        write(root, "internal/parser/probe.go", '''// Package parser owns core syntax.
+package parser
+import yaml "github.com/goccy/go-yaml"
+func Parse() { yaml.Helper() }
+''')
+        code, output = run(binary, root, "run", "--config", ".golangci.yml", "./...")
+        if code != 1:
+            raise AssertionError(f"expected bounded YAML adapter violations, got {code}:\n{output}")
+        # Depguard reports the first applicable denied rule for an import.
+        # The earlier probe independently exercises parser-standard-library;
+        # these two YAML imports must both remain configuration-adapter errors.
+        for required in ("internal/integration/other.go", "internal/parser/probe.go",
+                         "configuration-adapter"):
+            if required not in output:
+                raise AssertionError(f"missing narrow YAML boundary {required}:\n{output}")
+        if "internal/integration/quarto_options.go:" in output:
+            raise AssertionError(f"approved bounded adapter rejected:\n{output}")
+        print("Only the bounded Quarto options adapter gains YAML access; other integration/parser files fail.")
 
         with (root / ".golangci.yml").open("a", encoding="utf-8") as config:
             config.write("\nunknown-configuration-key: true\n")

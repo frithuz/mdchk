@@ -618,3 +618,32 @@ transport fields, targets or write authority.
 New fragment-native fixtures run under the required TestFilesystem/TestNative
 hosted platform filter. Local Darwin runtime checks do not establish Linux or
 Windows execution; the actual hosted matrix remains a delivery requirement.
+
+## Selected-source parse consumers
+
+`Service.TargetParse` provides an opaque admitted parse outcome for an exact
+selected target/view, including native NoKey snapshots outside the root or in
+metadata paths. It reuses selected-source validation and the full parse cache
+without opening the selected path or requiring HTML-ID/anchor interpretation.
+One finite owner/source/view index retains full parse keys, so already available
+facts can survive quota, caller/operation cancellation or service closure without
+rehashing source bytes. A live-precharged per-view index reserves only admitted
+selected IDs before parsing. Its stopped lookup first rejects IDs longer than the
+admitted maximum, then compares bounded identifier bytes through an exact string
+map; this is not a constant-time string operation. No target-list/source scan,
+new admission, parse wait, reopen or miss-history growth occurs after stop.
+Ready immutable completed outcomes retain the same full key and Source alongside
+all independently observed canonical controls and the first exact quota.
+Unavailable Saved and unwarmed/foreign/replaced views acquire no fallback.
+Content/parse and anchor availability remain distinct capabilities. Original
+bytes use existing service admission; complete
+candidate/saved aggregate admission remains the coordinated producer's duty.
+
+`OwnsOperation` is identity only. `Service.Checkpoint` lets synchronous derived
+consumers share the existing operation meter and observe service closure together
+with actual caller/operation/quota causes; it grants no parse, resource or target
+authority. The Quarto provider assembles cells outside the service worker, with
+no extra cache or background task, and observes Close at its next bounded
+checkpoint. No new work can claim completion from a closed service merely because
+an older parse is available. Returned opaque parse facts remain inspectable
+independently and do not grant anchor or cross-file authority.

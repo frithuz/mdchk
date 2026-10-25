@@ -54,9 +54,12 @@ linters:
         configuration-adapter:
           files:
             - '!${base-path}/internal/config/**'
+            # Quarto cell-option YAML has its own bounded, source-mapped
+            # adapter. All other integration/parser files stay denied.
+            - '!${base-path}/internal/integration/quarto_options.go'
           deny:
             - pkg: github.com/goccy/go-yaml
-              desc: keep YAML decoding behind internal/config
+              desc: keep YAML decoding behind configuration or the bounded Quarto options adapter
         mcp-adapter:
           files:
             - '!${base-path}/internal/mcp/**'

@@ -33,11 +33,12 @@ type Settings struct {
 // Scope binds contexts to one existing resource operation and immutable view.
 // It creates no worker, cache, root, resource reader or allowance.
 type Scope struct {
-	operation *resource.Operation
-	view      resource.View
-	quarto    bool
-	mkdocs    MkDocsPolicy
-	slides    *slidePolicy
+	operation     *resource.Operation
+	view          resource.View
+	quarto        bool
+	mkdocs        MkDocsPolicy
+	slides        *slidePolicy
+	quartoService *resource.Service
 }
 
 func NewScope(ctx context.Context, operation *resource.Operation, view resource.View, settings Settings) (*Scope, error) {
@@ -133,6 +134,12 @@ func (s *Scope) checkpoint(ctx context.Context, work, nodes int64) error {
 	if s == nil || s.operation == nil || ctx == nil {
 		return ErrContract
 	}
+	if owner, ok := ctx.Value(quartoAssemblyKey{}).(*Scope); ok && owner == s && s.quartoService != nil {
+		if err := s.quartoService.Checkpoint(ctx, work); err != nil {
+			return err
+		}
+		return s.operation.Budget().ChargeNodes(nodes)
+	}
 	// Independently observed operation and caller controls must both survive.
 	if err := errors.Join(ctx.Err(), s.operation.Context().Err(), s.operation.Budget().ChargeWork(0)); err != nil {
 		return err
@@ -150,7 +157,7 @@ type Location struct {
 }
 
 func NewLocation(source parser.Source, span parser.Span) (Location, error) {
-	if source == (parser.Source{}) {
+	if source.Token() == (parser.SourceToken{}) || span.SourceToken() != source.Token() {
 		return Location{}, ErrContract
 	}
 	if _, err := source.Text(span); err != nil {
@@ -161,7 +168,7 @@ func NewLocation(source parser.Source, span parser.Span) (Location, error) {
 func (l Location) Source() parser.Source { return l.source }
 func (l Location) Span() parser.Span     { return l.span }
 func (l Location) valid() bool {
-	if l.source == (parser.Source{}) {
+	if l.source.Token() == (parser.SourceToken{}) || l.span.SourceToken() != l.source.Token() {
 		return false
 	}
 	_, err := l.source.Text(l.span)

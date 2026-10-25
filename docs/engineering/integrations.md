@@ -8,8 +8,9 @@ The shared typed context/policy boundary is implemented under
 [`internal/integration`](../../internal/integration/README.md). Its executable
 contract tests cover explicit activation, source/view ownership, candidate-header
 and label precedence, static navigation/omission prerequisites and explicit slide
-annotation. Candidate policy is not parser/acquisition proof: concrete Quarto cell
-production (#175), bounded MkDocs acquisition/eligibility (#176), production rule
+annotation. Candidate policy is not parser/acquisition proof. The admitted
+parser-backed Quarto cell provider (#175) is available through an explicitly bound
+integration scope; bounded MkDocs acquisition/eligibility (#176), production rule
 consumers and end-to-end integration verification remain their separate work.
 Interface availability alone does not advertise those runtime capabilities.
 

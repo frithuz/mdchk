@@ -38,6 +38,16 @@ func (s Span) Present() bool { return s.present }
 func (s Span) Start() int    { return s.start }
 func (s Span) End() int      { return s.end }
 
+// SourceToken exposes only the immutable owner identity of a present range.
+// It permits bounded foreign-range rejection before inspecting source bytes;
+// matching identity does not establish parsed syntax or content admission.
+func (s Span) SourceToken() SourceToken {
+	if !s.present {
+		return SourceToken{}
+	}
+	return s.source.Token()
+}
+
 func contains(outer, inner Span) bool {
 	return outer.present && inner.present && outer.source == inner.source && inner.start >= outer.start && inner.end <= outer.end
 }

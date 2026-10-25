@@ -6,6 +6,9 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/resource"
 )
 
 type HeaderClass string
@@ -105,7 +108,9 @@ func (s *Scope) QuartoHeader(ctx context.Context, document Document, location Lo
 	if !s.quarto {
 		return out, nil
 	}
-	raw = strings.TrimSpace(raw)
+	leftTrimmed := strings.TrimLeftFunc(raw, unicode.IsSpace)
+	rawStart := location.span.Start() + len(raw) - len(leftTrimmed)
+	raw = strings.TrimRightFunc(leftTrimmed, unicode.IsSpace)
 	if enclosingExample {
 		out.class = EscapedExample
 		return out, nil
@@ -135,17 +140,21 @@ func (s *Scope) QuartoHeader(ctx context.Context, document Document, location Lo
 		return out, nil
 	}
 	out.language = language
-	rest := strings.TrimSpace(body[end:])
+	rest := body[end:]
 	if language != "r" {
-		if rest == "" {
+		if strings.TrimSpace(rest) == "" {
 			out.class = SupportedCandidate
 			out.label = Label{kind: LabelAbsent}
 		}
 		return out, nil
 	}
-	labels, ok := rHeaderLabel(rest)
-	for _, text := range labels {
-		out.declared = append(out.declared, Label{kind: LabelString, text: text, location: location})
+	labels, ok := rHeaderParts(rest)
+	for _, part := range labels {
+		span, err := document.source.Span(rawStart+1+end+part.start, rawStart+1+end+part.end)
+		if err != nil {
+			return HeaderDecision{}, ErrContract
+		}
+		out.declared = append(out.declared, Label{kind: LabelString, text: part.text, location: Location{document.source, span}})
 	}
 	if len(labels) > 1 {
 		out.label = Label{kind: LabelAmbiguous, location: location}
@@ -156,18 +165,31 @@ func (s *Scope) QuartoHeader(ctx context.Context, document Document, location Lo
 	out.class = SupportedCandidate
 	out.label = Label{kind: LabelAbsent}
 	if len(labels) == 1 {
-		// The complete info span is truthful provenance for a decoded header
-		// declaration; fine-grained mapped extraction belongs to the producer.
+		// Literal label syntax has a precise original value/positional range.
 		out.label = out.declared[0]
 	}
 	return out, nil
 }
 
-func rHeaderLabel(rest string) ([]string, bool) {
-	var labels []string
-	rest = strings.TrimSpace(rest)
+type rHeaderPart struct {
+	text       string
+	start, end int
+}
+
+func rHeaderParts(rest string) ([]rHeaderPart, bool) {
+	var labels []rHeaderPart
+	offset := 0
+	trimLeft := func() {
+		next := strings.TrimLeftFunc(rest, unicode.IsSpace)
+		offset += len(rest) - len(next)
+		rest = next
+	}
+	trimLeft()
+	rest = strings.TrimRightFunc(rest, unicode.IsSpace)
 	if strings.HasPrefix(rest, ",") {
-		rest = strings.TrimSpace(rest[1:])
+		rest = rest[1:]
+		offset++
+		trimLeft()
 		if rest == "" {
 			return labels, true
 		}
@@ -186,8 +208,11 @@ func rHeaderLabel(rest string) ([]string, bool) {
 			return labels, false
 		}
 		tail := strings.TrimLeftFunc(rest[end:], unicode.IsSpace)
+		tailStart := offset + end + len(rest[end:]) - len(tail)
 		if strings.HasPrefix(tail, "=") {
-			tail = strings.TrimLeftFunc(tail[1:], unicode.IsSpace)
+			untrimmed := tail[1:]
+			tail = strings.TrimLeftFunc(untrimmed, unicode.IsSpace)
+			valueStart := tailStart + 1 + len(untrimmed) - len(tail)
 			end = scalarEnd(tail)
 			if end == 0 {
 				return labels, false
@@ -206,20 +231,24 @@ func rHeaderLabel(rest string) ([]string, bool) {
 				if !quoted {
 					return labels, false
 				}
-				labels = append(labels, value)
+				labels = append(labels, rHeaderPart{value, valueStart, valueStart + end})
 			}
 			rest = tail[end:]
+			offset = valueStart + end
 		} else {
 			if !first {
 				return labels, false
 			}
-			labels = append(labels, name)
+			labels = append(labels, rHeaderPart{name, offset, offset + end})
 			rest = rest[end:]
+			offset += end
 		}
 		first = false
-		rest = strings.TrimLeftFunc(rest, unicode.IsSpace)
+		trimLeft()
 		if strings.HasPrefix(rest, ",") {
-			rest = strings.TrimSpace(rest[1:])
+			rest = rest[1:]
+			offset++
+			trimLeft()
 			if rest == "" {
 				return labels, false
 			}
@@ -358,11 +387,18 @@ func (s *Scope) ResolveLabels(ctx context.Context, document Document, header, bo
 // Cell is a future parser-producer-owned source fact. There is intentionally no
 // public constructor accepting raw CodeBlock nodes, header decisions or enums.
 type Cell struct {
-	document Document
-	envelope Location
-	language string
-	labels   LabelDecision
-	declared []Label
+	document   Document
+	envelope   Location
+	language   string
+	labels     LabelDecision
+	declared   []Label
+	info       Location
+	content    parser.Value
+	markers    []parser.Marker
+	containers []parser.HeadingContainer
+	fence      byte
+	width      int
+	status     Status
 }
 
 func (c Cell) Envelope() Location    { return c.envelope }
@@ -382,6 +418,8 @@ type QuartoContext struct {
 	document Document
 	status   Status
 	cells    []Cell
+	problems []QuartoProblem
+	parsed   resource.TargetParseResult
 }
 
 func (c QuartoContext) Status() Status     { return c.status }
@@ -405,8 +443,12 @@ func (s *Scope) Quarto(ctx context.Context, document Document) (QuartoContext, e
 	}
 	if !s.quarto {
 		out.status = Inactive
+		return out, nil
 	}
-	// Actual parser-backed collection production is #175. Policy helpers above
-	// cannot manufacture its proof or advertise that capability today.
+	if s.quartoService != nil {
+		return s.produceQuarto(ctx, document)
+	}
+	// A policy-only Scope remains unavailable until immutably bound to the
+	// operation's admitted parse service through WithQuarto.
 	return out, nil
 }
