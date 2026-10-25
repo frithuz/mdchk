@@ -553,6 +553,68 @@ SVG/MathML entry is one such unsupported context: foreign integration points do
 not grant ordinary HTML raw-text ownership from a local name such as title.
 Already acquired content and its witness survive such deficits and actual
 operational causes retain their existing report ownership. A completed index
-also survives a later stop without content rehashing. No fragment resolver,
-MD051/MD073/MD080 callback, TOC fix, renderer, sanitizer or runtime capability is
-introduced here.
+also survives a later stop without content rehashing. The index itself introduces no MD051/MD073/MD080 callback, TOC fix, renderer,
+sanitizer or transport capability. The fragment query seam below composes it.
+
+## Fragment query completion
+
+`NewFragmentResolver(service, normalizer)` binds the existing shared service to
+one immutable source view. `Prepare(link)` accepts the original source-owned
+parser-semantic Link and normalizes it once. It reserves exact source range,
+SHA256/size/view metadata, a single-use query and at most three bounded request
+carriers before acquisition or lookup can stop. These carriers do not themselves
+perform or admit resource lookups. Copies share the query's consume guard.
+If preparation stops, no query was admitted: retain the returned controlled error
+as a producer-owned operation/source effect. Do not fabricate a resource Request,
+rescan/hash the source after stop, or claim source coverage for an unadmitted
+query. Prepare the required query batch while execution is permitted.
+
+`Resolve(ctx, query, crossFile)` consumes that prepared query outside the service
+worker. The typed outcome distinguishes no named query, an empty-fragment document
+address, skipped distinct documents, known missing/type-inapplicable targets,
+unavailable context, applicable malformed encoding, found names and proved named
+absence. The outcome is authoritative; neither a nil error nor an available index
+alone proves that the query finished. MD057 ownership never transfers when that
+rule is disabled. No fragment, empty fragments and skipped references acquire no
+resource/content/index. Their independent MD057 existence checks remain a separate
+producer responsibility. Unsupported implicit resource formats with named queries
+retain truthful existence but unavailable fragment interpretation.
+
+Same-source aliases use the exact selected snapshot at any extension. Fragment-
+and query-only links also work for selected outside-root/metadata NoKey sources,
+without deriving a key from the report ID. For a distinct locator, pure planning
+of the sole configured index can identify the current selected document before
+the cross-file skip decision; only actual directory/root evidence authorizes the
+index attempt. Unknown directory facts cannot prove a missing index. A regular
+file with a directory hint is a mismatch, and a directory-valued index never
+recurses or falls back. Parsing and anchors use only the operation's settings.
+
+A complete index is retained independently of the final named lookup. Lookup uses
+the Normalizer's once-decoded exact UTF-8 fragment: plus is literal, case and Unicode
+normalization stay unchanged. Only a successful zero-match Lookup proves named
+absence. Actual stops preserve the acquired content/index and yield query-specific
+context unavailability. Returned occurrences are copied through `Matches(ctx)`
+under the original meter; a later inspection stop does not alter the completed
+query outcome. No fragment miss history or additional worker is retained.
+
+Transfer the initial Result value and its slices to
+`NewFragmentReport(resolver, initial)`. Append complete view batches through
+`Append(view, resolutions)` using one owner for Original/Candidate/Saved, even
+when each view has its own resolver. Finish consumes all aliases and transfers the
+Result for the shared finalizer. Do not also project those resolutions' raw
+observations through ServiceReport or an adapter. Whole-batch validation precedes
+mutation, and the existing incremental cause indexes preserve collision-safe IDs
+and actual IO/Internal plus cancellation, deadline and first exact limit causes.
+Each unresolved query emits at most one affected coverage record with its own
+original Link range/SHA/view, including NoKey and stopped available-index queries.
+Known missing/type-inapplicable outcomes retain actual causes without inventing
+MD051 coverage.
+The opaque resolution retains the final anchor/query cause identity after a proved
+directory selects its index. Anchor problems and terminal controls use that exact
+identity; independently encountered directory-stage causes retain their own
+identity. A successful directory never acquires a second copy of an index error. The resolver creates no diagnostics, checked files, changes,
+transport fields, targets or write authority.
+
+New fragment-native fixtures run under the required TestFilesystem/TestNative
+hosted platform filter. Local Darwin runtime checks do not establish Linux or
+Windows execution; the actual hosted matrix remains a delivery requirement.

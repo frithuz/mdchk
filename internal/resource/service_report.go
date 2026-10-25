@@ -91,33 +91,45 @@ func (s *Service) effectProblems(view View, observations []Observation, failures
 		if _, duplicate := additional[failure.Request.identity]; duplicate {
 			return nil, ErrContract
 		}
-		_, _, detached := snapshotServiceError(failure.Err)
-		var returned *serviceReadError
-		if !errors.As(detached, &returned) {
-			if _, controlled := InterruptionProblem(detached); !controlled {
-				return nil, ErrContract
-			}
-		}
-		normalized := joinServiceErrors(detached)
-		var err *serviceReadError
-		if !errors.As(normalized, &err) {
-			return nil, ErrContract
-		}
-		var problems []Problem
-		for _, cause := range err.causes {
-			problems = append(problems, Problem{Kind: cause.kind, Message: cause.message})
-		}
-
-		if err.stop != nil && !err.controls.present() {
-			return nil, ErrContract
-		}
-		problems = append(problems, serviceControlProblems(err.controls)...)
-		if len(problems) == 0 {
-			return nil, ErrContract
+		problems, err := serviceFailureProblems(failure.Err)
+		if err != nil {
+			return nil, err
 		}
 		additional[failure.Request.identity] = problems
 	}
 	return additional, nil
+}
+
+// serviceFailureProblems retains canonical causes without depending on mutable
+// public error metadata. Nil is valid for a completed domain query.
+func serviceFailureProblems(failure error) ([]Problem, error) {
+	if failure == nil {
+		return nil, nil
+	}
+	_, _, detached := snapshotServiceError(failure)
+	var returned *serviceReadError
+	if !errors.As(detached, &returned) {
+		if _, controlled := InterruptionProblem(detached); !controlled {
+			return nil, ErrContract
+		}
+	}
+	normalized := joinServiceErrors(detached)
+	var err *serviceReadError
+	if !errors.As(normalized, &err) {
+		return nil, ErrContract
+	}
+	var problems []Problem
+	for _, cause := range err.causes {
+		problems = append(problems, Problem{Kind: cause.kind, Message: cause.message})
+	}
+	if err.stop != nil && !err.controls.present() {
+		return nil, ErrContract
+	}
+	problems = append(problems, serviceControlProblems(err.controls)...)
+	if len(problems) == 0 {
+		return nil, ErrContract
+	}
+	return problems, nil
 }
 
 // Projection preserves the fixed set of independently observed reasons. Primary
