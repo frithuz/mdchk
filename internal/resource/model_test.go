@@ -70,7 +70,29 @@ func TestOutcomeContractMatrix(t *testing.T) {
 	op, view, source := operation(t, context.Background(), parser.DefaultLimits())
 	empty := parser.NewSource(nil)
 	text := parser.NewSource([]byte("# A\n"))
-	parsed := parser.ParseWithOptions(op.Context(), text, op.Budget(), op.Settings().ParseOptions())
+	seed, _ := r.NewKey("docs/source.md")
+	asset, _ := r.NewKey("asset.md")
+	input, err := r.DecodeSupplied(op.Context(), op.Budget(), r.DefaultInputLimits(), nil, []r.SuppliedFile{{Key: seed, Source: source}, {Key: asset, Source: text}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	reader, err := r.NewSuppliedReader(op.Context(), op, input, r.DefaultInputLimits())
+	if err != nil {
+		t.Fatal(err)
+	}
+	service, err := r.NewSuppliedService(reader, r.DefaultServiceLimits())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := service.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+	indexed, err := service.Read(op.Context(), request(t, view, source, "MD057", r.ParsedAnchors, r.RegularFile))
+	if err != nil {
+		t.Fatal(err)
+	}
 	cases := []struct {
 		name     string
 		cap      r.Capability
@@ -82,7 +104,7 @@ func TestOutcomeContractMatrix(t *testing.T) {
 		{"omitted content preserves file", r.ExistenceOnly, r.RegularFile, r.ObservationSpec{Existence: r.File, Content: r.Unavailable, Anchors: r.Unavailable, Problem: r.Problem{Kind: r.NotSupplied, Message: "not supplied"}}, r.Complete},
 		{"omitted anchors incomplete", r.ParsedAnchors, r.RegularFile, r.ObservationSpec{Existence: r.File, Content: r.Unavailable, Anchors: r.Unavailable, Problem: r.Problem{Kind: r.NotSupplied, Message: "not supplied"}}, r.ContextIncomplete},
 		{"empty is acquired", r.TextContent, r.RegularFile, r.ObservationSpec{Existence: r.File, Content: r.Available, Anchors: r.NotRequested, Source: empty}, r.Complete},
-		{"parsed source available", r.ParsedAnchors, r.RegularFile, r.ObservationSpec{Existence: r.File, Content: r.Available, Anchors: r.Available, Source: text, Parsed: &parsed}, r.Complete},
+		{"computed index available", r.ParsedAnchors, r.RegularFile, indexed, r.Complete},
 		{"uncertain parsed structure", r.ParsedAnchors, r.RegularFile, r.ObservationSpec{Existence: r.File, Content: r.Available, Anchors: r.Uncertain, Source: text, Problem: r.Problem{Kind: r.ParserUncertain, Message: "uncertain"}}, r.ContextIncomplete},
 		{"read fails after existence", r.TextContent, r.RegularFile, r.ObservationSpec{Existence: r.File, Content: r.Failed, Anchors: r.Unavailable, Problem: r.Problem{Kind: r.ReadFailure, Message: "read failed"}}, r.ContextIncomplete},
 		{"decode fails after existence", r.ParsedAnchors, r.RegularFile, r.ObservationSpec{Existence: r.File, Content: r.Failed, Anchors: r.Unavailable, Problem: r.Problem{Kind: r.DecodeFailure, Message: "decode failed"}}, r.ContextIncomplete},
@@ -92,6 +114,11 @@ func TestOutcomeContractMatrix(t *testing.T) {
 		{"authoritative absent", r.ExistenceOnly, r.RegularFile, r.ObservationSpec{Existence: r.Missing, Content: r.Inapplicable, Anchors: r.Inapplicable}, r.MissingTarget},
 		{"partial omission unknown", r.ParsedAnchors, r.RegularFile, r.ObservationSpec{Existence: r.Unknown, Content: r.Unavailable, Anchors: r.Unavailable, Problem: r.Problem{Kind: r.PartialInventory, Message: "unknown"}}, r.ContextIncomplete},
 		{"blocked not missing", r.ExistenceOnly, r.RegularFile, r.ObservationSpec{Existence: r.Unknown, Content: r.Unavailable, Anchors: r.Unavailable, Problem: r.Problem{Kind: r.Blocked, Message: "blocked"}}, r.ContextIncomplete},
+	}
+	parsedOnly := indexed
+	parsedOnly.Index = r.AnchorIndex{}
+	if _, err := op.Record(request(t, view, source, "MD051", r.ParsedAnchors, r.RegularFile), parsedOnly); !errors.Is(err, r.ErrContract) {
+		t.Fatal("parsed data alone asserted a computed index", err)
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

@@ -4,8 +4,9 @@ Issue #249 establishes engine-facing types and fixtures. Issues #170/#250 add
 the strict supplied-input boundary and shared destination normalization. Issue
 #251 adds root selection and an internal raw native read adapter. Issue #252
 adds immutable partial/complete supplied-inventory lookup. Issue #253 adds the
-operation-owned first-observation service and parsed-source cache seam. Anchors,
-production consumers and coordinated fixes remain downstream. No CLI/MCP resource capability or engine rule
+operation-owned first-observation service and parsed-source cache seam. Issue
+#254 adds the immutable CommonMark/GFM heading and verified HTML ID index.
+Production consumers and coordinated fixes remain downstream. No CLI/MCP resource capability or engine rule
 callback is enabled by these internal APIs.
 
 A caller supplies an opaque root identity, immutable parser/index/anchor policy,
@@ -36,12 +37,11 @@ and copies its evidence. File/directory/missing/unknown existence is independent
 from content and parsed-source availability. An empty acquired source is distinct
 from omitted content. Missing is authoritative; partial inventory omissions,
 blocked context, read/decode failures and interruptions do not imply absence.
-Available parsed-source evidence must come from a complete reliable parse using
-the operation's budget and `Operation.Settings().ParseOptions()`. Producers MUST
-use these options. `Record` verifies source, completeness and budget ownership,
-but cannot authenticate parser-policy provenance; a same-budget wrong-options
-parse is not mechanically rejected. It is not an anchor index or an anchor
-algorithm. `ValidateContent` checks strict UTF-8 and bounds while execution is
+Available anchors require the service's opaque computed `AnchorIndex` and complete
+parsed evidence for the exact operation, source owner, view and settings. A
+caller-supplied complete parse alone cannot grant anchor availability. The index
+retains the full digest, parse options (including frontmatter), parser revision
+and shared anchor style in its `ParseCacheKey`. `ValidateContent` checks strict UTF-8 and bounds while execution is
 permitted. Retain its opaque operation-owned `ContentEvidence` in
 `ObservationSpec.Validated` to preserve acquired bytes when later anchor work
 stops. Matching evidence avoids rescanning/recharging; zero, foreign or mismatched
@@ -498,3 +498,61 @@ is changed or cut off. Nil children and typed-nil supported carriers become
 finite metadata markers before any dereference or nil-unsafe Error call. Canonical
 operational failure remains retained even when unsupported or excessive inspection
 metadata is cut off.
+
+## Computed anchor authority
+
+`Service.Anchors` accepts only a content witness admitted by that service.
+`Read` with `ParsedAnchors` obtains this computed index; `Parse` alone does not.
+Parsing completes before the index is queued on the same operation worker.
+Concurrent callers share production, while cancelling one wait does not cancel
+another caller's index. `Close` joins the worker. Derived entries are bounded by
+the finite parsed admission policy and the shared operation budget; there is no
+global cache or retained history outside the operation.
+
+`TargetAnchors` admits an exact already-selected snapshot by target ID and view.
+This permits same-document analysis of outside-root or metadata targets with
+`NoKey`, without minting resource keys or broadening cross-file access. Saved
+unavailability never falls back to original content. Original bytes were counted
+at service construction; each replacement has the per-text bound, and the
+coordinated producer must still enforce the complete candidate overlay's
+aggregate limit. Repeated requests reuse a bounded witness. Generic
+`ValidateContent` evidence cannot bypass service admission. `Source.Token` is
+only an opaque owner identity for ready-cache lookup, with no admission authority.
+The full policy/digest/source key remains authoritative.
+
+The `github` style flattens parsed heading text, code, formatting, link labels,
+image alternative children and line breaks once. Raw tag spelling, destinations
+and titles contribute no text. Unicode simple lowercase is applied without
+normalization or case folding; Unicode punctuation is removed except `-` and
+`_`, symbols are retained, and each whitespace rune becomes one hyphen without
+trimming or collapse. All proven effective nonempty HTML IDs are reserved first,
+including later occurrences. Headings then take their base or the lowest free
+numeric suffix in source order. Empty bases remain empty, with no invented
+fallback; the first empty ID is not a usable named target. Per-base suffix cursors
+only skip proven occupied names.
+
+The `explicit` style generates no heading IDs. Current CommonMark/GFM has no
+explicit-heading-ID producer: `{#id}` remains ordinary text. HTML IDs on child
+elements or raw HTML headings are general targets, not Markdown heading IDs.
+HTML attribute names compare ASCII-insensitively, the first duplicate wins, and
+values decode once in HTML attribute context without trimming, URL decoding or
+case normalization. Empty and ignored duplicate attributes remain source
+occurrences but confer no membership. Heading records retain visible text, level,
+source envelopes and container ancestry separately from general ID occurrences.
+Quote/list headings participate in anchors; future TOC consumers decide their
+own eligibility.
+
+`AnchorIndex.Lookup` accepts an already-decoded exact ID. Its empty successful
+result proves absence only in a complete index. Zero, uncertain or interrupted
+indexes cannot prove absence. Accessors copy mutable slices and charge the
+original shared meter before scanning/copying. Construction charges syntax
+extraction, ID bytes, occupancy/suffix work, retained nodes and occurrence copies;
+no partial map is published on a stop. Required parse or HTML-context uncertainty
+withholds the whole index because unknown explicit IDs can affect any suffix.
+SVG/MathML entry is one such unsupported context: foreign integration points do
+not grant ordinary HTML raw-text ownership from a local name such as title.
+Already acquired content and its witness survive such deficits and actual
+operational causes retain their existing report ownership. A completed index
+also survives a later stop without content rehashing. No fragment resolver,
+MD051/MD073/MD080 callback, TOC fix, renderer, sanitizer or runtime capability is
+introduced here.

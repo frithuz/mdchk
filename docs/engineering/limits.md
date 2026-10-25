@@ -187,3 +187,15 @@ and operational-error precedence. This supports positive finite deadlines down
 to a nanosecond without claiming that constant reserve construction or output
 delivery finishes within that interval. No second timed retry performs additional
 project work. Lint retains its existing manifest and presentation behavior.
+
+
+The #254 derived anchor index shares the parser operation's work, node and elapsed
+meters. Heading/HTML extraction, visible ID bytes, global explicit reservation,
+per-base suffix probes and detached inspection copies are charged before their
+corresponding scans or retention. Its service cache is operation-owned, bounded
+by parsed admission, and keyed by the full parsed policy and exact source/view
+owner. Selected-target content witnesses reuse a finite derived-entry cap;
+`resource-derived-entries` reports exhaustion without registering resources.
+Original selected bytes are already counted at service construction. The narrow
+selected-source seam enforces each replacement's text limit; complete aggregate
+candidate-overlay admission remains the coordinated producer's responsibility.

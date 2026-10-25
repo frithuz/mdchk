@@ -40,6 +40,7 @@ const (
 	NotSupplied        ProblemKind = "not-supplied"
 	ReadFailure        ProblemKind = "read-failure"
 	DecodeFailure      ProblemKind = "decode-failure"
+	InternalFailure    ProblemKind = "internal-failure"
 	ParserUncertain    ProblemKind = "parser-uncertain"
 	Cancelled          ProblemKind = "cancelled"
 	Deadline           ProblemKind = "deadline-exceeded"
@@ -56,15 +57,16 @@ type Problem struct {
 // ObservationSpec is adapter-supplied evidence, validated and copied by Record.
 // Parsed producers MUST use Operation.Settings().ParseOptions(). Record validates
 // source, completeness and budget ownership, but cannot authenticate parse-policy
-// provenance. Parsed must be complete when Anchors is Available.
-// This establishes parsed-source availability, NOT a computed anchor index.
-// An actual index/projection and its algorithm remain #254's responsibility.
+// provenance. Available anchors require both a complete Parsed result and the
+// service's opaque computed Index for this exact source/view/settings. Parsed
+// evidence alone cannot establish named-target presence or absence.
 type ObservationSpec struct {
 	Existence        Existence
 	Content, Anchors Availability
 	Source           parser.Source
 	Validated        ContentEvidence
 	Parsed           *parser.ParseResult
+	Index            AnchorIndex
 	Problem          Problem
 }
 type Observation struct {
@@ -73,6 +75,7 @@ type Observation struct {
 	content, anchors Availability
 	source           parser.Source
 	problem          Problem
+	index            AnchorIndex
 }
 
 func (o Observation) Request() Request                  { return o.request }
@@ -81,6 +84,9 @@ func (o Observation) ContentAvailability() Availability { return o.content }
 func (o Observation) AnchorAvailability() Availability  { return o.anchors }
 func (o Observation) Content() (parser.Source, bool)    { return o.source, o.content == Available }
 func (o Observation) Problem() Problem                  { return copyProblem(o.problem) }
+func (o Observation) Index() (AnchorIndex, bool) {
+	return o.index, o.anchors == Available && o.index.state != nil
+}
 func copyProblem(p Problem) Problem {
 	if p.Limit != nil {
 		v := *p.Limit
@@ -141,7 +147,7 @@ func (o *Operation) Record(request Request, spec ObservationSpec) (Observation, 
 		return Observation{}, ErrContract
 	}
 	switch spec.Problem.Kind {
-	case NoProblem, PartialInventory, MalformedReference, Blocked, NotSupplied, ReadFailure, DecodeFailure, ParserUncertain, Cancelled, Deadline, Limited:
+	case NoProblem, PartialInventory, MalformedReference, Blocked, NotSupplied, ReadFailure, DecodeFailure, InternalFailure, ParserUncertain, Cancelled, Deadline, Limited:
 	default:
 		return Observation{}, ErrContract
 	}
@@ -179,16 +185,22 @@ func (o *Operation) Record(request Request, spec ObservationSpec) (Observation, 
 		if spec.Content != Available || p == nil || p.Document == nil || p.Source != spec.Source || p.Document.Source() != spec.Source || p.Status != parser.Complete || p.AST != parser.Available || p.Failure != nil || len(p.Uncertainty) != 0 || p.Interruption != "" {
 			return Observation{}, ErrContract
 		}
-		if _, err := p.Document.Comments(o.ctx, o.budget); err != nil {
-			return Observation{}, err
+		i := spec.Index.state
+		if i == nil || i.operation != o || i.key.source != spec.Source || i.key.view != request.view.identity || i.key.options != o.settings.parsing || i.key.anchor != o.settings.anchor || i.key.revision != o.settings.revision {
+			return Observation{}, ErrContract
 		}
-	} else if spec.Parsed != nil {
+		for _, state := range request.view.targets {
+			if state.target.ResourceKey == request.Key() && (state.unavailable || state.target.Source != spec.Source) {
+				return Observation{}, ErrContract
+			}
+		}
+	} else if spec.Parsed != nil || spec.Index.state != nil {
 		return Observation{}, ErrContract
 	}
 	if spec.Existence == Unknown && (spec.Content == Available || spec.Anchors == Available || spec.Content == Inapplicable || spec.Anchors == Inapplicable) {
 		return Observation{}, ErrContract
 	}
-	failure := spec.Problem.Kind == ReadFailure || spec.Problem.Kind == DecodeFailure
+	failure := spec.Problem.Kind == ReadFailure || spec.Problem.Kind == DecodeFailure || spec.Problem.Kind == InternalFailure
 	stop := spec.Problem.Kind == Cancelled || spec.Problem.Kind == Deadline || spec.Problem.Kind == Limited
 	if (spec.Content == Failed || spec.Anchors == Failed) && !failure {
 		return Observation{}, ErrContract
@@ -223,7 +235,7 @@ func (o *Operation) Record(request Request, spec ObservationSpec) (Observation, 
 	if spec.Content == Uncertain || spec.Anchors == Uncertain && (spec.Content != Available || spec.Problem.Kind != ParserUncertain) {
 		return Observation{}, ErrContract
 	}
-	return Observation{request, spec.Existence, spec.Content, spec.Anchors, spec.Source, copyProblem(spec.Problem)}, nil
+	return Observation{request, spec.Existence, spec.Content, spec.Anchors, spec.Source, copyProblem(spec.Problem), spec.Index}, nil
 }
 
 // InterruptionProblem converts controlled runtime stops without reclassifying

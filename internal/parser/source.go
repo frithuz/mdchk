@@ -26,6 +26,13 @@ type Source struct {
 // Identity is private ownership metadata, never an output or serialization ID.
 type sourceIdentity struct{ _ byte }
 
+// SourceToken is constant-size immutable snapshot identity, not source bytes or
+// a content digest. Equal text from independent snapshots has distinct tokens.
+// Its zero value identifies only a zero Source and grants no parsed authority.
+type SourceToken struct{ identity *sourceIdentity }
+
+func (s Source) Token() SourceToken { return SourceToken{s.identity} }
+
 // NewSource copies content into a Source. Callers may reuse or modify content
 // after NewSource returns without changing the retained bytes.
 func NewSource(content []byte) Source {

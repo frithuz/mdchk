@@ -41,10 +41,19 @@ func (s *Service) ParseKey(view View, evidence ContentEvidence) (ParseCacheKey, 
 		return ParseCacheKey{}, ErrContract
 	}
 	s.mu.Lock()
-	admittedSource, admitted := s.validations[evidence.identity]
+	admission, admitted := s.validations[evidence.identity]
 	s.mu.Unlock()
-	if !admitted || admittedSource != evidence.source {
+	if !admitted || admission.source.Token() != evidence.source.Token() {
 		return ParseCacheKey{}, ErrContract
+	}
+	if admission.targetID != "" {
+		if err := s.operation.Checkpoint(int64(len(admission.targetID)+1) * int64(len(view.targets)+1)); err != nil {
+			return ParseCacheKey{}, err
+		}
+		target, available, exists := view.Target(admission.targetID)
+		if !exists || !available || target.Source.Token() != evidence.source.Token() {
+			return ParseCacheKey{}, ErrContract
+		}
 	}
 
 	if err := s.operation.Checkpoint(3*int64(evidence.source.Len()) + int64(len(s.operation.settings.revision)) + 1); err != nil {
@@ -56,7 +65,7 @@ func (s *Service) ParseKey(view View, evidence ContentEvidence) (ParseCacheKey, 
 // Parse reuses an immutable parser result under the full source/policy key.
 // The single operation worker runs ParseWithOptions using the exact existing
 // settings and budget. Results are defensively copied; Document is immutable.
-// This is a parsed-source seam, not a computed heading/anchor index (#254).
+// Use Anchors for computed named-target authority; Parse alone grants none.
 // Completed evidence remains valid if parsing later stops; callers keep it.
 func (s *Service) Parse(ctx context.Context, view View, evidence ContentEvidence) (parser.ParseResult, error) {
 	out, err := s.parseCached(ctx, view, evidence)
@@ -74,6 +83,10 @@ func (s *Service) parseCached(ctx context.Context, view View, evidence ContentEv
 	if err != nil {
 		return parser.ParseResult{}, err
 	}
+	return s.parseKeyCached(ctx, key)
+}
+
+func (s *Service) parseKeyCached(ctx context.Context, key ParseCacheKey) (parser.ParseResult, error) {
 	for {
 		s.mu.Lock()
 		p := s.parsed[key]

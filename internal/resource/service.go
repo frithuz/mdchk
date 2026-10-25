@@ -34,6 +34,10 @@ type cachedResource struct {
 	flight                   chan struct{}
 }
 type serviceJob func(context.Context)
+type serviceValidation struct {
+	source   parser.Source
+	targetID string
+}
 
 // Service retains first resource facts for one exact Operation. One owned
 // worker coalesces acquisition and derived parsing; caller cancellation stops
@@ -42,29 +46,34 @@ type serviceJob func(context.Context)
 // The zero value is invalid. Read returns facts AND independently retained errors;
 // project both with ServiceReport. No query registers a target or a write.
 type Service struct {
-	operation   *Operation
-	filesystem  *FilesystemReader
-	supplied    *SuppliedReader
-	limits      ServiceLimits
-	ctx         context.Context
-	cancel      context.CancelFunc
-	done        chan struct{}
-	wake        chan struct{}
-	mu          sync.Mutex
-	closed      bool
-	stop        error
-	identities  map[Key]bool
-	unkeyed     int64
-	lookups     map[Key]bool
-	entries     map[serviceKey]*cachedResource
-	selected    map[Key]int
-	bytes       int64
-	queue       []serviceJob
-	parsed      map[ParseCacheKey]*cachedParse
-	validations map[*contentIdentity]parser.Source
+	operation      *Operation
+	filesystem     *FilesystemReader
+	supplied       *SuppliedReader
+	limits         ServiceLimits
+	ctx            context.Context
+	cancel         context.CancelFunc
+	done           chan struct{}
+	wake           chan struct{}
+	mu             sync.Mutex
+	closed         bool
+	stop           error
+	identities     map[Key]bool
+	unkeyed        int64
+	lookups        map[Key]bool
+	entries        map[serviceKey]*cachedResource
+	selected       map[Key]int
+	bytes          int64
+	queue          []serviceJob
+	parsed         map[ParseCacheKey]*cachedParse
+	anchors        map[anchorOwnerKey]*cachedAnchors
+	validations    map[*contentIdentity]serviceValidation
+	targetEvidence map[anchorOwnerKey]ContentEvidence
 	// read is an internal deterministic-test seam. Production always uses the
 	// exact registered adapter; it is never exported as generic filesystem authority.
 	read func(context.Context, Request, filesystemReceipt) (ObservationSpec, filesystemReceipt, error)
+	// Private deterministic production boundary, like read. It never accepts a
+	// caller-supplied builder or enlarges resource authority.
+	buildAnchors func(context.Context, *Operation, ParseCacheKey, parser.ParseResult) (AnchorResult, error)
 }
 
 // NewFilesystemService registers at most one service per operation. Repeated
@@ -101,10 +110,10 @@ func newService(op *Operation, native *FilesystemReader, supplied *SuppliedReade
 	if err := op.Checkpoint(1); err != nil {
 		return nil, err
 	}
-	if err := op.budget.ChargeNodes(9); err != nil {
+	if err := op.budget.ChargeNodes(11); err != nil {
 		return nil, err
 	}
-	s := &Service{operation: op, filesystem: native, supplied: supplied, limits: limits, done: make(chan struct{}), wake: make(chan struct{}, 1), identities: map[Key]bool{}, lookups: map[Key]bool{}, entries: map[serviceKey]*cachedResource{}, selected: map[Key]int{}, parsed: map[ParseCacheKey]*cachedParse{}, validations: map[*contentIdentity]parser.Source{}}
+	s := &Service{operation: op, filesystem: native, supplied: supplied, limits: limits, done: make(chan struct{}), wake: make(chan struct{}, 1), identities: map[Key]bool{}, lookups: map[Key]bool{}, entries: map[serviceKey]*cachedResource{}, selected: map[Key]int{}, parsed: map[ParseCacheKey]*cachedParse{}, anchors: map[anchorOwnerKey]*cachedAnchors{}, validations: map[*contentIdentity]serviceValidation{}, targetEvidence: map[anchorOwnerKey]ContentEvidence{}}
 	targetCount := len(op.targets)
 	if supplied != nil {
 		if err := op.Checkpoint(int64(len(supplied.entries)) + 1); err != nil {
@@ -124,6 +133,11 @@ func newService(op *Operation, native *FilesystemReader, supplied *SuppliedReade
 	add := func(key Key, source parser.Source) error {
 		if err := op.Checkpoint(int64(len(key.value)) + 1); err != nil {
 			return err
+		}
+		if source != (parser.Source{}) {
+			if err := inputBound("resources", "document-bytes", int64(source.Len()), op.budget.Limits().DocumentBytes); err != nil {
+				return err
+			}
 		}
 		delta := int64(0)
 		if key.value == "" || !s.identities[key] {
@@ -171,6 +185,7 @@ func newService(op *Operation, native *FilesystemReader, supplied *SuppliedReade
 		return nil, err
 	}
 	s.ctx, s.cancel = context.WithCancel(op.ctx)
+	s.buildAnchors = buildAnchorIndex
 	if native != nil {
 		s.read = native.readReceipt
 	} else {
@@ -254,6 +269,12 @@ func (s *Service) finishWorker(err error) {
 			p.done = nil
 		}
 	}
+	for _, p := range s.anchors {
+		if p.done != nil {
+			close(p.done)
+			p.done = nil
+		}
+	}
 }
 func (s *Service) enqueue(job serviceJob) {
 	s.queue = append(s.queue, job)
@@ -308,6 +329,16 @@ func (s *Service) wait(ctx context.Context, done <-chan struct{}) error {
 // are partitioned by exact immutable view identity. Cache hits perform no I/O.
 func (s *Service) Read(ctx context.Context, q Request) (ObservationSpec, error) {
 	spec, err := s.readCached(ctx, q)
+	if q.Capability() == ParsedAnchors && spec.Content == Available {
+		anchors, anchorErr := s.Anchors(ctx, q.View(), spec.Validated)
+		if anchors.state != nil {
+			spec, anchorErr = applyAnchorResult(anchors, spec, anchorErr)
+		}
+		if errors.Is(anchorErr, ErrContract) {
+			return spec, anchorErr
+		}
+		err = joinServiceErrors(err, anchorErr)
+	}
 	spec.Problem = copyProblem(spec.Problem)
 	if spec.Parsed != nil {
 		parsed := copyCachedParse(*spec.Parsed)
@@ -329,6 +360,14 @@ func (s *Service) Read(ctx context.Context, q Request) (ObservationSpec, error) 
 		}
 	}
 	return spec, err
+}
+
+func applyAnchorResult(anchors AnchorResult, spec ObservationSpec, prior error) (ObservationSpec, error) {
+	out, err := anchors.apply(spec)
+	if err != nil {
+		return out, err
+	}
+	return out, anchorReadError(errors.Join(prior, err))
 }
 
 func (s *Service) readCached(ctx context.Context, q Request) (ObservationSpec, error) {
@@ -433,7 +472,7 @@ func (s *Service) readCached(ctx context.Context, q Request) (ObservationSpec, e
 			s.entries[key] = e
 		}
 		if e.flight == nil {
-			if err := s.operation.budget.ChargeNodes(4); err != nil {
+			if err := s.operation.budget.ChargeNodes(5); err != nil {
 				s.mu.Unlock()
 				return filesystemStop(Unknown, err), err
 			}
@@ -549,7 +588,14 @@ func (s *Service) acquire(ctx context.Context, e *cachedResource, q Request, con
 		}
 	}
 	if e.hasContent && e.content.Content == Available && e.content.Validated.operation == s.operation && e.content.Validated.source == e.content.Source && e.content.Validated.identity != nil {
-		s.validations[e.content.Validated.identity] = e.content.Source
+		admission := serviceValidation{source: e.content.Source}
+		if i, selected := s.selected[q.Key()]; selected {
+			admission.targetID = q.view.targets[i].target.ID
+			if int64(len(s.targetEvidence)) < s.limits.Identities {
+				s.targetEvidence[anchorOwnerKey{source: e.content.Source.Token(), view: q.view.identity}] = e.content.Validated
+			}
+		}
+		s.validations[e.content.Validated.identity] = admission
 	}
 	if e.flight != nil {
 		close(e.flight)

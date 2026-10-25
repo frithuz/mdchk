@@ -145,13 +145,17 @@ func filesystemFault(err error) *FilesystemReadError {
 func (p *filesystemReportState) problem(key string, problem Problem) string {
 	identity := key + "\x00" + string(problem.Kind)
 	switch problem.Kind {
-	case ReadFailure, DecodeFailure:
+	case ReadFailure, DecodeFailure, InternalFailure:
 		if id := p.io[identity]; id != "" {
 			return id
 		}
 		id := p.next("resource-native-error")
 		p.io[identity] = id
-		p.out.Errors = append(p.out.Errors, result.Error{ID: id, Category: result.IO, Code: string(problem.Kind), Scope: "operation", Path: key, Message: problem.Message})
+		category := result.IO
+		if problem.Kind == InternalFailure {
+			category = result.Internal
+		}
+		p.out.Errors = append(p.out.Errors, result.Error{ID: id, Category: category, Code: string(problem.Kind), Scope: "operation", Path: key, Message: problem.Message})
 		return id
 	case Cancelled, Deadline, Limited:
 		if id := p.stops[identity]; id != "" {

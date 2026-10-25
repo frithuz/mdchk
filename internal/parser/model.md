@@ -944,6 +944,53 @@ deterministic interruption sweeps include images. The corpus is 652 pass/0 pendi
 comprehensive work/depth hardening follows
 [parser accounting](../../docs/engineering/parser-limits.md).
 
+## Verified HTML ID attributes
+
+`Document.HTMLIDs(ctx, budget)` derives a separate source-owned inventory from an
+actual completed parse in the same operation. It does not add eager attributes to
+the Markdown AST or let constructed Nodes/Documents claim recognized HTML. The
+method reuses the complete CommonMark tag lexer, mapped logical content and pinned
+HTML entity data. Collection shares the existing work/node/time budget. Actual
+quota, cancellation or deadline errors withhold the entire inventory.
+
+An Available collection contains source-ordered `HTMLIDOccurrence` records. Tag
+selects the original physical envelope of the complete opening tag; Attribute
+selects the authored id/ID spelling, optional equals/value and quotes. Value keeps
+mapped original segments separately from its once-decoded HTML attribute semantics.
+Present-empty and bare id attributes retain a real empty value. Later duplicate
+id attributes remain occurrences with Effective=false: ASCII name case does not
+change first-attribute precedence, and ID values remain case-sensitive. Empty IDs
+are not usable named targets. Closing-tag attributes and legacy name anchors do
+not create IDs.
+
+Attribute decoding preserves literal backslashes and percent spellings. It uses
+the attribute-specific semicolonless-name rule, numeric invalid-scalar/C1 handling,
+and input CRLF/CR preprocessing; references are not decoded or preprocessed twice.
+The existing 2125 strict named references remain unchanged. The 106 legacy bare
+names are generated from the same pinned WHATWG fixture by
+`python3 tools/html_entities.py`, and `--check` verifies both tables offline.
+
+Extraction excludes Markdown code, opaque frontmatter, image-description HTML
+(which becomes alt text), comments, declarations, CDATA/PI and quoted tag-looking
+attribute text. Real nested HTML elements inside pre can carry IDs; script,
+style and other HTML raw-text interiors cannot manufacture child elements. This
+is a narrow static projection, not a DOM, script executor or browser-recovery
+parser. An actual SVG or MathML opening enters an unsupported foreign namespace,
+whose integration points cannot inherit HTML raw-text ownership from a local tag
+name. Such entry immediately withholds the whole inventory and locates the
+original opening-tag envelope. Protected or quoted foreign-looking text does not
+enter that context. No namespace stack or tree builder is introduced.
+Unsupported malformed/cross-block/script-escape contexts and filtered GFM
+raw openings yield Unavailable plus an original-source uncertainty region, with
+no occurrences. In particular, escaping a filtered opening does not establish
+ordinary raw-text ownership or permit guessing a complete absent-ID inventory.
+
+Each call owns its returned slices/values. Source spans still belong to the
+original immutable snapshot, including mapped container gaps and transformed
+entity contributions. Raw HTML heading elements are general targets, not parsed
+Markdown Heading records. No format-specific heading attributes, generated slug
+algorithm, fragment consumer, rule or TOC policy is introduced by this projection.
+
 ## Snapshots, spans and ownership
 
 `Source` copies incoming bytes; `Bytes` returns an independent copy. Copies of a
@@ -1548,3 +1595,23 @@ source authority. The delivered tagged adapter (#234) executes
 all 2,117 units with separate immutable raw and approved modern-target comparisons;
 its [actual-run contract](testdata/gfm/profile/README.md#execute-the-actual-adapter-offline)
 retains these boundaries and distinguishes integrity-only NOT-RUN checks.
+
+
+## Derived heading facts and source identity
+
+`Document.Headings(ctx, budget)` exposes completed-parse Markdown heading facts
+for a resource index. It requires the original operation budget witness, as does
+`HTMLIDs`; constructing nodes does not establish that witness. Facts preserve the
+original heading envelope, level/style, parsed visible text and quote/list
+ancestry. Text/code, formatting, labels and image alternative children contribute
+once; soft/hard breaks contribute a newline. Raw tag spelling contributes none,
+and protected raw text is not reinterpreted as Markdown. This API does not
+allocate anchors or define TOC eligibility. Storage is detached and metered; a
+stop returns no partial collection. Default parsing and node recognition are
+unchanged.
+
+`Source.Token()` is a constant-size comparable opaque snapshot-owner identity.
+Copies of one source share a token; separately constructed equal bytes do not.
+The zero source differs from a real empty source. Tokens expose no bytes, span
+construction, budget witness or content admission authority. They allow a
+service to retain completed facts after a stop without hashing source contents.

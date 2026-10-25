@@ -31,7 +31,7 @@ type reportFixture struct {
 	text      string
 }
 
-func newReportFixture(t *testing.T, ctx context.Context, text string) reportFixture {
+func newReportFixture(t *testing.T, ctx context.Context, text string, parsing ...parser.ParseOptions) reportFixture {
 	t.Helper()
 	budget, err := parser.NewOperationBudget(parser.DefaultLimits())
 	if err != nil {
@@ -41,7 +41,11 @@ func newReportFixture(t *testing.T, ctx context.Context, text string) reportFixt
 	if err != nil {
 		t.Fatal(err)
 	}
-	settings, err := resource.NewSettings(parser.ParseOptions{}, "index.md", "github", "contract-test-v1")
+	options := parser.ParseOptions{}
+	if len(parsing) != 0 {
+		options = parsing[0]
+	}
+	settings, err := resource.NewSettings(options, "index.md", "github", "contract-test-v1")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -200,7 +204,7 @@ func TestResourceContextProblemsDoNotInventIOOrMissingFindings(t *testing.T) {
 					t.Fatal(err)
 				}
 			case resource.PartialInventory:
-			case resource.ReadFailure, resource.DecodeFailure, resource.Cancelled, resource.Deadline, resource.Limited:
+			case resource.ReadFailure, resource.DecodeFailure, resource.InternalFailure, resource.Cancelled, resource.Deadline, resource.Limited:
 				t.Fatal("operational cause is outside this coverage-only fixture")
 			}
 			observation := f.outcome(t, request, spec)

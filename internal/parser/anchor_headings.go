@@ -1,0 +1,146 @@
+package parser
+
+import (
+	"context"
+	"errors"
+	"slices"
+	"strings"
+)
+
+// HeadingContainer retains original syntax ancestry. It is not a final TOC
+// eligibility decision: marked regions and the consumer's level policy are
+// separate work. Quote/list headings still have ordinary anchor identities.
+type HeadingContainer struct {
+	Kind     Kind
+	Envelope Span
+}
+
+// HeadingFact is a parser-confirmed Markdown heading, separate from arbitrary
+// HTML ID targets. Visible contains semantic inline text, including image alt
+// descriptions, rather than source markup or link destinations/titles.
+type HeadingFact struct {
+	Envelope   Span
+	Level      int
+	Style      string
+	Visible    string
+	Containers []HeadingContainer
+}
+
+// Headings projects source-ordered facts only from an actual completed parse in
+// the same operation. All construction and text copying share its existing
+// budget. An interrupted collection publishes no partial complete-looking list.
+func (d *Document) Headings(ctx context.Context, budget *OperationBudget) ([]HeadingFact, error) {
+	if ctx == nil || budget == nil || d == nil || !d.parsedComplete || d.commentOperation != budget.identity {
+		return nil, errors.New("heading context is not a completed parse in this operation")
+	}
+	var out []HeadingFact
+	var walk func(*Node, []HeadingContainer) error
+	walk = func(n *Node, containers []HeadingContainer) error {
+		if err := headingFactCharge(ctx, budget, int64(len(n.spec.Children))+1, 0); err != nil {
+			return err
+		}
+		if n.Kind() == Heading {
+			if n.spec.Properties.Heading == nil {
+				return ErrModel
+			}
+			visible, err := headingVisibleText(ctx, budget, n)
+			if err != nil {
+				return err
+			}
+			if err := headingFactCharge(ctx, budget, int64(len(containers))+1, int64(len(containers))+1); err != nil {
+				return err
+			}
+			h := n.spec.Properties.Heading
+			out = append(out, HeadingFact{Envelope: n.Span(), Level: h.Level, Style: h.Style, Visible: visible, Containers: slices.Clone(containers)})
+			return nil
+		}
+		switch n.Kind() {
+		case BlockQuote, List, ListItem:
+			if err := headingFactCharge(ctx, budget, int64(len(containers))+1, int64(len(containers))+1); err != nil {
+				return err
+			}
+			containers = append(slices.Clone(containers), HeadingContainer{Kind: n.Kind(), Envelope: n.Span()})
+		default:
+		}
+		for _, child := range n.spec.Children {
+			if err := walk(child, containers); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	if err := walk(d.root, nil); err != nil {
+		return nil, err
+	}
+	if err := headingFactCharge(ctx, budget, 0, 0); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func headingFactCharge(ctx context.Context, budget *OperationBudget, work, nodes int64) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if err := budget.ChargeWork(work); err != nil {
+		return err
+	}
+	return budget.ChargeNodes(nodes)
+}
+
+func headingVisibleText(ctx context.Context, budget *OperationBudget, heading *Node) (string, error) {
+	var text strings.Builder
+	raw := ""
+	var walk func(*Node, bool) error
+	walk = func(n *Node, alt bool) error {
+		if err := headingFactCharge(ctx, budget, int64(len(n.spec.Children))+1, 0); err != nil {
+			return err
+		}
+		if n.Kind() == InlineHTML {
+			if !alt && htmlIDRawText(n.rawTag) {
+				if raw == "" && !n.rawClosing {
+					raw = n.rawTag
+				} else if raw == n.rawTag && n.rawClosing {
+					raw = ""
+				}
+			}
+			return nil
+		}
+		if raw != "" && !alt {
+			return nil
+		}
+		write := func(value string) error {
+			// Reserve actual scanning/copying and amortized builder growth before
+			// retaining semantic text. Existing Source/parse limits remain shared.
+			if err := headingFactCharge(ctx, budget, 3*int64(len(value))+1, 0); err != nil {
+				return err
+			}
+			_, err := text.WriteString(value)
+			return err
+		}
+		switch n.Kind() {
+		case Text, CodeSpan:
+			if !n.spec.Properties.Literal.Present {
+				return ErrModel
+			}
+			return write(n.spec.Properties.Literal.Value)
+		case SoftBreak, HardBreak:
+			return write("\n")
+		case Image:
+			alt = true
+		case Heading, Emphasis, Strong, Strike, Link:
+		default:
+			return ErrModel
+		}
+		for _, child := range n.spec.Children {
+			if err := walk(child, alt); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	if err := walk(heading, false); err != nil {
+		return "", err
+	}
+	return text.String(), nil
+}

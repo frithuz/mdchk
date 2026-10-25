@@ -52,12 +52,16 @@ func (v View) appendEffects(out *result.Result, observations []Observation, addi
 	project := func(key string, problem Problem) string {
 		identity := key + "\x00" + string(problem.Kind)
 		switch problem.Kind {
-		case ReadFailure, DecodeFailure:
+		case ReadFailure, DecodeFailure, InternalFailure:
 			id := errorsByIdentity[identity]
 			if id == "" {
 				id = nextID("resource-error")
 				errorsByIdentity[identity] = id
-				out.Errors = append(out.Errors, result.Error{ID: id, Category: result.IO, Scope: "operation", Code: string(problem.Kind), Message: problem.Message, Path: key})
+				category := result.IO
+				if problem.Kind == InternalFailure {
+					category = result.Internal
+				}
+				out.Errors = append(out.Errors, result.Error{ID: id, Category: category, Scope: "operation", Code: string(problem.Kind), Message: problem.Message, Path: key})
 			}
 			return id
 		case Cancelled, Deadline, Limited:
