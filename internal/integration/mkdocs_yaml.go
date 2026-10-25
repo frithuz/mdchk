@@ -3,18 +3,15 @@ package integration
 import (
 	"context"
 	"errors"
-	"strconv"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/goccy/go-yaml/ast"
-	yamlparser "github.com/goccy/go-yaml/parser"
-	"github.com/goccy/go-yaml/token"
 )
 
 // MkDocs decodes full configuration YAML with a guarded pinned lexical adapter
 // and a direct map to the acquired original source.
+type mkDocsStop struct{ err error }
 type mkDocsInternalError struct{}
 
 func (*mkDocsInternalError) Error() string { return "MkDocs YAML adapter failed" }
@@ -43,6 +40,8 @@ func decodeMkDocsYAML(ctx context.Context, s *Scope, source parser.Source) (out 
 	defer func() {
 		if r := recover(); r != nil {
 			if stop, ok := r.(yamlStop); ok {
+				err = stop.Cause()
+			} else if stop, ok := r.(mkDocsStop); ok {
 				err = stop.err
 			} else {
 				err = &mkDocsInternalError{}
@@ -52,108 +51,19 @@ func decodeMkDocsYAML(ctx context.Context, s *Scope, source parser.Source) (out 
 	}()
 	charge := func(work, nodes int64) {
 		if e := s.checkpoint(ctx, work, nodes); e != nil {
-			panic(yamlStop{e})
+			panic(mkDocsStop{e})
 		}
 	}
-	charge(8*int64(source.Len())+1, 4)
-	raw, _ := source.Text(whole)
-	skip := 0
-	if strings.HasPrefix(raw, "\xef\xbb\xbf") {
-		skip = 3
-	}
-	input := raw[skip:]
-	// Normalize YAML physical line breaks for the pinned scanner while mapping
-	// every retained content byte directly back to the acquired source. CRLF
-	// bytes remain original in Source and in all authored token ranges.
-	charge(8*int64(len(input))+1, 2*int64(len(input))+3)
-	var normalized strings.Builder
-	normalized.Grow(len(input))
-	maps := make([]yamlMap, 0)
-	cursor := skip
-	for i := skip; i < len(raw); i++ {
-		if raw[i] != '\r' {
-			continue
-		}
-		if i > cursor {
-			start := normalized.Len()
-			normalized.WriteString(raw[cursor:i])
-			span, _ := source.Span(cursor, i)
-			maps = append(maps, yamlMap{start, normalized.Len(), span, true})
-		}
-		end := i + 1
-		if end < len(raw) && raw[end] == '\n' {
-			end++
-			i++
-		}
-		start := normalized.Len()
-		normalized.WriteByte('\n')
-		var span parser.Span
-		// The normalization segment starts at the actual CR, including a CRLF.
-		cr := i
-		if raw[i] == '\n' {
-			cr--
-		}
-		span, _ = source.Span(cr, end)
-		maps = append(maps, yamlMap{start, normalized.Len(), span, false})
-		cursor = end
-	}
-	if cursor < len(raw) {
-		start := normalized.Len()
-		normalized.WriteString(raw[cursor:])
-		span, _ := source.Span(cursor, len(raw))
-		maps = append(maps, yamlMap{start, normalized.Len(), span, true})
-	}
-	input = normalized.String()
-	result := yamlResult{block: block}
-	mapper := yamlMapper{source: source, body: maps, lines: []yamlLine{{0, len(input), 0}}, charge: charge}
-	d := yamlDecoder{scope: s, ctx: ctx, text: input, mapper: mapper, out: &result, anchors: map[string]ast.Node{}, bindings: map[*ast.AliasNode]ast.Node{}, active: map[ast.Node]bool{}}
-	d.starts = []int{0}
-	for i := range input {
-		if input[i] == '\n' {
-			charge(1, 1)
-			d.starts = append(d.starts, i+1)
-		}
-	}
-	adapted, e := d.tagSeparatorInput()
-	if e != nil {
-		return out, e
-	}
-	tokens, e := d.lexTokens(adapted)
-	if e != nil {
-		return out, e
-	}
-	for _, tk := range tokens {
-		if (tk.Type == token.LiteralType || tk.Type == token.FoldedType) && !yamlBlockHeader.MatchString(tk.Value) {
-			d.issue(tk, "Invalid MkDocs block-scalar header.")
-		}
-	}
-	d.prepareOffsets(tokens)
-	invalidQuotes := map[*token.Token]bool{}
-	for _, tk := range tokens {
-		if tk.Type != token.DoubleQuoteType {
-			continue
-		}
-		start := d.offset(tk)
-		if start < 0 {
-			continue
-		}
-		end := d.quotedTokenEnd(tk, start)
-		if end <= start || end > len(d.text) {
-			continue
-		}
-		charge(int64(end-start)+1, 1)
-		if !mkDocsValidNumericEscapes(d.text[start:end]) {
-			invalidQuotes[tk] = true
-			d.issue(tk, "Malformed MkDocs quoted escape.")
-		}
-	}
-	tokens = yamlNormalizeEmptyBlocks(tokens)
-	file, e := yamlparser.Parse(tokens, 0, yamlparser.AllowDuplicateMapKey())
+	d, file, e := newYAMLDecoder(ctx, s, source)
 	issue := func(loc Location, message string) {
 		charge(int64(len(message))+1, 1)
 		out.problems = append(out.problems, MkDocsProblem{loc, message})
 	}
-	if e != nil {
+	var limit *parser.LimitExceeded
+	if errors.As(e, &limit) || errors.Is(e, context.Canceled) || errors.Is(e, context.DeadlineExceeded) {
+		return out, e
+	}
+	if e != nil || file == nil {
 		issue(block, "Malformed MkDocs YAML.")
 		return out, nil
 	}
@@ -163,8 +73,15 @@ func decodeMkDocsYAML(ctx context.Context, s *Scope, source parser.Source) (out 
 	}
 	root := file.Docs[0].Body
 	_, _, kind := d.read(root, 0, nil, false)
-	for _, p := range result.issues {
-		issue(p.location, p.message)
+	for i := 0; i < d.IssueCount(); i++ {
+		span, message, _ := d.Issue(i)
+		switch message {
+		case "Invalid YAML block-scalar header.":
+			message = "Invalid MkDocs block-scalar header."
+		case "Malformed YAML quoted escape.":
+			message = "Malformed MkDocs quoted escape."
+		}
+		issue(Location{source, span}, message)
 	}
 	if kind != yamlMapping {
 		issue(block, "MkDocs configuration must be a mapping.")
@@ -175,7 +92,7 @@ func decodeMkDocsYAML(ctx context.Context, s *Scope, source parser.Source) (out 
 	project = func(n ast.Node, depth int, use *ast.AliasNode) *mkDocsValue {
 		charge(1, 1)
 		if int64(depth) > min(int64(64), s.operation.Budget().Limits().SyntaxDepth) {
-			panic(yamlStop{&parser.LimitExceeded{Name: "structured-input-depth", Observed: int64(depth), Allowed: min(int64(64), s.operation.Budget().Limits().SyntaxDepth)}})
+			panic(mkDocsStop{&parser.LimitExceeded{Name: "structured-input-depth", Observed: int64(depth), Allowed: min(int64(64), s.operation.Budget().Limits().SyntaxDepth)}})
 		}
 		if n == nil {
 			return &mkDocsValue{kind: "unknown", location: block}
@@ -190,9 +107,13 @@ func decodeMkDocsYAML(ctx context.Context, s *Scope, source parser.Source) (out 
 		case *ast.MappingKeyNode:
 			return project(v.Value, depth+1, use)
 		case *ast.AnchorNode:
-			return project(v.Value, depth+1, use)
+			out := project(v.Value, depth+1, use)
+			if use == nil {
+				out.location = mkDocsCover(loc, out.location)
+			}
+			return out
 		case *ast.AliasNode:
-			target := d.bindings[v]
+			target := d.Target(v)
 			if target == nil {
 				return &mkDocsValue{kind: "unknown", location: loc}
 			}
@@ -210,7 +131,12 @@ func decodeMkDocsYAML(ctx context.Context, s *Scope, source parser.Source) (out 
 				return project(v.Value, depth+1, use)
 			}
 			if kind == yamlOther {
-				text, ok := yamlTaggedScalar(v.Value)
+				child := v.Value
+				if anchor, ok := child.(*ast.AnchorNode); ok {
+					charge(1, 0)
+					child = anchor.Value
+				}
+				text, ok := yamlTaggedScalar(child)
 				if ok && (tag == "!!bool" || strings.HasSuffix(tag, ":bool>")) {
 					return &mkDocsValue{kind: "bool", boolean: strings.EqualFold(text, "true"), location: location}
 				}
@@ -249,7 +175,7 @@ func decodeMkDocsYAML(ctx context.Context, s *Scope, source parser.Source) (out 
 			}
 			return out
 		case *ast.StringNode:
-			if invalidQuotes[v.Token] {
+			if d.InvalidQuote(v.Token) {
 				return &mkDocsValue{kind: "unknown", location: loc}
 			}
 			value, location, kind := d.read(v, depth, use, false)
@@ -297,59 +223,4 @@ func (v *mkDocsValue) field(name string) (*mkDocsValue, bool) {
 		}
 	}
 	return nil, false
-}
-
-// The pinned dependency owns quoted token boundaries and semantic decoding.
-// Validate only numeric escape syntax that its scanner otherwise accepts after
-// failed hex conversion, so malformed source never becomes invented text.
-func mkDocsValidNumericEscapes(raw string) bool {
-	for i := 1; i < len(raw)-1; i++ {
-		if raw[i] != '\\' {
-			continue
-		}
-		i++
-		if i >= len(raw)-1 {
-			return false
-		}
-		width := 0
-		switch raw[i] {
-		case 'x':
-			width = 2
-		case 'u':
-			width = 4
-		case 'U':
-			width = 8
-		default:
-			continue
-		}
-		if i+width >= len(raw) {
-			return false
-		}
-		digits := raw[i+1 : i+1+width]
-		for j := range digits {
-			c := digits[j]
-			if !(c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F') {
-				return false
-			}
-		}
-		value, e := strconv.ParseUint(digits, 16, 32)
-		if e != nil || value > utf8.MaxRune {
-			return false
-		}
-		if value >= 0xD800 && value <= 0xDFFF {
-			// The pinned decoder accepts an adjacent UTF-16 surrogate pair.
-			// Isolated surrogates cannot denote a Unicode scalar value.
-			next := i + width + 1
-			if width != 4 || value > 0xDBFF || next+6 > len(raw)-1 || raw[next:next+2] != `\u` {
-				return false
-			}
-			low, e := strconv.ParseUint(raw[next+2:next+6], 16, 16)
-			if e != nil || low < 0xDC00 || low > 0xDFFF {
-				return false
-			}
-			i += 6
-		}
-		i += width
-	}
-	return true
 }

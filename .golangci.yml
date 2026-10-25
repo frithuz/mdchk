@@ -32,6 +32,8 @@ linters:
           allow:
             - $gostd
             - github.com/frithuz/mdchk/
+            - github.com/pelletier/go-toml/v2$
+            - github.com/pelletier/go-toml/v2/
             - github.com/goccy/go-yaml$
             - github.com/goccy/go-yaml/
             - github.com/modelcontextprotocol/go-sdk/
@@ -58,9 +60,17 @@ linters:
             # adapter. All other integration/parser files stay denied.
             - '!${base-path}/internal/integration/yaml_context.go'
             - '!${base-path}/internal/integration/mkdocs_yaml.go'
+            - '!${base-path}/internal/yamlsource/**'
+            - '!${base-path}/internal/metadata/yaml.go'
           deny:
             - pkg: github.com/goccy/go-yaml
               desc: keep YAML decoding behind configuration adapters
+        metadata-toml-adapter:
+          files:
+            - '!${base-path}/internal/metadata/toml*.go'
+          deny:
+            - pkg: github.com/pelletier/go-toml/v2
+              desc: keep TOML behind the bounded metadata adapter
         mcp-adapter:
           files:
             - '!${base-path}/internal/mcp/**'

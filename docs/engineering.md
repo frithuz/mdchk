@@ -64,7 +64,9 @@ same lifecycle through `ParseGFMWithBudget`; the legacy Parse APIs stay core-onl
 and independent complete GFM selection. Recognized headers are opaque typed
 document records, with body parsing against the same original snapshot; legacy
 entry points remain unchanged. Shared CLI consumers preserve recognition settings,
-protect header envelopes and project source-backed records. Semantic metadata,
+protect header envelopes and project source-backed records. On-demand internal
+YAML/TOML decoding preserves native values and original source spans; production
+metadata integration,
 other production rules, MCP and rendering remain separate.
 
 The first phase identifies paragraphs, ATX/Setext headings, fenced/indented code,

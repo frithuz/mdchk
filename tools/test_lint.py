@@ -34,6 +34,7 @@ def main():
         with (root / "go.mod").open("a", encoding="utf-8") as module:
             for path, version, directory in (
                 ("github.com/goccy/go-yaml", "v1.19.2", "yaml"),
+                ("github.com/pelletier/go-toml/v2", "v2.4.3", "toml"),
                 ("github.com/modelcontextprotocol/go-sdk", "v1.8.0", "sdk"),
                 ("golang.org/x/sys", "v0.49.0", "sys"),
                 ("example.invalid/unapproved", "v1.0.0", "unapproved"),
@@ -85,12 +86,13 @@ func Boundary() { conformance.Helper(); helper.Helper() }
         write(root, "internal/probe/dependencies.go", '''package probe
 import (
  yaml "github.com/goccy/go-yaml"
+ toml "github.com/pelletier/go-toml/v2"
  sdk "github.com/modelcontextprotocol/go-sdk/mcp"
  unapproved "example.invalid/unapproved"
  "github.com/frithuz/mdchk/internal/conformance"
  unix "golang.org/x/sys/unix"
 )
-func Dependencies() { yaml.Helper(); sdk.Helper(); unapproved.Helper(); conformance.Helper(); unix.Helper() }
+func Dependencies() { toml.Helper(); yaml.Helper(); sdk.Helper(); unapproved.Helper(); conformance.Helper(); unix.Helper() }
 ''')
         code, output = run(binary, root, "run", "--config", ".golangci.yml", "./...")
         if code != 1:
@@ -102,7 +104,7 @@ func Dependencies() { yaml.Helper(); sdk.Helper(); unapproved.Helper(); conforma
                 raise AssertionError(f"missing {analyzer} detection:\n{output}")
         for boundary in ("parser-standard-library", "test-only-renderer",
                          "configuration-adapter", "mcp-adapter", "approved-dependencies",
-                         "native-resource-adapter"):
+                         "native-resource-adapter", "metadata-toml-adapter"):
             if boundary not in output:
                 raise AssertionError(f"missing {boundary} detection:\n{output}")
         if "G401" not in output or "Fatal" not in output:
@@ -128,6 +130,9 @@ package integration
 import yaml "github.com/goccy/go-yaml"
 func DecodeMkDocs() { yaml.Helper() }
 ''')
+        for path, name in (("internal/yamlsource/probe.go", "Source"), ("internal/metadata/yaml.go", "YAML")):
+            write(root, path, f'// Package {Path(path).parent.name} owns bounded source decoding.\npackage {Path(path).parent.name}\nimport yaml "github.com/goccy/go-yaml"\nfunc {name}() {{ yaml.Helper() }}\n')
+        write(root, "internal/metadata/toml.go", '// Package metadata owns bounded source decoding.\npackage metadata\nimport toml "github.com/pelletier/go-toml/v2"\nfunc TOML() { toml.Helper() }\n')
         write(root, "internal/mcp/probe.go", '''// Package mcp owns SDK adaptation.
 package mcp
 import sdk "github.com/modelcontextprotocol/go-sdk/mcp"
@@ -176,6 +181,15 @@ func Parse() { yaml.Helper() }
         if "internal/integration/yaml_context.go:" in output or "internal/integration/mkdocs_yaml.go:" in output:
             raise AssertionError(f"approved bounded adapter rejected:\n{output}")
         print("Only the bounded shared YAML and MkDocs adapters gain YAML access; other integration/parser files fail.")
+
+        write(root, "internal/metadata/other.go", '// Package metadata owns bounded source decoding.\npackage metadata\nimport toml "github.com/pelletier/go-toml/v2"\nfunc Other() { toml.Helper() }\n')
+        code, output = run(binary, root, "run", "--config", ".golangci.yml", "./...")
+        if code != 1 or "metadata-toml-adapter" not in output or "internal/metadata/other.go:" not in output:
+            raise AssertionError(f"missing narrow TOML boundary:\n{output}")
+        for allowed in ("internal/yamlsource/probe.go:", "internal/metadata/yaml.go:", "internal/metadata/toml.go:"):
+            if allowed in output:
+                raise AssertionError(f"bounded metadata adapter rejected {allowed}:\n{output}")
+        print("Only the neutral YAML and format-specific metadata adapters gain native parser access.")
 
         with (root / ".golangci.yml").open("a", encoding="utf-8") as config:
             config.write("\nunknown-configuration-key: true\n")

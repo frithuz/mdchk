@@ -526,3 +526,32 @@ func TestMkDocsProviderQuotedNumericEscapes(t *testing.T) {
 		})
 	}
 }
+
+func TestMkDocsNeutralYAMLRetainsDiagnosticsAndSiblingFacts(t *testing.T) {
+	for _, tc := range []struct{ config, message, spelling string }{{"site_name: Good\nbad: \"\\uZZZZ\"\n", "Malformed MkDocs quoted escape.", `"\uZZZZ"`}, {"site_name: Good\nx: 1\nx: 2\n", "Duplicate YAML key.", "x"}} {
+		fixture := suppliedMkDocsFixture(t, "mkdocs.yml", map[string]any{"mkdocs.yml": mkDocsText(tc.config)}, true, MkDocsPolicy{Enabled: true})
+		source := parser.NewSource([]byte(tc.config))
+		decoded, err := decodeMkDocsYAML(context.Background(), fixture.scope, source)
+		if err != nil || decoded.root == nil {
+			t.Fatal("neutral boundary lost partial configuration", err)
+		}
+		good, ok := decoded.root.field("site_name")
+		if !ok || good.kind != "string" || good.text != "Good" {
+			t.Fatal("reliable sibling lost")
+		}
+		found := false
+		for _, problem := range decoded.problems {
+			if problem.Message() == tc.message {
+				found = true
+				loc := problem.Location()
+				text, err := source.Text(loc.Span())
+				if err != nil || loc.Source().Token() != source.Token() || text != tc.spelling {
+					t.Fatal("original diagnostic location lost", text, err)
+				}
+			}
+		}
+		if !found {
+			t.Fatal("specific diagnostic lost", tc.message, decoded.problems)
+		}
+	}
+}

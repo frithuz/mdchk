@@ -1,5 +1,5 @@
 // Package metadata defines source-owned metadata values and consumer policy.
-// Binding recognition is implemented; format decoding is a separate adapter.
+// Format adapters decode recognized YAML and TOML on demand.
 // No model or eligibility value authorizes an edit to opaque frontmatter.
 package metadata
 
@@ -212,7 +212,7 @@ func (e Entry) KeySpan() parser.Span { return e.keySpan }
 func (e Entry) Span() parser.Span    { return e.span }
 func (e Entry) Value() Value         { return e.value }
 
-// Private builders are the future decoder boundary, not public data admission.
+// Private builders are the decoder boundary, not public data admission.
 // They freeze collections and reject foreign source records before publication.
 func scalar(ctx context.Context, b Binding, span parser.Span, kind Kind, text string, boolean bool) (Value, error) {
 	if !b.owns(span) {
@@ -301,8 +301,7 @@ func collection(ctx context.Context, b Binding, span parser.Span, kind Kind, ent
 }
 
 // Result has no public constructor for trusted decoded completeness. The zero
-// value is unavailable. The concrete format producer is intentionally not part
-// of this contract-only change.
+// value is unavailable. Decode is the only source-based producer.
 type Result struct {
 	owner    *binding
 	root     Value

@@ -1,8 +1,9 @@
 # Frontmatter and metadata contract
 
 Status: accepted on 2026-10-15. Opaque recognition, shared protection and source
-inspection are implemented; structured metadata interpretation and corrections
-remain pending. The cross-operation recognition matrix is verified for both
+inspection and on-demand structured metadata interpretation are implemented;
+production metadata-rule integration and corrections remain pending. The
+cross-operation recognition matrix is verified for both
 supported flavors; see [operation parity fixtures](../../internal/testutil/frontmatter/README.md).
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
@@ -81,16 +82,17 @@ selected flavor, ownership, cancellation and limits. Unterminated records remain
 available with explicit incomplete uncertainty, without a completed-parse handoff.
 Shared CLI lint/fix/inspect preserve the same independently selected recognition
 settings. Inspection exposes source records separately from the body AST, and
-incidental edits cannot alter header bytes or recognition. Structured metadata
-interpretation remains unavailable; the broader operation matrix is verified by #169.
+incidental edits cannot alter header bytes or recognition. On-demand structured
+metadata interpretation is available through the separately bound decoder; the broader opaque operation matrix is verified by #169.
 
 ## Metadata values and corrections
 
 
 The source-owned model, title/ordering policy and necessary preservation gates
 are implemented in [internal/metadata](../../internal/metadata/README.md). Concrete
-format decoding/source projection (#179), production rule integration (#180) and
-metadata correction authorization (#181) remain separate work. Model records and
+format decoding/source projection (#179) is implemented. Production rule
+integration (#180) and metadata correction authorization (#181) remain separate
+work. Model records and
 eligibility never bypass ordinary opaque-header protection.
 
 ### Parser strategy
@@ -103,8 +105,9 @@ kind only when valid; merge keys, custom tags and cycles remain unsupported.
 Aliases are bounded and acyclic, with diagnostic ranges at their authored use.
 
 Use TOML 1.1 through `github.com/pelletier/go-toml/v2 v2.4.3`, behind a project-owned
-source-preserving boundary. The module is selected for #179; it is not a runtime
-dependency until that producer is implemented. Its unstable expression AST exposes
+source-preserving boundary. The module is admitted by the #179 producer through
+a narrow metadata adapter boundary, with its checksum and MIT license retained
+in the repository. Its unstable expression AST exposes
 raw ranges and optional comments; copy validated records before advancing the
 parser, and expose no upstream types to consumers. Add the exact module checksum,
 license and narrow architecture boundary with implementation. The
