@@ -272,3 +272,14 @@ The shared MD018/MD020 protection filter traverses actual syntax once per invent
 and uses indexed whole-run overlaps, including active raw-text regions. No fresh
 source, parse, budget or public-tree clone is introduced. Failed projection
 withholds the inventory; late callback interruption retains reliable findings.
+
+MD021 adds two fixed source spans to each detached heading fact. Only genuine
+closed ATX markers grant these gaps. The first/last raw Content source bounds
+survive NUL normalization; Visible does not decide content presence or bounds.
+Raw-empty closed headings expose one shared gap. OpeningSeparator retains its
+absent-on-empty contract. Marker traversal and the fixed gap construction reserve
+work on the original completed parse before publication; no additional inventory,
+source, parse, allowance or tree clone is created. The callback reserves bounded
+source access/scans and finding construction, checking long scans every 256 bytes.
+Failed projection withholds the inventory; later callback interruption retains
+previous reliable findings with Err and explicit incomplete coverage.

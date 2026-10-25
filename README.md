@@ -8,7 +8,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing and MD020 missing terminal-hash spacing analysis are also available. Other named rules remain unavailable. See the [parser verification record](docs/engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing and MD021 closed-heading delimiter spacing analysis are also available. Other named rules remain unavailable. See the [parser verification record](docs/engineering/gfm-verification.md).
 
 ## Check Markdown
 

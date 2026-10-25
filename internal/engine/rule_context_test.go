@@ -104,7 +104,7 @@ func TestRuleContextTitleOriginalDocumentAllowance(t *testing.T) {
 func TestRuleContextCompoundControls(t *testing.T) {
 	for _, access := range []string{"headings", "title", "opening hashes", "closing hashes"} {
 		operation, cancel := context.WithCancel(context.Background())
-		c := headingContext(t, "---\ntitle: Guide\n---\n# Root\n### Third\n", parser.DefaultLimits(), operation)
+		c := headingContext(t, "---\ntitle: Guide\n---\n# Root #\n### Third #\n", parser.DefaultLimits(), operation)
 		// A caller deadline, original operation cancellation and original cumulative
 		// quota must all survive the added bridge as canonical causes.
 		caller, stop := context.WithDeadline(context.Background(), time.Unix(0, 0))
@@ -129,7 +129,7 @@ func TestRuleContextCompoundControls(t *testing.T) {
 }
 
 func TestRuleContextHeadingsOriginalAllowance(t *testing.T) {
-	const source = "#  <!-- raw -->\n###  \x00\n"
+	const source = "#  <!-- raw -->  #\n###  a\x00b  #\n#\t#\n"
 	for _, kind := range []string{"nodes", "work"} {
 		// Find the exact parser admission boundary from public outcomes. Projection
 		// must consume its residual allowance rather than start a fresh parse budget.
@@ -171,7 +171,7 @@ func TestRuleContextHeadingsOriginalAllowance(t *testing.T) {
 				if !errors.As(err, &limit) || limit.Name != expected || facts != nil {
 					t.Fatal("new projection allowance", facts, err)
 				}
-			} else if err != nil || len(facts) != 2 {
+			} else if err != nil || len(facts) != 3 {
 				t.Fatal("sufficient original allowance failed", facts, err)
 			}
 		}
@@ -181,7 +181,7 @@ func TestRuleContextHeadingsOriginalAllowance(t *testing.T) {
 func TestRuleContextOriginalElapsedAllowance(t *testing.T) {
 	limits := parser.DefaultLimits()
 	limits.OperationTime = time.Second
-	c := headingContext(t, "---\ntitle: Guide\n---\n# Root\n### Third\n", limits, context.Background())
+	c := headingContext(t, "---\ntitle: Guide\n---\n# Root #\n### Third #\n", limits, context.Background())
 	// The allowance begins at the original parse, rather than at an accessor.
 	time.Sleep(limits.OperationTime + time.Millisecond)
 	facts, headingErr := c.Headings(context.Background())
@@ -325,6 +325,21 @@ func TestRuleContextClosingHashesAuthority(t *testing.T) {
 		invalidate(&copy)
 		if partial, err := copy.ClosingHashCandidates(context.Background()); err == nil || partial != nil {
 			t.Fatal(partial, err)
+		}
+	}
+}
+
+func TestRuleContextClosedGapAuthority(t *testing.T) {
+	c := headingContext(t, "#  a\x00b  #\n#\t#", parser.DefaultLimits(), context.Background())
+	facts, err := c.Headings(context.Background())
+	if err != nil || len(facts) != 2 || facts[0].ClosedClosingGap.SourceToken() != c.Source().Token() || facts[1].ClosedOpeningGap.SourceToken() != c.Source().Token() {
+		t.Fatal(facts, err)
+	}
+	for _, invalidate := range []func(*RuleContext){func(c *RuleContext) { c.syntaxReliable = false }, func(c *RuleContext) { c.operation = nil }, func(c *RuleContext) { c.document = nil }} {
+		copy := c
+		invalidate(&copy)
+		if got, err := copy.Headings(context.Background()); err == nil || got != nil {
+			t.Fatal("invalid context granted gaps", got, err)
 		}
 	}
 }

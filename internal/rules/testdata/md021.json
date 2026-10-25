@@ -1,0 +1,681 @@
+[
+  {
+    "Name": "example",
+    "Source": "## Install  ##",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          1,
+          12,
+          1,
+          13
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "opening",
+    "Source": "##  Install ##",
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "both",
+    "Source": "##  Install  ##",
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": " "
+      },
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          13,
+          1,
+          14
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "valid",
+    "Source": "## Install ##",
+    "Expected": []
+  },
+  {
+    "Name": "unequal",
+    "Source": "#  x  ########",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " "
+      },
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "empty one",
+    "Source": "## ##",
+    "Expected": []
+  },
+  {
+    "Name": "empty excess",
+    "Source": "##   ##",
+    "Expected": [
+      {
+        "Range": [
+          3,
+          5,
+          1,
+          4,
+          1,
+          6
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "empty tabs",
+    "Source": "#\t#",
+    "Expected": [
+      {
+        "Range": [
+          1,
+          1,
+          1,
+          2,
+          1,
+          2
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "tabs",
+    "Source": "#\tTitle\t#",
+    "Expected": [
+      {
+        "Range": [
+          1,
+          1,
+          1,
+          2,
+          1,
+          2
+        ],
+        "Source": ""
+      },
+      {
+        "Range": [
+          8,
+          8,
+          1,
+          9,
+          1,
+          9
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "mixed pass",
+    "Source": "#\t \tTitle\t \t#",
+    "Expected": []
+  },
+  {
+    "Name": "mixed excess",
+    "Source": "#\t \t \tTitle\t \t \t#",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " "
+      },
+      {
+        "Range": [
+          14,
+          15,
+          1,
+          15,
+          1,
+          16
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "nbsp content",
+    "Source": "#     #",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " "
+      },
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "comment",
+    "Source": "#  <!-- x -->  #",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " "
+      },
+      {
+        "Range": [
+          14,
+          15,
+          1,
+          15,
+          1,
+          16
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "html",
+    "Source": "#  <i></i>  #",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " "
+      },
+      {
+        "Range": [
+          11,
+          12,
+          1,
+          12,
+          1,
+          13
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "link",
+    "Source": "#  [](url)  #",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " "
+      },
+      {
+        "Range": [
+          11,
+          12,
+          1,
+          12,
+          1,
+          13
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "nul",
+    "Source": "#  a\u0000b  #",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " "
+      },
+      {
+        "Range": [
+          7,
+          8,
+          1,
+          8,
+          1,
+          9
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "content protected",
+    "Source": "# `a  b` #",
+    "Expected": []
+  },
+  {
+    "Name": "internal",
+    "Source": "# a  b #",
+    "Expected": []
+  },
+  {
+    "Name": "open",
+    "Source": "#  open",
+    "Expected": []
+  },
+  {
+    "Name": "empty open",
+    "Source": "##   ",
+    "Expected": []
+  },
+  {
+    "Name": "malformed",
+    "Source": "# title##",
+    "Expected": []
+  },
+  {
+    "Name": "setext",
+    "Source": "title\n===",
+    "Expected": []
+  },
+  {
+    "Name": "fence",
+    "Source": "```\n#  x  #\n```",
+    "Expected": []
+  },
+  {
+    "Name": "indented",
+    "Source": "    #  x  #",
+    "Expected": []
+  },
+  {
+    "Name": "html block",
+    "Source": "<div>\n#  x  #\n</div>",
+    "Expected": []
+  },
+  {
+    "Name": "literal hashes",
+    "Source": "# literal### #",
+    "Expected": []
+  },
+  {
+    "Name": "escaped terminal",
+    "Source": "# x\\#",
+    "Expected": []
+  },
+  {
+    "Name": "padding",
+    "Source": "# x #  \t",
+    "Expected": []
+  },
+  {
+    "Name": "nested",
+    "Source": "> - ##  雪  ##\r\n",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          1,
+          8,
+          1,
+          9
+        ],
+        "Source": " "
+      },
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          11,
+          1,
+          12
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "combining",
+    "Source": "> #  é  #",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " "
+      },
+      {
+        "Range": [
+          9,
+          10,
+          1,
+          9,
+          1,
+          10
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "partial tab",
+    "Source": ">\t#  x  #",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " "
+      },
+      {
+        "Range": [
+          7,
+          8,
+          1,
+          8,
+          1,
+          9
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "lf",
+    "Source": "# x  #\n",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "crlf",
+    "Source": "# x  #\r\n",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "cr",
+    "Source": "# x  #\r",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "eof",
+    "Source": "# x  #",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "header True",
+    "Source": "---\n#  hidden  #\n---\n#  body #",
+    "Recognize": true,
+    "Expected": [
+      {
+        "Range": [
+          23,
+          24,
+          4,
+          3,
+          4,
+          4
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "header False",
+    "Source": "---\n#  body #\n---",
+    "Recognize": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "unreliable header",
+    "Source": "---\n#  maybe  #",
+    "Recognize": true,
+    "Incomplete": true,
+    "Expected": []
+  },
+  {
+    "Name": "toml opaque",
+    "Source": "+++\n#  fake  #\n+++\n",
+    "Recognize": true,
+    "Expected": []
+  },
+  {
+    "Name": "protected neighbor",
+    "Source": "```\n#  fake  #\n```\n#  x #",
+    "Expected": [
+      {
+        "Range": [
+          21,
+          22,
+          4,
+          3,
+          4,
+          4
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "empty image",
+    "Source": "#  ![](x)  #",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " "
+      },
+      {
+        "Range": [
+          10,
+          11,
+          1,
+          11,
+          1,
+          12
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "invalid opener",
+    "Source": "#######  x  #\n##x  #",
+    "Expected": []
+  },
+  {
+    "Name": "protected comment",
+    "Source": "<!--\n#  x  #\n-->",
+    "Expected": []
+  },
+  {
+    "Name": "intervening envelope",
+    "Source": "#  \t \tx  \t \t#",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          5,
+          1,
+          3,
+          1,
+          6
+        ],
+        "Source": " \t "
+      },
+      {
+        "Range": [
+          8,
+          11,
+          1,
+          9,
+          1,
+          12
+        ],
+        "Source": " \t "
+      }
+    ]
+  }
+]

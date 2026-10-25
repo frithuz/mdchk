@@ -1619,6 +1619,17 @@ allocate anchors or define TOC eligibility. Storage is detached and metered; a
 stop returns no partial collection. Default parsing and node recognition are
 unchanged.
 
+Closed ATX facts also expose `ClosedOpeningGap` and `ClosedClosingGap` as
+original source spans between actual markers and first/last raw Content source
+contributions. NUL normalization may split contributions; the final source end
+remains authoritative. Raw-empty closed ATX exposes only `ClosedOpeningGap`, the
+shared marker gap. Open ATX and Setext expose neither. This leaves all existing
+fields unchanged, including absent `OpeningSeparator` for raw-empty headings.
+The fixed extra gap work shares the actual completed original operation's work,
+node and elapsed controls; interrupted projection publishes no partial inventory.
+MD021 scans only these confirmed gaps and grants no correction authority. See its
+[exact spacing policy](../../docs/rules/headings/md021.md).
+
 `Source.Token()` is a constant-size comparable opaque snapshot-owner identity.
 Copies of one source share a token; separately constructed equal bytes do not.
 The zero source differs from a real empty source. Tokens expose no bytes, span

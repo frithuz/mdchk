@@ -9,7 +9,7 @@ import (
 )
 
 func TestAnchorHeadingFactsRequireActualSourceOperation(t *testing.T) {
-	source := parser.NewSource([]byte("# Root\r\n\r\n> ## ![Alt](image) *text*\r\n\r\n- ### Item\r\n"))
+	source := parser.NewSource([]byte("# Root #\r\n\r\n> ## ![Alt](image) *text* #\r\n\r\n- ### Item #\r\n"))
 	budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
 	parsed := parser.ParseWithBudget(context.Background(), source, budget)
 	if parsed.Status != parser.Complete {

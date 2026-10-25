@@ -304,7 +304,7 @@ and per-file references before deriving the shared outcome. Public CLI paths
 are relative to the invocation directory; acquisition keeps native names private.
 Lint text and JSON reporters present the canonical result without rereading
 configuration sources or target documents. CommonMark/GFM, MD001 analysis with opt-in metadata titles, MD003 heading-style
-analysis, MD018/MD019 opening-hash spacing analysis, MD020 terminal-hash spacing analysis, MD047, directives,
+analysis, MD018/MD019 opening-hash spacing analysis, MD020 terminal-hash spacing and MD021 closed-heading delimiter spacing analysis, MD047, directives,
 shared suppression and VS Code/GitHub reporters are implemented. Other rule
 callbacks and optional contexts remain separate deliveries.
 

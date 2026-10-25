@@ -23,7 +23,12 @@ type HeadingContainer struct {
 // OpeningSeparator is present only for nonempty raw ATX content, from the
 // opening marker end to the first raw content byte. Empty ATX and Setext
 // headings have an absent separator. HasRawContent is independent of Visible.
+// ClosedOpeningGap and ClosedClosingGap are actual delimiter gaps of closed
+// ATX headings. Raw-empty headings have only ClosedOpeningGap (the shared gap).
+// Neither field changes OpeningSeparator or derives bounds from Visible.
 type HeadingFact struct {
+	ClosedOpeningGap Span
+	ClosedClosingGap Span
 	OpeningSeparator Span
 	HasRawContent    bool
 	Envelope         Span
@@ -59,12 +64,15 @@ func (d *Document) Headings(ctx context.Context, budget *OperationBudget) ([]Hea
 				return err
 			}
 			closed := false
-			var opening Span
+			var opening, closing Span
 			for _, marker := range n.spec.Markers {
 				if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
 					return err
 				}
 				closed = closed || marker.Role == "closing"
+				if marker.Role == "closing" {
+					closing = marker.Source
+				}
 				if marker.Role == "opening" {
 					opening = marker.Source
 				}
@@ -85,7 +93,26 @@ func (d *Document) Headings(ctx context.Context, budget *OperationBudget) ([]Hea
 					return err
 				}
 			}
-			out = append(out, HeadingFact{OpeningSeparator: separator, HasRawContent: hasContent, Envelope: n.Span(), Level: h.Level, Style: h.Style, Closed: closed, Visible: visible, Containers: slices.Clone(containers)})
+			var closedOpening, closedClosing Span
+			if h.Style == "atx" && closed {
+				if err := headingFactCharge(ctx, budget, 3, 0); err != nil {
+					return err
+				}
+				if !opening.Present() || !closing.Present() {
+					return ErrModel
+				}
+				var err error
+				if hasContent {
+					closedOpening = separator
+					closedClosing, err = opening.source.Span(n.spec.Content[len(n.spec.Content)-1].Source.End(), closing.Start())
+				} else {
+					closedOpening, err = opening.source.Span(opening.End(), closing.Start())
+				}
+				if err != nil {
+					return err
+				}
+			}
+			out = append(out, HeadingFact{ClosedOpeningGap: closedOpening, ClosedClosingGap: closedClosing, OpeningSeparator: separator, HasRawContent: hasContent, Envelope: n.Span(), Level: h.Level, Style: h.Style, Closed: closed, Visible: visible, Containers: slices.Clone(containers)})
 			return nil
 		}
 		switch n.Kind() {
