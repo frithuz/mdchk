@@ -20,13 +20,18 @@ type HeadingContainer struct {
 // ATX heading with a parser-retained closing marker (including empty headings).
 // Visible contains semantic inline text, including image alt
 // descriptions, rather than source markup or link destinations/titles.
+// OpeningSeparator is present only for nonempty raw ATX content, from the
+// opening marker end to the first raw content byte. Empty ATX and Setext
+// headings have an absent separator. HasRawContent is independent of Visible.
 type HeadingFact struct {
-	Envelope   Span
-	Level      int
-	Style      string
-	Closed     bool
-	Visible    string
-	Containers []HeadingContainer
+	OpeningSeparator Span
+	HasRawContent    bool
+	Envelope         Span
+	Level            int
+	Style            string
+	Closed           bool
+	Visible          string
+	Containers       []HeadingContainer
 }
 
 // Headings projects source-ordered facts only from an actual completed parse in
@@ -54,14 +59,33 @@ func (d *Document) Headings(ctx context.Context, budget *OperationBudget) ([]Hea
 				return err
 			}
 			closed := false
+			var opening Span
 			for _, marker := range n.spec.Markers {
 				if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
 					return err
 				}
 				closed = closed || marker.Role == "closing"
+				if marker.Role == "opening" {
+					opening = marker.Source
+				}
 			}
 			h := n.spec.Properties.Heading
-			out = append(out, HeadingFact{Envelope: n.Span(), Level: h.Level, Style: h.Style, Closed: closed, Visible: visible, Containers: slices.Clone(containers)})
+			var separator Span
+			if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
+				return err
+			}
+			hasContent := len(n.spec.Content) != 0
+			if h.Style == "atx" && hasContent {
+				if !opening.Present() {
+					return ErrModel
+				}
+				var err error
+				separator, err = opening.source.Span(opening.End(), n.spec.Content[0].Source.Start())
+				if err != nil {
+					return err
+				}
+			}
+			out = append(out, HeadingFact{OpeningSeparator: separator, HasRawContent: hasContent, Envelope: n.Span(), Level: h.Level, Style: h.Style, Closed: closed, Visible: visible, Containers: slices.Clone(containers)})
 			return nil
 		}
 		switch n.Kind() {

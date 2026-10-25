@@ -256,3 +256,10 @@ reparsing, cloning the tree or scanning the whole source per candidate. Any
 interruption withholds the complete inventory. Literal expected fixtures and
 original-allowance/authority controls verify these claims separately from full
 syntax conformance.
+
+MD019 reuses the original-operation heading inventory. Marker visits, first raw
+content inspection and separator fact construction are charged before publication.
+Its callback reserves each bounded separator byte scan and source/span access
+before counting literal ASCII spaces. No fresh parse, source or budget is created.
+Interrupted inventory projection withholds the list; a later callback stop retains
+findings already constructed with the canonical interruption.

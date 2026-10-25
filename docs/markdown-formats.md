@@ -1,6 +1,6 @@
 # Supported Markdown formats
 
-mdchk's confirmed format scope is CommonMark and GitHub Flavored Markdown (GFM), with independently optional frontmatter support. The internal CommonMark 0.31.2 core is delivered and verified: all **652/652** unchanged specification examples pass normalized and strict comparisons without exemptions. Direct upstream runs in both modes report 652 passed and zero failed, errored or skipped. CLI lint/fix/inspect integrate this core and directive suppression, and MD047 is the first production ordinary rule and correction. GFM and independently selected opaque YAML/TOML frontmatter integrate this pipeline. Source-mapped YAML/TOML metadata decoding, MD001 heading-increment, MD003 heading-style and MD018 opening-hash spacing analysis are implemented. Other ordinary callbacks, MCP integration and production rendering remain separate deliveries.
+mdchk's confirmed format scope is CommonMark and GitHub Flavored Markdown (GFM), with independently optional frontmatter support. The internal CommonMark 0.31.2 core is delivered and verified: all **652/652** unchanged specification examples pass normalized and strict comparisons without exemptions. Direct upstream runs in both modes report 652 passed and zero failed, errored or skipped. CLI lint/fix/inspect integrate this core and directive suppression, and MD047 is the first production ordinary rule and correction. GFM and independently selected opaque YAML/TOML frontmatter integrate this pipeline. Source-mapped YAML/TOML metadata decoding, MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing and MD019 extra opening-hash spacing analysis are implemented. Other ordinary callbacks, MCP integration and production rendering remain separate deliveries.
 
 The current Go `Parse` API has no flavor or configuration option. CLI `flavor: commonmark` selection is delivered; it does not add a switch to that Go API. GFM is available, including selection by omission. Enabled YAML/TOML frontmatter is recognized and protected in shared lint/fix/inspect; MD001 can consume a semantic title when its `frontmatter_title` option is enabled. CommonMark alone still leaves missing default-rule coverage (`15`); use the [current reduced setup](index.md#get-started-with-this-build) for a complete MD047-only run. See the [delivered core contract](engineering.md#delivered-commonmark-core) for APIs, source guarantees, UTF-8/resource outcomes and [reproduction commands](engineering.md#reproduce-the-core-delivery).
 
@@ -8,7 +8,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001, MD003 and MD018 analysis are also available. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001, MD003, MD018 and MD019 analysis are also available. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ## CommonMark and the GFM foundation
 

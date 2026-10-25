@@ -1606,7 +1606,13 @@ retains these boundaries and distinguishes integrity-only NOT-RUN checks.
 for a resource index. It requires the original operation budget witness, as does
 `HTMLIDs`; constructing nodes does not establish that witness. Facts preserve the
 original heading envelope, level/style, parsed visible text and quote/list
-ancestry. Text/code, formatting, labels and image alternative children contribute
+ancestry. `HasRawContent` records whether parser-trimmed raw Content has a
+contribution, independently of Visible. For nonempty ATX content only,
+`OpeningSeparator` spans the actual opening marker end to the first raw Content
+source byte. Empty ATX and Setext separators are absent. Marker and first-content
+inspection and scalar/span construction share the original operation meter; no
+public tree or content collection is cloned for these facts.
+Text/code, formatting, labels and image alternative children contribute
 once; soft/hard breaks contribute a newline. Raw tag spelling contributes none,
 and protected raw text is not reinterpreted as Markdown. This API does not
 allocate anchors or define TOC eligibility. Storage is detached and metered; a

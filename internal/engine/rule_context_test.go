@@ -34,7 +34,7 @@ func TestRuleContextHeadingAndTitleOriginalAuthority(t *testing.T) {
 		t.Fatal(title, err)
 	}
 	facts, err := c.Headings(context.Background())
-	if err != nil || len(facts) != 2 || facts[1].Level != 3 || facts[1].Envelope.SourceToken() != c.Source().Token() {
+	if err != nil || len(facts) != 2 || facts[1].Level != 3 || facts[1].Envelope.SourceToken() != c.Source().Token() || facts[1].OpeningSeparator.SourceToken() != c.Source().Token() || !facts[1].HasRawContent {
 		t.Fatal(facts, err)
 	}
 	if _, present := c.Frontmatter(); present {
@@ -127,7 +127,7 @@ func TestRuleContextCompoundControls(t *testing.T) {
 }
 
 func TestRuleContextHeadingsOriginalAllowance(t *testing.T) {
-	const source = "# Root\n### Third\n"
+	const source = "#  <!-- raw -->\n###  \x00\n"
 	for _, kind := range []string{"nodes", "work"} {
 		// Find the exact parser admission boundary from public outcomes. Projection
 		// must consume its residual allowance rather than start a fresh parse budget.

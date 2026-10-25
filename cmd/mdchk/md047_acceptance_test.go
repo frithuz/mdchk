@@ -67,7 +67,7 @@ func TestCompiledMD047ProductionAnalysis(t *testing.T) {
 						t.Fatal(rule)
 					}
 				}
-				if (rule.Rule == "MD001" || rule.Rule == "MD003" || rule.Rule == "MD018") && rule.Implementation != "available" {
+				if (rule.Rule == "MD001" || rule.Rule == "MD003" || rule.Rule == "MD018" || rule.Rule == "MD019") && rule.Implementation != "available" {
 					t.Fatal(rule)
 				}
 			}
