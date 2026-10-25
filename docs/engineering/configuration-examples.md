@@ -89,7 +89,7 @@ flavor: commonmark
 ```
 
 This configuration works with the current production executable: CommonMark
-0.31.2, GFM, directive processing, MD001/MD003/MD018/MD019/MD020/MD021 analysis and MD047 analysis/correction
+0.31.2, GFM, directive processing, MD001/MD003/MD018/MD019/MD020/MD021/MD022 analysis and MD047 analysis/correction
 are available. MD001 also supports opt-in YAML/TOML title consumption with
 independently enabled header recognition. Other ordinary rule implementations
 remain unavailable. Lint parses

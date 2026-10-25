@@ -20,3 +20,10 @@ Each expected item gives the same six coordinates in `range` and an independent
 literal `source` slice. Empty `expected` means no finding. Tests run both flavors
 with explicit recognition/title selections and pin affected metadata coverage.
 All MD001 findings remain report-only; no edits or changed documents are emitted.
+
+`md022.json` fixes original byte/Unicode points and before/after messages for both
+CommonMark and GFM. Its literal options exercise independent minima, extra blanks,
+actual document edges, complete Setext extents, parser-owned container prefixes,
+marker-looking prose, protected neighbors, headers and ASCII-only blankness.
+The NUL fixture is asserted after JSON decoding. Repeats preserve original source
+identity/bytes, produce no fixes and retain explicit uncertainty where required.

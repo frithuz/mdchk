@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing and MD021 closed-heading delimiter spacing analysis are also available. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing and MD022 heading blank-line analysis are also available. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -163,6 +163,14 @@ raw-empty headings expose only the shared ClosedOpeningGap. These derive from
 actual opening/closing markers and first/last raw Content source contributions,
 including split NUL contributions. They confer no correction authority. See the
 [MD021 policy](rules/headings/md021.md) and [accounting](engineering/parser-limits.md).
+
+MD022 analysis uses a separate completed-parser projection of whole physical
+heading endpoints and neighboring blank body runs, leaving existing HeadingFact
+consumers unchanged. Actual per-line container markers supply prefix ownership;
+finite source/line passes share original controls and never loop over configured
+minima. See [MD022 policy](rules/headings/md022.md) and
+[accounting](engineering/parser-limits.md). Automatic blank-line correction is
+future work.
 
 For GFM, retain original table cell counts before semantic padding or truncation, task-marker spans and spelling, strikethrough delimiter spans, and bare versus angle-delimited autolink origins. Keep filtered raw HTML protected and preserve its source. The [extension source contract](engineering/gfm-compatibility.md#extension-source-contract) defines the information shared by lint, fix, inspect, and MCP.
 
@@ -249,7 +257,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001's opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;

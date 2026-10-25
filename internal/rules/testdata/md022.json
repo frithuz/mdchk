@@ -1,0 +1,951 @@
+[
+  {
+    "name": "published",
+    "source": "Text\n## Install\nText\n",
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          15,
+          15,
+          2,
+          11,
+          2,
+          11
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "accepted",
+    "source": "Text\n\n## Install\n\nText",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "extras",
+    "source": "Text\n\n\n# H\n\n\nText",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "before zero",
+    "source": "Text\n# H\nText",
+    "expected": [
+      {
+        "range": [
+          8,
+          8,
+          2,
+          4,
+          2,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {
+      "before": 0
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "after zero",
+    "source": "Text\n# H\nText",
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {
+      "after": 0
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "both zero",
+    "source": "Text\n# H\nText",
+    "expected": [],
+    "options": {
+      "before": 0,
+      "after": 0
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "two one short",
+    "source": "Text\n\n# H\n\nText",
+    "expected": [
+      {
+        "range": [
+          6,
+          6,
+          3,
+          1,
+          3,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          9,
+          9,
+          3,
+          4,
+          3,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {
+      "before": 2,
+      "after": 2
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "two exact",
+    "source": "Text\n\n\n# H\n\n\nText",
+    "expected": [],
+    "options": {
+      "before": 2,
+      "after": 2
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "independent two",
+    "source": "Text\n\n# H\n\n\nText",
+    "expected": [
+      {
+        "range": [
+          6,
+          6,
+          3,
+          1,
+          3,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {
+      "before": 2,
+      "after": 2
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "large strict integer",
+    "source": "Text\n# H\nText",
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          8,
+          8,
+          2,
+          4,
+          2,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {
+      "before": 2147483647,
+      "after": 2147483647
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "document edge '# H'",
+    "source": "# H",
+    "expected": [],
+    "options": {
+      "before": 2,
+      "after": 2
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "document edge '# H\\n'",
+    "source": "# H\n",
+    "expected": [],
+    "options": {
+      "before": 2,
+      "after": 2
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "document edge '# H\\r\\n'",
+    "source": "# H\r\n",
+    "expected": [],
+    "options": {
+      "before": 2,
+      "after": 2
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "document edge '# H\\r'",
+    "source": "# H\r",
+    "expected": [],
+    "options": {
+      "before": 2,
+      "after": 2
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "document edge '\\n# H\\n\\n'",
+    "source": "\n# H\n\n",
+    "expected": [],
+    "options": {
+      "before": 2,
+      "after": 2
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "document edge '\\r\\n# H\\r\\n\\r\\n'",
+    "source": "\r\n# H\r\n\r\n",
+    "expected": [],
+    "options": {
+      "before": 2,
+      "after": 2
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "short run edge",
+    "source": "\n# H\n\nText",
+    "expected": [
+      {
+        "range": [
+          4,
+          4,
+          2,
+          4,
+          2,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {
+      "before": 2,
+      "after": 2
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "ending not blank",
+    "source": "Text\n# H\nText",
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          8,
+          8,
+          2,
+          4,
+          2,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "consecutive",
+    "source": "# A\n# B",
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      },
+      {
+        "range": [
+          4,
+          4,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "shared different minima",
+    "source": "# A\n\n# B",
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {
+      "before": 1,
+      "after": 2
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "multiline setext",
+    "source": "前\n\nAlpha\nBeta\n===\nTail",
+    "expected": [
+      {
+        "range": [
+          19,
+          19,
+          5,
+          4,
+          5,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "setext two sides",
+    "source": "Text\n\nOne\nTwo\n---\nText",
+    "expected": [
+      {
+        "range": [
+          17,
+          17,
+          5,
+          4,
+          5,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "single setext",
+    "source": "Text\n\nH\n=\nText",
+    "expected": [
+      {
+        "range": [
+          9,
+          9,
+          4,
+          2,
+          4,
+          2
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "thematic break",
+    "source": "Text\n\n---\nText",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "quote prefix blank",
+    "source": "Text\n>\n> # H\n>\n> Text",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "nested prefix blank",
+    "source": "Text\n> -\n> - ## 雪\n>\nText",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "container no waiver",
+    "source": "Text\n> - ## 雪\n> Text",
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          15,
+          15,
+          2,
+          9,
+          2,
+          9
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "cross container blanks",
+    "source": "Text\n\n> # H\n\nText",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "empty item blank",
+    "source": "Text\n\n-\n# H\n-\n\nText",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "marker looking prose",
+    "source": "Text\n2.\n# H\nText",
+    "expected": [
+      {
+        "range": [
+          8,
+          8,
+          3,
+          1,
+          3,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          11,
+          11,
+          3,
+          4,
+          3,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "lazy content",
+    "source": "> Text\nlazy\n> # H\n>\n> Tail",
+    "expected": [
+      {
+        "range": [
+          12,
+          12,
+          3,
+          1,
+          3,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "list indent blank",
+    "source": "- Text\n  \n  # H\n  \n  Tail",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "partial tabs",
+    "source": "Text\n>\t\n>\t# H\n>\t\nText",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "nested setext",
+    "source": "Text\n>\n> Alpha\n> Beta\n> ===\nTail",
+    "expected": [
+      {
+        "range": [
+          27,
+          27,
+          5,
+          6,
+          5,
+          6
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "unicode combining padding",
+    "source": "前\r\n> - ## é雪 \t\r\n尾",
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          20,
+          20,
+          2,
+          13,
+          2,
+          13
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "ascii blank",
+    "source": "Text\n \t \n# H\n\t\nText",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "nbsp",
+    "source": "Text\n \n# H\n \nText",
+    "expected": [
+      {
+        "range": [
+          8,
+          8,
+          3,
+          1,
+          3,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          11,
+          11,
+          3,
+          4,
+          3,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "nul",
+    "source": "Text\n\u0000\n# H\n\u0000\nText",
+    "expected": [
+      {
+        "range": [
+          7,
+          7,
+          3,
+          1,
+          3,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          10,
+          10,
+          3,
+          4,
+          3,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "empty actual headings",
+    "source": "Text\n#\nText\n## <!-- invisible --> ##\nText",
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          6,
+          6,
+          2,
+          2,
+          2,
+          2
+        ],
+        "source": "",
+        "side": "after"
+      },
+      {
+        "range": [
+          12,
+          12,
+          4,
+          1,
+          4,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          36,
+          36,
+          4,
+          25,
+          4,
+          25
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "protected fake real",
+    "source": "```md\n# fake\n```\n# real\n<!-- # fake -->",
+    "expected": [
+      {
+        "range": [
+          17,
+          17,
+          4,
+          1,
+          4,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          23,
+          23,
+          4,
+          7,
+          4,
+          7
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "indented fake",
+    "source": "    # fake\n\n# real",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "html fake",
+    "source": "<div>\n# fake\n</div>\n\n# real",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "yaml header",
+    "source": "---\ntitle: H\n---\n# real",
+    "expected": [
+      {
+        "range": [
+          17,
+          17,
+          4,
+          1,
+          4,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": true,
+    "incomplete": false
+  },
+  {
+    "name": "toml header",
+    "source": "+++\ntitle=\"H\"\n+++\n# real",
+    "expected": [
+      {
+        "range": [
+          18,
+          18,
+          4,
+          1,
+          4,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": true,
+    "incomplete": false
+  },
+  {
+    "name": "header off",
+    "source": "---\n# real\n---",
+    "expected": [
+      {
+        "range": [
+          4,
+          4,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          10,
+          10,
+          2,
+          7,
+          2,
+          7
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "unreliable header",
+    "source": "---\n# fake",
+    "expected": [],
+    "options": {},
+    "recognize": true,
+    "incomplete": true
+  },
+  {
+    "name": "cr endings",
+    "source": "Text\r# H\rText",
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          8,
+          8,
+          2,
+          4,
+          2,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  }
+]

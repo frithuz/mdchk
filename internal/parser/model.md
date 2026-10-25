@@ -1666,3 +1666,28 @@ protection traversal covers code, raw HTML/comments, link literal values and
 active raw-text regions without cloning public trees. Every scan, overlap and
 retained construction shares original work/node/time controls; interruption
 publishes no partial inventory. Existing HeadingFact fields are unchanged.
+
+## Physical heading separation projection
+
+`Document.HeadingSpacing(ctx, budget, index)` requires the completed original
+parse, its original operation budget and a physical LineIndex bound to the same
+Source token. It returns detached source-ordered HeadingSpacingFact records,
+without changing HeadingFact or existing semantic heading/anchor consumers.
+Each record has zero-width points at first physical Content.Start and last
+physical Content.End, adjacent consecutive blank body counts and actual-document
+edge flags. A terminator contributes no extra selectable content line. The
+exclusive heading envelope end is not interpreted as a following heading line.
+
+One bounded traversal reuses only actual quote-prefix, item-prefix and item-indent
+markers. Per-line maximum prefix ends handle shared partial-tab bytes; residual
+tab columns are ASCII whitespace. Lazy prefixes and marker-looking prose are
+never synthesized. Each original body suffix is tested only for ASCII space/tab;
+NBSP and NUL are content. Finite forward/backward line passes compute adjacent
+runs across container transitions, independent of options. Opaque header/source
+lines remain physical neighbors. No source, parse, budget or public tree clone
+is created. Reservations precede line storage, traversal, marker lookup, byte
+scans, amortized output growth and records (including both possible sides); loops checkpoint the original and
+caller controls. Failure, including the final check, withholds the inventory.
+The MD022 callback separately retains reliable earlier side findings on a later
+interruption. See [MD022 policy](../../docs/rules/headings/md022.md) and
+[accounting](../../docs/engineering/parser-limits.md).

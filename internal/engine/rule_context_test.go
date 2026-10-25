@@ -24,7 +24,7 @@ func headingContext(t *testing.T, text string, limits parser.Limits, operation c
 	if parsed.Status != parser.Complete {
 		t.Fatal(parsed)
 	}
-	return RuleContext{input: in, document: parsed.Document, parsed: parsed, budget: budget, operation: operation, syntaxReliable: true, options: Options{"frontmatter_title": true}}
+	return RuleContext{input: in, index: parser.NewLineIndex(in.source), document: parsed.Document, parsed: parsed, budget: budget, operation: operation, syntaxReliable: true, options: Options{"frontmatter_title": true}}
 }
 
 func TestRuleContextHeadingAndTitleOriginalAuthority(t *testing.T) {
@@ -102,7 +102,7 @@ func TestRuleContextTitleOriginalDocumentAllowance(t *testing.T) {
 }
 
 func TestRuleContextCompoundControls(t *testing.T) {
-	for _, access := range []string{"headings", "title", "opening hashes", "closing hashes"} {
+	for _, access := range []string{"headings", "title", "opening hashes", "closing hashes", "heading spacing"} {
 		operation, cancel := context.WithCancel(context.Background())
 		c := headingContext(t, "---\ntitle: Guide\n---\n# Root #\n### Third #\n", parser.DefaultLimits(), operation)
 		// A caller deadline, original operation cancellation and original cumulative
@@ -116,6 +116,8 @@ func TestRuleContextCompoundControls(t *testing.T) {
 			_, err = c.Headings(caller)
 		} else if access == "opening hashes" {
 			_, err = c.OpeningHashCandidates(caller)
+		} else if access == "heading spacing" {
+			_, err = c.HeadingSpacing(caller)
 		} else if access == "closing hashes" {
 			_, err = c.ClosingHashCandidates(caller)
 		} else {
@@ -188,13 +190,14 @@ func TestRuleContextOriginalElapsedAllowance(t *testing.T) {
 	title, titleErr := c.FrontmatterTitle(context.Background())
 	points, pointErr := c.OpeningHashCandidates(context.Background())
 	closing, closingErr := c.ClosingHashCandidates(context.Background())
-	for _, err := range []error{headingErr, titleErr, pointErr, closingErr} {
+	spacing, spacingErr := c.HeadingSpacing(context.Background())
+	for _, err := range []error{headingErr, titleErr, pointErr, closingErr, spacingErr} {
 		var limit *parser.LimitExceeded
 		if !errors.As(err, &limit) || limit.Name != "operation-time" {
 			t.Fatal(err)
 		}
 	}
-	if facts != nil || points != nil || closing != nil || title.Known {
+	if facts != nil || points != nil || closing != nil || spacing != nil || title.Known {
 		t.Fatal("elapsed stop published complete facts", facts, title)
 	}
 }
@@ -341,5 +344,98 @@ func TestRuleContextClosedGapAuthority(t *testing.T) {
 		if got, err := copy.Headings(context.Background()); err == nil || got != nil {
 			t.Fatal("invalid context granted gaps", got, err)
 		}
+	}
+}
+
+func TestRuleContextHeadingSpacingOriginalAllowance(t *testing.T) {
+	const source = "#  <!-- raw -->  #\n###  a\x00b  #\n#\t#\n"
+	for _, kind := range []string{"nodes", "work"} {
+		// Find the exact parser admission boundary from public outcomes. Projection
+		// must consume its residual allowance rather than start a fresh parse budget.
+		low, high := int64(1), int64(10000)
+		for low < high {
+			n := (low + high) / 2
+			limits := parser.DefaultLimits()
+			if kind == "nodes" {
+				limits.TotalNodes = n
+				limits.DocumentNodes = n
+			} else {
+				limits.WorkUnits = n
+			}
+			b, _ := parser.NewOperationBudget(limits)
+			fm, _ := parser.NewFrontmatterOptions(true, nil)
+			p := parser.ParseWithOptions(context.Background(), parser.NewSource([]byte(source)), b, parser.ParseOptions{Frontmatter: fm})
+			if p.Status == parser.Complete {
+				high = n
+			} else {
+				low = n + 1
+			}
+		}
+		for _, extra := range []int64{0, 10000} {
+			limits := parser.DefaultLimits()
+			if kind == "nodes" {
+				limits.TotalNodes = low + extra
+				limits.DocumentNodes = low + extra
+			} else {
+				limits.WorkUnits = low + extra
+			}
+			c := headingContext(t, source, limits, context.Background())
+			facts, err := c.HeadingSpacing(context.Background())
+			if extra == 0 {
+				var limit *parser.LimitExceeded
+				expected := "total-nodes"
+				if kind == "work" {
+					expected = "work-units"
+				}
+				if !errors.As(err, &limit) || limit.Name != expected || facts != nil {
+					t.Fatal("new projection allowance", facts, err)
+				}
+			} else if err != nil || len(facts) != 3 {
+				t.Fatal("sufficient original allowance failed", facts, err)
+			}
+		}
+	}
+}
+
+func TestRuleContextHeadingSpacingAuthority(t *testing.T) {
+	c := headingContext(t, "## bad##", parser.DefaultLimits(), context.Background())
+	points, err := c.HeadingSpacing(context.Background())
+	if err != nil || len(points) != 1 || points[0].Before.Start() != 0 || points[0].Before.SourceToken() != c.Source().Token() {
+		t.Fatal(points, err)
+	}
+	for _, invalidate := range []func(*RuleContext){func(c *RuleContext) { c.syntaxReliable = false }, func(c *RuleContext) { c.operation = nil }, func(c *RuleContext) { c.document = nil }} {
+		copy := c
+		invalidate(&copy)
+		if partial, err := copy.HeadingSpacing(context.Background()); err == nil || partial != nil {
+			t.Fatal(partial, err)
+		}
+	}
+}
+
+func TestRuleContextHeadingSpacingIndependentControls(t *testing.T) {
+	for _, origin := range []bool{false, true} {
+		operation, cancel := context.WithCancel(context.Background())
+		c := headingContext(t, "Text\n# H\nText", parser.DefaultLimits(), operation)
+		caller := context.Background()
+		if origin {
+			cancel()
+		} else {
+			var stop context.CancelFunc
+			caller, stop = context.WithCancel(caller)
+			stop()
+			defer cancel()
+		}
+		if facts, err := c.HeadingSpacing(caller); !errors.Is(err, context.Canceled) || facts != nil {
+			t.Fatal("lost caller/origin cancellation", origin, facts, err)
+		}
+	}
+	c := headingContext(t, "Text\n# H\nText", parser.DefaultLimits(), context.Background())
+	in, err := NewInput("foreign.md", []byte("Text\n# H\nText"), nil, DocumentContext{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	c.input = in
+	if facts, err := c.HeadingSpacing(context.Background()); err == nil || facts != nil {
+		t.Fatal("foreign input source granted facts", facts, err)
 	}
 }

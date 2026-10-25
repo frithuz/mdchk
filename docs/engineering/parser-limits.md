@@ -283,3 +283,17 @@ source, parse, allowance or tree clone is created. The callback reserves bounded
 source access/scans and finding construction, checking long scans every 256 bytes.
 Failed projection withholds the inventory; later callback interruption retains
 previous reliable findings with Err and explicit incomplete coverage.
+
+MD022 uses the original completed document and same-source physical LineIndex.
+Its separate heading-separation projection reserves one record per physical line,
+visits retained structural markers and headings once, and charges binary line
+lookups, byte scans, amortized output copying and detached heading/possible side records before
+retaining them. Linear forward/backward passes compute body-blank runs after each
+line's own actual prefixes. Periodic byte-scan and per-record checkpoints retain
+caller/original-operation controls and sticky cumulative node/work/time limits.
+No fresh source, index, parse, public tree clone or allowance is constructed.
+Cost is bounded by actual bytes/lines/tree facts and logarithmic line lookups,
+never numeric before/after values or a whole-document scan per heading. Projection
+failure withholds all facts; a later callback stop retains reliable side findings
+under the ordinary partial-result contract. This is finite accounting, not a
+process memory or throughput guarantee. See [MD022](../rules/headings/md022.md).

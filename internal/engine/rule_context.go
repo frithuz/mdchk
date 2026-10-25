@@ -91,3 +91,19 @@ func (c RuleContext) ClosingHashCandidates(ctx context.Context) (out []parser.Sp
 	}()
 	return c.document.ClosingHashCandidates(owned, c.budget)
 }
+
+// HeadingSpacing projects physical heading endpoints and adjacent blank body
+// runs from the original completed parser ownership and physical line index.
+func (c RuleContext) HeadingSpacing(ctx context.Context) (out []parser.HeadingSpacingFact, err error) {
+	if ctx == nil || c.operation == nil || c.document == nil || !c.syntaxReliable || c.document.Source().Token() != c.Source().Token() {
+		return nil, parser.ErrModel
+	}
+	owned := ruleOperation{ctx, c.operation}
+	defer func() {
+		err = errors.Join(err, owned.Err(), c.budget.ChargeWork(0))
+		if err != nil {
+			out = nil
+		}
+	}()
+	return c.document.HeadingSpacing(owned, c.budget, c.index)
+}

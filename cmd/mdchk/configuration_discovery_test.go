@@ -128,7 +128,7 @@ func testConfigurationDiscovery(t *testing.T, binary string) {
 		root := configurationProject(t)
 		putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\ndirectives: {enabled: false}\n")
 		putConfigurationFile(t, root, "child/.mdchk.yaml", "version: 1\nflavor: commonmark\ndirectives: {enabled: true}\n")
-		putConfigurationFile(t, root, "child/guide.md", "<!-- mdchk-disable MD001 -->\n# untouched\n")
+		putConfigurationFile(t, root, "child/guide.md", "<!-- mdchk-disable MD001 -->\n\n# untouched\n")
 		got := runConfiguration(t, binary, filepath.Join(root, "child"), root, "lint", "--format=json", "guide.md")
 		requireDiscoveryChecked(t, got, "guide.md")
 	})

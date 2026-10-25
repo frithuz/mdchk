@@ -11,8 +11,8 @@ failures, unavailable implementations and interruption never become skips.
 map. Each canonical, nonreserved MDxxx ID has one metadata entry and at most
 one executable implementation. Adding a rule changes registration, without
 changing command dispatch. Metadata can describe unavailable implementations;
-`Catalog` supplies all 89 known rules, preserving reserved gaps and the 59
-enabled / 30 disabled defaults. `NewCatalogRegistry` combines those contracts
+`Catalog` supplies all 87 known rules, preserving reserved gaps and the 59
+enabled / 28 disabled defaults. `NewCatalogRegistry` combines those contracts
 with only the supplied callbacks; planned corrections remain metadata. Tests and
 other trusted consumers may still provide a smaller metadata set to `NewRegistry`.
 Options admit bool, int, finite number, string and copied string-list domains,
@@ -206,3 +206,9 @@ reduce affected coverage without discarding reliable body comparisons. The optio
 false performs no decoding. MD001 uses these seams while retaining
 UsesFrontmatter=false and body-only finding protection. Title consumption grants
 no header observations, edits, preview or write authority.
+
+RuleContext.HeadingSpacing is a narrow original-operation bridge for physical
+heading endpoints and adjacent blank body runs. It requires reliable complete
+syntax and the original source index, shares all original controls and withholds
+a failed inventory. MD022 consumes these facts with before/after integer minima
+and ordinary start-anchor directive filtering; it produces no correction.
