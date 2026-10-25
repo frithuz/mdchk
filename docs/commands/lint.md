@@ -35,8 +35,8 @@ error attribution. It reports the first invalid sequence's original byte offset
 and Unicode position, retaining the original size and SHA-256 snapshot identity.
 
 The admitted plan runs the internal parser and available registered checks with
-the original source and validated options. MD047 terminating-newline analysis is
-implemented; other enabled missing defaults produce real coverage deficits and
+the original source and validated options. MD047 terminating-newline, MD001 heading-increment and MD003 heading-style
+analysis are implemented; other enabled missing defaults produce real coverage deficits and
 return `15`. Disabling all ordinary rules permits a clean `0` for valid UTF-8.
 Available registered checks can return violations (`10`); interruptions retain
 partial findings and known targets, with runtime precedence `14 > 13 > 15 > 10 > 0`.
@@ -95,7 +95,7 @@ printf '# Example\n' > "$mdchk_demo/example.md"
 
 The compiled binary reports `incomplete` and exits `15`: this configuration admits
 the current CommonMark parser, while many enabled ordinary defaults still lack
-production implementations. MD047 terminating-newline analysis is available. The catalog contains 87 entries, with 59 enabled
+production implementations. MD047 terminating-newline, MD001 heading-increment and MD003 heading-style analysis are available. The catalog contains 87 entries, with 59 enabled
 and 28 disabled by default; the mandatory UTF-8 gate is available independently
 of ordinary checks. Explicitly requesting an unavailable rule returns `12`.
 Omitting configuration selects GFM and also retains missing default-rule coverage (`15`).
@@ -106,7 +106,7 @@ For a runnable reduced selection, use the published
 [quick start](../index.md#get-started-with-this-build). The original returns `10`;
 adding one newline returns `0`. Preview returns `0` with a proposed change while
 the original bytes stay unchanged. To obtain a clean `0` for other valid UTF-8,
-disable unavailable ordinary rules and satisfy or disable MD047. To isolate the decoding gate, disable every ordinary rule. The
+disable unavailable ordinary rules and satisfy or disable the available checks. To isolate the decoding gate, disable every ordinary rule. The
 compiled production fixture in
 [`cleanConfiguration`](../../cmd/mdchk/configuration_acceptance_test.go)
 generates that complete configuration from the actual catalog and verifies text/JSON

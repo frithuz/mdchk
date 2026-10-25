@@ -254,7 +254,10 @@ marker selects a terminal hash run preceded by ASCII space/tab and followed only
 by ASCII space/tab. Escaped/nonclosing hash sequences remain raw block content;
 the inline decoder interprets eligible escapes after classification. Block
 classification does not perform semantic escape decoding. Missing closers
-are absent, not synthetic zero-width markers. Leading/trailing ASCII space/tab
+are absent, not synthetic zero-width markers. The original-operation `Headings`
+projection preserves `Style` as `atx`/`setext` and exposes `HeadingFact.Closed`
+as an owned boolean for a retained ATX closing marker, including empty headings.
+Marker visits share the original work budget before publishing facts. Leading/trailing ASCII space/tab
 and valid closing runs are excluded from logical content but remain in Source.
 Unicode whitespace is not trimmed. Content has original-byte Exact segments,
 with explicit Normalized provenance only for semantic NUL replacement. No inline

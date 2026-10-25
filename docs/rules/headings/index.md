@@ -5,7 +5,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | Rule | Focus | Status |
 | --- | --- | --- |
 | [MD001](md001.md) | Heading increments | Analysis implemented |
-| [MD003](md003.md) | Heading syntax style | Planned |
+| [MD003](md003.md) | Heading syntax style | Analysis implemented |
 | [MD018](md018.md) | Missing space after opening hashes | Planned |
 | [MD019](md019.md) | Extra spaces after opening hashes | Planned |
 | [MD020](md020.md) | Missing spaces within closed headings | Planned |

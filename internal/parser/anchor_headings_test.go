@@ -107,3 +107,26 @@ func TestHTMLIDsFilteredRawScriptNeverClaimsEmptyAuthority(t *testing.T) {
 		}
 	}
 }
+
+func TestHeadingClosingFactsUseOriginalMarkers(t *testing.T) {
+	text := "#\n# #\n## text #### \t\n# text###\n# text \\###\n\nSetext\n===\n"
+	budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
+	source := parser.NewSource([]byte(text))
+	parsed := parser.ParseWithBudget(context.Background(), source, budget)
+	facts, err := parsed.Document.Headings(context.Background(), budget)
+	if err != nil || len(facts) != 6 {
+		t.Fatal(facts, err)
+	}
+	for i, closed := range []bool{false, true, true, false, false, false} {
+		style := "atx"
+		if i == 5 {
+			style = "setext"
+		}
+		if facts[i].Closed != closed || facts[i].Style != style {
+			t.Fatal(i, facts[i])
+		}
+	}
+	if string(source.Bytes()) != text {
+		t.Fatal("projection changed source")
+	}
+}

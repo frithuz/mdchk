@@ -1,0 +1,474 @@
+[
+  {
+    "Name": "default-first-open-retained",
+    "Source": "# First\n## Closed ###\n### Third\n\nSetext\n------\n",
+    "Style": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          22,
+          2,
+          1,
+          3,
+          1
+        ],
+        "Source": "## Closed ###\n",
+        "Style": "atx"
+      },
+      {
+        "Range": [
+          33,
+          47,
+          5,
+          1,
+          7,
+          1
+        ],
+        "Source": "Setext\n------\n",
+        "Style": "atx"
+      }
+    ]
+  },
+  {
+    "Name": "explicit-consistent-first-closed",
+    "Source": "# First ###\n## Open\n### Last #\n",
+    "Style": "consistent",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          20,
+          2,
+          1,
+          3,
+          1
+        ],
+        "Source": "## Open\n",
+        "Style": "atx_closed"
+      }
+    ]
+  },
+  {
+    "Name": "consistent-first-setext",
+    "Source": "First\n=====\n\n## Second #\n\nThird\n-----\n",
+    "Style": "consistent",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          13,
+          25,
+          4,
+          1,
+          5,
+          1
+        ],
+        "Source": "## Second #\n",
+        "Style": "setext"
+      }
+    ]
+  },
+  {
+    "Name": "atx-cross-syntax",
+    "Source": "# Good\n## Closed ##\n\nTitle\n=====\n",
+    "Style": "atx",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          20,
+          2,
+          1,
+          3,
+          1
+        ],
+        "Source": "## Closed ##\n",
+        "Style": "atx"
+      },
+      {
+        "Range": [
+          21,
+          33,
+          4,
+          1,
+          6,
+          1
+        ],
+        "Source": "Title\n=====\n",
+        "Style": "atx"
+      }
+    ]
+  },
+  {
+    "Name": "closed-cross-syntax",
+    "Source": "# Open\n## Fine ###\n\nTitle\n-----\n",
+    "Style": "atx_closed",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          0,
+          7,
+          1,
+          1,
+          2,
+          1
+        ],
+        "Source": "# Open\n",
+        "Style": "atx_closed"
+      },
+      {
+        "Range": [
+          20,
+          32,
+          4,
+          1,
+          6,
+          1
+        ],
+        "Source": "Title\n-----\n",
+        "Style": "atx_closed"
+      }
+    ]
+  },
+  {
+    "Name": "setext-levels",
+    "Source": "One\n===\n\nTwo\n---\n\n### Three\n#### Four #\n##### Five\n###### Six\n",
+    "Style": "setext",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          18,
+          28,
+          7,
+          1,
+          8,
+          1
+        ],
+        "Source": "### Three\n",
+        "Style": "setext"
+      },
+      {
+        "Range": [
+          28,
+          40,
+          8,
+          1,
+          9,
+          1
+        ],
+        "Source": "#### Four #\n",
+        "Style": "setext"
+      },
+      {
+        "Range": [
+          40,
+          51,
+          9,
+          1,
+          10,
+          1
+        ],
+        "Source": "##### Five\n",
+        "Style": "setext"
+      },
+      {
+        "Range": [
+          51,
+          62,
+          10,
+          1,
+          11,
+          1
+        ],
+        "Source": "###### Six\n",
+        "Style": "setext"
+      }
+    ]
+  },
+  {
+    "Name": "empty-open-baseline",
+    "Source": "#\n## ##\n###\n",
+    "Style": "consistent",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          8,
+          2,
+          1,
+          3,
+          1
+        ],
+        "Source": "## ##\n",
+        "Style": "atx"
+      }
+    ]
+  },
+  {
+    "Name": "empty-closed-baseline",
+    "Source": "# #\n##\n### ###\n",
+    "Style": "consistent",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          7,
+          2,
+          1,
+          3,
+          1
+        ],
+        "Source": "##\n",
+        "Style": "atx_closed"
+      }
+    ]
+  },
+  {
+    "Name": "whitespace-empty-open",
+    "Source": "# \t\n## #\n",
+    "Style": "consistent",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          9,
+          2,
+          1,
+          3,
+          1
+        ],
+        "Source": "## #\n",
+        "Style": "atx"
+      }
+    ]
+  },
+  {
+    "Name": "nonclosing-and-escaped",
+    "Source": "# text###\n# text #x\n# text \\###\n# `#` [x](url) ![alt](img)\n# closed #### \t\n",
+    "Style": "atx",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          59,
+          75,
+          5,
+          1,
+          6,
+          1
+        ],
+        "Source": "# closed #### \t\n",
+        "Style": "atx"
+      }
+    ]
+  },
+  {
+    "Name": "closed-empty-and-unequal",
+    "Source": "# #\n## ##\n### text #\t \n",
+    "Style": "atx_closed",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "multiline-setext-unicode-crlf",
+    "Source": "# Root\r\n\r\nTítle\r\né\ttext\r\n------",
+    "Style": "atx",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          10,
+          34,
+          3,
+          1,
+          5,
+          7
+        ],
+        "Source": "Títle\r\né\ttext\r\n------",
+        "Style": "atx"
+      }
+    ]
+  },
+  {
+    "Name": "quote-first-global",
+    "Source": "> # First #\n\n- ## 雪é\topen\r\n\n### Closed #",
+    "Style": "consistent",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          15,
+          31,
+          3,
+          3,
+          4,
+          1
+        ],
+        "Source": "## 雪é\topen\r\n",
+        "Style": "atx_closed"
+      }
+    ]
+  },
+  {
+    "Name": "list-first-global",
+    "Source": "- # First\n\n> ## Closed #\r\n\n### Fine",
+    "Style": "consistent",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          13,
+          26,
+          3,
+          3,
+          4,
+          1
+        ],
+        "Source": "## Closed #\r\n",
+        "Style": "atx"
+      }
+    ]
+  },
+  {
+    "Name": "nested-multiline-setext",
+    "Source": "# Root\n\n> Títle\n> second\n> ------\n",
+    "Style": "atx",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          10,
+          35,
+          3,
+          3,
+          6,
+          1
+        ],
+        "Source": "Títle\n> second\n> ------\n",
+        "Style": "atx"
+      }
+    ]
+  },
+  {
+    "Name": "lone-cr-eof",
+    "Source": "# Root\r## Last #",
+    "Style": "atx",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          16,
+          2,
+          1,
+          2,
+          10
+        ],
+        "Source": "## Last #",
+        "Style": "atx"
+      }
+    ]
+  },
+  {
+    "Name": "protected-literals",
+    "Source": "```\n# Fake #\n```\n\n    # Fake #\n\n<div>\n# Fake #\n</div>\n\n<!--\n# Fake #\n-->\n\n\\# Fake #\n\n---\n\n# Actual\n## Actual too\n",
+    "Style": "consistent",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "opaque-yaml-no-title-baseline",
+    "Source": "---\ntitle: Guide\n# Fake #\n---\n# Real\n## Real\n",
+    "Style": "consistent",
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "opaque-toml",
+    "Source": "+++\n# Fake #\n+++\n# Real\n## Real\n",
+    "Style": "consistent",
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "disabled-header-recognition",
+    "Source": "---\n# First #\n---\n## Open\n",
+    "Style": "consistent",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          18,
+          26,
+          4,
+          1,
+          5,
+          1
+        ],
+        "Source": "## Open\n",
+        "Style": "atx_closed"
+      }
+    ]
+  },
+  {
+    "Name": "unterminated-header",
+    "Source": "---\n# Fake\n",
+    "Style": "consistent",
+    "Recognize": true,
+    "Incomplete": true,
+    "Expected": []
+  },
+  {
+    "Name": "no-headings",
+    "Source": "ordinary\n\n---\n\n\\# literal\n",
+    "Style": "consistent",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty-document",
+    "Source": "",
+    "Style": "consistent",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "only-setext-multiline",
+    "Source": "First\nsecond\n===\n\nOther\n---\n",
+    "Style": "setext",
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  }
+]

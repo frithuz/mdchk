@@ -16,12 +16,15 @@ type HeadingContainer struct {
 }
 
 // HeadingFact is a parser-confirmed Markdown heading, separate from arbitrary
-// HTML ID targets. Visible contains semantic inline text, including image alt
+// HTML ID targets. Style remains "atx" or "setext"; Closed is true only for an
+// ATX heading with a parser-retained closing marker (including empty headings).
+// Visible contains semantic inline text, including image alt
 // descriptions, rather than source markup or link destinations/titles.
 type HeadingFact struct {
 	Envelope   Span
 	Level      int
 	Style      string
+	Closed     bool
 	Visible    string
 	Containers []HeadingContainer
 }
@@ -50,8 +53,15 @@ func (d *Document) Headings(ctx context.Context, budget *OperationBudget) ([]Hea
 			if err := headingFactCharge(ctx, budget, int64(len(containers))+1, int64(len(containers))+1); err != nil {
 				return err
 			}
+			closed := false
+			for _, marker := range n.spec.Markers {
+				if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
+					return err
+				}
+				closed = closed || marker.Role == "closing"
+			}
 			h := n.spec.Properties.Heading
-			out = append(out, HeadingFact{Envelope: n.Span(), Level: h.Level, Style: h.Style, Visible: visible, Containers: slices.Clone(containers)})
+			out = append(out, HeadingFact{Envelope: n.Span(), Level: h.Level, Style: h.Style, Closed: closed, Visible: visible, Containers: slices.Clone(containers)})
 			return nil
 		}
 		switch n.Kind() {
