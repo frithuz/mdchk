@@ -89,7 +89,6 @@ func TestDecodeObjectFixedStructure(t *testing.T) {
 	}{
 		{"unknown", true}, {"directives", map[string]any{"unknown": true}}, {"resources", map[string]any{"unknown": true}},
 		{"frontmatter", map[string]any{"unknown": true}}, {"documents", map[string]any{"unknown": true}},
-		{"integrations", map[string]any{"quarto": map[string]any{"unknown": true}}},
 		{"exclude", []any{false}}, {"directives", map[string]any{"enabled": "false"}},
 	} {
 		if d, err := DecodeObject(map[string]any{"version": 1, entry.key: entry.value}); d != nil || err == nil {

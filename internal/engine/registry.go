@@ -81,7 +81,7 @@ func validID(id string) bool {
 		}
 	}
 	n, err := strconv.Atoi(id[2:])
-	return err == nil && n >= 1 && n <= 95 && !slices.Contains([]int{2, 6, 8, 15, 16, 17}, n)
+	return err == nil && n >= 1 && n <= 95 && !slices.Contains([]int{2, 6, 8, 15, 16, 17, 78, 79}, n)
 }
 
 // NewRegistry freezes catalog schemas and registration maps. No package-global

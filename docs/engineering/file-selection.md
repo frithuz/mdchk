@@ -14,8 +14,7 @@ configuration, interpret Git ignores, access linked resources, or write files.
 An operation supplies `files.Options` with its working directory, terminal paths,
 the selected configuration's directory and compiled `config.Patterns`. Without a
 selected definition, the exclusion base is the invocation directory. Empty paths
-scan the working directory recursively. The independent `Quarto` flag adds `.qmd`
-to directory discovery; it does not assert production Quarto interpretation.
+scan the working directory recursively.
 Current capability admission still rejects unsupported requested integrations.
 
 Targets use cleaned absolute host-native paths. Relative arguments resolve from
@@ -25,8 +24,7 @@ On POSIX a literal backslash remains part of the filename. Pattern text never
 passes through native path conversion. Outside-base targets remain unmatched
 and do not select another configuration or enlarge resource permissions.
 
-Directory discovery uses ASCII-case-insensitive `.md` and `.markdown` extensions,
-plus `.qmd` when requested. Explicit regular files accept any extension. Hidden
+Directory discovery uses ASCII-case-insensitive `.md` and `.markdown` extensions. Explicit regular files accept any extension. Hidden
 entries are included. Every `.git` component and symlink is skipped, including
 explicit ancestor components and dangling links. Mixed-case Git metadata names
 are skipped when native file identity confirms they alias the sibling `.git`;

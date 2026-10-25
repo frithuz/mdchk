@@ -25,27 +25,24 @@ const (
 // Settings is explicit adapter-selected policy. It neither admits unavailable
 // build capabilities nor changes flavor, frontmatter, rules or target selection.
 type Settings struct {
-	QuartoEnabled bool
-	MkDocs        MkDocsPolicy
-	Slides        SlideSettings
+	MkDocs MkDocsPolicy
+	Slides SlideSettings
 }
 
 // Scope binds contexts to one existing resource operation and immutable view.
 // It creates no worker, cache, root, resource reader or allowance.
 type Scope struct {
-	operation     *resource.Operation
-	view          resource.View
-	quarto        bool
-	mkdocs        MkDocsPolicy
-	slides        *slidePolicy
-	quartoService *resource.Service
+	operation *resource.Operation
+	view      resource.View
+	mkdocs    MkDocsPolicy
+	slides    *slidePolicy
 }
 
 func NewScope(ctx context.Context, operation *resource.Operation, view resource.View, settings Settings) (*Scope, error) {
 	if ctx == nil || !operation.OwnsView(view) {
 		return nil, ErrContract
 	}
-	s := &Scope{operation: operation, view: view, quarto: settings.QuartoEnabled}
+	s := &Scope{operation: operation, view: view}
 	if err := s.checkpoint(ctx, 1, 1); err != nil {
 		return nil, err
 	}
@@ -133,12 +130,6 @@ func (s *Scope) accepts(d Document) bool {
 func (s *Scope) checkpoint(ctx context.Context, work, nodes int64) error {
 	if s == nil || s.operation == nil || ctx == nil {
 		return ErrContract
-	}
-	if owner, ok := ctx.Value(quartoAssemblyKey{}).(*Scope); ok && owner == s && s.quartoService != nil {
-		if err := s.quartoService.Checkpoint(ctx, work); err != nil {
-			return err
-		}
-		return s.operation.Budget().ChargeNodes(nodes)
 	}
 	// Independently observed operation and caller controls must both survive.
 	if err := errors.Join(ctx.Err(), s.operation.Context().Err(), s.operation.Budget().ChargeWork(0)); err != nil {

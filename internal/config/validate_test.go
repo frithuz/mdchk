@@ -77,7 +77,7 @@ func TestValidationDefaultsAcrossBuilds(t *testing.T) {
 				no++
 			}
 		}
-		if yes != 59 || no != 30 || len(got.Rules) != 89 {
+		if yes != 59 || no != 28 || len(got.Rules) != 87 {
 			t.Fatal(yes, no)
 		}
 		if !reflect.DeepEqual(got.Settings, DefaultSettings()) {
@@ -142,7 +142,7 @@ func TestOptionalCapabilities(t *testing.T) {
 	for _, tt := range []struct {
 		body, path string
 		caps       Capabilities
-	}{{"", "flavor", Capabilities{CommonMark: true, DirectiveProcessing: true}}, {"frontmatter: {enabled: true, formats: [yaml]}", "frontmatter.enabled", baseCaps()}, {"frontmatter: {enabled: true}", "frontmatter.enabled", func() Capabilities { c := baseCaps(); c.FrontmatterYAML = true; return c }()}, {"integrations: {quarto: {enabled: true}}", "integrations.quarto.enabled", baseCaps()}, {"documents: {slides: ['slides/**']}", "documents.slides", baseCaps()}, {"rules: {MD001: {frontmatter_title: true}}", "rules.MD001.frontmatter_title", baseCaps()}, {"resources: {index_file: index.md}", "resources.index_file", baseCaps()}, {"resources: {anchor_style: github}", "resources.anchor_style", baseCaps()}} {
+	}{{"", "flavor", Capabilities{CommonMark: true, DirectiveProcessing: true}}, {"frontmatter: {enabled: true, formats: [yaml]}", "frontmatter.enabled", baseCaps()}, {"frontmatter: {enabled: true}", "frontmatter.enabled", func() Capabilities { c := baseCaps(); c.FrontmatterYAML = true; return c }()}, {"documents: {slides: ['slides/**']}", "documents.slides", baseCaps()}, {"rules: {MD001: {frontmatter_title: true}}", "rules.MD001.frontmatter_title", baseCaps()}, {"resources: {index_file: index.md}", "resources.index_file", baseCaps()}, {"resources: {anchor_style: github}", "resources.anchor_style", baseCaps()}} {
 		t.Run(tt.body, func(t *testing.T) {
 			v := schemaFor(t, "version: 1\n"+tt.body+"\n", registryFor(t, "MD001"))
 			_, e := v.Admit(tt.caps, Permissions{})
@@ -152,7 +152,6 @@ func TestOptionalCapabilities(t *testing.T) {
 	c := baseCaps()
 	c.FrontmatterYAML = true
 	c.MetadataInterpretation = true
-	c.QuartoRecognition = true
 	c.SlideAnnotation = true
 	c.ResourceIndex = true
 	c.ExplicitAnchors = true
@@ -162,7 +161,7 @@ func TestOptionalCapabilities(t *testing.T) {
 		}
 		return nil
 	}
-	v := schemaFor(t, "version: 1\nflavor: gfm\nfrontmatter: {enabled: true, formats: [yaml]}\nintegrations: {quarto: {enabled: true}}\ndocuments: {slides: ['s/**']}\nresources: {index_file: README.md, anchor_style: explicit}\nrules: {MD001: {frontmatter_title: true}}\n", registryFor(t, "MD001"))
+	v := schemaFor(t, "version: 1\nflavor: gfm\nfrontmatter: {enabled: true, formats: [yaml]}\ndocuments: {slides: ['s/**']}\nresources: {index_file: README.md, anchor_style: explicit}\nrules: {MD001: {frontmatter_title: true}}\n", registryFor(t, "MD001"))
 	if _, e := v.Admit(c, Permissions{}); e != nil {
 		t.Fatal(e)
 	}

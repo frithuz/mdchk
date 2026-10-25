@@ -105,5 +105,5 @@ Git ignore support for lint and fix is deferred in the current design. A `.gitig
 
 See [troubleshooting](troubleshooting.md) when selected files or configuration differ from what you expected.
 
-Under the accepted future Quarto contract (currently unavailable and rejected with `12`),
-when `integrations.quarto.enabled: true`, directory scans also select `.qmd` with the same case-insensitive extension matching. `documents.slides` only annotates selected documents; its patterns never select or exclude targets. See [optional contexts](configuration.md#optional-document-contexts).
+Slide patterns only annotate selected documents; they never select or exclude
+targets. See [optional contexts](configuration.md#optional-document-contexts).

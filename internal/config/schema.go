@@ -24,7 +24,6 @@ type Definition struct {
 	Flavor              *string
 	Resources           *Resources
 	Frontmatter         *Frontmatter
-	Integrations        *Integrations
 	Documents           *Documents
 	Rules               map[string]RuleSetting
 	Exclude             *[]string
@@ -43,8 +42,6 @@ type Frontmatter struct {
 	Formats *[]string
 }
 
-type Integrations struct{ Quarto *Quarto }
-type Quarto struct{ Enabled *bool }
 type Documents struct{ Slides *[]string }
 type Directives struct{ Enabled *bool }
 
@@ -73,7 +70,6 @@ type Builtins struct {
 	AnchorStyle         string
 	FrontmatterEnabled  bool
 	FrontmatterFormats  []string
-	QuartoEnabled       bool
 	Slides              []string
 	Exclude             []string
 	DirectivesEnabled   bool

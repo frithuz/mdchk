@@ -139,7 +139,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 		base = filepath.Dir(selectedConfig.SelectedPath)
 	}
 	inv := &lintInvocation{options: opts, selection: selectedConfig, plan: resolution.ExecutionPlan(), workingDirectory: cwd, exclusionBase: base, exclusions: resolution.Exclude}
-	selection, err := files.SelectBounded(ctx, files.Options{WorkingDirectory: cwd, ExclusionBase: base, Paths: opts.paths, Exclusions: resolution.Exclude, Quarto: inv.plan.Configuration().Settings.QuartoEnabled}, budget)
+	selection, err := files.SelectBounded(ctx, files.Options{WorkingDirectory: cwd, ExclusionBase: base, Paths: opts.paths, Exclusions: resolution.Exclude}, budget)
 	if err != nil {
 		return fail(err, "selection-failed", result.IO)
 	}

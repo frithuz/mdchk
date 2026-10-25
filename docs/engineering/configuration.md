@@ -247,7 +247,7 @@ is effective; per-rule permission denials do not substitute for that global gate
 
 `Capabilities` is an explicit trusted assertion by the build adapter, independent
 of default settings. Separate dimensions cover CommonMark/GFM, directive processing, YAML and TOML recognition, metadata
-interpretation, Quarto recognition, slide annotation, index handling and each
+interpretation, slide annotation, index handling and each
 anchor style. An explicit index basename also requires the pure active-adapter
 `RepresentIndexFile` predicate. No capability flag implements those features or
 grants resource access. Explicit resource values equal to built-ins remain
@@ -335,7 +335,7 @@ Maintain metadata for all known catalog IDs separately from executable implement
 
 An unavailable rule with an explicit entry and effective `enabled: true` is a configuration error. Explicitly disabled unavailable rules are valid after option validation. Unmentioned unavailable default-enabled rules remain enabled expectations and produce `rule-unavailable` coverage records during analysis; unavailable default-disabled rules do not. Evaluate dialect applicability separately: a rule inapplicable to the selected dialect does not reduce coverage. Preserve the catalog defaults rather than enabling only registered implementations.
 
-Validate effective flavor and directive-processing availability before analysis. Default GFM never falls back to CommonMark. The shared CommonMark lint engine implements directive processing; adapters must declare that capability only when bound to the shared processor. Validate the approved `frontmatter`, `integrations.quarto` and `documents.slides` settings. Explicitly enabled recognition and enabled-rule options requiring unavailable metadata capabilities fail capability validation. See [initial capability handling](../configuration.md#initial-capability-handling).
+Validate effective flavor and directive-processing availability before analysis. Default GFM never falls back to CommonMark. The shared CommonMark lint engine implements directive processing; adapters must declare that capability only when bound to the shared processor. Validate the approved `frontmatter` and `documents.slides` settings. Explicitly enabled recognition and enabled-rule options requiring unavailable metadata capabilities fail capability validation. See [initial capability handling](../configuration.md#initial-capability-handling).
 
 Separate schema/policy validation from selected-operation capability validation. Ancestors consulted only for policy must be completely schema-valid, but their unselected rule options and flavor do not undergo execution-availability checks or become inherited settings. Each definition visited by `config validate` is checked as a selected definition using inherited permissions. Unmentioned unavailable default rules do not make that scan incomplete because it does not run Markdown checks.
 

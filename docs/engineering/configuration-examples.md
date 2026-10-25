@@ -93,7 +93,7 @@ This configuration works with the current production executable: CommonMark
 GFM is also available; other ordinary rule implementations remain unavailable. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
 as `rule-unavailable`, sets `status: incomplete` and `complete: false`, and exits
-15. The complete 89-rule catalog remains intact: MD001 is default-enabled and
+15. The complete 87-rule catalog remains intact: MD001 is default-enabled and
 contributes coverage; MD013 is default-disabled and does not. Explicitly enabling
 an unavailable rule instead fails configuration admission with exit 12 before
 target processing. Text and JSON retain the same coverage and outcome.
@@ -327,11 +327,10 @@ the [resource contract](resources.md#verification-and-handoff).
 The [optional context settings](../configuration.md#optional-document-contexts)
 are schema-1 fields. Use the complete default object there as a valid fixture.
 Also accept `frontmatter: {enabled: true, formats: [yaml]}`,
-`integrations: {quarto: {enabled: true}}`, and
-`documents: {slides: ["slides/**"]}` when required capabilities are available.
+and `documents: {slides: ["slides/**"]}` when required capabilities are available.
 
 Reject string booleans, `frontmatter.formats: [json]`, empty/duplicate format
-lists, unknown integration names, malformed slide patterns, and null mappings.
+lists, unknown settings, malformed slide patterns, and null mappings.
 Reject `rules.MD088.replacements` even when MD088 is disabled; its mapping is fixed.
 Reject `limits` or HTTP authentication fields in project/supplied configuration.
 Capability tests must distinguish accepted schema from an unavailable implementation.

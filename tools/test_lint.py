@@ -118,11 +118,6 @@ package config
 import yaml "github.com/goccy/go-yaml"
 func Decode() { yaml.Helper() }
 ''')
-        write(root, "internal/integration/quarto_options.go", '''// Package integration owns bounded Quarto option adaptation.
-package integration
-import yaml "github.com/goccy/go-yaml"
-func DecodeOptions() { yaml.Helper() }
-''')
         write(root, "internal/mcp/probe.go", '''// Package mcp owns SDK adaptation.
 package mcp
 import sdk "github.com/modelcontextprotocol/go-sdk/mcp"
@@ -147,8 +142,7 @@ func TestAdapter(t *testing.T) { conformance.Helper() }
             raise AssertionError(f"legitimate tests/entry points rejected:\n{output}")
         print("External parser tests and both process entry points pass.")
 
-        # The integration exception names exactly one bounded adapter. Neither
-        # another integration file nor the core parser inherits YAML access.
+        # Integration and parser files do not inherit configuration YAML access.
         write(root, "internal/integration/other.go", '''package integration
 import yaml "github.com/goccy/go-yaml"
 func OtherOptions() { yaml.Helper() }
@@ -168,9 +162,7 @@ func Parse() { yaml.Helper() }
                          "configuration-adapter"):
             if required not in output:
                 raise AssertionError(f"missing narrow YAML boundary {required}:\n{output}")
-        if "internal/integration/quarto_options.go:" in output:
-            raise AssertionError(f"approved bounded adapter rejected:\n{output}")
-        print("Only the bounded Quarto options adapter gains YAML access; other integration/parser files fail.")
+        print("YAML access remains confined to configuration adapters.")
 
         with (root / ".golangci.yml").open("a", encoding="utf-8") as config:
             config.write("\nunknown-configuration-key: true\n")

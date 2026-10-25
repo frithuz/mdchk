@@ -45,7 +45,7 @@ To exclude a whole file from all rule linting, list its path under `exclude`. In
 
 `rules` sets expectations by canonical, case-sensitive numeric ID, such as `MD013`. Use `enabled: true` to enable a rule or `enabled: false` to disable it. Rule-specific options, such as the list `marker` above, sit alongside `enabled`. Omitted rules and options keep their defaults.
 
-The [implementation ruleset](rules/index.md) defines 89 numeric rule IDs; each rule page supplies its option schema and default enablement. Descriptive aliases, lowercase IDs, unknown IDs, and reserved IDs are rejected. Repeating an ID is an error even when its settings are identical. Descriptions may accompany IDs in reports without becoming configuration names.
+The [implementation ruleset](rules/index.md) defines 87 numeric rule IDs; each rule page supplies its option schema and default enablement. Descriptive aliases, lowercase IDs, unknown IDs, and reserved IDs are rejected. Repeating an ID is an error even when its settings are identical. Descriptions may accompany IDs in reports without becoming configuration names.
 
 ## Configuration syntax
 
@@ -63,7 +63,6 @@ Types are strict: strings do not become booleans or numbers, numbers do not beco
 | `flavor` | `commonmark` or `gfm` | `gfm` |
 | `resources` | Shared resource policy mapping | `index_file: index.md`, `anchor_style: github` |
 | `frontmatter` | Mapping with `enabled` and `formats` | `enabled: false`, `formats: [yaml, toml]` |
-| `integrations` | Mapping with `quarto.enabled` | `quarto.enabled: false` |
 | `documents` | Mapping with `slides` pattern sequence | `slides: []` |
 | `rules` | Mapping from MDxxx IDs to option mappings | Catalog defaults |
 | `exclude` | Sequence of valid pattern strings | Empty sequence |
@@ -105,7 +104,7 @@ These settings do not grant access or select lint targets. Excluded or unselecte
 
 Availability: independently enabled YAML/TOML frontmatter recognition is implemented
 in shared lint, inspection and fix processing. Headers remain opaque; semantic
-metadata decoding and title options remain unavailable. Quarto, slides and MkDocs
+metadata decoding and title options remain unavailable. Slides and MkDocs
 consumers are not implemented; explicitly enabling unavailable context returns `12`.
 
 ```yaml
@@ -113,9 +112,6 @@ version: 1
 frontmatter:
   enabled: false
   formats: [yaml, toml]
-integrations:
-  quarto:
-    enabled: false
 documents:
   slides: []
 ```
@@ -128,11 +124,6 @@ preserved UTF-8 BOM. Delimiters are unindented lines with only optional trailing
 spaces/tabs. Recognized headers are opaque to ordinary rules and directives;
 an unterminated header is protected through EOF with incomplete coverage and no
 edits there. JSON headers are deferred. See [frontmatter and metadata](engineering/frontmatter.md).
-
-`integrations.quarto.enabled` is Boolean and defaults to false. When enabled,
-`.qmd` joins directory-scan extensions and explicit executable `r`, `python` and
-`julia` cells receive the [Quarto interpretation](engineering/integrations.md#quarto-chunks).
-It does not enable MD078/MD079 or frontmatter and never executes code.
 
 `documents.slides` is a sequence of patterns using the exclusion grammar and its
 base directory, but only annotates already selected files. It does not select or
@@ -171,7 +162,7 @@ version: 1
 flavor: commonmark
 ```
 
-This configuration still yields incomplete lint analysis if default-enabled applicable rules are unavailable. Enabled frontmatter or Quarto recognition requires the corresponding implementation; unsupported explicitly requested capabilities are configuration errors. Disabled recognition uses ordinary flavor parsing. Explicit enabled-rule options requiring unavailable metadata interpretation are also configuration errors.
+This configuration still yields incomplete lint analysis if default-enabled applicable rules are unavailable. Enabled frontmatter recognition requires the corresponding implementation; unsupported explicitly requested capabilities are configuration errors. Disabled recognition uses ordinary flavor parsing. Explicit enabled-rule options requiring unavailable metadata interpretation are also configuration errors.
 
 Explicit shared resource settings require their corresponding implementation capabilities; unavailable explicitly requested behavior is a configuration error. Missing unmentioned default behavior produces incomplete coverage when an applicable analysis requires it.
 

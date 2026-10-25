@@ -95,8 +95,8 @@ printf '# Example\n' > "$mdchk_demo/example.md"
 
 The compiled binary reports `incomplete` and exits `15`: this configuration admits
 the current CommonMark parser, while many enabled ordinary defaults still lack
-production implementations. MD047 terminating-newline analysis is available. The catalog contains 89 entries, with 59 enabled
-and 30 disabled by default; the mandatory UTF-8 gate is available independently
+production implementations. MD047 terminating-newline analysis is available. The catalog contains 87 entries, with 59 enabled
+and 28 disabled by default; the mandatory UTF-8 gate is available independently
 of ordinary checks. Explicitly requesting an unavailable rule returns `12`.
 Omitting configuration selects GFM and also retains missing default-rule coverage (`15`).
 

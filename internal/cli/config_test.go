@@ -52,7 +52,6 @@ func TestLintConfigurationStopsBeforeTargets(t *testing.T) {
 		{"invalid pattern", availableConfig + "exclude: ['bad/**x']\n", "", "exclude"},
 		{"disabled hostname provider", availableConfig + "rules: {MD095: {enabled: false, allowed_hosts: [example.com]}}\n", "", "allowed_hosts"},
 		{"unsupported frontmatter", availableConfig + "frontmatter: {enabled: true, formats: [json]}\n", "", "frontmatter"},
-		{"quarto", availableConfig + "integrations: {quarto: {enabled: true}}\n", "", "quarto"},
 		{"slides", availableConfig + "documents: {slides: ['talk/**']}\n", "", "slides"},
 		{"explicit resource default", availableConfig + "resources: {index_file: index.md}\n", "", "index_file"},
 	} {
@@ -88,7 +87,7 @@ func TestLintPreparationRetainsOwnedSelection(t *testing.T) {
 	calls := 0
 	status := run([]string{"lint", "other/target.md", "missing.md"}, io.Discard, io.Discard, "dev", prepareLint, func(inv *lintInvocation, _, _ io.Writer) int {
 		calls++
-		if inv.selection.SelectedPath != path || inv.selection.Resolution.Settings.Flavor != "commonmark" || len(inv.selection.Resolution.Rules) != 89 || len(inv.options.paths) != 2 {
+		if inv.selection.SelectedPath != path || inv.selection.Resolution.Settings.Flavor != "commonmark" || len(inv.selection.Resolution.Rules) != 87 || len(inv.options.paths) != 2 {
 			t.Fatalf("incomplete selection: %+v", inv)
 		}
 		r := inv.selection.Resolution.Rules["MD013"]

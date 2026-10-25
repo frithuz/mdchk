@@ -46,7 +46,7 @@ func acquireLintContext(ctx context.Context, inv *lintInvocation, _ io.Writer) i
 	}
 	ctx, cancel := context.WithTimeout(ctx, limits.OperationTime)
 	defer cancel()
-	selected, err := files.Select(files.Options{WorkingDirectory: inv.workingDirectory, ExclusionBase: inv.exclusionBase, Paths: inv.options.paths, Exclusions: inv.exclusions, Quarto: inv.plan.Configuration().Settings.QuartoEnabled})
+	selected, err := files.Select(files.Options{WorkingDirectory: inv.workingDirectory, ExclusionBase: inv.exclusionBase, Paths: inv.options.paths, Exclusions: inv.exclusions})
 	if err != nil {
 		return inv.fail(err, "selection-failed", result.IO)
 	}

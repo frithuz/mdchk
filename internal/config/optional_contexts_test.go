@@ -11,13 +11,10 @@ import (
 // preserve their settings and catalog defaults rather than activate related
 // contexts or rules merely because a dialect or annotation is supported.
 func TestOptionalContextIndependence(t *testing.T) {
-	quarto := DefaultSettings()
-	quarto.QuartoEnabled = true
 	slides := DefaultSettings()
 	slides.Flavor = "commonmark"
 	slides.FrontmatterEnabled = true
 	slides.FrontmatterFormats = []string{"yaml"}
-	slides.QuartoEnabled = true
 	slides.Slides = []string{"talks/**"}
 	slides.Exclude = []string{"generated/**"}
 	for _, tc := range []struct {
@@ -28,18 +25,11 @@ func TestOptionalContextIndependence(t *testing.T) {
 		explicit map[string]bool
 	}{
 		{
-			name:     "Quarto does not enable frontmatter or integration rules",
-			body:     "integrations: {quarto: {enabled: true}}\n",
-			caps:     Capabilities{GFM: true, QuartoRecognition: true, DirectiveProcessing: true},
-			want:     quarto,
-			explicit: map[string]bool{"integrations.quarto.enabled": true},
-		},
-		{
 			name:     "slides preserve profile exclusions and independent contexts",
-			body:     "flavor: commonmark\nfrontmatter: {enabled: true, formats: [yaml]}\nintegrations: {quarto: {enabled: true}}\ndocuments: {slides: ['talks/**']}\nexclude: ['generated/**']\n",
-			caps:     Capabilities{CommonMark: true, FrontmatterYAML: true, QuartoRecognition: true, SlideAnnotation: true, DirectiveProcessing: true},
+			body:     "flavor: commonmark\nfrontmatter: {enabled: true, formats: [yaml]}\ndocuments: {slides: ['talks/**']}\nexclude: ['generated/**']\n",
+			caps:     Capabilities{CommonMark: true, FrontmatterYAML: true, SlideAnnotation: true, DirectiveProcessing: true},
 			want:     slides,
-			explicit: map[string]bool{"flavor": true, "frontmatter.enabled": true, "frontmatter.formats": true, "integrations.quarto.enabled": true, "documents.slides": true, "exclude": true},
+			explicit: map[string]bool{"flavor": true, "frontmatter.enabled": true, "frontmatter.formats": true, "documents.slides": true, "exclude": true},
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -63,7 +53,7 @@ func TestOptionalContextIndependence(t *testing.T) {
 					}
 				}
 			}
-			for _, path := range []string{"flavor", "frontmatter.enabled", "frontmatter.formats", "integrations.quarto.enabled", "documents.slides", "exclude", "rules.MD078.enabled", "rules.MD079.enabled", "rules.MD090.enabled"} {
+			for _, path := range []string{"flavor", "frontmatter.enabled", "frontmatter.formats", "documents.slides", "exclude", "rules.MD090.enabled"} {
 				p, ok := view.Provenance[path]
 				if !ok || p.Explicit != tc.explicit[path] {
 					t.Fatalf("%s provenance=%#v, want explicit=%v", path, p, tc.explicit[path])

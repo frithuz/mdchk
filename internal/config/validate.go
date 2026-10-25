@@ -30,7 +30,7 @@ type Capabilities struct {
 	CommonMark, GFM                                          bool
 	DirectiveProcessing                                      bool
 	FrontmatterYAML, FrontmatterTOML, MetadataInterpretation bool
-	QuartoRecognition, SlideAnnotation                       bool
+	SlideAnnotation                                          bool
 	ResourceIndex, GitHubAnchors, ExplicitAnchors            bool
 	RepresentIndexFile                                       func(string) error
 }
@@ -149,9 +149,6 @@ func ValidateDefinition(input *Definition, registry *engine.Registry, providers 
 			}
 			seen[f] = true
 		}
-	}
-	if d.Integrations != nil && d.Integrations.Quarto != nil && d.Integrations.Quarto.Enabled != nil {
-		b.QuartoEnabled = *d.Integrations.Quarto.Enabled
 	}
 	if d.Documents != nil && d.Documents.Slides != nil {
 		b.Slides = slices.Clone(*d.Documents.Slides)
@@ -275,9 +272,6 @@ func (v *Validated) Admit(c Capabilities, inherited Permissions) (*Resolution, e
 				return fail("frontmatter.enabled", "selected frontmatter recognition is unavailable")
 			}
 		}
-	}
-	if b.QuartoEnabled && !c.QuartoRecognition {
-		return fail("integrations.quarto.enabled", "Quarto recognition is unavailable")
 	}
 	if len(b.Slides) > 0 && !c.SlideAnnotation {
 		return fail("documents.slides", "slide annotation is unavailable")

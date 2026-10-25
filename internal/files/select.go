@@ -17,12 +17,11 @@ import (
 // Empty Paths scans WorkingDirectory; an empty WorkingDirectory uses os.Getwd.
 // ExclusionBase defaults to WorkingDirectory. A selected configuration's adapter
 // supplies its directory instead. No configuration or resource scope is inferred
-// from target paths. Quarto adds .qmd to directory discovery only.
+// from target paths.
 type Options struct {
 	WorkingDirectory, ExclusionBase string
 	Paths                           []string
 	Exclusions                      *config.Patterns
-	Quarto                          bool
 }
 
 // Target is a cleaned absolute native path, not an acquired or checked file.
@@ -372,7 +371,7 @@ func (s *selector) walk(root string, explicit bool) {
 			s.skip(p, SkipNonregular)
 			continue
 		}
-		if !item.explicit && !eligible(p, s.options.Quarto) {
+		if !item.explicit && !eligible(p) {
 			s.skip(p, SkipExtension)
 			continue
 		}
@@ -384,7 +383,7 @@ func (s *selector) walk(root string, explicit bool) {
 		s.selected[p] = Target{Path: p, identities: identities}
 	}
 }
-func eligible(p string, quarto bool) bool {
+func eligible(p string) bool {
 	ext := filepath.Ext(p)
 	// ASCII-only folding avoids interpreting Unicode lookalikes as extensions.
 	folded := []byte(ext)
@@ -394,7 +393,7 @@ func eligible(p string, quarto bool) bool {
 		}
 	}
 	ext = string(folded)
-	return ext == ".md" || ext == ".markdown" || (quarto && ext == ".qmd")
+	return ext == ".md" || ext == ".markdown"
 }
 
 // Excludes converts absolute host-native paths into the shared matcher's logical

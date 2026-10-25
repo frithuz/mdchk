@@ -76,8 +76,6 @@ func Catalog() []Metadata {
 		{ID: "MD075", Name: "Pipe rows without a table header", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, AppliesTo: pipeTablesApply, Options: OptionSchema{}},
 		{ID: "MD076", Name: "Consistent spacing between list items", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "tight", "loose")}},
 		{ID: "MD077", Name: "Indentation of list continuation content", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD078", Name: "Missing executable Quarto chunk label", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"require_unique": boolean(true)}},
-		{ID: "MD079", Name: "Whitespace in Quarto chunk labels", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD080", Name: "Colliding heading anchors", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD081", Name: "Overuse of bold and italic text", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"maximum_ratio": {Kind: Number, Default: 0.5, Minimum: bound(0), Maximum: bound(1)}, "minimum_characters": integer(20, 1)}},
 		{ID: "MD082", Name: "Sections without content", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"allow_final_section": boolean(false)}},

@@ -73,7 +73,6 @@ func documentedOptions() map[string]engine.OptionSchema {
 		"MD073": {"start_marker": marker("<!-- toc -->"), "end_marker": marker("<!-- /toc -->"), "min_level": level(1), "max_level": level(6)},
 		"MD074": {"config_path": str("mkdocs.yml"), "check_omitted": b(false), "check_absolute": b(false)},
 		"MD076": {"style": choice("consistent", "tight", "loose")},
-		"MD078": {"require_unique": b(true)},
 		"MD081": {"maximum_ratio": {Kind: engine.Number, Default: 0.5, Minimum: &min, Maximum: &max}, "minimum_characters": n(20, 1)},
 		"MD082": {"allow_final_section": b(false)},
 		"MD083": {"sequences": list("Ã", "Â", "â€")},
@@ -86,9 +85,9 @@ func documentedOptions() map[string]engine.OptionSchema {
 }
 
 func TestCatalogDocumentedContracts(t *testing.T) {
-	disabled := strings.Fields("MD013 MD026 MD033 MD036 MD040 MD043 MD044 MD054 MD060 MD061 MD063 MD070 MD072 MD073 MD074 MD078 MD079 MD080 MD081 MD082 MD083 MD084 MD085 MD087 MD088 MD089 MD090 MD091 MD093 MD095")
+	disabled := strings.Fields("MD013 MD026 MD033 MD036 MD040 MD043 MD044 MD054 MD060 MD061 MD063 MD070 MD072 MD073 MD074 MD080 MD081 MD082 MD083 MD084 MD085 MD087 MD088 MD089 MD090 MD091 MD093 MD095")
 	planned := strings.Fields("MD003 MD004 MD005 MD007 MD009 MD010 MD011 MD012 MD014 MD019 MD021 MD022 MD023 MD027 MD029 MD030 MD031 MD032 MD034 MD035 MD038 MD044 MD046 MD048 MD049 MD050 MD053 MD054 MD055 MD058 MD060 MD063 MD064 MD065 MD067 MD070 MD071 MD072 MD073 MD076 MD077 MD085 MD088 MD089")
-	reserved := []int{2, 6, 8, 15, 16, 17}
+	reserved := []int{2, 6, 8, 15, 16, 17, 78, 79}
 	var wantIDs []string
 	for i := 1; i <= 95; i++ {
 		if !slices.Contains(reserved, i) {
@@ -163,7 +162,7 @@ func TestCatalogDocumentedContracts(t *testing.T) {
 	if !reflect.DeepEqual(gotIDs, wantIDs) {
 		t.Errorf("catalog IDs = %v, want %v", gotIDs, wantIDs)
 	}
-	if len(names) != 89 || len(catalog) != 89 || enabled != 59 || len(disabled) != 30 {
+	if len(names) != 87 || len(catalog) != 87 || enabled != 59 || len(disabled) != 28 {
 		t.Fatalf("counts: docs=%d catalog=%d enabled=%d disabled=%d", len(names), len(catalog), enabled, len(disabled))
 	}
 }
@@ -192,7 +191,7 @@ func TestCatalogExecutableSubsetsPreserveMetadata(t *testing.T) {
 			}
 		}
 	}
-	for _, id := range []string{"md001", "MD01", "MD000", "MD002", "MD006", "MD008", "MD015", "MD016", "MD017", "MD096", "MD999", "MD094"} {
+	for _, id := range []string{"md001", "MD01", "MD000", "MD002", "MD006", "MD008", "MD015", "MD016", "MD017", "MD078", "MD079", "MD096", "MD999", "MD094"} {
 		if _, err := engine.NewCatalogRegistry([]engine.Registration{{ID: id, Check: check}}); err == nil {
 			t.Errorf("accepted registration %q", id)
 		}

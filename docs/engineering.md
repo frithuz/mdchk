@@ -5,7 +5,7 @@ mdchk uses one Markdown analysis and correction engine for both its command-line
 ## Confirmed choices
 
 - Name the command `mdchk`.
-- Implement the [89-rule catalog](rules/index.md) with stable numeric IDs and skipping MD002, MD006, MD008, MD015, MD016, and MD017.
+- Implement the [87-rule catalog](rules/index.md) with stable numeric IDs and skipping MD002, MD006, MD008, MD015, MD016, MD017, MD078, and MD079.
 - Implement the project in Go.
 - Build and maintain an internal Markdown parser instead of using a third-party parser.
 - Minimize third-party dependencies across the project.
@@ -181,13 +181,13 @@ Keep packages internal initially. A public Go API can be designed later if there
 
 ## Rules and diagnostics
 
-Use the [ruleset to implement](rules/index.md) as the canonical scope. It contains 89 planned rules grouped by area, with one page per rule. Preserve the MDxxx IDs. Each rule page defines its internal behavior, options, default enablement, and correction policy.
+Use the [ruleset to implement](rules/index.md) as the canonical scope. It contains 87 planned rules grouped by area, with one page per rule. Preserve the MDxxx IDs. Each rule page defines its internal behavior, options, default enablement, and correction policy.
 
 Give each rule a summary, default setting, option schema, and documented fix policy. Use the defaults in the rule pages. Keep known-rule metadata separate from executable registration so unavailable checks retain their identity, defaults, and option schemas. Use canonical MDxxx IDs throughout configuration, directives, and reports.
 
 A diagnostic should carry the relative file path, rule ID, severity, message, source range, and fix availability. Internal spans should use byte offsets; public positions should use one-based lines and Unicode code-point columns, with tabs counted as one column. Document exclusive range ends. Sort results by path, source position, and rule ID for repeatable output.
 
-Follow the catalog's implementation contract for rule specifications, fixtures, format activation, and resource boundaries. Keep heading hierarchy and missing code language fixes report-only when author intent cannot be inferred safely. MkDocs, Quarto and slide contexts follow the [integration contract](engineering/integrations.md); metadata and encoding checks follow the [frontmatter](engineering/frontmatter.md) and [special rule contracts](engineering/rule-behavior.md).
+Follow the catalog's implementation contract for rule specifications, fixtures, format activation, and resource boundaries. Keep heading hierarchy and missing code language fixes report-only when author intent cannot be inferred safely. MkDocs and slide contexts follow the [integration contract](engineering/integrations.md); metadata and encoding checks follow the [frontmatter](engineering/frontmatter.md) and [special rule contracts](engineering/rule-behavior.md).
 
 Start with one violation severity and no warning threshold controls. Add severities only when concrete rules justify them.
 
@@ -225,7 +225,7 @@ Resolve inherited directive permissions as logical AND within the same ancestor 
 
 Resolve higher-level `allow_nested_excludes` policies separately from rule settings, as defined in the [configuration design](engineering/configuration.md#higher-level-exclusion-policy). A selected lower-level configuration cannot bypass an ancestor's restriction, including through explicit config selection. Keep ancestor policy reads within the operation's discovery boundary.
 
-With no paths, recursively select `.md` and `.markdown` files (also `.qmd` when Quarto is enabled) beneath the invocation root using ASCII-case-insensitive extension matching. Include hidden directories except `.git`; skip symlinks. Explicit regular files are eligible regardless of extension, but still honor exclusions, including matching ancestor directories. Explicit unreadable or missing paths are errors. Report explicitly excluded paths as skipped. Selecting no files is a usage error.
+With no paths, recursively select `.md` and `.markdown` files beneath the invocation root using ASCII-case-insensitive extension matching. Include hidden directories except `.git`; skip symlinks. Explicit regular files are eligible regardless of extension, but still honor exclusions, including matching ancestor directories. Explicit unreadable or missing paths are errors. Report explicitly excluded paths as skipped. Selecting no files is a usage error.
 
 The [configuration validation design](engineering/configuration.md) defines the separate project-wide scan used by `config validate`, including Git ignore support and scoped exclusions from nested definitions. Nested validation does not introduce overrides for Markdown operations. Defer Git ignore support for lint and fix, nested configuration overrides, stdin input, and global mdchk user configuration until their behavior is designed. The [configuration guide](configuration.md) defines user-facing settings and examples.
 

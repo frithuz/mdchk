@@ -2,7 +2,7 @@
 
 We target the implemented rule list from `rumdl` because it covers markdownlint's built-in rules and adds further checks. The individual rule specifications define mdchk's behavior internally. We may expand this ruleset with additional custom rules in the future.
 
-The mdchk ruleset contains 89 rules: MD001 through MD095, excluding MD002, MD006, MD008, MD015, MD016, and MD017. Preserve these reserved gaps; do not implement checks under those IDs.
+The mdchk ruleset contains 87 rules: MD001 through MD095, excluding MD002, MD006, MD008, MD015, MD016, MD017, MD078, and MD079. Preserve these reserved gaps; do not implement checks under those IDs.
 
 MD047 analysis, configuration, safe previews and native application are implemented for CommonMark. Apply is limited to Darwin arm64+cgo/local APFS; other native adapters refuse writes with `13`, and protected EOF contexts remain manual. Other ordinary rule callbacks remain planned. The mandatory UTF-8 gate is implemented independently; MD094 controls attribution, not an ordinary production callback. Each linked page defines its behavior, configuration, examples, correction policy, and validation requirements. These are internal mdchk specifications; individual status text identifies implemented support. Rule IDs are stable; additions and changes to defaults require an explicit specification update.
 
@@ -81,6 +81,6 @@ Use parser context and preserved source bytes. Respect the selected format, dire
 
 Before marking a rule implemented, verify valid and invalid cases, configuration boundaries, intentional exceptions, diagnostic ranges, and applicable formats. Fixtures must exercise interactions with protected regions and containers. Fixes require reparsing, rule-specific preservation checks, and idempotence. Pass 1 rule completion requires reusable engine analysis fixtures; it does not wait for MCP transports or later correction passes. CLI/project/standalone parity for equivalent source and context is verified in #196, #200 and #206 after the adapters exist. See the [delivery stages](../engineering/contracts.md#delivery-stages-and-prerequisites).
 
-Quarto chunk checks require an explicit syntax extension; MkDocs navigation requires an explicit project context. Both remain required work beyond the confirmed CommonMark and GFM format contracts. Metadata key sorting requires a format-aware parser and is an explicit exception to opaque metadata handling. UTF-8 validation is unconditional before parsing; MD094 controls attribution only. Invalid bytes produce one I/O error, never a duplicate rule violation. See the [UTF-8 contract](../engineering/rule-behavior.md#utf-8-validation).
+MkDocs navigation requires an explicit project context. This remains required work beyond the confirmed CommonMark and GFM format contracts. Metadata key sorting requires a format-aware parser and is an explicit exception to opaque metadata handling. UTF-8 validation is unconditional before parsing; MD094 controls attribution only. Invalid bytes produce one I/O error, never a duplicate rule violation. See the [UTF-8 contract](../engineering/rule-behavior.md#utf-8-validation).
 
 See the [engineering design](../engineering.md#rules-and-diagnostics), [Markdown formats](../markdown-formats.md), and [configuration guide](../configuration.md).

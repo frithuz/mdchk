@@ -1,6 +1,6 @@
 # Accepted implementation contracts
 
-The following 21 policy groups were accepted on 2026-10-15, including the final
+The following 20 policy groups were accepted on 2026-10-15, including the final
 1 MiB resource revision. They complement the previously approved configuration,
 GFM and resource contracts. Implementation issues remain open until their
 code and verification criteria are satisfied; acceptance of policy is not a
@@ -10,7 +10,6 @@ conformance claim.
 | --- | --- | --- |
 | 1 | [Frontmatter recognition](frontmatter.md#frontmatter-recognition) | [#166](https://github.com/frithuz/mdchk/issues/166), [#167](https://github.com/frithuz/mdchk/issues/167), [#168](https://github.com/frithuz/mdchk/issues/168), [#169](https://github.com/frithuz/mdchk/issues/169), [#114](https://github.com/frithuz/mdchk/issues/114) |
 | 2 | [Metadata values and corrections](frontmatter.md#metadata-values-and-corrections) | [#178](https://github.com/frithuz/mdchk/issues/178), [#179](https://github.com/frithuz/mdchk/issues/179), [#180](https://github.com/frithuz/mdchk/issues/180), [#181](https://github.com/frithuz/mdchk/issues/181), [#186](https://github.com/frithuz/mdchk/issues/186), [#33](https://github.com/frithuz/mdchk/issues/33), [#42](https://github.com/frithuz/mdchk/issues/42), [#45](https://github.com/frithuz/mdchk/issues/45), [#115](https://github.com/frithuz/mdchk/issues/115) |
-| 3 | [Quarto chunks](integrations.md#quarto-chunks) | [#174](https://github.com/frithuz/mdchk/issues/174), [#175](https://github.com/frithuz/mdchk/issues/175), [#177](https://github.com/frithuz/mdchk/issues/177), [#91](https://github.com/frithuz/mdchk/issues/91), [#92](https://github.com/frithuz/mdchk/issues/92) |
 | 4 | [MkDocs navigation](integrations.md#mkdocs-navigation) | [#174](https://github.com/frithuz/mdchk/issues/174), [#176](https://github.com/frithuz/mdchk/issues/176), [#177](https://github.com/frithuz/mdchk/issues/177), [#118](https://github.com/frithuz/mdchk/issues/118) |
 | 5 | [Slide documents](integrations.md#slide-documents) | [#50](https://github.com/frithuz/mdchk/issues/50) |
 | 6 | [Malformed syntax candidates](rule-behavior.md#malformed-syntax-candidates) | [#58](https://github.com/frithuz/mdchk/issues/58), [#72](https://github.com/frithuz/mdchk/issues/72), [#93](https://github.com/frithuz/mdchk/issues/93), [#99](https://github.com/frithuz/mdchk/issues/99), [#104](https://github.com/frithuz/mdchk/issues/104), [#110](https://github.com/frithuz/mdchk/issues/110) |
@@ -32,7 +31,7 @@ conformance claim.
 
 ## Delivery stages and prerequisites
 
-The 89 rule issues cover analysis and configuration in Pass 1. They supply
+The 87 rule issues cover analysis and configuration in Pass 1. They supply
 reusable engine fixtures; they do not wait for the MCP transports or correction
 passes. Project, standalone, and full transport parity remain completion gates in
 [#196](https://github.com/frithuz/mdchk/issues/196),

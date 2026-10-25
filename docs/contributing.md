@@ -129,7 +129,7 @@ For a synthetic callback integration test, reuse
 `runConfiguration` from `cmd/mdchk` tests. The build helper writes a temporary Go
 `-overlay` replacing only `internal/cli/providers.go` with
 `cmd/mdchk/testdata/configuration_providers.go`. That file registers explicit
-MD001 and MD003 synthetic callbacks against all 89 catalog entries; a normal
+MD001 and MD003 synthetic callbacks against all 87 catalog entries; a normal
 build excludes it. These probes demonstrate findings, failure and option delivery,
 and do not implement those rules' Markdown semantics. Keep implicit defaults and
 explicit enablement distinct, disable other absent ordinary checks through the

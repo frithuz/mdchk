@@ -46,30 +46,28 @@ type serviceValidation struct {
 // The zero value is invalid. Read returns facts AND independently retained errors;
 // project both with ServiceReport. No query registers a target or a write.
 type Service struct {
-	operation        *Operation
-	filesystem       *FilesystemReader
-	supplied         *SuppliedReader
-	limits           ServiceLimits
-	ctx              context.Context
-	cancel           context.CancelFunc
-	done             chan struct{}
-	wake             chan struct{}
-	mu               sync.Mutex
-	closed           bool
-	stop             error
-	identities       map[Key]bool
-	unkeyed          int64
-	lookups          map[Key]bool
-	entries          map[serviceKey]*cachedResource
-	selected         map[Key]int
-	bytes            int64
-	queue            []serviceJob
-	parsed           map[ParseCacheKey]*cachedParse
-	anchors          map[anchorOwnerKey]*cachedAnchors
-	validations      map[*contentIdentity]serviceValidation
-	targetEvidence   map[anchorOwnerKey]ContentEvidence
-	targetParseKeys  map[anchorOwnerKey]ParseCacheKey
-	targetParseReady map[*viewIdentity]*targetParseIndex
+	operation      *Operation
+	filesystem     *FilesystemReader
+	supplied       *SuppliedReader
+	limits         ServiceLimits
+	ctx            context.Context
+	cancel         context.CancelFunc
+	done           chan struct{}
+	wake           chan struct{}
+	mu             sync.Mutex
+	closed         bool
+	stop           error
+	identities     map[Key]bool
+	unkeyed        int64
+	lookups        map[Key]bool
+	entries        map[serviceKey]*cachedResource
+	selected       map[Key]int
+	bytes          int64
+	queue          []serviceJob
+	parsed         map[ParseCacheKey]*cachedParse
+	anchors        map[anchorOwnerKey]*cachedAnchors
+	validations    map[*contentIdentity]serviceValidation
+	targetEvidence map[anchorOwnerKey]ContentEvidence
 	// read is an internal deterministic-test seam. Production always uses the
 	// exact registered adapter; it is never exported as generic filesystem authority.
 	read func(context.Context, Request, filesystemReceipt) (ObservationSpec, filesystemReceipt, error)
@@ -112,10 +110,10 @@ func newService(op *Operation, native *FilesystemReader, supplied *SuppliedReade
 	if err := op.Checkpoint(1); err != nil {
 		return nil, err
 	}
-	if err := op.budget.ChargeNodes(13); err != nil {
+	if err := op.budget.ChargeNodes(11); err != nil {
 		return nil, err
 	}
-	s := &Service{operation: op, filesystem: native, supplied: supplied, limits: limits, done: make(chan struct{}), wake: make(chan struct{}, 1), identities: map[Key]bool{}, lookups: map[Key]bool{}, entries: map[serviceKey]*cachedResource{}, selected: map[Key]int{}, parsed: map[ParseCacheKey]*cachedParse{}, anchors: map[anchorOwnerKey]*cachedAnchors{}, validations: map[*contentIdentity]serviceValidation{}, targetEvidence: map[anchorOwnerKey]ContentEvidence{}, targetParseKeys: map[anchorOwnerKey]ParseCacheKey{}, targetParseReady: map[*viewIdentity]*targetParseIndex{}}
+	s := &Service{operation: op, filesystem: native, supplied: supplied, limits: limits, done: make(chan struct{}), wake: make(chan struct{}, 1), identities: map[Key]bool{}, lookups: map[Key]bool{}, entries: map[serviceKey]*cachedResource{}, selected: map[Key]int{}, parsed: map[ParseCacheKey]*cachedParse{}, anchors: map[anchorOwnerKey]*cachedAnchors{}, validations: map[*contentIdentity]serviceValidation{}, targetEvidence: map[anchorOwnerKey]ContentEvidence{}}
 	targetCount := len(op.targets)
 	if supplied != nil {
 		if err := op.Checkpoint(int64(len(supplied.entries)) + 1); err != nil {

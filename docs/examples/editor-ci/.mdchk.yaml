@@ -73,8 +73,6 @@ rules:
   MD075: {enabled: false}
   MD076: {enabled: false}
   MD077: {enabled: false}
-  MD078: {enabled: false}
-  MD079: {enabled: false}
   MD080: {enabled: false}
   MD081: {enabled: false}
   MD082: {enabled: false}

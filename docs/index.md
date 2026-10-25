@@ -113,7 +113,7 @@ is exactly the same selected value printed after `mdchk ` by `--version`.
 
 ## Rules
 
-The [ruleset to implement](rules/index.md) covers 89 rules, grouped by focus area, with one planning page per rule.
+The [ruleset to implement](rules/index.md) covers 87 rules, grouped by focus area, with one planning page per rule.
 
 ## Understand and integrate results
 

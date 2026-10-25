@@ -46,7 +46,7 @@ func TestPresenceIsIndependentOfDefaults(t *testing.T) {
 
 func TestDefaultSettingsContractAndIsolation(t *testing.T) {
 	first, second := DefaultSettings(), DefaultSettings()
-	if first.Flavor != "gfm" || first.IndexFile != "index.md" || first.AnchorStyle != "github" || first.FrontmatterEnabled || first.QuartoEnabled || !first.DirectivesEnabled || !first.AllowDirectives || !first.AllowNestedExcludes {
+	if first.Flavor != "gfm" || first.IndexFile != "index.md" || first.AnchorStyle != "github" || first.FrontmatterEnabled || !first.DirectivesEnabled || !first.AllowDirectives || !first.AllowNestedExcludes {
 		t.Fatalf("unexpected approved defaults: %+v", first)
 	}
 	if !reflect.DeepEqual(first.FrontmatterFormats, []string{"yaml", "toml"}) || len(first.Slides) != 0 || len(first.Exclude) != 0 {

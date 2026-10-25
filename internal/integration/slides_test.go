@@ -26,7 +26,7 @@ func slideFixture(t *testing.T, operationContext context.Context, patterns []str
 	if err != nil {
 		t.Fatal(err)
 	}
-	operation, err := resource.NewOperation(operationContext, budget, root, settings, []resource.Target{{ID: "talk.qmd", Source: source}})
+	operation, err := resource.NewOperation(operationContext, budget, root, settings, []resource.Target{{ID: "talk.md", Source: source}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func slideFixture(t *testing.T, operationContext context.Context, patterns []str
 	if err != nil {
 		t.Fatal(err)
 	}
-	document, err := scope.Document(context.Background(), "talk.qmd")
+	document, err := scope.Document(context.Background(), "talk.md")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,10 +52,10 @@ func TestSlidesExplicitDirectSelectedAnnotation(t *testing.T) {
 		inBase   bool
 		matched  string
 	}{
-		{"talk.qmd", nil, true, ""},
+		{"talk.md", nil, true, ""},
 		{"slides/talk.md", []string{"slides/**", "**"}, true, "slides/**"},
 		{"deck.slides.md", []string{"**/*.slides.md"}, true, "**/*.slides.md"},
-		{"talk.qmd", []string{"**"}, true, "**"},
+		{"talk.md", []string{"**"}, true, "**"},
 		{"SLIDES/talk.md", []string{"slides/**"}, true, ""},
 		{"slides/talk.md", []string{"slides/"}, true, ""},
 		{"../outside\x00", []string{"**"}, false, ""},
@@ -71,7 +71,7 @@ func TestSlidesExplicitDirectSelectedAnnotation(t *testing.T) {
 			if pattern != tc.matched || matched != (tc.matched != "") {
 				t.Fatalf("pattern=%q matched=%v want %q", pattern, matched, tc.matched)
 			}
-			if scope.quarto || scope.mkdocs.Enabled || !reflect.DeepEqual(before, operation.Targets()) || operation.Settings().AnchorStyle() != "github" || operation.Settings().ParseOptions().GFM {
+			if scope.mkdocs.Enabled || !reflect.DeepEqual(before, operation.Targets()) || operation.Settings().AnchorStyle() != "github" || operation.Settings().ParseOptions().GFM {
 				t.Fatal("annotation changed independent settings or selection")
 			}
 		})
@@ -130,11 +130,11 @@ func TestSlidesViewsAndUnavailableSaved(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		out, err := scope.Slides(context.Background(), document, "talk.qmd", true)
+		out, err := scope.Slides(context.Background(), document, "talk.md", true)
 		if err != nil || out.Status() != Available || out.Document().Source() != replacement || out.Document().View().Phase() != phase {
 			t.Fatal("view/source identity lost", out, err)
 		}
-		if _, err := scope.Slides(context.Background(), original, "talk.qmd", true); !errors.Is(err, ErrContract) {
+		if _, err := scope.Slides(context.Background(), original, "talk.md", true); !errors.Is(err, ErrContract) {
 			t.Fatal("stale original accepted", err)
 		}
 	}
@@ -150,7 +150,7 @@ func TestSlidesViewsAndUnavailableSaved(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, err := scope.Slides(context.Background(), document, "talk.qmd", true)
+	out, err := scope.Slides(context.Background(), document, "talk.md", true)
 	if err != nil || out.Status() != Unavailable || out.Document().Source() != (parser.Source{}) {
 		t.Fatal("unavailable Saved borrowed original", out, err)
 	}

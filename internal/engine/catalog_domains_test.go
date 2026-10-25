@@ -185,7 +185,7 @@ func TestCompleteCatalogExecutesOnlyAvailableEnabledApplicableChecks(t *testing.
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(r.Metadata()) != 89 || calls["MD001"] != 1 || calls["MD003"] != 0 || calls["MD013"] != 0 || out.Complete {
+	if len(r.Metadata()) != 87 || calls["MD001"] != 1 || calls["MD003"] != 0 || calls["MD013"] != 0 || out.Complete {
 		t.Fatalf("wrong catalog execution: calls=%v complete=%t", calls, out.Complete)
 	}
 	for _, coverage := range out.Coverage {

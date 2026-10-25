@@ -122,7 +122,7 @@ func TestRegionCountsAndSuppressedOriginalOwner(t *testing.T) {
 	for _, v := range []Analysis{out, eof, whole} {
 		var count struct{ Known, Active, Inactive int }
 		_ = json.Unmarshal(*v.Projection.RuleCounts.Data, &count)
-		if count.Known != 89 || count.Active+count.Inactive != 89 {
+		if count.Known != 87 || count.Active+count.Inactive != 87 {
 			t.Fatal(count)
 		}
 		validateProduced(t, v)
@@ -309,7 +309,7 @@ func TestFilteredAllRulesConfiguredOff(t *testing.T) {
 	out := filter(t, s, analyze(t, s, false), "2")
 	var counts struct{ Known, Active, Inactive int }
 	_ = json.Unmarshal(*out.Projection.RuleCounts.Data, &counts)
-	if counts.Known != 89 || counts.Active != 0 || counts.Inactive != 89 {
+	if counts.Known != 87 || counts.Active != 0 || counts.Inactive != 87 {
 		t.Fatal(counts)
 	}
 	if rule(t, out, "MD094").ActiveEvaluation != "complete" {

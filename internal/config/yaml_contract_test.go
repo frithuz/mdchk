@@ -37,11 +37,11 @@ func TestYAMLContractFixedShapesAndScalarTypes(t *testing.T) {
 		"resources: []", "resources: {index_file: 3}", "resources: {anchor_style: true}",
 		"frontmatter: []", "frontmatter: {enabled: 1}", "frontmatter: {formats: yaml}", "frontmatter: {formats: [3]}",
 		"documents: []", "documents: {slides: '*.md'}", "documents: {slides: [false]}",
-		"integrations: []", "integrations: {quarto: true}", "integrations: {quarto: {enabled: 'false'}}",
+		"integrations: []",
 		"unknown: true", "directives: {unknown: true}", "resources: {unknown: true}",
-		"frontmatter: {unknown: true}", "documents: {unknown: true}", "integrations: {unknown: {}}", "integrations: {quarto: {unknown: true}}",
+		"frontmatter: {unknown: true}", "documents: {unknown: true}", "integrations: {unknown: {}}",
 	}
-	for _, mapping := range []string{"rules", "resources", "frontmatter", "documents", "integrations", "directives", "exclude", "allow_nested_excludes"} {
+	for _, mapping := range []string{"rules", "resources", "frontmatter", "documents", "directives", "exclude", "allow_nested_excludes"} {
 		invalid = append(invalid, mapping+": null")
 	}
 	for _, fragment := range invalid {
@@ -56,7 +56,7 @@ func TestYAMLContractFixedShapesAndScalarTypes(t *testing.T) {
 
 func TestYAMLContractPresenceAndPresentation(t *testing.T) {
 	omitted := decodeContractYAML(t, "version: 1\n")
-	if omitted.Flavor != nil || omitted.Rules != nil || omitted.Exclude != nil || omitted.Resources != nil || omitted.Frontmatter != nil || omitted.Integrations != nil || omitted.Documents != nil || omitted.Directives != nil || omitted.AllowNestedExcludes != nil {
+	if omitted.Flavor != nil || omitted.Rules != nil || omitted.Exclude != nil || omitted.Resources != nil || omitted.Frontmatter != nil || omitted.Documents != nil || omitted.Directives != nil || omitted.AllowNestedExcludes != nil {
 		t.Fatalf("omitted fields gained values: %+v", omitted)
 	}
 	d := decodeContractYAML(t, `# ordinary presentation forms
@@ -69,20 +69,19 @@ frontmatter:
   enabled: false
   formats: [yaml, toml]
 documents: {slides: []}
-integrations: {quarto: {enabled: false}}
 directives: {enabled: false}
 allow_nested_excludes: false
 `)
 	if *d.Version != 1 || *d.Flavor != "commonmark" || d.Rules["MD001"].Enabled != nil || d.Rules["MD013"].Enabled == nil || *d.Rules["MD013"].Enabled || *d.Rules["MD013"].AllowDirectives {
 		t.Fatalf("presence lost: %+v", d)
 	}
-	if d.Exclude == nil || len(*d.Exclude) != 0 || d.Documents.Slides == nil || len(*d.Documents.Slides) != 0 || *d.Frontmatter.Enabled || *d.Integrations.Quarto.Enabled || *d.Directives.Enabled || *d.AllowNestedExcludes {
+	if d.Exclude == nil || len(*d.Exclude) != 0 || d.Documents.Slides == nil || len(*d.Documents.Slides) != 0 || *d.Frontmatter.Enabled || *d.Directives.Enabled || *d.AllowNestedExcludes {
 		t.Fatal("explicit empty/false settings lost")
 	}
 	if !reflect.DeepEqual(*d.Frontmatter.Formats, []string{"yaml", "toml"}) || *d.Resources.IndexFile != "README.md" || *d.Resources.AnchorStyle != "explicit" {
 		t.Fatal("supplied settings changed")
 	}
-	for _, key := range []string{"resources", "frontmatter", "documents", "integrations", "directives", "rules"} {
+	for _, key := range []string{"resources", "frontmatter", "documents", "directives", "rules"} {
 		decodeContractYAML(t, "version: 1\n"+key+": {}\n")
 	}
 	decodeContractYAML(t, "version: 1\nrules:\n  UNKNOWN:\n    future_option: |\n      first\n      second\n")
@@ -144,7 +143,6 @@ func TestYAMLContractDuplicateLocations(t *testing.T) {
 		{"version: 1\nrules:\n  MD001: {}\n  MD001: {}\n", "rules.MD001", 3, 3, 4, 3},
 		{"version: 1\nrules:\n  MD001:\n    enabled: false\n    enabled: true\n", "rules.MD001.enabled", 4, 5, 5, 5},
 		{"version: 1\nrules:\n  future:\n    option:\n      child: 1\n      child: 2\n", "rules.future.option.child", 5, 7, 6, 7},
-		{"version: 1\nintegrations:\n  quarto:\n    enabled: false\n    enabled: true\n", "integrations.quarto.enabled", 4, 5, 5, 5},
 		{"version: 1\nresources:\n  index_file: a\n  index_file: b\n", "resources.index_file", 3, 3, 4, 3},
 		{"version: 1\nfrontmatter: {enabled: false, enabled: true}\n", "frontmatter.enabled", 2, 15, 2, 31},
 		{"version: 1\ndocuments: {slides: [], slides: []}\n", "documents.slides", 2, 13, 2, 25},

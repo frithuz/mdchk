@@ -72,7 +72,6 @@ func (v *Validated) configuration(c Capabilities, inherited Permissions) *Config
 	}
 	add("frontmatter.enabled", formats)
 	add("frontmatter.formats", formats)
-	add("integrations.quarto.enabled", c.QuartoRecognition)
 	add("documents.slides", c.SlideAnnotation)
 	add("exclude", true)
 	add("directives.enabled", c.DirectiveProcessing)
@@ -166,11 +165,10 @@ func (c *Configuration) Shared() result.ConfigurationData {
 		"availability":         availability,
 		"selected_permissions": selectedPermissions,
 		"version":              Version, "flavor": b.Flavor,
-		"resources":    map[string]any{"index_file": b.IndexFile, "anchor_style": b.AnchorStyle},
-		"frontmatter":  map[string]any{"enabled": b.FrontmatterEnabled, "formats": slices.Clone(b.FrontmatterFormats)},
-		"integrations": map[string]any{"quarto": map[string]any{"enabled": b.QuartoEnabled}},
-		"documents":    map[string]any{"slides": slices.Clone(b.Slides)},
-		"exclude":      slices.Clone(b.Exclude), "directives": map[string]any{"enabled": b.DirectivesEnabled}, "allow_nested_excludes": b.AllowNestedExcludes, "rules": rules,
+		"resources":   map[string]any{"index_file": b.IndexFile, "anchor_style": b.AnchorStyle},
+		"frontmatter": map[string]any{"enabled": b.FrontmatterEnabled, "formats": slices.Clone(b.FrontmatterFormats)},
+		"documents":   map[string]any{"slides": slices.Clone(b.Slides)},
+		"exclude":     slices.Clone(b.Exclude), "directives": map[string]any{"enabled": b.DirectivesEnabled}, "allow_nested_excludes": b.AllowNestedExcludes, "rules": rules,
 	}
 	sourceKind := "supplied-config"
 	if c.Selected.Path != "" {

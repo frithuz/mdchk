@@ -87,29 +87,20 @@ func selectionPatterns(t *testing.T, patterns ...string) *config.Patterns {
 func TestSelectDirectoryEligibilityAndSourcePreservation(t *testing.T) {
 	root := selectionRoot(t)
 	contents := []byte{'#', ' ', 0xff, '\r', '\n', 0, '\n'}
-	names := []string{"README.MD", "nested/guide.Markdown", ".hidden.md", ".github/guide.md", "nested/article.qMd", "notes.txt", "nested/noextension", "lookalike.marKdown", ".git/private.md"}
+	names := []string{"README.MD", "nested/guide.Markdown", ".hidden.md", ".github/guide.md", "nested/article.data", "notes.txt", "nested/noextension", "lookalike.marKdown", ".git/private.md"}
 	paths := make(map[string]string)
 	for _, name := range names {
 		paths[name] = selectionFile(t, root, name, contents)
 	}
 	selectionFile(t, root, ".gitignore", []byte(".hidden.md\nnested/\n"))
-	for _, quarto := range []bool{false, true} {
-		t.Run(map[bool]string{false: "markdown", true: "quarto"}[quarto], func(t *testing.T) {
-			selection := selectFixture(t, Options{WorkingDirectory: root, Quarto: quarto})
-			want := []string{paths["README.MD"], paths["nested/guide.Markdown"], paths[".hidden.md"], paths[".github/guide.md"]}
-			if quarto {
-				want = append(want, paths["nested/article.qMd"])
-			} else {
-				wantSkip(t, selection, paths["nested/article.qMd"], SkipExtension)
-			}
-			wantTargets(t, selection, want...)
-			wantSkip(t, selection, filepath.Join(root, ".git"), SkipGit)
-			wantSkip(t, selection, paths["notes.txt"], SkipExtension)
-			wantSkip(t, selection, paths["lookalike.marKdown"], SkipExtension)
-			if len(selection.Errors) != 0 {
-				t.Fatalf("unexpected errors: %v", selection.Errors)
-			}
-		})
+	selection := selectFixture(t, Options{WorkingDirectory: root})
+	wantTargets(t, selection, paths["README.MD"], paths["nested/guide.Markdown"], paths[".hidden.md"], paths[".github/guide.md"])
+	wantSkip(t, selection, filepath.Join(root, ".git"), SkipGit)
+	for _, name := range []string{"nested/article.data", "notes.txt", "lookalike.marKdown"} {
+		wantSkip(t, selection, paths[name], SkipExtension)
+	}
+	if len(selection.Errors) != 0 {
+		t.Fatalf("unexpected errors: %v", selection.Errors)
 	}
 	for _, path := range paths {
 		got, err := os.ReadFile(path) //nolint:gosec // Read only test-owned fixture paths to prove selection preserved bytes.
@@ -132,10 +123,10 @@ func TestSelectExplicitFilesOverlapAndDeterminism(t *testing.T) {
 	root := selectionRoot(t)
 	md := selectionFile(t, root, "nested/a.md", nil)
 	other := selectionFile(t, root, "nested/custom", nil)
-	qmd := selectionFile(t, root, "slides.qmd", nil)
+	qmd := selectionFile(t, root, "notes.custom", nil)
 	inputs := [][]string{
-		{".", "nested/custom", md, "nested/./a.md", "slides.qmd"},
-		{"slides.qmd", "nested/./a.md", md, "nested/custom", "."},
+		{".", "nested/custom", md, "nested/./a.md", "notes.custom"},
+		{"notes.custom", "nested/./a.md", md, "nested/custom", "."},
 		{root, other, qmd, filepath.Join(root, "nested"), md},
 	}
 	var previous *Selection

@@ -5,66 +5,12 @@ These requirements incorporate the revised **1 MiB per-file limit** where applic
 See the [contract index](contracts.md) for related specifications and issue ownership.
 
 The shared typed context/policy boundary is implemented under
-[`internal/integration`](../../internal/integration/README.md). Its executable
-contract tests cover explicit activation, source/view ownership, candidate-header
-and label precedence, static navigation/omission prerequisites and explicit slide
-annotation. Candidate policy is not parser/acquisition proof. The admitted
-parser-backed Quarto cell provider (#175) is available through an explicitly bound
-integration scope; bounded MkDocs acquisition/eligibility (#176), production rule
-consumers and end-to-end integration verification remain their separate work.
-Interface availability alone does not advertise those runtime capabilities.
-
-## Quarto chunks
-
-### Activation
-
-integrations.quarto.enabled defaults false, independent of Markdown flavor, frontmatter and rule
-enablement. When true it applies to selected documents and adds .qmd to directory-scan extensions
-with existing case-insensitive matching; explicit file selection remains extension-independent. No
-automatic activation from a filename or renderer attributes.
-
-### Initial scope
-
-Recognize parser-owned fenced cells with exact language identifiers r, python or julia in single
-braces. Accept {r}, {python}, {julia}; initial R headers additionally support literal positional
-labels, including the optional comma form, and quoted literal label= assignments. Other header
-option values must be statically representable; unsupported executable-looking forms receive
-affected incomplete coverage. Further languages and dynamic or engine-specific forms remain
-unsupported initially, not silently considered clean.
-
-### Label options
-
-Read YAML label from the contiguous initial #| option-comment block, before code. Decode string
-literals without trimming or coercion. Allow bounded ordinary YAML under the accepted metadata
-restrictions. Unsupported tags, aliases requiring unsupported evaluation, duplicate keys, malformed
-headers/options or non-string labels make affected label analysis incomplete. Unrelated values are
-not executed.
-
-### Precedence
-
-A valid body label option overrides a literal R header label. An explicitly blank body label
-overrides too, and counts as missing; do not fall back to the header. Ambiguous duplicate
-declarations within the same source level remain incomplete.
-
-### Recognition exceptions
-
-Ordinary language fences, double-brace escaped examples, and syntax
-inside enclosing code examples are not executable cells. eval:false or output-hiding flags do not
-exempt a syntactically executable cell from label checks.
-
-### Checks
-
-MD078 requires a nonblank effective string label and, when require_unique=true, checks exact
-case-sensitive effective labels within one document, across supported languages, without Unicode
-normalization. MD079 checks Unicode whitespace in each reliably decoded declared label, including
-one overridden by a body option. Do not infer missing or unique labels where required context is
-unavailable.
-
-### Coverage and preservation
-
-An enabled Quarto-dependent rule without enabled recognition gets explicit missing-context coverage.
-Preserve cell bytes, never execute code or evaluate expressions, and keep both rules report-only.
-Reliable independent checks continue when a cell is uncertain.
+[internal/integration](../../internal/integration/README.md). Its contract tests
+cover source/view ownership, static navigation/omission prerequisites and explicit
+slide annotation. Policy decisions do not establish acquired context. Bounded
+MkDocs acquisition/eligibility (#176), production rule consumers and end-to-end
+verification remain separate work. Interface availability alone does not
+advertise those runtime capabilities.
 
 ## MkDocs navigation
 
@@ -159,7 +105,7 @@ document context. Invalid patterns are configuration errors.
 
 Patterns annotate document context only. They do not select or exclude files, change Markdown
 flavor, activate integrations/frontmatter, or enable rules. Do not infer slide context from
-frontmatter fields, Quarto output settings, separators, or filename conventions unless the filename
+frontmatter fields, separators, or filename conventions unless the filename
 matches an explicit configured pattern.
 
 ### Rule

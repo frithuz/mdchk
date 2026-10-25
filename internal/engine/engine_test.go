@@ -389,7 +389,7 @@ func TestOversizePreflightAndInvalidBudget(t *testing.T) {
 }
 
 func TestAllReservedIDsRejected(t *testing.T) {
-	for _, id := range []string{"MD002", "MD006", "MD008", "MD015", "MD016", "MD017"} {
+	for _, id := range []string{"MD002", "MD006", "MD008", "MD015", "MD016", "MD017", "MD078", "MD079"} {
 		t.Run(id, func(t *testing.T) {
 			if _, err := engine.NewRegistry([]engine.Metadata{metadata(id)}, nil); err == nil {
 				t.Fatal("reserved metadata accepted")
