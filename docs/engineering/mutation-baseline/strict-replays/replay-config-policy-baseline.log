@@ -1,0 +1,12 @@
+=== RUN   TestDirectivePermissionMatrix
+=== RUN   TestDirectivePermissionMatrix/omitted
+=== RUN   TestDirectivePermissionMatrix/global-only
+=== RUN   TestDirectivePermissionMatrix/rule-only
+=== RUN   TestDirectivePermissionMatrix/both
+--- PASS: TestDirectivePermissionMatrix (0.00s)
+    --- PASS: TestDirectivePermissionMatrix/omitted (0.00s)
+    --- PASS: TestDirectivePermissionMatrix/global-only (0.00s)
+    --- PASS: TestDirectivePermissionMatrix/rule-only (0.00s)
+    --- PASS: TestDirectivePermissionMatrix/both (0.00s)
+PASS
+ok  	github.com/frithuz/mdchk/internal/config	0.009s

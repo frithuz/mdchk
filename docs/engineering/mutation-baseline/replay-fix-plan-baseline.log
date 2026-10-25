@@ -1,0 +1,28 @@
+=== RUN   TestBoundariesOwnershipPreconditionsAndRules
+=== RUN   TestBoundariesOwnershipPreconditionsAndRules/foreign_anchor
+=== RUN   TestBoundariesOwnershipPreconditionsAndRules/foreign_edit
+=== RUN   TestBoundariesOwnershipPreconditionsAndRules/absent
+=== RUN   TestBoundariesOwnershipPreconditionsAndRules/scalar
+=== RUN   TestBoundariesOwnershipPreconditionsAndRules/crlf
+=== RUN   TestBoundariesOwnershipPreconditionsAndRules/anchor_scalar
+=== RUN   TestBoundariesOwnershipPreconditionsAndRules/precondition
+=== RUN   TestBoundariesOwnershipPreconditionsAndRules/encoding
+=== RUN   TestBoundariesOwnershipPreconditionsAndRules/unknown
+=== RUN   TestBoundariesOwnershipPreconditionsAndRules/reportonly
+=== RUN   TestBoundariesOwnershipPreconditionsAndRules/preservation
+=== RUN   TestBoundariesOwnershipPreconditionsAndRules/unknown_preservation
+--- PASS: TestBoundariesOwnershipPreconditionsAndRules (0.00s)
+    --- PASS: TestBoundariesOwnershipPreconditionsAndRules/foreign_anchor (0.00s)
+    --- PASS: TestBoundariesOwnershipPreconditionsAndRules/foreign_edit (0.00s)
+    --- PASS: TestBoundariesOwnershipPreconditionsAndRules/absent (0.00s)
+    --- PASS: TestBoundariesOwnershipPreconditionsAndRules/scalar (0.00s)
+    --- PASS: TestBoundariesOwnershipPreconditionsAndRules/crlf (0.00s)
+    --- PASS: TestBoundariesOwnershipPreconditionsAndRules/anchor_scalar (0.00s)
+    --- PASS: TestBoundariesOwnershipPreconditionsAndRules/precondition (0.00s)
+    --- PASS: TestBoundariesOwnershipPreconditionsAndRules/encoding (0.00s)
+    --- PASS: TestBoundariesOwnershipPreconditionsAndRules/unknown (0.00s)
+    --- PASS: TestBoundariesOwnershipPreconditionsAndRules/reportonly (0.00s)
+    --- PASS: TestBoundariesOwnershipPreconditionsAndRules/preservation (0.00s)
+    --- PASS: TestBoundariesOwnershipPreconditionsAndRules/unknown_preservation (0.00s)
+PASS
+ok  	github.com/frithuz/mdchk/internal/fix	0.008s

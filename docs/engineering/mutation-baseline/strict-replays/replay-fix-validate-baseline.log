@@ -1,0 +1,12 @@
+=== RUN   TestCandidateTrustedMeaningAndMissingProof
+=== RUN   TestCandidateTrustedMeaningAndMissingProof/safe
+=== RUN   TestCandidateTrustedMeaningAndMissingProof/same_AST_different_meaning
+=== RUN   TestCandidateTrustedMeaningAndMissingProof/missing_checker
+=== RUN   TestCandidateTrustedMeaningAndMissingProof/uncertain_proof
+--- PASS: TestCandidateTrustedMeaningAndMissingProof (0.00s)
+    --- PASS: TestCandidateTrustedMeaningAndMissingProof/safe (0.00s)
+    --- PASS: TestCandidateTrustedMeaningAndMissingProof/same_AST_different_meaning (0.00s)
+    --- PASS: TestCandidateTrustedMeaningAndMissingProof/missing_checker (0.00s)
+    --- PASS: TestCandidateTrustedMeaningAndMissingProof/uncertain_proof (0.00s)
+PASS
+ok  	github.com/frithuz/mdchk/internal/fix	0.008s

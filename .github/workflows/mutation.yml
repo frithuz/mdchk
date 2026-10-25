@@ -1,0 +1,40 @@
+name: Critical behavior mutations
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "41 5 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  critical-behavior:
+    runs-on: ubuntu-24.04
+    # Three 15-minute area deadlines, installation, replays and artifact margin.
+    timeout-minutes: 65
+    env:
+      GOTOOLCHAIN: local
+      GOWORK: "off"
+      GOFLAGS: -p=2 -mod=readonly
+      GOMAXPROCS: "2"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Verify mutation infrastructure failure paths
+        run: python3 -B tools/test_mutation.py
+      - name: Run isolated critical behavior baseline and semantic controls
+        run: sh tools/mutation.sh --output "${RUNNER_TEMP}/mutation-reports"
+      - name: Retain complete and partial mutation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: mutation-reports-${{ github.run_id }}
+          path: ${{ runner.temp }}/mutation-reports/
+          if-no-files-found: error
+          retention-days: 30

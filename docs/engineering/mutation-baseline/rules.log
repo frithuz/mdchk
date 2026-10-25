@@ -1,0 +1,15 @@
+Starting...
+Gathering coverage... done in 2.6480295s
+      KILLED CONDITIONALS_NEGATION at md001.go:12:38
+      KILLED CONDITIONALS_NEGATION at md001.go:14:10
+      KILLED CONDITIONALS_NEGATION at md001.go:24:9
+      KILLED CONDITIONALS_NEGATION at md001.go:29:39
+      KILLED CONDITIONALS_NEGATION at md001.go:33:15
+      KILLED CONDITIONALS_BOUNDARY at md001.go:33:37
+      KILLED CONDITIONALS_NEGATION at md001.go:33:37
+
+Mutation testing completed in 5 seconds 531 milliseconds
+Killed: 7, Lived: 0, Not covered: 0
+Timed out: 0, Not viable: 0, Skipped: 0
+Test efficacy: 100.00%
+Mutator coverage: 100.00%

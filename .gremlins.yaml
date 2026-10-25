@@ -1,0 +1,23 @@
+# Bounded critical-behavior baseline. No global efficacy gate before review.
+silent: false
+unleash:
+  integration: false
+  dry-run: false
+  workers: 1
+  test-cpu: 2
+  timeout-coefficient: 3
+  threshold:
+    efficacy: 0
+    mutant-coverage: 0
+mutants:
+  arithmetic-base: {enabled: false}
+  conditionals-boundary: {enabled: true}
+  conditionals-negation: {enabled: true}
+  increment-decrement: {enabled: false}
+  invert-assignments: {enabled: false}
+  invert-bitwise: {enabled: false}
+  invert-bwassign: {enabled: false}
+  invert-negatives: {enabled: false}
+  invert-logical: {enabled: false}
+  invert-loopctrl: {enabled: false}
+  remove-self-assignments: {enabled: false}

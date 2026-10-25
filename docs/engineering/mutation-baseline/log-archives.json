@@ -1,0 +1,30 @@
+[
+  {
+    "original": "replay-fix-plan-mutant.log",
+    "archive": "replay-fix-plan-mutant.log.gz",
+    "uncompressed_sha256": "ed7b13fad81462c53e1d4a99f6b5a6777d6e1567f6a7758f8e6ae72303086f37",
+    "archive_sha256": "88d7856a17d6fee3420907459b4532187a601a2bed1329a48893d0e90415dbb6",
+    "uncompressed_bytes": 1992
+  },
+  {
+    "original": "replay-rules-md001-mutant.log",
+    "archive": "replay-rules-md001-mutant.log.gz",
+    "uncompressed_sha256": "4352b41bfe2f2c216aa1442dbfd14ccdd674a4aa4812047791cdbb7f56c09d1d",
+    "archive_sha256": "687b4f6a5333bb2fe55700039b9c5dae40efda2c8610801dd3b61acb7d95e5f9",
+    "uncompressed_bytes": 561380
+  },
+  {
+    "original": "strict-replays/replay-fix-plan-mutant.log",
+    "archive": "strict-replays/replay-fix-plan-mutant.log.gz",
+    "uncompressed_sha256": "ba3d938537da13a7822e3afc68ad728d572bdd9f58962c651e80e8035a8a1722",
+    "archive_sha256": "426195760ae68717c737e504cf961fb1e9514993d4a1be9c08043d3bd256c8b4",
+    "uncompressed_bytes": 2558
+  },
+  {
+    "original": "strict-replays/replay-rules-md001-mutant.log",
+    "archive": "strict-replays/replay-rules-md001-mutant.log.gz",
+    "uncompressed_sha256": "d8d39898c8c1bd8e52f481236b48fd323ef87793532426cecb3d2a19b8e2372f",
+    "archive_sha256": "e97445b816d5b25410ae4ea3f5f90775b75c5c468bccc85f989ade46f3cbb454",
+    "uncompressed_bytes": 561380
+  }
+]

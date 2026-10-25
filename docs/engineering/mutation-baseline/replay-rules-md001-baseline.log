@@ -1,0 +1,128 @@
+=== RUN   TestMD001AnalysisFixtures
+=== RUN   TestMD001AnalysisFixtures/documented_violation/commonmark
+=== RUN   TestMD001AnalysisFixtures/documented_violation/gfm
+=== RUN   TestMD001AnalysisFixtures/documented_accepted/commonmark
+=== RUN   TestMD001AnalysisFixtures/documented_accepted/gfm
+=== RUN   TestMD001AnalysisFixtures/first_establishes_baseline/commonmark
+=== RUN   TestMD001AnalysisFixtures/first_establishes_baseline/gfm
+=== RUN   TestMD001AnalysisFixtures/sequence/commonmark
+=== RUN   TestMD001AnalysisFixtures/sequence/gfm
+=== RUN   TestMD001AnalysisFixtures/violation_becomes_baseline/commonmark
+=== RUN   TestMD001AnalysisFixtures/violation_becomes_baseline/gfm
+=== RUN   TestMD001AnalysisFixtures/styles/commonmark
+=== RUN   TestMD001AnalysisFixtures/styles/gfm
+=== RUN   TestMD001AnalysisFixtures/empty_ATX_baseline/commonmark
+=== RUN   TestMD001AnalysisFixtures/empty_ATX_baseline/gfm
+=== RUN   TestMD001AnalysisFixtures/multiline_setext_structural_range/commonmark
+=== RUN   TestMD001AnalysisFixtures/multiline_setext_structural_range/gfm
+=== RUN   TestMD001AnalysisFixtures/setext_offending_envelope/commonmark
+=== RUN   TestMD001AnalysisFixtures/setext_offending_envelope/gfm
+=== RUN   TestMD001AnalysisFixtures/global_containers/commonmark
+=== RUN   TestMD001AnalysisFixtures/global_containers/gfm
+=== RUN   TestMD001AnalysisFixtures/Unicode_nested_LF/commonmark
+=== RUN   TestMD001AnalysisFixtures/Unicode_nested_LF/gfm
+=== RUN   TestMD001AnalysisFixtures/Unicode_nested_CRLF/commonmark
+=== RUN   TestMD001AnalysisFixtures/Unicode_nested_CRLF/gfm
+=== RUN   TestMD001AnalysisFixtures/protected_candidates/commonmark
+=== RUN   TestMD001AnalysisFixtures/protected_candidates/gfm
+=== RUN   TestMD001AnalysisFixtures/YAML_virtual_H1/commonmark
+=== RUN   TestMD001AnalysisFixtures/YAML_virtual_H1/gfm
+=== RUN   TestMD001AnalysisFixtures/TOML_BOM_CRLF_virtual_H1/commonmark
+=== RUN   TestMD001AnalysisFixtures/TOML_BOM_CRLF_virtual_H1/gfm
+=== RUN   TestMD001AnalysisFixtures/virtual_H2_accepted/commonmark
+=== RUN   TestMD001AnalysisFixtures/virtual_H2_accepted/gfm
+=== RUN   TestMD001AnalysisFixtures/default_skips_semantic_malformed_header/commonmark
+=== RUN   TestMD001AnalysisFixtures/default_skips_semantic_malformed_header/gfm
+=== RUN   TestMD001AnalysisFixtures/malformed_unknown_first_comparison/commonmark
+=== RUN   TestMD001AnalysisFixtures/malformed_unknown_first_comparison/gfm
+=== RUN   TestMD001AnalysisFixtures/duplicate_unknown_first_comparison/commonmark
+=== RUN   TestMD001AnalysisFixtures/duplicate_unknown_first_comparison/gfm
+=== RUN   TestMD001AnalysisFixtures/unsupported_title_unknown/commonmark
+=== RUN   TestMD001AnalysisFixtures/unsupported_title_unknown/gfm
+=== RUN   TestMD001AnalysisFixtures/known_title_beside_unsupported_sibling/commonmark
+=== RUN   TestMD001AnalysisFixtures/known_title_beside_unsupported_sibling/gfm
+=== RUN   TestMD001AnalysisFixtures/header_absence_is_known/commonmark
+=== RUN   TestMD001AnalysisFixtures/header_absence_is_known/gfm
+=== RUN   TestMD001AnalysisFixtures/recognition_disabled_uses_ordinary_Markdown/commonmark
+=== RUN   TestMD001AnalysisFixtures/recognition_disabled_uses_ordinary_Markdown/gfm
+=== RUN   TestMD001AnalysisFixtures/Setext_complete_offending_envelope/commonmark
+=== RUN   TestMD001AnalysisFixtures/Setext_complete_offending_envelope/gfm
+=== RUN   TestMD001AnalysisFixtures/Setext_H2_supplies_baseline/commonmark
+=== RUN   TestMD001AnalysisFixtures/Setext_H2_supplies_baseline/gfm
+=== RUN   TestMD001AnalysisFixtures/list_heading_complete_range/commonmark
+=== RUN   TestMD001AnalysisFixtures/list_heading_complete_range/gfm
+=== RUN   TestMD001AnalysisFixtures/code_directive_cannot_suppress/commonmark
+=== RUN   TestMD001AnalysisFixtures/code_directive_cannot_suppress/gfm
+=== RUN   TestMD001AnalysisFixtures/metadata_directive_cannot_suppress/commonmark
+=== RUN   TestMD001AnalysisFixtures/metadata_directive_cannot_suppress/gfm
+=== RUN   TestMD001AnalysisFixtures/TOML_default_ignores_virtual_title/commonmark
+=== RUN   TestMD001AnalysisFixtures/TOML_default_ignores_virtual_title/gfm
+=== RUN   TestMD001AnalysisFixtures/TOML_duplicate_title_unknown/commonmark
+=== RUN   TestMD001AnalysisFixtures/TOML_duplicate_title_unknown/gfm
+=== RUN   TestMD001AnalysisFixtures/TOML_malformed_title_unknown/commonmark
+=== RUN   TestMD001AnalysisFixtures/TOML_malformed_title_unknown/gfm
+--- PASS: TestMD001AnalysisFixtures (0.02s)
+    --- PASS: TestMD001AnalysisFixtures/documented_violation/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/documented_violation/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/documented_accepted/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/documented_accepted/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/first_establishes_baseline/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/first_establishes_baseline/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/sequence/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/sequence/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/violation_becomes_baseline/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/violation_becomes_baseline/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/styles/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/styles/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/empty_ATX_baseline/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/empty_ATX_baseline/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/multiline_setext_structural_range/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/multiline_setext_structural_range/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/setext_offending_envelope/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/setext_offending_envelope/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/global_containers/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/global_containers/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/Unicode_nested_LF/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/Unicode_nested_LF/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/Unicode_nested_CRLF/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/Unicode_nested_CRLF/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/protected_candidates/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/protected_candidates/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/YAML_virtual_H1/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/YAML_virtual_H1/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/TOML_BOM_CRLF_virtual_H1/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/TOML_BOM_CRLF_virtual_H1/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/virtual_H2_accepted/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/virtual_H2_accepted/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/default_skips_semantic_malformed_header/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/default_skips_semantic_malformed_header/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/malformed_unknown_first_comparison/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/malformed_unknown_first_comparison/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/duplicate_unknown_first_comparison/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/duplicate_unknown_first_comparison/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/unsupported_title_unknown/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/unsupported_title_unknown/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/known_title_beside_unsupported_sibling/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/known_title_beside_unsupported_sibling/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/header_absence_is_known/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/header_absence_is_known/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/recognition_disabled_uses_ordinary_Markdown/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/recognition_disabled_uses_ordinary_Markdown/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/Setext_complete_offending_envelope/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/Setext_complete_offending_envelope/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/Setext_H2_supplies_baseline/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/Setext_H2_supplies_baseline/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/list_heading_complete_range/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/list_heading_complete_range/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/code_directive_cannot_suppress/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/code_directive_cannot_suppress/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/metadata_directive_cannot_suppress/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/metadata_directive_cannot_suppress/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/TOML_default_ignores_virtual_title/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/TOML_default_ignores_virtual_title/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/TOML_duplicate_title_unknown/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/TOML_duplicate_title_unknown/gfm (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/TOML_malformed_title_unknown/commonmark (0.00s)
+    --- PASS: TestMD001AnalysisFixtures/TOML_malformed_title_unknown/gfm (0.00s)
+PASS
+ok  	github.com/frithuz/mdchk/internal/rules	0.028s

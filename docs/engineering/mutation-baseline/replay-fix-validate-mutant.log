@@ -1,0 +1,16 @@
+=== RUN   TestCandidateTrustedMeaningAndMissingProof
+=== RUN   TestCandidateTrustedMeaningAndMissingProof/safe
+    validate_test.go:110: candidate="hello" complete=false reasons=[context-unavailable]
+=== RUN   TestCandidateTrustedMeaningAndMissingProof/same_AST_different_meaning
+    validate_test.go:110: candidate="hello" complete=false reasons=[context-unavailable]
+=== RUN   TestCandidateTrustedMeaningAndMissingProof/missing_checker
+=== RUN   TestCandidateTrustedMeaningAndMissingProof/uncertain_proof
+    validate_test.go:110: candidate="\nhello" complete=true reasons=[]
+--- FAIL: TestCandidateTrustedMeaningAndMissingProof (0.00s)
+    --- FAIL: TestCandidateTrustedMeaningAndMissingProof/safe (0.00s)
+    --- FAIL: TestCandidateTrustedMeaningAndMissingProof/same_AST_different_meaning (0.00s)
+    --- PASS: TestCandidateTrustedMeaningAndMissingProof/missing_checker (0.00s)
+    --- FAIL: TestCandidateTrustedMeaningAndMissingProof/uncertain_proof (0.00s)
+FAIL
+FAIL	github.com/frithuz/mdchk/internal/fix	0.009s
+FAIL

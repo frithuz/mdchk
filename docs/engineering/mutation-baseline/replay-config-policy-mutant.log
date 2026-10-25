@@ -1,0 +1,17 @@
+=== RUN   TestDirectivePermissionMatrix
+=== RUN   TestDirectivePermissionMatrix/omitted
+    policy_test.go:279: wrong effective decision: {Allowed:false Restrictions:[] Err:<nil>}
+=== RUN   TestDirectivePermissionMatrix/global-only
+    policy_test.go:279: wrong effective decision: {Allowed:true Restrictions:[{Path:supplied.yaml PropertyPath:directives.enabled Position:0x19c1ef310ee0}] Err:<nil>}
+=== RUN   TestDirectivePermissionMatrix/rule-only
+    policy_test.go:279: wrong effective decision: {Allowed:true Restrictions:[{Path:supplied.yaml PropertyPath:rules.MD013.allow_directives Position:0x19c1ef311cf0}] Err:<nil>}
+=== RUN   TestDirectivePermissionMatrix/both
+    policy_test.go:279: wrong effective decision: {Allowed:true Restrictions:[{Path:supplied.yaml PropertyPath:directives.enabled Position:0x19c1ef41cce0} {Path:supplied.yaml PropertyPath:rules.MD013.allow_directives Position:0x19c1ef41ccf0}] Err:<nil>}
+--- FAIL: TestDirectivePermissionMatrix (0.00s)
+    --- FAIL: TestDirectivePermissionMatrix/omitted (0.00s)
+    --- FAIL: TestDirectivePermissionMatrix/global-only (0.00s)
+    --- FAIL: TestDirectivePermissionMatrix/rule-only (0.00s)
+    --- FAIL: TestDirectivePermissionMatrix/both (0.00s)
+FAIL
+FAIL	github.com/frithuz/mdchk/internal/config	0.010s
+FAIL
