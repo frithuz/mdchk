@@ -86,6 +86,51 @@ interpretation remains unavailable; the broader operation matrix is verified by 
 
 ## Metadata values and corrections
 
+
+The source-owned model, title/ordering policy and necessary preservation gates
+are implemented in [internal/metadata](../../internal/metadata/README.md). Concrete
+format decoding/source projection (#179), production rule integration (#180) and
+metadata correction authorization (#181) remain separate work. Model records and
+eligibility never bypass ordinary opaque-header protection.
+
+### Parser strategy
+
+Use YAML 1.2 Core interpretation through the existing exact pinned
+`github.com/goccy/go-yaml v1.19.2` token/AST adapter. Reuse/factor the bounded lexical
+guards and original-source mapping, without importing integration policy or the
+closed mdchk configuration schema. Standard Core tags may establish their native
+kind only when valid; merge keys, custom tags and cycles remain unsupported.
+Aliases are bounded and acyclic, with diagnostic ranges at their authored use.
+
+Use TOML 1.1 through `github.com/pelletier/go-toml/v2 v2.4.3`, behind a project-owned
+source-preserving boundary. The module is selected for #179; it is not a runtime
+dependency until that producer is implemented. Its unstable expression AST exposes
+raw ranges and optional comments; copy validated records before advancing the
+parser, and expose no upstream types to consumers. Add the exact module checksum,
+license and narrow architecture boundary with implementation. The
+[pinned parser](https://github.com/pelletier/go-toml/blob/v2.4.3/unstable/parser.go)
+and [AST](https://github.com/pelletier/go-toml/blob/v2.4.3/unstable/ast.go) are the
+adapter reference. This patched version is selected over the versions affected
+by the [maintainer recursion advisory](https://github.com/pelletier/go-toml/security/advisories/GHSA-frc4-6h9q-39fq).
+
+For both adapters, before recursive dependency entry reserve bytes, temporary
+storage and work and enforce the tighter shared syntax-depth limit. The TOML
+library's 10,000 nesting cap does not replace mdchk's limit. Charge subsequent
+projection, copies, aliases, key comparisons and retained records to the original
+operation and document counters. Apply caller/operation/elapsed-time checkpoints;
+actual controls stay canonical errors rather than malformed metadata. No panic
+recovery or after-the-fact depth check substitutes for bounded entry. Extend the
+parser accounting/property fixtures when #179 introduces actual adapter work.
+
+TOML table paths need semantic validation beyond token scanning: enforce exact
+decoded-key duplicate/redefinition rules, scalar-versus-table conflicts, implicit
+and explicit table ownership and array-of-table identity. Preserve native integer,
+float, Boolean, offset-date-time, local-date-time, local-date and local-time kinds.
+Do not normalize local values through a server timezone. Use the
+[TOML 1.1 specification](https://toml.io/en/v1.1.0) for grammar fixtures. JSON
+frontmatter remains deferred. Dependency upgrades require the same source-range,
+native-value, bounded-entry and semantic-validation probes.
+
 ### Acquisition
 
 Decode recognized YAML/TOML only when metadata-aware rules or inspection need structured values.
@@ -104,7 +149,9 @@ conclusion when required metadata is unavailable.
 
 ### Title
 
-Only the exact top-level title key with a decoded nonblank string counts. Missing, blank or
+Only the exact top-level title key with a decoded nonblank string counts. Blank
+means only Unicode White_Space (`unicode.IsSpace` in the pinned Go toolchain);
+retain the decoded string without trimming. Missing, blank or
 non-string title values do not count. The existing frontmatter_title options remain opt-in; MD001
 uses a virtual H1, MD025 counts one title at its configured title level, and MD041 accepts the title
 as satisfying its existing opening-heading requirement.
@@ -112,8 +159,9 @@ as satisfying its existing opening-heading requirement.
 ### Ordering
 
 Retain current recursive=false and case_sensitive=true defaults. Compare decoded keys in Unicode
-code-point order; case-insensitive mode uses Unicode case folding, retaining source order for equal
-folded keys. Recursive mode checks nested mappings, including mappings inside sequences, without
+code-point order; case-insensitive mode uses Unicode 17.0.0 full default C/F case folding,
+without whitespace/NUL transformation or normalization, retaining source order
+for equal folded keys. Recursive mode checks nested mappings, including mappings inside sequences, without
 reordering sequence elements.
 
 ### Yaml features

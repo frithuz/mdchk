@@ -2,6 +2,7 @@ package parser
 
 import (
 	"context"
+	"errors"
 	"slices"
 	"strings"
 )
@@ -20,7 +21,52 @@ type frontmatterBoundary struct {
 // It is separate from Root's ordinary body children and contributes no Markdown
 // nodes, references or comments. Its zero value is absent. All source spans
 // retain the original snapshot, including exact physical line endings.
-type Frontmatter struct{ boundary frontmatterBoundary }
+type Frontmatter struct {
+	boundary frontmatterBoundary
+	records  *parseBudget
+}
+
+// OwnsOperation identifies the existing operation that recognized this header.
+// It grants no decoded metadata, body completeness or correction authority.
+// Unterminated headers retain identity but cannot establish complete metadata.
+func (h Frontmatter) OwnsOperation(budget *OperationBudget) bool {
+	return budget != nil && h.records != nil && h.records.operation == budget && h.boundary.region.Present()
+}
+
+// ReserveRecords charges derived metadata records to this exact parse's
+// document-local construction and the same operation cumulative counter.
+// It proves no decoding or edit eligibility. Call before constructing records.
+func (h Frontmatter) ReserveRecords(ctx context.Context, budget *OperationBudget, records int64) error {
+	if ctx == nil || records < 0 || !h.OwnsOperation(budget) {
+		return ErrRange
+	}
+	budget.mu.Lock()
+	defer budget.mu.Unlock()
+	var stopped error
+	if quota := budget.chargeLocked("work-units", 0); quota != nil {
+		copy := *quota
+		stopped = &copy
+	}
+	if h.records.documentLimit != nil {
+		copy := *h.records.documentLimit
+		return errors.Join(ctx.Err(), &copy, stopped)
+	}
+	if err := errors.Join(ctx.Err(), stopped); err != nil {
+		return err
+	}
+	observed := addBounded(h.records.nodes, records)
+	if observed > budget.limits.DocumentNodes {
+		h.records.documentLimit = &LimitExceeded{Name: "document-nodes", Observed: observed, Allowed: budget.limits.DocumentNodes}
+		copy := *h.records.documentLimit
+		return &copy
+	}
+	if err := budget.chargeLocked("total-nodes", records); err != nil {
+		copy := *err
+		return &copy
+	}
+	h.records.nodes = observed
+	return ctx.Err()
+}
 
 func (h Frontmatter) Format() string { return h.boundary.format }
 

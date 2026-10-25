@@ -182,8 +182,9 @@ func withAncestor(ctx context.Context, n int) context.Context {
 }
 
 type parseBudget struct {
-	operation *OperationBudget
-	nodes     int64
+	operation     *OperationBudget
+	nodes         int64
+	documentLimit *LimitExceeded
 }
 
 // budgetStop is recovered only at the public parse boundary. Deep scanner and
@@ -242,9 +243,15 @@ func filteredValueWork(semanticBytes, segments int64, searchBits int) int64 {
 
 func meterRecords(ctx context.Context, n int) {
 	if b := currentBudget(ctx); b != nil {
+		if b.documentLimit != nil {
+			copy := *b.documentLimit
+			panic(budgetStop{&copy})
+		}
 		observed := addBounded(b.nodes, int64(n))
 		if observed > b.operation.limits.DocumentNodes {
-			panic(budgetStop{&LimitExceeded{"document-nodes", observed, b.operation.limits.DocumentNodes}})
+			b.documentLimit = &LimitExceeded{"document-nodes", observed, b.operation.limits.DocumentNodes}
+			copy := *b.documentLimit
+			panic(budgetStop{&copy})
 		}
 		if e := b.operation.chargeLocked("total-nodes", int64(n)); e != nil {
 			panic(budgetStop{e})

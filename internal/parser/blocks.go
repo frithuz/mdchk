@@ -87,7 +87,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		if header.region.Present() {
 			meterRecords(ctx, 1)
 			meterWork(ctx, 6) // fixed record and source-span copies
-			document.frontmatter = Frontmatter{boundary: header}
+			document.frontmatter = Frontmatter{boundary: header, records: settings.budget}
 			bodyOffset = header.region.End()
 		}
 	}

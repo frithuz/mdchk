@@ -246,7 +246,13 @@ func cloneReferences(r ReferenceCollection) ReferenceCollection {
 	return r
 }
 
-func (d *Document) Source() Source                  { return d.root.Span().source }
+// Source retains the immutable snapshot; a nil or zero Document has no source.
+func (d *Document) Source() Source {
+	if d == nil || d.root == nil {
+		return Source{}
+	}
+	return d.root.Span().source
+}
 func (d *Document) Root() *Node                     { return cloneNode(d.root) }
 func (d *Document) References() ReferenceCollection { return cloneReferences(d.references) }
 
