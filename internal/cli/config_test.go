@@ -94,7 +94,7 @@ func TestLintPreparationRetainsOwnedSelection(t *testing.T) {
 		if r.Enabled || r.Options["length"] != 88 {
 			t.Fatalf("rule=%+v", r)
 		}
-		if !inv.selection.Resolution.Rules["MD001"].Enabled || inv.selection.Resolution.Rules["MD001"].Available {
+		if !inv.selection.Resolution.Rules["MD001"].Enabled || !inv.selection.Resolution.Rules["MD001"].Available {
 			t.Fatal("default catalog/availability changed")
 		}
 		if inv.plan == nil || inv.plan != inv.selection.Resolution.ExecutionPlan() {

@@ -2,7 +2,7 @@
 
 Use `.mdchk.yaml` to define your project's Markdown expectations. Lint and fix use the same rules and exclusions from the terminal; the planned MCP modes share this contract. Without a configuration file, mdchk uses its defaults, including the supported GFM profile. Missing default rule implementations produce incomplete analysis (`15`).
 
-This is the approved configuration contract. Lint loads and validates configuration before target access, then acquires source snapshots and executes the shared parser and available registered checks. Lint, fix and config validate support text, schema-v1 JSON, VS Code and GitHub reports; inspect supports text/JSON. MD047 terminating-newline analysis, safe previews and apply on the verified Darwin arm64+cgo/local APFS adapter are implemented; other ordinary rule implementations remain pending. Missing enabled defaults produce coverage deficits rather than clean results; valid UTF-8 with all ordinary rules disabled can return clean `0`. See [initial capability handling](#initial-capability-handling) for how development builds must report unavailable behavior.
+This is the approved configuration contract. Lint loads and validates configuration before target access, then acquires source snapshots and executes the shared parser and available registered checks. Lint, fix and config validate support text, schema-v1 JSON, VS Code and GitHub reports; inspect supports text/JSON. MD047 terminating-newline analysis, safe previews and apply on the verified Darwin arm64+cgo/local APFS adapter are implemented; MD001 heading-increment analysis and its opt-in `frontmatter_title` setting are also implemented for CommonMark/GFM. Other ordinary rule implementations remain pending. Missing enabled defaults produce coverage deficits rather than clean results; valid UTF-8 with all ordinary rules disabled can return clean `0`. See [initial capability handling](#initial-capability-handling) for how development builds must report unavailable behavior.
 
 ## Define project expectations
 
@@ -13,7 +13,7 @@ alone still returns incomplete/`15` for unavailable defaults; this reduced
 selection is not full Markdown conformance.
 
 The following is an accepted schema example, not a runnable configuration for
-this build: the explicitly enabled MD001/MD004 are unavailable (`12`).
+this build: the explicitly enabled MD004 is unavailable (`12`).
 
 ```yaml
 version: 1
@@ -103,9 +103,12 @@ These settings do not grant access or select lint targets. Excluded or unselecte
 ## Optional document contexts
 
 Availability: independently enabled YAML/TOML frontmatter recognition is implemented
-in shared lint, inspection and fix processing. Headers remain opaque; semantic
-metadata decoding and title options remain unavailable. Slides and MkDocs
-consumers are not implemented; explicitly enabling unavailable context returns `12`.
+in shared lint, inspection and fix processing. Headers remain protected from
+ordinary Markdown checks and directives. MD001 supports semantic YAML/TOML title
+consumption when its `frontmatter_title` option is enabled; recognition must be
+enabled independently. Broader metadata-rule and structured inspection integration
+remain pending. Slides and MkDocs consumers are not implemented; explicitly
+enabling unavailable context returns `12`.
 
 ```yaml
 version: 1

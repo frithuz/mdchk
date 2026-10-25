@@ -113,7 +113,9 @@ unavailable AST data does not prove absence. An absent closer means a recognized
 unterminated header through EOF. Its AST section is partial, its reliable source
 record remains visible, and a located `unterminated-frontmatter` parsing note
 explains the incomplete result. This does not manufacture completed directive
-or ordinary rule context. Metadata decoding/title/order semantics remain unavailable.
+or ordinary rule context. Structured metadata values and title/order inspection
+remain unavailable in this projection. MD001 consumes title semantics separately
+through its engine-owned opt-in analysis path.
 
 Line selection retains the complete header as source context, marking it
 `context_only` when it does not intersect selected lines and `extends_region`

@@ -1,0 +1,576 @@
+[
+  {
+    "name": "documented violation",
+    "source": "# Guide\n### Install\n",
+    "expected": [
+      {
+        "range": [
+          8,
+          20,
+          2,
+          1,
+          3,
+          1
+        ],
+        "source": "### Install\n"
+      }
+    ]
+  },
+  {
+    "name": "documented accepted",
+    "source": "# Guide\n## Install\n",
+    "expected": []
+  },
+  {
+    "name": "first establishes baseline",
+    "source": "#### Alone\n",
+    "expected": []
+  },
+  {
+    "name": "sequence",
+    "source": "#### First\n###### Six\n# One\n### Three\n### Same\n## Two\n#### Four\n",
+    "expected": [
+      {
+        "range": [
+          11,
+          22,
+          2,
+          1,
+          3,
+          1
+        ],
+        "source": "###### Six\n"
+      },
+      {
+        "range": [
+          28,
+          38,
+          4,
+          1,
+          5,
+          1
+        ],
+        "source": "### Three\n"
+      },
+      {
+        "range": [
+          54,
+          64,
+          7,
+          1,
+          8,
+          1
+        ],
+        "source": "#### Four\n"
+      }
+    ]
+  },
+  {
+    "name": "violation becomes baseline",
+    "source": "# First\n### Violation\n#### Next\n",
+    "expected": [
+      {
+        "range": [
+          8,
+          22,
+          2,
+          1,
+          3,
+          1
+        ],
+        "source": "### Violation\n"
+      }
+    ]
+  },
+  {
+    "name": "styles",
+    "source": "# Root\n\nSecond\n------\n\n#### Fourth\n",
+    "expected": [
+      {
+        "range": [
+          23,
+          35,
+          6,
+          1,
+          7,
+          1
+        ],
+        "source": "#### Fourth\n"
+      }
+    ]
+  },
+  {
+    "name": "empty ATX baseline",
+    "source": "#\n\n### Third\n",
+    "expected": [
+      {
+        "range": [
+          3,
+          13,
+          3,
+          1,
+          4,
+          1
+        ],
+        "source": "### Third\n"
+      }
+    ]
+  },
+  {
+    "name": "multiline setext structural range",
+    "source": "# Root\n\n## Two\n\nFirst line\nsecond é\n===\n\n### Third",
+    "expected": [
+      {
+        "range": [
+          42,
+          51,
+          9,
+          1,
+          9,
+          10
+        ],
+        "source": "### Third"
+      }
+    ]
+  },
+  {
+    "name": "setext offending envelope",
+    "source": "### Three\n\n# Reset\n\n### Third\n\n#### Four\n",
+    "expected": [
+      {
+        "range": [
+          20,
+          30,
+          5,
+          1,
+          6,
+          1
+        ],
+        "source": "### Third\n"
+      }
+    ]
+  },
+  {
+    "name": "global containers",
+    "source": "# Root\n\n> ### Quoted\n\n- #### List\n\n###### Main\n",
+    "expected": [
+      {
+        "range": [
+          10,
+          21,
+          3,
+          3,
+          4,
+          1
+        ],
+        "source": "### Quoted\n"
+      },
+      {
+        "range": [
+          35,
+          47,
+          7,
+          1,
+          8,
+          1
+        ],
+        "source": "###### Main\n"
+      }
+    ]
+  },
+  {
+    "name": "Unicode nested LF",
+    "source": "# é\n\n> ### 雪é **x** ###\n\n- #### Fine\n\n######\t`最後`\n",
+    "expected": [
+      {
+        "range": [
+          8,
+          29,
+          3,
+          3,
+          4,
+          1
+        ],
+        "source": "### 雪é **x** ###\n"
+      },
+      {
+        "range": [
+          43,
+          59,
+          7,
+          1,
+          8,
+          1
+        ],
+        "source": "######\t`最後`\n"
+      }
+    ]
+  },
+  {
+    "name": "Unicode nested CRLF",
+    "source": "# é\r\n\r\n> ### 雪é **x** ###\r\n\r\n- #### Fine\r\n\r\n######\t`最後`\r\n",
+    "expected": [
+      {
+        "range": [
+          10,
+          32,
+          3,
+          3,
+          4,
+          1
+        ],
+        "source": "### 雪é **x** ###\r\n"
+      },
+      {
+        "range": [
+          49,
+          66,
+          7,
+          1,
+          8,
+          1
+        ],
+        "source": "######\t`最後`\r\n"
+      }
+    ]
+  },
+  {
+    "name": "protected candidates",
+    "source": "# Root\n\n```md\n###### fenced\n```\n\n    ###### indented\n\n<div>\n###### raw\n</div>\n\n<!--\n###### comment\n-->\n\n\\###### escaped\n\n<h6>HTML</h6>\n\n## Valid\n\n#### *Real* `heading`\n",
+    "expected": [
+      {
+        "range": [
+          146,
+          168,
+          23,
+          1,
+          24,
+          1
+        ],
+        "source": "#### *Real* `heading`\n"
+      }
+    ]
+  },
+  {
+    "name": "YAML virtual H1",
+    "source": "---\ntitle: Guide\n---\n### Install\n##### Later\n",
+    "expected": [
+      {
+        "range": [
+          21,
+          33,
+          4,
+          1,
+          5,
+          1
+        ],
+        "source": "### Install\n"
+      },
+      {
+        "range": [
+          33,
+          45,
+          5,
+          1,
+          6,
+          1
+        ],
+        "source": "##### Later\n"
+      }
+    ],
+    "recognize": true,
+    "title": true
+  },
+  {
+    "name": "TOML BOM CRLF virtual H1",
+    "source": "﻿+++\r\n\"ti\\u0074le\" = \"Guide\"\r\n+++\r\n### 雪\r\n",
+    "expected": [
+      {
+        "range": [
+          37,
+          46,
+          4,
+          1,
+          5,
+          1
+        ],
+        "source": "### 雪\r\n"
+      }
+    ],
+    "recognize": true,
+    "title": true
+  },
+  {
+    "name": "virtual H2 accepted",
+    "source": "---\ntitle: Guide\n---\n## Install\n### Later\n",
+    "expected": [],
+    "recognize": true,
+    "title": true
+  },
+  {
+    "name": "default skips semantic malformed header",
+    "source": "---\ntitle: [\n---\n### First\n##### Later\n",
+    "expected": [
+      {
+        "range": [
+          27,
+          39,
+          5,
+          1,
+          6,
+          1
+        ],
+        "source": "##### Later\n"
+      }
+    ],
+    "recognize": true
+  },
+  {
+    "name": "malformed unknown first comparison",
+    "source": "---\ntitle: [\n---\n### First\n##### Later\n",
+    "expected": [
+      {
+        "range": [
+          27,
+          39,
+          5,
+          1,
+          6,
+          1
+        ],
+        "source": "##### Later\n"
+      }
+    ],
+    "recognize": true,
+    "title": true,
+    "incomplete": true
+  },
+  {
+    "name": "duplicate unknown first comparison",
+    "source": "---\ntitle: A\ntitle: B\n---\n### First\n##### Later\n",
+    "expected": [
+      {
+        "range": [
+          36,
+          48,
+          6,
+          1,
+          7,
+          1
+        ],
+        "source": "##### Later\n"
+      }
+    ],
+    "recognize": true,
+    "title": true,
+    "incomplete": true
+  },
+  {
+    "name": "unsupported title unknown",
+    "source": "---\ntitle: !custom X\n---\n### First\n##### Later\n",
+    "expected": [
+      {
+        "range": [
+          35,
+          47,
+          5,
+          1,
+          6,
+          1
+        ],
+        "source": "##### Later\n"
+      }
+    ],
+    "recognize": true,
+    "title": true,
+    "incomplete": true
+  },
+  {
+    "name": "known title beside unsupported sibling",
+    "source": "---\ntitle: Good\nother: !custom X\n---\n### First\n",
+    "expected": [
+      {
+        "range": [
+          37,
+          47,
+          5,
+          1,
+          6,
+          1
+        ],
+        "source": "### First\n"
+      }
+    ],
+    "recognize": true,
+    "title": true
+  },
+  {
+    "name": "header absence is known",
+    "source": "### First\n##### Later\n",
+    "expected": [
+      {
+        "range": [
+          10,
+          22,
+          2,
+          1,
+          3,
+          1
+        ],
+        "source": "##### Later\n"
+      }
+    ],
+    "recognize": true,
+    "title": true
+  },
+  {
+    "name": "recognition disabled uses ordinary Markdown",
+    "source": "+++\ntitle = \"Guide\"\n+++\n\n### First\n##### Later\n",
+    "expected": [
+      {
+        "range": [
+          35,
+          47,
+          6,
+          1,
+          7,
+          1
+        ],
+        "source": "##### Later\n"
+      }
+    ],
+    "title": true
+  },
+  {
+    "name": "Setext complete offending envelope",
+    "source": "# Root\n\n### Previous\n\n# Reset\n\n### End\n",
+    "expected": [
+      {
+        "range": [
+          8,
+          21,
+          3,
+          1,
+          4,
+          1
+        ],
+        "source": "### Previous\n"
+      },
+      {
+        "range": [
+          31,
+          39,
+          7,
+          1,
+          8,
+          1
+        ],
+        "source": "### End\n"
+      }
+    ]
+  },
+  {
+    "name": "Setext H2 supplies baseline",
+    "source": "# Root\n\nSecond\n------\n\n### Third\n",
+    "expected": []
+  },
+  {
+    "name": "list heading complete range",
+    "source": "# Root\n\n- ### Item\n",
+    "expected": [
+      {
+        "range": [
+          10,
+          19,
+          3,
+          3,
+          4,
+          1
+        ],
+        "source": "### Item\n"
+      }
+    ]
+  },
+  {
+    "name": "code directive cannot suppress",
+    "source": "# Root\n\n```\n<!-- mdchk:disable MD001 -->\n```\n\n### Active\n",
+    "expected": [
+      {
+        "range": [
+          46,
+          57,
+          7,
+          1,
+          8,
+          1
+        ],
+        "source": "### Active\n"
+      }
+    ]
+  },
+  {
+    "name": "metadata directive cannot suppress",
+    "source": "---\n<!-- mdchk:disable MD001 -->\n---\n# Root\n### Active\n",
+    "recognize": true,
+    "expected": [
+      {
+        "range": [
+          44,
+          55,
+          5,
+          1,
+          6,
+          1
+        ],
+        "source": "### Active\n"
+      }
+    ]
+  },
+  {
+    "name": "TOML default ignores virtual title",
+    "source": "﻿+++\r\n\"ti\\u0074le\" = \"Guide\"\r\n+++\r\n### 雪\r\n",
+    "expected": [],
+    "recognize": true,
+    "title": false
+  },
+  {
+    "name": "TOML duplicate title unknown",
+    "source": "+++\ntitle = \"A\"\ntitle = \"B\"\n+++\n### First\n##### Later\n",
+    "recognize": true,
+    "title": true,
+    "incomplete": true,
+    "expected": [
+      {
+        "range": [
+          42,
+          54,
+          6,
+          1,
+          7,
+          1
+        ],
+        "source": "##### Later\n"
+      }
+    ]
+  },
+  {
+    "name": "TOML malformed title unknown",
+    "source": "+++\ntitle = [\n+++\n### First\n##### Later\n",
+    "recognize": true,
+    "title": true,
+    "incomplete": true,
+    "expected": [
+      {
+        "range": [
+          28,
+          40,
+          5,
+          1,
+          6,
+          1
+        ],
+        "source": "##### Later\n"
+      }
+    ]
+  }
+]

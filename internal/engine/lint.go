@@ -217,7 +217,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				continue
 			}
 		}
-		rc := RuleContext{input: in, index: index, document: parsed.Document, budget: budget, parsed: parsed, directives: directives, syntaxReliable: syntaxReliable}
+		rc := RuleContext{input: in, index: index, document: parsed.Document, budget: budget, operation: ctx, parsed: parsed, directives: directives, syntaxReliable: syntaxReliable}
 
 		for _, id := range r.ids {
 			state := settings[i][id]

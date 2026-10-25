@@ -196,3 +196,13 @@ observations; it grants neither decoded values nor edits. MD094 still validates
 all original UTF-8 bytes. A physical EOF observation can remain report-only when
 a complete header ends at EOF. Unterminated headers retain located uncertainty,
 withhold ordinary execution and cannot acquire completed directive authority.
+
+RuleContext.Headings projects the parser's existing heading facts under the
+original budget and operation lifetime; it neither scans source independently nor
+exposes a budget. RuleContext.FrontmatterTitle is narrow semantic consumption for
+an enabled frontmatter_title option, using metadata.Bind/Decode/Title on that same
+original document. Lexical absence is known absence; unknown title semantics
+reduce affected coverage without discarding reliable body comparisons. The option
+false performs no decoding. MD001 uses these seams while retaining
+UsesFrontmatter=false and body-only finding protection. Title consumption grants
+no header observations, edits, preview or write authority.

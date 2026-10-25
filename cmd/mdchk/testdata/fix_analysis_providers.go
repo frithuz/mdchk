@@ -11,7 +11,15 @@ import (
 )
 
 func configuredProviders() (*engine.Registry, engine.ValidationProviders, config.Capabilities, error) {
-	checks := append(rules.Registrations(), engine.Registration{ID: "MD001", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
+	// Replace only the production MD001 callback in this compiled synthetic
+	// provider. Its established correction assertions exercise fixture semantics.
+	checks := []engine.Registration{}
+	for _, registration := range rules.Registrations() {
+		if registration.ID != "MD001" {
+			checks = append(checks, registration)
+		}
+	}
+	checks = append(checks, engine.Registration{ID: "MD001", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 		text := string(c.Source().Bytes())
 		if err := c.Checkpoint(ctx, int64(len(text))+1); err != nil {
 			return engine.RuleOutcome{Err: err}

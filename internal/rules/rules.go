@@ -6,5 +6,5 @@ package rules
 import "github.com/frithuz/mdchk/internal/engine"
 
 func Registrations() []engine.Registration {
-	return []engine.Registration{{ID: "MD047", Check: terminatingNewline}}
+	return []engine.Registration{{ID: "MD047", Check: terminatingNewline}, {ID: "MD001", Check: headingIncrements}}
 }

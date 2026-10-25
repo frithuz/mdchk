@@ -1,7 +1,7 @@
 # Metadata contracts
 
 This package defines the model and consumer policy for recognized metadata.
-`Decode` now produces source-mapped YAML and TOML values on demand. Production
+`Decode` now produces source-mapped YAML and TOML values on demand. MD001 consumes title policy through the engine on opt-in. Broader production
 metadata rules, inspection projection and edits remain downstream work.
 
 `Bind` admits only the actual document-owned header under its original parser
@@ -69,7 +69,9 @@ a located problem for unterminated input. These unavailable outcomes reserve the
 new root/problem records and work before construction, under the same binding. Malformed syntax and nonmapping roots
 produce an unknown root with a located problem. Unsupported YAML subvalues retain
 independently decoded sibling facts, while unknown/duplicate keys deny negative
-authority. No decoder result enables a production capability or authorizes edits.
+authority. No decoder result alone enables a production capability or authorizes edits.
+The CLI admits metadata interpretation for the actual MD001 title consumer;
+MD025, MD041 and MD072 remain independently unavailable.
 
 YAML uses the pinned goccy AST through `internal/yamlsource`, shared with MkDocs.
 That neutral boundary owns normalization, tag/tab/escape reconciliation, guarded
@@ -111,4 +113,4 @@ Source-based decoder fixtures independently assert native kinds/text, original
 key/value/entry slices, comments, aliases, temporal precision, ownership conflicts,
 physical endings and pre-entry guard failures. The earlier private-builder
 fixtures continue to test model/policy contracts. Actual correction preservation
-and production integrations remain unverified until their owning issues deliver.
+and other production integrations remain unverified until their owning issues deliver.

@@ -4,12 +4,13 @@ Use inline HTML comments with canonical MDxxx rule IDs to enable or disable rule
 
 Directives are intended for exceptions to specific rules within a document. To exclude a whole file from all rule linting, add its path to `exclude` in configuration. Do not enumerate every rule in a directive to suppress linting across the file. A whole-file exclusion does not prevent an explicitly requested inspection.
 
-Current availability: CommonMark directive processing is delivered in lint, fix
-and inspect. MD047 is the ordinary production check; the MD001/MD040 examples
-below illustrate rule-state syntax, not delivered checks. Permitted directives
-that enable unavailable rules produce incomplete coverage. Frontmatter,
-resource consumers, MCP and MD087 counterfactual checks remain planned; their
-semantics below describe the accepted future contract.
+Current availability: CommonMark/GFM directive processing is delivered in lint,
+fix and inspect. MD001 and MD047 are production checks; the MD040 examples below
+illustrate rule-state syntax for an unavailable check. Permitted directives that
+enable unavailable rules produce incomplete coverage. Independently recognized
+YAML/TOML headers remain protected from directives, including when MD001 consumes
+a title. Resource consumers, MCP and MD087 counterfactual checks remain planned;
+their semantics below describe the accepted future contract.
 
 ## Disable and enable rules
 

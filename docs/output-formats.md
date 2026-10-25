@@ -29,10 +29,10 @@ mdchk lint docs/
 mdchk fix docs/ --dry-run --format text
 ```
 
-Each finding includes a file, line, column, rule, explanation, and whether it can be fixed automatically. The following is illustrative future MD001 output; MD001 is unavailable in this build. For an actual MD047 example, use the [runnable integration setup](#runnable-integration-setup).
+Each finding includes a file, line, column, rule, explanation, and whether it can be fixed automatically. MD001 reports heading increments without an automatic correction, as illustrated below. For a runnable MD047 example, use the [runnable integration setup](#runnable-integration-setup).
 
 ```text
-docs/guide.md:18:1 MD001: Heading jumps from level 2 to level 4. Choose the intended heading level. [manual]
+docs/guide.md:18:1 MD001: Heading level must not increase by more than one. [manual]
 Checked 3 files. Found 1 violation.
 ```
 
@@ -100,7 +100,7 @@ the coordinates, and build-wide records leave the path field empty rather than
 inventing a source position. For example:
 
 ```text
-coverage  MD001 rule-unavailable: Rule has no executable implementation.
+coverage  MD004 rule-unavailable: No executable implementation is registered.
 coverage docs/guide.md:2:4 MD057 context-unavailable: Required context is unavailable.
 ```
 

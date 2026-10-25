@@ -75,6 +75,7 @@ type RuleContext struct {
 	document         *parser.Document
 	options          Options
 	budget           *parser.OperationBudget
+	operation        context.Context
 	parsed           parser.ParseResult
 	directives       DirectiveResult
 	syntaxReliable   bool

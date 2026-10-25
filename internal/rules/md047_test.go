@@ -136,7 +136,7 @@ func TestMD047ProtectedContainersAndRetainedSourceConsumers(t *testing.T) {
 }
 func TestMD047SharedConfigurationAndOwnership(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD047") || r.Available("MD001") {
+	if !r.Available("MD047") || !r.Available("MD001") {
 		t.Fatal("incorrect availability")
 	}
 	for _, m := range r.Metadata() {

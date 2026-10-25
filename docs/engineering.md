@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production rule and correction; other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment analysis is also available. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -241,9 +241,15 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with the MD047 read-only analysis callback
-and asserts CommonMark, GFM and shared directive-processing capabilities. No
-configuration selects built-in GFM through the same whole-profile parser. Configuration and read
+assembly uses the complete catalog with real MD001 and MD047 analysis callbacks.
+It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
+header recognition. Metadata interpretation supports MD001's opt-in
+`frontmatter_title` consumer under the original engine-owned document and budget;
+MD025, MD041 and MD072 remain independently unavailable. MD001 is report-only;
+its title access grants no header findings or corrections. Broader metadata
+inspection, consumer and correction integration remain separate deliveries.
+Omitted flavor configuration selects built-in GFM through the same whole-profile
+parser. Configuration and read
 failures return 12; output failures return 13.
 
 Preparation retains the full owned selection, resolution and admitted execution

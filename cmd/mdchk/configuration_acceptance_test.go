@@ -313,7 +313,7 @@ func testConfigurationStrict(t *testing.T, binary string) {
 	})
 	t.Run("capability preflight", func(t *testing.T) {
 		for _, tc := range []configurationNegative{
-			{"explicit enabled default", availableConfiguration + "rules: {MD001: {}}\n", "rules.MD001", "explicitly enabled rule is unavailable", 4, 16},
+			{"explicit enabled default", availableConfiguration + "rules: {MD004: {}}\n", "rules.MD004", "explicitly enabled rule is unavailable", 4, 16},
 			{"explicit enabled unavailable", availableConfiguration + "rules: {MD013: {enabled: true}}\n", "rules.MD013", "explicitly enabled rule is unavailable", 4, 16},
 			{"removed flavor", "version: 1\nflavor: pandoc\ndirectives: {enabled: false}\n", "flavor", "expected commonmark or gfm", 2, 9},
 			{"slides unavailable", availableConfiguration + "documents: {slides: ['talk/**']}\n", "documents.slides", "slide annotation is unavailable", 4, 21},
@@ -366,17 +366,17 @@ func testConfigurationStrict(t *testing.T, binary string) {
 		if run.Status != 15 || run.Result.Status != "incomplete" || run.Result.Complete || len(run.Result.CheckedFiles) != 1 {
 			t.Fatalf("valid configuration/default coverage: %+v", run)
 		}
-		md001 := false
+		md004 := false
 		for _, c := range run.Result.Coverage {
-			if c.Rule == "MD001" {
-				md001 = true
+			if c.Rule == "MD004" {
+				md004 = true
 			}
 			if c.Rule == "MD013" {
 				t.Fatal("disabled MD013 incurred coverage")
 			}
 		}
-		if !md001 {
-			t.Fatal("implicit enabled MD001 disappeared")
+		if !md004 {
+			t.Fatal("implicit enabled MD004 disappeared")
 		}
 	}
 	root := configurationProject(t)

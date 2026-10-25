@@ -8,7 +8,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production rule and correction; other named rules remain unavailable. See the [parser verification record](docs/engineering/gfm-verification.md).
+production correction; MD001 heading-increment analysis is also available. Other named rules remain unavailable. See the [parser verification record](docs/engineering/gfm-verification.md).
 
 ## Check Markdown
 
@@ -27,10 +27,10 @@ mdchk lint docs/
 
 Each finding identifies the file, line, column, rule, and a useful explanation. Findings distinguish problems that can be fixed automatically from those that need a person or agent to decide what to change.
 
-An illustrative future MD001 finding (this rule is not yet implemented):
+An MD001 finding reports the offending heading without offering a correction:
 
 ```text
-docs/guide.md:18:1 MD001: Heading jumps from level 2 to level 4. Choose the intended heading level. [manual]
+docs/guide.md:18:1 MD001: Heading level must not increase by more than one. [manual]
 ```
 
 ## Apply safe corrections
@@ -82,9 +82,9 @@ See the [result formats guide](docs/output-formats.md) for readable output, JSON
 
 mdchk provides file and directory checks, safe fixes with previews, project configuration, results for people and integrations, and a planned MCP server.
 
-The [ruleset to implement](docs/rules/index.md) defines 89 checks with stable numeric IDs and reserved gaps. Rule pages are grouped by focus area. Each page specifies behavior, default enablement, options, examples, and correction policies.
+The [ruleset to implement](docs/rules/index.md) defines 87 checks with stable numeric IDs and reserved gaps. Rule pages are grouped by focus area. Each page specifies behavior, default enablement, options, examples, and correction policies.
 
-The approved [format contracts](docs/markdown-formats.md) define CommonMark 0.31.2 and the fixed GFM profile. The [resource contract](docs/engineering/resources.md) defines bounded link/anchor lookup and standalone context. The internal CommonMark core passes all 652 specification examples in normalized and strict comparisons. CLI lint now selects and acquires immutable source snapshots, runs mandatory UTF-8 validation, parses Markdown, resolves inherited directive permissions and suppression, and executes available registered checks. It emits readable text by default or one bounded schema-v1 JSON result on stdout, including errors and partial outcomes. Lint, fix and config validate support all four reporters; inspect supports text/JSON. MD047 is the first production ordinary rule and correction, with native application bounded as above. Missing default rule implementations remain explicit coverage deficits. GFM's five extensions and independently optional opaque YAML/TOML frontmatter use the shared lint, fix and inspection pipeline. On-demand source-mapped YAML/TOML interpretation is available internally; metadata-rule/inspection integration, other ordinary and named rules, MCP integration and production rendering remain separate deliveries; see the [delivered parser contract](docs/engineering.md#delivered-commonmark-core).
+The approved [format contracts](docs/markdown-formats.md) define CommonMark 0.31.2 and the fixed GFM profile. The [resource contract](docs/engineering/resources.md) defines bounded link/anchor lookup and standalone context. The internal CommonMark core passes all 652 specification examples in normalized and strict comparisons. CLI lint now selects and acquires immutable source snapshots, runs mandatory UTF-8 validation, parses Markdown, resolves inherited directive permissions and suppression, and executes available registered checks. It emits readable text by default or one bounded schema-v1 JSON result on stdout, including errors and partial outcomes. Lint, fix and config validate support all four reporters; inspect supports text/JSON. MD047 is the first production ordinary rule and correction, with native application bounded as above. Missing default rule implementations remain explicit coverage deficits. GFM's five extensions and independently optional opaque YAML/TOML frontmatter use the shared lint, fix and inspection pipeline. On-demand source-mapped YAML/TOML interpretation is available internally; MD001 consumes exact nonblank top-level titles on opt-in; broader metadata-rule/inspection integration, other ordinary and named rules, MCP integration and production rendering remain separate deliveries; see the [delivered parser contract](docs/engineering.md#delivered-commonmark-core).
 
 Full-document formatting, prose rewriting, remote link checks, dedicated editor extensions, and third-party rules are outside mdchk's scope.
 

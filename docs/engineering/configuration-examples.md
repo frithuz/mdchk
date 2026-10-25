@@ -89,12 +89,15 @@ flavor: commonmark
 ```
 
 This configuration works with the current production executable: CommonMark
-0.31.2, directive processing and MD047 analysis/correction are available, while
-GFM is also available; other ordinary rule implementations remain unavailable. Lint parses
+0.31.2, GFM, directive processing, MD001 analysis and MD047 analysis/correction
+are available. MD001 also supports opt-in YAML/TOML title consumption with
+independently enabled header recognition. Other ordinary rule implementations
+remain unavailable. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
 as `rule-unavailable`, sets `status: incomplete` and `complete: false`, and exits
 15. The complete 87-rule catalog remains intact: MD001 is default-enabled and
-contributes coverage; MD013 is default-disabled and does not. Explicitly enabling
+executes, while unavailable default-enabled MD004 contributes coverage. MD013
+is default-disabled and does not incur a coverage penalty. Explicitly enabling
 an unavailable rule instead fails configuration admission with exit 12 before
 target processing. Text and JSON retain the same coverage and outcome.
 
