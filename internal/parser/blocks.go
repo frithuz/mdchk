@@ -23,18 +23,19 @@ type blockLine struct {
 type blockStartHook func(blockLine, bool) bool
 
 type openBlock struct {
-	kind        Kind
-	start       int
-	last        blockLine
-	content     []Segment
-	end         int
-	markers     []Marker
-	children    []parsedBlock
-	list        *ListProperties
-	empty       bool // an item whose opening line was blank and has no later content
-	partial     bool // an unavailable suffix prevents final list interpretation
-	reference   *referenceParagraph
-	definitions []Span // non-rendered direct definition boundaries (item-only)
+	kind            Kind
+	start           int
+	last            blockLine
+	content         []Segment
+	end             int
+	markers         []Marker
+	children        []parsedBlock
+	list            *ListProperties
+	empty           bool // an item whose opening line was blank and has no later content
+	partial         bool // an unavailable suffix prevents final list interpretation
+	reference       *referenceParagraph
+	openingHashRuns []Span
+	definitions     []Span // non-rendered direct definition boundaries (item-only)
 }
 
 // Accumulation belongs exclusively to this parse. Freeze nodes once on closure;
@@ -53,6 +54,7 @@ type blockParser struct {
 	inlinePayload             bool
 	referenceSemanticsPending bool
 	referenceInterrupted      bool
+	openingHashRuns           []Span
 	deferred                  bool
 }
 
@@ -390,6 +392,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		return Pending, err
 	}
 	document.root = root
+	document.openingHashRuns = p.openingHashRuns
 	if state != Interrupted && !p.deferred {
 		sort.SliceStable(p.definitions, func(i, j int) bool {
 			meterWork(p.ctx, 1)
@@ -592,6 +595,7 @@ func (p *blockParser) appendParagraph(line blockLine) {
 	if !p.paragraphOpen() {
 		checkDepth(p.ctx, p.syntaxDepth()+1)
 		block := openBlock{kind: Paragraph, start: line.start, last: line}
+		block.openingHashRuns = p.retainOpeningHashRun(block.openingHashRuns, line)
 		if line.first == '[' {
 			block.reference = &referenceParagraph{}
 			block.reference.append(p.index.source, line)
@@ -600,6 +604,7 @@ func (p *blockParser) appendParagraph(line blockLine) {
 		return
 	}
 	paragraph := &p.stack[len(p.stack)-1]
+	paragraph.openingHashRuns = p.retainOpeningHashRun(paragraph.openingHashRuns, line)
 	if paragraph.reference != nil {
 		paragraph.reference.append(p.index.source, line)
 	}
@@ -636,6 +641,14 @@ func (p *blockParser) closeTo(depth int) error {
 		}
 		if block.kind == Paragraph {
 			p.inlinePayload = true
+			// References may have consumed leading physical lines. Setext/table
+			// promotions never reach this ordinary paragraph closure.
+			for _, run := range block.openingHashRuns {
+				meterWork(p.ctx, 1)
+				if run.Start() >= block.start {
+					p.openingHashRuns = meteredAppend(p.ctx, p.openingHashRuns, run)
+				}
+			}
 			spec.Envelope = p.index.span(block.start, block.last.next)
 			spec.Content = p.paragraphContent(block)
 			if p.extensionEnabled(tasksOnlyProfile) && len(p.stack) >= 2 {

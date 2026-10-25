@@ -243,3 +243,16 @@ spans/spelling and visible paragraph contributions. Candidate validation obtains
 both real round parses independently of producer eligibility. This is a narrow
 suffix preservation proof alongside existing exact body, protection, binding and
 directive checks, rather than a general semantic equivalence claim.
+
+
+MD018 candidate retention charges each actual paragraph line visit and at most
+seven hash-byte inspections, reserving provisional and final source records
+before append/growth. Reference extraction and final block promotion decide
+ownership before publication. Its completed opening-hash projection charges
+candidate flags, one tree/stack traversal, indexed overlap comparisons, raw-region
+filtering and output records, including copied growth prefixes. It uses the
+original operation's context, work, construction and elapsed allowance, without
+reparsing, cloning the tree or scanning the whole source per candidate. Any
+interruption withholds the complete inventory. Literal expected fixtures and
+original-allowance/authority controls verify these claims separately from full
+syntax conformance.

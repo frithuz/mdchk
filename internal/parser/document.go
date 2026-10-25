@@ -89,6 +89,7 @@ type Document struct {
 	blocksRecognized bool
 	parsedComplete   bool
 	commentOperation *operationIdentity
+	openingHashRuns  []Span // eligible physical lines with final Paragraph ownership
 }
 
 // NewDocument binds a complete source envelope to records. It validates supplied

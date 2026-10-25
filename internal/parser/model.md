@@ -1618,3 +1618,21 @@ Copies of one source share a token; separately constructed equal bytes do not.
 The zero source differs from a real empty source. Tokens expose no bytes, span
 construction, budget witness or content admission authority. They allow a
 service to retain completed facts after a stop without hashing source contents.
+
+
+## Opening-hash candidate projection
+
+`Document.OpeningHashCandidates(ctx, budget)` returns original zero-width points
+for MD018. During ordinary paragraph append, the actual blockLine retains a
+bounded one-to-six-hash lexical run only below four structural indentation
+columns. Final ordinary-paragraph closure publishes surviving runs after reference
+extraction; Setext/table promotion discards them. The completed projection uses
+one metered tree traversal and indexed run-overlap queries to exclude code/raw
+HTML/literal regions and link destinations/titles before publishing points.
+It does not infer line starts from normalized Content or change recognition,
+AST, rendering, headings or other consumers. Construction, traversal, stack
+copying and output share the original operation and source witness; a stop
+returns an error and no partial inventory. Constructed or incomplete documents
+and foreign budgets cannot establish authority. The engine's narrow
+`RuleContext.OpeningHashCandidates` bridge additionally requires reliable syntax
+and observes both callback and original operation controls.

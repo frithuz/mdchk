@@ -59,3 +59,19 @@ func (c RuleContext) FrontmatterTitle(ctx context.Context) (metadata.Title, erro
 	}
 	return decoded.Title(ctx, binding)
 }
+
+// OpeningHashCandidates projects parser-owned missing-separator points using
+// the original operation, source and allowance. Reliable syntax is required.
+func (c RuleContext) OpeningHashCandidates(ctx context.Context) (out []parser.Span, err error) {
+	if ctx == nil || c.operation == nil || c.document == nil || !c.syntaxReliable {
+		return nil, parser.ErrModel
+	}
+	owned := ruleOperation{ctx, c.operation}
+	defer func() {
+		err = errors.Join(err, owned.Err(), c.budget.ChargeWork(0))
+		if err != nil {
+			out = nil
+		}
+	}()
+	return c.document.OpeningHashCandidates(owned, c.budget)
+}

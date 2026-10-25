@@ -1,0 +1,543 @@
+[
+  {
+    "name": "plain",
+    "source": "##Install",
+    "expected": [
+      [
+        2,
+        1,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "one",
+    "source": "#5",
+    "expected": [
+      [
+        1,
+        1,
+        2
+      ]
+    ]
+  },
+  {
+    "name": "hashtag",
+    "source": "#hashtag\n",
+    "expected": [
+      [
+        1,
+        1,
+        2
+      ]
+    ]
+  },
+  {
+    "name": "three",
+    "source": "###text",
+    "expected": [
+      [
+        3,
+        1,
+        4
+      ]
+    ]
+  },
+  {
+    "name": "four",
+    "source": "####text",
+    "expected": [
+      [
+        4,
+        1,
+        5
+      ]
+    ]
+  },
+  {
+    "name": "five",
+    "source": "#####text",
+    "expected": [
+      [
+        5,
+        1,
+        6
+      ]
+    ]
+  },
+  {
+    "name": "six",
+    "source": "######text",
+    "expected": [
+      [
+        6,
+        1,
+        7
+      ]
+    ]
+  },
+  {
+    "name": "separators",
+    "source": "#\n######\n## text\n###\ttext\n# text #\n#######word\n########word",
+    "expected": []
+  },
+  {
+    "name": "escaped opening",
+    "source": "\\##text",
+    "expected": []
+  },
+  {
+    "name": "escaped next",
+    "source": "#\\#",
+    "expected": [
+      [
+        1,
+        1,
+        2
+      ]
+    ]
+  },
+  {
+    "name": "trailing hashes",
+    "source": "##text##",
+    "expected": [
+      [
+        2,
+        1,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "unicode",
+    "source": "#雪é",
+    "expected": [
+      [
+        1,
+        1,
+        2
+      ]
+    ]
+  },
+  {
+    "name": "nbsp",
+    "source": "## text",
+    "expected": [
+      [
+        2,
+        1,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "em space",
+    "source": "## text",
+    "expected": [
+      [
+        2,
+        1,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "one indent",
+    "source": " ##bad",
+    "expected": [
+      [
+        3,
+        1,
+        4
+      ]
+    ]
+  },
+  {
+    "name": "three indent",
+    "source": "   ##bad",
+    "expected": [
+      [
+        5,
+        1,
+        6
+      ]
+    ]
+  },
+  {
+    "name": "indented code",
+    "source": "    ##bad",
+    "expected": []
+  },
+  {
+    "name": "tab code",
+    "source": "\t##bad",
+    "expected": []
+  },
+  {
+    "name": "quote",
+    "source": "> ##雪",
+    "expected": [
+      [
+        4,
+        1,
+        5
+      ]
+    ]
+  },
+  {
+    "name": "nested CRLF",
+    "source": "> - ##雪\r\n",
+    "expected": [
+      [
+        6,
+        1,
+        7
+      ]
+    ]
+  },
+  {
+    "name": "partial tab quote",
+    "source": ">\t##雪",
+    "expected": [
+      [
+        4,
+        1,
+        5
+      ]
+    ]
+  },
+  {
+    "name": "partial tab list",
+    "source": "-\t##雪",
+    "expected": [
+      [
+        4,
+        1,
+        5
+      ]
+    ]
+  },
+  {
+    "name": "ordinary continuation",
+    "source": "text\n##bad",
+    "expected": [
+      [
+        7,
+        2,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "lazy quote",
+    "source": "> text\n##bad",
+    "expected": [
+      [
+        9,
+        2,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "lazy list",
+    "source": "- text\n##bad",
+    "expected": [
+      [
+        9,
+        2,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "deep paragraph",
+    "source": "text\n    ##bad\n##good",
+    "expected": [
+      [
+        17,
+        3,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "line endings",
+    "source": "##a\r\n##b\r##c\n##d",
+    "expected": [
+      [
+        2,
+        1,
+        3
+      ],
+      [
+        7,
+        2,
+        3
+      ],
+      [
+        11,
+        3,
+        3
+      ],
+      [
+        15,
+        4,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "bare endings",
+    "source": "#\r\n##\r###\n######",
+    "expected": []
+  },
+  {
+    "name": "setext",
+    "source": "##bad\n---\n\n##good",
+    "expected": [
+      [
+        13,
+        4,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "multiline setext",
+    "source": "text\n##bad\n===\n",
+    "expected": []
+  },
+  {
+    "name": "reference title",
+    "source": "[id]: /url \"title\n##bad\nend\"\n\n##good",
+    "expected": [
+      [
+        32,
+        5,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "reference destination",
+    "source": "[id]:\n##dest\n\n##good",
+    "expected": [
+      [
+        16,
+        4,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "reference remainder",
+    "source": "[id]: /url\n##good",
+    "expected": [
+      [
+        13,
+        2,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "fence neighbor",
+    "source": "```\n##bad\n```\n##good",
+    "expected": [
+      [
+        16,
+        4,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "code neighbor",
+    "source": "    ##bad\n\n##good",
+    "expected": [
+      [
+        13,
+        3,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "multiline code span",
+    "source": "text `open\n##bad\nclose`\n##good",
+    "expected": [
+      [
+        26,
+        4,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "code span boundary",
+    "source": "text `open\n##`\n##good",
+    "expected": [
+      [
+        17,
+        3,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "block html",
+    "source": "<div>\n##bad\n</div>\n\n##good",
+    "expected": [
+      [
+        22,
+        5,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "inline comment",
+    "source": "text <!-- open\n##bad\n-->\n##good",
+    "expected": [
+      [
+        27,
+        4,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "inline attribute",
+    "source": "text <a title=\"open\n##bad\nend\">\n##good",
+    "expected": [
+      [
+        34,
+        4,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "raw region",
+    "source": "text <script>\n##bad\n</script>\n##good",
+    "expected": [
+      [
+        32,
+        4,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "inline title",
+    "source": "text [a](/url \"open\n##bad\nend\")\n##good",
+    "expected": [
+      [
+        34,
+        4,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "table ownership",
+    "source": "##bad | value\n--- | ---\n\n##good",
+    "expected": [
+      [
+        2,
+        1,
+        3
+      ],
+      [
+        27,
+        4,
+        3
+      ]
+    ],
+    "gfmExpected": [
+      [
+        27,
+        4,
+        3
+      ]
+    ]
+  },
+  {
+    "name": "yaml opaque",
+    "source": "---\n##bad\n---\n##good",
+    "expected": [
+      [
+        16,
+        4,
+        3
+      ]
+    ],
+    "recognize": true,
+    "incomplete": false
+  },
+  {
+    "name": "toml opaque",
+    "source": "+++\n##bad\n+++\n##good",
+    "expected": [
+      [
+        16,
+        4,
+        3
+      ]
+    ],
+    "recognize": true,
+    "incomplete": false
+  },
+  {
+    "name": "yaml disabled setext",
+    "source": "---\n##bad\n---\n##good",
+    "expected": [
+      [
+        16,
+        4,
+        3
+      ]
+    ],
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "toml disabled",
+    "source": "+++\n##bad\n+++\n##good",
+    "expected": [
+      [
+        6,
+        2,
+        3
+      ],
+      [
+        16,
+        4,
+        3
+      ]
+    ],
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "header unterminated",
+    "source": "---\n##bad\n",
+    "expected": [],
+    "recognize": true,
+    "incomplete": true
+  },
+  {
+    "name": "metadata comment",
+    "source": "---\n# ##bad\n---\n##good",
+    "expected": [
+      [
+        18,
+        4,
+        3
+      ]
+    ],
+    "recognize": true,
+    "incomplete": false
+  }
+]

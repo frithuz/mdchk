@@ -102,7 +102,7 @@ func TestRuleContextTitleOriginalDocumentAllowance(t *testing.T) {
 }
 
 func TestRuleContextCompoundControls(t *testing.T) {
-	for _, access := range []string{"headings", "title"} {
+	for _, access := range []string{"headings", "title", "opening hashes"} {
 		operation, cancel := context.WithCancel(context.Background())
 		c := headingContext(t, "---\ntitle: Guide\n---\n# Root\n### Third\n", parser.DefaultLimits(), operation)
 		// A caller deadline, original operation cancellation and original cumulative
@@ -114,6 +114,8 @@ func TestRuleContextCompoundControls(t *testing.T) {
 		var err error
 		if access == "headings" {
 			_, err = c.Headings(caller)
+		} else if access == "opening hashes" {
+			_, err = c.OpeningHashCandidates(caller)
 		} else {
 			_, err = c.FrontmatterTitle(caller)
 		}
@@ -182,13 +184,79 @@ func TestRuleContextOriginalElapsedAllowance(t *testing.T) {
 	time.Sleep(limits.OperationTime + time.Millisecond)
 	facts, headingErr := c.Headings(context.Background())
 	title, titleErr := c.FrontmatterTitle(context.Background())
-	for _, err := range []error{headingErr, titleErr} {
+	points, pointErr := c.OpeningHashCandidates(context.Background())
+	for _, err := range []error{headingErr, titleErr, pointErr} {
 		var limit *parser.LimitExceeded
 		if !errors.As(err, &limit) || limit.Name != "operation-time" {
 			t.Fatal(err)
 		}
 	}
-	if facts != nil || title.Known {
+	if facts != nil || points != nil || title.Known {
 		t.Fatal("elapsed stop published complete facts", facts, title)
+	}
+}
+
+func TestRuleContextOpeningHashesOriginalAllowance(t *testing.T) {
+	const source = "##Root\n###Third\n"
+	for _, kind := range []string{"nodes", "work"} {
+		// Find the exact parser admission boundary from public outcomes. Projection
+		// must consume its residual allowance rather than start a fresh parse budget.
+		low, high := int64(1), int64(10000)
+		for low < high {
+			n := (low + high) / 2
+			limits := parser.DefaultLimits()
+			if kind == "nodes" {
+				limits.TotalNodes = n
+				limits.DocumentNodes = n
+			} else {
+				limits.WorkUnits = n
+			}
+			b, _ := parser.NewOperationBudget(limits)
+			fm, _ := parser.NewFrontmatterOptions(true, nil)
+			p := parser.ParseWithOptions(context.Background(), parser.NewSource([]byte(source)), b, parser.ParseOptions{Frontmatter: fm})
+			if p.Status == parser.Complete {
+				high = n
+			} else {
+				low = n + 1
+			}
+		}
+		for _, extra := range []int64{0, 10000} {
+			limits := parser.DefaultLimits()
+			if kind == "nodes" {
+				limits.TotalNodes = low + extra
+				limits.DocumentNodes = low + extra
+			} else {
+				limits.WorkUnits = low + extra
+			}
+			c := headingContext(t, source, limits, context.Background())
+			facts, err := c.OpeningHashCandidates(context.Background())
+			if extra == 0 {
+				var limit *parser.LimitExceeded
+				expected := "total-nodes"
+				if kind == "work" {
+					expected = "work-units"
+				}
+				if !errors.As(err, &limit) || limit.Name != expected || facts != nil {
+					t.Fatal("new projection allowance", facts, err)
+				}
+			} else if err != nil || len(facts) != 2 {
+				t.Fatal("sufficient original allowance failed", facts, err)
+			}
+		}
+	}
+}
+
+func TestRuleContextOpeningHashesAuthority(t *testing.T) {
+	c := headingContext(t, "##bad", parser.DefaultLimits(), context.Background())
+	points, err := c.OpeningHashCandidates(context.Background())
+	if err != nil || len(points) != 1 || points[0].Start() != 2 || points[0].SourceToken() != c.Source().Token() {
+		t.Fatal(points, err)
+	}
+	for _, invalidate := range []func(*RuleContext){func(c *RuleContext) { c.syntaxReliable = false }, func(c *RuleContext) { c.operation = nil }, func(c *RuleContext) { c.document = nil }} {
+		copy := c
+		invalidate(&copy)
+		if partial, err := copy.OpeningHashCandidates(context.Background()); err == nil || partial != nil {
+			t.Fatal(partial, err)
+		}
 	}
 }
