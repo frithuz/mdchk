@@ -32,10 +32,11 @@ type Settings struct {
 // Scope binds contexts to one existing resource operation and immutable view.
 // It creates no worker, cache, root, resource reader or allowance.
 type Scope struct {
-	operation *resource.Operation
-	view      resource.View
-	mkdocs    MkDocsPolicy
-	slides    *slidePolicy
+	operation     *resource.Operation
+	view          resource.View
+	mkdocs        MkDocsPolicy
+	slides        *slidePolicy
+	mkdocsService *resource.Service
 }
 
 func NewScope(ctx context.Context, operation *resource.Operation, view resource.View, settings Settings) (*Scope, error) {
@@ -130,6 +131,12 @@ func (s *Scope) accepts(d Document) bool {
 func (s *Scope) checkpoint(ctx context.Context, work, nodes int64) error {
 	if s == nil || s.operation == nil || ctx == nil {
 		return ErrContract
+	}
+	if owner, ok := ctx.Value(mkDocsAssemblyKey{}).(*Scope); ok && owner == s && s.mkdocsService != nil {
+		if err := s.mkdocsService.Checkpoint(ctx, work); err != nil {
+			return err
+		}
+		return s.operation.Budget().ChargeNodes(nodes)
 	}
 	// Independently observed operation and caller controls must both survive.
 	if err := errors.Join(ctx.Err(), s.operation.Context().Err(), s.operation.Budget().ChargeWork(0)); err != nil {

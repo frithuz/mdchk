@@ -626,3 +626,25 @@ consumers share the existing operation meter and observe service closure togethe
 with actual caller/operation/quota causes. It grants no resource, target or write
 authority. Derived work runs outside the service worker and observes Close at
 bounded checkpoints.
+
+### Acquired project sources and complete names
+
+`Service.AcquireSource` admits one literal key through existing first-observation
+and content validation without registering a lint target. Its opaque
+`ProjectSource` binds the actual Source, exact immutable view and service lifetime.
+Source spans and literal directory bases feed the same once-decoding normalizer
+through `Resolve`; these requests never fabricate selected Markdown Links.
+`Inspect` handles the real virtual root separately from ordinary file keys, and
+`IndexLocation` plans exactly one configured basename. Existing selected-Link,
+NoKey, Candidate/Saved and Git metadata boundaries remain in force.
+
+`ProjectSource.Enumerate` produces an opaque complete-name witness only through
+the registered confined native/supplied adapter. Native traversal uses pinned
+root-relative descriptors, exact entry names, no-follow metadata/open operations,
+identity checks, bounded one-entry batches and closed handles. It shares the
+existing acquisition gate, entry counters and operation identity/work/node/path
+limits, with no integration-level host walker or additional worker. Unavailable
+branches or changed first facts cannot prove completeness. Supplied enumeration
+never consults the host; unavailable Saved resources cannot borrow original facts.
+Names establish neither Markdown selection nor site eligibility. Immutable known
+facts remain inspectable after stop; detached collection copies consume budget.

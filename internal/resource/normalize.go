@@ -127,23 +127,27 @@ func (n *Normalizer) Normalize(link Link) (NormalizedLink, error) {
 	if !selected || !available || target.Source != link.source {
 		return NormalizedLink{}, ErrContract
 	}
+	return n.normalize(link, target, link.destination, "", false)
+}
+
+func (n *Normalizer) normalize(link Link, target Target, destination, base string, project bool) (NormalizedLink, error) {
 	o := n.view.operation
 	if err := o.Checkpoint(0); err != nil {
 		return NormalizedLink{}, err
 	}
-	if err := normalizationBound("document-bytes", int64(len(link.destination)), o.budget.Limits().DocumentBytes); err != nil {
+	if err := normalizationBound("document-bytes", int64(len(destination)), o.budget.Limits().DocumentBytes); err != nil {
 		return NormalizedLink{}, err
 	}
 	// Reserve byte inspections, decoding/copies, segment/name checks and joining
 	// before doing them. The 16x bound also covers source-key and policy scans.
-	if err := o.Checkpoint(16*(int64(len(link.destination))+int64(len(target.ResourceKey.value))) + 1); err != nil {
+	if err := o.Checkpoint(16*(int64(len(destination))+int64(len(target.ResourceKey.value))) + 1); err != nil {
 		return NormalizedLink{}, err
 	}
 	if err := o.budget.ChargeNodes(4); err != nil {
 		return NormalizedLink{}, err
 	}
 	out := NormalizedLink{normalizer: *n, link: link, class: Local, fragment: Fragment{status: FragmentAbsent}}
-	rawPath, rawFragment, hasFragment := strings.Cut(link.destination, "#")
+	rawPath, rawFragment, hasFragment := strings.Cut(destination, "#")
 	rawPath, _, _ = strings.Cut(rawPath, "?")
 	if hasFragment {
 		out.fragment = Fragment{status: FragmentUnchecked, raw: rawFragment}
@@ -180,28 +184,33 @@ func (n *Normalizer) Normalize(link Link) (NormalizedLink, error) {
 		out.class, out.problem = BlockedReference, Problem{Kind: Blocked, Message: "Encoded resource path separator is not permitted."}
 		return n.finish(out)
 	}
-	if rawPath == "" {
+	if rawPath == "" && !project {
 		// This selected-source identity is valid even outside the resource root.
 		// Never derive root membership from the report path or native cwd.
 		out.same = target.Source
 		if target.ResourceKey.value != "" {
-			if err := n.checkKey(target.ResourceKey); err != nil {
+			if err := n.checkKey(target.ResourceKey); !project && err != nil {
 				return NormalizedLink{}, err
 			}
 			out.location = Location{root: o.root, key: target.ResourceKey}
 		}
 		return n.finish(out)
 	}
-	if target.ResourceKey.value == "" {
+	if target.ResourceKey.value == "" && !project {
 		out.class, out.problem = BlockedReference, Problem{Kind: Blocked, Message: "Source has no cross-file resource namespace."}
 		return n.finish(out)
 	}
-	if err := n.checkKey(target.ResourceKey); err != nil {
+	if err := n.checkKey(target.ResourceKey); !project && err != nil {
 		return NormalizedLink{}, err
 	}
 	last := decoded[strings.LastIndexByte(decoded, '/')+1:]
-	out.directory = strings.HasSuffix(decoded, "/") || last == "." || last == ".."
-	parts, err := n.resolve(target.ResourceKey, decoded)
+	out.directory = project && rawPath == "" || strings.HasSuffix(decoded, "/") || last == "." || last == ".."
+	var parts []string
+	if project {
+		parts, err = n.resolveBase(base, decoded)
+	} else {
+		parts, err = n.resolve(target.ResourceKey, decoded)
+	}
 	if err != nil {
 		return NormalizedLink{}, err
 	}
@@ -219,7 +228,7 @@ func (n *Normalizer) Normalize(link Link) (NormalizedLink, error) {
 		out.class, out.problem = InvalidReference, Problem{Kind: MalformedReference, Message: "Invalid logical resource name."}
 		return n.finish(out)
 	}
-	if key == target.ResourceKey {
+	if !project && key == target.ResourceKey {
 		// Known selected identity needs no fresh native lookup. A directory
 		// hint still requires DirectoryType and cannot reuse file content as
 		// directory success; consumers retain the established type mismatch.
@@ -262,13 +271,17 @@ func (n *Normalizer) checkKey(key Key) error {
 // resolve maintains an explicit confined segment stack. Nil means root escape;
 // an owned nonnil empty stack denotes the virtual root. No path.Clean clamps it.
 func (n *Normalizer) resolve(source Key, decoded string) ([]string, error) {
-	o := n.view.operation
 	parent := source.value
 	if slash := strings.LastIndexByte(parent, '/'); slash >= 0 {
 		parent = parent[:slash]
 	} else {
 		parent = ""
 	}
+	return n.resolveBase(parent, decoded)
+}
+
+func (n *Normalizer) resolveBase(parent, decoded string) ([]string, error) {
+	o := n.view.operation
 	count := strings.Count(parent, "/") + 1
 	if parent == "" {
 		count = 0

@@ -455,10 +455,10 @@ func (r *FilesystemReader) read(ctx context.Context, request Request, receipt *f
 		return ObservationSpec{}, ErrContract
 	}
 	source, available, selected := request.view.Target(request.Link().Path())
-	if !selected || !available || source.Source != request.Link().Source() {
+	if !request.project && (!selected || !available || source.Source != request.Link().Source()) {
 		return ObservationSpec{}, ErrContract
 	}
-	if source.ResourceKey.value == "" {
+	if !request.project && source.ResourceKey.value == "" {
 		return filesystemBlocked("Source has no proven native resource membership."), nil
 	}
 	key := request.Key()

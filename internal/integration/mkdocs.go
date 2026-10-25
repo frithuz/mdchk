@@ -357,11 +357,21 @@ func (s *Scope) CanCheckOmissions(ctx context.Context, navigation NavigationDeci
 }
 
 type MkDocsContext struct {
-	scope      *Scope
-	status     Status
-	config     parser.Source
-	navigation NavigationDecision
-	inventory  EligibleInventory
+	scope             *Scope
+	status            Status
+	config            parser.Source
+	navigation        NavigationDecision
+	inventory         EligibleInventory
+	docsRoot          DocsRoot
+	directory         resource.Location
+	static            bool
+	complete          bool
+	configComplete    bool
+	targetsComplete   bool
+	problems          []MkDocsProblem
+	targets           []MkDocsTarget
+	configObservation resource.ObservationSpec
+	names             resource.NameInventory
 }
 
 func (c MkDocsContext) Status() Status                 { return c.status }
@@ -379,7 +389,35 @@ func (s *Scope) MkDocs(ctx context.Context) (MkDocsContext, error) {
 	if !s.mkdocs.Enabled {
 		out.status = Inactive
 	}
-	// #176 acquires and parses exact resources[config_path], with no competing
-	// standalone request DTO or host fallback. Interfaces alone grant no proof.
-	return out, nil
+	if !s.mkdocs.Enabled || s.mkdocsService == nil {
+		return out, nil
+	}
+	return s.assembleMkDocs(ctx, out)
+}
+
+// KnownCount reports retained entries without allocation or new analysis,
+// including after operation/service stop.
+func (d NavigationDecision) KnownCount() int { return len(d.entries) }
+func (d NavigationDecision) KnownEntry(index int) (NavItem, bool) {
+	if index < 0 || index >= len(d.entries) {
+		return NavItem{}, false
+	}
+	item := d.entries[index]
+	item.Children = nil
+	return item, true
+}
+func (c MkDocsContext) KnownTargetCount() int { return len(c.targets) }
+func (c MkDocsContext) KnownTarget(index int) (MkDocsTarget, bool) {
+	if index < 0 || index >= len(c.targets) {
+		return MkDocsTarget{}, false
+	}
+	return c.targets[index], true
+}
+func (c MkDocsContext) NameInventory() resource.NameInventory { return c.names }
+func (i EligibleInventory) KnownCount() int                   { return len(i.entries) }
+func (i EligibleInventory) KnownPage(index int) (EligiblePageFact, bool) {
+	if index < 0 || index >= len(i.entries) {
+		return EligiblePageFact{}, false
+	}
+	return i.entries[index], true
 }

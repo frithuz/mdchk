@@ -54,6 +54,10 @@ linters:
         configuration-adapter:
           files:
             - '!${base-path}/internal/config/**'
+            # Shared configuration YAML has a bounded, source-mapped
+            # adapter. All other integration/parser files stay denied.
+            - '!${base-path}/internal/integration/yaml_context.go'
+            - '!${base-path}/internal/integration/mkdocs_yaml.go'
           deny:
             - pkg: github.com/goccy/go-yaml
               desc: keep YAML decoding behind configuration adapters

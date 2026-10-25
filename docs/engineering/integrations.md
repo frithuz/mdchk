@@ -8,8 +8,9 @@ The shared typed context/policy boundary is implemented under
 [internal/integration](../../internal/integration/README.md). Its contract tests
 cover source/view ownership, static navigation/omission prerequisites and explicit
 slide annotation. Policy decisions do not establish acquired context. Bounded
-MkDocs acquisition/eligibility (#176), production rule consumers and end-to-end
-verification remain separate work. Interface availability alone does not
+MkDocs acquisition/eligibility is implemented by the bound context provider.
+Production rule consumers and end-to-end verification remain separate work.
+Interface availability alone does not
 advertise those runtime capabilities.
 
 ## MkDocs navigation

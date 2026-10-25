@@ -93,3 +93,45 @@ presentation remain later consumers.
 No production MD074/MD090 callbacks, findings, fixes, TOC, transport or
 writer changes are implemented here. #176 still supplies the MkDocs provider;
 later #177 must prove complete consumer journeys under these shared contracts.
+
+## Bounded MkDocs producer
+
+`Scope.WithMkDocs` immutably binds the existing operation/view to its registered
+Service. `Scope.MkDocs` acquires the literal configured resource key even with no
+selected Markdown targets. MD074 enablement is the sole activation. Config uses
+TextContent admission, with no Markdown parse, transport field, host fallback,
+plugin execution or new worker. The resulting context retains the exact acquired
+Source, original config/nav spans, docs-root plan, ordered entries and independent
+existence observations. Caller-owned returned errors retain actual I/O and all
+observed controls; source-bound interpretation problems remain typed context.
+`KnownTarget`, `KnownPage` and name-inventory accessors inspect retained immutable
+facts after stop without starting analysis. Collection copies remain budgeted.
+
+Full configuration YAML uses a bounded lexical/source adapter with a direct
+original-byte map.
+CR/CRLF normalization is mapped back to original bytes; standard tags, quoted
+payloads, aliases and Unicode locations retain their authored ranges. A narrow
+numeric-escape check rejects malformed hex digits accepted by the pinned lexer.
+Other integration files and the Markdown parser remain denied YAML imports.
+
+Missing/null nav is automatic; literal `[]` is manually empty. This is an
+intentional project override of MkDocs 1.6.1's empty-list coercion. Literal relative
+docs_dir is confined below the original resource root and never URL-decoded.
+Nav targets reuse the shared normalizer once, with a docs-subroot guard, explicit
+virtual-directory representation and exactly one configured index lookup.
+Existence accepts any regular file, including binary assets; fragment validity
+never changes that separate fact. No deployed-URL or generated-HTML inference is
+performed.
+
+For manual omission analysis the producer enumerates authorized names through the
+registered adapter, then derives private config/source/view-bound eligibility.
+Partial inputs, unavailable branches, unsupported plugins, acquisition instability
+and stops withhold completeness while preserving known names and positive targets.
+Lint selection never supplies site inventory. Pinned eligibility uses MkDocs
+1.6.1's five case-sensitive documentation suffixes, defaults, exclude/draft/
+not-in-nav priority, and destination conflicts after inclusion. Patterns compile
+once with Unicode RE2 and GitIgnoreSpec match priority, without Git parent pruning.
+The reproducible compatibility baseline is Python pathspec 0.11.1 (MkDocs declares
+`pathspec>=0.11.1`, rather than pinning a transitive version). Runtime uses no Python.
+These typed producers do not advertise CLI/MCP capability or implement MD074's
+later rule callback, findings or correction behavior.

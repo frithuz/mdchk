@@ -153,6 +153,7 @@ type RequestSpec struct {
 type requestIdentity struct{ _ byte }
 
 type Request struct {
+	project  bool // service-owned project query, never a selected Markdown Link
 	spec     RequestSpec
 	view     View
 	identity *requestIdentity

@@ -401,7 +401,7 @@ func (s *Service) readCached(ctx context.Context, q Request) (ObservationSpec, e
 	// Do not let an unproven native source or a Git self exception poison a shared
 	// ordinary resource entry or lend its authority to a different requester.
 	denied := false
-	if s.filesystem != nil {
+	if s.filesystem != nil && !q.project {
 		source, _, _ := q.view.Target(q.Link().Path())
 		denied = source.ResourceKey.value == ""
 	}
