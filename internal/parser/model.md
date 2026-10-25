@@ -1691,3 +1691,20 @@ caller controls. Failure, including the final check, withholds the inventory.
 The MD022 callback separately retains reliable earlier side findings on a later
 interruption. See [MD022 policy](../../docs/rules/headings/md022.md) and
 [accounting](../../docs/engineering/parser-limits.md).
+
+MD023 retains a private positive leaf-indentation aggregate while the block parser
+still owns each line's actual post-matched-container cursor, including partial
+tabs, lazy prefixes and deep Setext continuations. Leading reference extraction
+recomputes the aggregate from surviving retained paragraph parts. Only actual
+heading dispatch retains one original opening/underline marker; paragraph and
+table ownership publishes none. Existing HeadingFact and MD022 facts are unchanged.
+
+Private aggregate updates use the existing metered line visits; retained markers
+use metered append reservations. The narrow IndentedHeadings projection requires
+the completed original parse, source and operation. It charges each copied marker,
+record and amortized slice growth before publication and withholds the inventory
+on failure. RuleContext joins caller and originating controls; the callback
+charges each finding and retains reliable prior findings with a later error.
+There is no new parse, source, allowance, whole-document rescan or public-tree copy.
+This is finite application-work accounting, not a process memory or throughput
+guarantee. No correction provider or write authority is added. See [MD023 policy](../../docs/rules/headings/md023.md).

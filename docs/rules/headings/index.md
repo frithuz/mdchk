@@ -11,7 +11,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD020](md020.md) | Missing spaces within closed headings | Analysis implemented |
 | [MD021](md021.md) | Extra spaces within closed headings | Analysis implemented |
 | [MD022](md022.md) | Blank lines around headings | Analysis implemented |
-| [MD023](md023.md) | Indented headings | Planned |
+| [MD023](md023.md) | Indented headings | Analysis implemented |
 | [MD024](md024.md) | Repeated heading text | Planned |
 | [MD025](md025.md) | Multiple document titles | Planned |
 | [MD026](md026.md) | Punctuation at heading ends | Planned |

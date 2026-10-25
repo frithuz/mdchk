@@ -212,3 +212,20 @@ heading endpoints and adjacent blank body runs. It requires reliable complete
 syntax and the original source index, shares all original controls and withholds
 a failed inventory. MD022 consumes these facts with before/after integer minima
 and ordinary start-anchor directive filtering; it produces no correction.
+
+MD023 retains a private positive leaf-indentation aggregate while the block parser
+still owns each line's actual post-matched-container cursor, including partial
+tabs, lazy prefixes and deep Setext continuations. Leading reference extraction
+recomputes the aggregate from surviving retained paragraph parts. Only actual
+heading dispatch retains one original opening/underline marker; paragraph and
+table ownership publishes none. Existing HeadingFact and MD022 facts are unchanged.
+
+Private aggregate updates use the existing metered line visits; retained markers
+use metered append reservations. The narrow IndentedHeadings projection requires
+the completed original parse, source and operation. It charges each copied marker,
+record and amortized slice growth before publication and withholds the inventory
+on failure. RuleContext joins caller and originating controls; the callback
+charges each finding and retains reliable prior findings with a later error.
+There is no new parse, source, allowance, whole-document rescan or public-tree copy.
+This is finite application-work accounting, not a process memory or throughput
+guarantee. No correction provider or write authority is added. See [MD023 policy](../../docs/rules/headings/md023.md).

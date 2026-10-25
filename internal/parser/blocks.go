@@ -35,6 +35,7 @@ type openBlock struct {
 	partial         bool // an unavailable suffix prevents final list interpretation
 	reference       *referenceParagraph
 	openingHashRuns []Span
+	indentedHeading bool   // actual paragraph contributions, reset after reference extraction
 	definitions     []Span // non-rendered direct definition boundaries (item-only)
 }
 
@@ -54,6 +55,7 @@ type blockParser struct {
 	inlinePayload             bool
 	referenceSemanticsPending bool
 	referenceInterrupted      bool
+	indentedHeadings          []Span
 	openingHashRuns           []Span
 	deferred                  bool
 }
@@ -294,6 +296,9 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		}
 		// Promote marked, eligible paragraphs before thematic/list dispatch.
 		if setext != nil {
+			if line.indent > 0 || p.stack[len(p.stack)-1].indentedHeading {
+				p.indentedHeadings = meteredAppend(p.ctx, p.indentedHeadings, setext.spec.Markers[0].Source)
+			}
 			p.stack = p.stack[:depth]
 			p.attach(setext)
 			p.inlinePayload = true
@@ -318,6 +323,9 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		if heading != nil {
 			if err := p.closeTo(depth); err != nil {
 				return Pending, err
+			}
+			if line.indent > 0 {
+				p.indentedHeadings = meteredAppend(p.ctx, p.indentedHeadings, heading.spec.Markers[0].Source)
 			}
 			p.attach(heading)
 			if len(heading.spec.Content) != 0 {
@@ -393,6 +401,7 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 	}
 	document.root = root
 	document.openingHashRuns = p.openingHashRuns
+	document.indentedHeadings = p.indentedHeadings
 	if state != Interrupted && !p.deferred {
 		sort.SliceStable(p.definitions, func(i, j int) bool {
 			meterWork(p.ctx, 1)
@@ -594,7 +603,7 @@ func (p *blockParser) appendParagraph(line blockLine) {
 	meterWork(p.ctx, 1)
 	if !p.paragraphOpen() {
 		checkDepth(p.ctx, p.syntaxDepth()+1)
-		block := openBlock{kind: Paragraph, start: line.start, last: line}
+		block := openBlock{kind: Paragraph, start: line.start, last: line, indentedHeading: line.indent > 0}
 		block.openingHashRuns = p.retainOpeningHashRun(block.openingHashRuns, line)
 		if line.first == '[' {
 			block.reference = &referenceParagraph{}
@@ -604,6 +613,7 @@ func (p *blockParser) appendParagraph(line blockLine) {
 		return
 	}
 	paragraph := &p.stack[len(p.stack)-1]
+	paragraph.indentedHeading = paragraph.indentedHeading || line.indent > 0
 	paragraph.openingHashRuns = p.retainOpeningHashRun(paragraph.openingHashRuns, line)
 	if paragraph.reference != nil {
 		paragraph.reference.append(p.index.source, line)

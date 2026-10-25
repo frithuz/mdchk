@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing and MD022 heading blank-line analysis are also available. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis and MD023 heading indentation analysis are also available. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -171,6 +171,24 @@ finite source/line passes share original controls and never loop over configured
 minima. See [MD022 policy](rules/headings/md022.md) and
 [accounting](engineering/parser-limits.md). Automatic blank-line correction is
 future work.
+
+
+MD023 retains a private positive leaf-indentation aggregate while the block parser
+still owns each line's actual post-matched-container cursor, including partial
+tabs, lazy prefixes and deep Setext continuations. Leading reference extraction
+recomputes the aggregate from surviving retained paragraph parts. Only actual
+heading dispatch retains one original opening/underline marker; paragraph and
+table ownership publishes none. Existing HeadingFact and MD022 facts are unchanged.
+
+Private aggregate updates use the existing metered line visits; retained markers
+use metered append reservations. The narrow IndentedHeadings projection requires
+the completed original parse, source and operation. It charges each copied marker,
+record and amortized slice growth before publication and withholds the inventory
+on failure. RuleContext joins caller and originating controls; the callback
+charges each finding and retains reliable prior findings with a later error.
+There is no new parse, source, allowance, whole-document rescan or public-tree copy.
+This is finite application-work accounting, not a process memory or throughput
+guarantee. No correction provider or write authority is added. See [MD023 policy](rules/headings/md023.md).
 
 For GFM, retain original table cell counts before semantic padding or truncation, task-marker spans and spelling, strikethrough delimiter spans, and bare versus angle-delimited autolink origins. Keep filtered raw HTML protected and preserve its source. The [extension source contract](engineering/gfm-compatibility.md#extension-source-contract) defines the information shared by lint, fix, inspect, and MCP.
 
@@ -257,7 +275,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001's opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;

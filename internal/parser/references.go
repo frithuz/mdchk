@@ -409,6 +409,15 @@ func (p *blockParser) stripReferences() error {
 	}
 	first := sort.Search(len(r.parts), func(i int) bool { meterWork(p.ctx, 1); return r.parts[i].start >= offset })
 	block.start = r.parts[first].line.start
+	block.indentedHeading = false
+	for _, part := range r.parts[first:] {
+		meterWork(p.ctx, 1)
+		if interruption(p.ctx) != "" {
+			p.referenceInterrupted = true
+			return nil
+		}
+		block.indentedHeading = block.indentedHeading || part.line.indent > 0
+	}
 	block.content = nil
 	for i := first; i+1 < len(r.parts); i++ {
 		meterWork(p.ctx, 1)

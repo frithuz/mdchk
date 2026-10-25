@@ -107,3 +107,19 @@ func (c RuleContext) HeadingSpacing(ctx context.Context) (out []parser.HeadingSp
 	}()
 	return c.document.HeadingSpacing(owned, c.budget, c.index)
 }
+
+// IndentedHeadings projects original full heading markers with parser-confirmed
+// leaf indentation, using the completed original source and operation controls.
+func (c RuleContext) IndentedHeadings(ctx context.Context) (out []parser.Span, err error) {
+	if ctx == nil || c.operation == nil || c.document == nil || !c.syntaxReliable || c.document.Source().Token() != c.Source().Token() {
+		return nil, parser.ErrModel
+	}
+	owned := ruleOperation{ctx, c.operation}
+	defer func() {
+		err = errors.Join(err, owned.Err(), c.budget.ChargeWork(0))
+		if err != nil {
+			out = nil
+		}
+	}()
+	return c.document.IndentedHeadings(owned, c.budget)
+}
