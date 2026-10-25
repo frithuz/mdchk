@@ -17,8 +17,8 @@ import (
 // InputLimits are operator-owned preflight bounds, never resource tool fields.
 // DocumentBytes comes from the existing shared OperationBudget. RawBytes bounds
 // this resource argument; the transport must also bound the whole request.
-// Identities here counts explicit files/entries; inferred/queried identities are
-// additionally counted by the future inventory/acquisition adapters.
+// Identities counts explicit files/entries and, in NewSuppliedReader, distinct
+// inferred parents. Queried-identity/cache accounting belongs to the service.
 type InputLimits struct {
 	RawBytes, TotalContentBytes, TargetFiles, Identities, PathBytes, PathDepth int64
 }

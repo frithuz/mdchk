@@ -2,9 +2,9 @@
 
 Issue #249 establishes engine-facing types and fixtures. Issues #170/#250 add
 the strict supplied-input boundary and shared destination normalization. Issue
-#251 adds root selection and an internal raw native read adapter. Higher-level
-supplied-map lookup, first-observation caching, anchors, production consumers and
-coordinated fixes remain downstream. No CLI/MCP resource capability or engine rule
+#251 adds root selection and an internal raw native read adapter. Issue #252
+adds immutable partial/complete supplied-inventory lookup. First-observation
+caching, anchors, production consumers and coordinated fixes remain downstream. No CLI/MCP resource capability or engine rule
 callback is enabled by these internal APIs.
 
 A caller supplies an opaque root identity, immutable parser/index/anchor policy,
@@ -296,9 +296,78 @@ capability. Report use remains serialized by its caller. The raw reader does not
 parse anchors; later producers must still use the operation ParseOptions and
 retain validated ContentEvidence across later stops.
 
-Local Darwin native no-follow, root, stability and lifecycle tests have passed.
-Linux and Windows backends are implemented, but their hosted native execution is
-pending at this candidate stage. The required three-platform native CI suite must
-pass before completion or portability verification is recorded. Cross-vet,
-cross-compilation or a mocked backend is not that proof. No new CLI/MCP capability
-or broader native writer support is advertised by the read adapter.
+Native no-follow, root, stability and lifecycle tests passed on actual Linux,
+macOS and Windows hosts in [run 40145609610](https://github.com/frithuz/mdchk/actions/runs/40145609610),
+including real Windows symbolic links/junctions and live/closed native handle
+controls, with no native test skips. Cross-vet, cross-compilation or a mocked
+backend alone is not runtime proof. No new CLI/MCP capability or broader native
+writer support is advertised by the read adapter.
+
+
+## Supplied inventory acquisition
+
+`NewSuppliedReader(ctx, operation, input, limits)` builds an immutable logical
+index from `DecodeSupplied`'s owned `SuppliedInput`. Use the same operator input
+limits and operation budget. All submitted files seed it, including excluded
+ones. The selected subset remains explicit in `Operation`; every selected key
+and original Source must match an actual submitted seed exactly. Equal bytes in
+a different Source or a reporting ID alone cannot grant this authority. The
+selection owner must reject all-targets-excluded as usage; creating a resource
+reader does not make an empty selected set valid for lint/fix.
+
+Only positive files/directories infer parent directories. Explicit declarations
+and distinct inferred parents share the `Identities` cap, checked before retaining
+new names; the virtual root is a separate constant fact. The builder publishes
+nothing after input excess, cancellation or quota failure. Known input excess
+uses `InputError`; actual runtime stops retain their context/limit identity.
+Constructing another reader charges the existing budget rather than resetting it.
+Supplied content bytes are admitted as input once; repeated lookup charges actual
+lookup/UTF-8 validation work, not another submitted payload allowance.
+
+Lookup resolves an explicit/seeded/inferred entry, then an absent or blocked
+ancestor, then completeness. A known file ancestor proves descendants absent.
+Partial omission is Unknown; complete omission is Missing. An unavailable subtree
+stays unavailable even when complete. Negative declarations infer no parent
+existence, and a directory alone does not prove its children absent in a partial
+map. `RootDirectory(ctx, location)` accepts only a root-directory Location from
+this exact namespace. It works with the existing one-level `DirectoryIndex` plan;
+there is no empty/dot Key, recursive index search or implicit entry for the root.
+
+Files without content satisfy existence only; an explicitly empty string is real
+available zero-byte content. Completeness asserts names/types, never content.
+Existence/type checks do not request content or parse work. Nonselected implicit
+non-Markdown resources cannot gain Markdown anchor interpretation. A selected
+snapshot remains an explicit Markdown document regardless of extension. Original,
+Candidate and Saved selected resources use that exact view's snapshot, including
+an unavailable Saved resource queried from another source. Excluded seeds and
+resource-only entries keep original bytes and gain no target/write authority.
+
+Supplied names are exact literal canonical keys. They do not inherit native
+case/Unicode, Windows device/stream or trailing-name aliases. `.git` components
+are blocked for resource lookup; distinct `.GIT` is literal data. The decoder does
+not reject these names merely because lookup policy blocks a resource. An
+independently selected source retains its own same-document snapshot authority.
+No call reads server files, fetches URLs, decodes keys again, parses Markdown,
+executes directives or traverses outgoing links. There is no cross-call cache or
+first-observation/singleflight service; those belong to #253. Complete navigation
+inventory consumers, anchors, MCP transport and coordinated fix overlays remain
+later integrations.
+
+`Read(ctx, request)` returns an ObservationSpec and an independent controlled
+runtime error. Bind the spec with `Operation.Record` and retain any returned error
+using `SuppliedStop` in `reader.AppendEffects(&out, view, observations, stops)`.
+Call once for the complete view batch, then use the existing finalizer. Do not
+also project the same observations through `View.AppendEffects`. A late stop can
+accompany known Directory/Missing or already acquired content: it must not be
+stuffed into an invalid spec, erased, or turned into I/O. The effects method keeps
+the stop even when the request's capability is already satisfied. Context deficits
+appear only for actual unresolved requests, never merely because the inventory
+is partial. Missing/type treatment stays MD057-owned and MD051-inapplicable.
+
+Projection validates all observations and stop carriers before result mutation.
+The caller retains result/slice ownership and serializes mutation. Different
+readers/views and fresh results reusing the same caller variable can interleave;
+there is no mutable reader projection state or saved Result pointer. Each complete
+batch scans existing cause IDs once and processes that batch incrementally; it
+is not a persistent indexed report service. Root-only planning errors have no
+source Request and remain the caller's operation-level interruption handoff.

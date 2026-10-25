@@ -16,8 +16,11 @@ and their end-to-end verification remain pending. Issue #251 adds internal raw
 native acquisition counters for path/depth, directory entries, actual content
 bytes and bounded retries using the existing operation budget. It does not enable
 CLI/MCP resource lookup; cache/service composition and complete replacement-overlay
-admission remain downstream. Its Linux/Windows hosted native checks are still a
-required delivery gate at this candidate stage.
+admission remain downstream. Its native Linux/macOS/Windows checks passed in
+[run 40145609610](https://github.com/frithuz/mdchk/actions/runs/40145609610).
+Issue #252 bounds supplied-index construction, including distinct inferred parent
+identities, with the same operation work/node/time budgets. It adds no lookup
+cache/service or CLI/MCP resource capability.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
 

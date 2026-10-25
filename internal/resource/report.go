@@ -15,6 +15,10 @@ import (
 // Resource errors are deduplicated by resource identity and failure kind, while
 // every affected source link retains its own coverage and explicit cause link.
 func (v View) AppendEffects(out *result.Result, observations []Observation) error {
+	return v.appendEffects(out, observations, nil)
+}
+
+func (v View) appendEffects(out *result.Result, observations []Observation, additional map[*requestIdentity]Problem) error {
 	if v.operation == nil || v.identity == nil || out == nil {
 		return ErrContract
 	}
@@ -45,21 +49,17 @@ func (v View) AppendEffects(out *result.Result, observations []Observation) erro
 	}
 	errorsByIdentity := map[string]string{}
 	stops := map[string]string{}
-	for _, o := range observations {
-		var causeID string
-		problem := o.problem
-		identity := o.request.Key().String() + "\x00" + string(problem.Kind)
+	project := func(key string, problem Problem) string {
+		identity := key + "\x00" + string(problem.Kind)
 		switch problem.Kind {
-		case NoProblem, PartialInventory, MalformedReference, Blocked, NotSupplied, ParserUncertain:
-			// Unavailable context is coverage, not an invented operational failure.
 		case ReadFailure, DecodeFailure:
 			id := errorsByIdentity[identity]
 			if id == "" {
 				id = nextID("resource-error")
 				errorsByIdentity[identity] = id
-				out.Errors = append(out.Errors, result.Error{ID: id, Category: result.IO, Scope: "operation", Code: string(problem.Kind), Message: problem.Message, Path: o.request.Key().String()})
+				out.Errors = append(out.Errors, result.Error{ID: id, Category: result.IO, Scope: "operation", Code: string(problem.Kind), Message: problem.Message, Path: key})
 			}
-			causeID = id
+			return id
 		case Cancelled, Deadline, Limited:
 			id := stops[identity]
 			if id == "" {
@@ -68,15 +68,22 @@ func (v View) AppendEffects(out *result.Result, observations []Observation) erro
 				p := copyProblem(problem)
 				out.Interruptions = append(out.Interruptions, result.Interruption{ID: id, Reason: string(problem.Kind), Phase: "acquisition", Message: p.Message, Limit: p.Limit})
 			}
-			causeID = id
+			return id
+		default:
+			return ""
+		}
+	}
+	for _, o := range observations {
+		var causeIDs []string
+		for _, problem := range []Problem{o.problem, additional[o.request.identity]} {
+			if id := project(o.request.Key().String(), problem); id != "" && !slices.Contains(causeIDs, id) {
+				causeIDs = append(causeIDs, id)
+			}
 		}
 		if o.Treatment() == ContextIncomplete {
 			origin := o.request.Link()
 			location, snapshot := o.request.location, o.request.snapshot
-			coverage := result.Coverage{Path: origin.path, Rule: origin.rule, Range: &location, Snapshot: &snapshot, Reason: result.ContextUnavailable, Message: "Required resource context is unavailable."}
-			if causeID != "" {
-				coverage.CauseIDs = []string{causeID}
-			}
+			coverage := result.Coverage{Path: origin.path, Rule: origin.rule, Range: &location, Snapshot: &snapshot, Reason: result.ContextUnavailable, Message: "Required resource context is unavailable.", CauseIDs: causeIDs}
 			out.Coverage = append(out.Coverage, coverage)
 		}
 	}

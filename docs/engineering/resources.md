@@ -8,11 +8,12 @@ observation and immutable view contracts with result/coverage fixtures in
 strict supplied-inventory input boundary and embeddable schema. Issue #250 adds
 shared destination normalization, independent fragment facts and a one-level index
 plan. Issue #251 adds internal root selection and raw native read acquisition.
-Supplied inventory lookup, first-observation cache, anchors, production consumers
-and MCP argument integration remain pending; these internal APIs do not advertise
-CLI/MCP resource lookup as implemented. Local native validation is Darwin-only at
-this candidate stage; Linux/Windows hosted execution remains a required delivery
-gate before portability verification or task completion.
+Issue #252 adds immutable partial/complete supplied-inventory lookup. The
+first-observation cache, anchors, production consumers and MCP argument integration
+remain pending; these internal APIs do not advertise CLI/MCP resource lookup as
+implemented. The native #251 acquisition tests passed on actual Linux/macOS/Windows
+hosts in [run 40145609610](https://github.com/frithuz/mdchk/actions/runs/40145609610),
+with no native skips. Native read validation does not expand write support.
 
 Resource lookup is read-only, confined, and shared by CLI, inspect, project MCP,
 and standalone consumers. Lint selection is separate from resource permission.
