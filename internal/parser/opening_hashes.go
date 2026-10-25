@@ -41,6 +41,40 @@ func (d *Document) OpeningHashCandidates(ctx context.Context, budget *OperationB
 		return nil, errors.New("opening hashes require a completed parse in this operation")
 	}
 	runs := d.openingHashRuns
+	excluded, err := d.protectedHashRuns(ctx, budget, runs)
+	if err != nil {
+		return nil, err
+	}
+	var out []Span
+	for i, run := range runs {
+		if err := headingFactCharge(ctx, budget, 1, 1); err != nil {
+			return nil, err
+		}
+		if !excluded[i] {
+			point, _ := d.Source().Span(run.End(), run.End())
+			if err := openingHashGrowth(ctx, budget, len(out), cap(out)); err != nil {
+				return nil, err
+			}
+			out = append(out, point)
+		}
+	}
+	if err := headingFactCharge(ctx, budget, 0, 0); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// Record reservations precede append; growth additionally copies the old prefix.
+func openingHashGrowth(ctx context.Context, budget *OperationBudget, length, capacity int) error {
+	if length == capacity {
+		return headingFactCharge(ctx, budget, int64(length), 0)
+	}
+	return nil
+}
+
+// protectedHashRuns filters source-ordered, disjoint runs against actual opaque
+// ownership in one tree traversal, including active raw-text regions.
+func (d *Document) protectedHashRuns(ctx context.Context, budget *OperationBudget, runs []Span) ([]bool, error) {
 	if err := headingFactCharge(ctx, budget, int64(len(runs))+1, int64(len(runs))); err != nil {
 		return nil, err
 	}
@@ -136,29 +170,5 @@ func (d *Document) OpeningHashCandidates(ctx context.Context, budget *OperationB
 			return nil, err
 		}
 	}
-	var out []Span
-	for i, run := range runs {
-		if err := headingFactCharge(ctx, budget, 1, 1); err != nil {
-			return nil, err
-		}
-		if !excluded[i] {
-			point, _ := d.Source().Span(run.End(), run.End())
-			if err := openingHashGrowth(ctx, budget, len(out), cap(out)); err != nil {
-				return nil, err
-			}
-			out = append(out, point)
-		}
-	}
-	if err := headingFactCharge(ctx, budget, 0, 0); err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// Record reservations precede append; growth additionally copies the old prefix.
-func openingHashGrowth(ctx context.Context, budget *OperationBudget, length, capacity int) error {
-	if length == capacity {
-		return headingFactCharge(ctx, budget, int64(length), 0)
-	}
-	return nil
+	return excluded, nil
 }

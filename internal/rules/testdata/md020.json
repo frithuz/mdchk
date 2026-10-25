@@ -1,0 +1,515 @@
+[
+ {
+  "name": "ordinary",
+  "source": "## Install##",
+  "expected": [
+   {
+    "range": [
+     10,
+     10,
+     1,
+     11,
+     1,
+     11
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "valid closer",
+  "source": "## Install ##",
+  "expected": []
+ },
+ {
+  "name": "tab closer",
+  "source": "## Install\t##",
+  "expected": []
+ },
+ {
+  "name": "no suffix",
+  "source": "# text",
+  "expected": []
+ },
+ {
+  "name": "one unequal",
+  "source": "# text#",
+  "expected": [
+   {
+    "range": [
+     6,
+     6,
+     1,
+     7,
+     1,
+     7
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "long unequal",
+  "source": "## x########",
+  "expected": [
+   {
+    "range": [
+     4,
+     4,
+     1,
+     5,
+     1,
+     5
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "literal hashes before real closer",
+  "source": "# literal### ##",
+  "expected": []
+ },
+ {
+  "name": "empty headings",
+  "source": "#\n#   \n# ###\n## # \t",
+  "expected": []
+ },
+ {
+  "name": "invalid openers",
+  "source": "##Install##\n####### prose##\n\\# text##\ntext##\n===",
+  "expected": []
+ },
+ {
+  "name": "opening tab",
+  "source": "#\tx##",
+  "expected": [
+   {
+    "range": [
+     3,
+     3,
+     1,
+     4,
+     1,
+     4
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "one slash whole run",
+  "source": "# x\\###",
+  "expected": []
+ },
+ {
+  "name": "three slashes whole run",
+  "source": "# x\\\\\\###",
+  "expected": []
+ },
+ {
+  "name": "two slashes",
+  "source": "# x\\\\###",
+  "expected": [
+   {
+    "range": [
+     5,
+     5,
+     1,
+     6,
+     1,
+     6
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "four slashes",
+  "source": "# x\\\\\\\\###",
+  "expected": [
+   {
+    "range": [
+     7,
+     7,
+     1,
+     8,
+     1,
+     8
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "padding lf",
+  "source": "## Install## \t\n",
+  "expected": [
+   {
+    "range": [
+     10,
+     10,
+     1,
+     11,
+     1,
+     11
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "padding crlf",
+  "source": "## Install## \t\r\n",
+  "expected": [
+   {
+    "range": [
+     10,
+     10,
+     1,
+     11,
+     1,
+     11
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "padding cr",
+  "source": "## Install## \t\r",
+  "expected": [
+   {
+    "range": [
+     10,
+     10,
+     1,
+     11,
+     1,
+     11
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "padding eof",
+  "source": "## Install## \t",
+  "expected": [
+   {
+    "range": [
+     10,
+     10,
+     1,
+     11,
+     1,
+     11
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "nbsp before",
+  "source": "# x ##",
+  "expected": [
+   {
+    "range": [
+     5,
+     5,
+     1,
+     5,
+     1,
+     5
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "nbsp after",
+  "source": "# x## ",
+  "expected": []
+ },
+ {
+  "name": "nonterminal",
+  "source": "# x##tail",
+  "expected": []
+ },
+ {
+  "name": "entity is not hash",
+  "source": "# x&#35;",
+  "expected": []
+ },
+ {
+  "name": "entity before run",
+  "source": "# &#92;##",
+  "expected": [
+   {
+    "range": [
+     7,
+     7,
+     1,
+     8,
+     1,
+     8
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "actual nul",
+  "source": "# x\u0000##",
+  "expected": [
+   {
+    "range": [
+     4,
+     4,
+     1,
+     5,
+     1,
+     5
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "nested unicode",
+  "source": "> - ## 雪##",
+  "expected": [
+   {
+    "range": [
+     10,
+     10,
+     1,
+     9,
+     1,
+     9
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "partial tab",
+  "source": "-\t# x##",
+  "expected": [
+   {
+    "range": [
+     5,
+     5,
+     1,
+     6,
+     1,
+     6
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "combining preceding",
+  "source": "雪é\n\n# é##",
+  "expected": [
+   {
+    "range": [
+     13,
+     13,
+     3,
+     5,
+     3,
+     5
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "multiple cr",
+  "source": "# a##\r# b##\r",
+  "expected": [
+   {
+    "range": [
+     3,
+     3,
+     1,
+     4,
+     1,
+     4
+    ],
+    "source": ""
+   },
+   {
+    "range": [
+     9,
+     9,
+     2,
+     4,
+     2,
+     4
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "fence neighbor",
+  "source": "```\n# fake##\n```\n# real##",
+  "expected": [
+   {
+    "range": [
+     23,
+     23,
+     4,
+     7,
+     4,
+     7
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "indented code",
+  "source": "    # fake##",
+  "expected": []
+ },
+ {
+  "name": "html block",
+  "source": "<div>\n# fake##\n</div>",
+  "expected": []
+ },
+ {
+  "name": "comment block",
+  "source": "<!--\n# fake##\n-->",
+  "expected": []
+ },
+ {
+  "name": "raw text terminal protected",
+  "source": "# <script>x###",
+  "expected": []
+ },
+ {
+  "name": "raw text earlier heading region",
+  "source": "# <script>\n# hidden###\n\n# also###",
+  "expected": []
+ },
+ {
+  "name": "closed raw adjacent",
+  "source": "# <script>x</script>###",
+  "expected": [
+   {
+    "range": [
+     20,
+     20,
+     1,
+     21,
+     1,
+     21
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "code adjacent",
+  "source": "# `x`###",
+  "expected": [
+   {
+    "range": [
+     5,
+     5,
+     1,
+     6,
+     1,
+     6
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "comment adjacent",
+  "source": "# <!-- x -->###",
+  "expected": [
+   {
+    "range": [
+     12,
+     12,
+     1,
+     13,
+     1,
+     13
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "inline tag adjacent",
+  "source": "# <i>###",
+  "expected": [
+   {
+    "range": [
+     5,
+     5,
+     1,
+     6,
+     1,
+     6
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "yaml opaque",
+  "source": "---\n# fake##\n---\n# real##",
+  "expected": [
+   {
+    "range": [
+     23,
+     23,
+     4,
+     7,
+     4,
+     7
+    ],
+    "source": ""
+   }
+  ],
+  "recognize": true
+ },
+ {
+  "name": "toml opaque",
+  "source": "+++\n# fake##\n+++",
+  "expected": [],
+  "recognize": true
+ },
+ {
+  "name": "recognition disabled",
+  "source": "+++\n# real##\n+++",
+  "expected": [
+   {
+    "range": [
+     10,
+     10,
+     2,
+     7,
+     2,
+     7
+    ],
+    "source": ""
+   }
+  ]
+ },
+ {
+  "name": "unreliable header",
+  "source": "---\n# maybe##",
+  "expected": [],
+  "recognize": true,
+  "incomplete": true
+ }
+]

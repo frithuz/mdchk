@@ -1642,3 +1642,16 @@ returns an error and no partial inventory. Constructed or incomplete documents
 and foreign budgets cannot establish authority. The engine's narrow
 `RuleContext.OpeningHashCandidates` bridge additionally requires reliable syntax
 and observes both callback and original operation controls.
+
+### Terminal ATX candidate projection
+
+`Document.ClosingHashCandidates` requires the actual completed parse and its
+original operation. It projects zero-width original points before maximal raw
+terminal hash runs in open ATX headings, with no closing-width cap or matching
+requirement. Raw first/last Content bounds survive normalization contributions.
+Odd escape parity excludes the whole maximal run conservatively. Genuine closing
+markers and whole-run protected ownership exclude candidates. The shared hash
+protection traversal covers code, raw HTML/comments, link literal values and
+active raw-text regions without cloning public trees. Every scan, overlap and
+retained construction shares original work/node/time controls; interruption
+publishes no partial inventory. Existing HeadingFact fields are unchanged.

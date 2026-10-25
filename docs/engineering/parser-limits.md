@@ -263,3 +263,12 @@ Its callback reserves each bounded separator byte scan and source/span access
 before counting literal ASCII spaces. No fresh parse, source or budget is created.
 Interrupted inventory projection withholds the list; a later callback stop retains
 findings already constructed with the canonical interruption.
+
+MD020 projects terminal runs only from actual open ATX nodes. Original first/last
+Content contributions retain bounds across NUL normalization. Each backwards hash
+and backslash inspection checks the original operation and reserves work before
+reading; stack, candidate, flag, overlap and output construction are charged.
+The shared MD018/MD020 protection filter traverses actual syntax once per inventory
+and uses indexed whole-run overlaps, including active raw-text regions. No fresh
+source, parse, budget or public-tree clone is introduced. Failed projection
+withholds the inventory; late callback interruption retains reliable findings.

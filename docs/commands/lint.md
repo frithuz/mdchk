@@ -35,7 +35,7 @@ error attribution. It reports the first invalid sequence's original byte offset
 and Unicode position, retaining the original size and SHA-256 snapshot identity.
 
 The admitted plan runs the internal parser and available registered checks with
-the original source and validated options. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing and MD019 extra opening-hash spacing
+the original source and validated options. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing and MD020 missing terminal-hash spacing
 analysis are implemented; other enabled missing defaults produce real coverage deficits and
 return `15`. Disabling all ordinary rules permits a clean `0` for valid UTF-8.
 Available registered checks can return violations (`10`); interruptions retain
@@ -95,7 +95,7 @@ printf '# Example\n' > "$mdchk_demo/example.md"
 
 The compiled binary reports `incomplete` and exits `15`: this configuration admits
 the current CommonMark parser, while many enabled ordinary defaults still lack
-production implementations. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing and MD019 extra opening-hash spacing analysis are available. The catalog contains 87 entries, with 59 enabled
+production implementations. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing and MD020 missing terminal-hash spacing analysis are available. The catalog contains 87 entries, with 59 enabled
 and 28 disabled by default; the mandatory UTF-8 gate is available independently
 of ordinary checks. Explicitly requesting an unavailable rule returns `12`.
 Omitting configuration selects GFM and also retains missing default-rule coverage (`15`).

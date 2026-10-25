@@ -75,3 +75,19 @@ func (c RuleContext) OpeningHashCandidates(ctx context.Context) (out []parser.Sp
 	}()
 	return c.document.OpeningHashCandidates(owned, c.budget)
 }
+
+// ClosingHashCandidates projects parser-owned missing closing-separator points using
+// the original operation, source and allowance. Reliable syntax is required.
+func (c RuleContext) ClosingHashCandidates(ctx context.Context) (out []parser.Span, err error) {
+	if ctx == nil || c.operation == nil || c.document == nil || !c.syntaxReliable {
+		return nil, parser.ErrModel
+	}
+	owned := ruleOperation{ctx, c.operation}
+	defer func() {
+		err = errors.Join(err, owned.Err(), c.budget.ChargeWork(0))
+		if err != nil {
+			out = nil
+		}
+	}()
+	return c.document.ClosingHashCandidates(owned, c.budget)
+}

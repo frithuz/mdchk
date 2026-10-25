@@ -6,5 +6,5 @@ package rules
 import "github.com/frithuz/mdchk/internal/engine"
 
 func Registrations() []engine.Registration {
-	return []engine.Registration{{ID: "MD047", Check: terminatingNewline}, {ID: "MD001", Check: headingIncrements}, {ID: "MD003", Check: headingStyle}, {ID: "MD018", Check: openingHashSpacing}, {ID: "MD019", Check: extraOpeningHashSpaces}}
+	return []engine.Registration{{ID: "MD047", Check: terminatingNewline}, {ID: "MD001", Check: headingIncrements}, {ID: "MD003", Check: headingStyle}, {ID: "MD018", Check: openingHashSpacing}, {ID: "MD019", Check: extraOpeningHashSpaces}, {ID: "MD020", Check: closingHashSpacing}}
 }

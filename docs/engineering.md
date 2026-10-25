@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing and MD019 extra opening-hash spacing analysis are also available. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing and MD020 missing terminal-hash spacing analysis are also available. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -241,7 +241,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD018, MD019 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001's opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
