@@ -151,6 +151,39 @@ func (p Patterns) Match(name string, isDir, inBase bool) (bool, error) {
 	return p.match(name, isDir, inBase, false, nil)
 }
 
+// MatchBounded uses direct annotation matching and the shared operation meter.
+// It does not inherit matches from ancestor directories.
+func (p Patterns) MatchBounded(ctx context.Context, budget *parser.OperationBudget, name string, isDir, inBase bool) (bool, error) {
+	_, matched, err := p.MatchFirstBounded(ctx, budget, name, isDir, inBase)
+	return matched, err
+}
+
+// MatchFirstBounded additionally identifies the first matching configured pattern
+// by its zero-based index. The entire list shares one deterministic matcher bound
+// and one operation meter; no per-pattern allowance is restarted. The index is
+// meaningful only when matched is true and err is nil.
+func (p Patterns) MatchFirstBounded(ctx context.Context, budget *parser.OperationBudget, name string, isDir, inBase bool) (int, bool, error) {
+	if ctx == nil || budget == nil {
+		return 0, false, errors.New("pattern matching requires a context and operation budget")
+	}
+	charge := func(n int) error {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		return budget.ChargeWork(int64(n))
+	}
+	if err := charge(len(name) + 1); err != nil {
+		return 0, false, err
+	}
+	chargeNodes := func(n int) error {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		return budget.ChargeNodes(int64(n))
+	}
+	return p.firstMatch(name, isDir, inBase, false, charge, chargeNodes)
+}
+
 // Excludes reports a direct match or a matching ancestor directory. Thus an
 // explicitly submitted file beneath an excluded directory is still excluded.
 // Use Match for consumers such as slide annotations that need direct matching.
@@ -172,35 +205,51 @@ func (p Patterns) ExcludesBounded(ctx context.Context, budget *parser.OperationB
 	return p.match(name, isDir, inBase, true, charge)
 }
 func (p Patterns) match(name string, isDir, inBase, ancestors bool, charge func(int) error) (bool, error) {
+	_, matched, err := p.firstMatch(name, isDir, inBase, ancestors, charge, nil)
+	return matched, err
+}
+
+func (p Patterns) firstMatch(name string, isDir, inBase, ancestors bool, charge, chargeNodes func(int) error) (int, bool, error) {
 	if !inBase {
-		return false, nil
+		return 0, false, nil
 	}
 	if len(name) > MaxMatchNameBytes {
-		return false, fmt.Errorf("%w: name bytes", ErrPatternLimit)
+		return 0, false, fmt.Errorf("%w: name bytes", ErrPatternLimit)
 	}
 	if !utf8.ValidString(name) || strings.ContainsRune(name, 0) || strings.HasPrefix(name, "/") || driveQualified(name) || (name == "" && !isDir) {
-		return false, errors.New("expected a normalized relative logical entry")
+		return 0, false, errors.New("expected a normalized relative logical entry")
 	}
 	var names []string
 	if name != "" {
+		segments := strings.Count(name, "/") + 1
+		if segments > MaxMatchSegments {
+			return 0, false, fmt.Errorf("%w: name segments", ErrPatternLimit)
+		}
+		if chargeNodes != nil {
+			if err := chargeNodes(segments); err != nil {
+				return 0, false, err
+			}
+		}
 		names = strings.Split(name, "/")
-	}
-	if len(names) > MaxMatchSegments {
-		return false, fmt.Errorf("%w: name segments", ErrPatternLimit)
 	}
 	for _, s := range names {
 		if s == "" || s == "." || s == ".." {
-			return false, errors.New("expected a normalized relative logical entry")
+			return 0, false, errors.New("expected a normalized relative logical entry")
 		}
 	}
 	work := 0
-	for _, pattern := range p.patterns {
+	for i, pattern := range p.patterns {
+		if chargeNodes != nil {
+			if err := chargeNodes(2 * (len(pattern.segments) + 1)); err != nil {
+				return 0, false, err
+			}
+		}
 		matched, err := pattern.match(names, isDir, ancestors, &work, charge)
 		if err != nil || matched {
-			return matched, err
+			return i, matched, err
 		}
 	}
-	return false, nil
+	return 0, false, nil
 }
 
 // Each row memoizes reachable (pattern index, name index) states. Ancestors

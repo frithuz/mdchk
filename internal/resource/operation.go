@@ -87,7 +87,13 @@ func (o *Operation) Context() context.Context        { return o.ctx }
 func (o *Operation) Budget() *parser.OperationBudget { return o.budget }
 func (o *Operation) Root() Root                      { return o.root }
 func (o *Operation) Settings() Settings              { return o.settings }
-func (o *Operation) Targets() []Target               { return slices.Clone(o.targets) }
+
+// OwnsView tests exact operation/view ownership. It grants no acquisition,
+// inventory completeness, selected-target or write authority.
+func (o *Operation) OwnsView(v View) bool {
+	return o != nil && v.operation == o && v.identity != nil
+}
+func (o *Operation) Targets() []Target { return slices.Clone(o.targets) }
 func (o *Operation) Checkpoint(units int64) error {
 	if o == nil {
 		return ErrContract
@@ -232,6 +238,10 @@ func (v View) Target(id string) (Target, bool, bool) {
 func (v View) Same(other View) bool {
 	return v.identity != nil && v.identity == other.identity && v.operation == other.operation
 }
+
+// TargetCount supports metering a selected-target identity lookup without
+// copying the target collection. It conveys no target or resource authority.
+func (v View) TargetCount() int { return len(v.targets) }
 func (v View) Request(spec RequestSpec) (Request, error) {
 	if v.operation == nil || v.identity == nil || spec.Link.path == "" || !spec.Link.span.Present() {
 		return Request{}, ErrContract
