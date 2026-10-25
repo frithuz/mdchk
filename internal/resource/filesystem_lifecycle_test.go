@@ -435,6 +435,7 @@ func TestFilesystemLifecycleLateClosePreservesAcquiredSource(t *testing.T) {
 		file, err := open(parent, name, directory)
 		if err == nil && name == "asset.md" && !directory {
 			dataHandle = file
+			t.Cleanup(func() { filesystemCleanupHandle(t, file) })
 		}
 		return file, err
 	}
@@ -451,7 +452,7 @@ func TestFilesystemLifecycleLateClosePreservesAcquiredSource(t *testing.T) {
 	if !errors.Is(readErr, closeFailure) || spec.Existence != File || spec.Content != Available || string(spec.Source.Bytes()) != "verified resource\r\n" || dataHandle == nil {
 		t.Fatal("late cleanup error erased completed content", spec, readErr)
 	}
-	if _, err := dataHandle.Stat(); !errors.Is(err, os.ErrClosed) {
+	if err := filesystemClosedHandleProof(dataHandle); err != nil {
 		t.Fatal("real close was not performed before fault injection", err)
 	}
 	observation, err := f.operation.Record(request, spec)
@@ -490,6 +491,7 @@ func TestFilesystemLifecycleOwnedHandlesCloseOnEveryExit(t *testing.T) {
 					file, err := underlying(parent, name, directory)
 					if file != nil {
 						opened[file] = true
+						t.Cleanup(func() { filesystemCleanupHandle(t, file) })
 					}
 					return file, err
 				}
@@ -534,11 +536,75 @@ func TestFilesystemLifecycleOwnedHandlesCloseOnEveryExit(t *testing.T) {
 				if closed[file] != 1 {
 					t.Fatal("owned native handle was not closed exactly once", file.Name(), closed[file])
 				}
-				if _, err := file.Stat(); !errors.Is(err, os.ErrClosed) {
+				if err := filesystemClosedHandleProof(file); err != nil {
 					t.Fatal("an owned native handle escaped its read lifetime", file.Name(), err)
 				}
 			}
 		})
+	}
+}
+
+var errFilesystemHandleStillOpen = errors.New("native handle was still open before the closure proof")
+
+// Windows File.Stat calls GetFileType on its invalidated handle after Close;
+// that error need not wrap os.ErrClosed. A second Close does preserve the
+// portable already-closed identity. If the operation leaked a live handle, this
+// proof closes it but rejects the leak, rather than accepting an arbitrary error.
+func filesystemClosedHandleProof(file *os.File) error {
+	err := file.Close()
+	if errors.Is(err, os.ErrClosed) {
+		return nil
+	}
+	if err == nil {
+		return errFilesystemHandleStillOpen
+	}
+	return err
+}
+
+func filesystemCleanupHandle(t *testing.T, file *os.File) {
+	t.Helper()
+	if err := file.Close(); err != nil && !errors.Is(err, os.ErrClosed) {
+		t.Error("native fixture handle cleanup failed", err)
+	}
+}
+
+func TestFilesystemLifecycleClosedHandleProofRejectsLiveHandles(t *testing.T) {
+	for _, kind := range []string{"directory", "metadata", "data"} {
+		for _, closed := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/closed=%v", kind, closed), func(t *testing.T) {
+				f := newFilesystemFixture(t)
+				f.write(t, "asset.md", []byte("real native handle fixture"))
+				var file *os.File
+				var err error
+				switch kind {
+				case "directory":
+					file, err = nativeOpenChild(f.filesystem.file, ".", true)
+				case "metadata":
+					file, err = nativeOpenMetadata(f.filesystem.file, "asset.md", false)
+				case "data":
+					file, err = nativeOpenChild(f.filesystem.file, "asset.md", false)
+				}
+				if err != nil {
+					t.Fatal(err)
+				}
+				t.Cleanup(func() { filesystemCleanupHandle(t, file) })
+				if _, err := file.Stat(); err != nil {
+					t.Fatal("control handle was not initially open", err)
+				}
+				if closed {
+					if err := file.Close(); err != nil {
+						t.Fatal("real native close failed", err)
+					}
+				}
+				proofErr := filesystemClosedHandleProof(file)
+				if closed && proofErr != nil {
+					t.Fatal("proof rejected a real closed handle", proofErr)
+				}
+				if !closed && !errors.Is(proofErr, errFilesystemHandleStillOpen) {
+					t.Fatal("proof did not reject a genuinely live handle", proofErr)
+				}
+			})
+		}
 	}
 }
 
