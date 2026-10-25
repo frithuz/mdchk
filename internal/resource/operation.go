@@ -4,6 +4,7 @@ import (
 	"context"
 	"slices"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"unicode/utf8"
 
@@ -38,11 +39,13 @@ type targetState struct {
 	unavailable bool
 }
 type Operation struct {
-	ctx      context.Context
-	budget   *parser.OperationBudget
-	root     Root
-	settings Settings
-	targets  []Target
+	ctx       context.Context
+	budget    *parser.OperationBudget
+	root      Root
+	settings  Settings
+	targets   []Target
+	serviceMu sync.Mutex
+	service   *Service
 }
 type View struct {
 	operation *Operation

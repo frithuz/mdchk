@@ -425,6 +425,11 @@ func (e *FilesystemReadError) Unwrap() []error {
 }
 
 func (r *FilesystemReader) Read(ctx context.Context, request Request) (ObservationSpec, error) {
+	out, _, err := r.readReceipt(ctx, request, filesystemReceipt{})
+	return out, err
+}
+
+func (r *FilesystemReader) read(ctx context.Context, request Request, receipt *filesystemReceipt) (ObservationSpec, error) {
 	if r == nil || r.filesystem == nil || ctx == nil || request.view.operation != r.operation || request.identity == nil {
 		return ObservationSpec{}, ErrContract
 	}
@@ -476,7 +481,10 @@ func (r *FilesystemReader) Read(ctx context.Context, request Request) (Observati
 	}
 	unsupportedAnchors := request.Capability() == ParsedAnchors && !markdownResourceKey(key)
 	wantContent := request.Capability() != ExistenceOnly && request.RequiredType() != DirectoryType && !unsupportedAnchors
-	lookup, err := f.acquire(ctx, key, wantContent)
+	lookup, err := f.acquireReceipt(ctx, key, wantContent, *receipt)
+	if receipt.identity == "" && lookup.identity != "" && !lookup.policy && (lookup.existence == File || lookup.existence == Directory) && !errors.Is(err, errFilesystemUnstable) {
+		*receipt = filesystemReceipt{operation: r.operation, key: key, existence: lookup.existence, identity: lookup.identity}
+	}
 	if lookup.policy {
 		return filesystemBlocked("Native resource path is blocked or unsupported."), err
 	}
@@ -661,6 +669,10 @@ func (f *FilesystemRoot) callHook(stage, key string) error {
 }
 
 func (f *FilesystemRoot) acquire(ctx context.Context, key Key, content bool) (filesystemLookup, error) {
+	return f.acquireReceipt(ctx, key, content, filesystemReceipt{})
+}
+
+func (f *FilesystemRoot) acquireReceipt(ctx context.Context, key Key, content bool, prior filesystemReceipt) (filesystemLookup, error) {
 	if err := f.keyBound(key); err != nil {
 		return filesystemLookup{existence: Unknown}, err
 	}
@@ -672,7 +684,8 @@ func (f *FilesystemRoot) acquire(ctx context.Context, key Key, content bool) (fi
 		if err := f.budget.ChargeNodes(int64(strings.Count(key.value, "/")*8) + 12); err != nil {
 			return last, err
 		}
-		lookup, err := f.attempt(ctx, key, content)
+		lookup, err := f.attemptReceipt(ctx, key, content, prior)
+		lookup, err = retainFilesystemReceipt(prior, lookup, err)
 		// Native calls cannot be asynchronously interrupted. Observe stops even
 		// when the call itself failed, so an I/O failure cannot hide cancellation
 		// or quota exhaustion that occurred during that call or its cleanup.
@@ -702,7 +715,7 @@ func (f *FilesystemRoot) acquire(ctx context.Context, key Key, content bool) (fi
 	return last, errFilesystemUnstable
 }
 
-func (f *FilesystemRoot) attempt(ctx context.Context, key Key, content bool) (out filesystemLookup, err error) {
+func (f *FilesystemRoot) attemptReceipt(ctx context.Context, key Key, content bool, prior filesystemReceipt) (out filesystemLookup, err error) {
 	out.existence = Unknown
 	parent, err := f.cloneAnchor()
 	if err != nil {
@@ -857,6 +870,9 @@ func (f *FilesystemRoot) attempt(ctx context.Context, key Key, content bool) (ou
 			out.existence = Directory
 		} else {
 			out.existence = File
+		}
+		if prior.identity != "" && (identity != prior.identity || out.existence != prior.existence) {
+			return out, errFilesystemReceiptChanged
 		}
 		if content && out.existence == File {
 			if err := errors.Join(f.callHook("before-content-open", prefix), f.checkpoint(ctx, 0)); err != nil {

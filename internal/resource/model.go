@@ -169,7 +169,8 @@ func (r Request) View() View                 { return r.view }
 
 // Reader is the domain consumer's read-only adapter seam. Implementations must
 // honor operation context/budget and return facts, never register targets/writes.
-// Concrete confined adapters, acquisition and caching are later deliveries.
+// Concrete native/supplied adapters and Service provide acquisition and caching;
+// runtime consumer integration remains downstream.
 type Reader interface {
 	Read(context.Context, Request) (ObservationSpec, error)
 }

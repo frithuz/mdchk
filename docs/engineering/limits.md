@@ -15,12 +15,15 @@ APFS adapter. Remaining traversal, resource and MCP adapter/application limits
 and their end-to-end verification remain pending. Issue #251 adds internal raw
 native acquisition counters for path/depth, directory entries, actual content
 bytes and bounded retries using the existing operation budget. It does not enable
-CLI/MCP resource lookup; cache/service composition and complete replacement-overlay
-admission remain downstream. Its native Linux/macOS/Windows checks passed in
+CLI/MCP resource lookup; complete replacement-overlay admission remains downstream. Its native Linux/macOS/Windows checks passed in
 [run 40145609610](https://github.com/frithuz/mdchk/actions/runs/40145609610).
 Issue #252 bounds supplied-index construction, including distinct inferred parent
 identities, with the same operation work/node/time budgets. It adds no lookup
-cache/service or CLI/MCP resource capability.
+CLI/MCP resource capability. Issue #253 composes one operation-owned finite
+identity/lookup ledger and single-worker cache across both adapters. It refuses
+new admission at the cap while retaining first facts, rather than evicting and
+reopening resources. Parsed-source reuse is bounded by the same identity policy
+and shared node/work/time counters; CLI/MCP consumers remain downstream.
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
 See the [contract index](contracts.md) for related specifications and issue ownership.
 

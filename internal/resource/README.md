@@ -3,8 +3,9 @@
 Issue #249 establishes engine-facing types and fixtures. Issues #170/#250 add
 the strict supplied-input boundary and shared destination normalization. Issue
 #251 adds root selection and an internal raw native read adapter. Issue #252
-adds immutable partial/complete supplied-inventory lookup. First-observation
-caching, anchors, production consumers and coordinated fixes remain downstream. No CLI/MCP resource capability or engine rule
+adds immutable partial/complete supplied-inventory lookup. Issue #253 adds the
+operation-owned first-observation service and parsed-source cache seam. Anchors,
+production consumers and coordinated fixes remain downstream. No CLI/MCP resource capability or engine rule
 callback is enabled by these internal APIs.
 
 A caller supplies an opaque root identity, immutable parser/index/anchor policy,
@@ -70,8 +71,8 @@ Construction and request projection charge the supplied shared budget; no query
 resets it. Immutable snapshots/views/observations support concurrent reads. Result
 projection after an interruption does not create a new execution budget. The native
 adapter below implements bounded acquisition and shared operation accounting;
-first-observation retention, cache bounds, singleflight and queried-identity service
-composition remain #253. The types alone do not authenticate adapter truthfulness,
+the service below supplies first-observation retention, cache bounds, singleflight
+and queried-identity composition. The types alone do not authenticate adapter truthfulness,
 inventory completeness or native confinement. Each concrete producer owns those
 guarantees and must use the shared normalization pipeline below rather than
 reinterpret destinations.
@@ -183,8 +184,8 @@ previously returned decision.
 The exact 80-row outcome table, source/view/result fixtures and
 `FuzzNormalizeDestination` exercise this boundary. The required schema ECMAScript
 gate from #170 remains unchanged. Supplied inventory lookup, first-observation
-cache, anchor interpretation, production rule consumers and runtime resource
-capability remain downstream of normalization and raw native acquisition.
+anchor interpretation, production rule consumers and runtime resource capability
+remain downstream of normalization, raw acquisition and the operation service.
 
 Run a bounded normalization campaign with
 `GOMAXPROCS=2 go test ./internal/resource -run '^$' -fuzz '^FuzzNormalizeDestination$' -fuzztime=20s -parallel=2`.
@@ -255,8 +256,8 @@ still obey `document-bytes`. Admission of an entire candidate/saved overlay agai
 its separate aggregate limit belongs to the overlay producer/#258, not this raw
 reader. `Session` accepts a distinct operation budget and creates a new identity
 over the retained startup anchor without sharing contents, misses or settings. It
-is not a cache or an atomic whole-tree snapshot; #253 must retain first
-observations and coordinate concurrent duplicate lookups above this raw
+is not a cache or an atomic whole-tree snapshot; Service retains first
+observations and coordinates concurrent duplicate lookups above this raw
 acquisition boundary.
 
 `Read` can return a valid partial `ObservationSpec` together with an error. Keep
@@ -348,8 +349,9 @@ are blocked for resource lookup; distinct `.GIT` is literal data. The decoder do
 not reject these names merely because lookup policy blocks a resource. An
 independently selected source retains its own same-document snapshot authority.
 No call reads server files, fetches URLs, decodes keys again, parses Markdown,
-executes directives or traverses outgoing links. There is no cross-call cache or
-first-observation/singleflight service; those belong to #253. Complete navigation
+executes directives or traverses outgoing links. The raw supplied reader keeps no
+cache. The operation service below supplies first-observation/singleflight behavior;
+there is no cross-call content or settings cache. Complete navigation
 inventory consumers, anchors, MCP transport and coordinated fix overlays remain
 later integrations.
 
@@ -371,3 +373,128 @@ there is no mutable reader projection state or saved Result pointer. Each comple
 batch scans existing cause IDs once and processes that batch incrementally; it
 is not a persistent indexed report service. Root-only planning errors have no
 source Request and remain the caller's operation-level interruption handoff.
+
+
+## Operation-owned observations and parsing
+
+`NewFilesystemService(reader, limits)` or `NewSuppliedService(reader, limits)`
+registers one canonical service on the exact Operation. Repeating the same native
+root/operation or supplied reader with identical limits returns that service.
+A different adapter or policy is rejected; another wrapper cannot reset counters.
+A new operation must acquire new target/configuration snapshots and native session
+identity. The service never shares mutable content, misses or settings globally.
+
+The owner **must call Service.Close before closing the native root**. Close cancels
+and joins the single owned worker and is idempotent. Do not abandon an operation's
+service after its caller cancels: individual wait cancellation intentionally leaves
+operation-owned acquisition available to other callers. The idle worker polls the
+existing monotonic operation meter and exits on its stop or context cancellation.
+Waiting callers also poll that meter; they do not wait only on Context.Done.
+A kernel call that does not return can still delay worker shutdown and Close;
+there is no claim that a goroutine or cancellation can interrupt such a call.
+There is no per-waiter service goroutine or retained waiter registry. Flights and
+queued work are reserved before allocation and run through one operation worker.
+
+The service retains raw immutable facts/evidence, not an Observation bound to an
+earlier requesting link. Bind every returned spec through Operation.Record for
+that exact Request/View. Positive, missing, blocked, unknown and failure outcomes
+remain first observations. Resource-only originals are shared across all views;
+selected targets use exact view identities and sources, including unavailable
+Saved targets. A cached miss stays missing after external appearance. Hard-link
+logical names stay independent. A root handle is not a simultaneous tree snapshot.
+
+Existence and content are independent capabilities. Existence-only images read no
+binary bytes. The first later content read may see later bytes of the **same native
+object/type**, validated by a private operation/key receipt before data acquisition
+and the existing stable-read checks. Receipt identity does not require historical
+size/mtime equality and retains no descriptor. Replacement/deletion/type/policy
+changes refuse that upgrade while preserving prior existence and encountered IO.
+The first acquired content or content failure is retained; cache hits never reread
+it. Implicit non-Markdown anchors remain unavailable. RootDirectory uses the exact
+root Location and returns the known Directory fact plus any independent stop.
+
+ServiceLimits defaults are 5,000 submitted/selected files, 25,000 combined logical
+identities, 25,000 distinct canonical lookup keys and 8 MiB original content.
+The identity ledger is a union of keys from all targets/submitted files, supplied
+entries and inferred parents, and queried keys including misses/blocked keys.
+A no-key target counts as its own record without minting a report-derived key.
+A queried seed is not counted again. Each distinct directory/index key is a lookup.
+Known seeded excess fails preflight; runtime admission at a bound returns a typed
+interruption and refuses new work. **No authoritative fact is evicted/reopened.**
+Previously admitted facts remain retained, with the encountered stop reported.
+
+Native actual retry bytes, enumeration, work and stability attempts still consume
+the existing raw adapter counters. The native total-content policy must equal the
+service's policy; targets seed that ledger once, and the service additionally
+tracks retained logical content once. Supplied admission counts all submitted
+payloads, including excluded seeds. Hits do not count input again or perform IO;
+actual digesting, validation, parsing, request binding and wait polling remain
+metered. Per-text/path/depth and cumulative node/time bounds remain in force.
+Complete candidate/saved overlay aggregate admission remains its producer's duty.
+
+Read returns both a spec and an independently retainable error. Transfer the initial Result value to `NewServiceReport(service, initial)`, then
+append complete view batches with `owner.Append(view, observations, failures)` and
+call `owner.Finish()` before shared finalization;
+each ServiceFailure carries the matching Request and returned error. Do not also
+project that batch through a raw adapter or View.AppendEffects. Real IO and actual
+stops remain reportable even when File/Directory/Missing or acquired content
+satisfies the requested capability. Missing/type ownership stays MD057/MD051 as
+before. The caller transfers ownership of the initial result and its slices while the
+report is active, and serializes mutation. Copies share a consuming Finish guard.
+Full admission is validated before mutation; report-owned incremental cause maps
+support sparse occupied IDs, multiple readers/views and fresh results without
+retaining caller pointers or rescanning growing output for every error.
+Root-only planning stops have no Request and remain caller-owned control effects.
+
+`ParseKey(view, evidence)` and `Parse(ctx, view, evidence)` require this service's completed
+ContentEvidence returned by Read. An opaque validation witness proves that those
+bytes passed the adapter/service content admission; generic same-operation UTF-8
+validation cannot admit unrelated new payloads into derived retention. The bounded parsed-source cache key includes SHA256,
+complete immutable ParseOptions/frontmatter interpretation, parser/profile revision,
+shared anchor policy, exact Source ownership and view. Same-byte foreign sources
+cannot borrow another tree's spans or parser-budget ownership. The single worker
+runs ParseWithOptions using the exact operation settings/budget; result records are
+defensively copied and immutable Documents may be reused. Derived entries have the
+finite identity-policy cap, with additional node/work accounting before retention.
+A later parse stop cannot invalidate already completed ContentEvidence. Key hashing
+and parsing are execution work and require a live meter. This seam computes no
+heading/explicit-ID index and grants no transport, lint target or write authority.
+An exhaustive navigation inventory cannot be inferred from the queried-key cache.
+
+Native receipt/service fixtures are selected by the required TestFilesystem/
+TestNative hosted Linux/macOS/Windows matrix. Current candidate checks run locally
+on Darwin; compilation for other platforms does not prove runtime behavior. New
+hosted execution remains a delivery gate before claiming those fixtures passed.
+
+
+Service content upgrades require a proved first native receipt after a committed
+nonselected File. A partial File left by exhausted unstable acquisition has no
+such proof: content is cached unavailable, with that File and its actual IO/stop
+retained, without another data read or validation/parse admission. Initial raw
+reads, selected immutable snapshots and proved compatible upgrades are distinct.
+
+Retained error evidence has immutable canonical read/decode classification and
+messages. Reports use that classification rather than inspect a caller's mutated
+Unwrap chain. Supported mutable PathError, LinkError, SyscallError and LimitExceeded
+carriers are detached on retention and return; standard fmt wrapping and joined
+causes are preserved as finite snapshots. Changing a returned carrier's Op, paths
+or Err cannot change later cached messages, permission/context/limit provenance,
+classification or source cause links. Copies preserve standard sentinel Is and
+known carrier As inspection; copied mutable carrier pointer identity is not a
+contract. Unsupported custom errors are opaque frozen identity leaves when their
+values are comparable; custom Is/As/Unwrap callbacks are not delegated, and generic
+deep cloning of arbitrary custom state is not promised.
+
+Error metadata traversal is capped at 128 visited nodes, depth 32, 256 child edges
+and 64 KiB of copied text, with explicit boundary/repetition markers. Cycles and
+shared subgraphs cannot expand into cyclic/exponential returned traversal. Bounded
+copy work/construction is charged through the existing operation meter; post-stop
+copies reconcile already-known evidence. Canonical IO kinds/messages and cancel/deadline/limit facts (including limit
+details) are private values, copied independently of optional metadata traversal.
+Reports project every present control reason (at most cancellation, deadline and
+the first exact limit) through the shared cause index. Reports reconstruct those
+control facts even when returned inspection metadata
+is changed or cut off. Nil children and typed-nil supported carriers become
+finite metadata markers before any dereference or nil-unsafe Error call. Canonical
+operational failure remains retained even when unsupported or excessive inspection
+metadata is cut off.

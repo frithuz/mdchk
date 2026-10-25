@@ -93,7 +93,10 @@ func copyProblem(p Problem) Problem {
 // source can be retained after a later anchor stop without rescanning bytes or
 // charging an already exhausted execution budget. Zero/foreign evidence grants
 // nothing. It does not establish inventory truth, existence or parsed policy.
+type contentIdentity struct{ _ byte }
+
 type ContentEvidence struct {
+	identity  *contentIdentity
 	operation *Operation
 	source    parser.Source
 }
@@ -118,7 +121,7 @@ func (o *Operation) ValidateContent(source parser.Source) (ContentEvidence, erro
 	if err := o.Checkpoint(0); err != nil {
 		return ContentEvidence{}, err
 	}
-	return ContentEvidence{operation: o, source: source}, nil
+	return ContentEvidence{operation: o, source: source, identity: &contentIdentity{}}, nil
 }
 
 // Record binds completed evidence to its original request/view. It is also usable

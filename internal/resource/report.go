@@ -91,5 +91,5 @@ func (v View) appendEffects(out *result.Result, observations []Observation, addi
 }
 
 // Observations returns a defensive copy suitable for an immutable view owner.
-// Acquisition caching and observation coalescing are deliberately not implemented.
+// Service caches raw acquisition facts; request-bound observations are not cache entries.
 func Observations(values ...Observation) []Observation { return slices.Clone(values) }
