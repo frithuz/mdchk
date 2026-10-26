@@ -54,7 +54,7 @@ mdchk fix docs/ --dry-run --format json
 ```
 
 Text and JSON previews include proposed diffs when a registered correction
-passes shared candidate validation. MD047 final-newline correction is implemented. MD001, MD003, MD004, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 remain report-only, with no edits or previews for their findings.
+passes shared candidate validation. MD047 final-newline correction is implemented. MD001, MD003, MD004, MD005, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 remain report-only, with no edits or previews for their findings.
 Other corrections remain planned. VS Code and GitHub describe findings remaining
 in proposed content for dry runs, without diffs or raw corrected Markdown. Use
 [lint](lint.md) when highlighted locations must match files currently on disk.

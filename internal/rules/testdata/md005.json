@@ -1,0 +1,604 @@
+[
+  {
+    "Name": "published accepted",
+    "Source": "- One\n- Two",
+    "Expected": []
+  },
+  {
+    "Name": "published violation",
+    "Source": "- One\n - Two",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "aligned nonzero",
+    "Source": "  - one\n  - two",
+    "Expected": []
+  },
+  {
+    "Name": "opposite direction",
+    "Source": " - one\n- two\n- three",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "-"
+      },
+      {
+        "Range": [
+          13,
+          14,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "nested parent interleave",
+    "Source": "- one\n  - child\n   - child2\n - parent2",
+    "Expected": [
+      {
+        "Range": [
+          19,
+          20,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": "-"
+      },
+      {
+        "Range": [
+          29,
+          30,
+          4,
+          2,
+          4,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "ordered width",
+    "Source": "9. one\n10. two\n 11. three",
+    "Expected": [
+      {
+        "Range": [
+          16,
+          19,
+          3,
+          2,
+          3,
+          5
+        ],
+        "Source": "11."
+      }
+    ]
+  },
+  {
+    "Name": "ordered parenthesis",
+    "Source": "9) one\n10) two\n 11) three",
+    "Expected": [
+      {
+        "Range": [
+          16,
+          19,
+          3,
+          2,
+          3,
+          5
+        ],
+        "Source": "11)"
+      }
+    ]
+  },
+  {
+    "Name": "ordered leading zeros",
+    "Source": "001. one\n 002. two",
+    "Expected": [
+      {
+        "Range": [
+          10,
+          14,
+          2,
+          2,
+          2,
+          6
+        ],
+        "Source": "002."
+      }
+    ]
+  },
+  {
+    "Name": "ordered padding",
+    "Source": "1. one\n2.   two\n3.\n4.\tthree",
+    "Expected": []
+  },
+  {
+    "Name": "bullet padding",
+    "Source": "- one\n-   two\n-\n-\tthree",
+    "Expected": []
+  },
+  {
+    "Name": "bullet style split",
+    "Source": "- one\n* other\n + different",
+    "Expected": []
+  },
+  {
+    "Name": "ordered delimiter split",
+    "Source": "1. one\n 2) two",
+    "Expected": []
+  },
+  {
+    "Name": "intervening block split",
+    "Source": "- one\n\nparagraph\n\n - two",
+    "Expected": []
+  },
+  {
+    "Name": "quote relative",
+    "Source": "> - one\n>  - two",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "nested quote relative",
+    "Source": "- > - one\n  >  - two",
+    "Expected": [
+      {
+        "Range": [
+          15,
+          16,
+          2,
+          6,
+          2,
+          7
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "varying quote padding",
+    "Source": "> - one\n > - two",
+    "Expected": []
+  },
+  {
+    "Name": "tab nested parent",
+    "Source": "- one\n\t- child\n\t - child2\n - two",
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": "-"
+      },
+      {
+        "Range": [
+          27,
+          28,
+          4,
+          2,
+          4,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "partial quote tab",
+    "Source": ">\t- one\n>\t - two",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "empty items",
+    "Source": "-\n -",
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "task items",
+    "Source": "- [ ] one\n - [x] two",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "definition items",
+    "Source": "- [a]: /one\n - [b]: /two",
+    "Expected": [
+      {
+        "Range": [
+          13,
+          14,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "UTF8 CRLF",
+    "Source": "- é\r\n - 🐈\r\n",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "UTF8 LF",
+    "Source": "- é\n - 🐈\n",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "UTF8 CR",
+    "Source": "- é\r - 🐈\r",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "NUL content",
+    "Source": "- a\u0000\n - b",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "fenced fake",
+    "Source": "```\n- fake\n - fake\n```\n\n- one\n - two",
+    "Expected": [
+      {
+        "Range": [
+          31,
+          32,
+          7,
+          2,
+          7,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "indented code fake",
+    "Source": "    - fake\n     - fake\n\n- one\n - two",
+    "Expected": [
+      {
+        "Range": [
+          31,
+          32,
+          5,
+          2,
+          5,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "HTML fake",
+    "Source": "<div>\n- fake\n - fake\n</div>\n\n- one\n - two",
+    "Expected": [
+      {
+        "Range": [
+          36,
+          37,
+          7,
+          2,
+          7,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "comment fake",
+    "Source": "<!--\n- fake\n - fake\n-->\n- one\n - two",
+    "Expected": [
+      {
+        "Range": [
+          31,
+          32,
+          6,
+          2,
+          6,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "escaped fake",
+    "Source": "\\- fake\n\\- fake2\n\n- one\n - two",
+    "Expected": [
+      {
+        "Range": [
+          25,
+          26,
+          5,
+          2,
+          5,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "inline fake",
+    "Source": "`- fake`\n\n- one\n - two",
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          4,
+          2,
+          4,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "thematic and setext",
+    "Source": "* * *\n\ntext\n---\n\n- one\n - two",
+    "Expected": [
+      {
+        "Range": [
+          24,
+          25,
+          7,
+          2,
+          7,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "lazy continuation",
+    "Source": "- one\ncontinuation\n - two",
+    "Expected": [
+      {
+        "Range": [
+          20,
+          21,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "yaml opaque",
+    "Source": "---\n- fake\n - fake\n---\n- one\n - two",
+    "Expected": [
+      {
+        "Range": [
+          30,
+          31,
+          6,
+          2,
+          6,
+          3
+        ],
+        "Source": "-"
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "toml opaque",
+    "Source": "+++\n- fake\n - fake\n+++\n- one\n - two",
+    "Expected": [
+      {
+        "Range": [
+          30,
+          31,
+          6,
+          2,
+          6,
+          3
+        ],
+        "Source": "-"
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "yaml ordinary",
+    "Source": "---\n- fake\n - fake\n---\n- one\n - two",
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "-"
+      },
+      {
+        "Range": [
+          30,
+          31,
+          6,
+          2,
+          6,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "empty document",
+    "Source": "",
+    "Expected": []
+  },
+  {
+    "Name": "unclosed header",
+    "Source": "---\n- hidden\n - hidden",
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "same physical line groups",
+    "Source": "- - one\n   - two\n - parent",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "-"
+      },
+      {
+        "Range": [
+          18,
+          19,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  }
+]

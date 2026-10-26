@@ -509,3 +509,9 @@ final publication checks withhold unfinished inventories. MD004 selects one
 per-document first-bullet baseline before directive filtering, or an admitted
 explicit marker, and emits marker-only manual findings. It remains enabled by
 default with PlannedFix metadata; MD047 alone supplies executable corrections.
+
+MD005 consumes the same original list facts with per-analysis baseline storage.
+It reserves records and work before constructing baseline and finding storage,
+compares constant-size complete group identities and structural marker indentation,
+and withholds findings on caller/origin or sticky quota/final publication stops.
+No replacement allowance, parse or source scan is introduced.

@@ -35,7 +35,7 @@ error attribution. It reports the first invalid sequence's original byte offset
 and Unicode position, retaining the original size and SHA-256 snapshot identity.
 
 The admitted plan runs the internal parser and available registered checks with
-the original source and validated options. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD004 bullet-marker analysis, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing and MD021 closed-heading delimiter spacing
+the original source and validated options. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing and MD021 closed-heading delimiter spacing
 analysis are implemented; other enabled missing defaults produce real coverage deficits and
 return `15`. Disabling all ordinary rules permits a clean `0` for valid UTF-8.
 Available registered checks can return violations (`10`); interruptions retain
@@ -95,7 +95,7 @@ printf '# Example\n' > "$mdchk_demo/example.md"
 
 The compiled binary reports `incomplete` and exits `15`: this configuration admits
 the current CommonMark parser, while many enabled ordinary defaults still lack
-production implementations. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD004 bullet-marker analysis, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis are available. MD026, MD036, MD043, MD063, MD080, MD082, MD090 and MD093 are available but disabled by default. The catalog contains 87 entries, with 59 enabled
+production implementations. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis are available. MD026, MD036, MD043, MD063, MD080, MD082, MD090 and MD093 are available but disabled by default. The catalog contains 87 entries, with 59 enabled
 and 28 disabled by default; the mandatory UTF-8 gate is available independently
 of ordinary checks. Explicitly requesting an unavailable rule returns `12`.
 Omitting configuration selects GFM and also retains missing default-rule coverage (`15`).

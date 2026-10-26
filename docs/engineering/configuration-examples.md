@@ -89,14 +89,14 @@ flavor: commonmark
 ```
 
 This configuration works with the current production executable: CommonMark
-0.31.2, GFM, directive processing, MD001/MD003/MD004/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD090/MD093 analysis and MD047 analysis/correction
+0.31.2, GFM, directive processing, MD001/MD003/MD004/MD005/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD090/MD093 analysis and MD047 analysis/correction
 are available. MD026, MD036, MD043, MD063, MD080, MD082, MD090 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
 independently enabled header recognition. Other ordinary rule implementations
 remain unavailable. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
 as `rule-unavailable`, sets `status: incomplete` and `complete: false`, and exits
 15. The complete 87-rule catalog remains intact: MD001 is default-enabled and
-executes along with MD004, while unavailable default-enabled MD005 contributes
+executes along with MD004 and MD005, while unavailable default-enabled MD007 contributes
 coverage. MD013
 is default-disabled and does not incur a coverage penalty. Explicitly enabling
 an unavailable rule instead fails configuration admission with exit 12 before
@@ -396,3 +396,12 @@ MD004 is available and enabled by default. Its `marker` option is `consistent`
 for the whole document, including nested and directive-suppressed items. Explicit
 modes check every actual bullet. Findings select only the parsed marker byte.
 Planned correction metadata does not grant edits: analysis remains manual.
+
+## Sibling list alignment
+
+MD005 is available and enabled by default, with no rule-specific options. Each
+actual list group uses the first direct item's structural marker indentation as
+its baseline, including hidden original items. Nested groups retain independent
+baselines. Ordered width and padding changes do not shift aligned marker starts.
+Findings select the entire original bullet or ordered marker and remain manual;
+PlannedFix metadata grants no edits or previews.

@@ -424,3 +424,13 @@ final publication checks withhold unfinished inventories. MD004 selects one
 per-document first-bullet baseline before directive filtering, or an admitted
 explicit marker, and emits marker-only manual findings. It remains enabled by
 default with PlannedFix metadata; MD047 alone supplies executable corrections.
+
+MD005 reuses the same detached list facts. It compares structural marker
+indentation (`ContentIndent - MarkerWidth - Padding`) against each actual group's
+first direct item, before directive filtering. Full source-backed group spans
+retain independent nested baselines without replacing an enclosing baseline.
+Ordered-width and post-marker padding changes do not move marker starts.
+Per-analysis baseline storage, comparisons and finding growth reserve original
+work and records before construction, including aligned groups. Final checks
+withhold interrupted output. Exact full item-marker spans produce manual
+findings; default-enabled PlannedFix metadata grants no correction authority.
