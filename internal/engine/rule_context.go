@@ -144,3 +144,19 @@ func (c RuleContext) HeadingComparisonCheckpoint(ctx context.Context, work, node
 	}
 	return errors.Join(ruleOperation{ctx, c.operation}.Err(), c.budget.ChargeWork(work), c.budget.ChargeNodes(nodes))
 }
+
+// HeadingTerminals projects terminal visible scalar provenance under the actual
+// completed original parse and its shared operation allowance.
+func (c RuleContext) HeadingTerminals(ctx context.Context) (out []parser.HeadingTerminal, err error) {
+	if ctx == nil || c.operation == nil || c.document == nil || !c.syntaxReliable || c.document.Source().Token() != c.Source().Token() {
+		return nil, parser.ErrModel
+	}
+	owned := ruleOperation{ctx, c.operation}
+	defer func() {
+		err = errors.Join(err, owned.Err(), c.budget.ChargeWork(0))
+		if err != nil {
+			out = nil
+		}
+	}()
+	return c.document.HeadingTerminals(owned, c.budget)
+}

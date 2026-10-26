@@ -339,3 +339,17 @@ The callback charges each heading, each retained finding and potential slice
 copy before append through the original compound caller/operation and sticky
 work/node/elapsed controls. It uses original raw Label spans and adds no source,
 parse, index, allowance, edit or write authority. See [MD025 policy](../rules/headings/md025.md).
+
+MD026 adds HeadingTerminals, a narrow provenance projection sharing the exact
+semantic walk with HeadingFact.Visible. Existing Visible and Label contracts stay
+unchanged. It selects one final non-whitespace scalar before code/escape exclusion;
+Exact text selects original rune bytes and transformed tokens remain atomic.
+Code text participates in selection, so it cannot expose earlier punctuation.
+The projection borrows actual immutable inline segments under the completed
+original parse and allowance, charges tree/segment/rune visits and output growth,
+and withholds all facts on failure, including final publication checks.
+RuleContext joins caller and origin controls; the callback reserves scalar-set
+construction, membership and finding growth, retaining reliable prior findings
+with a late interruption. No source/parse/index/allowance/tree clone, correction
+provider or write authority is added. This is finite application-work accounting,
+not a process memory or throughput guarantee. See [MD026 policy](../rules/headings/md026.md).

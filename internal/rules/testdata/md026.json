@@ -1,0 +1,903 @@
+[
+  {
+    "Name": "published",
+    "Source": "## Installation!",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          15,
+          16,
+          1,
+          16,
+          1,
+          17
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "valid",
+    "Source": "# A",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "run",
+    "Source": "# A!?",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "?"
+      }
+    ]
+  },
+  {
+    "Name": "no fallback",
+    "Source": "# A!?",
+    "Punctuation": "!",
+    "Expected": []
+  },
+  {
+    "Name": "empty set",
+    "Source": "# A!",
+    "Punctuation": "",
+    "Expected": []
+  },
+  {
+    "Name": "unicode",
+    "Source": "# \u96ea\uff01",
+    "Punctuation": "\uff01",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          8,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\uff01"
+      }
+    ]
+  },
+  {
+    "Name": "letter",
+    "Source": "# Ab",
+    "Punctuation": "b",
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "b"
+      }
+    ]
+  },
+  {
+    "Name": "duplicates",
+    "Source": "# A!",
+    "Punctuation": "!!",
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "combining",
+    "Source": "# A!\u0301",
+    "Punctuation": "\u0301",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          6,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "\u0301"
+      }
+    ]
+  },
+  {
+    "Name": "combining blocker",
+    "Source": "# A!\u0301",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "strong",
+    "Source": "# **A!**",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "link",
+    "Source": "# [A!](u \"?\")",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "image",
+    "Source": "# ![A!](u)",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "dest",
+    "Source": "# [A](u!)",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "reference",
+    "Source": "# [A!][r]\n\n[r]: u",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "escaped",
+    "Source": "# A!\\?",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "escaped slash",
+    "Source": "# A\\\\!",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "entity",
+    "Source": "# A&#33;",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          8,
+          1,
+          4,
+          1,
+          9
+        ],
+        "Source": "&#33;"
+      }
+    ]
+  },
+  {
+    "Name": "named",
+    "Source": "# A&excl;",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          9,
+          1,
+          4,
+          1,
+          10
+        ],
+        "Source": "&excl;"
+      }
+    ]
+  },
+  {
+    "Name": "multi",
+    "Source": "# &fjlig;",
+    "Punctuation": "j",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          9,
+          1,
+          3,
+          1,
+          10
+        ],
+        "Source": "&fjlig;"
+      }
+    ]
+  },
+  {
+    "Name": "multi no fallback",
+    "Source": "# &fjlig;",
+    "Punctuation": "f",
+    "Expected": []
+  },
+  {
+    "Name": "overlay",
+    "Source": "# &NotEqualTilde;",
+    "Punctuation": "\u0338",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          17,
+          1,
+          3,
+          1,
+          18
+        ],
+        "Source": "&NotEqualTilde;"
+      }
+    ]
+  },
+  {
+    "Name": "base no fallback",
+    "Source": "# &NotEqualTilde;",
+    "Punctuation": "\u2242",
+    "Expected": []
+  },
+  {
+    "Name": "nul",
+    "Source": "# A\u0000",
+    "Punctuation": "\ufffd",
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\u0000"
+      }
+    ]
+  },
+  {
+    "Name": "replacement",
+    "Source": "# A\ufffd",
+    "Punctuation": "\ufffd",
+    "Expected": [
+      {
+        "Range": [
+          3,
+          6,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\ufffd"
+      }
+    ]
+  },
+  {
+    "Name": "unknown",
+    "Source": "# &bogus;",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          1,
+          9,
+          1,
+          10
+        ],
+        "Source": ";"
+      }
+    ]
+  },
+  {
+    "Name": "unmatched",
+    "Source": "# A`!",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "code",
+    "Source": "# A! `?`",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "code other",
+    "Source": "# A! `x`",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "after code",
+    "Source": "# `x`!",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "space code",
+    "Source": "# A! `   `",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "normalized code",
+    "Source": "# A! ` x `",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "nested code",
+    "Source": "# [**A! `?`**](u)",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "image code",
+    "Source": "# ![A! `?`](u)",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "raw tag",
+    "Source": "# A!<b>",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "comment",
+    "Source": "# A!<!-- ? -->",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "raw payload",
+    "Source": "# A!<script>?</script>",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "nbsp",
+    "Source": "# A!\u00a0",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "entity whitespace",
+    "Source": "# A!&nbsp;",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "vt",
+    "Source": "# A!\u000b",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "nel",
+    "Source": "# A!\u0085",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "ls",
+    "Source": "# A!\u2028",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "ps",
+    "Source": "# A!\u2029",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "zwsp",
+    "Source": "# A!\u200b",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "custom vt",
+    "Source": "# A!\u000b",
+    "Punctuation": "\u000b",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "\u000b"
+      }
+    ]
+  },
+  {
+    "Name": "trim configured",
+    "Source": "# A!\u00a0",
+    "Punctuation": "\u00a0",
+    "Expected": []
+  },
+  {
+    "Name": "empty",
+    "Source": "#",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "visible empty",
+    "Source": "# <!-- ! -->",
+    "Punctuation": null,
+    "Expected": []
+  },
+  {
+    "Name": "closed",
+    "Source": "# A! ##",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "setext",
+    "Source": "A!\n===",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "multiline",
+    "Source": "A\nB!\n===",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "nested",
+    "Source": "> - # \u96eaa\u0301!\r\n",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          10,
+          1,
+          11
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "gaps",
+    "Source": "> A\r\n> B!\r\n> ===",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "crlf",
+    "Source": "# A!\r\n",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "cr",
+    "Source": "# A!\r",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "protected",
+    "Source": "```\n# Fake!\n```\n\n# A!",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          20,
+          21,
+          5,
+          4,
+          5,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "indented",
+    "Source": "    # Fake!\n\n# A!",
+    "Punctuation": null,
+    "Expected": [
+      {
+        "Range": [
+          16,
+          17,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "recognized header",
+    "Source": "---\n# Fake!\n---\n# Real!",
+    "Recognize": true,
+    "Expected": [
+      {
+        "Range": [
+          22,
+          23,
+          4,
+          7,
+          4,
+          8
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "recognition off",
+    "Source": "---\n# Fake!\n---\n# Real!",
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          2,
+          7,
+          2,
+          8
+        ],
+        "Source": "!"
+      },
+      {
+        "Range": [
+          22,
+          23,
+          4,
+          7,
+          4,
+          8
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "uncertain header",
+    "Source": "---\n# Fake!",
+    "Recognize": true,
+    "Incomplete": true,
+    "Expected": []
+  },
+  {
+    "Name": "normalized multiline code",
+    "Source": "A! ` \r\n `\r\n===",
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "tab",
+    "Source": "# A\t!",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "normalized code blocker",
+    "Source": "A! ` ?\r\n `\r\n===",
+    "Expected": []
+  },
+  {
+    "Name": "strike dialect ownership",
+    "Source": "# ~~A!~~",
+    "Expected": [],
+    "GFMExpected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "raw block fake neighbor",
+    "Source": "<script>\n# Fake!\n</script>\n\n# A!",
+    "Expected": [
+      {
+        "Range": [
+          31,
+          32,
+          5,
+          4,
+          5,
+          5
+        ],
+        "Source": "!"
+      }
+    ]
+  }
+]

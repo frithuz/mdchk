@@ -166,8 +166,7 @@ func headingFactCharge(ctx context.Context, budget *OperationBudget, work, nodes
 	return budget.ChargeNodes(nodes)
 }
 
-func headingVisibleText(ctx context.Context, budget *OperationBudget, heading *Node) (string, error) {
-	var text strings.Builder
+func walkHeadingVisible(ctx context.Context, budget *OperationBudget, heading *Node, write func(*Node, string) error) error {
 	raw := ""
 	var walk func(*Node, bool) error
 	walk = func(n *Node, alt bool) error {
@@ -187,23 +186,14 @@ func headingVisibleText(ctx context.Context, budget *OperationBudget, heading *N
 		if raw != "" && !alt {
 			return nil
 		}
-		write := func(value string) error {
-			// Reserve actual scanning/copying and amortized builder growth before
-			// retaining semantic text. Existing Source/parse limits remain shared.
-			if err := headingFactCharge(ctx, budget, 3*int64(len(value))+1, 0); err != nil {
-				return err
-			}
-			_, err := text.WriteString(value)
-			return err
-		}
 		switch n.Kind() {
 		case Text, CodeSpan:
 			if !n.spec.Properties.Literal.Present {
 				return ErrModel
 			}
-			return write(n.spec.Properties.Literal.Value)
+			return write(n, n.spec.Properties.Literal.Value)
 		case SoftBreak, HardBreak:
-			return write("\n")
+			return write(n, "\n")
 		case Image:
 			alt = true
 		case Heading, Emphasis, Strong, Strike, Link:
@@ -217,7 +207,19 @@ func headingVisibleText(ctx context.Context, budget *OperationBudget, heading *N
 		}
 		return nil
 	}
-	if err := walk(heading, false); err != nil {
+	return walk(heading, false)
+}
+
+func headingVisibleText(ctx context.Context, budget *OperationBudget, heading *Node) (string, error) {
+	var text strings.Builder
+	err := walkHeadingVisible(ctx, budget, heading, func(_ *Node, value string) error {
+		if err := headingFactCharge(ctx, budget, 3*int64(len(value))+1, 0); err != nil {
+			return err
+		}
+		_, err := text.WriteString(value)
+		return err
+	})
+	if err != nil {
 		return "", err
 	}
 	return text.String(), nil

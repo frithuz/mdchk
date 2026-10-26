@@ -12,7 +12,7 @@ registered-rule execution. Build it from a checkout with
 before target access; invalid or unavailable settings return `12`. This build's
 available flavors are CommonMark and GFM; omission selects the full GFM profile.
 After preparation, target I/O and invalid UTF-8 return `13`; successful empty
-selection returns `11`. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis and MD025 multiple-title analysis are implemented; missing
+selection returns `11`. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis and MD026 heading-end punctuation analysis are implemented; MD026 is disabled by default. Missing
 enabled defaults for other rules still return `15`. Valid UTF-8 with all ordinary rules disabled can
 return clean `0`; available registered checks retain findings and coverage.
 See [lint's current implementation](commands/lint.md#current-implementation) for

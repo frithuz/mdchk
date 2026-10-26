@@ -14,7 +14,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD023](md023.md) | Indented headings | Analysis implemented |
 | [MD024](md024.md) | Repeated heading text | Analysis implemented |
 | [MD025](md025.md) | Multiple document titles | Analysis implemented |
-| [MD026](md026.md) | Punctuation at heading ends | Planned |
+| [MD026](md026.md) | Punctuation at heading ends | Analysis implemented (default disabled) |
 | [MD036](md036.md) | Emphasis used as a heading | Planned |
 | [MD041](md041.md) | Opening document heading | Planned |
 | [MD043](md043.md) | Required heading outline | Planned |
