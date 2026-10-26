@@ -1,0 +1,1506 @@
+[
+  {
+    "Name": "published",
+    "Source": "## installation guide",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "i"
+      }
+    ]
+  },
+  {
+    "Name": "accepted",
+    "Source": "## Installation guide",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "title second word",
+    "Source": "## Installation guide",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          16,
+          17,
+          1,
+          17,
+          1,
+          18
+        ],
+        "Source": "g"
+      }
+    ]
+  },
+  {
+    "Name": "title accepted",
+    "Source": "## Installation Guide",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "uppercase remainder",
+    "Source": "## INSTALLation GUIDE",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "first only sentence",
+    "Source": "# first second",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "f"
+      }
+    ]
+  },
+  {
+    "Name": "first only title",
+    "Source": "# first second",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "f"
+      }
+    ]
+  },
+  {
+    "Name": "code first consumes sentence",
+    "Source": "# `lower` guide",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "code first title",
+    "Source": "# `lower` guide",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          1,
+          11,
+          1,
+          12
+        ],
+        "Source": "g"
+      }
+    ]
+  },
+  {
+    "Name": "code digits no cased slot",
+    "Source": "# `42` installation",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          1,
+          8,
+          1,
+          9
+        ],
+        "Source": "i"
+      }
+    ]
+  },
+  {
+    "Name": "code only",
+    "Source": "# `lower`",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "code inline same word",
+    "Source": "# `lower`case",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "code latter no new initial",
+    "Source": "# Foo`lower`",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "code protected title word",
+    "Source": "# Foo `lower` Guide",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "name consumes sentence",
+    "Source": "# iPhone guide",
+    "Style": "sentence",
+    "Names": [
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "name title later",
+    "Source": "# iPhone guide",
+    "Style": "title",
+    "Names": [
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          1,
+          10,
+          1,
+          11
+        ],
+        "Source": "g"
+      }
+    ]
+  },
+  {
+    "Name": "name case mismatch",
+    "Source": "# iphone guide",
+    "Style": "sentence",
+    "Names": [
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "i"
+      }
+    ]
+  },
+  {
+    "Name": "name prefix boundary",
+    "Source": "# myiPhone",
+    "Style": "sentence",
+    "Names": [
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "m"
+      }
+    ]
+  },
+  {
+    "Name": "name suffix boundary",
+    "Source": "# iPhone_case",
+    "Style": "sentence",
+    "Names": [
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "i"
+      }
+    ]
+  },
+  {
+    "Name": "name apostrophe possessive",
+    "Source": "# iPhone's guide",
+    "Style": "sentence",
+    "Names": [
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "name curly possessive",
+    "Source": "# iPhone’s guide",
+    "Style": "sentence",
+    "Names": [
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "possessive title later",
+    "Source": "# iPhone's guide",
+    "Style": "title",
+    "Names": [
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          1,
+          12,
+          1,
+          13
+        ],
+        "Source": "g"
+      }
+    ]
+  },
+  {
+    "Name": "name exact phrase",
+    "Source": "# van Gogh guide",
+    "Style": "sentence",
+    "Names": [
+      "van Gogh"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "name phrase title later",
+    "Source": "# van Gogh guide",
+    "Style": "title",
+    "Names": [
+      "van Gogh"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          1,
+          12,
+          1,
+          13
+        ],
+        "Source": "g"
+      }
+    ]
+  },
+  {
+    "Name": "name overlap union",
+    "Source": "# van Gogh guide",
+    "Style": "title",
+    "Names": [
+      "van Gogh",
+      "Gogh guide"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "name later in list",
+    "Source": "# iPhone",
+    "Style": "sentence",
+    "Names": [
+      "other",
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "name empty no op",
+    "Source": "# lower",
+    "Style": "sentence",
+    "Names": [
+      ""
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "name literal markup",
+    "Source": "# **lower**",
+    "Style": "sentence",
+    "Names": [
+      "**lower**"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "name crosses formatting",
+    "Source": "# i**Phone**",
+    "Style": "sentence",
+    "Names": [
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "name crosses code",
+    "Source": "# i`Phone`",
+    "Style": "sentence",
+    "Names": [
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "name crosses link",
+    "Source": "# i[Phone](x)",
+    "Style": "sentence",
+    "Names": [
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "name crosses image",
+    "Source": "# i![Phone](x)",
+    "Style": "sentence",
+    "Names": [
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "name newline Setext",
+    "Source": "van\nGogh\n===",
+    "Style": "sentence",
+    "Names": [
+      "van\nGogh"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "name no heading crossing",
+    "Source": "# van\n# Gogh",
+    "Style": "sentence",
+    "Names": [
+      "van\nGogh"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "v"
+      }
+    ]
+  },
+  {
+    "Name": "name punctuation phrase",
+    "Source": "# e-bay guide",
+    "Style": "title",
+    "Names": [
+      "e-bay"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          1,
+          9,
+          1,
+          10
+        ],
+        "Source": "g"
+      }
+    ]
+  },
+  {
+    "Name": "numbers before cased",
+    "Source": "# 123abc",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "a"
+      }
+    ]
+  },
+  {
+    "Name": "title numbers before cased",
+    "Source": "# 123abc",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "a"
+      }
+    ]
+  },
+  {
+    "Name": "connector joins",
+    "Source": "# A_b",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "hyphen separates",
+    "Source": "# A-b",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "b"
+      }
+    ]
+  },
+  {
+    "Name": "em dash separates",
+    "Source": "# A—b",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "b"
+      }
+    ]
+  },
+  {
+    "Name": "apostrophe joins",
+    "Source": "# Don't stop",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          1,
+          9,
+          1,
+          10
+        ],
+        "Source": "s"
+      }
+    ]
+  },
+  {
+    "Name": "curly apostrophe joins",
+    "Source": "# Don’t Stop",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "leading apostrophe",
+    "Source": "# 'lower",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "trailing apostrophe",
+    "Source": "# A' lower",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "double apostrophe separates",
+    "Source": "# A''b",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "b"
+      }
+    ]
+  },
+  {
+    "Name": "formatting does not split",
+    "Source": "# F**oo**-bar",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          1,
+          11,
+          1,
+          12
+        ],
+        "Source": "b"
+      }
+    ]
+  },
+  {
+    "Name": "link label",
+    "Source": "# [lower](dest)",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "image alt",
+    "Source": "# ![lower](dest)",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "code in image alt",
+    "Source": "# ![`lower`](dest) guide",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          19,
+          20,
+          1,
+          20,
+          1,
+          21
+        ],
+        "Source": "g"
+      }
+    ]
+  },
+  {
+    "Name": "entity atomic",
+    "Source": "# &#97;bc",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          7,
+          1,
+          3,
+          1,
+          8
+        ],
+        "Source": "&#97;"
+      }
+    ]
+  },
+  {
+    "Name": "entity two scalars",
+    "Source": "# &fjlig;",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          9,
+          1,
+          3,
+          1,
+          10
+        ],
+        "Source": "&fjlig;"
+      }
+    ]
+  },
+  {
+    "Name": "entity name decoded once",
+    "Source": "# iPh&#111;ne",
+    "Style": "sentence",
+    "Names": [
+      "iPhone"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "option entity literal",
+    "Source": "# iPhone",
+    "Style": "sentence",
+    "Names": [
+      "iPh&#111;ne"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "i"
+      }
+    ]
+  },
+  {
+    "Name": "escape punctuation",
+    "Source": "# \\!lower",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "NUL semantic replacement",
+    "Source": "# \u0000lower",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "lower sharp s",
+    "Source": "# ßeta",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "ß"
+      }
+    ]
+  },
+  {
+    "Name": "upper unicode",
+    "Source": "# École",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "title unicode",
+    "Source": "# ǅungla",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "lower unicode",
+    "Source": "# élève",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "é"
+      }
+    ]
+  },
+  {
+    "Name": "uncased before latin",
+    "Source": "# 雪 lower",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "uncased joins word",
+    "Source": "# 雪lower",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "combining prefix",
+    "Source": "# ́lower",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "decomposed lower",
+    "Source": "# école",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "e"
+      }
+    ]
+  },
+  {
+    "Name": "uncomposed name mismatch",
+    "Source": "# école",
+    "Style": "sentence",
+    "Names": [
+      "école"
+    ],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "e"
+      }
+    ]
+  },
+  {
+    "Name": "empty heading",
+    "Source": "#",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "no headings",
+    "Source": "prose",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty source",
+    "Source": "",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "punctuation only",
+    "Source": "# !?",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "uncased only",
+    "Source": "# 雪42",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw empty",
+    "Source": "# <script>lower</script>",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw ignores lowercase prefix",
+    "Source": "# <script>lower</script>Title",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw closer restores prose",
+    "Source": "# <script>*payload</script>*lower",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          28,
+          29,
+          1,
+          29,
+          1,
+          30
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "raw image alt cannot close",
+    "Source": "# <script>![</script>](x)lower",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw code cannot close",
+    "Source": "# <script>`</script>`lower",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "HTML tag text",
+    "Source": "# <b>lower</b>",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "Setext lower",
+    "Source": "lower\n===",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          2
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "Setext title second line",
+    "Source": "Upper\nlower\n===",
+    "Style": "title",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "closed ATX",
+    "Source": "## lower ##",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "nested quote",
+    "Source": "> ## lower",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "nested list",
+    "Source": "- ## lower",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "all actual headings",
+    "Source": "# lower\n\n> ## lower",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "l"
+      },
+      {
+        "Range": [
+          14,
+          15,
+          3,
+          6,
+          3,
+          7
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "fenced fake",
+    "Source": "```\n# lower\n```\n# Upper",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "indented fake",
+    "Source": "    # lower\n\n# Upper",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw block fake",
+    "Source": "<script>\n# lower\n</script>\n\n# Upper",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "header recognized",
+    "Source": "---\ntitle: lower\n---\n# Upper",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "header only",
+    "Source": "---\ntitle: lower\n---",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "header unreliable",
+    "Source": "---\n# lower",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": true,
+    "Incomplete": true,
+    "Expected": []
+  },
+  {
+    "Name": "CRLF",
+    "Source": "# Upper\r\n## lower\r\n",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "CR",
+    "Source": "# Upper\r## lower\r",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "no final newline",
+    "Source": "# lower",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "l"
+      }
+    ]
+  },
+  {
+    "Name": "GFM strike",
+    "Source": "# ~~lower~~",
+    "Style": "sentence",
+    "Names": [],
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "l"
+      }
+    ]
+  }
+]

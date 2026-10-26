@@ -402,3 +402,19 @@ one already justified finding. No source, parse, index, budget, public tree clon
 second Visible definition, correction or write authority is introduced. These are
 finite application controls, not hard RSS or OS preemption guarantees.
 See [MD043 policy](../rules/headings/md043.md).
+
+MD063 reuses the shared heading Visible walk with independently owned scalar,
+code-owner and exact/atomic source-token records. Proper-name list storage is
+reserved before copying; immutable string bytes may be borrowed without exposing
+mutable engine options. Name protection is settled before selecting a dependent
+initial, with repeated scalar comparisons, protection writes, word visits and
+finding records charged to the original operation. Worst-case matching work is
+O(heading-scalars * names * name-scalars); retained state is linear in projected
+heading scalars and option-list entries, bounded by the original work/node/time
+allowance rather than a new name cap. Caller/origin cancellation and completed
+private parse/source/index identity remain required, including final withholding.
+Already justified earlier-heading findings follow existing late-error handling.
+No Source, parse, index, allowance, second renderer, public tree clone or correction
+authority is added. These are application accounting controls, not hard RSS or OS
+preemption guarantees.
+See [MD063 policy](../rules/headings/md063.md).

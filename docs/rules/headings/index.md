@@ -18,7 +18,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD036](md036.md) | Emphasis used as a heading | Analysis implemented (default disabled) |
 | [MD041](md041.md) | Opening document heading | Analysis implemented |
 | [MD043](md043.md) | Required heading outline | Analysis implemented (default disabled) |
-| [MD063](md063.md) | Heading capitalization | Planned |
+| [MD063](md063.md) | Heading capitalization | Analysis implemented (default disabled) |
 | [MD080](md080.md) | Colliding heading anchors | Planned |
 | [MD082](md082.md) | Sections without content | Planned |
 | [MD090](md090.md) | Horizontal rules before headings | Planned |

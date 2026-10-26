@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis and MD043 required-outline analysis are also available. MD026, MD036 and MD043 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis and MD063 heading-capitalization analysis are also available. MD026, MD036, MD043 and MD063 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -275,7 +275,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001, MD025 and MD041 opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
@@ -491,3 +491,19 @@ one already justified finding. No source, parse, index, budget, public tree clon
 second Visible definition, correction or write authority is introduced. These are
 finite application controls, not hard RSS or OS preemption guarantees.
 See [MD043 policy](rules/headings/md043.md).
+
+MD063 reuses the shared heading Visible walk with independently owned scalar,
+code-owner and exact/atomic source-token records. Proper-name list storage is
+reserved before copying; immutable string bytes may be borrowed without exposing
+mutable engine options. Name protection is settled before selecting a dependent
+initial, with repeated scalar comparisons, protection writes, word visits and
+finding records charged to the original operation. Worst-case matching work is
+O(heading-scalars * names * name-scalars); retained state is linear in projected
+heading scalars and option-list entries, bounded by the original work/node/time
+allowance rather than a new name cap. Caller/origin cancellation and completed
+private parse/source/index identity remain required, including final withholding.
+Already justified earlier-heading findings follow existing late-error handling.
+No Source, parse, index, allowance, second renderer, public tree clone or correction
+authority is added. These are application accounting controls, not hard RSS or OS
+preemption guarantees.
+See [MD063 policy](rules/headings/md063.md).
