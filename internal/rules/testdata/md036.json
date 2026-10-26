@@ -1,0 +1,786 @@
+[
+  {
+    "Name": "published",
+    "Source": "**Install**\n\nRun the command.",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          11,
+          1,
+          1,
+          1,
+          12
+        ],
+        "Source": "**Install**"
+      }
+    ]
+  },
+  {
+    "Name": "valid heading",
+    "Source": "## Install\n\nRun the command.",
+    "Expected": []
+  },
+  {
+    "Name": "strong",
+    "Source": "**A**\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "italic",
+    "Source": "*A*\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          3,
+          1,
+          1,
+          1,
+          4
+        ],
+        "Source": "*A*"
+      }
+    ]
+  },
+  {
+    "Name": "underscore",
+    "Source": "_A_\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          3,
+          1,
+          1,
+          1,
+          4
+        ],
+        "Source": "_A_"
+      }
+    ]
+  },
+  {
+    "Name": "underscore strong",
+    "Source": "__A__\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "__A__"
+      }
+    ]
+  },
+  {
+    "Name": "nested",
+    "Source": "***A***\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          7,
+          1,
+          1,
+          1,
+          8
+        ],
+        "Source": "***A***"
+      }
+    ]
+  },
+  {
+    "Name": "nested mixed",
+    "Source": "**A *B* C**\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          11,
+          1,
+          1,
+          1,
+          12
+        ],
+        "Source": "**A *B* C**"
+      }
+    ]
+  },
+  {
+    "Name": "adjacent",
+    "Source": "**A** **B**\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "prefix",
+    "Source": "prefix **A**\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "suffix",
+    "Source": "**A** suffix\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "outside comment",
+    "Source": "**A**<!--x-->\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "inside code",
+    "Source": "**`A`**\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "inside link",
+    "Source": "**[A](x)**\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "inside image",
+    "Source": "**![A](x)**\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "inside html",
+    "Source": "**<b>A</b>**\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "strike dialect",
+    "Source": "**~~A~~**\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          9,
+          1,
+          1,
+          1,
+          10
+        ],
+        "Source": "**~~A~~**"
+      }
+    ],
+    "GFMExpected": []
+  },
+  {
+    "Name": "escaped outer",
+    "Source": "\\*\\*A\\*\\*\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "unmatched",
+    "Source": "**A\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "intraword",
+    "Source": "x_A_x\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "code fake",
+    "Source": "`**A**`\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "empty",
+    "Source": "",
+    "Expected": []
+  },
+  {
+    "Name": "empty emphasis",
+    "Source": "****\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "entity whitespace",
+    "Source": "**&nbsp;**\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "entity meaningful",
+    "Source": "**&amp;**\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          9,
+          1,
+          1,
+          1,
+          10
+        ],
+        "Source": "**&amp;**"
+      }
+    ]
+  },
+  {
+    "Name": "escaped literal",
+    "Source": "**A\\!**\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          7,
+          1,
+          1,
+          1,
+          8
+        ],
+        "Source": "**A\\!**"
+      }
+    ]
+  },
+  {
+    "Name": "nul",
+    "Source": "**A\u0000**\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          6,
+          1,
+          1,
+          1,
+          7
+        ],
+        "Source": "**A\u0000**"
+      }
+    ]
+  },
+  {
+    "Name": "unicode",
+    "Source": "**\u96ea**\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          7,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "**\u96ea**"
+      }
+    ]
+  },
+  {
+    "Name": "combining",
+    "Source": "**a\u0301**\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          7,
+          1,
+          1,
+          1,
+          7
+        ],
+        "Source": "**a\u0301**"
+      }
+    ]
+  },
+  {
+    "Name": "multiline",
+    "Source": "**A**\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "multiline emphasis",
+    "Source": "**A\nB**\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "hard break",
+    "Source": "**A  \nB**\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "eof",
+    "Source": "**A**",
+    "Expected": []
+  },
+  {
+    "Name": "eof ending",
+    "Source": "**A**\n",
+    "Expected": []
+  },
+  {
+    "Name": "multiline follower",
+    "Source": "**A**\n\nBody\nmore.",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "mixed follower",
+    "Source": "**A**\n\n`x` ordinary *words*.",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "code follower",
+    "Source": "**A**\n\n`Body`",
+    "Expected": []
+  },
+  {
+    "Name": "link follower",
+    "Source": "**A**\n\n[Body](x)",
+    "Expected": []
+  },
+  {
+    "Name": "image follower",
+    "Source": "**A**\n\n![Body](x)",
+    "Expected": []
+  },
+  {
+    "Name": "raw follower",
+    "Source": "**A**\n\n<script>Body</script>",
+    "Expected": []
+  },
+  {
+    "Name": "inline raw follower",
+    "Source": "**A**\n\n<script>Body</script> tail",
+    "Expected": []
+  },
+  {
+    "Name": "inline raw only",
+    "Source": "**A**\n\n <script>Body</script>",
+    "Expected": []
+  },
+  {
+    "Name": "consecutive emphasized",
+    "Source": "**A**\n\n*B*\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          10,
+          3,
+          1,
+          3,
+          4
+        ],
+        "Source": "*B*"
+      }
+    ]
+  },
+  {
+    "Name": "intervening heading",
+    "Source": "**A**\n\n# H\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "intervening fence",
+    "Source": "**A**\n\n```\nx\n```\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "intervening list",
+    "Source": "**A**\n\n- x\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "intervening html",
+    "Source": "**A**\n\n<!--x-->\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "intervening thematic",
+    "Source": "**A**\n\n---\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "reference gap",
+    "Source": "**A**\n\n[r]: /x\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "reference gap quote",
+    "Source": "> **A**\n>\n> [r]: /x\n>\n> Body",
+    "Expected": []
+  },
+  {
+    "Name": "blank gap",
+    "Source": "**A**\n\n \t\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "quote",
+    "Source": "> **\u96ea**\n>\n> Body",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          9,
+          1,
+          3,
+          1,
+          8
+        ],
+        "Source": "**\u96ea**"
+      }
+    ]
+  },
+  {
+    "Name": "quote lazy follower",
+    "Source": "> **A**\n>\n> Body\ncontinued",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          7,
+          1,
+          3,
+          1,
+          8
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "dedent",
+    "Source": "> **A**\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "same item",
+    "Source": "- **A**\n\n  Body",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          7,
+          1,
+          3,
+          1,
+          8
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "next item",
+    "Source": "- **A**\n- Body",
+    "Expected": []
+  },
+  {
+    "Name": "nested container",
+    "Source": "**A**\n\n> Body",
+    "Expected": []
+  },
+  {
+    "Name": "gfm task",
+    "Source": "- [ ] **A**\n\n  Body",
+    "Expected": []
+  },
+  {
+    "Name": "indented",
+    "Source": "    **A**\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "fence protected",
+    "Source": "```\n**A**\n\nBody\n```",
+    "Expected": []
+  },
+  {
+    "Name": "raw block protected",
+    "Source": "<script>\n**A**\n\nBody\n</script>",
+    "Expected": []
+  },
+  {
+    "Name": "setext promotion",
+    "Source": "**A**\n===\n\nBody",
+    "Expected": []
+  },
+  {
+    "Name": "padding",
+    "Source": "  **A**  \n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          7,
+          1,
+          3,
+          1,
+          8
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "tab inside",
+    "Source": "**A\tB**\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          7,
+          1,
+          1,
+          1,
+          8
+        ],
+        "Source": "**A\tB**"
+      }
+    ]
+  },
+  {
+    "Name": "crlf",
+    "Source": "**A**\r\n\r\nBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "cr",
+    "Source": "**A**\r\rBody",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "recognized header",
+    "Source": "---\n**Fake**\n\nBody\n---\n**A**\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          23,
+          28,
+          6,
+          1,
+          6,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "recognition off",
+    "Source": "---\n**A**\n\nBody",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          9,
+          2,
+          1,
+          2,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "uncertain header",
+    "Source": "---\n**A**\n\nBody",
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "bare autolink dialect",
+    "Source": "**A**\n\nhttps://example.com",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ],
+    "GFMExpected": []
+  },
+  {
+    "Name": "inline raw follower excluded",
+    "Source": "**A**\n\n`x` <script>Body</script>",
+    "Expected": []
+  },
+  {
+    "Name": "inline raw follower tail",
+    "Source": "**A**\n\n`x` <script>Body</script> tail",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "literal before raw follower",
+    "Source": "**A**\n\n*<script>*payload</script>",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "emphasized raw follower",
+    "Source": "**A**\n\n*<script>payload</script>*",
+    "Expected": []
+  },
+  {
+    "Name": "nested raw emphasis tail",
+    "Source": "**A**\n\n`x` <script>*payload</script>* tail",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "nested raw strong tail",
+    "Source": "**A**\n\n`x` <script>**payload</script>** tail",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "nested raw link tail",
+    "Source": "**A**\n\n`x` <script>[payload</script>](u) tail",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "nested raw emphasis no tail",
+    "Source": "**A**\n\n`x` <script>*payload</script>*",
+    "Expected": []
+  },
+  {
+    "Name": "nested raw strong inner tail",
+    "Source": "**A**\n\n`x` <script>**payload</script> tail**",
+    "Expected": []
+  }
+]

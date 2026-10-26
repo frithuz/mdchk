@@ -160,3 +160,19 @@ func (c RuleContext) HeadingTerminals(ctx context.Context) (out []parser.Heading
 	}()
 	return c.document.HeadingTerminals(owned, c.budget)
 }
+
+// EmphasisHeadings projects parser-owned simulated-heading labels and actual
+// sibling context under the completed original source and operation allowance.
+func (c RuleContext) EmphasisHeadings(ctx context.Context) (out []parser.Span, err error) {
+	if ctx == nil || c.operation == nil || c.document == nil || c.budget == nil || !c.syntaxReliable || c.document.Source().Token() != c.Source().Token() {
+		return nil, parser.ErrModel
+	}
+	owned := ruleOperation{ctx, c.operation}
+	defer func() {
+		err = errors.Join(err, owned.Err(), c.budget.ChargeWork(0))
+		if err != nil {
+			out = nil
+		}
+	}()
+	return c.document.EmphasisHeadings(owned, c.budget, c.index)
+}

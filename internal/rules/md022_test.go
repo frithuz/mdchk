@@ -117,7 +117,7 @@ func TestMD022AddedWorkInterruptions(t *testing.T) {
 
 func TestMD022CatalogOptionsDefaults(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD022") || r.Available("MD036") || len(r.Metadata()) != 87 {
+	if !r.Available("MD022") || r.Available("MD041") || len(r.Metadata()) != 87 {
 		t.Fatal("availability/catalog changed")
 	}
 	for _, m := range r.Metadata() {

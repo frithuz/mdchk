@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis and MD026 heading-end punctuation analysis are also available. MD026 is available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis and MD036 emphasis-as-heading analysis are also available. MD026 and MD036 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -275,7 +275,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001 and MD025 opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
@@ -442,3 +442,17 @@ construction, membership and finding growth, retaining reliable prior findings
 with a late interruption. No source/parse/index/allowance/tree clone, correction
 provider or write authority is added. This is finite application-work accounting,
 not a process memory or throughput guarantee. See [MD026 policy](rules/headings/md026.md).
+
+MD036 adds EmphasisHeadings, a narrow completed-parser projection of actual
+one-line emphasized Paragraph labels and their immediate same-parent prose
+followers. It borrows immutable internal nodes and the original physical index;
+actual retained container prefixes and one cumulative nonblank-line pass prevent
+jumping source-only reference definitions. Candidate descendants and follower
+ordinary Text use actual parser ownership, including task and raw-region
+exclusions. Original outer envelopes retain both delimiter markers.
+All line arrays, tree/marker/line/rune visits, binary searches and retained output
+growth share the original work/node/time allowance. Caller/origin controls and
+final withholding apply; callback interruptions retain reliable prior findings.
+No fresh source, parser, index, budget, public-tree clone, edit or write authority
+is added. Accounting bounds application work, not process RSS or throughput.
+See [MD036 policy](rules/headings/md036.md).
