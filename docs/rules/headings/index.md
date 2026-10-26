@@ -17,7 +17,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD026](md026.md) | Punctuation at heading ends | Analysis implemented (default disabled) |
 | [MD036](md036.md) | Emphasis used as a heading | Analysis implemented (default disabled) |
 | [MD041](md041.md) | Opening document heading | Analysis implemented |
-| [MD043](md043.md) | Required heading outline | Planned |
+| [MD043](md043.md) | Required heading outline | Analysis implemented (default disabled) |
 | [MD063](md063.md) | Heading capitalization | Planned |
 | [MD080](md080.md) | Colliding heading anchors | Planned |
 | [MD082](md082.md) | Sections without content | Planned |

@@ -158,7 +158,7 @@ func TestMD023LateInterruptionRetainsReliableMarkers(t *testing.T) {
 
 func TestMD023CatalogAndOptions(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD023") || r.Available("MD043") || len(r.Metadata()) != 87 {
+	if !r.Available("MD023") || r.Available("MD063") || len(r.Metadata()) != 87 {
 		t.Fatal("incorrect availability")
 	}
 	for _, m := range r.Metadata() {

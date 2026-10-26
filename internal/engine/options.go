@@ -45,6 +45,7 @@ const (
 	UnicodeScalarHex OptionDomain = "unicode-scalar-hex"
 	HTMLComment      OptionDomain = "html-comment"
 	DNSHostname      OptionDomain = "dns-hostname-unicode-17"
+	HeadingOutline   OptionDomain = "heading-outline"
 )
 
 var ErrHostnameValidationUnavailable = errors.New("hostname validation unavailable: requires Unicode 17.0.0 UTS #46")
@@ -103,7 +104,7 @@ func (s OptionSpec) validConstraints() bool {
 		return true
 	case HTMLComment:
 		return s.Kind == String
-	case UnicodeScalarHex, DNSHostname:
+	case UnicodeScalarHex, DNSHostname, HeadingOutline:
 		return s.Kind == Strings
 	default:
 		return false
@@ -164,6 +165,13 @@ func (s OptionSpec) validate(v any) error {
 			n, err := strconv.ParseUint(x, 16, 32)
 			if err != nil || n > utf8.MaxRune || n >= 0xD800 && n <= 0xDFFF {
 				return &SettingError{Element: &i, Err: fmt.Errorf("expected hexadecimal Unicode scalar")}
+			}
+		}
+	}
+	if s.Domain == HeadingOutline {
+		for i, value := range v.([]string) {
+			if _, err := headingOutlineEntry(value, nil); err != nil {
+				return &SettingError{Element: &i, Err: err}
 			}
 		}
 	}

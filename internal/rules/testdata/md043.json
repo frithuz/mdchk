@@ -1,0 +1,1047 @@
+[
+  {
+    "Name": "published",
+    "Source": "# Guide\n\n## Usage",
+    "Headings": [
+      "# Guide",
+      "## Install",
+      "## Usage"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "accepted",
+    "Source": "# Guide\n\n## Install\n\n## Usage",
+    "Headings": [
+      "# Guide",
+      "## Install",
+      "## Usage"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "substitution",
+    "Source": "# Other",
+    "Headings": [
+      "# Guide"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          7,
+          1,
+          3,
+          1,
+          8
+        ],
+        "Source": "Other"
+      }
+    ]
+  },
+  {
+    "Name": "missing suffix",
+    "Source": "# Guide",
+    "Headings": [
+      "# Guide",
+      "## Install"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          7,
+          7,
+          1,
+          8,
+          1,
+          8
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "missing prefix",
+    "Source": "# B",
+    "Headings": [
+      "# A",
+      "# B"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "missing middle",
+    "Source": "# A\n# C",
+    "Headings": [
+      "# A",
+      "# B",
+      "# C"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          4,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "multiple missing",
+    "Source": "# A\n# D",
+    "Headings": [
+      "# A",
+      "# B",
+      "# C",
+      "# D"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          4,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "unexpected prefix",
+    "Source": "# X\n# A",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "X"
+      }
+    ]
+  },
+  {
+    "Name": "unexpected middle",
+    "Source": "# A\n# X\n# B",
+    "Headings": [
+      "# A",
+      "# B"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "X"
+      }
+    ]
+  },
+  {
+    "Name": "unexpected suffix",
+    "Source": "# A\n# B\n# X",
+    "Headings": [
+      "# A",
+      "# B"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": "X"
+      }
+    ]
+  },
+  {
+    "Name": "whole sequence",
+    "Source": "# A\n# X",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "X"
+      }
+    ]
+  },
+  {
+    "Name": "empty outline",
+    "Source": "# A\n# X",
+    "Headings": [],
+    "Expected": []
+  },
+  {
+    "Name": "empty both",
+    "Source": "",
+    "Headings": [],
+    "Expected": []
+  },
+  {
+    "Name": "no headings",
+    "Source": "prose",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          1,
+          6,
+          1,
+          6
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "empty source",
+    "Source": "",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "only star",
+    "Source": "prose",
+    "Headings": [
+      "*"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "stars any",
+    "Source": "# A\n# B",
+    "Headings": [
+      "*",
+      "*"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "stars empty",
+    "Source": "",
+    "Headings": [
+      "*",
+      "*"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "star zero",
+    "Source": "# A\n# B\n# C",
+    "Headings": [
+      "# A",
+      "*",
+      "# B",
+      "# C"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "star many",
+    "Source": "# A\n# X\n## Y\n# B\n# C",
+    "Headings": [
+      "# A",
+      "*",
+      "# B",
+      "# C"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "alternate anchor",
+    "Source": "# A\n# B\n# B\n# C",
+    "Headings": [
+      "# A",
+      "*",
+      "# B",
+      "# C"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "alternate separated",
+    "Source": "# A\n# B\n# X\n# B\n# C",
+    "Headings": [
+      "# A",
+      "*",
+      "# B",
+      "# C"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "leading star",
+    "Source": "# X\n# A",
+    "Headings": [
+      "*",
+      "# A"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "trailing star",
+    "Source": "# A\n# X",
+    "Headings": [
+      "# A",
+      "*"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "consecutive stars",
+    "Source": "# A\n# X\n# B",
+    "Headings": [
+      "# A",
+      "*",
+      "*",
+      "# B"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "multiple stars",
+    "Source": "# X\n# A\n# Y\n# B\n# Z",
+    "Headings": [
+      "*",
+      "# A",
+      "*",
+      "# B",
+      "*"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "tie substitution",
+    "Source": "# A\n# C\n# B",
+    "Headings": [
+      "# A",
+      "# B",
+      "# C"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "C"
+      }
+    ]
+  },
+  {
+    "Name": "tie star advance",
+    "Source": "# A\n# B\n# B",
+    "Headings": [
+      "# A",
+      "*",
+      "# B",
+      "# C"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": "B"
+      }
+    ]
+  },
+  {
+    "Name": "star missing end",
+    "Source": "# A\n# X",
+    "Headings": [
+      "# A",
+      "*",
+      "# B"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "X"
+      }
+    ]
+  },
+  {
+    "Name": "star missing EOF",
+    "Source": "# A",
+    "Headings": [
+      "# A",
+      "*",
+      "# B"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          3,
+          1,
+          4,
+          1,
+          4
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "case exact",
+    "Source": "# a",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "a"
+      }
+    ]
+  },
+  {
+    "Name": "level exact",
+    "Source": "## A",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "level six",
+    "Source": "###### A",
+    "Headings": [
+      "###### A"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "closed",
+    "Source": "# A ###",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "Setext",
+    "Source": "A\n===",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "Setext level two",
+    "Source": "A\n---",
+    "Headings": [
+      "## A"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "empty heading",
+    "Source": "#",
+    "Headings": [
+      "# "
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "invisible heading",
+    "Source": "# <!-- A -->",
+    "Headings": [
+      "# "
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "unexpected empty",
+    "Source": "#\n# A",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          1,
+          1,
+          2,
+          1,
+          2
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "strong",
+    "Source": "# **Guide**",
+    "Headings": [
+      "# Guide"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "option markup literal",
+    "Source": "# **Guide**",
+    "Headings": [
+      "# **Guide**"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          11,
+          1,
+          3,
+          1,
+          12
+        ],
+        "Source": "**Guide**"
+      }
+    ]
+  },
+  {
+    "Name": "option markup escaped",
+    "Source": "# \\*\\*Guide\\*\\*",
+    "Headings": [
+      "# **Guide**"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "link",
+    "Source": "# [Guide](x \"other\")",
+    "Headings": [
+      "# Guide"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "image",
+    "Source": "# ![Guide](x)",
+    "Headings": [
+      "# Guide"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "code",
+    "Source": "# `Guide`",
+    "Headings": [
+      "# Guide"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "entity",
+    "Source": "# G&#117;ide",
+    "Headings": [
+      "# Guide"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "escaped",
+    "Source": "# A\\!",
+    "Headings": [
+      "# A!"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "raw tag",
+    "Source": "# <b>Guide</b>",
+    "Headings": [
+      "# Guide"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "raw payload",
+    "Source": "# A<script>other</script>",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "nul",
+    "Source": "# A\u0000",
+    "Headings": [
+      "# A�"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "literal star",
+    "Source": "# \\*",
+    "Headings": [
+      "# *"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "option closing literal",
+    "Source": "# A #",
+    "Headings": [
+      "# A #"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "actual literal closing",
+    "Source": "# A \\#",
+    "Headings": [
+      "# A #"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "exact spaces",
+    "Source": "# A  B",
+    "Headings": [
+      "# A B"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          6,
+          1,
+          3,
+          1,
+          7
+        ],
+        "Source": "A  B"
+      }
+    ]
+  },
+  {
+    "Name": "literal extra suffix space",
+    "Source": "# &#32;A",
+    "Headings": [
+      "#  A"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "semantic trailing space",
+    "Source": "# A&#32;",
+    "Headings": [
+      "# A "
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "normalization",
+    "Source": "# é",
+    "Headings": [
+      "# é"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          5,
+          1,
+          3,
+          1,
+          5
+        ],
+        "Source": "é"
+      }
+    ]
+  },
+  {
+    "Name": "unicode label",
+    "Source": "# **雪á**",
+    "Headings": [
+      "# other"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          12,
+          1,
+          3,
+          1,
+          10
+        ],
+        "Source": "**雪á**"
+      }
+    ]
+  },
+  {
+    "Name": "multiline Setext",
+    "Source": "A\nB\n===",
+    "Headings": [
+      "# A B"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          0,
+          3,
+          1,
+          1,
+          2,
+          2
+        ],
+        "Source": "A\nB"
+      }
+    ]
+  },
+  {
+    "Name": "nested global",
+    "Source": "> # A\n\n- ## B",
+    "Headings": [
+      "# A",
+      "## B"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "nested missing",
+    "Source": "# A\n\n> ## C",
+    "Headings": [
+      "# A",
+      "## B",
+      "## C"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          7,
+          7,
+          3,
+          3,
+          3,
+          3
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "nested label",
+    "Source": "> # **雪**",
+    "Headings": [
+      "# other"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          11,
+          1,
+          5,
+          1,
+          10
+        ],
+        "Source": "**雪**"
+      }
+    ]
+  },
+  {
+    "Name": "fence fake",
+    "Source": "```\n# fake\n```\n# A",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "indent fake",
+    "Source": "    # fake\n\n# A",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "raw block fake",
+    "Source": "<script>\n# fake\n</script>\n\n# A",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "comments fake",
+    "Source": "<!--\n# fake\n-->\n# A",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "header recognized",
+    "Source": "---\ntitle: Guide\n---\n# A",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": [],
+    "Recognize": true
+  },
+  {
+    "Name": "header only",
+    "Source": "---\ntitle: Guide\n---",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          20,
+          20,
+          3,
+          4,
+          3,
+          4
+        ],
+        "Source": ""
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "header off",
+    "Source": "---\n# A\n---",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "header uncertain",
+    "Source": "---\n# A",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "CRLF missing",
+    "Source": "# A\r\n# C\r\n",
+    "Headings": [
+      "# A",
+      "# B",
+      "# C"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "CR missing",
+    "Source": "# A\r# C\r",
+    "Headings": [
+      "# A",
+      "# B",
+      "# C"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          4,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "strike dialect",
+    "Source": "# ~~A~~",
+    "Headings": [
+      "# A"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          7,
+          1,
+          3,
+          1,
+          8
+        ],
+        "Source": "~~A~~"
+      }
+    ],
+    "GFMExpected": []
+  },
+  {
+    "Name": "nested raw closer retains outside visible text",
+    "Source": "# A!<script>*payload</script>* B",
+    "Headings": [
+      "# A! B"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "nested raw closer rejects truncated visible text",
+    "Source": "# A!<script>*payload</script>* B",
+    "Headings": [
+      "# A!"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          32,
+          1,
+          3,
+          1,
+          33
+        ],
+        "Source": "A!<script>*payload</script>* B"
+      }
+    ]
+  },
+  {
+    "Name": "nested raw closer retains terminal punctuation",
+    "Source": "# `x` <script>*payload</script>*!",
+    "Headings": [
+      "# x !"
+    ],
+    "Expected": []
+  }
+]

@@ -52,7 +52,7 @@ func documentedOptions() map[string]engine.OptionSchema {
 		"MD035": {"style": choice("consistent", "dash", "asterisk", "underscore")},
 		"MD040": {"allowed_languages": list()},
 		"MD041": {"level": level(1), "frontmatter_title": b(false)},
-		"MD043": {"headings": list()},
+		"MD043": {"headings": domain(engine.HeadingOutline)},
 		"MD044": {"names": list(), "code_blocks": b(false)},
 		"MD045": {"allow_decorative": b(false)},
 		"MD046": {"style": choice("consistent", "fenced", "indented")},

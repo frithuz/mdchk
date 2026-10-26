@@ -148,7 +148,7 @@ func TestMD041MetadataNativeValues(t *testing.T) {
 
 func TestMD041CatalogAndOptions(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD041") || r.Available("MD043") || len(r.Metadata()) != 87 {
+	if !r.Available("MD041") || r.Available("MD063") || len(r.Metadata()) != 87 {
 		t.Fatal("availability")
 	}
 	for _, m := range r.Metadata() {

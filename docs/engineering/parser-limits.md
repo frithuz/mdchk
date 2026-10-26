@@ -382,3 +382,23 @@ otherwise opt-in title truth supplies an alternative or explicit affected
 coverage. No Source, parse, index, allowance, edit or write authority is added.
 Finite application accounting is not a process-memory or throughput guarantee.
 See [MD041 policy](../rules/headings/md041.md).
+
+MD043 compiles its exact single-line descriptor list through HeadingOutline after
+reserving independent entry storage, without Options' eager list clone or mutable
+option borrowing. An additive semantic list domain rejects invalid entries at
+admission, with per-element source locations even while disabled. Empty outlines
+avoid heading projection and comparison workspace.
+For nonempty patterns, existing HeadingFact level/Visible/Label/Envelope facts
+supply the whole source-ordered sequence. A checked suffix cost/action grid reserves
+both arrays under the original allowance before allocation; cells, transitions,
+chunked repeated exact byte comparisons and canonical reconstruction are charged.
+Worst-case matching uses O((patterns+1) * (headings+1) * (label-bytes+1)) work
+and O((patterns+1) * (headings+1)) state, rather than unbounded wildcard backtracking. Overflow or exhausted
+original work/node/time controls produces explicit incomplete analysis, not a
+guessed mismatch. The completed-original parser/index witness and compound
+caller/origin checks also apply to empty option access. Failed alignment withholds
+its observation through the final check; existing late-operation handling retains
+one already justified finding. No source, parse, index, budget, public tree clone,
+second Visible definition, correction or write authority is introduced. These are
+finite application controls, not hard RSS or OS preemption guarantees.
+See [MD043 policy](../rules/headings/md043.md).

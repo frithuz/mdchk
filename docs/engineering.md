@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis and MD041 opening-heading analysis are also available. MD026 and MD036 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis and MD043 required-outline analysis are also available. MD026, MD036 and MD043 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -275,7 +275,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001, MD025 and MD041 opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
@@ -471,3 +471,23 @@ otherwise opt-in title truth supplies an alternative or explicit affected
 coverage. No Source, parse, index, allowance, edit or write authority is added.
 Finite application accounting is not a process-memory or throughput guarantee.
 See [MD041 policy](rules/headings/md041.md).
+
+MD043 compiles its exact single-line descriptor list through HeadingOutline after
+reserving independent entry storage, without Options' eager list clone or mutable
+option borrowing. An additive semantic list domain rejects invalid entries at
+admission, with per-element source locations even while disabled. Empty outlines
+avoid heading projection and comparison workspace.
+For nonempty patterns, existing HeadingFact level/Visible/Label/Envelope facts
+supply the whole source-ordered sequence. A checked suffix cost/action grid reserves
+both arrays under the original allowance before allocation; cells, transitions,
+chunked repeated exact byte comparisons and canonical reconstruction are charged.
+Worst-case matching uses O((patterns+1) * (headings+1) * (label-bytes+1)) work
+and O((patterns+1) * (headings+1)) state, rather than unbounded wildcard backtracking. Overflow or exhausted
+original work/node/time controls produces explicit incomplete analysis, not a
+guessed mismatch. The completed-original parser/index witness and compound
+caller/origin checks also apply to empty option access. Failed alignment withholds
+its observation through the final check; existing late-operation handling retains
+one already justified finding. No source, parse, index, budget, public tree clone,
+second Visible definition, correction or write authority is introduced. These are
+finite application controls, not hard RSS or OS preemption guarantees.
+See [MD043 policy](rules/headings/md043.md).
