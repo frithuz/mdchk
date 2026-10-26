@@ -203,3 +203,8 @@ candidate-overlay admission remains the coordinated producer's responsibility.
 MD032 source-boundary projection and finding construction share the original
 parser work, node and elapsed allowance. Empty and accepted inputs still reserve
 traversal and line state. Interrupted inventories and findings are withheld.
+
+MD069 shares the original completed parse allowance for item inventory, constant
+identity state, physical-line lookups, original gap bytes, run records and output
+capacity. Finding growth, copied prefixes and logical records are reserved before
+work. Caller and origin stops withhold the entire dependent output.

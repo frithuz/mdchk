@@ -1926,3 +1926,9 @@ entire boundary. List-owned trailing blanks can count at the parent body level.
 Detached zero-width missing-side facts require the completed original production
 profile/options/source/index/operation witness and share its allowance. All
 visits, storage, copies and records are reserved; final failure withholds all facts.
+
+The private MD069 source projection obtains actual ListItems once under the
+completed original production witness. It keeps ordered and mixed context,
+associates parents by constant source-token/offset/presence identity, and checks
+same physical line before borrowing ASCII whitespace gaps. Returned maximal-run
+spans are detached immutable-source values without edit authority.

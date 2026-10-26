@@ -344,3 +344,8 @@ MD032 emits one manual zero-width point per deficient list/non-list source gap.
 Before points use the first list marker; after points use the following source
 block physical body start after parent prefixes. MD047 candidate reanalysis keeps
 these manual findings with the candidate snapshot. MD032 supplies no previews.
+
+MD069 emits one manual finding per maximal identical-bullet subrun, spanning
+the first marker start through the last marker end, including original gaps.
+`fix_available` is false under its permanent NoFix policy. Composed MD047
+previews retain these full-run ranges against the candidate snapshot.

@@ -120,7 +120,7 @@ facts, directives, protected regions and candidate reparsing. MD047 is the first
 production correction; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
 analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation
 analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis,
-MD032 list-boundary blank-line analysis, MD018 missing opening-hash spacing, MD019 extra
+MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD018 missing opening-hash spacing, MD019 extra
 opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading
 delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation
 analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026
@@ -288,7 +288,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001, MD025 and MD041 opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
@@ -661,3 +661,8 @@ MD032 merges real body children and retained reference definitions in one bounde
 original-tree traversal. Parent-prefix rollback and terminal content floors
 distinguish list-owned separators from empty markers and opaque-child payload.
 Its detached missing-side points remain manual, with no edit producer.
+
+MD069 projects actual list items once into maximal identical-bullet runs using
+direct ancestry, the original physical line index and ASCII space/tab gaps.
+Mixed, ordered and quote boundaries retain independent inner subruns. Its
+full-run manual findings preserve the permanent NoFix catalog policy.

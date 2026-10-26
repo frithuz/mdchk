@@ -555,3 +555,8 @@ prefix rollback capacity and copies, definition association visits, binary
 lookups, detached boundary capacity and logical records before construction.
 Clean and no-list paths are metered. Caller and origin controls and final
 publication checks withhold incomplete inventories. No new allowance is created.
+
+MD069 reserves association-map and run capacity before construction, bounded
+line-index comparisons before lookup, and original gap bytes before scanning.
+Different physical lines are rejected before gap work. Run and output storage
+are distinct from logical records; final publication observes original controls.

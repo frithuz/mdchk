@@ -102,3 +102,7 @@ Empty marker lines remain exempt; separately enabled nested items still run.
 
 MD032 evaluates complete source-body neighbors before chosen-start suppression.
 A removed reference definition remains context in its actual owning container.
+
+MD069 retains complete actual item context through maximal-run construction.
+Suppression uses the first marker start of each full run; an inline comment
+after that start cannot suppress the run retroactively.

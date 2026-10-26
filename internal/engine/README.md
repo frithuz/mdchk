@@ -467,3 +467,9 @@ following non-list body start. Context precedes directive filtering; default
 enablement and PlannedFix metadata grant no edit authority. Finding capacity,
 copies and logical records are reserved before construction, with final atomic
 withholding. MD047 remains the sole edit producer.
+
+MD069 borrows maximal repeated-marker spans through ListRepetitions under both
+caller and originating operation controls. Callback findings reserve capacity,
+copied prefixes and logical records before publication, which is atomic on
+interruption. The default-enabled NoFix metadata and optionless schema remain
+unchanged; MD047 is the sole correction producer.

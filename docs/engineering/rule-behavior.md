@@ -17,11 +17,18 @@ prerequisite still causes affected incomplete coverage.
 
 ### Md069
 
-Report identical consecutive bullet markers at the beginning of an item on the same source line,
-separated by whitespace and each lexically valid as a list marker, e.g. - - Text. Ignore mixed
-marker pairs, thematic breaks, escaped markers, and ordinary nesting across separate lines. Use
-parser-owned list/thematic-break classification; report once per repeated run, rather than
-flattening or guessing intended nesting.
+MD069 analysis is implemented for CommonMark and GFM using a bounded parser-backed
+projection over actual list items and original physical-line ASCII space/tab gaps.
+Require direct item ancestry and reject different physical lines before gap scans.
+Report each maximal identical-bullet subrun of length at least two, spanning its
+first marker start through its last marker end, with original whitespace retained.
+Mixed pairs, ordered markers and quote discontinuities end a run; later inner
+subruns remain eligible. `- - + + Text` reports two runs; `- - - Text` reports one
+full run. `- > - - Text` reports only the inner pair. Parser ownership protects
+thematic/code/raw/metadata regions without erasing independently owned outer
+markers: `- - * * *` reports the dash pair; pure `- - -` is thematic and excluded.
+Empty EOF `- -` remains eligible. No unparsed heuristic or generic framework for
+other candidate rules is implied. MD069 remains permanently report-only with NoFix.
 
 ### Md037
 

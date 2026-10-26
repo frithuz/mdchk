@@ -142,3 +142,6 @@ producer, preview or write authority.
 
 MD032 is available for both flavors. Inspection exposes complete source-body
 boundary analysis. PlannedFix metadata grants no edits or correction previews.
+
+MD069 inspection identifies available default-enabled CommonMark/GFM analysis.
+Its maximal repeated-marker ranges remain manual and never grant fix authority.
