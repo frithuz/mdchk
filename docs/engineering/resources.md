@@ -10,9 +10,11 @@ shared destination normalization, independent fragment facts and a one-level ind
 plan. Issue #251 adds internal root selection and raw native read acquisition.
 Issue #252 adds immutable partial/complete supplied-inventory lookup. Issue #253
 adds operation-owned first-observation retention/coalescing and a policy/source-aware
-parsed-source cache seam. Anchors, production consumers and MCP argument integration
-remain pending; these internal APIs do not advertise CLI/MCP resource lookup as
-implemented. The native #251 acquisition tests passed on actual Linux/macOS/Windows
+parsed-source cache seam. Issue #254 supplies shared heading/HTML-ID anchor indexes.
+MD080 now consumes that same builder for local same-document analysis. Broader
+production resource consumers and MCP argument integration remain pending; these
+internal APIs and local policy selection do not advertise CLI/MCP cross-file
+resource lookup as implemented. The native #251 acquisition tests passed on actual Linux/macOS/Windows
 hosts in [run 40145609610](https://github.com/frithuz/mdchk/actions/runs/40145609610),
 with no native skips. Native read validation does not expand write support.
 

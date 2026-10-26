@@ -16,7 +16,6 @@ import (
 	"testing/synctest"
 	"time"
 
-	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/result"
 )
@@ -138,7 +137,9 @@ func validateFragmentCauseSchema(t *testing.T, out result.Result) {
 		t.Fatalf("cause result schema: %v\n%s\n%s", err, output, raw)
 	}
 }
-func TestFragmentFinalIndexCauseIdentityAcrossViews(t *testing.T) {
+
+// CheckFragmentFinalIndexCauseIdentityAcrossViews retains private resource controls while the outer test supplies the real engine finalizer.
+func CheckFragmentFinalIndexCauseIdentityAcrossViews(t *testing.T, finalize func(*result.Result)) {
 	paths := []struct{ name, key, destination, final, raw string }{
 		{"ordinary-directory", "source.md", "folder/#target", "folder/index.md", `{"entries":[{"path":"folder/index.md","kind":"file","content":"# Target\n"}]}`},
 		{"root-index", "docs/source.md", "../#target", "index.md", `{"entries":[{"path":"index.md","kind":"file","content":"# Target\n"}]}`},
@@ -251,7 +252,7 @@ func TestFragmentFinalIndexCauseIdentityAcrossViews(t *testing.T) {
 						}
 						location := result.Range{Start: parser.Position{Line: 1, Column: column}, End: parser.Position{Line: 1, Column: column + len(path.destination)}}
 						assertFragmentCauseReport(t, out, "source.md", source, phase, location, wants)
-						engine.FinalizeLintResult(&out)
+						finalize(&out)
 						assertFragmentCauseReport(t, out, "source.md", source, phase, location, wants)
 						validateFragmentCauseSchema(t, out)
 					})
@@ -261,7 +262,8 @@ func TestFragmentFinalIndexCauseIdentityAcrossViews(t *testing.T) {
 	}
 }
 
-func TestFragmentEarlierDirectoryCauseRemainsIndependent(t *testing.T) {
+// CheckFragmentEarlierDirectoryCauseRemainsIndependent retains private resource controls while the outer test supplies the real engine finalizer.
+func CheckFragmentEarlierDirectoryCauseRemainsIndependent(t *testing.T, finalize func(*result.Result)) {
 	for _, phase := range []Phase{Original, Candidate, Saved} {
 		for _, indexKind := range []ProblemKind{ReadFailure, InternalFailure} {
 			t.Run(string(phase)+"/"+string(indexKind), func(t *testing.T) {
@@ -313,7 +315,7 @@ func TestFragmentEarlierDirectoryCauseRemainsIndependent(t *testing.T) {
 				location := result.Range{Start: parser.Position{Line: 1, Column: 7}, End: parser.Position{Line: 1, Column: 21}}
 				wants := []fragmentCauseWant{{"folder", "read-failure"}, {"folder/index.md", string(indexKind)}}
 				assertFragmentCauseReport(t, out, "source.md", target, phase, location, wants)
-				engine.FinalizeLintResult(&out)
+				finalize(&out)
 				assertFragmentCauseReport(t, out, "source.md", target, phase, location, wants)
 				validateFragmentCauseSchema(t, out)
 			})
@@ -321,7 +323,8 @@ func TestFragmentEarlierDirectoryCauseRemainsIndependent(t *testing.T) {
 	}
 }
 
-func TestFragmentDirectoryLookupQuotaKeepsFinalCauseIdentity(t *testing.T) {
+// CheckFragmentDirectoryLookupQuotaKeepsFinalCauseIdentity retains private resource controls while the outer test supplies the real engine finalizer.
+func CheckFragmentDirectoryLookupQuotaKeepsFinalCauseIdentity(t *testing.T, finalize func(*result.Result)) {
 	for _, phase := range []Phase{Original, Candidate, Saved} {
 		t.Run(string(phase), func(t *testing.T) {
 			f := fragmentCauseFixture(t, context.Background(), "source.md", "folder/#target", `{"entries":[{"path":"folder/index.md","kind":"file","content":"# Target\n"}]}`)
@@ -371,7 +374,7 @@ func TestFragmentDirectoryLookupQuotaKeepsFinalCauseIdentity(t *testing.T) {
 			location := result.Range{Start: parser.Position{Line: 1, Column: 7}, End: parser.Position{Line: 1, Column: 21}}
 			wants := []fragmentCauseWant{{"folder/index.md", "limit-exceeded"}}
 			assertFragmentCauseReport(t, out, "source.md", source, phase, location, wants)
-			engine.FinalizeLintResult(&out)
+			finalize(&out)
 			assertFragmentCauseReport(t, out, "source.md", source, phase, location, wants)
 			validateFragmentCauseSchema(t, out)
 		})

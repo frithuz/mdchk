@@ -21,7 +21,7 @@ func TestGFMPrivateScopesPreserveProductionAdmission(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(baseline, config.Capabilities{CommonMark: true, GFM: true, DirectiveProcessing: true, FrontmatterYAML: true, FrontmatterTOML: true, MetadataInterpretation: true}) {
+	if !reflect.DeepEqual(baseline, config.Capabilities{CommonMark: true, GFM: true, DirectiveProcessing: true, FrontmatterYAML: true, FrontmatterTOML: true, MetadataInterpretation: true, GitHubAnchors: true, ExplicitAnchors: true}) {
 		t.Fatal("production capabilities changed", baseline)
 	}
 	check := func() {

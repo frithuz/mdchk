@@ -15,6 +15,7 @@ type DocumentContext struct {
 	Flavor      string
 	Project     string
 	Frontmatter parser.FrontmatterOptions
+	AnchorStyle string
 }
 
 // ParseOptions preserves the exact immutable recognition selection for every
@@ -46,6 +47,9 @@ func NewInput(path string, content []byte, settings Settings, dc DocumentContext
 	}
 	if dc.Flavor == "" {
 		dc.Flavor = "commonmark"
+	}
+	if err := dc.resolveAnchorStyle(); err != nil {
+		return Input{}, err
 	}
 	copySettings := make(Settings, len(settings))
 	for id, s := range settings {

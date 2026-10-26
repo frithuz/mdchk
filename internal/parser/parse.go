@@ -258,6 +258,8 @@ func parseConfigured(ctx context.Context, source Source, budget *OperationBudget
 		r.Status, r.AST = Complete, Available
 		r.Document.parsedComplete = true
 		r.Document.commentOperation = budget.identity
+		r.Document.parsedProfile = profile
+		r.Document.parsedOptions = ParseOptions{GFM: profile == gfmInProgressProfile, Frontmatter: frontmatter}
 	} else {
 		r.Uncertainty = []Uncertainty{{Region: span, Reason: SyntaxUnimplemented}}
 	}

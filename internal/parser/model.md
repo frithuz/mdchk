@@ -1803,3 +1803,18 @@ No Source, parse, index, allowance, second renderer, public tree clone or correc
 authority is added. These are application accounting controls, not hard RSS or OS
 preemption guarantees.
 See [MD063 policy](../../docs/rules/headings/md063.md).
+
+MD080 uses OriginalHeadingAnchors to invoke the existing shared resource index
+builder on the actual completed original parse. A private profile/options/source/
+index/operation witness prevents forged public parse fields from granting facts.
+Only owned heading records and availability escape; no Service/cache/view/content
+witness, resource read, Root or new parse/source/allowance is introduced. Original
+caller and origin cancellation, sticky work/node/time and final withholding apply.
+The shared builder retains raw labels from the same HeadingFact and preserves its
+whole-index uncertainty. MD080 reserves a finite seen-map capacity before allocation,
+charges borrowed base bytes before hashing/equality and reserves actual output
+records; immutable string bytes are not charged again as constructed nodes. Every
+later present-base duplicate, including empty bases, uses the original full Label.
+Local AnchorStyle defaults github, validates github/explicit and persists through
+plans/candidates. This does not enable index_file or cross-file consumers. Finite
+application accounting is not a hard RSS or OS-preemption guarantee.

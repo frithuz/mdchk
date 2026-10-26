@@ -62,6 +62,9 @@ func (s *RuleSelection) Plan(dc DocumentContext, deniedDirectives map[string]boo
 	if dc.Flavor != "commonmark" && dc.Flavor != "gfm" {
 		return nil, fmt.Errorf("invalid Markdown flavor %q", dc.Flavor)
 	}
+	if err := dc.resolveAnchorStyle(); err != nil {
+		return nil, err
+	}
 	rules := copyRules(s.rules)
 	for _, id := range s.registry.ids {
 		state := rules[id]

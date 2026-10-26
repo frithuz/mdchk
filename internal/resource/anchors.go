@@ -31,12 +31,13 @@ type AnchorOccurrence struct {
 	Effective, Usable bool
 }
 
-// HeadingAnchor keeps heading-only facts for future TOC/collision consumers.
+// HeadingAnchor keeps heading-only facts for TOC/collision consumers.
 // Base is unsuffixed; ID is the allocated spelling. Explicit mode leaves both
 // absent for headings without a genuinely supported explicit-heading record.
 // Containers are syntax ancestry, not final TOC/marked-region eligibility.
 type HeadingAnchor struct {
 	Envelope   parser.Span
+	Label      parser.Span // Original full raw heading label, including legitimate empty points.
 	Level      int
 	Style      string
 	Visible    string
@@ -287,7 +288,7 @@ func buildAnchorIndex(ctx context.Context, operation *Operation, key ParseCacheK
 		if err := check(int64(len(fact.Containers))+1, int64(len(fact.Containers))); err != nil {
 			return stopped(err)
 		}
-		heading := HeadingAnchor{Envelope: fact.Envelope, Level: fact.Level, Style: fact.Style, Visible: fact.Visible, Containers: slices.Clone(fact.Containers)}
+		heading := HeadingAnchor{Envelope: fact.Envelope, Label: fact.Label, Level: fact.Level, Style: fact.Style, Visible: fact.Visible, Containers: slices.Clone(fact.Containers)}
 		if key.anchor == "github" {
 			base, err := anchorBase(ctx, operation, fact.Visible)
 			if err != nil {

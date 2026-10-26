@@ -12,7 +12,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/result"
 )
@@ -211,7 +210,8 @@ func TestFilesystemFragmentFinalSelectedIndexAndSingleAttempt(t *testing.T) {
 	}
 }
 
-func TestFilesystemFragmentNoKeySelfCandidateAndStoppedQueryReport(t *testing.T) {
+// CheckFilesystemFragmentNoKeySelfCandidateAndStoppedQueryReport retains private resource controls while the outer test supplies the real engine finalizer.
+func CheckFilesystemFragmentNoKeySelfCandidateAndStoppedQueryReport(t *testing.T, finalize func(*result.Result)) {
 	for _, metadata := range []bool{false, true} {
 		t.Run(fmt.Sprint("metadata=", metadata), func(t *testing.T) {
 			dir, err := filepath.EvalSymlinks(t.TempDir())
@@ -396,7 +396,7 @@ func TestFilesystemFragmentNoKeySelfCandidateAndStoppedQueryReport(t *testing.T)
 				location := result.Range{Start: parser.Position{Line: row.line, Column: 5}, End: parser.Position{Line: row.line, Column: 5 + len(row.destination)}}
 				wants := []fragmentCauseWant{{"outside-report", "cancelled"}}
 				assertFragmentCauseReport(t, out, "outside-report", row.source, row.view.Phase(), location, wants)
-				engine.FinalizeLintResult(&out)
+				finalize(&out)
 				assertFragmentCauseReport(t, out, "outside-report", row.source, row.view.Phase(), location, wants)
 				validateFragmentCauseSchema(t, out)
 			}

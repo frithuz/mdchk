@@ -89,8 +89,8 @@ flavor: commonmark
 ```
 
 This configuration works with the current production executable: CommonMark
-0.31.2, GFM, directive processing, MD001/MD003/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063 analysis and MD047 analysis/correction
-are available. MD026, MD036, MD043 and MD063 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
+0.31.2, GFM, directive processing, MD001/MD003/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080 analysis and MD047 analysis/correction
+are available. MD026, MD036, MD043, MD063 and MD080 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
 independently enabled header recognition. Other ordinary rule implementations
 remain unavailable. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
@@ -306,8 +306,8 @@ rules:
 | Input or condition | Expected outcome |
 | --- | --- |
 | Omitted `resources`, or `resources: {}` | `index_file: index.md`, `anchor_style: github` |
-| `resources: {anchor_style: explicit}` | One policy for MD051, MD073, and MD080, including referenced Markdown |
-| `resources: {index_file: README.md}` | Directory lookups try that one filename once |
+| `resources: {anchor_style: explicit}` | Available for same-document MD080; MD051/MD073 and referenced Markdown consumption remain separate deliveries |
+| `resources: {index_file: README.md}` | Current CLI rejects unavailable index handling; the future directory-lookup contract tries that one filename once |
 | `resources: null`, a sequence, or an unknown resource field | Configuration error |
 | `resources: {index_file: docs/index.md}` | Configuration error: filename only |
 | Empty index filename, `.`/`..`, a glob, URL, query/fragment, drive prefix, backslash, or control character | Configuration error |

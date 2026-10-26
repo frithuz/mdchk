@@ -352,8 +352,8 @@ No call reads server files, fetches URLs, decodes keys again, parses Markdown,
 executes directives or traverses outgoing links. The raw supplied reader keeps no
 cache. The operation service below supplies first-observation/singleflight behavior;
 there is no cross-call content or settings cache. Complete navigation
-inventory consumers, anchors, MCP transport and coordinated fix overlays remain
-later integrations.
+inventory consumers, MCP transport and coordinated fix overlays remain later
+integrations; shared anchors and the local MD080 consumer are described below.
 
 `Read(ctx, request)` returns an ObservationSpec and an independent controlled
 runtime error. Bind the spec with `Operation.Record` and retain any returned error
@@ -538,7 +538,7 @@ HTML attribute names compare ASCII-insensitively, the first duplicate wins, and
 values decode once in HTML attribute context without trimming, URL decoding or
 case normalization. Empty and ignored duplicate attributes remain source
 occurrences but confer no membership. Heading records retain visible text, level,
-source envelopes and container ancestry separately from general ID occurrences.
+source envelopes, original raw labels and container ancestry separately from general ID occurrences.
 Quote/list headings participate in anchors; future TOC consumers decide their
 own eligibility.
 
@@ -553,8 +553,29 @@ SVG/MathML entry is one such unsupported context: foreign integration points do
 not grant ordinary HTML raw-text ownership from a local name such as title.
 Already acquired content and its witness survive such deficits and actual
 operational causes retain their existing report ownership. A completed index
-also survives a later stop without content rehashing. The index itself introduces no MD051/MD073/MD080 callback, TOC fix, renderer,
-sanitizer or transport capability. The fragment query seam below composes it.
+also survives a later stop without content rehashing. MD080 consumes the shared
+builder through the local projection below. MD051/MD073 callbacks, TOC fixes,
+rendering, sanitization and transport integration remain separate deliveries. The
+fragment query seam below composes the service index independently.
+
+## Original-document heading anchors
+
+`OriginalHeadingAnchors` returns only owned heading facts and availability from
+an actual completed engine parse, using the SAME shared builder and originating
+allowance. It does not return an AnchorResult, AnchorIndex, ContentEvidence, cache
+key, view, Root or Service; no resource read, namespace membership or cache admission
+is granted. The private completed-production-profile/options/source/index/budget
+witness rejects constructed, foreign, incomplete and closed partial test profiles.
+A private Operation wrapper binds the original context and budget without resetting
+allowances or creating service workers. Full index uncertainty remains authoritative.
+
+HeadingAnchor.Label is retained from the same HeadingFact used for anchor generation.
+MD080 compares every present Base, including empty, independently of allocated ID
+or Usable; only absent bases skip. It reports each later collision on the original
+label, after full hidden/container context and with per-document state. It does
+not treat nonheading IDs as heading bases. Local style is immutable through input,
+plan and candidate analysis. The CLI advertises local github/explicit selection;
+index_file and cross-file resource capabilities remain unavailable.
 
 ## Fragment query completion
 

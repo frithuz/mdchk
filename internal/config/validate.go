@@ -330,7 +330,7 @@ func (v *Validated) Admit(c Capabilities, inherited Permissions) (*Resolution, e
 	if err != nil {
 		return nil, located(d, "frontmatter", err)
 	}
-	plan, err := v.selection.Plan(engine.DocumentContext{Flavor: b.Flavor, Frontmatter: frontmatter}, denied)
+	plan, err := v.selection.Plan(engine.DocumentContext{Flavor: b.Flavor, Frontmatter: frontmatter, AnchorStyle: b.AnchorStyle}, denied)
 	if err != nil {
 		return nil, located(d, "rules", err)
 	}

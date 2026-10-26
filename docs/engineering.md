@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis and MD063 heading-capitalization analysis are also available. MD026, MD036, MD043 and MD063 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization analysis and MD080 heading-anchor collision analysis are also available. MD026, MD036, MD043, MD063 and MD080 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -275,7 +275,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001, MD025 and MD041 opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
@@ -507,3 +507,18 @@ No Source, parse, index, allowance, second renderer, public tree clone or correc
 authority is added. These are application accounting controls, not hard RSS or OS
 preemption guarantees.
 See [MD063 policy](rules/headings/md063.md).
+
+MD080 uses OriginalHeadingAnchors to invoke the existing shared resource index
+builder on the actual completed original parse. A private profile/options/source/
+index/operation witness prevents forged public parse fields from granting facts.
+Only owned heading records and availability escape; no Service/cache/view/content
+witness, resource read, Root or new parse/source/allowance is introduced. Original
+caller and origin cancellation, sticky work/node/time and final withholding apply.
+The shared builder retains raw labels from the same HeadingFact and preserves its
+whole-index uncertainty. MD080 reserves a finite seen-map capacity before allocation,
+charges borrowed base bytes before hashing/equality and reserves actual output
+records; immutable string bytes are not charged again as constructed nodes. Every
+later present-base duplicate, including empty bases, uses the original full Label.
+Local AnchorStyle defaults github, validates github/explicit and persists through
+plans/candidates. This does not enable index_file or cross-file consumers. Finite
+application accounting is not a hard RSS or OS-preemption guarantee.

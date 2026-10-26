@@ -351,7 +351,16 @@ func TestGFMVerifiedExcludedSyntax(t *testing.T) {
 			core := gfmParse(t, s, budgetFor(t, DefaultLimits()), coreProfile)
 			for _, p := range []parserProfile{coreProfile, gfmInProgressProfile} {
 				r := gfmParse(t, s, budgetFor(t, DefaultLimits()), p)
-				if !reflect.DeepEqual(core, r) {
+				// These profiles retain different private anchor-policy authority even
+				// when excluded syntax has identical ordinary model interpretation.
+				if r.Document.parsedProfile != p || r.Document.parsedOptions != (ParseOptions{GFM: p == gfmInProgressProfile}) {
+					t.Fatal("actual completed profile/options witness was not retained")
+				}
+				ordinary := r
+				document := *r.Document
+				document.parsedProfile, document.parsedOptions = core.Document.parsedProfile, core.Document.parsedOptions
+				ordinary.Document = &document
+				if !reflect.DeepEqual(core, ordinary) {
 					t.Fatal("excluded syntax changed ordinary interpretation")
 				}
 				children := r.Document.Root().Children()

@@ -89,6 +89,8 @@ type Document struct {
 	blocksRecognized bool
 	parsedComplete   bool
 	commentOperation *operationIdentity
+	parsedProfile    parserProfile
+	parsedOptions    ParseOptions
 	indentedHeadings []Span // one actual opening/underline marker per indented heading
 	openingHashRuns  []Span // eligible physical lines with final Paragraph ownership
 }

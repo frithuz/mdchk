@@ -12,12 +12,12 @@ import (
 	"testing/synctest"
 	"time"
 
-	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
-func TestServiceReturnedErrorMutationCannotChangeCachedCause(t *testing.T) {
+// CheckServiceReturnedErrorMutationCannotChangeCachedCause retains private resource controls while the outer test supplies the real engine finalizer.
+func CheckServiceReturnedErrorMutationCannotChangeCachedCause(t *testing.T, finalize func(*result.Result)) {
 	f := newServiceFixture(t, context.Background(), `{"entries":[]}`, DefaultServiceLimits())
 	syscall := &os.SyscallError{Syscall: "open", Err: os.ErrPermission}
 	path := &os.PathError{Op: "read", Path: "read.md", Err: syscall}
@@ -105,7 +105,7 @@ func TestServiceReturnedErrorMutationCannotChangeCachedCause(t *testing.T) {
 			}
 		}
 		assertSource()
-		engine.FinalizeLintResult(&out)
+		finalize(&out)
 		assertSource()
 		if out.Errors[0].Code != "read-failure" || out.Coverage[0].CauseIDs[0] != out.Errors[0].ID {
 			t.Fatal("finalization changed cause relationship", out)
@@ -212,7 +212,8 @@ func TestServiceErrorSnapshotLimitsAndSharedCopyWork(t *testing.T) {
 
 // Optional inspection metadata must never replace the independently acquired
 // IO/control records, including when a consumer makes a standard carrier invalid.
-func TestServiceReturnedMetadataCannotEraseCanonicalStops(t *testing.T) {
+// CheckServiceReturnedMetadataCannotEraseCanonicalStops retains private resource controls while the outer test supplies the real engine finalizer.
+func CheckServiceReturnedMetadataCannotEraseCanonicalStops(t *testing.T, finalize func(*result.Result)) {
 	mutations := []struct {
 		name   string
 		mutate func(*os.PathError)
@@ -377,7 +378,7 @@ func TestServiceReturnedMetadataCannotEraseCanonicalStops(t *testing.T) {
 						}
 					}
 					check()
-					engine.FinalizeLintResult(&out)
+					finalize(&out)
 					check()
 					if out.Status != "error" || out.Complete {
 						t.Fatal("IO precedence lost", out)
@@ -408,7 +409,8 @@ func TestServiceErrorSnapshotNilKnownCarriers(t *testing.T) {
 	}
 }
 
-func TestServiceCombinedCanonicalStopsAreAllProjected(t *testing.T) {
+// CheckServiceCombinedCanonicalStopsAreAllProjected retains private resource controls while the outer test supplies the real engine finalizer.
+func CheckServiceCombinedCanonicalStopsAreAllProjected(t *testing.T, finalize func(*result.Result)) {
 	for _, mode := range []struct {
 		name                    string
 		cancel, deadline, limit bool
@@ -610,7 +612,7 @@ func TestServiceCombinedCanonicalStopsAreAllProjected(t *testing.T) {
 						}
 					}
 					check()
-					engine.FinalizeLintResult(&out)
+					finalize(&out)
 					check()
 					wantStatus := "incomplete"
 					if fact == "io" {

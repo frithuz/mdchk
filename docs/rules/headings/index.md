@@ -19,7 +19,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD041](md041.md) | Opening document heading | Analysis implemented |
 | [MD043](md043.md) | Required heading outline | Analysis implemented (default disabled) |
 | [MD063](md063.md) | Heading capitalization | Analysis implemented (default disabled) |
-| [MD080](md080.md) | Colliding heading anchors | Planned |
+| [MD080](md080.md) | Colliding heading anchors | Analysis implemented (default disabled) |
 | [MD082](md082.md) | Sections without content | Planned |
 | [MD090](md090.md) | Horizontal rules before headings | Planned |
 | [MD093](md093.md) | Inline formatting in headings | Planned |

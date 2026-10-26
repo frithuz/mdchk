@@ -1,0 +1,1287 @@
+[
+  {
+    "Name": "published",
+    "Source": "## Hello!\n\n## Hello",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          14,
+          19,
+          3,
+          4,
+          3,
+          9
+        ],
+        "Source": "Hello"
+      }
+    ]
+  },
+  {
+    "Name": "valid",
+    "Source": "## Hello!\n\n## Welcome",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "every later",
+    "Source": "# A\n# A\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      },
+      {
+        "Range": [
+          10,
+          11,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "same level",
+    "Source": "# A\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "different levels",
+    "Source": "# A\n###### A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          8,
+          2,
+          9
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "empty raw",
+    "Source": "#\n#",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          3,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "empty padded",
+    "Source": "#  \n#  ",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "empty base punctuation",
+    "Source": "# !!!\n# ???",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          11,
+          2,
+          3,
+          2,
+          6
+        ],
+        "Source": "???"
+      }
+    ]
+  },
+  {
+    "Name": "empty base comments",
+    "Source": "# <!-- x -->\n# <!-- y -->",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          15,
+          25,
+          2,
+          3,
+          2,
+          13
+        ],
+        "Source": "<!-- y -->"
+      }
+    ]
+  },
+  {
+    "Name": "empty mixed",
+    "Source": "# !!!\n#",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          7,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "empty explicit",
+    "Source": "#\n#",
+    "AnchorStyle": "explicit",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "explicit repeated",
+    "Source": "# A\n# A",
+    "AnchorStyle": "explicit",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "explicit HTML not heading",
+    "Source": "<h1 id=\"same\">A</h1>\n\n<h2 id=\"same\">A</h2>\n\n# A\n# A",
+    "AnchorStyle": "explicit",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "HTML occupied",
+    "Source": "<div id=\"a\"></div>\n\n# A\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          26,
+          27,
+          4,
+          3,
+          4,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "HTML duplicate no headings",
+    "Source": "<div id=\"a\"></div>\n\n<span id=\"a\"></span>",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "HTML duplicate one heading",
+    "Source": "<div id=\"a\"></div>\n\n<span id=\"a\"></span>\n\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "HTML empty suffix reservation",
+    "Source": "<div id=\"-1\"></div>\n\n# !!!\n# ???",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          29,
+          32,
+          4,
+          3,
+          4,
+          6
+        ],
+        "Source": "???"
+      }
+    ]
+  },
+  {
+    "Name": "suffix-looking distinct",
+    "Source": "# A\n# A-1",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "suffix-looking third",
+    "Source": "# A\n# A\n# A-1",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "HTML reservation distinct bases",
+    "Source": "<div id=\"a\"></div>\n\n# A\n# A-1",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "containers global",
+    "Source": "> ## Hello\n\n- ### hello!",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          18,
+          24,
+          3,
+          7,
+          3,
+          13
+        ],
+        "Source": "hello!"
+      }
+    ]
+  },
+  {
+    "Name": "quote duplicate",
+    "Source": "> # A\n> # A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "list duplicate",
+    "Source": "- # A\n\n- # A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          3,
+          5,
+          3,
+          6
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "root and nested",
+    "Source": "# A\n\n> ## A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          3,
+          6,
+          3,
+          7
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "closed",
+    "Source": "## A ###\n\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "Setext",
+    "Source": "A\n===\n\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          4,
+          3,
+          4,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "Setext two levels",
+    "Source": "A\n---\n\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          4,
+          3,
+          4,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "Setext multiline",
+    "Source": "A\nB\n===\n\n# A B",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          14,
+          5,
+          3,
+          5,
+          6
+        ],
+        "Source": "A B"
+      }
+    ]
+  },
+  {
+    "Name": "strong",
+    "Source": "# **A**\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "strong second",
+    "Source": "# A\n# **A**",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          11,
+          2,
+          3,
+          2,
+          8
+        ],
+        "Source": "**A**"
+      }
+    ]
+  },
+  {
+    "Name": "link",
+    "Source": "# [A](x \"title\")\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          19,
+          20,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "image",
+    "Source": "# ![A](x)\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "code",
+    "Source": "# `A`\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "entity",
+    "Source": "# &#65;\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "entity second",
+    "Source": "# A\n# &#65;",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          11,
+          2,
+          3,
+          2,
+          8
+        ],
+        "Source": "&#65;"
+      }
+    ]
+  },
+  {
+    "Name": "escaped punctuation",
+    "Source": "# A\\!\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "raw inline",
+    "Source": "# <b>A</b>\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          13,
+          14,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "raw payload",
+    "Source": "# A<script>payload</script>\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          30,
+          31,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "GFMExpected": [],
+    "GFMUnavailable": true
+  },
+  {
+    "Name": "raw nested closer",
+    "Source": "# A!<script>*payload</script>* B\n# A! B",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          35,
+          39,
+          2,
+          3,
+          2,
+          7
+        ],
+        "Source": "A! B"
+      }
+    ],
+    "GFMExpected": [],
+    "GFMUnavailable": true
+  },
+  {
+    "Name": "raw different tail",
+    "Source": "# A!<script>*payload</script>* B\n# A!",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [],
+    "GFMExpected": [],
+    "GFMUnavailable": true
+  },
+  {
+    "Name": "script after repeated",
+    "Source": "# A\n# A\n\n<script id=\"x\">\n</script>",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "GFMExpected": [],
+    "GFMUnavailable": true
+  },
+  {
+    "Name": "explicit script unknown",
+    "Source": "# A\n# A\n\n<script id=\"x\">\n</script>",
+    "AnchorStyle": "explicit",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [],
+    "GFMExpected": [],
+    "GFMUnavailable": true
+  },
+  {
+    "Name": "malformed HTML unknown",
+    "Source": "# A\n# A\n\n<div id=\"unterminated>",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": true,
+    "Expected": []
+  },
+  {
+    "Name": "Unicode lower",
+    "Source": "# É\n# é",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          9,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "é"
+      }
+    ]
+  },
+  {
+    "Name": "no full folding",
+    "Source": "# Straße\n# STRASSE",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "no composition",
+    "Source": "# É\n# É",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "combining duplicate",
+    "Source": "# É\n# é",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          11,
+          2,
+          3,
+          2,
+          5
+        ],
+        "Source": "é"
+      }
+    ]
+  },
+  {
+    "Name": "Unicode uncased",
+    "Source": "# 雪\n# 雪",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          11,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "雪"
+      }
+    ]
+  },
+  {
+    "Name": "symbol retained",
+    "Source": "# A+B\n# AB",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "symbol same",
+    "Source": "# A+B\n# a+b",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          11,
+          2,
+          3,
+          2,
+          6
+        ],
+        "Source": "a+b"
+      }
+    ]
+  },
+  {
+    "Name": "spaces not collapsed",
+    "Source": "# A  B\n# A B",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "space newline equivalence",
+    "Source": "A\nB\n===\n\n# A B",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          14,
+          5,
+          3,
+          5,
+          6
+        ],
+        "Source": "A B"
+      }
+    ]
+  },
+  {
+    "Name": "nbsp semantic",
+    "Source": "# A&nbsp;B\n# A B",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          13,
+          16,
+          2,
+          3,
+          2,
+          6
+        ],
+        "Source": "A B"
+      }
+    ]
+  },
+  {
+    "Name": "hyphen underscore distinct",
+    "Source": "# A-B\n# A_B",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "punctuation stripped",
+    "Source": "# Hello!?\n# hello",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          17,
+          2,
+          3,
+          2,
+          8
+        ],
+        "Source": "hello"
+      }
+    ]
+  },
+  {
+    "Name": "nul normalized",
+    "Source": "# A\u0000\n# A�",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          11,
+          2,
+          3,
+          2,
+          5
+        ],
+        "Source": "A�"
+      }
+    ]
+  },
+  {
+    "Name": "strike dialect",
+    "Source": "# ~~Gone~~\n# Gone",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [],
+    "GFMExpected": [
+      {
+        "Range": [
+          13,
+          17,
+          2,
+          3,
+          2,
+          7
+        ],
+        "Source": "Gone"
+      }
+    ]
+  },
+  {
+    "Name": "fence fake",
+    "Source": "# A\n\n```\n# A\n```",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "indent fake",
+    "Source": "# A\n\n    # A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw block fake",
+    "Source": "<div>\n# A\n</div>\n\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "comment fake",
+    "Source": "<!--\n# A\n-->\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "protected before real",
+    "Source": "# A\n\n```\n# A\n```\n\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          20,
+          21,
+          7,
+          3,
+          7,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "metadata no virtual",
+    "Source": "---\ntitle: A\n---\n# A",
+    "AnchorStyle": "github",
+    "Recognize": true,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "metadata duplicate body",
+    "Source": "---\ntitle: A\n---\n# A\n# A",
+    "AnchorStyle": "github",
+    "Recognize": true,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          23,
+          24,
+          5,
+          3,
+          5,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "metadata only",
+    "Source": "---\ntitle: A\n---",
+    "AnchorStyle": "github",
+    "Recognize": true,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "metadata uncertain",
+    "Source": "---\n# A\n# A",
+    "AnchorStyle": "github",
+    "Recognize": true,
+    "ParserUncertain": true,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "header off",
+    "Source": "---\n# A\n---\n# A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          14,
+          15,
+          4,
+          3,
+          4,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "empty document",
+    "Source": "",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "no headings",
+    "Source": "prose\n\nMore prose",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "LF",
+    "Source": "# A\n# A\n",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "CRLF",
+    "Source": "# A\r\n# A\r\n",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "CR",
+    "Source": "# A\r# A\r",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "Unicode prefix nested",
+    "Source": "雪\r\n\r\n> # A\r\n\r\n- # A",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          20,
+          21,
+          5,
+          5,
+          5,
+          6
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "explicit removed attribute-looking",
+    "Source": "# A {#same}\n# A {#same}",
+    "AnchorStyle": "explicit",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": []
+  },
+  {
+    "Name": "attribute-looking ordinary github",
+    "Source": "# A {#same}\n# A {#same}",
+    "AnchorStyle": "github",
+    "Recognize": false,
+    "ParserUncertain": false,
+    "Unavailable": false,
+    "Expected": [
+      {
+        "Range": [
+          14,
+          23,
+          2,
+          3,
+          2,
+          12
+        ],
+        "Source": "A {#same}"
+      }
+    ]
+  }
+]
