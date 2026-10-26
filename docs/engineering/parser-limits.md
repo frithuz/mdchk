@@ -528,3 +528,16 @@ and item offsets, retaining ordered anchors before children; storage, work and
 finding growth reserve the original allowance even on clean inputs. Final caller
 and origin checks withhold interrupted findings. Findings own one bullet byte
 and remain manual despite PlannedFix metadata; MD047 alone produces edits.
+
+MD029 reuses the original detached list facts and borrows its admitted `style`
+under the same original operation controls. Each actual ordered group keeps an
+immutable first direct numeric start and a direct ordinal, including wrong and
+suppressed items. Independent nested groups and quotes retain enclosing state;
+ordered descendants below bullets are targets. Numeric leading zeros are equal,
+zero starts are valid, and comparing actual minus first to ordinal avoids growing
+numeric sums. `one` requires numeric 1 even on the first item. State uses constant
+source-token and group offsets, with storage, work, capacity, copies and finding
+records reserved before construction, including clean inputs. Caller and origin
+checks atomically withhold interrupted findings. Diagnostics own the full digits
+and delimiter only. Default-enabled PlannedFix remains metadata; findings are
+manual and MD047 alone supplies executable edits.

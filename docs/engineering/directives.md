@@ -91,3 +91,7 @@ Both text and JSON reporters include these observations and count whole-record
 omissions under reporting limits. The inspection package now projects these observations and optionally runs
 disabled-throughout callbacks on the shared budget. Inspection/fix/MCP commands
 and MD087 counterfactual conclusions remain downstream.
+
+MD029 compares full actual ordered groups before marker-start suppression. Hidden
+first items supply the start; hidden later mismatches consume direct ordinals.
+A later enable directive retains the original group counter and admitted style.

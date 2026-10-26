@@ -201,3 +201,61 @@ func TestRuleContextBulletIndentationOriginalAuthority(t *testing.T) {
 		t.Fatal(indent, start, err)
 	}
 }
+
+func TestRuleContextOrderedListStyleOriginalAuthority(t *testing.T) {
+	for _, origin := range []bool{false, true} {
+		for _, stop := range []int{1, 2} {
+			c := listContext(t, "", parser.DefaultLimits(), context.Background())
+			c.options = Options{"style": "one"}
+			caller := context.Background()
+			counter := &terminalCounter{Context: context.Background(), stop: stop}
+			if origin {
+				c.operation = counter
+			} else {
+				caller = counter
+			}
+			one, err := c.OrderedListStyle(caller)
+			if !errors.Is(err, context.Canceled) || one {
+				t.Fatal(one, err)
+			}
+		}
+	}
+	for _, kind := range []string{"fresh budget", "foreign input", "absent context", "invalid option", "work", "nodes", "elapsed"} {
+		t.Run(kind, func(t *testing.T) {
+			synctest.Test(t, func(t *testing.T) {
+				limits := parser.DefaultLimits()
+				limits.OperationTime = 20 * time.Millisecond
+				c := listContext(t, "", limits, context.Background())
+				c.options = Options{"style": "ordered"}
+				caller := context.Background()
+				switch kind {
+				case "fresh budget":
+					c.budget, _ = parser.NewOperationBudget(limits)
+				case "foreign input":
+					c.input, _ = NewInput("other", nil, nil, DocumentContext{})
+				case "absent context":
+					caller = nil
+				case "invalid option":
+					c.options["style"] = nil
+				case "work":
+					_ = c.budget.ChargeWork(limits.WorkUnits)
+				case "nodes":
+					_ = c.budget.ChargeNodes(limits.TotalNodes + 1)
+				case "elapsed":
+					time.Sleep(25 * time.Millisecond)
+				}
+				one, err := c.OrderedListStyle(caller)
+				if err == nil || one {
+					t.Fatal(kind, one, err)
+				}
+			})
+		})
+	}
+	c := listContext(t, "", parser.DefaultLimits(), context.Background())
+	c.options = Options{"style": "one"}
+	copied := c.Options()
+	copied["style"] = "ordered"
+	if one, err := c.OrderedListStyle(context.Background()); err != nil || !one {
+		t.Fatal(one, err)
+	}
+}

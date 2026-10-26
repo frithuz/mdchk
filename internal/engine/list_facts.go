@@ -63,3 +63,19 @@ func (c RuleContext) BulletIndentation(ctx context.Context) (int, bool, error) {
 	}
 	return indent, start, nil
 }
+
+// OrderedListStyle borrows the admitted immutable MD029 style under the original
+// operation controls; true selects numeric one for every actual ordered item.
+func (c RuleContext) OrderedListStyle(ctx context.Context) (bool, error) {
+	if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
+		return false, err
+	}
+	value, ok := c.options["style"].(string)
+	if !ok || (value != "ordered" && value != "one") {
+		return false, parser.ErrModel
+	}
+	if err := c.SectionCheckpoint(ctx, int64(len(value))+1, 0); err != nil {
+		return false, err
+	}
+	return value == "one", nil
+}

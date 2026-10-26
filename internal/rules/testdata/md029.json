@@ -1,0 +1,475 @@
+[
+  {
+    "Name": "published accepted",
+    "Source": "1. One\n2. Two\n",
+    "Expected": []
+  },
+  {
+    "Name": "published violating",
+    "Source": "1. One\n3. Two\n",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          9,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "3."
+      }
+    ]
+  },
+  {
+    "Name": "fixed baseline recovery",
+    "Source": "5. a\n9. b\n7. c",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          7,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "9."
+      }
+    ]
+  },
+  {
+    "Name": "no observed reset",
+    "Source": "5. a\n9. b\n10. c",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          7,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "9."
+      },
+      {
+        "Range": [
+          10,
+          13,
+          3,
+          1,
+          3,
+          4
+        ],
+        "Source": "10."
+      }
+    ]
+  },
+  {
+    "Name": "non one start",
+    "Source": "5. a\n6. b",
+    "Expected": []
+  },
+  {
+    "Name": "zero start",
+    "Source": "0. a\n1. b",
+    "Expected": []
+  },
+  {
+    "Name": "leading zeros",
+    "Source": "003. a\n0004. b\n5. c",
+    "Expected": []
+  },
+  {
+    "Name": "leading zero violation",
+    "Source": "003. a\n005. b",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          11,
+          2,
+          1,
+          2,
+          5
+        ],
+        "Source": "005."
+      }
+    ]
+  },
+  {
+    "Name": "one accepted",
+    "Source": "01) a\n001) b",
+    "Expected": [],
+    "Style": "one"
+  },
+  {
+    "Name": "one first and later",
+    "Source": "5. a\n1. b\n0. c",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          2,
+          1,
+          1,
+          1,
+          3
+        ],
+        "Source": "5."
+      },
+      {
+        "Range": [
+          10,
+          12,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "0."
+      }
+    ],
+    "Style": "one"
+  },
+  {
+    "Name": "width transition",
+    "Source": "9. a\n10. b\n12. c",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          14,
+          3,
+          1,
+          3,
+          4
+        ],
+        "Source": "12."
+      }
+    ]
+  },
+  {
+    "Name": "thousand transition",
+    "Source": "999. a\n1000. b\n1002. c",
+    "Expected": [
+      {
+        "Range": [
+          15,
+          20,
+          3,
+          1,
+          3,
+          6
+        ],
+        "Source": "1002."
+      }
+    ]
+  },
+  {
+    "Name": "maximum numeric",
+    "Source": "999999999. a\n999999999. b",
+    "Expected": [
+      {
+        "Range": [
+          13,
+          23,
+          2,
+          1,
+          2,
+          11
+        ],
+        "Source": "999999999."
+      }
+    ]
+  },
+  {
+    "Name": "ten digit nonitem",
+    "Source": "1000000000. a\n1000000002. b",
+    "Expected": []
+  },
+  {
+    "Name": "delimiter groups",
+    "Source": "5. a\n6) b\n8) c",
+    "Expected": [
+      {
+        "Range": [
+          10,
+          12,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "8)"
+      }
+    ]
+  },
+  {
+    "Name": "paragraph groups",
+    "Source": "3. a\n\nparagraph\n\n8. b\n9. c",
+    "Expected": []
+  },
+  {
+    "Name": "thematic groups",
+    "Source": "3. a\n\n---\n\n8. b\n9. c",
+    "Expected": []
+  },
+  {
+    "Name": "setext groups",
+    "Source": "3. a\n\nheading\n=======\n\n8. b\n9. c",
+    "Expected": []
+  },
+  {
+    "Name": "nested groups",
+    "Source": "5. a\n\n   8. inner\n   10. child\n6. b\n8. c",
+    "Expected": [
+      {
+        "Range": [
+          21,
+          24,
+          4,
+          4,
+          4,
+          7
+        ],
+        "Source": "10."
+      },
+      {
+        "Range": [
+          36,
+          38,
+          6,
+          1,
+          6,
+          3
+        ],
+        "Source": "8."
+      }
+    ]
+  },
+  {
+    "Name": "quote interleave",
+    "Source": "5. a\n   > 8. inner\n   > 10. child\n6. b",
+    "Expected": [
+      {
+        "Range": [
+          24,
+          27,
+          3,
+          6,
+          3,
+          9
+        ],
+        "Source": "10."
+      }
+    ]
+  },
+  {
+    "Name": "under bullet",
+    "Source": "- a\n\n  3. inner\n  5. child",
+    "Expected": [
+      {
+        "Range": [
+          18,
+          20,
+          4,
+          3,
+          4,
+          5
+        ],
+        "Source": "5."
+      }
+    ]
+  },
+  {
+    "Name": "same line",
+    "Source": "- 3. inner\n  5. child",
+    "Expected": [
+      {
+        "Range": [
+          13,
+          15,
+          2,
+          3,
+          2,
+          5
+        ],
+        "Source": "5."
+      }
+    ]
+  },
+  {
+    "Name": "empty task definition",
+    "Source": "1.\n2. [x] task\n3. [r]: /url\n5. tail",
+    "Expected": [
+      {
+        "Range": [
+          28,
+          30,
+          4,
+          1,
+          4,
+          3
+        ],
+        "Source": "5."
+      }
+    ]
+  },
+  {
+    "Name": "protected",
+    "Source": "```\n1. a\n3. b\n```\n\n    1. a\n    3. b\n\n<div>\n1. a\n3. b\n</div>\n\n<!--\n1. a\n3. b\n-->\n\n1\\. text\n3\\. text\n\ntext\n3. cannot interrupt\n4. still text\n",
+    "Expected": []
+  },
+  {
+    "Name": "lazy quote",
+    "Source": "> text\n3. lazy\n4. lazy",
+    "Expected": []
+  },
+  {
+    "Name": "opaque yaml",
+    "Source": "---\n1. a\n3. b\n---\n\n1. body\n3. body",
+    "Expected": [
+      {
+        "Range": [
+          27,
+          29,
+          7,
+          1,
+          7,
+          3
+        ],
+        "Source": "3."
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "opaque toml",
+    "Source": "+++\n1. a\n3. b\n+++\n\n1. body\n3. body",
+    "Expected": [
+      {
+        "Range": [
+          27,
+          29,
+          7,
+          1,
+          7,
+          3
+        ],
+        "Source": "3."
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "header disabled",
+    "Source": "+++\n1. a\n3. b\n+++",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          11,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "3."
+      }
+    ]
+  },
+  {
+    "Name": "unreliable header",
+    "Source": "---\n1. a\n3. b",
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "exact LF",
+    "Source": "é🙂\u0000\n\n> 003) a\n> 005) b",
+    "Expected": [
+      {
+        "Range": [
+          20,
+          24,
+          4,
+          3,
+          4,
+          7
+        ],
+        "Source": "005)"
+      }
+    ]
+  },
+  {
+    "Name": "exact CRLF",
+    "Source": "é🙂\u0000\r\n\r\n> 003) a\r\n> 005) b",
+    "Expected": [
+      {
+        "Range": [
+          23,
+          27,
+          4,
+          3,
+          4,
+          7
+        ],
+        "Source": "005)"
+      }
+    ]
+  },
+  {
+    "Name": "exact CR",
+    "Source": "é🙂\u0000\r\r> 003) a\r> 005) b",
+    "Expected": [
+      {
+        "Range": [
+          20,
+          24,
+          4,
+          3,
+          4,
+          7
+        ],
+        "Source": "005)"
+      }
+    ]
+  },
+  {
+    "Name": "tab padding",
+    "Source": "1.\ta\n3.\tb",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          7,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "3."
+      }
+    ]
+  },
+  {
+    "Name": "eof",
+    "Source": "1. a\n003. b",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          9,
+          2,
+          1,
+          2,
+          5
+        ],
+        "Source": "003."
+      }
+    ]
+  }
+]

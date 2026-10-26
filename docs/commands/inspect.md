@@ -131,3 +131,7 @@ Line filtering keeps the document context. Output limits can omit the whole sect
 An explicitly exempt MD090 rule is marked `inapplicable`. If unrelated parser or
 directive work is unavailable, known exemption rows can appear in a partial rules
 section; this does not claim full rule counts, body syntax or complete analysis.
+
+MD029 is available for both flavors, with admitted `ordered` or `one` style.
+Inspection reports analysis availability; PlannedFix metadata grants no MD029
+correction authority. Its full numeric marker findings remain manual.
