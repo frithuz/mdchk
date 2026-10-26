@@ -26,18 +26,23 @@ func (d *Document) Comments(ctx context.Context, budget *OperationBudget) ([]Com
 		return nil, errors.New("comment context is not a completed parse in this operation")
 	}
 	var out []CommentFact
-	stack := []*Node{d.root}
+	type visit struct {
+		node *Node
+		alt  bool
+	}
+	stack := []visit{{node: d.root}}
 	raw := ""
 	for len(stack) != 0 {
 		if err := ctx.Err(); err != nil {
 			return nil, err
 		}
-		n := stack[len(stack)-1]
+		entry := stack[len(stack)-1]
+		n := entry.node
 		stack = stack[:len(stack)-1]
 		if err := budget.ChargeWork(int64(1 + len(n.spec.Children) + len(n.htmlTail) + len(n.spec.Markers) + len(n.spec.Content))); err != nil {
 			return nil, err
 		}
-		if n.rawTag != "" {
+		if !entry.alt && n.rawTag != "" {
 			if raw == "" && !n.rawClosing {
 				raw = n.rawTag
 			} else if raw == n.rawTag && n.rawClosing {
@@ -79,10 +84,10 @@ func (d *Document) Comments(ctx context.Context, budget *OperationBudget) ([]Com
 			out = append(out, fact)
 		}
 		for i := len(n.htmlTail) - 1; i >= 0; i-- {
-			stack = append(stack, n.htmlTail[i])
+			stack = append(stack, visit{n.htmlTail[i], entry.alt})
 		}
 		for i := len(n.spec.Children) - 1; i >= 0; i-- {
-			stack = append(stack, n.spec.Children[i])
+			stack = append(stack, visit{n.spec.Children[i], entry.alt || n.Kind() == Image})
 		}
 	}
 	return out, nil

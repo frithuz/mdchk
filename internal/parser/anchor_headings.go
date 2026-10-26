@@ -96,17 +96,7 @@ func (d *Document) Headings(ctx context.Context, budget *OperationBudget) ([]Hea
 					return err
 				}
 			}
-			var label Span
-			if err := headingFactCharge(ctx, budget, 1, 1); err != nil {
-				return err
-			}
-			if hasContent {
-				label, err = n.spec.Content[0].Source.source.Span(n.spec.Content[0].Source.Start(), n.spec.Content[len(n.spec.Content)-1].Source.End())
-			} else if h.Style == "atx" && opening.Present() {
-				label, err = opening.source.Span(opening.End(), opening.End())
-			} else {
-				return ErrModel
-			}
+			label, err := headingLabel(ctx, budget, n, opening)
 			if err != nil {
 				return err
 			}
@@ -230,4 +220,32 @@ func headingVisibleText(ctx context.Context, budget *OperationBudget, heading *N
 		return "", err
 	}
 	return text.String(), nil
+}
+
+// headingLabel borrows only actual raw content ownership; empty ATX labels
+// select the opening marker end. It does not render inline semantics. Callers
+// retaining the opening marker pass it to avoid rescanning already-owned syntax.
+func headingLabel(ctx context.Context, budget *OperationBudget, n *Node, opening Span) (Span, error) {
+	if err := headingFactCharge(ctx, budget, 1, 1); err != nil {
+		return Span{}, err
+	}
+	if len(n.spec.Content) != 0 {
+		first, last := n.spec.Content[0].Source, n.spec.Content[len(n.spec.Content)-1].Source
+		return first.source.Span(first.Start(), last.End())
+	}
+	if n.spec.Properties.Heading == nil || n.spec.Properties.Heading.Style != "atx" {
+		return Span{}, ErrModel
+	}
+	if opening.Present() {
+		return opening.source.Span(opening.End(), opening.End())
+	}
+	for _, marker := range n.spec.Markers {
+		if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
+			return Span{}, err
+		}
+		if marker.Role == "opening" {
+			return marker.Source.source.Span(marker.Source.End(), marker.Source.End())
+		}
+	}
+	return Span{}, ErrModel
 }

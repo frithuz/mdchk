@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization analysis and MD080 heading-anchor collision analysis are also available. MD026, MD036, MD043, MD063 and MD080 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision analysis and MD082 empty-section analysis are also available. MD026, MD036, MD043, MD063, MD080 and MD082 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -275,7 +275,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001, MD025 and MD041 opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
@@ -522,3 +522,25 @@ later present-base duplicate, including empty bases, uses the original full Labe
 Local AnchorStyle defaults github, validates github/explicit and persists through
 plans/candidates. This does not enable index_file or cross-file consumers. Finite
 application accounting is not a hard RSS or OS-preemption guarantee.
+
+
+### Empty sections
+
+MD082 uses the parser-owned EmptySections projection under the complete original
+production profile, parse options, source/index and operation allowance. One
+pending actual heading and intervening body flag resolve each heading once; a
+deeper next heading itself satisfies its parent. All actual container and hidden
+headings participate before filtering. Only the globally last actual heading per
+document can receive the boolean allow_final_section exemption. Labels share the
+raw heading-label helper, including empty-label points; own inline labels are not
+body. Semantic whitespace, actual object presence and confirmed comment ownership
+follow the [MD082 policy](rules/headings/md082.md).
+
+Traversal stack growth and derived output are reserved before allocation. Borrowed
+AST visits and bounded semantic UTF-8 byte scans use work from the original
+allowance; both caller and origin controls and final publication are checked.
+An interrupted projection withholds its inventory atomically. Raw/comment state
+uses actual private nodes and owned content/tails, excluding container prefixes.
+This provider does not build an anchor index or consume AnchorStyle, metadata,
+resource availability, correction, write or MCP authority. MD082 remains default
+disabled and report-only; MD047 retains the sole production correction.

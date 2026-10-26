@@ -1,0 +1,1130 @@
+[
+  {
+    "Name": "published",
+    "Source": "## Install\n\n## Usage\nText",
+    "Expected": [
+      {
+        "Range": [
+          3,
+          10,
+          1,
+          4,
+          1,
+          11
+        ],
+        "Source": "Install"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "accepted",
+    "Source": "## Install\nInstructions.\n\n## Usage\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "own label is not body",
+    "Source": "# A",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "deeper child itself counts",
+    "Source": "# A\n## B\n# C\nText",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "B"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "only last child empty",
+    "Source": "# A\n## B",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "B"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "final child exempt",
+    "Source": "# A\n## B",
+    "Expected": [],
+    "AllowFinal": true,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "nonfinal child not exempt",
+    "Source": "# A\n## B\n## C",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "B"
+      }
+    ],
+    "AllowFinal": true,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "equal closes",
+    "Source": "# A\n# B",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      },
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "B"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "raw empty labels",
+    "Source": "#\n#",
+    "Expected": [
+      {
+        "Range": [
+          1,
+          1,
+          1,
+          2,
+          1,
+          2
+        ],
+        "Source": ""
+      },
+      {
+        "Range": [
+          3,
+          3,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": ""
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "raw empty final exemption",
+    "Source": "#\n#",
+    "Expected": [
+      {
+        "Range": [
+          1,
+          1,
+          1,
+          2,
+          1,
+          2
+        ],
+        "Source": ""
+      }
+    ],
+    "AllowFinal": true,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "unicode nested global",
+    "Source": "雪\n\n> ## Empty\n\n## Next\nText",
+    "Expected": [
+      {
+        "Range": [
+          10,
+          15,
+          3,
+          6,
+          3,
+          11
+        ],
+        "Source": "Empty"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "setext raw label",
+    "Source": "*Alpha*\n=======\n\nNext\n====\nText",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          7,
+          1,
+          1,
+          1,
+          8
+        ],
+        "Source": "*Alpha*"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "closed raw label",
+    "Source": "## *A* ###\n\n## B\nText",
+    "Expected": [
+      {
+        "Range": [
+          3,
+          6,
+          1,
+          4,
+          1,
+          7
+        ],
+        "Source": "*A*"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "blank",
+    "Source": "# A\n\n \t\n\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "comment",
+    "Source": "# A\n\n<!-- c -->\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "multiple comments",
+    "Source": "# A\n\n<!--a--> <!--b-->\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "multiline comments",
+    "Source": "# A\n\n<!--a\n b-->\n<!--c-->\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "nested comment quote",
+    "Source": "# A\n\n> <!-- c -->\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "nested multiline comments",
+    "Source": "# A\n\n> <!--a\n> b-->\n> <!--c-->\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "nested list comments",
+    "Source": "# A\n\n- <!--a-->\n  <!--b-->\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "inline comment wrapper",
+    "Source": "# A\n\n*<!--c-->*\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "comment linked label",
+    "Source": "# A\n\n[<!--c-->](x)\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "empty link",
+    "Source": "# A\n\n[](x \"title\")\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "semantic space entity",
+    "Source": "# A\n\n&#32;\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "semantic nbsp entity",
+    "Source": "# A\n\n&nbsp;\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "unicode whitespace",
+    "Source": "# A\n\n  　\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "line paragraph separators",
+    "Source": "# A\n\n  \n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "formatted whitespace",
+    "Source": "# A\n\n*&#32;*\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "bare quote",
+    "Source": "# A\n\n>\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "bare list",
+    "Source": "# A\n\n-\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "reference only",
+    "Source": "# A\n\n[x]: /url\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "reference only list",
+    "Source": "# A\n\n- [x]: /url\n\n# B\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "nonblank",
+    "Source": "# A\n\nText\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "nul",
+    "Source": "# A\n\n\u0000\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "image object",
+    "Source": "# A\n\n![](x)\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "linked image object",
+    "Source": "# A\n\n[![](x)](y)\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "code whitespace",
+    "Source": "# A\n\n` `\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "inline tags",
+    "Source": "# A\n\n<span></span>\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "html block",
+    "Source": "# A\n\n<div>\n</div>\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "script raw",
+    "Source": "# A\n\n<script id=\"x\">\n<!-- c -->\n</script>\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "empty fence",
+    "Source": "# A\n\n```\n```\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "indented code",
+    "Source": "# A\n\n    x\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "thematic break",
+    "Source": "# A\n\n***\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "table",
+    "Source": "# A\n\n| A |\n| - |\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "task unchecked",
+    "Source": "# A\n\n- [ ]\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "task checked",
+    "Source": "# A\n\n- [x]\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "escaped comment",
+    "Source": "# A\n\n\\<!-- c -->\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "entity comment",
+    "Source": "# A\n\n&lt;!-- c -->\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "code comment",
+    "Source": "# A\n\n`<!--c-->`\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "comment text tail",
+    "Source": "# A\n\n<!--c-->tail\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "comment tag tail",
+    "Source": "# A\n\n<!--c--><span></span>\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "nested comment text tail",
+    "Source": "# A\n\n> <!--c--> tail\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "nested comment tag tail",
+    "Source": "# A\n\n> <!--c--><b></b>\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "comment multiple tail",
+    "Source": "# A\n\n<!--c--> <!--d--> tail\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "unclosed block comment",
+    "Source": "# A\n\n<!-- never closes",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "unclosed nested comment",
+    "Source": "# A\n\n> <!-- never\n> closes",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "tail unclosed comment",
+    "Source": "# A\n\n<!--c--> <!-- never closes",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "unclosed fence object",
+    "Source": "# A\n\n```\n# fake",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "protected fake headings",
+    "Source": "# A\n\n```\n# B\n<!--c-->\n```",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "header no virtual heading",
+    "Source": "---\ntitle: X\n---\n# A",
+    "Expected": [
+      {
+        "Range": [
+          19,
+          20,
+          4,
+          3,
+          4,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": true,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "unreliable header",
+    "Source": "---\n# A",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": true,
+    "AnchorStyle": "",
+    "ParserUncertain": true
+  },
+  {
+    "Name": "crlf",
+    "Source": "# A\r\n# B\r\nText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "cr",
+    "Source": "# A\r# B\rText",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "A"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "script independence github",
+    "Source": "# A\n\n<script id=\"x\">\n</script>\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "github",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "script independence explicit",
+    "Source": "# A\n\n<script id=\"x\">\n</script>\n\n# B\nText",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "explicit",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "crossparagraph protected comment",
+    "Source": "# Parent\n\ntext<script>\n\n# Empty\n\n<!-- payload -->",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "own label raw closer updates protection",
+    "Source": "# Parent\n\ntext<script>\n\n# Empty </script>\n\n<!-- payload -->",
+    "Expected": [
+      {
+        "Range": [
+          26,
+          41,
+          5,
+          3,
+          5,
+          18
+        ],
+        "Source": "Empty </script>"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "image alt raw opener opaque",
+    "Source": "# Parent\n\n![<script>](x)\n\n# Empty\n\n<!-- c -->",
+    "Expected": [
+      {
+        "Range": [
+          28,
+          33,
+          5,
+          3,
+          5,
+          8
+        ],
+        "Source": "Empty"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "heading image alt raw opener opaque",
+    "Source": "# ![<script>](x)\n\n# Empty\n\n<!-- c -->",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          16,
+          1,
+          3,
+          1,
+          17
+        ],
+        "Source": "![<script>](x)"
+      },
+      {
+        "Range": [
+          20,
+          25,
+          3,
+          3,
+          3,
+          8
+        ],
+        "Source": "Empty"
+      }
+    ],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "image alt raw closer opaque",
+    "Source": "# Parent\n\ntext<script>\n\n![</script>](x)\n\n# Empty\n\n<!-- c -->",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  },
+  {
+    "Name": "heading image alt raw closer opaque",
+    "Source": "# Parent\n\ntext<script>\n\n# ![</script>](x)\n\n<!-- c -->",
+    "Expected": [],
+    "AllowFinal": false,
+    "Recognize": false,
+    "AnchorStyle": "",
+    "ParserUncertain": false
+  }
+]

@@ -9,6 +9,10 @@ import (
 // original parse, its actual production profile/options, index and allowance.
 // Public ParseResult fields alone cannot establish this private witness.
 func (d *Document) HeadingAnchorCheckpoint(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, work, nodes int64) error {
+	return d.headingProjectionCheckpoint(ctx, budget, index, options, work, nodes)
+}
+
+func (d *Document) headingProjectionCheckpoint(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, work, nodes int64) error {
 	if ctx == nil || budget == nil || d == nil || !d.parsedComplete || d.commentOperation != budget.identity || index.source.Token() != d.Source().Token() || d.parsedOptions != options || (d.parsedProfile != coreProfile && d.parsedProfile != gfmInProgressProfile) {
 		return ErrModel
 	}

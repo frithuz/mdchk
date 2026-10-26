@@ -348,3 +348,25 @@ later present-base duplicate, including empty bases, uses the original full Labe
 Local AnchorStyle defaults github, validates github/explicit and persists through
 plans/candidates. This does not enable index_file or cross-file consumers. Finite
 application accounting is not a hard RSS or OS-preemption guarantee.
+
+
+### Empty sections
+
+MD082 uses the parser-owned EmptySections projection under the complete original
+production profile, parse options, source/index and operation allowance. One
+pending actual heading and intervening body flag resolve each heading once; a
+deeper next heading itself satisfies its parent. All actual container and hidden
+headings participate before filtering. Only the globally last actual heading per
+document can receive the boolean allow_final_section exemption. Labels share the
+raw heading-label helper, including empty-label points; own inline labels are not
+body. Semantic whitespace, actual object presence and confirmed comment ownership
+follow the [MD082 policy](../../docs/rules/headings/md082.md).
+
+Traversal stack growth and derived output are reserved before allocation. Borrowed
+AST visits and bounded semantic UTF-8 byte scans use work from the original
+allowance; both caller and origin controls and final publication are checked.
+An interrupted projection withholds its inventory atomically. Raw/comment state
+uses actual private nodes and owned content/tails, excluding container prefixes.
+This provider does not build an anchor index or consume AnchorStyle, metadata,
+resource availability, correction, write or MCP authority. MD082 remains default
+disabled and report-only; MD047 retains the sole production correction.
