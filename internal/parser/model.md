@@ -1943,3 +1943,10 @@ selects one first-extra blank suffix without retaining per-blank spans. Detached
 mismatch facts carry actual/expected counts and original diagnostic ranges only.
 Visits, source summaries, lookups, frames, rollback, capacities, copies and records
 are reserved before construction; final interruption withholds all facts.
+
+
+MD077 continuation analysis borrows the final private block/inline tree, removed
+definitions and confirmed item/quote markers under the completed production
+witness. It returns detached Span/Actual/Expected mismatches only; NodeSpec,
+Properties and inspection schemas are unchanged. It preserves physical cursor
+phase and partial tabs without retaining new original-parse observations.

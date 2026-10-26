@@ -150,3 +150,8 @@ MD076 inspection reports available default-enabled CommonMark/GFM analysis and
 its admitted exact `style`. Hidden siblings still establish the per-list baseline;
 suppressed findings use their original deficit or first-extra-line surplus range.
 Inspection grants no MD076 correction authority.
+
+
+MD077 inspection identifies available default-enabled CommonMark/GFM analysis
+and manual findings. Selection slices findings after complete structural context
+and protected-line eligibility are established. It grants no correction authority.

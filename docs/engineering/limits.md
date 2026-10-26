@@ -214,3 +214,9 @@ index lookups, actual tree frames, prefix rollback, removed-definition associati
 group baselines, fact/finding capacity, copied prefixes and logical records.
 Empty, clean and interrupted inventories retain caller/origin controls and final
 atomic withholding. No source copy, reparse or new allowance is introduced.
+
+
+MD077 shares the completed original operation allowance for per-line cursors,
+confirmed prefix replay, final ownership/definition association, inline literal
+protection, traversal growth/copies and detached findings. Producer, facade and
+callback publication checks withhold all dependent output after failure.

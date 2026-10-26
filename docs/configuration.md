@@ -34,7 +34,7 @@ policy and has no rule-specific options; MD018 through MD021 and MD023 have no
 rule-specific options; MD025 and MD041 accept integer `level` from 1 through 6 (default
 1) and boolean `frontmatter_title` (default false); MD024 accepts boolean
 `siblings_only`, default false; MD022 accepts nonnegative integer `before` and `after`
-minima, each defaulting to 1. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076,
+minima, each defaulting to 1. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077,
 MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043,
 MD063, MD080, MD082, MD090 and MD093 are report-only. Other ordinary rule
 implementations remain pending. Missing enabled defaults produce coverage deficits
@@ -453,3 +453,9 @@ first direct sibling separator count per actual list, including counts above one
 `tight` requires zero and `loose` one. Shared directive restrictions apply before
 START-based filtering. Unknown options, wrong case, types and null fail even while
 disabled. PlannedFix metadata grants no MD076 edits or previews.
+
+
+MD077 is available and enabled by default, with no rule-specific options. An
+empty mapping retains defaults. Shared booleans and inherited directive denials
+apply; invalid types/null and unknown options are rejected even while disabled.
+Its PlannedFix metadata grants no executable correction authority.

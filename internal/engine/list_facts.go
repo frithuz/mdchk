@@ -162,3 +162,18 @@ func (c RuleContext) ListItemSpacing(ctx context.Context) (out []parser.ListItem
 	}
 	return c.document.ListItemSpacing(ruleOperation{ctx, c.operation}, c.budget, c.index, c.Context().ParseOptions(), style)
 }
+
+// ListContinuationIndentation exposes detached original nearest-item mismatches
+// under both caller and original operation controls, without cloning Options.
+func (c RuleContext) ListContinuationIndentation(ctx context.Context) (out []parser.ListContinuationFact, err error) {
+	if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
+		return nil, err
+	}
+	defer func() {
+		err = errors.Join(err, c.SectionCheckpoint(ctx, 0, 0))
+		if err != nil {
+			out = nil
+		}
+	}()
+	return c.document.ListContinuationIndentation(ruleOperation{ctx, c.operation}, c.budget, c.index, c.Context().ParseOptions())
+}

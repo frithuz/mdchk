@@ -566,3 +566,10 @@ precharged frames, prefix rollback and definition association. Each actual List
 retains its own exact baseline in its frame; no source-bearing span hashing or
 per-blank inventory is used. The admitted style chooses the first extra line in
 that traversal. All output is withheld on original caller/budget interruption.
+
+
+MD077 replays only confirmed final container markers using borrowed original
+source/index cursors, preserving partial tabs and physical phase. It reserves
+per-line state, associations/lookups, cumulative frames, inline protection visits,
+growth/copies and detached findings before construction. No parse retention,
+replacement index, whole-source reparse or additional allowance is introduced.

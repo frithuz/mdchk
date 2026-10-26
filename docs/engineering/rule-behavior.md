@@ -608,3 +608,11 @@ MD076 compares exact source-owned direct sibling separator counts per actual
 list. Tight=0, loose=1 and consistent=immutable exact first count, including >1.
 Internal looseness and final List.Tight do not decide source spacing. Every
 mismatch remains manual; rendering preservation only limits future correction.
+
+
+MD077 compares all eligible actual paragraph contributions, nonliteral block
+openings, real fence boundaries, definition first lines and actual GFM source
+rows against the cumulative final item chain. Actual quote columns are neutral
+only when consumed; descendant quotes select their first item-facing marker.
+Postquote body indent, raw/comment regions and literal payload stay protected.
+It is analysis-only and returns manual original-source evidence.

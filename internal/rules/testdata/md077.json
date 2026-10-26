@@ -1,0 +1,936 @@
+[
+  {
+    "Name": "empty",
+    "Source": "",
+    "Expected": []
+  },
+  {
+    "Name": "root",
+    "Source": "Text\n more\n",
+    "Expected": []
+  },
+  {
+    "Name": "three spaces owned",
+    "Source": "- One\n\n   Text\n",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "corrected",
+    "Source": "- One\n\n  Text\n",
+    "Expected": []
+  },
+  {
+    "Name": "outside",
+    "Source": "- One\n\n Text\n",
+    "Expected": []
+  },
+  {
+    "Name": "wrap lazy",
+    "Source": "- One\n wrapped\nnoindent\n",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          7,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": "",
+        "Actual": 1,
+        "Expected": 2
+      },
+      {
+        "Range": [
+          15,
+          15,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "wrap surplus",
+    "Source": "- One\n   wrapped\n",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "later wrap",
+    "Source": "- One\n\n  Two\n lazy\n",
+    "Expected": [
+      {
+        "Range": [
+          14,
+          14,
+          4,
+          2,
+          4,
+          2
+        ],
+        "Source": "",
+        "Actual": 1,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "nested lazy one",
+    "Source": "- - One\n Text\n",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": "",
+        "Actual": 1,
+        "Expected": 4
+      }
+    ]
+  },
+  {
+    "Name": "nested lazy zero",
+    "Source": "- - One\nText\n",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          8,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 4
+      }
+    ]
+  },
+  {
+    "Name": "nested quote absent",
+    "Source": "> - - One\n Text\n",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          11,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": "",
+        "Actual": 1,
+        "Expected": 4
+      }
+    ]
+  },
+  {
+    "Name": "quote above present",
+    "Source": "> - One\n> Text\n",
+    "Expected": [
+      {
+        "Range": [
+          10,
+          10,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "quote above absent",
+    "Source": "> - One\n Text\n",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": "",
+        "Actual": 1,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "quote inside absent",
+    "Source": "- > One\n Text\n",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": "",
+        "Actual": 1,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "quote inside aligned extra",
+    "Source": "- > One\n  >  Text\n",
+    "Expected": []
+  },
+  {
+    "Name": "closed inner reassigned",
+    "Source": "- - > One\n  > Text\n",
+    "Expected": []
+  },
+  {
+    "Name": "atomic tab",
+    "Source": "- One\n\n\tText\n",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Actual": 4,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "quote phase tab",
+    "Source": "> - One\n>\n> \tText\n",
+    "Expected": []
+  },
+  {
+    "Name": "quote partial tab",
+    "Source": "> - One\n>\n>\tText\n",
+    "Expected": []
+  },
+  {
+    "Name": "quote partial tab surplus",
+    "Source": "> - One\n>\n>\t Text\n",
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "fence boundaries",
+    "Source": "- One\n\n   ```go\n      literal\n   ```\n",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      },
+      {
+        "Range": [
+          32,
+          33,
+          5,
+          3,
+          5,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "fence false closer",
+    "Source": "- One\n\n  ```\n   ```x\n  ```\n",
+    "Expected": []
+  },
+  {
+    "Name": "fence unclosed",
+    "Source": "- One\n\n  ```\n   literal\n",
+    "Expected": []
+  },
+  {
+    "Name": "quote fence postquote accepted",
+    "Source": "- One\n\n  > ```\n  > literal\n  >   ```\n",
+    "Expected": []
+  },
+  {
+    "Name": "quote fence closer surplus",
+    "Source": "- One\n\n  > ```\n  > literal\n   > ```\n",
+    "Expected": [
+      {
+        "Range": [
+          29,
+          30,
+          5,
+          3,
+          5,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "quote fence both surplus",
+    "Source": "- > One\n  >\n   >  ```\n  > payload\n   >   ```\n",
+    "Expected": [
+      {
+        "Range": [
+          14,
+          15,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      },
+      {
+        "Range": [
+          36,
+          37,
+          5,
+          3,
+          5,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "quote table both surplus",
+    "Source": "- > One\n  >\n   >  | a |\n  >  | - |\n   >   | b |\n",
+    "Expected": [
+      {
+        "Range": [
+          14,
+          15,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      },
+      {
+        "Range": [
+          37,
+          38,
+          5,
+          3,
+          5,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "quote table aligned extra",
+    "Source": "- > One\n  >\n  >  | a |\n  >  | - |\n  >   | b |\n",
+    "Expected": []
+  },
+  {
+    "Name": "indented literal",
+    "Source": "- One\n\n      code\n        more\n",
+    "Expected": []
+  },
+  {
+    "Name": "raw complete",
+    "Source": "- One\n\n   <script>\n     raw\n   </script>\n",
+    "Expected": []
+  },
+  {
+    "Name": "comment complete",
+    "Source": "- One\n\n   <!-- comment\n      interior -->\n",
+    "Expected": []
+  },
+  {
+    "Name": "quoted raw complete",
+    "Source": "- One\n\n   > <script>\n   >   raw\n   > </script>\n",
+    "Expected": []
+  },
+  {
+    "Name": "definition first line",
+    "Source": "- One\n\n   [x]: /u\n\n   Text\n",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      },
+      {
+        "Range": [
+          21,
+          22,
+          5,
+          3,
+          5,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "definition continuation protected",
+    "Source": "- One\n\n  [x]:\n      /u\n      \"title\"\n",
+    "Expected": []
+  },
+  {
+    "Name": "task unchanged baseline",
+    "Source": "- [x] One\n   Two\n",
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "nested markers excluded",
+    "Source": "- One\n   - Two\n",
+    "Expected": []
+  },
+  {
+    "Name": "empty item continuation",
+    "Source": "-\n   Text\n",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "wide ordered",
+    "Source": "123. One\n      Text\n",
+    "Expected": [
+      {
+        "Range": [
+          14,
+          15,
+          2,
+          6,
+          2,
+          7
+        ],
+        "Source": " ",
+        "Actual": 6,
+        "Expected": 5
+      }
+    ]
+  },
+  {
+    "Name": "wide padding",
+    "Source": "-   One\n     Text\n",
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": " ",
+        "Actual": 5,
+        "Expected": 4
+      }
+    ]
+  },
+  {
+    "Name": "heading start",
+    "Source": "- One\n\n   # Title\n",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "thematic start",
+    "Source": "- One\n\n   ***\n",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "empty quote opening",
+    "Source": "- One\n\n   >\n",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "quote blank body protected",
+    "Source": "- One\n\n  > Text\n   >\n",
+    "Expected": []
+  },
+  {
+    "Name": "unicode nul nbsp",
+    "Source": "- é\n  β\u0000\n",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          6,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": "",
+        "Actual": 1,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "crlf",
+    "Source": "- One\r\n\r\n   Text\r\n",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "cr",
+    "Source": "- One\r\r   Text\r",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "eof",
+    "Source": "- One\n\n   Text",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "mixed atomic tab",
+    "Source": "- One\n\n \tText\n",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "\t",
+        "Actual": 4,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "mixed surplus suffix",
+    "Source": "- One\n\n  \t Text\n",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          11,
+          3,
+          3,
+          3,
+          5
+        ],
+        "Source": "\t ",
+        "Actual": 5,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "deep cumulative lazy",
+    "Source": "- - - A\nText\n",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          8,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 6
+      }
+    ]
+  },
+  {
+    "Name": "sibling reset",
+    "Source": "- A\n Text\n- B\n More\n",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": "",
+        "Actual": 1,
+        "Expected": 2
+      },
+      {
+        "Range": [
+          15,
+          15,
+          4,
+          2,
+          4,
+          2
+        ],
+        "Source": "",
+        "Actual": 1,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "misaligned parent baseline",
+    "Source": " - One\n Text\n",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          8,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": "",
+        "Actual": 1,
+        "Expected": 3
+      }
+    ]
+  },
+  {
+    "Name": "definition only item",
+    "Source": "-\n   [x]: /u\n",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "recognized yaml opacity",
+    "Source": "---\n- A\n Text\n---\n",
+    "Expected": [],
+    "Recognize": true
+  },
+  {
+    "Name": "disabled yaml ordinary",
+    "Source": "---\n- A\n Text\n---\n",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          3,
+          2,
+          3,
+          2
+        ],
+        "Source": "",
+        "Actual": 1,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "recognized toml opacity",
+    "Source": "+++\n- A\n Text\n+++\n",
+    "Expected": [],
+    "Recognize": true
+  },
+  {
+    "Name": "metadata uncertain",
+    "Source": "---\n- A\n Text\n",
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "protected directive",
+    "Source": "- One\n\n  ```\n  <!-- mdchk:disable MD077 -->\n  ```\n   Text\n",
+    "Expected": [
+      {
+        "Range": [
+          52,
+          53,
+          6,
+          3,
+          6,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "setext final heading opening only",
+    "Source": "- One\n\n  Title\n   ---\n",
+    "Expected": []
+  },
+  {
+    "Name": "inline code payload protected",
+    "Source": "- One\n  `code\n      literal\n  end`\n",
+    "Expected": []
+  },
+  {
+    "Name": "inline comment payload protected",
+    "Source": "- One\n  text <!-- comment\n      literal\n  --> tail\n",
+    "Expected": []
+  },
+  {
+    "Name": "inline opener indentation",
+    "Source": "- One\n   `code\n      literal\n  end`\n",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "quoted inline comment protected",
+    "Source": "- One\n  > text <!-- comment\n   >     literal\n   > --> tail\n",
+    "Expected": []
+  },
+  {
+    "Name": "quote partial tab between items",
+    "Source": "- > - One\n\t> Text\n",
+    "Expected": [
+      {
+        "Range": [
+          13,
+          13,
+          2,
+          4,
+          2,
+          4
+        ],
+        "Source": "",
+        "Actual": 2,
+        "Expected": 4
+      }
+    ]
+  }
+]

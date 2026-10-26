@@ -354,3 +354,9 @@ MD076 reports actual and expected blank body line counts once per mismatching
 sibling boundary. Deficits are zero-width at the next marker; surplus ranges cover
 only the first extra blank line's body suffix and complete original ending.
 Findings are manual with `fix_available: false`, despite PlannedFix metadata.
+
+
+MD077 reports normalized actual/expected item indentation columns once per
+eligible physical line. Surplus is original whitespace evidence (whole atomic
+tabs when shared); deficit is zero-width at the actual token start. Findings are
+manual with `fix_available: false`, without edits or returned content.

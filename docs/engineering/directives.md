@@ -111,3 +111,9 @@ MD076 evaluates full direct sibling context before filtering. The immutable exac
 first separator baseline survives hidden items and nested visits. Chosen original
 range START governs suppression: next-marker deficits differ from first-extra-line
 surplus ranges, which exclude ancestor prefixes and later surplus lines.
+
+
+MD077 uses final nearest-item ownership and cumulative ancestor ContentIndent
+before suppression. The first item-facing quote boundary controls eligible
+prose/fence/table lines; protected payload is excluded first. Filtering anchors
+to the original surplus/deficit START, including shared whole-tab evidence.
