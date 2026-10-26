@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/frithuz/mdchk/internal/config"
@@ -183,5 +184,96 @@ func TestSlidesStopsAndWholePolicyValidation(t *testing.T) {
 	out, err = scope.Slides(context.Background(), document, "a.md", true)
 	if out.Status() != Unavailable || !errors.Is(err, context.Canceled) {
 		t.Fatal("operation stop lost", out, err)
+	}
+}
+
+func TestSlideScopeOriginValidationReservesOriginalWork(t *testing.T) {
+	for _, field := range []string{"path", "property"} {
+		for _, suffix := range []string{"", "\x00", "\xff"} {
+			t.Run(field+"/"+strings.ReplaceAll(suffix, "\x00", "NUL"), func(t *testing.T) {
+				origin := config.Origin{}
+				value := strings.Repeat("a", 1<<19) + suffix
+				if field == "path" {
+					origin.Path = value
+				} else {
+					origin.PropertyPath = value
+				}
+				limits := parser.DefaultLimits()
+				limits.WorkUnits = 64
+				budget, err := parser.NewOperationBudget(limits)
+				if err != nil {
+					t.Fatal(err)
+				}
+				root, err := resource.NewRoot(resource.SuppliedRoot)
+				if err != nil {
+					t.Fatal(err)
+				}
+				settings, err := resource.NewSettings(parser.ParseOptions{}, "index.md", "github", "slide-origin-test")
+				if err != nil {
+					t.Fatal(err)
+				}
+				operation, err := resource.NewOperation(context.Background(), budget, root, settings, nil)
+				if err != nil {
+					t.Fatal(err)
+				}
+				view, err := operation.NewView(resource.Original, nil)
+				if err != nil {
+					t.Fatal(err)
+				}
+				scope, err := NewScope(context.Background(), operation, view, Settings{Slides: SlideSettings{Patterns: []string{"**"}, Origin: origin}})
+				var limit *parser.LimitExceeded
+				if scope != nil || !errors.As(err, &limit) || limit.Name != "work-units" {
+					t.Fatalf("public NewScope inspected origin before original work reservation: scope=%v err=%v remaining60=%v", scope, err, budget.ChargeWork(60))
+				}
+				if err := budget.ChargeWork(0); !errors.As(err, &limit) || limit.Name != "work-units" {
+					t.Fatal("original reservation was not sticky", err)
+				}
+			})
+		}
+	}
+}
+
+func TestSlideScopeMalformedOriginRetainsContract(t *testing.T) {
+	_, document, operation := slideFixture(t, context.Background(), nil)
+	for _, origin := range []config.Origin{
+		{Path: "bad\x00"}, {Path: "bad\xff"}, {PropertyPath: "bad\x00"}, {PropertyPath: "bad\xff"},
+		{Position: &parser.Position{Line: 0, Column: 1}}, {Position: &parser.Position{Line: 1, Column: 0}},
+	} {
+		scope, err := NewScope(context.Background(), operation, document.View(), Settings{Slides: SlideSettings{Patterns: []string{"**"}, Origin: origin}})
+		if scope != nil || !errors.Is(err, ErrContract) {
+			t.Fatal("malformed selected origin lost scoped contract identity", scope, err)
+		}
+	}
+}
+
+func TestSlideScopePatternLimitsPrecedeOriginBounds(t *testing.T) {
+	for _, patterns := range [][]string{make([]string, config.MaxPatterns+1), {strings.Repeat("a", config.MaxPatternBytes+1)}} {
+		limits := parser.DefaultLimits()
+		limits.DocumentBytes = 128
+		budget, err := parser.NewOperationBudget(limits)
+		if err != nil {
+			t.Fatal(err)
+		}
+		root, err := resource.NewRoot(resource.SuppliedRoot)
+		if err != nil {
+			t.Fatal(err)
+		}
+		settings, err := resource.NewSettings(parser.ParseOptions{}, "index.md", "github", "slide-pattern-test")
+		if err != nil {
+			t.Fatal(err)
+		}
+		operation, err := resource.NewOperation(context.Background(), budget, root, settings, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		view, err := operation.NewView(resource.Original, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = NewScope(context.Background(), operation, view, Settings{Slides: SlideSettings{Patterns: patterns, Origin: config.Origin{Path: strings.Repeat("a", 129)}}})
+		var invalid *config.PatternError
+		if !errors.Is(err, config.ErrPatternLimit) || len(patterns) == 1 && (!errors.As(err, &invalid) || invalid.Index != 0) {
+			t.Fatal("scoped pattern limit precedence lost to origin bound", err)
+		}
 	}
 }

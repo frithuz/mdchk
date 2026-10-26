@@ -17,6 +17,7 @@ import (
 type ExecutionPlan struct {
 	engine        *engine.ExecutionPlan
 	configuration *Resolution
+	slides        *SlidePolicy
 }
 
 func cloneResolution(r *Resolution) *Resolution {

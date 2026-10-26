@@ -91,8 +91,9 @@ Runtime limits, deadlines and cancellation instead return `15` unless an operati
 
 This build implements the text/JSON command using one shared snapshot, analysis
 and line-filtering budget. CommonMark and GFM are available; unavailable selected flavors
-and missing ordinary rule implementations remain visible observations. Resources
-and document-context integration are reported as not requested.
+and missing ordinary rule implementations remain visible observations. Explicit
+slide annotation and opaque frontmatter recognition are reported in document context.
+Resources remain not requested.
 
 Applicable overrides are `document-bytes`, `total-content-bytes`, `config-bytes`,
 `total-config-bytes`, `structured-input-depth`, `syntax-depth`, `document-nodes`,
@@ -116,3 +117,17 @@ Before analysis starts, the reporting reserve and the now-known target identity
 must fit together. If acquisition reveals an infeasible manifest, inspection
 retains the acquired metadata, leaves analysis explicitly not started, and
 returns incomplete/15 without invoking rule callbacks.
+
+
+The JSON `document_context` section reports `slides`, `matched_slide_patterns` (zero
+or one first matching pattern), and opaque `frontmatter` recognition (`disabled`,
+`absent`, `yaml`, `toml` or `unterminated`). A matched slide adds `slide_match` with
+its zero-based configured `index`, `pattern`, and `origin` (`path`, `property_path`
+and optional one-based `position`). Origin paths use the invocation-relative path
+base. This context does not decode metadata or acquire resources. Failed annotation
+or unresolved header recognition stays unavailable; it never becomes ordinary false.
+Line filtering keeps the document context. Output limits can omit the whole section.
+
+An explicitly exempt MD090 rule is marked `inapplicable`. If unrelated parser or
+directive work is unavailable, known exemption rows can appear in a partial rules
+section; this does not claim full rule counts, body syntax or complete analysis.

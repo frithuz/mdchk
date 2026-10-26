@@ -87,11 +87,12 @@ retained. Empty/no-match/outside-base is an ordinary selected document; invalid
 patterns remain configuration errors; unavailable Saved data or actual stops are
 unavailable, not ordinary. Filename conventions, frontmatter and
 separators do not implicitly classify slides. Annotation changes no selection,
-flavor, frontmatter, integration or rule setting. MD090 and actual inspect/CLI/MCP
-presentation remain later consumers.
+flavor, frontmatter, integration or rule setting. Production MD090 and CLI/inspect
+now consume the shared immutable configuration matching policy; scoped ownership
+and unavailable Saved guards remain in Scope.Slides. MCP presentation remains later work.
 
-No production MD074/MD090 callbacks, findings, fixes, TOC, transport or
-writer changes are implemented here. #176 still supplies the MkDocs provider;
+No production MD074 callbacks, fixes, TOC, transport or writer changes are
+implemented here. MD090 remains manual analysis only. #176 still supplies the MkDocs provider;
 later #177 must prove complete consumer journeys under these shared contracts.
 
 ## Bounded MkDocs producer

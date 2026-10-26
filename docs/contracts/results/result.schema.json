@@ -1953,7 +1953,8 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "maxItems": 1
                 },
                 "frontmatter": {
                   "enum": [
@@ -1963,6 +1964,44 @@
                     "toml",
                     "unterminated"
                   ]
+                },
+                "slide_match": {
+                  "type": "object",
+                  "properties": {
+                    "pattern": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "index": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "origin": {
+                      "type": "object",
+                      "properties": {
+                        "path": {
+                          "type": "string"
+                        },
+                        "property_path": {
+                          "type": "string"
+                        },
+                        "position": {
+                          "$ref": "#/$defs/Position"
+                        }
+                      },
+                      "required": [
+                        "path",
+                        "property_path"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "pattern",
+                    "index",
+                    "origin"
+                  ],
+                  "additionalProperties": false
                 }
               },
               "required": [

@@ -198,7 +198,14 @@ func Acquire(ctx context.Context, target string, options Options) (*Snapshot, er
 	resolution, admissionErr := selection.Admit(admissionCapabilities)
 	s.admissionErr = admissionErr
 	if resolution != nil {
-		s.plan = resolution.ExecutionPlan()
+		base := options.WorkingDirectory
+		if selection.SelectedPath != "" {
+			base = filepath.Dir(selection.SelectedPath)
+		}
+		if base == "" {
+			base = selection.Boundary.StartDirectory
+		}
+		s.plan, s.admissionErr = resolution.ExecutionPlan().WithDocumentPaths(base, base)
 	}
 	if err := check(0); err != nil {
 		return s, err

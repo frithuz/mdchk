@@ -39,6 +39,9 @@ type Metadata struct {
 type Registration struct {
 	ID    string
 	Check Check
+	// Applies resolves option-aware intentional exceptions before syntax prerequisites.
+	// It receives immutable options and explicit context and must honor operation controls.
+	Applies func(context.Context, RuleContext) (bool, error)
 }
 type Check func(context.Context, RuleContext) RuleOutcome
 
@@ -68,6 +71,7 @@ type Registry struct {
 	identity *registryIdentity
 	metadata map[string]Metadata
 	checks   map[string]Check
+	applies  map[string]func(context.Context, RuleContext) (bool, error)
 	ids      []string
 }
 
@@ -88,7 +92,7 @@ func validID(id string) bool {
 // mutable registry exists. Metadata returns defensive copies. MD094 is a gate
 // attribution entry and cannot have a normal executable implementation.
 func NewRegistry(catalog []Metadata, implementations []Registration) (*Registry, error) {
-	r := &Registry{identity: &registryIdentity{}, metadata: make(map[string]Metadata), checks: make(map[string]Check)}
+	r := &Registry{identity: &registryIdentity{}, metadata: make(map[string]Metadata), checks: make(map[string]Check), applies: make(map[string]func(context.Context, RuleContext) (bool, error))}
 	for _, m := range catalog {
 		if !validID(m.ID) || strings.TrimSpace(m.Name) == "" {
 			return nil, fmt.Errorf("invalid rule metadata %q", m.ID)
@@ -126,6 +130,9 @@ func NewRegistry(catalog []Metadata, implementations []Registration) (*Registry,
 			return nil, fmt.Errorf("duplicate executable registration %s", v.ID)
 		}
 		r.checks[v.ID] = v.Check
+		if v.Applies != nil {
+			r.applies[v.ID] = v.Applies
+		}
 	}
 	slices.Sort(r.ids)
 	return r, nil

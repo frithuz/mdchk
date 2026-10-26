@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"slices"
+	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -335,8 +336,19 @@ func (v *Validated) Admit(c Capabilities, inherited Permissions) (*Resolution, e
 		return nil, located(d, "rules", err)
 	}
 	plan = plan.WithDirectivePolicy(v.configuration(c, inherited))
+	slidePolicy := ownedSlidePolicy(b.Slides, v.slides, origins["documents.slides"])
+	slidePolicy.origins = make([]Origin, len(b.Slides))
+	for i := range b.Slides {
+		key := "documents.slides[" + strconv.Itoa(i) + "]"
+		o, ok := origins[key]
+		if !ok {
+			o = origins["documents.slides"]
+		}
+		slidePolicy.origins[i] = cloneOrigin(o)
+	}
+	plan = plan.WithSlideProvider(slideProvider{policy: slidePolicy})
 	resolution := &Resolution{Settings: b, Rules: rules, Origins: origins, OwnPermissions: v.Permissions(Permissions{}), EffectivePermissions: p, Exclude: ownedPatterns(v.exclude), Slides: ownedPatterns(v.slides)}
-	resolution.plan = &ExecutionPlan{engine: plan, configuration: cloneResolution(resolution)}
+	resolution.plan = &ExecutionPlan{engine: plan, configuration: cloneResolution(resolution), slides: slidePolicy}
 	return resolution, nil
 }
 func cloneOptions(o engine.Options) engine.Options {

@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -52,7 +53,7 @@ func TestLintConfigurationStopsBeforeTargets(t *testing.T) {
 		{"invalid pattern", availableConfig + "exclude: ['bad/**x']\n", "", "exclude"},
 		{"disabled hostname provider", availableConfig + "rules: {MD095: {enabled: false, allowed_hosts: [example.com]}}\n", "", "allowed_hosts"},
 		{"unsupported frontmatter", availableConfig + "frontmatter: {enabled: true, formats: [json]}\n", "", "frontmatter"},
-		{"slides", availableConfig + "documents: {slides: ['talk/**']}\n", "", "slides"},
+		{"invalid slides", availableConfig + "documents: {slides: ['talk/**', '[']}\n", "", "slides"},
 		{"explicit resource default", availableConfig + "resources: {index_file: index.md}\n", "", "index_file"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -97,7 +98,7 @@ func TestLintPreparationRetainsOwnedSelection(t *testing.T) {
 		if !inv.selection.Resolution.Rules["MD001"].Enabled || !inv.selection.Resolution.Rules["MD001"].Available {
 			t.Fatal("default catalog/availability changed")
 		}
-		if inv.plan == nil || inv.plan != inv.selection.Resolution.ExecutionPlan() {
+		if inv.plan == nil || !reflect.DeepEqual(inv.plan.Rules(), inv.selection.Resolution.ExecutionPlan().Rules()) {
 			t.Fatal("preparation discarded the admitted execution plan")
 		}
 		inv.selection.Resolution.Rules["MD013"].Options["length"] = 99

@@ -49,8 +49,12 @@ func prepareLintWith(options lintOptions, registry *engine.Registry, providers e
 	if selection.SelectedPath != "" {
 		base = filepath.Dir(selection.SelectedPath)
 	}
+	plan, err := selection.Resolution.ExecutionPlan().WithDocumentPaths(cwd, base)
+	if err != nil {
+		return nil, err
+	}
 	return &lintInvocation{
-		options: options, selection: selection, plan: selection.Resolution.ExecutionPlan(), workingDirectory: cwd,
+		options: options, selection: selection, plan: plan, workingDirectory: cwd,
 		exclusionBase: base, exclusions: selection.Resolution.Exclude,
 	}, nil
 }

@@ -1,0 +1,644 @@
+[
+  {
+    "Name": "published",
+    "Source": "***\n\n## Install\n",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          3,
+          1,
+          1,
+          1,
+          4
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "valid",
+    "Source": "## Install\n",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "atx eof",
+    "Source": "***\n# H",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          3,
+          1,
+          1,
+          1,
+          4
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "setext follower",
+    "Source": "***\nTitle\n---\n",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          3,
+          1,
+          1,
+          1,
+          4
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "setext precedence",
+    "Source": "Title\n---\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "last break only",
+    "Source": "***\n***\n# H",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          7,
+          2,
+          1,
+          2,
+          4
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "paragraph interrupts",
+    "Source": "***\ntext\n\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "comment interrupts",
+    "Source": "***\n<!-- c -->\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "removed reference gap",
+    "Source": "***\n[ref]: /target\n\n# H",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          3,
+          1,
+          1,
+          1,
+          4
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "reference remaining paragraph",
+    "Source": "***\n[ref]: /target\ntext\n\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "root to quote",
+    "Source": "***\n> # H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "quote pair",
+    "Source": "> ***\n> # H\n",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          5,
+          1,
+          3,
+          1,
+          6
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "quote to root",
+    "Source": "> ***\n\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "root and nested",
+    "Source": "***\n> ***\n> # H",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          9,
+          2,
+          3,
+          2,
+          6
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "item pair",
+    "Source": "- ***\n  # H\n",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          5,
+          1,
+          3,
+          1,
+          6
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "different items",
+    "Source": "- ***\n- # H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "item to root",
+    "Source": "- ***\n\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "unicode crlf",
+    "Source": "雪\n\n***\r\n# H",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          8,
+          3,
+          1,
+          3,
+          4
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "internal spacing",
+    "Source": "  * \t*  * \t\r\n# H",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          9,
+          1,
+          3,
+          1,
+          10
+        ],
+        "Source": "* \t*  *"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "underscore",
+    "Source": "_ _ _\n# H",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "_ _ _"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "dash",
+    "Source": "- - -\n# H",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "- - -"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "indented marker",
+    "Source": "   *** \t\n# H",
+    "Expected": [
+      {
+        "Range": [
+          3,
+          6,
+          1,
+          4,
+          1,
+          7
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "fence interrupts",
+    "Source": "***\n```\n```\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "indented code interrupts",
+    "Source": "***\n\n    code\n\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "html interrupts",
+    "Source": "***\n<div>\n</div>\n\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "empty quote interrupts",
+    "Source": "***\n>\n\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "empty list interrupts",
+    "Source": "***\n-\n\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "table interrupts",
+    "Source": "***\n| A |\n| - |\n\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "fake fenced",
+    "Source": "```\n***\n# H\n```",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "fake indented",
+    "Source": "    ***\n    # H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "fake comment",
+    "Source": "<!--\n***\n# H\n-->",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "fake raw",
+    "Source": "<script>\n***\n# H\n</script>",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "escape",
+    "Source": "\\***\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "nbsp invalid",
+    "Source": "* * *\n# H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "empty final heading",
+    "Source": "***\n#",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          3,
+          1,
+          1,
+          1,
+          4
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "crlf",
+    "Source": "***\r\n\r\n# H",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          3,
+          1,
+          1,
+          1,
+          4
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "cr",
+    "Source": "***\r\r# H",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          3,
+          1,
+          1,
+          1,
+          4
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "quote comment interrupts",
+    "Source": "> ***\n> <!--c-->\n> # H",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "nested two levels",
+    "Source": "> > ***\n> > # H",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          7,
+          1,
+          5,
+          1,
+          8
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "list quote pair",
+    "Source": "- > ***\n  > # H",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          7,
+          1,
+          5,
+          1,
+          8
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "paragraph before pair",
+    "Source": "Text\n\n***\n# H",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          9,
+          3,
+          1,
+          3,
+          4
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "multiple independent pairs",
+    "Source": "***\n# A\n\n___\n# B",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          3,
+          1,
+          1,
+          1,
+          4
+        ],
+        "Source": "***"
+      },
+      {
+        "Range": [
+          9,
+          12,
+          4,
+          1,
+          4,
+          4
+        ],
+        "Source": "___"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "spaced tab markers",
+    "Source": "*\t*\t*\t\n# H",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          5,
+          1,
+          1,
+          1,
+          6
+        ],
+        "Source": "*\t*\t*"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "empty document",
+    "Source": "",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "trailing break",
+    "Source": "***\n",
+    "Expected": [],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "own heading markup",
+    "Source": "***\n# *H*",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          3,
+          1,
+          1,
+          1,
+          4
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": false,
+    "Incomplete": false
+  },
+  {
+    "Name": "yaml header",
+    "Source": "---\ntitle: X\n---\n***\n# H",
+    "Expected": [
+      {
+        "Range": [
+          17,
+          20,
+          4,
+          1,
+          4,
+          4
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": true,
+    "Incomplete": false
+  },
+  {
+    "Name": "toml header",
+    "Source": "+++\ntitle=\"X\"\n+++\n***\n# H",
+    "Expected": [
+      {
+        "Range": [
+          18,
+          21,
+          4,
+          1,
+          4,
+          4
+        ],
+        "Source": "***"
+      }
+    ],
+    "Recognize": true,
+    "Incomplete": false
+  },
+  {
+    "Name": "unreliable header",
+    "Source": "---\n# H",
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  }
+]

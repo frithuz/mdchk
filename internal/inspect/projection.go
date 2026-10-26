@@ -44,6 +44,32 @@ func notRequested[T any]() Section[T] {
 	return Section[T]{Availability: "not-requested", Reasons: []string{}}
 }
 
+// DocumentContextData describes acquired annotation and opaque header recognition,
+// never metadata interpretation or a resource capability.
+type DocumentContextData struct {
+	Slides               bool        `json:"slides"`
+	MatchedSlidePatterns []string    `json:"matched_slide_patterns"`
+	Frontmatter          string      `json:"frontmatter"`
+	SlideMatch           *SlideMatch `json:"slide_match,omitempty"`
+}
+type SlideMatch struct {
+	Pattern string      `json:"pattern"`
+	Index   int         `json:"index"`
+	Origin  SlideOrigin `json:"origin"`
+}
+type SlideOrigin struct {
+	Path         string               `json:"path"`
+	PropertyPath string               `json:"property_path"`
+	Position     *SlideOriginPosition `json:"position,omitempty"`
+}
+
+// SlideOriginPosition keeps the declared JSON spelling independently of the
+// parser's internal Position value and the diagnostic Range wire adapter.
+type SlideOriginPosition struct {
+	Line   int `json:"line"`
+	Column int `json:"column"`
+}
+
 type InspectionFile struct {
 	ResolvedPath          string         `json:"resolved_path"`
 	BinaryVersion         string         `json:"binary_version"`
@@ -252,7 +278,7 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 	}
 	f := s.file
 	snap := result.Snapshot{View: "original", SHA256: f.SHA256, SizeBytes: s.source.Len()}
-	p := Projection{ProjectionVersion: 1, File: InspectionFile{ResolvedPath: f.Path, BinaryVersion: f.Version, SizeBytes: f.SizeBytes, SizeDisplay: f.SizeDisplay, SHA1: f.SHA1, SHA256: f.SHA256, NormallyExcluded: s.exclusion.Excluded, NormallyExcludedKnown: s.exclusion.Known, PhysicalLineCount: s.lines.LineCount()}, Configuration: unavailable[result.ConfigurationData]("configuration-invalid"), Flavor: unavailable[string]("configuration-invalid"), DocumentContext: notRequested[json.RawMessage](), AST: unavailable[AST]("context-unavailable"), Rules: unavailable[[]Rule]("context-unavailable"), RuleCounts: notRequested[json.RawMessage](), Directives: unavailable[[]Directive]("context-unavailable"), RawCandidates: unavailable[[]RawCandidate]("context-unavailable"), Resources: notRequested[json.RawMessage](), ParsingNotes: unavailable[[]result.Note]("context-unavailable")}
+	p := Projection{ProjectionVersion: 1, File: InspectionFile{ResolvedPath: f.Path, BinaryVersion: f.Version, SizeBytes: f.SizeBytes, SizeDisplay: f.SizeDisplay, SHA1: f.SHA1, SHA256: f.SHA256, NormallyExcluded: s.exclusion.Excluded, NormallyExcludedKnown: s.exclusion.Known, PhysicalLineCount: s.lines.LineCount()}, Configuration: unavailable[result.ConfigurationData]("configuration-invalid"), Flavor: unavailable[string]("configuration-invalid"), DocumentContext: unavailable[json.RawMessage]("context-unavailable"), AST: unavailable[AST]("context-unavailable"), Rules: unavailable[[]Rule]("context-unavailable"), RuleCounts: notRequested[json.RawMessage](), Directives: unavailable[[]Directive]("context-unavailable"), RawCandidates: unavailable[[]RawCandidate]("context-unavailable"), Resources: notRequested[json.RawMessage](), ParsingNotes: unavailable[[]result.Note]("context-unavailable")}
 	out := result.NewLint("cli")
 	out.Operation = "inspect"
 	out.CheckedFiles = []string{f.Path}
@@ -274,6 +300,7 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 		}
 		causes(&p.Configuration, ids, reason)
 		causes(&p.Flavor, ids, reason)
+		causes(&p.DocumentContext, ids, reason)
 		causes(&p.AST, ids, reason)
 		causes(&p.Rules, ids, reason)
 		causes(&p.Directives, ids, reason)
@@ -418,6 +445,35 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 	}
 	var fullRange result.Range
 	prepared := false
+	projectContext := func(trace *engine.InspectionTrace) error {
+		if dc, known := trace.DocumentContext(); known && dc.Slides.Known {
+			frontmatter := "disabled"
+			parsedContext := trace.Parsed()
+			contextReady := true
+			if configuration.Settings.FrontmatterEnabled {
+				frontmatter = "absent"
+				if parsedContext.Document != nil {
+					if header, present := parsedContext.Document.Frontmatter(); present {
+						frontmatter = header.Format()
+						if !header.Closer().Present() {
+							frontmatter = "unterminated"
+						}
+					}
+				} else {
+					contextReady = false
+				}
+			}
+			if !contextReady {
+				return nil
+			}
+			contextData, contextErr := build.slideContext(dc.Slides, frontmatter)
+			if contextErr != nil {
+				return contextErr
+			}
+			p.DocumentContext = available(contextData)
+		}
+		return nil
+	}
 	prepare := func(trace *engine.InspectionTrace) error {
 		parsed := trace.Parsed()
 		build.source = parsed.Source
@@ -425,6 +481,9 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 		build.knownRules = s.plan.Rules()
 		// Reserve bounded final trace publication now, before callback interruption.
 		if err := build.charge(int64(len(build.knownRules))*4096 + 8*int64(s.source.Len()+1)); err != nil {
+			return err
+		}
+		if err := projectContext(trace); err != nil {
 			return err
 		}
 		var err error
@@ -465,6 +524,11 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 		return Analysis{}, err
 	}
 	out = active
+	if !prepared && len(out.Interruptions) == 0 {
+		if contextErr := projectContext(trace); contextErr != nil {
+			return stop(contextErr)
+		}
+	}
 	for i := range out.Errors {
 		if out.Errors[i].Code == "invalid-utf8" {
 			out.Errors[i].Scope = "observation"
@@ -510,6 +574,23 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 			cause = errors.New(string(parsed.Interruption))
 		}
 		return finish(cause)
+	}
+	if !prepared {
+		exempt := false
+		for _, evaluation := range trace.Evaluations() {
+			if slices.Contains(evaluation.Reasons, "inapplicable") {
+				exempt = true
+				break
+			}
+		}
+		if exempt {
+			build.knownRules = s.plan.Rules()
+			rows, rowErr := build.rules(trace, build.knownRules)
+			if rowErr != nil {
+				return stop(rowErr)
+			}
+			p.Rules = Section[[]Rule]{Availability: "partial", Reasons: []string{"context-unavailable"}, Data: &rows}
+		}
 	}
 	if !prepared && parsed.Document != nil && len(parsed.Uncertainty) > 0 {
 		ast, err := build.ast(parsed.Document, snap)
@@ -1170,4 +1251,32 @@ func (b *builder) authority(analysis *Analysis, work int64) error {
 	analysis.wire = wire
 	analysis.filterNodes = nodes
 	return nil
+}
+
+// slideContext encodes only known annotation, independently of parser confidence.
+// Exempt rule rows remain partial when unrelated source/directive data is unknown.
+func (b *builder) slideContext(c engine.SlideContext, frontmatter string) (json.RawMessage, error) {
+	if err := b.charge(8*int64(len(c.Pattern)+len(c.OriginPath)+len(c.OriginProperty)) + 1024); err != nil {
+		return nil, err
+	}
+	if err := b.budget.ChargeNodes(12); err != nil {
+		return nil, err
+	}
+	data := DocumentContextData{Slides: c.Slides, MatchedSlidePatterns: []string{}, Frontmatter: frontmatter}
+	if c.Slides {
+		m := &SlideMatch{Pattern: c.Pattern, Index: c.PatternIndex, Origin: SlideOrigin{Path: c.OriginPath, PropertyPath: c.OriginProperty}}
+		if c.OriginPosition != (parser.Position{}) {
+			m.Origin.Position = &SlideOriginPosition{Line: c.OriginPosition.Line, Column: c.OriginPosition.Column}
+		}
+		data.SlideMatch = m
+		data.MatchedSlidePatterns = append(data.MatchedSlidePatterns, c.Pattern)
+	}
+	raw, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+	if err := b.charge(0); err != nil {
+		return nil, err
+	}
+	return raw, nil
 }

@@ -9,7 +9,8 @@ The shared typed context/policy boundary is implemented under
 cover source/view ownership, static navigation/omission prerequisites and explicit
 slide annotation. Policy decisions do not establish acquired context. Bounded
 MkDocs acquisition/eligibility is implemented by the bound context provider.
-Production rule consumers and end-to-end verification remain separate work.
+MD090 consumes explicit slides in production lint, fix candidate analysis and
+inspection. MkDocs rule consumers and MCP end-to-end verification remain separate work.
 Interface availability alone does not
 advertise those runtime capabilities.
 
@@ -121,3 +122,18 @@ behavior. Intentional exemptions do not incur incomplete coverage.
 Use the same configuration and classification across CLI, inspect, engine and MCP. Inspect exposes
 the effective context and matched pattern. No separate request field or in-document marker is
 introduced.
+
+
+### Delivered slide consumer
+
+MD090 analysis is implemented for CommonMark and GFM. The immutable selected policy
+uses direct bounded first-pattern matching for each selected input path, relative
+to the selected configuration directory. It stays on the execution plan for original,
+candidate and saved-view analyses; no per-plan global slide flag is shared by a batch.
+Known matched slides with `allow_slides: true` make MD090 inapplicable before its
+syntax prerequisite, without erasing independent parser or directive failures.
+Inspection publishes the known annotation and first-match origin using the existing
+version1 document-context section. Existing scoped integration document/view/Saved
+ownership remains separate from the shared immutable matching policy. No resource
+service, new parse, target selection, metadata interpretation or MCP transport is
+introduced by annotation.

@@ -138,7 +138,11 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	if selectedConfig.SelectedPath != "" {
 		base = filepath.Dir(selectedConfig.SelectedPath)
 	}
-	inv := &lintInvocation{options: opts, selection: selectedConfig, plan: resolution.ExecutionPlan(), workingDirectory: cwd, exclusionBase: base, exclusions: resolution.Exclude}
+	boundPlan, err := resolution.ExecutionPlan().WithDocumentPaths(cwd, base)
+	if err != nil {
+		return fail(err, "document-context", result.Internal)
+	}
+	inv := &lintInvocation{options: opts, selection: selectedConfig, plan: boundPlan, workingDirectory: cwd, exclusionBase: base, exclusions: resolution.Exclude}
 	selection, err := files.SelectBounded(ctx, files.Options{WorkingDirectory: cwd, ExclusionBase: base, Paths: opts.paths, Exclusions: resolution.Exclude}, budget)
 	if err != nil {
 		return fail(err, "selection-failed", result.IO)

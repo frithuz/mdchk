@@ -130,6 +130,73 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			out.Files = append(out.Files, file)
 			continue
 		}
+		if in.plan != nil && in.plan.slides != nil {
+			annotation, err := in.plan.slides.Slides(ctx, budget, in.path)
+			if err == nil {
+				err = annotation.validate()
+			}
+			if err != nil {
+				if isInterruption(err) {
+					stopped = recordInterruption(&out, in.path, "context", err)
+				} else {
+					out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "document-context", Scope: "operation", Path: in.path, Message: err.Error()})
+					out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Reason: result.ContextUnavailable, Message: "Document annotation is unavailable."})
+				}
+				file.Analysis = "partial"
+				out.Files = append(out.Files, file)
+				continue
+			}
+			in.documentContext.Slides = annotation
+		}
+		if options.inspection != nil {
+			options.inspection.documentContext = in.documentContext
+			options.inspection.contextKnown = true
+		}
+		// Resolve only explicit context/option exceptions before syntax prerequisites.
+		// No parser objects are supplied to this preassessment.
+		preassessed := map[string]bool(nil)
+		preassessCount := 0
+		for id := range r.applies {
+			if settings[i][id].Enabled || options.inspection != nil && options.inspection.observeInactive {
+				preassessCount++
+			}
+		}
+		if preassessCount > 0 {
+			if err := budget.ChargeNodes(int64(preassessCount)); err != nil {
+				stopped = recordInterruption(&out, in.path, "context", err)
+				file.Analysis = "partial"
+				out.Files = append(out.Files, file)
+				continue
+			}
+			preassessed = make(map[string]bool, preassessCount)
+			for _, id := range r.ids {
+				if r.applies[id] == nil || !settings[i][id].Enabled && (options.inspection == nil || !options.inspection.observeInactive) {
+					continue
+				}
+				rc := RuleContext{input: in, budget: budget, operation: ctx, options: settings[i][id].Options}
+				applies, err := r.applicable(ctx, rc, r.metadata[id])
+				if err != nil {
+					if isInterruption(err) {
+						stopped = recordInterruption(&out, in.path, "context", err)
+					} else {
+						out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "rule-applicability", Scope: "operation", Path: in.path, Rule: id, Message: err.Error()})
+					}
+					file.Analysis = "partial"
+					break
+				}
+				preassessed[id] = applies
+				if !applies && options.inspection != nil {
+					options.inspection.skip(id, "inapplicable")
+				}
+			}
+			if len(preassessed) != preassessCount {
+				out.Files = append(out.Files, file)
+				continue
+			}
+		}
+		if options.inspection != nil {
+			options.inspection.preassessed = preassessed
+		}
 		parsed := parser.ParseWithOptions(ctx, in.source, budget, in.documentContext.ParseOptions())
 		if options.inspection != nil {
 			options.inspection.parsed = parsed
@@ -229,7 +296,26 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				}
 				continue
 			}
-			if m.AppliesTo != nil && !m.AppliesTo(in.documentContext) {
+			rc.options = state.Options
+			rc.document = parsed.Document
+			if !syntaxReliable {
+				rc.document = nil
+			}
+			applies, assessed := preassessed[id]
+			var applyErr error
+			if !assessed {
+				applies, applyErr = r.applicable(ctx, rc, m)
+			}
+			if applyErr != nil {
+				if isInterruption(applyErr) {
+					stopped = recordInterruption(&out, in.path, "analysis", applyErr)
+					break
+				}
+				out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "rule-applicability", Scope: "operation", Path: in.path, Rule: id, Message: applyErr.Error()})
+				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: "Rule applicability is unresolved."})
+				continue
+			}
+			if !applies {
 				if options.inspection != nil {
 					options.inspection.skip(id, "inapplicable")
 				}

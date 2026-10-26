@@ -33,6 +33,9 @@ type InspectionOptions struct {
 // detached collections; parser objects retain their immutable original source.
 type InspectionTrace struct {
 	prepare         func(*InspectionTrace) error
+	documentContext DocumentContext
+	contextKnown    bool
+	preassessed     map[string]bool
 	parsed          parser.ParseResult
 	lines           parser.LineIndex
 	directives      DirectiveResult
@@ -60,6 +63,9 @@ func (t *InspectionTrace) Parsed() parser.ParseResult {
 		p.Failure = &copy
 	}
 	return p
+}
+func (t *InspectionTrace) DocumentContext() (DocumentContext, bool) {
+	return t.documentContext, t.contextKnown
 }
 func (t *InspectionTrace) Directives() DirectiveResult { return t.directives }
 func (t *InspectionTrace) Evaluations() []Evaluation {
@@ -178,8 +184,23 @@ func (t *InspectionTrace) observe(ctx context.Context, r *Registry, rc RuleConte
 		e := t.entry(id)
 		e.Observational = "skipped"
 		m := r.metadata[id]
+		rc.options = directives.rules[id].Options
+		applies, assessed := t.preassessed[id]
+		var applyErr error
+		if !assessed {
+			applies, applyErr = r.applicable(ctx, rc, m)
+		}
+		if applyErr != nil {
+			if isInterruption(applyErr) {
+				t.interruption = applyErr
+				return
+			}
+			t.errors = append(t.errors, result.Error{Category: result.Internal, Code: "rule-applicability", Scope: "operation", Path: rc.Path(), Rule: id, Message: applyErr.Error()})
+			e.Reasons = []string{"context-unavailable"}
+			continue
+		}
 		switch {
-		case m.AppliesTo != nil && !m.AppliesTo(rc.input.documentContext):
+		case !applies:
 			e.Reasons = []string{"inapplicable"}
 			continue
 		case r.checks[id] == nil:

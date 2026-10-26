@@ -119,6 +119,10 @@ func omitInspectionDetails(out *result.Result, p *inspection.Projection, emergen
 			omit("/inspection/ast", 1)
 			p.AST = omittedSection[inspection.AST]()
 		}
+		if p.DocumentContext.Data != nil {
+			omit("/inspection/document_context", 1)
+			p.DocumentContext = omittedSection[json.RawMessage]()
+		}
 		if p.Configuration.Data != nil {
 			omit("/inspection/configuration", 1)
 			p.Configuration = omittedSection[result.ConfigurationData]()

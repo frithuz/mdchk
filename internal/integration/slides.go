@@ -3,12 +3,8 @@ package integration
 import (
 	"context"
 	"errors"
-	"slices"
-	"strings"
-	"unicode/utf8"
 
 	"github.com/frithuz/mdchk/internal/config"
-	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/resource"
 )
 
@@ -21,9 +17,8 @@ type SlideSettings struct {
 }
 
 type slidePolicy struct {
-	matcher  *config.Patterns
-	patterns []string
-	origin   config.Origin
+	policy *config.SlidePolicy
+	origin config.Origin
 }
 
 func newSlidePolicy(ctx context.Context, operation *resource.Operation, settings SlideSettings) (*slidePolicy, error) {
@@ -33,43 +28,17 @@ func newSlidePolicy(ctx context.Context, operation *resource.Operation, settings
 	if err := errors.Join(ctx.Err(), operation.Context().Err(), operation.Budget().ChargeWork(0)); err != nil {
 		return nil, err
 	}
-	if len(settings.Patterns) > config.MaxPatterns {
-		_, err := config.CompilePatterns(settings.Patterns)
-		return nil, err
-	}
-	total := int64(0)
-	for i, pattern := range settings.Patterns {
-		total += int64(len(pattern))
-		if len(pattern) > config.MaxPatternBytes || total > config.MaxPatternListBytes {
-			return nil, &config.PatternError{Index: i, Pattern: pattern, Err: config.ErrPatternLimit}
-		}
-	}
-	originBytes := int64(len(settings.Origin.Path)) + int64(len(settings.Origin.PropertyPath))
-	if originBytes > operation.Budget().Limits().DocumentBytes {
-		return nil, &parser.LimitExceeded{Name: "document-bytes", Observed: originBytes, Allowed: operation.Budget().Limits().DocumentBytes}
-	}
-	if err := operation.Checkpoint(8*(total+originBytes) + 4*int64(len(settings.Patterns)) + 1); err != nil {
-		return nil, err
-	}
-	segments := int64(0)
-	for _, pattern := range settings.Patterns {
-		segments += int64(strings.Count(pattern, "/") + 1)
-	}
-	if err := operation.Budget().ChargeNodes(2*segments + int64(len(settings.Patterns)) + 2); err != nil {
-		return nil, err
-	}
-	if !utf8.ValidString(settings.Origin.Path) || !utf8.ValidString(settings.Origin.PropertyPath) || strings.ContainsRune(settings.Origin.Path, 0) || strings.ContainsRune(settings.Origin.PropertyPath, 0) || settings.Origin.Position != nil && (settings.Origin.Position.Line < 1 || settings.Origin.Position.Column < 1) {
+	policy, err := config.NewSlidePolicy(ctx, operation.Budget(), settings.Patterns, settings.Origin)
+	if errors.Is(err, config.ErrInvalidSlideOrigin) {
 		return nil, ErrContract
 	}
-	matcher, err := config.CompilePatterns(settings.Patterns)
 	if err != nil {
 		return nil, err
 	}
-	policy := &slidePolicy{matcher: matcher, patterns: slices.Clone(settings.Patterns), origin: copySlideOrigin(settings.Origin)}
 	if err := errors.Join(ctx.Err(), operation.Context().Err(), operation.Budget().ChargeWork(0)); err != nil {
 		return nil, err
 	}
-	return policy, nil
+	return &slidePolicy{policy: policy, origin: copySlideOrigin(settings.Origin)}, nil
 }
 
 // SlideContext is annotation of one exact selected snapshot, not target,
@@ -116,13 +85,9 @@ func (s *Scope) Slides(ctx context.Context, document Document, name string, inBa
 	if !document.available {
 		return out, nil
 	}
-	if !inBase {
-		out.status = Available
-		return out, nil
-	}
 	// The matcher charges each actual visited memo row and name segment before
 	// allocation, and shares its one work allowance across the complete list.
-	i, matched, err := s.slides.matcher.MatchFirstBounded(ctx, s.operation.Budget(), name, false, true)
+	annotation, err := s.slides.policy.Match(ctx, s.operation.Budget(), name, inBase)
 	if err != nil {
 		return out, errors.Join(err, s.checkpoint(ctx, 0, 0))
 	}
@@ -130,8 +95,8 @@ func (s *Scope) Slides(ctx context.Context, document Document, name string, inBa
 		return out, err
 	}
 	out.status = Available
-	if matched {
-		out.matched = s.slides.patterns[i]
+	if annotation.Slides {
+		out.matched = annotation.Pattern
 	}
 	return out, nil
 }

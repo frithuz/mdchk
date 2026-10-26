@@ -358,6 +358,15 @@ func rebaseInspection(out *result.Result, p *inspection.Projection, cwd string) 
 		d.Diagnostic.Path = logical(d.Diagnostic.Path)
 		out.SuppressedDiagnostics[i], _ = json.Marshal(d)
 	}
+	if p.DocumentContext.Data != nil {
+		var data inspection.DocumentContextData
+		if json.Unmarshal(*p.DocumentContext.Data, &data) == nil && data.SlideMatch != nil {
+			data.SlideMatch.Origin.Path = logical(data.SlideMatch.Origin.Path)
+			raw, _ := json.Marshal(data)
+			message := json.RawMessage(raw)
+			p.DocumentContext.Data = &message
+		}
+	}
 	if p.Configuration.Data != nil {
 		c := p.Configuration.Data
 		for i := range c.Sources {
