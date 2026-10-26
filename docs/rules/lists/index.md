@@ -4,7 +4,7 @@ These rules are part of the [implementation ruleset](../index.md).
 
 | Rule | Focus | Status |
 | --- | --- | --- |
-| [MD004](md004.md) | Bullet marker style | Planned |
+| [MD004](md004.md) | Bullet marker style | Analysis implemented |
 | [MD005](md005.md) | Alignment of sibling list items | Planned |
 | [MD007](md007.md) | Bullet list nesting indentation | Planned |
 | [MD029](md029.md) | Numbered list prefixes | Planned |

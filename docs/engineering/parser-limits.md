@@ -492,3 +492,20 @@ allow list is read under the same controls into five fixed allowance bits; retur
 facts own their slice and cannot mutate syntax or options. Nested constructs stay
 independent and source geometry uses original envelopes, including container gaps.
 The rule remains default disabled, RequiresSyntax and NoFix; MD047 alone owns edits.
+
+## Original list structure projection
+
+MD004 borrows actual List/ListItem ancestry and first-line marker facts through
+the completed private production profile/options/source/index/original-budget
+witness. Detached records retain group/item/parent envelopes, exact marker/prefix
+spans and scalar list properties without mutable syntax handles or public-tree
+cloning. Body-container preorder preserves outer-before-inner source order; code,
+HTML, heading and paragraph payload is not reparsed. Later list rules can reuse
+this seam without a second parse, renderer, anchor index or resource service.
+
+Stack/fact storage and copied prefixes reserve original records/work before
+construction. Caller and originating controls, sticky work/node/time stops and
+final publication checks withhold unfinished inventories. MD004 selects one
+per-document first-bullet baseline before directive filtering, or an admitted
+explicit marker, and emits marker-only manual findings. It remains enabled by
+default with PlannedFix metadata; MD047 alone supplies executable corrections.

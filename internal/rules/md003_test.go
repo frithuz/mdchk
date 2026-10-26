@@ -115,7 +115,7 @@ func TestMD003DirectivesPreserveFirstHeading(t *testing.T) {
 
 func TestMD003CatalogAndOptions(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD003") || !r.Available("MD001") || !r.Available("MD047") || r.Available("MD004") || len(r.Metadata()) != 87 {
+	if !r.Available("MD003") || !r.Available("MD001") || !r.Available("MD047") || r.Available("MD005") || len(r.Metadata()) != 87 {
 		t.Fatal("incorrect catalog availability")
 	}
 	for _, m := range r.Metadata() {

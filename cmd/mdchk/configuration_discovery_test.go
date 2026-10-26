@@ -170,12 +170,12 @@ func requireDiscoveryChecked(t *testing.T, got configurationRun, paths ...string
 	}
 	found := false
 	for _, c := range got.Result.Coverage {
-		if c.Rule == "MD004" && c.Reason == "rule-unavailable" {
+		if c.Rule == "MD005" && c.Reason == "rule-unavailable" {
 			found = true
 		}
 	}
 	if !found {
-		t.Fatal("implicit default-enabled MD004 missing from coverage")
+		t.Fatal("implicit default-enabled MD005 missing from coverage")
 	}
 }
 
