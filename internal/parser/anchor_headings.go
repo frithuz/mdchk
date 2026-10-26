@@ -184,7 +184,14 @@ func walkHeadingVisible(ctx context.Context, budget *OperationBudget, heading *N
 			return nil
 		}
 		if raw != "" && !alt {
-			return nil
+			// Structural wrappers may contain the actual closing HTML node.
+			// Suppress payload leaves, keeping image alt descriptions opaque:
+			// their HTML-looking content cannot close the outer raw region.
+			switch n.Kind() {
+			case Text, CodeSpan, SoftBreak, HardBreak, Image:
+				return nil
+			default:
+			}
 		}
 		switch n.Kind() {
 		case Text, CodeSpan:

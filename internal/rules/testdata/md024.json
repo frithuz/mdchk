@@ -669,5 +669,27 @@
         "Source": "a"
       }
     ]
+  },
+  {
+    "Name": "raw closer distinguishes visible headings",
+    "Source": "# A!<script>*payload</script>* B\n\n# A!\n",
+    "Expected": []
+  },
+  {
+    "Name": "raw closer preserves true duplicate",
+    "Source": "# A!<script>*payload</script>* B\n\n# A! B\n",
+    "Expected": [
+      {
+        "Range": [
+          36,
+          40,
+          3,
+          3,
+          3,
+          7
+        ],
+        "Source": "A! B"
+      }
+    ]
   }
 ]

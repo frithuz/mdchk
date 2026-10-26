@@ -899,5 +899,110 @@
         "Source": "!"
       }
     ]
+  },
+  {
+    "Name": "raw closer emphasis",
+    "Source": "# `x` <script>*payload</script>*!",
+    "Expected": [
+      {
+        "Range": [
+          32,
+          33,
+          1,
+          33,
+          1,
+          34
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "raw closer strong",
+    "Source": "# `x` <script>**payload</script>**!",
+    "Expected": [
+      {
+        "Range": [
+          34,
+          35,
+          1,
+          35,
+          1,
+          36
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "raw closer link",
+    "Source": "# `x` <script>[payload</script>](u)!",
+    "Expected": [
+      {
+        "Range": [
+          35,
+          36,
+          1,
+          36,
+          1,
+          37
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "raw closer inner-tail",
+    "Source": "# `x`<script>*payload</script>Tail*!",
+    "Expected": [
+      {
+        "Range": [
+          35,
+          36,
+          1,
+          36,
+          1,
+          37
+        ],
+        "Source": "!"
+      }
+    ]
+  },
+  {
+    "Name": "raw closer entity",
+    "Source": "# `x`<script>*payload</script>*&#33;",
+    "Expected": [
+      {
+        "Range": [
+          31,
+          36,
+          1,
+          32,
+          1,
+          37
+        ],
+        "Source": "&#33;"
+      }
+    ]
+  },
+  {
+    "Name": "raw closer letter blocks earlier punctuation",
+    "Source": "# A!<script>*payload</script>* B",
+    "Expected": []
+  },
+  {
+    "Name": "raw closer image alt cannot close",
+    "Source": "# `x`<script>![payload</script>](u)!",
+    "Expected": []
+  },
+  {
+    "Name": "raw closer code cannot close",
+    "Source": "# `x`<script>`</script>`!",
+    "Expected": []
+  },
+  {
+    "Name": "raw closer escaped tail",
+    "Source": "# A!<script>*payload</script>*\\?",
+    "Expected": []
   }
 ]
