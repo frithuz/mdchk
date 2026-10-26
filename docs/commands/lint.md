@@ -95,7 +95,7 @@ printf '# Example\n' > "$mdchk_demo/example.md"
 
 The compiled binary reports `incomplete` and exits `15`: this configuration admits
 the current CommonMark parser, while many enabled ordinary defaults still lack
-production implementations. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis and MD036 emphasis-as-heading analysis are available. MD026 and MD036 are available but disabled by default. The catalog contains 87 entries, with 59 enabled
+production implementations. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis and MD041 opening-heading analysis are available. MD026 and MD036 are available but disabled by default. The catalog contains 87 entries, with 59 enabled
 and 28 disabled by default; the mandatory UTF-8 gate is available independently
 of ordinary checks. Explicitly requesting an unavailable rule returns `12`.
 Omitting configuration selects GFM and also retains missing default-rule coverage (`15`).

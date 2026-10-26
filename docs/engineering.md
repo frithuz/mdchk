@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis and MD036 emphasis-as-heading analysis are also available. MD026 and MD036 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis and MD041 opening-heading analysis are also available. MD026 and MD036 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -275,11 +275,11 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
-header recognition. Metadata interpretation supports MD001 and MD025 opt-in
+header recognition. Metadata interpretation supports MD001, MD025 and MD041 opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
-MD041 and MD072 remain independently unavailable. MD001 and MD025 are report-only;
+MD072 remains independently unavailable. MD001, MD025 and MD041 are report-only;
 their title access grants no header findings or corrections. Broader metadata
 inspection, consumer and correction integration remain separate deliveries.
 Omitted flavor configuration selects built-in GFM through the same whole-profile
@@ -456,3 +456,18 @@ final withholding apply; callback interruptions retain reliable prior findings.
 No fresh source, parser, index, budget, public-tree clone, edit or write authority
 is added. Accounting bounds application work, not process RSS or throughput.
 See [MD036 policy](rules/headings/md036.md).
+
+
+MD041 adds OpeningBlock, a narrow original-operation projection of the first
+actual root body block after fully comment-owned introductory blocks. It borrows
+actual comment/tail and raw-protection facts and scans only uncovered ASCII
+whitespace gaps, without copying comment payload or a public tree. It retains
+one original zero point/heading-level record; empty bodies use original EOF.
+Root/comment/marker/source-gap visits and the fixed output record are charged
+before work/publication. Caller/origin and sticky work/node/time controls remain
+shared; any failed projection withholds its fact, including at the final check.
+The callback short-circuits a sufficient opening heading before metadata decode;
+otherwise opt-in title truth supplies an alternative or explicit affected
+coverage. No Source, parse, index, allowance, edit or write authority is added.
+Finite application accounting is not a process-memory or throughput guarantee.
+See [MD041 policy](rules/headings/md041.md).

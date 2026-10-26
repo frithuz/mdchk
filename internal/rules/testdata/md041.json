@@ -1,0 +1,675 @@
+[
+  {
+    "Name": "published",
+    "Source": "Introduction text.",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "valid",
+    "Source": "# Introduction",
+    "Expected": []
+  },
+  {
+    "Name": "wrong level",
+    "Source": "## A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "later heading",
+    "Source": "Intro\n\n# A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "empty",
+    "Source": "",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "blank",
+    "Source": "\n\n",
+    "Expected": [
+      [
+        2,
+        3,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "spaces",
+    "Source": " \t ",
+    "Expected": [
+      [
+        3,
+        1,
+        4
+      ]
+    ]
+  },
+  {
+    "Name": "leading blanks",
+    "Source": "\n\n  Intro",
+    "Expected": [
+      [
+        2,
+        3,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "leading CRLF",
+    "Source": "\r\n  Intro",
+    "Expected": [
+      [
+        2,
+        2,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "bare CR",
+    "Source": "\rIntro",
+    "Expected": [
+      [
+        1,
+        2,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "empty atx",
+    "Source": "#",
+    "Expected": []
+  },
+  {
+    "Name": "closed atx",
+    "Source": "# A ##",
+    "Expected": []
+  },
+  {
+    "Name": "invisible atx",
+    "Source": "# <!-- x -->",
+    "Expected": []
+  },
+  {
+    "Name": "setext",
+    "Source": "A\n===",
+    "Expected": []
+  },
+  {
+    "Name": "multiline setext",
+    "Source": "A\nB\n===",
+    "Expected": []
+  },
+  {
+    "Name": "setext level2",
+    "Source": "A\n---",
+    "Expected": [],
+    "Level": 2
+  },
+  {
+    "Name": "setext wrong",
+    "Source": "A\n---",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "quote nested",
+    "Source": "> # A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "item nested",
+    "Source": "- # A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "quote then root",
+    "Source": "> Intro\n\n# A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "fence",
+    "Source": "```\n# Fake\n```\n\n# Real",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "indented code",
+    "Source": "    # Fake\n\n# Real",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "raw fake",
+    "Source": "<script>\n# Fake\n</script>\n\n# Real",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "table",
+    "Source": "a | b\n--|--\nx | y\n\n# Real",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "thematic",
+    "Source": "***\n\n# A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "comment skip",
+    "Source": "<!-- a -->\n# A",
+    "Expected": []
+  },
+  {
+    "Name": "many comments",
+    "Source": "<!--a--><!--b-->\n\n# A",
+    "Expected": []
+  },
+  {
+    "Name": "comment multiline",
+    "Source": "<!-- a\n# Fake\n-->\n# A",
+    "Expected": []
+  },
+  {
+    "Name": "comment tail",
+    "Source": "<!--a--> prose\n# A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "comment other tag",
+    "Source": "<!--a--><b>\n# A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "comment nbsp",
+    "Source": "<!--a-->\u00a0\n# A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "comment attr fake",
+    "Source": "<b x=\"<!--a-->\">\n\n# A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "escaped fake",
+    "Source": "\\<!--a-->\n\n# A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "code fake",
+    "Source": "`<!--a-->`\n\n# A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "comment only",
+    "Source": "<!-- x -->",
+    "Expected": [
+      [
+        10,
+        1,
+        11
+      ]
+    ]
+  },
+  {
+    "Name": "comment only ending",
+    "Source": "<!-- x -->\r\n",
+    "Expected": [
+      [
+        12,
+        2,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "comment only unicode",
+    "Source": "<!--\u96ea-->",
+    "Expected": [
+      [
+        10,
+        1,
+        9
+      ]
+    ]
+  },
+  {
+    "Name": "unclosed comment",
+    "Source": "<!-- x",
+    "Expected": [
+      [
+        6,
+        1,
+        7
+      ]
+    ]
+  },
+  {
+    "Name": "unclosed comment ending",
+    "Source": "<!-- x\n",
+    "Expected": [
+      [
+        7,
+        2,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "tail unclosed comment",
+    "Source": "<!--a--><!--b",
+    "Expected": [
+      [
+        13,
+        1,
+        14
+      ]
+    ]
+  },
+  {
+    "Name": "tail comments then raw",
+    "Source": "<!--a--><script><!--b--></script>\n# A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "reference before heading",
+    "Source": "[r]: /x\n\n# A",
+    "Expected": []
+  },
+  {
+    "Name": "reference only",
+    "Source": "[r]: /x",
+    "Expected": [
+      [
+        7,
+        1,
+        8
+      ]
+    ]
+  },
+  {
+    "Name": "comments and reference",
+    "Source": "<!--a-->\n[r]: /x\n\n# A",
+    "Expected": []
+  },
+  {
+    "Name": "invalid reference",
+    "Source": "[r]:",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "unicode comment then body",
+    "Source": "<!--\u96ea-->\r\n\nIntro",
+    "Expected": [
+      [
+        13,
+        3,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "nul",
+    "Source": "\u0000",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "tabs",
+    "Source": "\tIntro",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "recognized header",
+    "Source": "---\n# Fake\n---\nIntro",
+    "Expected": [
+      [
+        15,
+        4,
+        1
+      ]
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "recognition off",
+    "Source": "---\n# Fake\n---\nIntro",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "header only",
+    "Source": "---\n---",
+    "Expected": [
+      [
+        7,
+        2,
+        4
+      ]
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "uncertain header",
+    "Source": "---\n# Fake",
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "leading defeats header",
+    "Source": "a\n---\ntitle: Guide\n---\n# A",
+    "Expected": [
+      [
+        0,
+        1,
+        1
+      ]
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "yaml title",
+    "Source": "---\ntitle: Guide\n---\nIntro",
+    "Expected": [],
+    "Recognize": true,
+    "Title": true
+  },
+  {
+    "Name": "yaml title optout",
+    "Source": "---\ntitle: Guide\n---\nIntro",
+    "Expected": [
+      [
+        21,
+        4,
+        1
+      ]
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "toml title",
+    "Source": "+++\ntitle = \"Guide\"\n+++\nIntro",
+    "Expected": [],
+    "Recognize": true,
+    "Title": true
+  },
+  {
+    "Name": "title level6",
+    "Source": "---\ntitle: Guide\n---\nIntro",
+    "Expected": [],
+    "Recognize": true,
+    "Title": true,
+    "Level": 6
+  },
+  {
+    "Name": "title only",
+    "Source": "---\ntitle: Guide\n---",
+    "Expected": [],
+    "Recognize": true,
+    "Title": true
+  },
+  {
+    "Name": "header missing title",
+    "Source": "---\nother: Guide\n---\nIntro",
+    "Expected": [
+      [
+        21,
+        4,
+        1
+      ]
+    ],
+    "Recognize": true,
+    "Title": true
+  },
+  {
+    "Name": "unknown title",
+    "Source": "---\ntitle: A\ntitle: B\n---\nIntro",
+    "Expected": [],
+    "Recognize": true,
+    "Title": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "unknown but opener",
+    "Source": "---\ntitle: A\ntitle: B\n---\n# A",
+    "Expected": [],
+    "Recognize": true,
+    "Title": true
+  },
+  {
+    "Name": "unknown empty",
+    "Source": "---\ntitle: A\ntitle: B\n---",
+    "Expected": [],
+    "Recognize": true,
+    "Title": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "unknown nested opener",
+    "Source": "---\ntitle: A\ntitle: B\n---\n> # A",
+    "Expected": [],
+    "Recognize": true,
+    "Title": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "unknown optout",
+    "Source": "---\ntitle: A\ntitle: B\n---\nIntro",
+    "Expected": [
+      [
+        26,
+        5,
+        1
+      ]
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "positive partial",
+    "Source": "---\ntitle: Guide\nother: !custom value\n---\nIntro",
+    "Expected": [],
+    "Recognize": true,
+    "Title": true
+  },
+  {
+    "Name": "unknown root",
+    "Source": "---\n- Guide\n---\nIntro",
+    "Expected": [],
+    "Recognize": true,
+    "Title": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "invalid toml",
+    "Source": "+++\ntitle = [\n+++\nIntro",
+    "Expected": [],
+    "Recognize": true,
+    "Title": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "unreliable with title",
+    "Source": "---\ntitle: Guide\n# A",
+    "Expected": [],
+    "Recognize": true,
+    "Title": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "BOM recognized header",
+    "Source": "\ufeff---\ntitle: Guide\n---\nIntro",
+    "Expected": [
+      [
+        24,
+        4,
+        1
+      ]
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "comment CR then body",
+    "Source": "<!--a-->\rIntro",
+    "Expected": [
+      [
+        9,
+        2,
+        1
+      ]
+    ]
+  },
+  {
+    "Name": "comment spaces CRLF body",
+    "Source": "<!--a--> \t\r\nIntro",
+    "Expected": [
+      [
+        12,
+        2,
+        1
+      ]
+    ]
+  }
+]

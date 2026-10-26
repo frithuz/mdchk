@@ -367,3 +367,18 @@ final withholding apply; callback interruptions retain reliable prior findings.
 No fresh source, parser, index, budget, public-tree clone, edit or write authority
 is added. Accounting bounds application work, not process RSS or throughput.
 See [MD036 policy](../rules/headings/md036.md).
+
+
+MD041 adds OpeningBlock, a narrow original-operation projection of the first
+actual root body block after fully comment-owned introductory blocks. It borrows
+actual comment/tail and raw-protection facts and scans only uncovered ASCII
+whitespace gaps, without copying comment payload or a public tree. It retains
+one original zero point/heading-level record; empty bodies use original EOF.
+Root/comment/marker/source-gap visits and the fixed output record are charged
+before work/publication. Caller/origin and sticky work/node/time controls remain
+shared; any failed projection withholds its fact, including at the final check.
+The callback short-circuits a sufficient opening heading before metadata decode;
+otherwise opt-in title truth supplies an alternative or explicit affected
+coverage. No Source, parse, index, allowance, edit or write authority is added.
+Finite application accounting is not a process-memory or throughput guarantee.
+See [MD041 policy](../rules/headings/md041.md).

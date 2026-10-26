@@ -114,7 +114,7 @@ unterminated header through EOF. Its AST section is partial, its reliable source
 record remains visible, and a located `unterminated-frontmatter` parsing note
 explains the incomplete result. This does not manufacture completed directive
 or ordinary rule context. Structured metadata values and title/order inspection
-remain unavailable in this projection. MD001 and MD025 consume title semantics separately
+remain unavailable in this projection. MD001, MD025 and MD041 consume title semantics separately
 through its engine-owned opt-in analysis path.
 
 Line selection retains the complete header as source context, marking it

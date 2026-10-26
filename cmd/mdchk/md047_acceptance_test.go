@@ -157,7 +157,13 @@ func TestCompiledMD047ProductionAnalysis(t *testing.T) {
 	putConfigurationFile(t, root, "doc.md", "missing")
 	got := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=json")
 	out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "lint")
-	if got.Status != 15 || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD047" || out.Complete {
+	md047Count := 0
+	for _, diagnostic := range out.Diagnostics {
+		if diagnostic.Rule == "MD047" {
+			md047Count++
+		}
+	}
+	if got.Status != 15 || md047Count != 1 || out.Complete {
 		t.Fatal(got)
 	}
 	for _, c := range out.Coverage {

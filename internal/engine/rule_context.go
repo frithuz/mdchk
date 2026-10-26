@@ -176,3 +176,19 @@ func (c RuleContext) EmphasisHeadings(ctx context.Context) (out []parser.Span, e
 	}()
 	return c.document.EmphasisHeadings(owned, c.budget, c.index)
 }
+
+// OpeningBlock observes the actual first root body block after introductory
+// comments under the original completed parse, source, index and allowance.
+func (c RuleContext) OpeningBlock(ctx context.Context) (out parser.OpeningBlockFact, err error) {
+	if ctx == nil || c.operation == nil || c.document == nil || c.budget == nil || !c.syntaxReliable || c.document.Source().Token() != c.Source().Token() {
+		return parser.OpeningBlockFact{}, parser.ErrModel
+	}
+	owned := ruleOperation{ctx, c.operation}
+	defer func() {
+		err = errors.Join(err, owned.Err(), c.budget.ChargeWork(0))
+		if err != nil {
+			out = parser.OpeningBlockFact{}
+		}
+	}()
+	return c.document.OpeningBlock(owned, c.budget, c.index)
+}

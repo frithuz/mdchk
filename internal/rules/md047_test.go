@@ -260,10 +260,20 @@ func TestMD047InactiveObservationUsesRealCallback(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !out.Complete || out.Status != "clean" || len(out.Diagnostics) != 0 || len(trace.Suppressed()) != 1 {
+	if !out.Complete || out.Status != "clean" || len(out.Diagnostics) != 0 || len(trace.Suppressed()) == 0 {
 		t.Fatal(out, trace.Suppressed())
 	}
-	hidden := trace.Suppressed()[0]
+	var hidden engine.DirectiveSuppression
+	count := 0
+	for _, observation := range trace.Suppressed() {
+		if observation.Diagnostic.Rule == "MD047" {
+			hidden = observation
+			count++
+		}
+	}
+	if count != 1 {
+		t.Fatal("expected one inactive MD047 observation", trace.Suppressed())
+	}
 	if hidden.Owner != -1 || hidden.Diagnostic.ByteRange != (result.ByteRange{Start: 3, End: 5}) || hidden.Diagnostic.FixAvailable {
 		t.Fatal(hidden)
 	}
