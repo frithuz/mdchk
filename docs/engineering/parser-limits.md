@@ -475,3 +475,20 @@ Known slide exemptions are retained independently of unrelated parser/directive
 uncertainty. Inspection prepares context before callbacks and preserves truthful
 completed sections when a later operation stop occurs. MD090 stays default disabled
 and manual; MD047 remains the sole production correction.
+
+## Heading inline construct projection
+
+MD093 borrows actual inline kinds and complete source envelopes from each real
+Heading using the completed private production profile, options, source/index and
+original operation allowance. It walks nested wrappers independently, retains raw
+HTML closer traversal and image-alt isolation, and never redispatches code, HTML,
+destination or title payload. Escaped/unresolved text remains parser-owned text.
+No new parse, renderer, public-tree clone, anchor index or resource service is used.
+
+Traversal stacks, output and finding growth reserve original records/work before
+construction. Caller and originating controls, sticky work/node/time stops and
+final publication checks withhold incomplete inventories. The immutable admitted
+allow list is read under the same controls into five fixed allowance bits; returned
+facts own their slice and cannot mutate syntax or options. Nested constructs stay
+independent and source geometry uses original envelopes, including container gaps.
+The rule remains default disabled, RequiresSyntax and NoFix; MD047 alone owns edits.

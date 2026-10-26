@@ -89,8 +89,8 @@ flavor: commonmark
 ```
 
 This configuration works with the current production executable: CommonMark
-0.31.2, GFM, directive processing, MD001/MD003/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD090 analysis and MD047 analysis/correction
-are available. MD026, MD036, MD043, MD063, MD080, MD082 and MD090 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
+0.31.2, GFM, directive processing, MD001/MD003/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD090/MD093 analysis and MD047 analysis/correction
+are available. MD026, MD036, MD043, MD063, MD080, MD082, MD090 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
 independently enabled header recognition. Other ordinary rule implementations
 remain unavailable. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
@@ -370,3 +370,20 @@ Set `allow_slides: false` to check declared slides normally. Patterns use the
 selected configuration directory and direct matching; no syntax infers slides.
 Invalid later patterns, nulls and nonboolean options are errors even while the
 rule is disabled and before target access. Inspection identifies the first match.
+
+## Inline formatting in headings
+
+MD093 is available, report-only and disabled by default. Each nested construct is
+checked independently: this example permits links while still reporting strong
+emphasis in a link label.
+
+```yaml
+version: 1
+rules:
+  MD093:
+    enabled: true
+    allowed_constructs: [link]
+```
+
+The exact choices are `emphasis`, `strong`, `code`, `link` and `image`; an empty list
+permits none. Null, unknown and non-string values are rejected even when disabled.

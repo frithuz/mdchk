@@ -1,0 +1,1352 @@
+[
+  {
+    "Name": "emphasis",
+    "Source": "## *Install*",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          12,
+          1,
+          4,
+          1,
+          13
+        ],
+        "Source": "*Install*"
+      }
+    ]
+  },
+  {
+    "Name": "allow_emphasis",
+    "Source": "## *Install*",
+    "Allowed": [
+      "emphasis"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "strong",
+    "Source": "## **Install**",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          14,
+          1,
+          4,
+          1,
+          15
+        ],
+        "Source": "**Install**"
+      }
+    ]
+  },
+  {
+    "Name": "allow_strong",
+    "Source": "## **Install**",
+    "Allowed": [
+      "strong"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "code",
+    "Source": "## `Install`",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          12,
+          1,
+          4,
+          1,
+          13
+        ],
+        "Source": "`Install`"
+      }
+    ]
+  },
+  {
+    "Name": "allow_code",
+    "Source": "## `Install`",
+    "Allowed": [
+      "code"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "link",
+    "Source": "## [Install](u)",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          15,
+          1,
+          4,
+          1,
+          16
+        ],
+        "Source": "[Install](u)"
+      }
+    ]
+  },
+  {
+    "Name": "allow_link",
+    "Source": "## [Install](u)",
+    "Allowed": [
+      "link"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "image",
+    "Source": "## ![Install](u)",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          16,
+          1,
+          4,
+          1,
+          17
+        ],
+        "Source": "![Install](u)"
+      }
+    ]
+  },
+  {
+    "Name": "allow_image",
+    "Source": "## ![Install](u)",
+    "Allowed": [
+      "image"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "published",
+    "Source": "## **Install**",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          14,
+          1,
+          4,
+          1,
+          15
+        ],
+        "Source": "**Install**"
+      }
+    ]
+  },
+  {
+    "Name": "accepted",
+    "Source": "## Install",
+    "Allowed": [],
+    "Expected": []
+  },
+  {
+    "Name": "empty",
+    "Source": "#",
+    "Allowed": [],
+    "Expected": []
+  },
+  {
+    "Name": "all_kinds",
+    "Source": "# *a* **b** `c` [d](u) ![e](u)",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          5,
+          1,
+          3,
+          1,
+          6
+        ],
+        "Source": "*a*"
+      },
+      {
+        "Range": [
+          6,
+          11,
+          1,
+          7,
+          1,
+          12
+        ],
+        "Source": "**b**"
+      },
+      {
+        "Range": [
+          12,
+          15,
+          1,
+          13,
+          1,
+          16
+        ],
+        "Source": "`c`"
+      },
+      {
+        "Range": [
+          16,
+          22,
+          1,
+          17,
+          1,
+          23
+        ],
+        "Source": "[d](u)"
+      },
+      {
+        "Range": [
+          23,
+          30,
+          1,
+          24,
+          1,
+          31
+        ],
+        "Source": "![e](u)"
+      }
+    ]
+  },
+  {
+    "Name": "allow_all",
+    "Source": "# *a* **b** `c` [d](u) ![e](u)",
+    "Allowed": [
+      "emphasis",
+      "strong",
+      "code",
+      "link",
+      "image"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "duplicates",
+    "Source": "# *a* **b**",
+    "Allowed": [
+      "emphasis",
+      "emphasis"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          6,
+          11,
+          1,
+          7,
+          1,
+          12
+        ],
+        "Source": "**b**"
+      }
+    ]
+  },
+  {
+    "Name": "nested_link_strong",
+    "Source": "# [**Install**](u)",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          18,
+          1,
+          3,
+          1,
+          19
+        ],
+        "Source": "[**Install**](u)"
+      },
+      {
+        "Range": [
+          3,
+          14,
+          1,
+          4,
+          1,
+          15
+        ],
+        "Source": "**Install**"
+      }
+    ]
+  },
+  {
+    "Name": "allowed_link_child",
+    "Source": "# [**Install**](u)",
+    "Allowed": [
+      "link"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          14,
+          1,
+          4,
+          1,
+          15
+        ],
+        "Source": "**Install**"
+      }
+    ]
+  },
+  {
+    "Name": "allowed_strong_parent",
+    "Source": "# [**Install**](u)",
+    "Allowed": [
+      "strong"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          18,
+          1,
+          3,
+          1,
+          19
+        ],
+        "Source": "[**Install**](u)"
+      }
+    ]
+  },
+  {
+    "Name": "image_alt",
+    "Source": "# ![*Alt*](u)",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          13,
+          1,
+          3,
+          1,
+          14
+        ],
+        "Source": "![*Alt*](u)"
+      },
+      {
+        "Range": [
+          4,
+          9,
+          1,
+          5,
+          1,
+          10
+        ],
+        "Source": "*Alt*"
+      }
+    ]
+  },
+  {
+    "Name": "allowed_image_child",
+    "Source": "# ![*Alt*](u)",
+    "Allowed": [
+      "image"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          9,
+          1,
+          5,
+          1,
+          10
+        ],
+        "Source": "*Alt*"
+      }
+    ]
+  },
+  {
+    "Name": "triple",
+    "Source": "# ***x***",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          9,
+          1,
+          3,
+          1,
+          10
+        ],
+        "Source": "***x***"
+      },
+      {
+        "Range": [
+          3,
+          8,
+          1,
+          4,
+          1,
+          9
+        ],
+        "Source": "**x**"
+      }
+    ]
+  },
+  {
+    "Name": "triple_emphasis_allowed",
+    "Source": "# ***x***",
+    "Allowed": [
+      "emphasis"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          8,
+          1,
+          4,
+          1,
+          9
+        ],
+        "Source": "**x**"
+      }
+    ]
+  },
+  {
+    "Name": "triple_strong_allowed",
+    "Source": "# ***x***",
+    "Allowed": [
+      "strong"
+    ],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          9,
+          1,
+          3,
+          1,
+          10
+        ],
+        "Source": "***x***"
+      }
+    ]
+  },
+  {
+    "Name": "nested_code",
+    "Source": "# [a `b`](u)",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          12,
+          1,
+          3,
+          1,
+          13
+        ],
+        "Source": "[a `b`](u)"
+      },
+      {
+        "Range": [
+          5,
+          8,
+          1,
+          6,
+          1,
+          9
+        ],
+        "Source": "`b`"
+      }
+    ]
+  },
+  {
+    "Name": "only_heading",
+    "Source": "*paragraph*\n\n# **heading**\n\n![body](u)",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          15,
+          26,
+          3,
+          3,
+          3,
+          14
+        ],
+        "Source": "**heading**"
+      }
+    ]
+  },
+  {
+    "Name": "closed_atx",
+    "Source": "### *x* ###",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          7,
+          1,
+          5,
+          1,
+          8
+        ],
+        "Source": "*x*"
+      }
+    ]
+  },
+  {
+    "Name": "setext",
+    "Source": "*Install*\n===",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          0,
+          9,
+          1,
+          1,
+          1,
+          10
+        ],
+        "Source": "*Install*"
+      }
+    ]
+  },
+  {
+    "Name": "quote",
+    "Source": "> ## **x**",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          10,
+          1,
+          6,
+          1,
+          11
+        ],
+        "Source": "**x**"
+      }
+    ]
+  },
+  {
+    "Name": "list",
+    "Source": "- ## `x`",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          8,
+          1,
+          6,
+          1,
+          9
+        ],
+        "Source": "`x`"
+      }
+    ]
+  },
+  {
+    "Name": "nested_container",
+    "Source": "> - ## [x](u)",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          7,
+          13,
+          1,
+          8,
+          1,
+          14
+        ],
+        "Source": "[x](u)"
+      }
+    ]
+  },
+  {
+    "Name": "multiline_setext",
+    "Source": "*one\ntwo*\n---",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          0,
+          9,
+          1,
+          1,
+          2,
+          5
+        ],
+        "Source": "*one\ntwo*"
+      }
+    ]
+  },
+  {
+    "Name": "multiline_quote",
+    "Source": "> *one\n> two*\n> ===",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          13,
+          1,
+          3,
+          2,
+          7
+        ],
+        "Source": "*one\n> two*"
+      }
+    ]
+  },
+  {
+    "Name": "multiline_list",
+    "Source": "- *one\n  two*\n  ===",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          13,
+          1,
+          3,
+          2,
+          7
+        ],
+        "Source": "*one\n  two*"
+      }
+    ]
+  },
+  {
+    "Name": "escaped",
+    "Source": "# \\*x\\* \\[x](u) \\!\\[x](u)",
+    "Allowed": [],
+    "Expected": []
+  },
+  {
+    "Name": "entities",
+    "Source": "# &#42;x&#42; &lbrack;x](u)",
+    "Allowed": [],
+    "Expected": []
+  },
+  {
+    "Name": "unmatched",
+    "Source": "# *x **y `z [bad](broken",
+    "Allowed": [],
+    "Expected": []
+  },
+  {
+    "Name": "code_opaque",
+    "Source": "# `*x* [y](u) ![z](u)`",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          22,
+          1,
+          3,
+          1,
+          23
+        ],
+        "Source": "`*x* [y](u) ![z](u)`"
+      }
+    ]
+  },
+  {
+    "Name": "code_allowed_opaque",
+    "Source": "# `*x* [y](u)`",
+    "Allowed": [
+      "code"
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "destination_title",
+    "Source": "# [plain](a*b \"**title**\")",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          26,
+          1,
+          3,
+          1,
+          27
+        ],
+        "Source": "[plain](a*b \"**title**\")"
+      }
+    ]
+  },
+  {
+    "Name": "reference_full",
+    "Source": "# [x][id]\n\n[id]: u",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          9,
+          1,
+          3,
+          1,
+          10
+        ],
+        "Source": "[x][id]"
+      }
+    ]
+  },
+  {
+    "Name": "image_reference_full",
+    "Source": "# ![x][id]\n\n[id]: u",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          10,
+          1,
+          3,
+          1,
+          11
+        ],
+        "Source": "![x][id]"
+      }
+    ]
+  },
+  {
+    "Name": "reference_collapsed",
+    "Source": "# [x][]\n\n[x]: u",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          7,
+          1,
+          3,
+          1,
+          8
+        ],
+        "Source": "[x][]"
+      }
+    ]
+  },
+  {
+    "Name": "image_reference_collapsed",
+    "Source": "# ![x][]\n\n[x]: u",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          8,
+          1,
+          3,
+          1,
+          9
+        ],
+        "Source": "![x][]"
+      }
+    ]
+  },
+  {
+    "Name": "reference_shortcut",
+    "Source": "# [x]\n\n[x]: u",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          5,
+          1,
+          3,
+          1,
+          6
+        ],
+        "Source": "[x]"
+      }
+    ]
+  },
+  {
+    "Name": "image_reference_shortcut",
+    "Source": "# ![x]\n\n[x]: u",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          6,
+          1,
+          3,
+          1,
+          7
+        ],
+        "Source": "![x]"
+      }
+    ]
+  },
+  {
+    "Name": "unresolved",
+    "Source": "# [x][unknown] ![x][missing]",
+    "Allowed": [],
+    "Expected": []
+  },
+  {
+    "Name": "empty_link_image",
+    "Source": "# []() ![]()",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          6,
+          1,
+          3,
+          1,
+          7
+        ],
+        "Source": "[]()"
+      },
+      {
+        "Range": [
+          7,
+          12,
+          1,
+          8,
+          1,
+          13
+        ],
+        "Source": "![]()"
+      }
+    ]
+  },
+  {
+    "Name": "angle_autolink",
+    "Source": "# <https://example.com>",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          23,
+          1,
+          3,
+          1,
+          24
+        ],
+        "Source": "<https://example.com>"
+      }
+    ]
+  },
+  {
+    "Name": "email_autolink",
+    "Source": "# <a@example.com>",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          17,
+          1,
+          3,
+          1,
+          18
+        ],
+        "Source": "<a@example.com>"
+      }
+    ]
+  },
+  {
+    "Name": "bare_commonmark",
+    "Source": "# https://example.com",
+    "Allowed": [],
+    "Expected": [],
+    "Flavor": "commonmark"
+  },
+  {
+    "Name": "bare_gfm",
+    "Source": "# https://example.com",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          21,
+          1,
+          3,
+          1,
+          22
+        ],
+        "Source": "https://example.com"
+      }
+    ],
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "strike_wrapper",
+    "Source": "# ~~*x*~~",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          7,
+          1,
+          5,
+          1,
+          8
+        ],
+        "Source": "*x*"
+      }
+    ]
+  },
+  {
+    "Name": "strike_only",
+    "Source": "# ~~x~~",
+    "Allowed": [],
+    "Expected": []
+  },
+  {
+    "Name": "inline_html",
+    "Source": "# <span title=\"*fake*\">plain</span> <!-- **fake** -->",
+    "Allowed": [],
+    "Expected": []
+  },
+  {
+    "Name": "raw_script",
+    "Source": "# <script>*fake*</script> **live**",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          26,
+          34,
+          1,
+          27,
+          1,
+          35
+        ],
+        "Source": "**live**"
+      }
+    ]
+  },
+  {
+    "Name": "raw_unclosed",
+    "Source": "# <script>*fake* **fake**",
+    "Allowed": [],
+    "Expected": []
+  },
+  {
+    "Name": "raw_nested_emphasis_closer",
+    "Source": "# <script>*payload</script>Tail* **real**",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          33,
+          41,
+          1,
+          34,
+          1,
+          42
+        ],
+        "Source": "**real**"
+      }
+    ]
+  },
+  {
+    "Name": "raw_nested_link_closer",
+    "Source": "# <script>[payload</script>*real*](u) **after**",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          27,
+          33,
+          1,
+          28,
+          1,
+          34
+        ],
+        "Source": "*real*"
+      },
+      {
+        "Range": [
+          38,
+          47,
+          1,
+          39,
+          1,
+          48
+        ],
+        "Source": "**after**"
+      }
+    ]
+  },
+  {
+    "Name": "raw_nested_strong_closer",
+    "Source": "# <script>**payload</script>*real*** `after`",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          28,
+          34,
+          1,
+          29,
+          1,
+          35
+        ],
+        "Source": "*real*"
+      },
+      {
+        "Range": [
+          37,
+          44,
+          1,
+          38,
+          1,
+          45
+        ],
+        "Source": "`after`"
+      }
+    ]
+  },
+  {
+    "Name": "raw_code_fake_closer",
+    "Source": "# <script>`</script>` *fake*",
+    "Allowed": [],
+    "Expected": []
+  },
+  {
+    "Name": "raw_image_fake_closer",
+    "Source": "# <script>![</script>](u) *fake*",
+    "Allowed": [],
+    "Expected": []
+  },
+  {
+    "Name": "raw_comment_fake_closer",
+    "Source": "# <script><!-- </script> --> *fake*",
+    "Allowed": [],
+    "Expected": []
+  },
+  {
+    "Name": "outside_raw_wrapper",
+    "Source": "# *a<script>b</script>*",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          23,
+          1,
+          3,
+          1,
+          24
+        ],
+        "Source": "*a<script>b</script>*"
+      }
+    ]
+  },
+  {
+    "Name": "image_alt_html",
+    "Source": "# ![<script>*alt*</script>](u) **live**",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          30,
+          1,
+          3,
+          1,
+          31
+        ],
+        "Source": "![<script>*alt*</script>](u)"
+      },
+      {
+        "Range": [
+          12,
+          17,
+          1,
+          13,
+          1,
+          18
+        ],
+        "Source": "*alt*"
+      },
+      {
+        "Range": [
+          31,
+          39,
+          1,
+          32,
+          1,
+          40
+        ],
+        "Source": "**live**"
+      }
+    ]
+  },
+  {
+    "Name": "raw_heading_reset",
+    "Source": "# <script>*fake*\n\n## **real**",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          21,
+          29,
+          3,
+          4,
+          3,
+          12
+        ],
+        "Source": "**real**"
+      }
+    ]
+  },
+  {
+    "Name": "raw_style",
+    "Source": "# <style>*fake*</style> `live`",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          24,
+          30,
+          1,
+          25,
+          1,
+          31
+        ],
+        "Source": "`live`"
+      }
+    ]
+  },
+  {
+    "Name": "raw_textarea",
+    "Source": "# <textarea>*fake*</textarea> [live](u)",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          30,
+          39,
+          1,
+          31,
+          1,
+          40
+        ],
+        "Source": "[live](u)"
+      }
+    ]
+  },
+  {
+    "Name": "fenced",
+    "Source": "```\n# **fake**\n```\n\n# *real*",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          22,
+          28,
+          5,
+          3,
+          5,
+          9
+        ],
+        "Source": "*real*"
+      }
+    ]
+  },
+  {
+    "Name": "indented",
+    "Source": "    # **fake**\n\n# *real*",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          18,
+          24,
+          3,
+          3,
+          3,
+          9
+        ],
+        "Source": "*real*"
+      }
+    ]
+  },
+  {
+    "Name": "html_block",
+    "Source": "<div>\n# **fake**\n</div>\n\n# *real*",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          27,
+          33,
+          5,
+          3,
+          5,
+          9
+        ],
+        "Source": "*real*"
+      }
+    ]
+  },
+  {
+    "Name": "comment_block",
+    "Source": "<!--\n# **fake**\n-->\n# *real*",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          22,
+          28,
+          4,
+          3,
+          4,
+          9
+        ],
+        "Source": "*real*"
+      }
+    ]
+  },
+  {
+    "Name": "yaml_header",
+    "Source": "---\ntitle: \"# **fake**\"\n---\n# *real*",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          30,
+          36,
+          4,
+          3,
+          4,
+          9
+        ],
+        "Source": "*real*"
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "toml_header",
+    "Source": "+++\ntitle = \"# **fake**\"\n+++\n# *real*",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          31,
+          37,
+          4,
+          3,
+          4,
+          9
+        ],
+        "Source": "*real*"
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "unterminated_header",
+    "Source": "---\n# **fake**",
+    "Allowed": [],
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "unicode_lf",
+    "Source": "# é\t**界**\n",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          12,
+          1,
+          5,
+          1,
+          10
+        ],
+        "Source": "**界**"
+      }
+    ]
+  },
+  {
+    "Name": "unicode_crlf",
+    "Source": "# é\t**界**\r\n",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          12,
+          1,
+          5,
+          1,
+          10
+        ],
+        "Source": "**界**"
+      }
+    ]
+  },
+  {
+    "Name": "unicode_cr",
+    "Source": "# é\t**界**\r",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          12,
+          1,
+          5,
+          1,
+          10
+        ],
+        "Source": "**界**"
+      }
+    ]
+  },
+  {
+    "Name": "nul",
+    "Source": "# \u0000 *界*",
+    "Allowed": [],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          9,
+          1,
+          5,
+          1,
+          8
+        ],
+        "Source": "*界*"
+      }
+    ]
+  }
+]
