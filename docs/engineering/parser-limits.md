@@ -541,3 +541,11 @@ records reserved before construction, including clean inputs. Caller and origin
 checks atomically withhold interrupted findings. Diagnostics own the full digits
 and delimiter only. Default-enabled PlannedFix remains metadata; findings are
 manual and MD047 alone supplies executable edits.
+
+MD030 reuses ListItems once, reserves detached separator capacity and logical
+records, and precharges bounded binary searches of the original line index.
+It derives first-line presence from original prefix/physical-line bounds, without
+scanning Unicode prefixes or copying source. Comparisons and finding capacity,
+copies and records use the same original allowance. Caller and origin controls,
+sticky work/node/time limits and final publication checks withhold all findings.
+Configured spaces is a borrowed positive int compared directly, including max int.

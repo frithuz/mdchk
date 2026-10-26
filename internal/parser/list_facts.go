@@ -1,6 +1,10 @@
 package parser
 
-import "context"
+import (
+	"context"
+	"math/bits"
+	"sort"
+)
 
 // ListItemFact retains actual group/item ancestry and first-line source facts.
 // Values contain no mutable syntax handles. ParentItem is absent at the root.
@@ -89,6 +93,61 @@ func (d *Document) ListItems(ctx context.Context, budget *OperationBudget, index
 			}
 			stack = append(stack, frame{node: n, group: group, parent: parent})
 		}
+	}
+	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 0, 0); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ListSeparatorFact describes the original owned first-line separator. Nonempty
+// refers to source syntax on that physical line, independently of descendants.
+// Values are detached from mutable syntax and never confer edit ownership.
+type ListSeparatorFact struct {
+	Marker, Separator Span
+	Padding           int
+	FirstLineNonempty bool
+}
+
+// ListSeparators derives facts from the actual ListItems inventory exactly once,
+// under its completed original production witness and allowance. Physical line
+// lookup uses the retained index, without decoding or copying source prefixes.
+func (d *Document) ListSeparators(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions) ([]ListSeparatorFact, error) {
+	items, err := d.ListItems(ctx, budget, index, options)
+	if err != nil {
+		return nil, err
+	}
+	// Reserve storage and work before construction, even for an empty inventory.
+	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, int64(len(items))+1, int64(len(items))); err != nil {
+		return nil, err
+	}
+	out := make([]ListSeparatorFact, 0, len(items))
+	previous := -1
+	for _, item := range items {
+		// Search performs at most bits.Len(len(lines)) comparisons. Reserve them
+		// before touching the original index; no Unicode prefix scan is necessary.
+		if err := headingFactCharge(ctx, budget, int64(bits.Len(uint(len(index.lines))))+1, 0); err != nil {
+			return nil, err
+		}
+		marker, prefix := item.Marker, item.Prefix
+		if !marker.Present() || !prefix.Present() || marker.SourceToken() != index.source.Token() || prefix.SourceToken() != index.source.Token() || marker.Start() < previous || prefix.Start() > marker.Start() || marker.Start() >= marker.End() || marker.End() > prefix.End() || item.Padding <= 0 {
+			return nil, ErrModel
+		}
+		line := sort.Search(len(index.lines), func(i int) bool { return index.lines[i].end >= marker.Start() })
+		if line == len(index.lines) || prefix.Start() < index.lines[line].start || prefix.End() > index.lines[line].end {
+			return nil, ErrModel
+		}
+		nonempty := prefix.End() < index.lines[line].end
+		if nonempty && marker.End() == prefix.End() {
+			return nil, ErrModel
+		}
+		// Logical records are distinct from their reserved backing storage.
+		if err := headingFactCharge(ctx, budget, 1, 1); err != nil {
+			return nil, err
+		}
+		separator := Span{source: index.source, start: marker.End(), end: prefix.End(), present: true}
+		out = append(out, ListSeparatorFact{Marker: marker, Separator: separator, Padding: item.Padding, FirstLineNonempty: nonempty})
+		previous = marker.End()
 	}
 	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 0, 0); err != nil {
 		return nil, err

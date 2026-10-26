@@ -95,3 +95,7 @@ and MD087 counterfactual conclusions remain downstream.
 MD029 compares full actual ordered groups before marker-start suppression. Hidden
 first items supply the start; hidden later mismatches consume direct ordinals.
 A later enable directive retains the original group counter and admitted style.
+
+MD030 inventories complete original list context before suppression. Each manual
+finding uses its owned separator start, excluding marker and ancestor prefixes.
+Empty marker lines remain exempt; separately enabled nested items still run.

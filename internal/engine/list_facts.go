@@ -79,3 +79,33 @@ func (c RuleContext) OrderedListStyle(ctx context.Context) (bool, error) {
 	}
 	return value == "one", nil
 }
+
+// ListSeparators exposes detached original separator facts under both controls.
+func (c RuleContext) ListSeparators(ctx context.Context) (out []parser.ListSeparatorFact, err error) {
+	if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
+		return nil, err
+	}
+	defer func() {
+		err = errors.Join(err, c.SectionCheckpoint(ctx, 0, 0))
+		if err != nil {
+			out = nil
+		}
+	}()
+	return c.document.ListSeparators(ruleOperation{ctx, c.operation}, c.budget, c.index, c.Context().ParseOptions())
+}
+
+// ListMarkerSpaces borrows the admitted positive integer without an option-map
+// clone or work proportional to the configured value.
+func (c RuleContext) ListMarkerSpaces(ctx context.Context) (int, error) {
+	if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
+		return 0, err
+	}
+	spaces, ok := c.options["spaces"].(int)
+	if !ok || spaces <= 0 {
+		return 0, parser.ErrModel
+	}
+	if err := c.SectionCheckpoint(ctx, 0, 0); err != nil {
+		return 0, err
+	}
+	return spaces, nil
+}

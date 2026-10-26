@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis are also available. MD026, MD036, MD043, MD063, MD080, MD082, MD090 and MD093 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis are also available. MD026, MD036, MD043, MD063, MD080, MD082, MD090 and MD093 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -275,7 +275,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD004, MD005, MD007, MD029, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001, MD025 and MD041 opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
@@ -634,3 +634,12 @@ records reserved before construction, including clean inputs. Caller and origin
 checks atomically withhold interrupted findings. Diagnostics own the full digits
 and delimiter only. Default-enabled PlannedFix remains metadata; findings are
 manual and MD047 alone supplies executable edits.
+
+MD030 derives a detached separator inventory from the actual ListItems exactly
+once. A precharged binary lookup in the original physical-line index establishes
+first-line source presence (`Prefix.End < line.end`); marker end through prefix
+end owns the diagnostic. No source clone, extra parse or grammar is introduced.
+The original completed production witness, options, allowance and caller/origin
+controls govern fact capacity, records, lookup, comparisons and finding growth.
+Final checkpoints withhold all output on failure. The borrowed positive integer
+is compared directly, without work or storage proportional to its value.

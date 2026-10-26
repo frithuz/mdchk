@@ -1904,3 +1904,14 @@ Per-analysis baseline storage, comparisons and finding growth reserve original
 work and records before construction, including aligned groups. Final checks
 withhold interrupted output. Exact full item-marker spans produce manual
 findings; default-enabled PlannedFix metadata grants no correction authority.
+
+The internal lint-only ListSeparators projection reuses the original ListItems
+inventory and completed production witness. It derives detached Marker,
+Separator, Padding and FirstLineNonempty facts; no AST property or inspection
+schema changes. The separator is [Marker.End, Prefix.End). A bounded binary
+search of the original physical-line index establishes nonempty source syntax
+when Prefix.End is less than that line's content end. Definitions, tasks and
+later descendants do not replace this physical first-line test. Empty virtual
+padding has no fabricated separator bytes. Capacity, logical records and lookup
+work are reserved under the original allowance before construction; final
+caller/origin checks withhold interrupted inventories.

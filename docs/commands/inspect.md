@@ -135,3 +135,7 @@ section; this does not claim full rule counts, body syntax or complete analysis.
 MD029 is available for both flavors, with admitted `ordered` or `one` style.
 Inspection reports analysis availability; PlannedFix metadata grants no MD029
 correction authority. Its full numeric marker findings remain manual.
+
+MD030 is available for both flavors with positive integer spaces (default 1).
+Inspection exposes analysis availability; PlannedFix metadata grants no MD030
+producer, preview or write authority.

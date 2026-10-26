@@ -1,0 +1,743 @@
+[
+  {
+    "Name": "published accepted",
+    "Source": "- One\n",
+    "Spaces": 0,
+    "Expected": []
+  },
+  {
+    "Name": "published violating",
+    "Source": "-  One\n",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "bullet *",
+    "Source": "*   One",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          4,
+          1,
+          2,
+          1,
+          5
+        ],
+        "Source": "   "
+      }
+    ]
+  },
+  {
+    "Name": "bullet +",
+    "Source": "+   One",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          4,
+          1,
+          2,
+          1,
+          5
+        ],
+        "Source": "   "
+      }
+    ]
+  },
+  {
+    "Name": "bullet -",
+    "Source": "-   One",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          4,
+          1,
+          2,
+          1,
+          5
+        ],
+        "Source": "   "
+      }
+    ]
+  },
+  {
+    "Name": "ordered 0.",
+    "Source": "0.  雪",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          1,
+          3,
+          1,
+          5
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "ordered 000)",
+    "Source": "000)  雪",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          6,
+          1,
+          5,
+          1,
+          7
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "ordered 123456789.",
+    "Source": "123456789.  雪",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          10,
+          12,
+          1,
+          11,
+          1,
+          13
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "ordered 1)",
+    "Source": "1)  雪",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          1,
+          3,
+          1,
+          5
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "exact 1",
+    "Source": "- One",
+    "Spaces": 1,
+    "Expected": []
+  },
+  {
+    "Name": "short versus 2",
+    "Source": "- One",
+    "Spaces": 2,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "exact 2",
+    "Source": "-  One",
+    "Spaces": 2,
+    "Expected": []
+  },
+  {
+    "Name": "short versus 3",
+    "Source": "-  One",
+    "Spaces": 3,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "exact 3",
+    "Source": "-   One",
+    "Spaces": 3,
+    "Expected": []
+  },
+  {
+    "Name": "short versus 4",
+    "Source": "-   One",
+    "Spaces": 4,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          4,
+          1,
+          2,
+          1,
+          5
+        ],
+        "Source": "   "
+      }
+    ]
+  },
+  {
+    "Name": "exact 4",
+    "Source": "-    One",
+    "Spaces": 4,
+    "Expected": []
+  },
+  {
+    "Name": "short versus 5",
+    "Source": "-    One",
+    "Spaces": 5,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          5,
+          1,
+          2,
+          1,
+          6
+        ],
+        "Source": "    "
+      }
+    ]
+  },
+  {
+    "Name": "large positive",
+    "Source": "- One",
+    "Spaces": 1000000,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "physical tab root",
+    "Source": "-\tOne",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t"
+      }
+    ]
+  },
+  {
+    "Name": "physical tab aligned",
+    "Source": "-\tOne",
+    "Spaces": 3,
+    "Expected": []
+  },
+  {
+    "Name": "physical tab quote",
+    "Source": "> -\tOne",
+    "Spaces": 0,
+    "Expected": []
+  },
+  {
+    "Name": "physical tab quote mismatch",
+    "Source": "> -\tOne",
+    "Spaces": 2,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t"
+      }
+    ]
+  },
+  {
+    "Name": "leading quote partial tab",
+    "Source": ">\t-  雪",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          5,
+          1,
+          4,
+          1,
+          6
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "fallback code",
+    "Source": "-     code",
+    "Spaces": 0,
+    "Expected": []
+  },
+  {
+    "Name": "fallback code not raw whitespace",
+    "Source": "-     code",
+    "Spaces": 5,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " "
+      }
+    ]
+  },
+  {
+    "Name": "shared residual tab",
+    "Source": "-\t  code",
+    "Spaces": 0,
+    "Expected": []
+  },
+  {
+    "Name": "shared residual tab mismatch",
+    "Source": "-\t  code",
+    "Spaces": 2,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t"
+      }
+    ]
+  },
+  {
+    "Name": "empty first line '-'",
+    "Source": "-",
+    "Spaces": 2,
+    "Expected": []
+  },
+  {
+    "Name": "empty first line '-   '",
+    "Source": "-   ",
+    "Spaces": 2,
+    "Expected": []
+  },
+  {
+    "Name": "empty first line '-\\t'",
+    "Source": "-\t",
+    "Spaces": 2,
+    "Expected": []
+  },
+  {
+    "Name": "empty first line '-\\n  continuation'",
+    "Source": "-\n  continuation",
+    "Spaces": 2,
+    "Expected": []
+  },
+  {
+    "Name": "empty first line '-\\n      code'",
+    "Source": "-\n      code",
+    "Spaces": 2,
+    "Expected": []
+  },
+  {
+    "Name": "empty first line '-   \\n  continuation'",
+    "Source": "-   \n  continuation",
+    "Spaces": 2,
+    "Expected": []
+  },
+  {
+    "Name": "empty first line '-\\t\\n      code'",
+    "Source": "-\t\n      code",
+    "Spaces": 2,
+    "Expected": []
+  },
+  {
+    "Name": "source payload -  [r]: /url",
+    "Source": "-  [r]: /url",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "source payload -  [ ]",
+    "Source": "-  [ ]",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "source payload -  [ ] ",
+    "Source": "-  [ ] ",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "source payload -  [x] task",
+    "Source": "-  [x] task",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "source payload -  <span></span>",
+    "Source": "-  <span></span>",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "source payload -  <!-- only -->",
+    "Source": "-  <!-- only -->",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "same line nested",
+    "Source": "- -  nested",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          5,
+          1,
+          4,
+          1,
+          6
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "both same line nested",
+    "Source": "-  +  nested",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  "
+      },
+      {
+        "Range": [
+          4,
+          6,
+          1,
+          5,
+          1,
+          7
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "multiline nested",
+    "Source": "- outer\n  1.  inner",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          14,
+          2,
+          5,
+          2,
+          7
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "unicode '\\n'",
+    "Source": "é\n\n> -  😀\n",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          9,
+          3,
+          4,
+          3,
+          6
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "empty continued '\\n'",
+    "Source": "-\n  paragraph",
+    "Spaces": 2,
+    "Expected": []
+  },
+  {
+    "Name": "unicode '\\r\\n'",
+    "Source": "é\r\n\r\n> -  😀\r\n",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          11,
+          3,
+          4,
+          3,
+          6
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "empty continued '\\r\\n'",
+    "Source": "-\r\n  paragraph",
+    "Spaces": 2,
+    "Expected": []
+  },
+  {
+    "Name": "unicode '\\r'",
+    "Source": "é\r\r> -  😀\r",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          9,
+          3,
+          4,
+          3,
+          6
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "empty continued '\\r'",
+    "Source": "-\r  paragraph",
+    "Spaces": 2,
+    "Expected": []
+  },
+  {
+    "Name": "nul content",
+    "Source": "-  a\u0000b",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  "
+      }
+    ]
+  },
+  {
+    "Name": "protected nonitems",
+    "Source": "```\n-  fence\n```\n\n    -  code\n\n<!--\n-  comment\n-->\n\n<div>\n-  raw\n</div>\n\n\\-  escaped\n\ntext\n2.  lazy\n\n---\n\nheading\n---\n\n-no\n1.no\n- no\n",
+    "Spaces": 0,
+    "Expected": []
+  },
+  {
+    "Name": "lazy marker prose",
+    "Source": "- text\n  ordinary\n  -no",
+    "Spaces": 0,
+    "Expected": []
+  },
+  {
+    "Name": "opaque header ---",
+    "Source": "---\nname: x\n-  yaml\n---\n\n-  outside\n",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          26,
+          28,
+          6,
+          2,
+          6,
+          4
+        ],
+        "Source": "  "
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "opaque header +++",
+    "Source": "+++\nname = \"x\"\n-  toml\n+++\n\n-  outside\n",
+    "Spaces": 0,
+    "Expected": [
+      {
+        "Range": [
+          29,
+          31,
+          6,
+          2,
+          6,
+          4
+        ],
+        "Source": "  "
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "unreliable header",
+    "Source": "---\nname: x\n-  hidden",
+    "Spaces": 0,
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  }
+]
