@@ -314,3 +314,19 @@ charges each finding and retains reliable prior findings with a later error.
 There is no new parse, source, allowance, whole-document rescan or public-tree copy.
 This is finite application-work accounting, not a process memory or throughput
 guarantee. No correction provider or write authority is added. See [MD023 policy](../rules/headings/md023.md).
+
+MD024 adds a raw Label span to HeadingFact without changing existing fields.
+First/last original Content source bounds preserve NUL mappings and multiline
+Setext gaps; raw-empty ATX uses opening.End. The original-operation HeadingKey
+bridge collapses parser.IsUnicodeWhitespace and uses pinned Unicode17 FoldCase
+without decoding again. All scans, builders and fold expansion reserve work and
+construction before allocation, with long-loop checkpoints. The callback reserves
+map capacity for the complete finite heading inventory before construction, so
+ordinary insertions do not grow the map or rehash prior variable-length keys;
+whole-key lookup/comparison, key retention, fixed outline state and output growth
+are separately charged. One linear heading pass uses actual occurrence IDs for
+nearest-shallower parents, preserving all original context across suppression.
+Projection failure withholds facts; a later callback error retains prior reliable
+findings and explicit incomplete coverage. No fresh source, parse, allowance or
+public-tree clone is created. This is finite application-work accounting, not a
+process memory or throughput guarantee. See [MD024 policy](../rules/headings/md024.md).

@@ -1,0 +1,673 @@
+[
+  {
+    "Name": "published",
+    "Source": "## Install\n\n## install",
+    "Expected": [
+      {
+        "Range": [
+          15,
+          22,
+          3,
+          4,
+          3,
+          11
+        ],
+        "Source": "install"
+      }
+    ]
+  },
+  {
+    "Name": "every later",
+    "Source": "## A\n\n# a\n\n### A",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": "a"
+      },
+      {
+        "Range": [
+          15,
+          16,
+          5,
+          5,
+          5,
+          6
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "unique",
+    "Source": "## Install\n\n## Usage",
+    "Expected": []
+  },
+  {
+    "Name": "raw markup closer",
+    "Source": "## A\n\n## **a** ##  ",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          14,
+          3,
+          4,
+          3,
+          9
+        ],
+        "Source": "**a**"
+      }
+    ]
+  },
+  {
+    "Name": "format code link image",
+    "Source": "## *A*\n# **a**\n# `A`\n# [a](/one \"title\")\n# ![A](/two \"other\")",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          14,
+          2,
+          3,
+          2,
+          8
+        ],
+        "Source": "**a**"
+      },
+      {
+        "Range": [
+          17,
+          20,
+          3,
+          3,
+          3,
+          6
+        ],
+        "Source": "`A`"
+      },
+      {
+        "Range": [
+          23,
+          40,
+          4,
+          3,
+          4,
+          20
+        ],
+        "Source": "[a](/one \"title\")"
+      },
+      {
+        "Range": [
+          43,
+          61,
+          5,
+          3,
+          5,
+          21
+        ],
+        "Source": "![A](/two \"other\")"
+      }
+    ]
+  },
+  {
+    "Name": "reference labels",
+    "Source": "[one]: /first \"T\"\n[two]: /second \"U\"\n\n# [A][one]\n# [a][two]",
+    "Expected": [
+      {
+        "Range": [
+          51,
+          59,
+          5,
+          3,
+          5,
+          11
+        ],
+        "Source": "[a][two]"
+      }
+    ]
+  },
+  {
+    "Name": "decode once",
+    "Source": "## A&amp;B\n## a&#38;b\n## A&amp;amp;B",
+    "Expected": [
+      {
+        "Range": [
+          14,
+          21,
+          2,
+          4,
+          2,
+          11
+        ],
+        "Source": "a&#38;b"
+      }
+    ]
+  },
+  {
+    "Name": "escaped literal punctuation",
+    "Source": "## \\*A\\*\n## *a*\n## *A*",
+    "Expected": [
+      {
+        "Range": [
+          19,
+          22,
+          3,
+          4,
+          3,
+          7
+        ],
+        "Source": "*A*"
+      }
+    ]
+  },
+  {
+    "Name": "comments join",
+    "Source": "## ab<!-- opaque -->cd\n## ABCD",
+    "Expected": [
+      {
+        "Range": [
+          26,
+          30,
+          2,
+          4,
+          2,
+          8
+        ],
+        "Source": "ABCD"
+      }
+    ]
+  },
+  {
+    "Name": "inline wrappers",
+    "Source": "## <i>A</i>\n## a",
+    "Expected": [
+      {
+        "Range": [
+          15,
+          16,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "a"
+      }
+    ]
+  },
+  {
+    "Name": "raw opaque",
+    "Source": "## <script>Hidden</script>\n## Hidden\n##",
+    "Expected": [
+      {
+        "Range": [
+          39,
+          39,
+          3,
+          3,
+          3,
+          3
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "full folding",
+    "Source": "## Straße\n## STRASSE\n## Σ\n## ς\n## σ\n## K\n## k",
+    "Expected": [
+      {
+        "Range": [
+          14,
+          21,
+          2,
+          4,
+          2,
+          11
+        ],
+        "Source": "STRASSE"
+      },
+      {
+        "Range": [
+          31,
+          33,
+          4,
+          4,
+          4,
+          5
+        ],
+        "Source": "ς"
+      },
+      {
+        "Range": [
+          37,
+          39,
+          5,
+          4,
+          5,
+          5
+        ],
+        "Source": "σ"
+      },
+      {
+        "Range": [
+          50,
+          51,
+          7,
+          4,
+          7,
+          5
+        ],
+        "Source": "k"
+      }
+    ]
+  },
+  {
+    "Name": "no composition punctuation locale",
+    "Source": "## é\n## é\n## İ\n## i\n## API!\n## API",
+    "Expected": []
+  },
+  {
+    "Name": "whitespace Zs",
+    "Source": "##  A \t B \n## a b",
+    "Expected": [
+      {
+        "Range": [
+          18,
+          21,
+          2,
+          4,
+          2,
+          7
+        ],
+        "Source": "a b"
+      }
+    ]
+  },
+  {
+    "Name": "non CommonMark whitespace",
+    "Source": "## A\u000bB\n## AB\n## A B\n## A B\n## A B",
+    "Expected": []
+  },
+  {
+    "Name": "multiline collapse",
+    "Source": "A  \nB\n===\n\n# a b",
+    "Expected": [
+      {
+        "Range": [
+          13,
+          16,
+          5,
+          3,
+          5,
+          6
+        ],
+        "Source": "a b"
+      }
+    ]
+  },
+  {
+    "Name": "empty raw and semantic",
+    "Source": " #\n## ##\n# <!-- x -->\n# [](/target)\n# <i></i>",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": ""
+      },
+      {
+        "Range": [
+          11,
+          21,
+          3,
+          3,
+          3,
+          13
+        ],
+        "Source": "<!-- x -->"
+      },
+      {
+        "Range": [
+          24,
+          35,
+          4,
+          3,
+          4,
+          14
+        ],
+        "Source": "[](/target)"
+      },
+      {
+        "Range": [
+          38,
+          45,
+          5,
+          3,
+          5,
+          10
+        ],
+        "Source": "<i></i>"
+      }
+    ]
+  },
+  {
+    "Name": "nul",
+    "Source": "## a\u0000b\n## A�B\n## a\u0000b",
+    "Expected": [
+      {
+        "Range": [
+          10,
+          15,
+          2,
+          4,
+          2,
+          7
+        ],
+        "Source": "A�B"
+      },
+      {
+        "Range": [
+          19,
+          22,
+          3,
+          4,
+          3,
+          7
+        ],
+        "Source": "a\u0000b"
+      }
+    ]
+  },
+  {
+    "Name": "nested CRLF label",
+    "Source": "# A B\r\n\r\n> - *a*\r\n>   b  \r\n>   ===",
+    "Expected": [
+      {
+        "Range": [
+          13,
+          23,
+          3,
+          5,
+          4,
+          6
+        ],
+        "Source": "*a*\r\n>   b"
+      }
+    ]
+  },
+  {
+    "Name": "CR label",
+    "Source": "# A B\r\ra\rb\r===",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          10,
+          3,
+          1,
+          4,
+          2
+        ],
+        "Source": "a\rb"
+      }
+    ]
+  },
+  {
+    "Name": "LF label EOF",
+    "Source": "# A B\n\n*a*\nb\n===",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          12,
+          3,
+          1,
+          4,
+          2
+        ],
+        "Source": "*a*\nb"
+      }
+    ]
+  },
+  {
+    "Name": "reference extraction",
+    "Source": "# A\n\n[ref]: /there\na\n===",
+    "Expected": [
+      {
+        "Range": [
+          19,
+          20,
+          4,
+          1,
+          4,
+          2
+        ],
+        "Source": "a"
+      }
+    ]
+  },
+  {
+    "Name": "unicode columns",
+    "Source": "## é́\r\n\r\n> ## **É́** ##",
+    "Expected": [
+      {
+        "Range": [
+          16,
+          24,
+          3,
+          6,
+          3,
+          12
+        ],
+        "Source": "**É́**"
+      }
+    ]
+  },
+  {
+    "Name": "global parent identity",
+    "Source": "# P\n## Child\n# p\n## child",
+    "Expected": [
+      {
+        "Range": [
+          15,
+          16,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": "p"
+      },
+      {
+        "Range": [
+          20,
+          25,
+          4,
+          4,
+          4,
+          9
+        ],
+        "Source": "child"
+      }
+    ]
+  },
+  {
+    "Name": "sibling parent identity",
+    "Source": "# P\n## Child\n# p\n## child",
+    "Expected": [
+      {
+        "Range": [
+          15,
+          16,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": "p"
+      }
+    ],
+    "Siblings": true
+  },
+  {
+    "Name": "siblings descendant then return",
+    "Source": "# P\n## Child\n### D\n## child",
+    "Expected": [
+      {
+        "Range": [
+          22,
+          27,
+          4,
+          4,
+          4,
+          9
+        ],
+        "Source": "child"
+      }
+    ],
+    "Siblings": true
+  },
+  {
+    "Name": "skipped levels",
+    "Source": "# P\n### Child\n## child",
+    "Expected": [
+      {
+        "Range": [
+          17,
+          22,
+          3,
+          4,
+          3,
+          9
+        ],
+        "Source": "child"
+      }
+    ],
+    "Siblings": true
+  },
+  {
+    "Name": "unequal root",
+    "Source": "### A\n## a",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "a"
+      }
+    ],
+    "Siblings": true
+  },
+  {
+    "Name": "parent child different scopes",
+    "Source": "# A\n## a",
+    "Expected": [],
+    "Siblings": true
+  },
+  {
+    "Name": "containers keep outline",
+    "Source": "# P\n> ### Child\n\n- ## child",
+    "Expected": [
+      {
+        "Range": [
+          22,
+          27,
+          4,
+          6,
+          4,
+          11
+        ],
+        "Source": "child"
+      }
+    ],
+    "Siblings": true
+  },
+  {
+    "Name": "protected fake",
+    "Source": "# A\n\n```\n# a\n```\n\n    # a\n\n<!--\n# a\n-->\n\n<div>\n# a\n</div>\n\n# a",
+    "Expected": [
+      {
+        "Range": [
+          61,
+          62,
+          17,
+          3,
+          17,
+          4
+        ],
+        "Source": "a"
+      }
+    ]
+  },
+  {
+    "Name": "recognized YAML",
+    "Source": "---\n# a\n---\n# A",
+    "Expected": [],
+    "Recognize": true
+  },
+  {
+    "Name": "recognized TOML",
+    "Source": "+++\n# a\n+++\n# A",
+    "Expected": [],
+    "Recognize": true
+  },
+  {
+    "Name": "recognition off",
+    "Source": "---\n# a\n---\n# A",
+    "Expected": [
+      {
+        "Range": [
+          14,
+          15,
+          4,
+          3,
+          4,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "unreliable header",
+    "Source": "---\n# a\n# A",
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "strike",
+    "Source": "## ~~A~~\n## a",
+    "Expected": [],
+    "GFMExpected": [
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "a"
+      }
+    ]
+  }
+]

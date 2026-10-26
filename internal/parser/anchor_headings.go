@@ -26,7 +26,10 @@ type HeadingContainer struct {
 // ClosedOpeningGap and ClosedClosingGap are actual delimiter gaps of closed
 // ATX headings. Raw-empty headings have only ClosedOpeningGap (the shared gap).
 // Neither field changes OpeningSeparator or derives bounds from Visible.
+// Label is the complete original raw Content envelope, or the present
+// opening.End point for raw-empty ATX. It does not derive bounds from Visible.
 type HeadingFact struct {
+	Label            Span
 	ClosedOpeningGap Span
 	ClosedClosingGap Span
 	OpeningSeparator Span
@@ -93,6 +96,20 @@ func (d *Document) Headings(ctx context.Context, budget *OperationBudget) ([]Hea
 					return err
 				}
 			}
+			var label Span
+			if err := headingFactCharge(ctx, budget, 1, 1); err != nil {
+				return err
+			}
+			if hasContent {
+				label, err = n.spec.Content[0].Source.source.Span(n.spec.Content[0].Source.Start(), n.spec.Content[len(n.spec.Content)-1].Source.End())
+			} else if h.Style == "atx" && opening.Present() {
+				label, err = opening.source.Span(opening.End(), opening.End())
+			} else {
+				return ErrModel
+			}
+			if err != nil {
+				return err
+			}
 			var closedOpening, closedClosing Span
 			if h.Style == "atx" && closed {
 				if err := headingFactCharge(ctx, budget, 3, 0); err != nil {
@@ -112,7 +129,7 @@ func (d *Document) Headings(ctx context.Context, budget *OperationBudget) ([]Hea
 					return err
 				}
 			}
-			out = append(out, HeadingFact{ClosedOpeningGap: closedOpening, ClosedClosingGap: closedClosing, OpeningSeparator: separator, HasRawContent: hasContent, Envelope: n.Span(), Level: h.Level, Style: h.Style, Closed: closed, Visible: visible, Containers: slices.Clone(containers)})
+			out = append(out, HeadingFact{Label: label, ClosedOpeningGap: closedOpening, ClosedClosingGap: closedClosing, OpeningSeparator: separator, HasRawContent: hasContent, Envelope: n.Span(), Level: h.Level, Style: h.Style, Closed: closed, Visible: visible, Containers: slices.Clone(containers)})
 			return nil
 		}
 		switch n.Kind() {

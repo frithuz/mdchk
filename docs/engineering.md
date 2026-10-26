@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis and MD023 heading indentation analysis are also available. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis and MD024 repeated heading analysis are also available. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -275,7 +275,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001's opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
@@ -403,3 +403,19 @@ Safe publication remains limited to the verified Darwin arm64+cgo/local APFS
 adapter. Other builds refuse apply with 13 and unchanged files, while dry-run
 works. A macOS runner's name alone does not prove those adapter prerequisites;
 architecture, cgo and filesystem capabilities must be verified independently.
+
+MD024 adds a raw Label span to HeadingFact without changing existing fields.
+First/last original Content source bounds preserve NUL mappings and multiline
+Setext gaps; raw-empty ATX uses opening.End. The original-operation HeadingKey
+bridge collapses parser.IsUnicodeWhitespace and uses pinned Unicode17 FoldCase
+without decoding again. All scans, builders and fold expansion reserve work and
+construction before allocation, with long-loop checkpoints. The callback reserves
+map capacity for the complete finite heading inventory before construction, so
+ordinary insertions do not grow the map or rehash prior variable-length keys;
+whole-key lookup/comparison, key retention, fixed outline state and output growth
+are separately charged. One linear heading pass uses actual occurrence IDs for
+nearest-shallower parents, preserving all original context across suppression.
+Projection failure withholds facts; a later callback error retains prior reliable
+findings and explicit incomplete coverage. No fresh source, parse, allowance or
+public-tree clone is created. This is finite application-work accounting, not a
+process memory or throughput guarantee. See [MD024 policy](rules/headings/md024.md).

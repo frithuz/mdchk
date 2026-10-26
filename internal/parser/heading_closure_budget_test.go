@@ -7,7 +7,7 @@ import (
 )
 
 func TestHeadingClosingMarkerScanSharesOriginalBudget(t *testing.T) {
-	for _, remaining := range []int64{8, 10, 11} {
+	for _, remaining := range []int64{8, 11, 12} {
 		budget, _ := NewOperationBudget(DefaultLimits())
 		parsed := ParseWithBudget(context.Background(), NewSource([]byte("# #\n")), budget)
 		if parsed.Status != Complete {
@@ -15,12 +15,12 @@ func TestHeadingClosingMarkerScanSharesOriginalBudget(t *testing.T) {
 		}
 		// Root, heading, visible text and construction consume five work units;
 		// the two actual marker visits and raw-content presence inspection
-		// require three more; closed-gap construction reserves another three.
+		// require three more; closed-gap construction reserves another three; the raw-label point reserves one.
 		if err := budget.ChargeWork(budget.Limits().WorkUnits - budget.work - remaining); err != nil {
 			t.Fatal(err)
 		}
 		facts, err := parsed.Document.Headings(context.Background(), budget)
-		if remaining < 11 {
+		if remaining < 12 {
 			var limit *LimitExceeded
 			if !errors.As(err, &limit) || limit.Name != "work-units" || facts != nil {
 				t.Fatal(facts, err)

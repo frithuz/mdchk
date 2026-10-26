@@ -22,7 +22,7 @@ func (c ruleOperation) Err() error { return errors.Join(c.Context.Err(), c.opera
 // only be called within the rule callback; no budget or reparsing authority is
 // exposed. Container boundaries do not partition this sequence.
 func (c RuleContext) Headings(ctx context.Context) (out []parser.HeadingFact, err error) {
-	if ctx == nil || c.operation == nil || c.document == nil || !c.syntaxReliable {
+	if ctx == nil || c.operation == nil || c.document == nil || !c.syntaxReliable || c.document.Source().Token() != c.Source().Token() {
 		return nil, parser.ErrModel
 	}
 	owned := ruleOperation{ctx, c.operation}
@@ -122,4 +122,25 @@ func (c RuleContext) IndentedHeadings(ctx context.Context) (out []parser.Span, e
 		}
 	}()
 	return c.document.IndentedHeadings(owned, c.budget)
+}
+
+// HeadingKey compares semantic heading text using CommonMark whitespace and
+// pinned full default folding. It shares the original completed parse allowance.
+func (c RuleContext) HeadingKey(ctx context.Context, h parser.HeadingFact) (string, error) {
+	if !h.Label.Present() || h.Label.SourceToken() != c.Source().Token() {
+		return "", parser.ErrModel
+	}
+	if err := c.HeadingComparisonCheckpoint(ctx, 0, 0); err != nil {
+		return "", err
+	}
+	return c.document.HeadingKey(ruleOperation{ctx, c.operation}, c.budget, h)
+}
+
+// HeadingComparisonCheckpoint reserves comparison state and output under the
+// same source, caller, origin, work, construction and elapsed controls.
+func (c RuleContext) HeadingComparisonCheckpoint(ctx context.Context, work, nodes int64) error {
+	if ctx == nil || c.operation == nil || c.document == nil || c.budget == nil || !c.syntaxReliable || c.document.Source().Token() != c.Source().Token() {
+		return parser.ErrModel
+	}
+	return errors.Join(ruleOperation{ctx, c.operation}.Err(), c.budget.ChargeWork(work), c.budget.ChargeNodes(nodes))
 }
