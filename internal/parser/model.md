@@ -1915,3 +1915,14 @@ later descendants do not replace this physical first-line test. Empty virtual
 padding has no fabricated separator bytes. Capacity, logical records and lookup
 work are reserved under the original allowance before construction; final
 caller/origin checks withhold interrupted inventories.
+
+The internal lint-only ListSpacing projection merges actual immediate source
+participants in Document, BlockQuote and ListItem containers. It consumes retained
+reference-definition envelopes once through the original tree, without reparsing
+or public syntax changes. Only ancestor prefixes are active for each boundary;
+rollback preserves target/deeper markers. List/item terminal content floors
+retain empty item markers and definitions; opaque blocks and quotes retain their
+entire boundary. List-owned trailing blanks can count at the parent body level.
+Detached zero-width missing-side facts require the completed original production
+profile/options/source/index/operation witness and share its allowance. All
+visits, storage, copies and records are reserved; final failure withholds all facts.

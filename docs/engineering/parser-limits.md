@@ -549,3 +549,9 @@ scanning Unicode prefixes or copying source. Comparisons and finding capacity,
 copies and records use the same original allowance. Caller and origin controls,
 sticky work/node/time limits and final publication checks withhold all findings.
 Configured spaces is a borrowed positive int compared directly, including max int.
+
+MD032 reserves original physical-line storage, byte scans, traversal frames,
+prefix rollback capacity and copies, definition association visits, binary
+lookups, detached boundary capacity and logical records before construction.
+Clean and no-list paths are metered. Caller and origin controls and final
+publication checks withhold incomplete inventories. No new allowance is created.

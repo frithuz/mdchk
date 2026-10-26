@@ -9,7 +9,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD007](md007.md) | Bullet list nesting indentation | Analysis implemented |
 | [MD029](md029.md) | Numbered list prefixes | Analysis implemented |
 | [MD030](md030.md) | Whitespace after list markers | Analysis implemented |
-| [MD032](md032.md) | Blank lines around lists | Planned |
+| [MD032](md032.md) | Blank lines around lists | Analysis implemented |
 | [MD069](md069.md) | Repeated list markers | Planned |
 | [MD076](md076.md) | Consistent spacing between list items | Planned |
 | [MD077](md077.md) | Indentation of list continuation content | Planned |

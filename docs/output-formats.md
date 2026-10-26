@@ -339,3 +339,8 @@ excluding marker and payload. Physical tabs use one scalar diagnostic column eve
 when their structural padding differs or a residual code contribution shares the
 same byte. MD030 supplies no edits or previews; MD047 candidate reanalysis retains
 explicit spaces options and the candidate snapshot.
+
+MD032 emits one manual zero-width point per deficient list/non-list source gap.
+Before points use the first list marker; after points use the following source
+block physical body start after parent prefixes. MD047 candidate reanalysis keeps
+these manual findings with the candidate snapshot. MD032 supplies no previews.

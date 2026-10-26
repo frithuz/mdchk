@@ -139,3 +139,6 @@ correction authority. Its full numeric marker findings remain manual.
 MD030 is available for both flavors with positive integer spaces (default 1).
 Inspection exposes analysis availability; PlannedFix metadata grants no MD030
 producer, preview or write authority.
+
+MD032 is available for both flavors. Inspection exposes complete source-body
+boundary analysis. PlannedFix metadata grants no edits or correction previews.

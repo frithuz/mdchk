@@ -199,3 +199,7 @@ owner. Selected-target content witnesses reuse a finite derived-entry cap;
 Original selected bytes are already counted at service construction. The narrow
 selected-source seam enforces each replacement's text limit; complete aggregate
 candidate-overlay admission remains the coordinated producer's responsibility.
+
+MD032 source-boundary projection and finding construction share the original
+parser work, node and elapsed allowance. Empty and accepted inputs still reserve
+traversal and line state. Interrupted inventories and findings are withheld.

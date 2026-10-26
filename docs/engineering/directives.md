@@ -99,3 +99,6 @@ A later enable directive retains the original group counter and admitted style.
 MD030 inventories complete original list context before suppression. Each manual
 finding uses its owned separator start, excluding marker and ancestor prefixes.
 Empty marker lines remain exempt; separately enabled nested items still run.
+
+MD032 evaluates complete source-body neighbors before chosen-start suppression.
+A removed reference definition remains context in its actual owning container.

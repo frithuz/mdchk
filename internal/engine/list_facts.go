@@ -109,3 +109,17 @@ func (c RuleContext) ListMarkerSpaces(ctx context.Context) (int, error) {
 	}
 	return spaces, nil
 }
+
+// ListSpacing exposes detached source-body boundaries under both controls.
+func (c RuleContext) ListSpacing(ctx context.Context) (out []parser.ListSpacingFact, err error) {
+	if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
+		return nil, err
+	}
+	defer func() {
+		err = errors.Join(err, c.SectionCheckpoint(ctx, 0, 0))
+		if err != nil {
+			out = nil
+		}
+	}()
+	return c.document.ListSpacing(ruleOperation{ctx, c.operation}, c.budget, c.index, c.Context().ParseOptions())
+}

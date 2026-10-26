@@ -1,0 +1,853 @@
+[
+  {
+    "Name": "published missing before",
+    "Source": "Text\n- One",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "published accepted",
+    "Source": "Text\n\n- One",
+    "Expected": []
+  },
+  {
+    "Name": "missing after heading",
+    "Source": "- One\n# H",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          6,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "both sides",
+    "Source": "Text\n- One\n# H",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      },
+      {
+        "Range": [
+          11,
+          11,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "document edges",
+    "Source": "- One",
+    "Expected": []
+  },
+  {
+    "Name": "empty source",
+    "Source": "",
+    "Expected": []
+  },
+  {
+    "Name": "lazy after",
+    "Source": "- One\nTail",
+    "Expected": []
+  },
+  {
+    "Name": "quote edges outside before",
+    "Source": "Text\n> - One",
+    "Expected": []
+  },
+  {
+    "Name": "quote edges outside after",
+    "Source": "> - One\n# Outside",
+    "Expected": []
+  },
+  {
+    "Name": "quote both sides",
+    "Source": "> Text\n> - One\n> # H",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      },
+      {
+        "Range": [
+          17,
+          17,
+          3,
+          3,
+          3,
+          3
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "item both sides",
+    "Source": "- Text\n  - One\n  # H",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      },
+      {
+        "Range": [
+          17,
+          17,
+          3,
+          3,
+          3,
+          3
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "item boundaries",
+    "Source": "- - One\n- Two",
+    "Expected": []
+  },
+  {
+    "Name": "adjacent list groups",
+    "Source": "- One\n+ Two\n1. Three\n2) Four",
+    "Expected": []
+  },
+  {
+    "Name": "loose internal",
+    "Source": "- One\n\n- Two",
+    "Expected": []
+  },
+  {
+    "Name": "tight internal",
+    "Source": "- One\n- Two",
+    "Expected": []
+  },
+  {
+    "Name": "nested mixed",
+    "Source": "1. - One\n   + Two",
+    "Expected": []
+  },
+  {
+    "Name": "last empty marker",
+    "Source": "- One\n-\n# H",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          8,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "empty list",
+    "Source": "-\n# H",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          2,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "same line nested empty",
+    "Source": "- -\n# H",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          4,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "before empty",
+    "Source": "# H\n-",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          4,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "unowned blank after empty",
+    "Source": "-\n\n# H",
+    "Expected": []
+  },
+  {
+    "Name": "list owned blank",
+    "Source": "- One\n\n# H",
+    "Expected": []
+  },
+  {
+    "Name": "list owned indent blank",
+    "Source": "- One\n  \n# H",
+    "Expected": []
+  },
+  {
+    "Name": "parent quote blank",
+    "Source": "> - One\n>\n> # H",
+    "Expected": []
+  },
+  {
+    "Name": "parent item blank",
+    "Source": "- Outer\n  - One\n  \n  # H",
+    "Expected": [
+      {
+        "Range": [
+          10,
+          10,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "deep quote terminal",
+    "Source": "- > Quote\n  >\n# H",
+    "Expected": [
+      {
+        "Range": [
+          14,
+          14,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "empty adjacent quote",
+    "Source": "> - One\n> >\n> # H",
+    "Expected": [
+      {
+        "Range": [
+          10,
+          10,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "code internal blank",
+    "Source": "- ```\n  \n  ```\n# H",
+    "Expected": [
+      {
+        "Range": [
+          15,
+          15,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "code trailing blank",
+    "Source": "- ```\n  ```\n\n# H",
+    "Expected": []
+  },
+  {
+    "Name": "unclosed code container closure",
+    "Source": "> - ```\n>   \n# H",
+    "Expected": []
+  },
+  {
+    "Name": "html internal blank",
+    "Source": "- <script>\n  \n  </script>\n# H",
+    "Expected": [
+      {
+        "Range": [
+          26,
+          26,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "unclosed html container closure",
+    "Source": "> - <script>\n>   \n# H",
+    "Expected": []
+  },
+  {
+    "Name": "definition before list",
+    "Source": "[a]: /url\n- One",
+    "Expected": [
+      {
+        "Range": [
+          10,
+          10,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "item definition before list",
+    "Source": "- [a]: /url\n  - One",
+    "Expected": [
+      {
+        "Range": [
+          14,
+          14,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "quote definition before list",
+    "Source": "> [a]: /url\n> - One",
+    "Expected": [
+      {
+        "Range": [
+          14,
+          14,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "multiline definition",
+    "Source": "[a]:\n /url\n \"Title\"\n- One",
+    "Expected": [
+      {
+        "Range": [
+          20,
+          20,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "definition only item",
+    "Source": "- [a]: /url\n# H",
+    "Expected": [
+      {
+        "Range": [
+          12,
+          12,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "last definition only item",
+    "Source": "- One\n- [a]: /url\n# H",
+    "Expected": [
+      {
+        "Range": [
+          18,
+          18,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "definition outside quote",
+    "Source": "[a]: /url\n> - One",
+    "Expected": []
+  },
+  {
+    "Name": "definition inside quote outside list",
+    "Source": "> [a]: /url\n- One",
+    "Expected": [
+      {
+        "Range": [
+          12,
+          12,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "definition outer item no leak",
+    "Source": "- [a]: /url\n  > - One",
+    "Expected": []
+  },
+  {
+    "Name": "definition after list lazy",
+    "Source": "- One\n[a]: /url",
+    "Expected": []
+  },
+  {
+    "Name": "definition blank accepted",
+    "Source": "[a]: /url\n\n- One",
+    "Expected": []
+  },
+  {
+    "Name": "fenced protected",
+    "Source": "```\n- fake\n```\n- One",
+    "Expected": [
+      {
+        "Range": [
+          15,
+          15,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "indented code protected",
+    "Source": "    - fake\n- One",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          11,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "html comment neighbor",
+    "Source": "<!-- c -->\n- One",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          11,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "escaped marker",
+    "Source": "\\- One\nTail",
+    "Expected": []
+  },
+  {
+    "Name": "thematic setext neighbor",
+    "Source": "Text\n---\n- One",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "thematic after",
+    "Source": "- One\n***",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          6,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "yaml opaque",
+    "Source": "---\ntitle: X\n---\n- One",
+    "Expected": [],
+    "Recognize": true
+  },
+  {
+    "Name": "toml opaque",
+    "Source": "+++\ntitle=\"X\"\n+++\n- One",
+    "Expected": [],
+    "Recognize": true
+  },
+  {
+    "Name": "disabled header ordinary",
+    "Source": "---\ntitle: X\n---\n- One",
+    "Expected": [
+      {
+        "Range": [
+          17,
+          17,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "unreliable header",
+    "Source": "---\n- One",
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "unicode nul",
+    "Source": "é\u0000\n- One",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          4,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "nbsp content",
+    "Source": "- One\n \n# H",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "tab indentation",
+    "Source": "> Text\n>\t- One\n> # H",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      },
+      {
+        "Range": [
+          17,
+          17,
+          3,
+          3,
+          3,
+          3
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "task list",
+    "Source": "- [ ] One\n# H",
+    "Expected": [
+      {
+        "Range": [
+          10,
+          10,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "eof ending no phantom",
+    "Source": "- One\n",
+    "Expected": []
+  },
+  {
+    "Name": "both sides CRLF",
+    "Source": "Text\r\n- One\r\n# H",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          6,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      },
+      {
+        "Range": [
+          13,
+          13,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "owned blank CRLF",
+    "Source": "- One\r\n\r\n# H",
+    "Expected": []
+  },
+  {
+    "Name": "both sides CR",
+    "Source": "Text\r- One\r# H",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Side": "before"
+      },
+      {
+        "Range": [
+          11,
+          11,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "owned blank CR",
+    "Source": "- One\r\r# H",
+    "Expected": []
+  },
+  {
+    "Name": "unclosed code list closure",
+    "Source": "- ```\n  \n# H",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "unclosed html list closure",
+    "Source": "- <script>\n  \n# H",
+    "Expected": [
+      {
+        "Range": [
+          14,
+          14,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Side": "after"
+      }
+    ]
+  }
+]

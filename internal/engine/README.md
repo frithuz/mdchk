@@ -460,3 +460,10 @@ records reserved before construction, including clean inputs. Caller and origin
 checks atomically withhold interrupted findings. Diagnostics own the full digits
 and delimiter only. Default-enabled PlannedFix remains metadata; findings are
 manual and MD047 alone supplies executable edits.
+
+MD032 borrows the completed original ListSpacing inventory under caller and origin
+controls. It emits zero-width manual points before first list markers or at the
+following non-list body start. Context precedes directive filtering; default
+enablement and PlannedFix metadata grant no edit authority. Finding capacity,
+copies and logical records are reserved before construction, with final atomic
+withholding. MD047 remains the sole edit producer.
