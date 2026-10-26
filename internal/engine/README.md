@@ -434,3 +434,16 @@ Per-analysis baseline storage, comparisons and finding growth reserve original
 work and records before construction, including aligned groups. Final checks
 withhold interrupted output. Exact full item-marker spans produce manual
 findings; default-enabled PlannedFix metadata grants no correction authority.
+
+MD007 reuses the complete original list inventory and admitted scalar options.
+For each actual bullet item, local indentation is ContentIndent minus MarkerWidth
+minus Padding. With a bullet parent, its actual marker width plus padding plus
+that local indentation must equal configured indent. With an ordered parent,
+local indentation must be zero: its content column is the target without extra
+indent. Parentless bullets require zero, or exactly indent with start_indented.
+Quotes strip prefixes without resetting actual ancestry; hidden or misindented
+parents remain anchors. A bounded invocation-local map keys constant source-token
+and item offsets, retaining ordered anchors before children; storage, work and
+finding growth reserve the original allowance even on clean inputs. Final caller
+and origin checks withhold interrupted findings. Findings own one bullet byte
+and remain manual despite PlannedFix metadata; MD047 alone produces edits.

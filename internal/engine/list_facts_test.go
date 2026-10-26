@@ -143,3 +143,61 @@ func TestRuleContextListsMarkerOptionOwnershipAndWork(t *testing.T) {
 		}
 	}
 }
+
+func TestRuleContextBulletIndentationOriginalAuthority(t *testing.T) {
+	for _, origin := range []bool{false, true} {
+		for _, stop := range []int{1, 2} {
+			c := listContext(t, "", parser.DefaultLimits(), context.Background())
+			c.options = Options{"indent": int(^uint(0) >> 1), "start_indented": true}
+			caller := context.Background()
+			counter := &terminalCounter{Context: context.Background(), stop: stop}
+			if origin {
+				c.operation = counter
+			} else {
+				caller = counter
+			}
+			indent, start, err := c.BulletIndentation(caller)
+			if !errors.Is(err, context.Canceled) || indent != 0 || start {
+				t.Fatal(indent, start, err)
+			}
+		}
+	}
+	for _, kind := range []string{"fresh budget", "foreign input", "absent context", "invalid option", "work", "nodes", "elapsed"} {
+		t.Run(kind, func(t *testing.T) {
+			synctest.Test(t, func(t *testing.T) {
+				limits := parser.DefaultLimits()
+				limits.OperationTime = 20 * time.Millisecond
+				c := listContext(t, "", limits, context.Background())
+				c.options = Options{"indent": 2, "start_indented": false}
+				caller := context.Background()
+				switch kind {
+				case "fresh budget":
+					c.budget, _ = parser.NewOperationBudget(limits)
+				case "foreign input":
+					c.input, _ = NewInput("other", nil, nil, DocumentContext{})
+				case "absent context":
+					caller = nil
+				case "invalid option":
+					c.options["indent"] = 0
+				case "work":
+					_ = c.budget.ChargeWork(limits.WorkUnits)
+				case "nodes":
+					_ = c.budget.ChargeNodes(limits.TotalNodes + 1)
+				case "elapsed":
+					time.Sleep(25 * time.Millisecond)
+				}
+				indent, start, err := c.BulletIndentation(caller)
+				if err == nil || indent != 0 || start {
+					t.Fatal(kind, indent, start, err)
+				}
+			})
+		})
+	}
+	c := listContext(t, "", parser.DefaultLimits(), context.Background())
+	c.options = Options{"indent": int(^uint(0) >> 1), "start_indented": true}
+	copied := c.Options()
+	copied["indent"] = 1
+	if indent, start, err := c.BulletIndentation(context.Background()); err != nil || indent != int(^uint(0)>>1) || !start {
+		t.Fatal(indent, start, err)
+	}
+}

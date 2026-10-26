@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis are also available. MD026, MD036, MD043, MD063, MD080, MD082, MD090 and MD093 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation analysis, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis are also available. MD026, MD036, MD043, MD063, MD080, MD082, MD090 and MD093 are available but disabled by default. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -275,7 +275,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD004, MD005, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD004, MD005, MD007, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001, MD025 and MD041 opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
@@ -608,3 +608,16 @@ Per-analysis baseline storage, comparisons and finding growth reserve original
 work and records before construction, including aligned groups. Final checks
 withhold interrupted output. Exact full item-marker spans produce manual
 findings; default-enabled PlannedFix metadata grants no correction authority.
+
+MD007 reuses the complete original list inventory and admitted scalar options.
+For each actual bullet item, local indentation is ContentIndent minus MarkerWidth
+minus Padding. With a bullet parent, its actual marker width plus padding plus
+that local indentation must equal configured indent. With an ordered parent,
+local indentation must be zero: its content column is the target without extra
+indent. Parentless bullets require zero, or exactly indent with start_indented.
+Quotes strip prefixes without resetting actual ancestry; hidden or misindented
+parents remain anchors. A bounded invocation-local map keys constant source-token
+and item offsets, retaining ordered anchors before children; storage, work and
+finding growth reserve the original allowance even on clean inputs. Final caller
+and origin checks withhold interrupted findings. Findings own one bullet byte
+and remain manual despite PlannedFix metadata; MD047 alone produces edits.

@@ -515,3 +515,16 @@ It reserves records and work before constructing baseline and finding storage,
 compares constant-size complete group identities and structural marker indentation,
 and withholds findings on caller/origin or sticky quota/final publication stops.
 No replacement allowance, parse or source scan is introduced.
+
+MD007 reuses the complete original list inventory and admitted scalar options.
+For each actual bullet item, local indentation is ContentIndent minus MarkerWidth
+minus Padding. With a bullet parent, its actual marker width plus padding plus
+that local indentation must equal configured indent. With an ordered parent,
+local indentation must be zero: its content column is the target without extra
+indent. Parentless bullets require zero, or exactly indent with start_indented.
+Quotes strip prefixes without resetting actual ancestry; hidden or misindented
+parents remain anchors. A bounded invocation-local map keys constant source-token
+and item offsets, retaining ordered anchors before children; storage, work and
+finding growth reserve the original allowance even on clean inputs. Final caller
+and origin checks withhold interrupted findings. Findings own one bullet byte
+and remain manual despite PlannedFix metadata; MD047 alone produces edits.

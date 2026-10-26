@@ -46,3 +46,20 @@ func (c RuleContext) BulletMarker(ctx context.Context) (byte, error) {
 		return 0, parser.ErrModel
 	}
 }
+
+// BulletIndentation borrows admitted immutable MD007 scalars under the original
+// operation controls, without cloning an option map or creating an allowance.
+func (c RuleContext) BulletIndentation(ctx context.Context) (int, bool, error) {
+	if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
+		return 0, false, err
+	}
+	indent, ok := c.options["indent"].(int)
+	start, valid := c.options["start_indented"].(bool)
+	if !ok || !valid || indent <= 0 {
+		return 0, false, parser.ErrModel
+	}
+	if err := c.SectionCheckpoint(ctx, 0, 0); err != nil {
+		return 0, false, err
+	}
+	return indent, start, nil
+}

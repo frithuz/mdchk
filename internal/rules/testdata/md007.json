@@ -1,0 +1,517 @@
+[
+  {
+    "Name": "published accepted",
+    "Source": "- One\n  - Two\n",
+    "Expected": []
+  },
+  {
+    "Name": "published violating",
+    "Source": "- One\n   - Two\n",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "wrong root correct child",
+    "Source": " - One\n   - Two\n",
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "actual padding",
+    "Source": "-   One\n    - Two\n",
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "fallback padding",
+    "Source": "-     code\n  - Two\n",
+    "Expected": []
+  },
+  {
+    "Name": "same line",
+    "Source": "- - Two\n",
+    "Expected": []
+  },
+  {
+    "Name": "ordered content",
+    "Source": "1. One\n   - Two\n",
+    "Expected": []
+  },
+  {
+    "Name": "ordered extra",
+    "Source": "1. One\n    - Two\n",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "ordered no plus indent",
+    "Source": "1. One\n     - Two\n",
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          6,
+          2,
+          7
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "ordered widths",
+    "Source": "9. One\n   - Two\n10. Three\n    - Four\n",
+    "Expected": []
+  },
+  {
+    "Name": "ordered zeros delimiter",
+    "Source": "001) One\n     - Two\n",
+    "Expected": []
+  },
+  {
+    "Name": "ordered anchors only",
+    "Source": " 1. One\n    2. Two\n       - Three\n",
+    "Expected": [
+      {
+        "Range": [
+          26,
+          27,
+          3,
+          8,
+          3,
+          9
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "mixed anchors",
+    "Source": "- One\n  1. Two\n     - Three\n",
+    "Expected": []
+  },
+  {
+    "Name": "quote root",
+    "Source": "> - One\n>   - Two\n",
+    "Expected": []
+  },
+  {
+    "Name": "quote varying prefix",
+    "Source": ">  - One\n>    - Two\n",
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "intervening bullet quote",
+    "Source": "- One\n  > - Two\n",
+    "Expected": []
+  },
+  {
+    "Name": "intervening ordered quote",
+    "Source": "1. One\n   > - Two\n",
+    "Expected": []
+  },
+  {
+    "Name": "same line ordered quote",
+    "Source": "1. > - Two\n",
+    "Expected": []
+  },
+  {
+    "Name": "tab partial",
+    "Source": "- One\n\t- Two\n",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "tab padding",
+    "Source": "-\tOne\n    - Two\n",
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "empty task definition",
+    "Source": " -\n\n - [x] task\n\n - [ref]: /url\n",
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "-"
+      },
+      {
+        "Range": [
+          5,
+          6,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "-"
+      },
+      {
+        "Range": [
+          18,
+          19,
+          5,
+          2,
+          5,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "protected",
+    "Source": "```\n - fake\n```\n\n    - fake\n\n<div>\n - fake\n</div>\n\n<!--\n - fake\n-->\n\n\\- escaped\n\n`- code`\n\n - body\n",
+    "Expected": [
+      {
+        "Range": [
+          92,
+          93,
+          19,
+          2,
+          19,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "heading hr continuation",
+    "Source": "# - heading\n\n---\n\ntext\n---\n\n- One\n  continuation - payload\n   - Two\n",
+    "Expected": [
+      {
+        "Range": [
+          62,
+          63,
+          10,
+          4,
+          10,
+          5
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "opaque yaml",
+    "Source": "---\nx: |\n   - fake\n---\n\n - body\n",
+    "Expected": [
+      {
+        "Range": [
+          25,
+          26,
+          6,
+          2,
+          6,
+          3
+        ],
+        "Source": "-"
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "opaque toml",
+    "Source": "+++\nx = \"- fake\"\n+++\n\n - body\n",
+    "Expected": [
+      {
+        "Range": [
+          23,
+          24,
+          5,
+          2,
+          5,
+          3
+        ],
+        "Source": "-"
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "header disabled",
+    "Source": "---\nx: value\n---\n\n - body\n",
+    "Expected": [
+      {
+        "Range": [
+          19,
+          20,
+          5,
+          2,
+          5,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "unreliable header",
+    "Source": "---\nx: value\n\n - body\n",
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "unicode nul",
+    "Source": "é\u0000\n\n - One\n   - Two",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "exact LF",
+    "Source": "é\n\n- One\n   - Two\n",
+    "Expected": [
+      {
+        "Range": [
+          13,
+          14,
+          4,
+          4,
+          4,
+          5
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "exact CRLF",
+    "Source": "é\r\n\r\n- One\r\n   - Two\r\n",
+    "Expected": [
+      {
+        "Range": [
+          16,
+          17,
+          4,
+          4,
+          4,
+          5
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "exact CR",
+    "Source": "é\r\r- One\r   - Two\r",
+    "Expected": [
+      {
+        "Range": [
+          13,
+          14,
+          4,
+          4,
+          4,
+          5
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "eof",
+    "Source": "- One\n   - Two",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "-"
+      }
+    ]
+  },
+  {
+    "Name": "indent one",
+    "Source": "- One\n  - Two\n",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "-"
+      }
+    ],
+    "Indent": 1
+  },
+  {
+    "Name": "indent four nested",
+    "Source": "- One\n    - Two\n",
+    "Expected": [],
+    "Indent": 4
+  },
+  {
+    "Name": "indent four code",
+    "Source": "    - code\n",
+    "Expected": [],
+    "Indent": 4,
+    "Start": true
+  },
+  {
+    "Name": "start true accepted",
+    "Source": "  - One\n    - Two\n",
+    "Expected": [],
+    "Indent": 2,
+    "Start": true
+  },
+  {
+    "Name": "start true wrong",
+    "Source": "- One\n  - Two\n",
+    "Expected": [
+      {
+        "Range": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          2
+        ],
+        "Source": "-"
+      }
+    ],
+    "Indent": 2,
+    "Start": true
+  },
+  {
+    "Name": "start true quote",
+    "Source": ">   - One\n>     - Two\n",
+    "Expected": [],
+    "Indent": 2,
+    "Start": true
+  },
+  {
+    "Name": "ordered independent four",
+    "Source": "1. One\n   - Two\n",
+    "Expected": [],
+    "Indent": 4,
+    "Start": true
+  },
+  {
+    "Name": "large nested",
+    "Source": "- One\n  - Two\n",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "-"
+      }
+    ],
+    "Indent": 1000000000
+  }
+]

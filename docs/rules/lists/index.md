@@ -6,7 +6,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | --- | --- | --- |
 | [MD004](md004.md) | Bullet marker style | Analysis implemented |
 | [MD005](md005.md) | Alignment of sibling list items | Analysis implemented |
-| [MD007](md007.md) | Bullet list nesting indentation | Planned |
+| [MD007](md007.md) | Bullet list nesting indentation | Analysis implemented |
 | [MD029](md029.md) | Numbered list prefixes | Planned |
 | [MD030](md030.md) | Whitespace after list markers | Planned |
 | [MD032](md032.md) | Blank lines around lists | Planned |
