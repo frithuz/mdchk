@@ -4,7 +4,7 @@ These rules are part of the [implementation ruleset](../index.md).
 
 | Rule | Focus | Status |
 | --- | --- | --- |
-| [MD009](md009.md) | Whitespace at line ends | Planned |
+| [MD009](md009.md) | Whitespace at line ends | Analysis implemented; manual |
 | [MD010](md010.md) | Tab characters | Planned |
 | [MD012](md012.md) | Runs of empty lines | Planned |
 | [MD013](md013.md) | Maximum line width | Planned |

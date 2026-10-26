@@ -115,6 +115,23 @@ Report in both modes; tabs never satisfy the configured all-space allowance.
 With exactly N trailing spaces, strict=false permits them and strict=true reports them because EOF
 does not produce a hard break. Other counts follow the same table.
 
+MD009 specializes the shared container-relative spacing default: its finding is
+one whole maximal physical ASCII space/TAB suffix before LF/CRLF/CR or EOF.
+Blankness removes only actual parser-owned list/quote prefixes; consumed suffix
+whitespace still reports, while markers never enter the range. Task checkboxes
+remain nonblank content. Strict allowance requires a spaces-origin hard-break
+marker equal to the full all-space suffix. A terminal paragraph ending does not
+create a break. Code opt-in includes multiline CodeSpan payload and all physical
+fenced/indented payload contributions, including blank indentation; actual fenced
+opening/retained closing lines follow the ordinary numeric policy. Inline closing
+delimiters leave outside suffixes eligible. Full recognized metadata headers and
+HTMLBlock tails remain protected, as do actual inline HTML/comment owner bytes
+and semantic raw-tag payload between actual tags, including Text/HardBreak bytes.
+Image-description tags cannot change enclosing raw state. Protection wins code
+opt-in. For example, `> <SPACE>` reports, `>` passes, and `a<TAB><SPACE><SPACE>`
+reports despite any smaller real break marker. These are manual analysis ranges;
+MD009 supplies no correction producer in this pass.
+
 ### Blank lines
 
 Report whitespace-only lines in both strict modes; there is no hard-break allowance for them.

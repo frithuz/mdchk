@@ -46,7 +46,7 @@ func TestConfigurationValidationWorkflow(t *testing.T) {
 			{"unknown-rule", availableConfiguration + "rules: {MD999: {}}\n", "unknown or reserved rule", [][2]int{{4, 16}}},
 			{"unknown-option", availableConfiguration + "rules: {MD013: {enabled: false, lenght: 80}}\n", "unknown option", [][2]int{{4, 41}}},
 			{"disabled-domain", availableConfiguration + "rules: {MD013: {enabled: false, length: -1}}\n", "value outside integer option domain", [][2]int{{4, 41}}},
-			{"explicit-unavailable", availableConfiguration + "rules: {MD009: {}}\n", "explicitly enabled rule is unavailable", [][2]int{{4, 16}}},
+			{"explicit-unavailable", availableConfiguration + "rules: {MD010: {}}\n", "explicitly enabled rule is unavailable", [][2]int{{4, 16}}},
 		}
 		for _, tc := range cases {
 			putConfigurationFile(t, root, tc.name+"/.mdchk.yaml", tc.yaml)

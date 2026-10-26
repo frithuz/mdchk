@@ -155,3 +155,7 @@ Inspection grants no MD076 correction authority.
 MD077 inspection identifies available default-enabled CommonMark/GFM analysis
 and manual findings. Selection slices findings after complete structural context
 and protected-line eligibility are established. It grants no correction authority.
+
+MD009 inspection exposes available analysis with original physical suffix ranges,
+manual findings and START-based directive attribution. Line selection retains full
+parser context. It adds no AST properties or inspection schema.

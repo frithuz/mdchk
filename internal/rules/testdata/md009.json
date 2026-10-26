@@ -1,0 +1,2311 @@
+[
+  {
+    "Name": "empty",
+    "Source": "",
+    "SHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "SizeBytes": 0,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty-line",
+    "Source": "\n",
+    "SHA256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "SizeBytes": 1,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "clean",
+    "Source": "Text\n",
+    "SHA256": "533bfd360a1274c99f13658e6c774d9dc3c4518cd1d31231e6503876509157db",
+    "SizeBytes": 5,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "bare-quote",
+    "Source": ">\n",
+    "SHA256": "60394cf8a46980d6199d0a3a71692ecb6689151f46a7085d31faab90b9d1f5d7",
+    "SizeBytes": 2,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "one",
+    "Source": "Text \n",
+    "SHA256": "e4215dc39986e0d0dcbb4e1d92a86c7c3956d4c1f17b1b298dc7963237108f12",
+    "SizeBytes": 6,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "exact-eof",
+    "Source": "a  ",
+    "SHA256": "b8a1d29a6761e2d474591c057595f78a19f90f9004b06e9895c56676bd827d1f",
+    "SizeBytes": 3,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "exact-terminal",
+    "Source": "a  \n",
+    "SHA256": "18ff741cc2779a320d7520277d194c1ad8a842a67b4b0911d9cc5bd7e2eef9b8",
+    "SizeBytes": 4,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "three",
+    "Source": "a   \n",
+    "SHA256": "fa570f92ffda5d66fcb4182877111148480300316b5122c8b5a3b931c27aac38",
+    "SizeBytes": 5,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          4,
+          1,
+          2,
+          1,
+          5
+        ],
+        "Source": "   ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "four",
+    "Source": "a    \n",
+    "SHA256": "3b9ea0ce8077fa713ee119c17ea42f183462983ea169d37018edec1e159eb3a4",
+    "SizeBytes": 6,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          5,
+          1,
+          2,
+          1,
+          6
+        ],
+        "Source": "    ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "tab",
+    "Source": "a\t\n",
+    "SHA256": "a03b8d5fa5c914c9b8b28fd6acc94e9840fca1cc7c5a9c444d5614ae7dd37f20",
+    "SizeBytes": 3,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "mixed-real-break",
+    "Source": "a\t  \nb",
+    "SHA256": "cf53a18766aa6e04cf652be42aefcbcee24d39e1841c8e4b2518b639d734a716",
+    "SizeBytes": 6,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          4,
+          1,
+          2,
+          1,
+          5
+        ],
+        "Source": "\t  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "space-tab",
+    "Source": "a \t\nb",
+    "SHA256": "b73748465c3d873c72109fe6d3e74d8e00436b3bca518da736c96fe397c8d23d",
+    "SizeBytes": 5,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": " \t",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "unicode",
+    "Source": "雪😀  \n",
+    "SHA256": "bf906f2a90cb4e334ed763544a61e7ff0d44cdc1c23b1c8a4153e06efa39af1b",
+    "SizeBytes": 11,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "unicode-content",
+    "Source": "   \n",
+    "SHA256": "2b6b6064807f7263e52e84f94fafba939a7aba14da8c21064f3407880c4852b8",
+    "SizeBytes": 5,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "nul-content",
+    "Source": "\u0000 \n",
+    "SHA256": "738f8b037c71bf4353e2e19a8a7ced30be1b8cab41aab4845e02021fe161f74e",
+    "SizeBytes": 3,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "blank",
+    "Source": "  \n",
+    "SHA256": "8855c6119660c614d285554e51769066e94fcb75ff215ccc2fa6b4838b18756b",
+    "SizeBytes": 3,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          0,
+          2,
+          1,
+          1,
+          1,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "quote-blank",
+    "Source": ">  \n",
+    "SHA256": "bd89a4033161e89a672aa2fb940bf1ec91498e6902f60638e1c071d3a629f720",
+    "SizeBytes": 4,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "quote-padding",
+    "Source": "> \n",
+    "SHA256": "f7a83127d47db7b436a92335a015b6b5e1d97fb13714f6f5051bc90d1f06073a",
+    "SizeBytes": 3,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "list-empty",
+    "Source": "-   \n",
+    "SHA256": "7b514c764fd98b831eaec4af744b41ae63ba3bf827cafeb0d9725559db5a1263",
+    "SizeBytes": 5,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          4,
+          1,
+          2,
+          1,
+          5
+        ],
+        "Source": "   ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "list-padding",
+    "Source": "- \n",
+    "SHA256": "7d607e7a90d25df3da85df2905179d92010c53772310c68b5a9fe74673ff204b",
+    "SizeBytes": 3,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "blank-continuation",
+    "Source": "- a\n  \n  b",
+    "SHA256": "89fd8c3a953e55d7df07a052ec6e5049979d7027d41aace31e49eb0593bf033b",
+    "SizeBytes": 10,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          6,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "nested-prefix",
+    "Source": "> - >  \n",
+    "SHA256": "54a35073fd9c0bea392bf3a9beb878e3809a5fefeff6d4724624da0f7d39d514",
+    "SizeBytes": 8,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          7,
+          1,
+          6,
+          1,
+          8
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "partial-tab",
+    "Source": "- a\n\t\n  b",
+    "SHA256": "c7a0321cab61f079cf9a3d06e0957a153e5d257c2a9095100522f1a997848200",
+    "SizeBytes": 9,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "task-ordinary",
+    "Source": "- [ ]  ",
+    "SHA256": "b0a97f313fecce1cd9cf79faca48f3e7175410317408fd4bc896d2b0e32d88dc",
+    "SizeBytes": 7,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "definition",
+    "Source": "[id]: /u \n",
+    "SHA256": "01b01ebab70a6c7b1b70fab13d585fb2dc5a3d528a1ca547534720693296eeb4",
+    "SizeBytes": 10,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          1,
+          9,
+          1,
+          10
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "atx",
+    "Source": "# heading \n",
+    "SHA256": "354ea5652262192312a9b9d561d43b1007f75807773c6a6069ba401fb745ae9b",
+    "SizeBytes": 11,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          1,
+          10,
+          1,
+          11
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "setext",
+    "Source": "heading\n--- \n",
+    "SHA256": "317adb267b6852974394ac5737f1a23e686f693a06e27342fd69f8fd14f8c3f5",
+    "SizeBytes": 13,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "thematic",
+    "Source": "*** \n",
+    "SHA256": "cec3cbe636482797452ded3f5226e40ac37e583a3fdd802afbc78cd28e96e9b1",
+    "SizeBytes": 5,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "strict-break-lf",
+    "Source": "雪  \nb\n",
+    "SHA256": "2b1ff47051fce675e01b7ddc6f487d6995cdfaa70e35cf8d58acc519489bcb26",
+    "SizeBytes": 8,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "strict-final-lf",
+    "Source": "a  \n",
+    "SHA256": "18ff741cc2779a320d7520277d194c1ad8a842a67b4b0911d9cc5bd7e2eef9b8",
+    "SizeBytes": 4,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "blank-lf",
+    "Source": " \n",
+    "SHA256": "e16f1596201850fd4a63680b27f603cb64e67176159be3d8ed78a4403fdb1700",
+    "SizeBytes": 2,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          2
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "strict-break-crlf",
+    "Source": "雪  \r\nb\r\n",
+    "SHA256": "8a40b2ce2dd9f728897aac7711ebadb432a01fc9cf48780fd7a168bd9836e9ce",
+    "SizeBytes": 10,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "strict-final-crlf",
+    "Source": "a  \r\n",
+    "SHA256": "8da4ee0ee8d8f93b814fc573c8d312e405f0cfeacf8632722f97ecb16cad2261",
+    "SizeBytes": 5,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "blank-crlf",
+    "Source": " \r\n",
+    "SHA256": "6bdf66b5bf2a44e658bea2ee86695ab150a06e600bf67cd5cce245ad54962c61",
+    "SizeBytes": 3,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          2
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "strict-break-cr",
+    "Source": "雪  \rb\r",
+    "SHA256": "161cd05b0f04033986656273e32bc517d07c24145895ec3ffca01566b977366c",
+    "SizeBytes": 8,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "strict-final-cr",
+    "Source": "a  \r",
+    "SHA256": "1adb89ae6e69b2fe93e5bf87174bf6bf441d42180e0f6f234b624583ccf36ef2",
+    "SizeBytes": 4,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "blank-cr",
+    "Source": " \r",
+    "SHA256": "4b3ad3a092aaa00fb3f57db445445d38b2085adf2fb98b73015b5a160fd31775",
+    "SizeBytes": 2,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          2
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "strict-eof",
+    "Source": "a  ",
+    "SHA256": "b8a1d29a6761e2d474591c057595f78a19f90f9004b06e9895c56676bd827d1f",
+    "SizeBytes": 3,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "strict-boundary",
+    "Source": "a  \n\n# h\n",
+    "SHA256": "2aa6607014e157cf76b4dac401e22fbf237ad17cd21dd949732fddb7b05e8e78",
+    "SizeBytes": 9,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "strict-backslash",
+    "Source": "a\\  \nb\n",
+    "SHA256": "3925ba70816825ed1232cfd1fb582cf851f45501dd72a84917898653ff647903",
+    "SizeBytes": 7,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "backslash-origin",
+    "Source": "a\\\nb\n",
+    "SHA256": "ce258c50d588965a081b1fc3ba0ffda6b672074344870f9ee818a3bdc3e4fa8b",
+    "SizeBytes": 5,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "strict-quote-blank",
+    "Source": ">  \n",
+    "SHA256": "bd89a4033161e89a672aa2fb940bf1ec91498e6902f60638e1c071d3a629f720",
+    "SizeBytes": 4,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "strict-task",
+    "Source": "- [ ]  ",
+    "SHA256": "b0a97f313fecce1cd9cf79faca48f3e7175410317408fd4bc896d2b0e32d88dc",
+    "SizeBytes": 7,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          7,
+          1,
+          6,
+          1,
+          8
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "N4-count-2",
+    "Source": "a  \nb",
+    "SHA256": "2783c1c31c81230475bb10bd9e0cbf657556aa5d93463878b653f45d932019f4",
+    "SizeBytes": 5,
+    "Spaces": 4,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "N4-count-3",
+    "Source": "a   \nb",
+    "SHA256": "5c0f35b7ee8636da3194769137b9ddb35bf3ed2888f3372389ed542494e33c69",
+    "SizeBytes": 6,
+    "Spaces": 4,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          4,
+          1,
+          2,
+          1,
+          5
+        ],
+        "Source": "   ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "N4-count-4",
+    "Source": "a    \nb",
+    "SHA256": "6a07b8d8a3fb72711495e509dc11bbb614565fffb0ab29bdc8ff76618a58316d",
+    "SizeBytes": 7,
+    "Spaces": 4,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "N4-count-5",
+    "Source": "a     \nb",
+    "SHA256": "b5da05be90b790bc15e9c5a43a032c536197c5beb12978497c31dfcb2389afb9",
+    "SizeBytes": 8,
+    "Spaces": 4,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          6,
+          1,
+          2,
+          1,
+          7
+        ],
+        "Source": "     ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "max-int",
+    "Source": "a  \n",
+    "SHA256": "18ff741cc2779a320d7520277d194c1ad8a842a67b4b0911d9cc5bd7e2eef9b8",
+    "SizeBytes": 4,
+    "Spaces": 9223372036854775807,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          4
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "table-strict-cm",
+    "Source": "| a | b |  \n| - | - |  \n| c | d |  \n",
+    "SHA256": "8c04fde3521753ad200556214317792ddda2225100aa84074753b9daf87b579c",
+    "SizeBytes": 36,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          33,
+          35,
+          3,
+          10,
+          3,
+          12
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ],
+    "Flavor": "commonmark"
+  },
+  {
+    "Name": "table-strict-gfm",
+    "Source": "| a | b |  \n| - | - |  \n| c | d |  \n",
+    "SHA256": "8c04fde3521753ad200556214317792ddda2225100aa84074753b9daf87b579c",
+    "SizeBytes": 36,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          11,
+          1,
+          10,
+          1,
+          12
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          21,
+          23,
+          2,
+          10,
+          2,
+          12
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          33,
+          35,
+          3,
+          10,
+          3,
+          12
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ],
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "table-default",
+    "Source": "| a | b |  \n| - | - |  \n| c | d |  \n",
+    "SHA256": "8c04fde3521753ad200556214317792ddda2225100aa84074753b9daf87b579c",
+    "SizeBytes": 36,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "fence-default",
+    "Source": "```  \na  \n  \n```  \n",
+    "SHA256": "b7f95d6cc72891348298b02acf35938f65380cbf022994ab030e9f75262efc82",
+    "SizeBytes": 19,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "fence-strict-default",
+    "Source": "```  \na  \n  \n```  \n",
+    "SHA256": "b7f95d6cc72891348298b02acf35938f65380cbf022994ab030e9f75262efc82",
+    "SizeBytes": 19,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          5,
+          1,
+          4,
+          1,
+          6
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          16,
+          18,
+          4,
+          4,
+          4,
+          6
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "indented-default",
+    "Source": "    a  \n    \n    b  \n",
+    "SHA256": "f3e61e8a96b2617bad6e41becc5415a0b855089b5584f044fc1e6f7aed8b4a2c",
+    "SizeBytes": 21,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "span-default",
+    "Source": "`x  \ny`  \nz",
+    "SHA256": "363fcfb4992d0a3734c6f2e2e6ce8683589404630eaed19d226ec72ca16025c1",
+    "SizeBytes": 11,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "unclosed-fence-default",
+    "Source": "```\na  \n~~~ \n",
+    "SHA256": "509899ea46e589ee716d416bbed7d3df681ea6d136d48213c400b07e110f2fbb",
+    "SizeBytes": 13,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "invalid-closer-default",
+    "Source": "```\na  \n``` x \n```\n",
+    "SHA256": "8eaacac90fe1f958206119fdf169f4f22c4abacbc8613e2dfa051f48e8a25171",
+    "SizeBytes": 19,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "nested-fence-default",
+    "Source": "> - ```\n>   a  \n>     \n>   ```\n",
+    "SHA256": "74ec85976ed91c56a11c84f5fca313f06f5ded788327a392f535e1a0a0f887ab",
+    "SizeBytes": 31,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "code-N4-default",
+    "Source": "```\na    \n```\n",
+    "SHA256": "4bdb88ca4cf048b640eac78bf8cf1fddc6a9b3ab826093fed73956d2c7cd7351",
+    "SizeBytes": 14,
+    "Spaces": 4,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "inline-html-default",
+    "Source": "x <a\n title='a  \nb'>  \ny",
+    "SHA256": "c3306039639a49dcc0e144b041c3047c8c7e96eae2c293e505a5ac4f71e1c6bd",
+    "SizeBytes": 24,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "comment-default",
+    "Source": "a <!-- x  \ny -->  \nz\n",
+    "SHA256": "66287508bc3ad31d080d9d38d48298de0883928f1a68d6a0eb5571dd7538380a",
+    "SizeBytes": 21,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "html-block-default",
+    "Source": "<!-- x -->  \n",
+    "SHA256": "d5d2a8e214bb5672c479237615e9871ce7d2f1d4728d534177f1280a94102253",
+    "SizeBytes": 13,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-script-default",
+    "Source": "a <script>x  \ny</script>  \nz\n",
+    "SHA256": "d3f2004f587ad3a9ab377e6fd5fdf83e48b06d63d64721d161e11409a585245f",
+    "SizeBytes": 29,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-style-default",
+    "Source": "a <style>x  \ny</style> \nz\n",
+    "SHA256": "4431969da41cbbada968a38cdb1d198949771a7fd0665256a0bf95e51f3f0ef2",
+    "SizeBytes": 26,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          22,
+          23,
+          2,
+          10,
+          2,
+          11
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "raw-unclosed-default",
+    "Source": "a <script>x \ny \n",
+    "SHA256": "283f01415208bc59ef2f5374bbf34b724b445a5a09cd48583f556d39bd2b9c90",
+    "SizeBytes": 16,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-tail-default",
+    "Source": "<!-- x --><script>\n\na \nb</script> \nz\n",
+    "SHA256": "9e63ad873281ad7001ee69cb928c5d0beec98f8940d564ea1248c733d3bca901",
+    "SizeBytes": 37,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          33,
+          34,
+          4,
+          11,
+          4,
+          12
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "fence-optin",
+    "Source": "```  \na  \n  \n```  \n",
+    "SHA256": "b7f95d6cc72891348298b02acf35938f65380cbf022994ab030e9f75262efc82",
+    "SizeBytes": 19,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          9,
+          2,
+          2,
+          2,
+          4
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          10,
+          12,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "fence-strict-optin",
+    "Source": "```  \na  \n  \n```  \n",
+    "SHA256": "b7f95d6cc72891348298b02acf35938f65380cbf022994ab030e9f75262efc82",
+    "SizeBytes": 19,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          5,
+          1,
+          4,
+          1,
+          6
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          7,
+          9,
+          2,
+          2,
+          2,
+          4
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          10,
+          12,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          16,
+          18,
+          4,
+          4,
+          4,
+          6
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "indented-optin",
+    "Source": "    a  \n    \n    b  \n",
+    "SHA256": "f3e61e8a96b2617bad6e41becc5415a0b855089b5584f044fc1e6f7aed8b4a2c",
+    "SizeBytes": 21,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          7,
+          1,
+          6,
+          1,
+          8
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          8,
+          12,
+          2,
+          1,
+          2,
+          5
+        ],
+        "Source": "    ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          18,
+          20,
+          3,
+          6,
+          3,
+          8
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "span-optin",
+    "Source": "`x  \ny`  \nz",
+    "SHA256": "363fcfb4992d0a3734c6f2e2e6ce8683589404630eaed19d226ec72ca16025c1",
+    "SizeBytes": 11,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          1,
+          3,
+          1,
+          5
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "unclosed-fence-optin",
+    "Source": "```\na  \n~~~ \n",
+    "SHA256": "509899ea46e589ee716d416bbed7d3df681ea6d136d48213c400b07e110f2fbb",
+    "SizeBytes": 13,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          7,
+          2,
+          2,
+          2,
+          4
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          11,
+          12,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "invalid-closer-optin",
+    "Source": "```\na  \n``` x \n```\n",
+    "SHA256": "8eaacac90fe1f958206119fdf169f4f22c4abacbc8613e2dfa051f48e8a25171",
+    "SizeBytes": 19,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          7,
+          2,
+          2,
+          2,
+          4
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          13,
+          14,
+          3,
+          6,
+          3,
+          7
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "nested-fence-optin",
+    "Source": "> - ```\n>   a  \n>     \n>   ```\n",
+    "SHA256": "74ec85976ed91c56a11c84f5fca313f06f5ded788327a392f535e1a0a0f887ab",
+    "SizeBytes": 31,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          13,
+          15,
+          2,
+          6,
+          2,
+          8
+        ],
+        "Source": "  ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          17,
+          22,
+          3,
+          2,
+          3,
+          7
+        ],
+        "Source": "     ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "code-N4-optin",
+    "Source": "```\na    \n```\n",
+    "SHA256": "4bdb88ca4cf048b640eac78bf8cf1fddc6a9b3ab826093fed73956d2c7cd7351",
+    "SizeBytes": 14,
+    "Spaces": 4,
+    "Strict": false,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          9,
+          2,
+          2,
+          2,
+          6
+        ],
+        "Source": "    ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "inline-html-optin",
+    "Source": "x <a\n title='a  \nb'>  \ny",
+    "SHA256": "c3306039639a49dcc0e144b041c3047c8c7e96eae2c293e505a5ac4f71e1c6bd",
+    "SizeBytes": 24,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "comment-optin",
+    "Source": "a <!-- x  \ny -->  \nz\n",
+    "SHA256": "66287508bc3ad31d080d9d38d48298de0883928f1a68d6a0eb5571dd7538380a",
+    "SizeBytes": 21,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "html-block-optin",
+    "Source": "<!-- x -->  \n",
+    "SHA256": "d5d2a8e214bb5672c479237615e9871ce7d2f1d4728d534177f1280a94102253",
+    "SizeBytes": 13,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-script-optin",
+    "Source": "a <script>x  \ny</script>  \nz\n",
+    "SHA256": "d3f2004f587ad3a9ab377e6fd5fdf83e48b06d63d64721d161e11409a585245f",
+    "SizeBytes": 29,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-style-optin",
+    "Source": "a <style>x  \ny</style> \nz\n",
+    "SHA256": "4431969da41cbbada968a38cdb1d198949771a7fd0665256a0bf95e51f3f0ef2",
+    "SizeBytes": 26,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          22,
+          23,
+          2,
+          10,
+          2,
+          11
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "raw-unclosed-optin",
+    "Source": "a <script>x \ny \n",
+    "SHA256": "283f01415208bc59ef2f5374bbf34b724b445a5a09cd48583f556d39bd2b9c90",
+    "SizeBytes": 16,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-tail-optin",
+    "Source": "<!-- x --><script>\n\na \nb</script> \nz\n",
+    "SHA256": "9e63ad873281ad7001ee69cb928c5d0beec98f8940d564ea1248c733d3bca901",
+    "SizeBytes": 37,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          33,
+          34,
+          4,
+          11,
+          4,
+          12
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "span-outside-one",
+    "Source": "`x  \ny` \nz",
+    "SHA256": "4625228cca0f12e85bbd45609ad6957dd67e2fd09d1bcfc158dcdedec276c2ed",
+    "SizeBytes": 10,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "html-outside-one",
+    "Source": "x <a\n title='a  \nb'> \ny",
+    "SHA256": "0deed7b586f9a39779a023b993a9053a096c79c99fe61cf5ecc9c8a840417c74",
+    "SizeBytes": 23,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          20,
+          21,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "alt-isolation",
+    "Source": "![a <script>x](u) \nb \n",
+    "SHA256": "fcd3debdea8f8247a9eb400621bffc2c9ec1bb1a583f5213081cd9916660db67",
+    "SizeBytes": 22,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          1,
+          18,
+          1,
+          19
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          20,
+          21,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "escaped-tag",
+    "Source": "a \\<script>x \ny \n",
+    "SHA256": "ff43dc6e357e0094ac5b922321108e9e7358d5303c2f77f9b6e9d11ac45c94e2",
+    "SizeBytes": 17,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          13,
+          1,
+          14
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          15,
+          16,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "malformed-tag",
+    "Source": "a <script?x \ny \n",
+    "SHA256": "ec9baba9f55aab52ac9f59d25737bc2fa29d49dad6ce7bf506e31d3a915e3c3b",
+    "SizeBytes": 16,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          1,
+          12,
+          1,
+          13
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          14,
+          15,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "filtered-tag",
+    "Source": "a <iframe>x \ny</iframe> \nz\n",
+    "SHA256": "c35a7061fde33735d928c1da0a5cd16272b5efe3076402971c74993132e0bb48",
+    "SizeBytes": 27,
+    "Spaces": 2,
+    "Strict": true,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          1,
+          12,
+          1,
+          13
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          23,
+          24,
+          2,
+          11,
+          2,
+          12
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "yaml-markdown",
+    "Source": "--- \nx: y \n--- \na \n",
+    "SHA256": "2d8ca3d4a578568d4f6af50caf0d8aac49a5e20828125b215a59aeeb557ee77a",
+    "SizeBytes": 19,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          9,
+          10,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          14,
+          15,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          17,
+          18,
+          4,
+          2,
+          4,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "yaml-recognized",
+    "Source": "--- \nx: y \n--- \na \n",
+    "SHA256": "2d8ca3d4a578568d4f6af50caf0d8aac49a5e20828125b215a59aeeb557ee77a",
+    "SizeBytes": 19,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          4,
+          2,
+          4,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "yaml-bom-markdown",
+    "Source": "﻿--- \nx: y \n--- \na \n",
+    "SHA256": "542b6fee24aba0d5c07b1827cbca3a70b73c53990ecfab7661c09c9bb1a477f3",
+    "SizeBytes": 22,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          17,
+          18,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          20,
+          21,
+          4,
+          2,
+          4,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "yaml-bom-recognized",
+    "Source": "﻿--- \nx: y \n--- \na \n",
+    "SHA256": "542b6fee24aba0d5c07b1827cbca3a70b73c53990ecfab7661c09c9bb1a477f3",
+    "SizeBytes": 22,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          20,
+          21,
+          4,
+          2,
+          4,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "toml-markdown",
+    "Source": "+++ \nx: y \n+++ \na \n",
+    "SHA256": "b1902ce19c9d3b8b3423ae451b7c7049c93dc0cae716536c8d65ce3569855aa0",
+    "SizeBytes": 19,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          9,
+          10,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          14,
+          15,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          17,
+          18,
+          4,
+          2,
+          4,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "toml-recognized",
+    "Source": "+++ \nx: y \n+++ \na \n",
+    "SHA256": "b1902ce19c9d3b8b3423ae451b7c7049c93dc0cae716536c8d65ce3569855aa0",
+    "SizeBytes": 19,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          4,
+          2,
+          4,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "toml-bom-markdown",
+    "Source": "﻿+++ \nx: y \n+++ \na \n",
+    "SHA256": "b0d1194723a6923d997b96e4fb997a018b80cc3ed96980baaaac1c5f49b16362",
+    "SizeBytes": 22,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          17,
+          18,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      },
+      {
+        "Range": [
+          20,
+          21,
+          4,
+          2,
+          4,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "toml-bom-recognized",
+    "Source": "﻿+++ \nx: y \n+++ \na \n",
+    "SHA256": "b0d1194723a6923d997b96e4fb997a018b80cc3ed96980baaaac1c5f49b16362",
+    "SizeBytes": 22,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          20,
+          21,
+          4,
+          2,
+          4,
+          3
+        ],
+        "Source": " ",
+        "Message": "Whitespace at line end."
+      }
+    ]
+  },
+  {
+    "Name": "unterminated-header",
+    "Source": "--- \nx: y \n",
+    "SHA256": "348e64665860d6cd2d7749d4b63c2244a9e015e74676e8212055aaacaa076b38",
+    "SizeBytes": 11,
+    "Spaces": 2,
+    "Strict": false,
+    "CodeBlocks": false,
+    "Recognize": true,
+    "Incomplete": true,
+    "Expected": []
+  }
+]

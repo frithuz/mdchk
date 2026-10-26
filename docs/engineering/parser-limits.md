@@ -573,3 +573,9 @@ source/index cursors, preserving partial tabs and physical phase. It reserves
 per-line state, associations/lookups, cumulative frames, inline protection visits,
 growth/copies and detached findings before construction. No parse retention,
 replacement index, whole-source reparse or additional allowance is introduced.
+
+MD009 borrows final private production ownership, original source/index/options
+and the same operation witness. It precharges physical suffix scans, failed byte
+probes, line searches, markers, HTML tails, per-line state, frame/output capacity,
+copied growth prefixes and logical records. Empty, clean and protected inputs
+still consume work. Producer, facade and callback withhold all output on failure.

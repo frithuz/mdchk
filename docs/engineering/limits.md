@@ -220,3 +220,7 @@ MD077 shares the completed original operation allowance for per-line cursors,
 confirmed prefix replay, final ownership/definition association, inline literal
 protection, traversal growth/copies and detached findings. Producer, facade and
 callback publication checks withhold all dependent output after failure.
+
+MD009 analysis shares the original finite operation for physical suffix scans,
+final owner association and detached findings, including state/capacity/copy work
+on clean and protected inputs. It creates no new allowance.

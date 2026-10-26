@@ -12,7 +12,7 @@ including opt-in YAML/TOML title baselines. MD003 heading-style analysis and
 configuration are also implemented for both flavors. MD004 bullet-marker, MD005
 sibling-list alignment, MD007 bullet nesting indentation, MD029 numbered-list prefix and
 MD030 list-marker separator, MD032 list-boundary blank-line, MD069 repeated-list-marker
-and MD076 list-item spacing and MD077 list-continuation indentation analysis and
+and MD076 list-item spacing, MD077 list-continuation indentation and MD009 trailing-whitespace analysis and
 configuration are implemented for both flavors. MD018 missing opening-hash spacing,
 MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021
 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading
@@ -22,7 +22,7 @@ opening-heading analysis, MD043 required-outline analysis, MD063 heading-capital
 analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090
 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis
 and configuration are implemented for both flavors. MD001, MD003, MD004, MD005, MD007,
-MD029, MD030, MD032, MD069, MD076, MD077, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026,
+MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026,
 MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 are report-only. MD026, MD036,
 MD043, MD063, MD080, MD082, MD090 and MD093 are available but disabled by default. Other
 ordinary rule callbacks remain planned. The mandatory UTF-8 gate is implemented
@@ -110,3 +110,6 @@ Before marking a rule implemented, verify valid and invalid cases, configuration
 MkDocs navigation requires an explicit project context. This remains required work beyond the confirmed CommonMark and GFM format contracts. Metadata key sorting requires a format-aware parser and is an explicit exception to opaque metadata handling. UTF-8 validation is unconditional before parsing; MD094 controls attribution only. Invalid bytes produce one I/O error, never a duplicate rule violation. See the [UTF-8 contract](../engineering/rule-behavior.md#utf-8-validation).
 
 See the [engineering design](../engineering.md#rules-and-diagnostics), [Markdown formats](../markdown-formats.md), and [configuration guide](../configuration.md).
+
+MD009 uses whole physical trailing ASCII-space/TAB suffixes as a documented
+exception to container-relative spacing; actual prefixes determine blankness.

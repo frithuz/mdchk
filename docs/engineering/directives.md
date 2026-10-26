@@ -117,3 +117,6 @@ MD077 uses final nearest-item ownership and cumulative ancestor ContentIndent
 before suppression. The first item-facing quote boundary controls eligible
 prose/fence/table lines; protected payload is excluded first. Filtering anchors
 to the original surplus/deficit START, including shared whole-tab evidence.
+
+MD009 inventories whole physical suffixes before START-based filtering, retaining
+actual code/raw/prefix/hard-break context across disabled and selected regions.

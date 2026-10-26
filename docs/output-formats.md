@@ -100,7 +100,7 @@ the coordinates, and build-wide records leave the path field empty rather than
 inventing a source position. For example:
 
 ```text
-coverage  MD009 rule-unavailable: No executable implementation is registered.
+coverage  MD010 rule-unavailable: No executable implementation is registered.
 coverage docs/guide.md:2:4 MD057 context-unavailable: Required context is unavailable.
 ```
 
@@ -360,3 +360,7 @@ MD077 reports normalized actual/expected item indentation columns once per
 eligible physical line. Surplus is original whitespace evidence (whole atomic
 tabs when shared); deficit is zero-width at the actual token start. Findings are
 manual with `fix_available: false`, without edits or returned content.
+
+MD009 reports one full physical ASCII-space/TAB suffix with Unicode code-point
+columns and exclusive ends. Its message is “Whitespace at line end.” and
+`fix_available` is always false. No MD009 changes or corrected documents appear.
