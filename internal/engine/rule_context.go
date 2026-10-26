@@ -43,7 +43,7 @@ func (c RuleContext) Headings(ctx context.Context) (out []parser.HeadingFact, er
 // This narrow semantic access grants no header findings or correction authority;
 // UsesFrontmatter continues to govern source observations inside the header.
 func (c RuleContext) FrontmatterTitle(ctx context.Context) (metadata.Title, error) {
-	if ctx == nil || c.operation == nil || c.document == nil || !c.syntaxReliable || c.options["frontmatter_title"] != true {
+	if ctx == nil || c.operation == nil || c.document == nil || !c.syntaxReliable || c.document.Source().Token() != c.Source().Token() || c.options["frontmatter_title"] != true {
 		return metadata.Title{}, metadata.ErrContract
 	}
 	binding, err := metadata.Bind(ctx, c.operation, c.budget, c.document)

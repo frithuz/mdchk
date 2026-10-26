@@ -117,7 +117,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis and MD024 repeated heading analysis are also available. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
+production correction; MD001 heading-increment, MD003 heading-style, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis and MD025 multiple-title analysis are also available. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
 
@@ -275,12 +275,12 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
-header recognition. Metadata interpretation supports MD001's opt-in
+header recognition. Metadata interpretation supports MD001 and MD025 opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
-MD025, MD041 and MD072 remain independently unavailable. MD001 is report-only;
-its title access grants no header findings or corrections. Broader metadata
+MD041 and MD072 remain independently unavailable. MD001 and MD025 are report-only;
+their title access grants no header findings or corrections. Broader metadata
 inspection, consumer and correction integration remain separate deliveries.
 Omitted flavor configuration selects built-in GFM through the same whole-profile
 parser. Configuration and read
@@ -419,3 +419,12 @@ Projection failure withholds facts; a later callback error retains prior reliabl
 findings and explicit incomplete coverage. No fresh source, parse, allowance or
 public-tree clone is created. This is finite application-work accounting, not a
 process memory or throughput guarantee. See [MD024 policy](rules/headings/md024.md).
+
+MD025 counts matching-level headings with one saturated baseline flag and no
+text comparison or container partition. Opt-in metadata is decoded once through
+the original title provider; unknown semantics withhold only the first matching
+body comparison and retain reliable later duplicates with incomplete coverage.
+The callback charges each heading, each retained finding and potential slice
+copy before append through the original compound caller/operation and sticky
+work/node/elapsed controls. It uses original raw Label spans and adds no source,
+parse, index, allowance, edit or write authority. See [MD025 policy](rules/headings/md025.md).

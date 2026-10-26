@@ -330,3 +330,12 @@ Projection failure withholds facts; a later callback error retains prior reliabl
 findings and explicit incomplete coverage. No fresh source, parse, allowance or
 public-tree clone is created. This is finite application-work accounting, not a
 process memory or throughput guarantee. See [MD024 policy](../rules/headings/md024.md).
+
+MD025 counts matching-level headings with one saturated baseline flag and no
+text comparison or container partition. Opt-in metadata is decoded once through
+the original title provider; unknown semantics withhold only the first matching
+body comparison and retain reliable later duplicates with incomplete coverage.
+The callback charges each heading, each retained finding and potential slice
+copy before append through the original compound caller/operation and sticky
+work/node/elapsed controls. It uses original raw Label spans and adds no source,
+parse, index, allowance, edit or write authority. See [MD025 policy](../rules/headings/md025.md).

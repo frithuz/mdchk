@@ -535,3 +535,15 @@ func TestRuleContextIndentedHeadingsIndependentControls(t *testing.T) {
 		t.Fatal("foreign input source granted facts", facts, err)
 	}
 }
+
+func TestRuleContextTitleRejectsForeignInput(t *testing.T) {
+	c := headingContext(t, "---\ntitle: Guide\n---\n# Body", parser.DefaultLimits(), context.Background())
+	foreign, err := NewInput("foreign.md", c.Source().Bytes(), nil, c.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+	c.input = foreign
+	if title, err := c.FrontmatterTitle(context.Background()); err == nil || title.Known {
+		t.Fatal("foreign source title admitted", title, err)
+	}
+}

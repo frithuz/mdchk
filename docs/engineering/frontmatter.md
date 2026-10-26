@@ -2,7 +2,7 @@
 
 Status: accepted on 2026-10-15. Opaque recognition, shared protection and source
 inspection and on-demand structured metadata interpretation are implemented;
-MD001 opt-in title consumption is implemented; broader production metadata-rule
+MD001 and MD025 opt-in title consumption is implemented; broader production metadata-rule
 integration and corrections remain pending. The
 cross-operation recognition matrix is verified for both
 supported flavors; see [operation parity fixtures](../../internal/testutil/frontmatter/README.md).
@@ -91,7 +91,7 @@ metadata interpretation is available through the separately bound decoder; the b
 
 The source-owned model, title/ordering policy and necessary preservation gates
 are implemented in [internal/metadata](../../internal/metadata/README.md). Concrete
-format decoding/source projection (#179) is implemented. MD001 consumes title
+format decoding/source projection (#179) is implemented. MD001 and MD025 consume title
 policy through narrow engine-owned access under the original
 parse budget and operation. It retains body-only finding protection; semantic
 title access does not grant UsesFrontmatter header-observation authority. Broader

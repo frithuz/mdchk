@@ -67,7 +67,7 @@ func TestMD001ProductionAdmission(t *testing.T) {
 		"MD001: {enabled: false, unknown: true}",
 		"MD001: {enabled: 'true'}",
 		"MD001: {enabled: false, allow_directives: null}",
-		"MD025: {enabled: true, frontmatter_title: true}",
+		"MD025: {enabled: true, level: 7}",
 		"MD041: {enabled: true, frontmatter_title: true}",
 		"MD072: {enabled: true}",
 	} {

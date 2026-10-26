@@ -203,7 +203,7 @@ exposes a budget. RuleContext.FrontmatterTitle is narrow semantic consumption fo
 an enabled frontmatter_title option, using metadata.Bind/Decode/Title on that same
 original document. Lexical absence is known absence; unknown title semantics
 reduce affected coverage without discarding reliable body comparisons. The option
-false performs no decoding. MD001 uses these seams while retaining
+false performs no decoding. MD001 and MD025 use these seams while retaining
 UsesFrontmatter=false and body-only finding protection. Title consumption grants
 no header observations, edits, preview or write authority.
 
@@ -245,3 +245,12 @@ Projection failure withholds facts; a later callback error retains prior reliabl
 findings and explicit incomplete coverage. No fresh source, parse, allowance or
 public-tree clone is created. This is finite application-work accounting, not a
 process memory or throughput guarantee. See [MD024 policy](../../docs/rules/headings/md024.md).
+
+MD025 counts matching-level headings with one saturated baseline flag and no
+text comparison or container partition. Opt-in metadata is decoded once through
+the original title provider; unknown semantics withhold only the first matching
+body comparison and retain reliable later duplicates with incomplete coverage.
+The callback charges each heading, each retained finding and potential slice
+copy before append through the original compound caller/operation and sticky
+work/node/elapsed controls. It uses original raw Label spans and adds no source,
+parse, index, allowance, edit or write authority. See [MD025 policy](../../docs/rules/headings/md025.md).

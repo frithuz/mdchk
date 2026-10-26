@@ -1,0 +1,258 @@
+[
+  {
+    "Name": "published",
+    "Source": "# Guide\n\n# Usage",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          16,
+          3,
+          3,
+          3,
+          8
+        ],
+        "Source": "Usage"
+      }
+    ]
+  },
+  {
+    "Name": "pass",
+    "Source": "# Guide\n\n## Usage",
+    "Expected": []
+  },
+  {
+    "Name": "three",
+    "Source": "# A\n## Other\n# B\n### Other\n# C",
+    "Expected": [
+      {
+        "Range": [
+          15,
+          16,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": "B"
+      },
+      {
+        "Range": [
+          29,
+          30,
+          5,
+          3,
+          5,
+          4
+        ],
+        "Source": "C"
+      }
+    ]
+  },
+  {
+    "Name": "empty",
+    "Source": "#\n\n#",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          4,
+          3,
+          2,
+          3,
+          2
+        ],
+        "Source": ""
+      }
+    ]
+  },
+  {
+    "Name": "visible empty",
+    "Source": "# A\n# <!-- invisible -->",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          24,
+          2,
+          3,
+          2,
+          21
+        ],
+        "Source": "<!-- invisible -->"
+      }
+    ]
+  },
+  {
+    "Name": "containers",
+    "Source": "# A\n\n> # **雪**\n\n- # C",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          16,
+          3,
+          5,
+          3,
+          10
+        ],
+        "Source": "**雪**"
+      },
+      {
+        "Range": [
+          22,
+          23,
+          5,
+          5,
+          5,
+          6
+        ],
+        "Source": "C"
+      }
+    ]
+  },
+  {
+    "Name": "setext",
+    "Source": "# A\n\nOne\nTwo\n===",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          12,
+          3,
+          1,
+          4,
+          4
+        ],
+        "Source": "One\nTwo"
+      }
+    ]
+  },
+  {
+    "Name": "crlf",
+    "Source": "# A\r\n\r\n# é雪\r\n",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          15,
+          3,
+          3,
+          3,
+          6
+        ],
+        "Source": "é雪"
+      }
+    ]
+  },
+  {
+    "Name": "cr",
+    "Source": "# A\r\r# B",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": "B"
+      }
+    ]
+  },
+  {
+    "Name": "nul",
+    "Source": "# A\n# \u0000雪",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          10,
+          2,
+          3,
+          2,
+          5
+        ],
+        "Source": "\u0000雪"
+      }
+    ]
+  },
+  {
+    "Name": "protected",
+    "Source": "```\n# Fake\n```\n\n# A\n\n# B",
+    "Expected": [
+      {
+        "Range": [
+          23,
+          24,
+          7,
+          3,
+          7,
+          4
+        ],
+        "Source": "B"
+      }
+    ]
+  },
+  {
+    "Name": "recognized header protects fake",
+    "Source": "---\n# Fake\ntitle: Guide\n---\n# A\n# B",
+    "Recognize": true,
+    "Expected": [
+      {
+        "Range": [
+          34,
+          35,
+          6,
+          3,
+          6,
+          4
+        ],
+        "Source": "B"
+      }
+    ]
+  },
+  {
+    "Name": "recognition off",
+    "Source": "---\n# Fake\n---\n# A",
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          4,
+          3,
+          4,
+          4
+        ],
+        "Source": "A"
+      }
+    ]
+  },
+  {
+    "Name": "unreliable header",
+    "Source": "---\ntitle: Guide\n# Fake",
+    "Recognize": true,
+    "Incomplete": true,
+    "Expected": []
+  },
+  {
+    "Name": "nested multiline unicode",
+    "Source": "# A\n\n> *雪*\n> é\n> ===",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          18,
+          3,
+          3,
+          4,
+          5
+        ],
+        "Source": "*雪*\n> é"
+      }
+    ]
+  }
+]
