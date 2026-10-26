@@ -1932,3 +1932,14 @@ completed original production witness. It keeps ordered and mixed context,
 associates parents by constant source-token/offset/presence identity, and checks
 same physical line before borrowing ASCII whitespace gaps. Returned maximal-run
 spans are detached immutable-source values without edit authority.
+
+The private MD076 ListItemSpacing projection traverses actual List children under
+the completed production/profile/options/source/index/operation witness. It uses
+ListSpacing's source-floor mechanics: source-only definitions and empty markers
+are content, terminal lists/items propagate floors, quotes and opaque leaves keep
+full envelopes. Only ancestor prefixes remain during sibling comparisons. Each
+List frame owns its immutable exact first-count baseline; the admitted style
+selects one first-extra blank suffix without retaining per-blank spans. Detached
+mismatch facts carry actual/expected counts and original diagnostic ranges only.
+Visits, source summaries, lookups, frames, rollback, capacities, copies and records
+are reserved before construction; final interruption withholds all facts.

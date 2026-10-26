@@ -349,3 +349,8 @@ MD069 emits one manual finding per maximal identical-bullet subrun, spanning
 the first marker start through the last marker end, including original gaps.
 `fix_available` is false under its permanent NoFix policy. Composed MD047
 previews retain these full-run ranges against the candidate snapshot.
+
+MD076 reports actual and expected blank body line counts once per mismatching
+sibling boundary. Deficits are zero-width at the next marker; surplus ranges cover
+only the first extra blank line's body suffix and complete original ending.
+Findings are manual with `fix_available: false`, despite PlannedFix metadata.

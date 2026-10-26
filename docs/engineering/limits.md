@@ -208,3 +208,9 @@ MD069 shares the original completed parse allowance for item inventory, constant
 identity state, physical-line lookups, original gap bytes, run records and output
 capacity. Finding growth, copied prefixes and logical records are reserved before
 work. Caller and origin stops withhold the entire dependent output.
+
+MD076 shares the original operation allowance for source-line summaries, bounded
+index lookups, actual tree frames, prefix rollback, removed-definition association,
+group baselines, fact/finding capacity, copied prefixes and logical records.
+Empty, clean and interrupted inventories retain caller/origin controls and final
+atomic withholding. No source copy, reparse or new allowance is introduced.

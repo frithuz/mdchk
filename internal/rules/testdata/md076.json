@@ -1,0 +1,890 @@
+[
+  {
+    "Name": "consistent_0_0",
+    "Source": "- A\n- B\n- C\n",
+    "Style": "consistent",
+    "Expected": []
+  },
+  {
+    "Name": "consistent_1_1",
+    "Source": "- A\n\n- B\n\n- C\n",
+    "Style": "consistent",
+    "Expected": []
+  },
+  {
+    "Name": "consistent_0_1",
+    "Source": "- A\n- B\n\n- C\n",
+    "Style": "consistent",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          3,
+          1,
+          4,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 1,
+        "Expected": 0
+      }
+    ]
+  },
+  {
+    "Name": "consistent_1_0",
+    "Source": "- A\n\n- B\n- C\n",
+    "Style": "consistent",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "consistent_2_1",
+    "Source": "- A\n\n\n- B\n\n- C\n",
+    "Style": "consistent",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          11,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Actual": 1,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "consistent_2_2",
+    "Source": "- A\n\n\n- B\n\n\n- C\n",
+    "Style": "consistent",
+    "Expected": []
+  },
+  {
+    "Name": "consistent_1_2",
+    "Source": "- A\n\n- B\n\n\n- C\n",
+    "Style": "consistent",
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          5,
+          1,
+          6,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 2,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "consistent_2_3",
+    "Source": "- A\n\n\n- B\n\n\n\n- C\n",
+    "Style": "consistent",
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          7,
+          1,
+          8,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 3,
+        "Expected": 2
+      }
+    ]
+  },
+  {
+    "Name": "tight_0",
+    "Source": "- A\n- B\n",
+    "Style": "tight",
+    "Expected": []
+  },
+  {
+    "Name": "tight_1",
+    "Source": "- A\n\n- B\n",
+    "Style": "tight",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          2,
+          1,
+          3,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 1,
+        "Expected": 0
+      }
+    ]
+  },
+  {
+    "Name": "tight_2",
+    "Source": "- A\n\n\n- B\n",
+    "Style": "tight",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          2,
+          1,
+          3,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 2,
+        "Expected": 0
+      }
+    ]
+  },
+  {
+    "Name": "tight_3",
+    "Source": "- A\n\n\n\n- B\n",
+    "Style": "tight",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          2,
+          1,
+          3,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 3,
+        "Expected": 0
+      }
+    ]
+  },
+  {
+    "Name": "loose_0",
+    "Source": "- A\n- B\n",
+    "Style": "loose",
+    "Expected": [
+      {
+        "Range": [
+          4,
+          4,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "loose_1",
+    "Source": "- A\n\n- B\n",
+    "Style": "loose",
+    "Expected": []
+  },
+  {
+    "Name": "loose_2",
+    "Source": "- A\n\n\n- B\n",
+    "Style": "loose",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          3,
+          1,
+          4,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 2,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "loose_3",
+    "Source": "- A\n\n\n\n- B\n",
+    "Style": "loose",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          3,
+          1,
+          4,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 3,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "published_invalid",
+    "Source": "- One\n\n- Two\n- Three\n",
+    "Style": "consistent",
+    "Expected": [
+      {
+        "Range": [
+          13,
+          13,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "published_valid",
+    "Source": "- One\n\n- Two\n\n- Three\n",
+    "Style": "consistent",
+    "Expected": []
+  },
+  {
+    "Name": "singleton",
+    "Source": "- A\n\n\n",
+    "Style": "tight",
+    "Expected": []
+  },
+  {
+    "Name": "empty",
+    "Source": "",
+    "Style": "tight",
+    "Expected": []
+  },
+  {
+    "Name": "no_list",
+    "Source": "text\n\ntext",
+    "Style": "tight",
+    "Expected": []
+  },
+  {
+    "Name": "internal_loose",
+    "Source": "- A\n\n  body\n- B\n",
+    "Style": "tight",
+    "Expected": []
+  },
+  {
+    "Name": "nested_terminal",
+    "Source": "- - A\n\n- B\n",
+    "Style": "tight",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          1,
+          3,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 1,
+        "Expected": 0
+      }
+    ]
+  },
+  {
+    "Name": "empty_item",
+    "Source": "-\n\n\n- B\n",
+    "Style": "tight",
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          2,
+          1,
+          3,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 2,
+        "Expected": 0
+      }
+    ]
+  },
+  {
+    "Name": "definition_only",
+    "Source": "- [a]: /url\n\n- B\n",
+    "Style": "tight",
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          1,
+          3,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 1,
+        "Expected": 0
+      }
+    ]
+  },
+  {
+    "Name": "multiline_definition",
+    "Source": "- [a]:\n    /url\n\n- B\n",
+    "Style": "tight",
+    "Expected": [
+      {
+        "Range": [
+          16,
+          17,
+          3,
+          1,
+          4,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 1,
+        "Expected": 0
+      }
+    ]
+  },
+  {
+    "Name": "closed_code",
+    "Source": "- ```\n  \n  ```\n\n- B\n",
+    "Style": "tight",
+    "Expected": [
+      {
+        "Range": [
+          15,
+          16,
+          4,
+          1,
+          5,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 1,
+        "Expected": 0
+      }
+    ]
+  },
+  {
+    "Name": "unclosed_code",
+    "Source": "- ```\n  \n- B\n",
+    "Style": "tight",
+    "Expected": []
+  },
+  {
+    "Name": "unclosed_html",
+    "Source": "- <script>\n  \n- B\n",
+    "Style": "tight",
+    "Expected": []
+  },
+  {
+    "Name": "closed_html",
+    "Source": "- <script>\n  \n  </script>\n\n- B\n",
+    "Style": "tight",
+    "Expected": [
+      {
+        "Range": [
+          26,
+          27,
+          4,
+          1,
+          5,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 1,
+        "Expected": 0
+      }
+    ]
+  },
+  {
+    "Name": "quote_leaf",
+    "Source": "- > A\n  >\n- B\n",
+    "Style": "tight",
+    "Expected": []
+  },
+  {
+    "Name": "NBSP_content",
+    "Source": "- A\n   \n- B\n",
+    "Style": "tight",
+    "Expected": []
+  },
+  {
+    "Name": "NUL_content",
+    "Source": "- A\n  \u0000\n- B\n",
+    "Style": "tight",
+    "Expected": []
+  },
+  {
+    "Name": "comment_content",
+    "Source": "- A\n  <!-- x -->\n- B\n",
+    "Style": "tight",
+    "Expected": []
+  },
+  {
+    "Name": "nonterminal_nested",
+    "Source": "- A\n  - X\n\n  - Y\n- B\n",
+    "Style": "consistent",
+    "Expected": []
+  },
+  {
+    "Name": "outer_state_after_nested",
+    "Source": "- A\n\n- B\n  - X\n  - Y\n- C\n",
+    "Style": "consistent",
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "independent_nested",
+    "Source": "- A\n\n- B\n  - X\n\n  - Y\n  - Z\n\n- C\n",
+    "Style": "consistent",
+    "Expected": [
+      {
+        "Range": [
+          24,
+          24,
+          7,
+          3,
+          7,
+          3
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "bullet_reset",
+    "Source": "- A\n\n- B\n+ C\n+ D\n",
+    "Style": "consistent",
+    "Expected": []
+  },
+  {
+    "Name": "type_reset",
+    "Source": "- A\n\n- B\n1. C\n2. D\n",
+    "Style": "consistent",
+    "Expected": []
+  },
+  {
+    "Name": "delimiter_reset",
+    "Source": "1. A\n\n2. B\n3) C\n4) D\n",
+    "Style": "consistent",
+    "Expected": []
+  },
+  {
+    "Name": "block_reset",
+    "Source": "- A\n\n- B\n\n# H\n\n- C\n- D\n",
+    "Style": "consistent",
+    "Expected": []
+  },
+  {
+    "Name": "quote_reset",
+    "Source": "> - A\n>\n> - B\n\n- C\n- D\n",
+    "Style": "consistent",
+    "Expected": []
+  },
+  {
+    "Name": "ordered_values_same_group",
+    "Source": "1. A\n\n7. B\n8. C\n",
+    "Style": "consistent",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          11,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "quote_missing",
+    "Source": "> - A\n> - B\n",
+    "Style": "loose",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          8,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "quote_first_extra",
+    "Source": "> - A\n>\n>\n> - B\n",
+    "Style": "loose",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          3,
+          2,
+          4,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 2,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "quote_tight_first_extra",
+    "Source": "> - A\n>\n>\n> - B\n",
+    "Style": "tight",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          2,
+          2,
+          3,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 2,
+        "Expected": 0
+      }
+    ]
+  },
+  {
+    "Name": "spaces_tabs_extra",
+    "Source": "- A\n \t\n \t\n- B\n",
+    "Style": "loose",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          10,
+          3,
+          1,
+          4,
+          1
+        ],
+        "Source": " \t\n",
+        "Actual": 2,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "tab_ancestor",
+    "Source": "- A\n\t- X\n\n\t- Y\n",
+    "Style": "tight",
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          3,
+          1,
+          4,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 1,
+        "Expected": 0
+      }
+    ]
+  },
+  {
+    "Name": "lazy_floor",
+    "Source": "> - A\nlazy\n> - B\n",
+    "Style": "loose",
+    "Expected": [
+      {
+        "Range": [
+          13,
+          13,
+          3,
+          3,
+          3,
+          3
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "task_siblings",
+    "Source": "- [ ] A\n\n- [x] B\n- [ ] C\n",
+    "Style": "consistent",
+    "Expected": [
+      {
+        "Range": [
+          17,
+          17,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "table_internal",
+    "Source": "- A | B\n  --- | ---\n  X | Y\n- C\n",
+    "Style": "tight",
+    "Expected": []
+  },
+  {
+    "Name": "LF_extra_EOF",
+    "Source": "- é\n\n\n- B",
+    "Style": "loose",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          3,
+          1,
+          4,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 2,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "LF_missing_EOF",
+    "Source": "- é\n- B",
+    "Style": "loose",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "CRLF_extra_EOF",
+    "Source": "- é\r\n\r\n\r\n- B",
+    "Style": "loose",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          10,
+          3,
+          1,
+          4,
+          1
+        ],
+        "Source": "\r\n",
+        "Actual": 2,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "CRLF_missing_EOF",
+    "Source": "- é\r\n- B",
+    "Style": "loose",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          6,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "CR_extra_EOF",
+    "Source": "- é\r\r\r- B",
+    "Style": "loose",
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          3,
+          1,
+          4,
+          1
+        ],
+        "Source": "\r",
+        "Actual": 2,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "CR_missing_EOF",
+    "Source": "- é\r- B",
+    "Style": "loose",
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ]
+  },
+  {
+    "Name": "YAML_opaque",
+    "Source": "---\ntext: |\n  - A\n\n  - B\n---\n- A\n\n- B\n- C\n",
+    "Style": "consistent",
+    "Expected": [
+      {
+        "Range": [
+          38,
+          38,
+          10,
+          1,
+          10,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "TOML_opaque",
+    "Source": "+++\na=\"- X\"\n+++\n- A\n\n- B\n- C\n",
+    "Style": "consistent",
+    "Expected": [
+      {
+        "Range": [
+          25,
+          25,
+          7,
+          1,
+          7,
+          1
+        ],
+        "Source": "",
+        "Actual": 0,
+        "Expected": 1
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "metadata_unterminated",
+    "Source": "---\n- A\n\n- B",
+    "Style": "tight",
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "item_quote_ancestor",
+    "Source": "- > - A\n  >\n  > - B\n",
+    "Style": "tight",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          4,
+          3,
+          1
+        ],
+        "Source": "\n",
+        "Actual": 1,
+        "Expected": 0
+      }
+    ]
+  }
+]

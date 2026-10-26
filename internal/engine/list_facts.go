@@ -137,3 +137,28 @@ func (c RuleContext) ListRepetitions(ctx context.Context) (out []parser.Span, er
 	}()
 	return c.document.ListRepetitions(ruleOperation{ctx, c.operation}, c.budget, c.index, c.Context().ParseOptions())
 }
+
+// ListItemSpacing borrows the admitted MD076 style and exposes detached sibling
+// mismatches under the caller and original operation controls.
+func (c RuleContext) ListItemSpacing(ctx context.Context) (out []parser.ListItemSpacingFact, err error) {
+	if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
+		return nil, err
+	}
+	defer func() {
+		err = errors.Join(err, c.SectionCheckpoint(ctx, 0, 0))
+		if err != nil {
+			out = nil
+		}
+	}()
+	style, ok := c.options["style"].(string)
+	if !ok {
+		return nil, parser.ErrModel
+	}
+	if err := c.SectionCheckpoint(ctx, int64(len(style))+1, 0); err != nil {
+		return nil, err
+	}
+	if style != "consistent" && style != "tight" && style != "loose" {
+		return nil, parser.ErrModel
+	}
+	return c.document.ListItemSpacing(ruleOperation{ctx, c.operation}, c.budget, c.index, c.Context().ParseOptions(), style)
+}

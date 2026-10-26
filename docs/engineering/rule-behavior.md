@@ -601,3 +601,10 @@ resolvable. Inspection identifies mandatory input validation separately from con
 attribution, so a disabled MD094 entry does not imply that byte validation was skipped. Core
 validation must exist in every build that accepts document bytes; it is not an optional unavailable
 parser capability.
+
+## List item spacing
+
+MD076 compares exact source-owned direct sibling separator counts per actual
+list. Tight=0, loose=1 and consistent=immutable exact first count, including >1.
+Internal looseness and final List.Tight do not decide source spacing. Every
+mismatch remains manual; rendering preservation only limits future correction.

@@ -145,3 +145,8 @@ boundary analysis. PlannedFix metadata grants no edits or correction previews.
 
 MD069 inspection identifies available default-enabled CommonMark/GFM analysis.
 Its maximal repeated-marker ranges remain manual and never grant fix authority.
+
+MD076 inspection reports available default-enabled CommonMark/GFM analysis and
+its admitted exact `style`. Hidden siblings still establish the per-list baseline;
+suppressed findings use their original deficit or first-extra-line surplus range.
+Inspection grants no MD076 correction authority.

@@ -560,3 +560,9 @@ MD069 reserves association-map and run capacity before construction, bounded
 line-index comparisons before lookup, and original gap bytes before scanning.
 Different physical lines are rejected before gap work. Run and output storage
 are distinct from logical records; final publication observes original controls.
+
+MD076 uses one original source-line summary and actual tree traversal, with
+precharged frames, prefix rollback and definition association. Each actual List
+retains its own exact baseline in its frame; no source-bearing span hashing or
+per-blank inventory is used. The admitted style chooses the first extra line in
+that traversal. All output is withheld on original caller/budget interruption.

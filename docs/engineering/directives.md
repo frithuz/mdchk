@@ -106,3 +106,8 @@ A removed reference definition remains context in its actual owning container.
 MD069 retains complete actual item context through maximal-run construction.
 Suppression uses the first marker start of each full run; an inline comment
 after that start cannot suppress the run retroactively.
+
+MD076 evaluates full direct sibling context before filtering. The immutable exact
+first separator baseline survives hidden items and nested visits. Chosen original
+range START governs suppression: next-marker deficits differ from first-extra-line
+surplus ranges, which exclude ancestor prefixes and later surplus lines.
