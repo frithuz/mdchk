@@ -224,3 +224,9 @@ callback publication checks withhold all dependent output after failure.
 MD009 analysis shares the original finite operation for physical suffix scans,
 final owner association and detached findings, including state/capacity/copy work
 on clean and protected inputs. It creates no new allowance.
+
+MD010 uses the original finite operation for source-byte scans, literal/raw
+associations and confirmed prefix replay, including failed probes, capacity,
+copies and logical records. spaces_per_tab has no numeric-sized work or storage.
+Caller/origin controls and final atomic withholding apply to empty, clean and
+protected-only inputs as well as violations.

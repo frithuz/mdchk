@@ -1950,3 +1950,11 @@ definitions and confirmed item/quote markers under the completed production
 witness. It returns detached Span/Actual/Expected mismatches only; NodeSpec,
 Properties and inspection schemas are unchanged. It preserves physical cursor
 phase and partial tabs without retaining new original-parse observations.
+
+MD010 consumes actual CodeBlock Content and intrinsic indent-prefix ownership,
+never coarse block envelopes. Literal contributions preserve container gaps;
+confirmed raw bounds additionally protect trimmed original body TABs. Charged
+scalar replay of final confirmed prefix facts distinguishes fully consumed TABs
+from residual body columns at original physical phase. Empty first items borrow
+the actual Prefix segment widths. This projection adds no retained parser model
+fields or public inspection schema.

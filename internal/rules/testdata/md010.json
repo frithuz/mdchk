@@ -1,0 +1,4316 @@
+[
+  {
+    "Name": "ordinary-default",
+    "Source": "Text\tcontinued\n",
+    "SHA256": "5019b58dff1471a55e2764fe713bb220bebb1c7f24d7af51b99c9384563a209e",
+    "SizeBytes": 15,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "ordinary-code",
+    "Source": "Text\tcontinued\n",
+    "SHA256": "5019b58dff1471a55e2764fe713bb220bebb1c7f24d7af51b99c9384563a209e",
+    "SizeBytes": 15,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "clean-default",
+    "Source": "Text continued\n",
+    "SHA256": "b363b01fb58582d314f53b9ee9e91a6d62a419f63626015db0cf5a351b001df9",
+    "SizeBytes": 15,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "clean-code",
+    "Source": "Text continued\n",
+    "SHA256": "b363b01fb58582d314f53b9ee9e91a6d62a419f63626015db0cf5a351b001df9",
+    "SizeBytes": 15,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty-default",
+    "Source": "",
+    "SHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "SizeBytes": 0,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty-code",
+    "Source": "",
+    "SHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "SizeBytes": 0,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "spaces-default",
+    "Source": "    \n",
+    "SHA256": "63ad8e85349fe11819885976ef96cbe3f6f65c288b290713acadbdf9a9280388",
+    "SizeBytes": 5,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "spaces-code",
+    "Source": "    \n",
+    "SHA256": "63ad8e85349fe11819885976ef96cbe3f6f65c288b290713acadbdf9a9280388",
+    "SizeBytes": 5,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "adjacent-default",
+    "Source": "a\t\tb\tc\n",
+    "SHA256": "74c04a3a1a3037fd7fdf02d359a0a73e3921f5859f3b22cb914b0c695c992c98",
+    "SizeBytes": 7,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "adjacent-code",
+    "Source": "a\t\tb\tc\n",
+    "SHA256": "74c04a3a1a3037fd7fdf02d359a0a73e3921f5859f3b22cb914b0c695c992c98",
+    "SizeBytes": 7,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "indented-default",
+    "Source": "\tText\n",
+    "SHA256": "06629c9104f8b07c34d7f8900f1ba4e79288922bf95129e2e385e251ecab44e7",
+    "SizeBytes": 6,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "indented-code",
+    "Source": "\tText\n",
+    "SHA256": "06629c9104f8b07c34d7f8900f1ba4e79288922bf95129e2e385e251ecab44e7",
+    "SizeBytes": 6,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "continuation-default",
+    "Source": "Text\n\tcontinued\n",
+    "SHA256": "532f811d81c1de712a7b78fe1b11eae8029fad958b8958bd132db24c1668a2d6",
+    "SizeBytes": 16,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "continuation-code",
+    "Source": "Text\n\tcontinued\n",
+    "SHA256": "532f811d81c1de712a7b78fe1b11eae8029fad958b8958bd132db24c1668a2d6",
+    "SizeBytes": 16,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "unicode-default",
+    "Source": "雪\t😀\t",
+    "SHA256": "05a838ca48a1f8c6e3d746d1e64bfe30f1a5a8c6d4719492e2c081963171ad82",
+    "SizeBytes": 9,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          8,
+          9,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "unicode-code",
+    "Source": "雪\t😀\t",
+    "SHA256": "05a838ca48a1f8c6e3d746d1e64bfe30f1a5a8c6d4719492e2c081963171ad82",
+    "SizeBytes": 9,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          8,
+          9,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "mixed-default",
+    "Source": "é\t\t中\r\na\t\rb\t",
+    "SHA256": "0f903f2cc44929bbd7dae444af589c1746e7faa095481f69dda5639488068807",
+    "SizeBytes": 14,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          10,
+          11,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          13,
+          14,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "mixed-code",
+    "Source": "é\t\t中\r\na\t\rb\t",
+    "SHA256": "0f903f2cc44929bbd7dae444af589c1746e7faa095481f69dda5639488068807",
+    "SizeBytes": 14,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          10,
+          11,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          13,
+          14,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "nul-default",
+    "Source": "a\u0000\t雪\n",
+    "SHA256": "5a4736581aa51e7cfe4a783d81ad521b37cadec6b6b51022cfb299a6de54b3c3",
+    "SizeBytes": 7,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "nul-code",
+    "Source": "a\u0000\t雪\n",
+    "SHA256": "5a4736581aa51e7cfe4a783d81ad521b37cadec6b6b51022cfb299a6de54b3c3",
+    "SizeBytes": 7,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "combining-default",
+    "Source": "é\tx\n",
+    "SHA256": "a31a10e48c79e252d4c0eaf1eeab914ef9da3cd2ba5bcf94c2fde35b10e5eae6",
+    "SizeBytes": 6,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "combining-code",
+    "Source": "é\tx\n",
+    "SHA256": "a31a10e48c79e252d4c0eaf1eeab914ef9da3cd2ba5bcf94c2fde35b10e5eae6",
+    "SizeBytes": 6,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "crlf-default",
+    "Source": "a\t\r\nb\t\r\n",
+    "SHA256": "538b1ff1585d29ba1a50f94988e0d033601c4806e90821d3934b15fda4e3f06a",
+    "SizeBytes": 8,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          5,
+          6,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "crlf-code",
+    "Source": "a\t\r\nb\t\r\n",
+    "SHA256": "538b1ff1585d29ba1a50f94988e0d033601c4806e90821d3934b15fda4e3f06a",
+    "SizeBytes": 8,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          5,
+          6,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "cr-default",
+    "Source": "a\t\rb\t\r",
+    "SHA256": "66dc5c7b0c12bbf4c7010f8d45e9256730e663230fdb9fa3ba0d8145e714e17b",
+    "SizeBytes": 6,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          4,
+          5,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "cr-code",
+    "Source": "a\t\rb\t\r",
+    "SHA256": "66dc5c7b0c12bbf4c7010f8d45e9256730e663230fdb9fa3ba0d8145e714e17b",
+    "SizeBytes": 6,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          4,
+          5,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "eof-default",
+    "Source": "x\t",
+    "SHA256": "b42049b4c5e08fbeab4b0652a883515731153d22b89b815010a34c8d0a19f21c",
+    "SizeBytes": 2,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "eof-code",
+    "Source": "x\t",
+    "SHA256": "b42049b4c5e08fbeab4b0652a883515731153d22b89b815010a34c8d0a19f21c",
+    "SizeBytes": 2,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "list-prefix-default",
+    "Source": "-\tText\n",
+    "SHA256": "f4173ceda4044e401dbddbbea600ac608af720c96df1840757a03aa15c7b040e",
+    "SizeBytes": 7,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "list-prefix-code",
+    "Source": "-\tText\n",
+    "SHA256": "f4173ceda4044e401dbddbbea600ac608af720c96df1840757a03aa15c7b040e",
+    "SizeBytes": 7,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "quote-prefix-default",
+    "Source": ">\tText\n",
+    "SHA256": "b130b4265289a42fc8336c3dbf0f92c40363ca888246e5eec3ad6315fef34e64",
+    "SizeBytes": 7,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "quote-prefix-code",
+    "Source": ">\tText\n",
+    "SHA256": "b130b4265289a42fc8336c3dbf0f92c40363ca888246e5eec3ad6315fef34e64",
+    "SizeBytes": 7,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "shared-list-default",
+    "Source": "-\t\tcode\n",
+    "SHA256": "d7967ed0095cdb9fb6d431c4eeb1fa8792895e19fc73b346ca0441bb76266448",
+    "SizeBytes": 8,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "shared-list-code",
+    "Source": "-\t\tcode\n",
+    "SHA256": "d7967ed0095cdb9fb6d431c4eeb1fa8792895e19fc73b346ca0441bb76266448",
+    "SizeBytes": 8,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "shared-quote-default",
+    "Source": ">\t\tcode\n",
+    "SHA256": "4b26c8a4d163bbe80c49b042a82bfbec797e5fc781202a08ae293a1e2dd10f4e",
+    "SizeBytes": 8,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "shared-quote-code",
+    "Source": ">\t\tcode\n",
+    "SHA256": "4b26c8a4d163bbe80c49b042a82bfbec797e5fc781202a08ae293a1e2dd10f4e",
+    "SizeBytes": 8,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "shared-code-indent-default",
+    "Source": "- a\n\n\t  code\n",
+    "SHA256": "d1253b08c53ae84d8552b0559e3b23d27c037a7944dce910bd9755fe52cb7405",
+    "SizeBytes": 13,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "shared-code-indent-code",
+    "Source": "- a\n\n\t  code\n",
+    "SHA256": "d1253b08c53ae84d8552b0559e3b23d27c037a7944dce910bd9755fe52cb7405",
+    "SizeBytes": 13,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "pure-code-prefix-default",
+    "Source": "-   a\n\n\t\tcode\n",
+    "SHA256": "4ea3e1c47d00540f5ae5049863f080eb7b5de16e4d45d7cda2ded6a0851f92b1",
+    "SizeBytes": 14,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "pure-code-prefix-code",
+    "Source": "-   a\n\n\t\tcode\n",
+    "SHA256": "4ea3e1c47d00540f5ae5049863f080eb7b5de16e4d45d7cda2ded6a0851f92b1",
+    "SizeBytes": 14,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          8,
+          9,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "pure-fence-prefix-default",
+    "Source": "-   a\n\n\t```\n\t\tx\n\t```\n",
+    "SHA256": "d87eecb9bfece70d2b9fc5ca840696b5b5b89dede0bc890d3c29b2af45850182",
+    "SizeBytes": 21,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          12,
+          13,
+          4,
+          1,
+          4,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          16,
+          17,
+          5,
+          1,
+          5,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "pure-fence-prefix-code",
+    "Source": "-   a\n\n\t```\n\t\tx\n\t```\n",
+    "SHA256": "d87eecb9bfece70d2b9fc5ca840696b5b5b89dede0bc890d3c29b2af45850182",
+    "SizeBytes": 21,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          12,
+          13,
+          4,
+          1,
+          4,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          13,
+          14,
+          4,
+          2,
+          4,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          16,
+          17,
+          5,
+          1,
+          5,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "pure-html-prefix-default",
+    "Source": "-   a\n\n\t<div>\n\tbody\n\n",
+    "SHA256": "b9c6a7bd9b10b54f323dc1dbf53965f7aea98acbf9520254fb4b7f190b8de291",
+    "SizeBytes": 21,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          14,
+          15,
+          4,
+          1,
+          4,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "pure-html-prefix-code",
+    "Source": "-   a\n\n\t<div>\n\tbody\n\n",
+    "SHA256": "b9c6a7bd9b10b54f323dc1dbf53965f7aea98acbf9520254fb4b7f190b8de291",
+    "SizeBytes": 21,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          14,
+          15,
+          4,
+          1,
+          4,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "shared-fence-content-default",
+    "Source": "- a\n  ```\n\tpayload\n  ```\n",
+    "SHA256": "713c8e619e7f5739963d534ae1f4f7ec084707ac42b9476538ac8d4756e3cd9d",
+    "SizeBytes": 25,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "shared-fence-content-code",
+    "Source": "- a\n  ```\n\tpayload\n  ```\n",
+    "SHA256": "713c8e619e7f5739963d534ae1f4f7ec084707ac42b9476538ac8d4756e3cd9d",
+    "SizeBytes": 25,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "interior-blank-default",
+    "Source": "    a\n\t\n    b\n",
+    "SHA256": "8040182f28c069055703fa7a501eebb76eac56b6629434c47b4f6e5939f2b8b8",
+    "SizeBytes": 14,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "interior-blank-code",
+    "Source": "    a\n\t\n    b\n",
+    "SHA256": "8040182f28c069055703fa7a501eebb76eac56b6629434c47b4f6e5939f2b8b8",
+    "SizeBytes": 14,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "rolled-back-default",
+    "Source": "    a\n\t\n",
+    "SHA256": "039a27c0b499253a6dc1c9aa07109790ecdb1b5a1d9a2ebf56d46451e6b90e52",
+    "SizeBytes": 8,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "rolled-back-code",
+    "Source": "    a\n\t\n",
+    "SHA256": "039a27c0b499253a6dc1c9aa07109790ecdb1b5a1d9a2ebf56d46451e6b90e52",
+    "SizeBytes": 8,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "nested-quote-default",
+    "Source": ">\t>     code\n",
+    "SHA256": "4579e95e026da06af019a45af163c68c9b4e08c9fdd142721a19aae2c079210d",
+    "SizeBytes": 13,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "nested-quote-code",
+    "Source": ">\t>     code\n",
+    "SHA256": "4579e95e026da06af019a45af163c68c9b4e08c9fdd142721a19aae2c079210d",
+    "SizeBytes": 13,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "ordered-shared-default",
+    "Source": "1.\t    code\n",
+    "SHA256": "607c98441e0b20ef02317e08f3949abcac3b16125e26889bf04b368491351d45",
+    "SizeBytes": 12,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "ordered-shared-code",
+    "Source": "1.\t    code\n",
+    "SHA256": "607c98441e0b20ef02317e08f3949abcac3b16125e26889bf04b368491351d45",
+    "SizeBytes": 12,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "fence-boundaries-default",
+    "Source": "```\tlang\nx\t\n```\t\n",
+    "SHA256": "ab893e612ce0586ea9a1ecf550a67ac7da8b10340c3f7f1a6b76d604888aa18f",
+    "SizeBytes": 17,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          15,
+          16,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "fence-boundaries-code",
+    "Source": "```\tlang\nx\t\n```\t\n",
+    "SHA256": "ab893e612ce0586ea9a1ecf550a67ac7da8b10340c3f7f1a6b76d604888aa18f",
+    "SizeBytes": 17,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          10,
+          11,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          15,
+          16,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "invalid-closer-default",
+    "Source": "```\nx\t\n```x\t\n",
+    "SHA256": "750ce5257949071e5b1377dfcd482941ceb859f717f6fcc9ae50d3a9243bed59",
+    "SizeBytes": 13,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "invalid-closer-code",
+    "Source": "```\nx\t\n```x\t\n",
+    "SHA256": "750ce5257949071e5b1377dfcd482941ceb859f717f6fcc9ae50d3a9243bed59",
+    "SizeBytes": 13,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          11,
+          12,
+          3,
+          5,
+          3,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "unclosed-default",
+    "Source": "```\nx\t",
+    "SHA256": "87545e5953ce6a6fb5c60d2843fa49f1afc0d107044ba40f4319984875c96008",
+    "SizeBytes": 6,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "unclosed-code",
+    "Source": "```\nx\t",
+    "SHA256": "87545e5953ce6a6fb5c60d2843fa49f1afc0d107044ba40f4319984875c96008",
+    "SizeBytes": 6,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "quote-fence-default",
+    "Source": ">\t```\tlang\n>\t\tcode\n>\t```\t\n",
+    "SHA256": "13656ff14cbcc16d492965d724d7ebd49901ae4482ba747109bd3058049d1921",
+    "SizeBytes": 26,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          20,
+          21,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          24,
+          25,
+          3,
+          6,
+          3,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "quote-fence-code",
+    "Source": ">\t```\tlang\n>\t\tcode\n>\t```\t\n",
+    "SHA256": "13656ff14cbcc16d492965d724d7ebd49901ae4482ba747109bd3058049d1921",
+    "SizeBytes": 26,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          13,
+          14,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          20,
+          21,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          24,
+          25,
+          3,
+          6,
+          3,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "codespan-default",
+    "Source": "p `a\t\nb\t`\tout\n",
+    "SHA256": "e368c5d7686a2d338b800ba9de7265c46fc964f3544693abb37100ea98c0265a",
+    "SizeBytes": 14,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "codespan-code",
+    "Source": "p `a\t\nb\t`\tout\n",
+    "SHA256": "e368c5d7686a2d338b800ba9de7265c46fc964f3544693abb37100ea98c0265a",
+    "SizeBytes": 14,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "codespan-gap-default",
+    "Source": "- a\n  p `x\n\tq`\tout\n",
+    "SHA256": "7a75f3ab555bf0a5e772c3517dd1b88d5b8af2b19a142ea08690ef8785a044ed",
+    "SizeBytes": 19,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          14,
+          15,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "codespan-gap-code",
+    "Source": "- a\n  p `x\n\tq`\tout\n",
+    "SHA256": "7a75f3ab555bf0a5e772c3517dd1b88d5b8af2b19a142ea08690ef8785a044ed",
+    "SizeBytes": 19,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          14,
+          15,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "quote-codespan-gap-default",
+    "Source": "> `a\n>\tb`\tout\n",
+    "SHA256": "f6afc3c9c4d9deabd1fc5f3b72635120db6555fa1bc50816382838544369de7b",
+    "SizeBytes": 14,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          9,
+          10,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "quote-codespan-gap-code",
+    "Source": "> `a\n>\tb`\tout\n",
+    "SHA256": "f6afc3c9c4d9deabd1fc5f3b72635120db6555fa1bc50816382838544369de7b",
+    "SizeBytes": 14,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          9,
+          10,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "inline-html-default",
+    "Source": "p <i\t x='\t'>\tout</i>\t\n",
+    "SHA256": "1ab610c490c808bff83e6f721c09ef2288ff712d99985d3a9bd51406538c842c",
+    "SizeBytes": 22,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          13,
+          1,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          20,
+          21,
+          1,
+          21,
+          1,
+          22
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "inline-html-code",
+    "Source": "p <i\t x='\t'>\tout</i>\t\n",
+    "SHA256": "1ab610c490c808bff83e6f721c09ef2288ff712d99985d3a9bd51406538c842c",
+    "SizeBytes": 22,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          13,
+          1,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          20,
+          21,
+          1,
+          21,
+          1,
+          22
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "inline-html-gap-default",
+    "Source": "- a\n  p <i\n\tx='v'>\tout\n",
+    "SHA256": "c3648934b615f20d903e9e9b58c70186af19580d6c41370fb3dbc4630258975d",
+    "SizeBytes": 23,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          18,
+          19,
+          3,
+          8,
+          3,
+          9
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "inline-html-gap-code",
+    "Source": "- a\n  p <i\n\tx='v'>\tout\n",
+    "SHA256": "c3648934b615f20d903e9e9b58c70186af19580d6c41370fb3dbc4630258975d",
+    "SizeBytes": 23,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          18,
+          19,
+          3,
+          8,
+          3,
+          9
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "html-tail-default",
+    "Source": "<!-- x -->tail\t\n",
+    "SHA256": "db3e38633684214b2267eee35e5c0519559d0308573732c42e194cab9ddb459f",
+    "SizeBytes": 16,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "html-tail-code",
+    "Source": "<!-- x -->tail\t\n",
+    "SHA256": "db3e38633684214b2267eee35e5c0519559d0308573732c42e194cab9ddb459f",
+    "SizeBytes": 16,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "html-shared-default",
+    "Source": "> <div>\n>\tx\n",
+    "SHA256": "a7f1550b8802f4aa796b4a54d422b0e1fec67d98275e25b861f147895363b8d1",
+    "SizeBytes": 12,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "html-shared-code",
+    "Source": "> <div>\n>\tx\n",
+    "SHA256": "a7f1550b8802f4aa796b4a54d422b0e1fec67d98275e25b861f147895363b8d1",
+    "SizeBytes": 12,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "html-block-then-code-default",
+    "Source": "<script>x\t</script>\ttail\n\tout\n",
+    "SHA256": "a5aeb925e180fbbb70be572f350e1f83b5a1cfbaa7f807f7d6bdc77424a23167",
+    "SizeBytes": 30,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "html-block-then-code-code",
+    "Source": "<script>x\t</script>\ttail\n\tout\n",
+    "SHA256": "a5aeb925e180fbbb70be572f350e1f83b5a1cfbaa7f807f7d6bdc77424a23167",
+    "SizeBytes": 30,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          25,
+          26,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "image-local-default",
+    "Source": "p ![<script>\t](x)\tout\n",
+    "SHA256": "87dca7420e9ab38518a7065d269d6f038b2dda3d65c81da78983d6d7101cea2e",
+    "SizeBytes": 22,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          13,
+          1,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          17,
+          18,
+          1,
+          18,
+          1,
+          19
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "image-local-code",
+    "Source": "p ![<script>\t](x)\tout\n",
+    "SHA256": "87dca7420e9ab38518a7065d269d6f038b2dda3d65c81da78983d6d7101cea2e",
+    "SizeBytes": 22,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          13,
+          1,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          17,
+          18,
+          1,
+          18,
+          1,
+          19
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "image-alt-default",
+    "Source": "![a\tb](x)\tout\n",
+    "SHA256": "aba78be8658977db139f7accdbbce9b372b8d1f9c4a43260990b2fc0f1d8c9eb",
+    "SizeBytes": 14,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          9,
+          10,
+          1,
+          10,
+          1,
+          11
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "image-alt-code",
+    "Source": "![a\tb](x)\tout\n",
+    "SHA256": "aba78be8658977db139f7accdbbce9b372b8d1f9c4a43260990b2fc0f1d8c9eb",
+    "SizeBytes": 14,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          9,
+          10,
+          1,
+          10,
+          1,
+          11
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "image-close-in-raw-default",
+    "Source": "a <script>x\t\n![</script>](u)\ty\t\n",
+    "SHA256": "9fe6be93113ea01fbf9a161e5c22ced8a81da2f82a033ab5d71c018e140ae46e",
+    "SizeBytes": 32,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "image-close-in-raw-code",
+    "Source": "a <script>x\t\n![</script>](u)\ty\t\n",
+    "SHA256": "9fe6be93113ea01fbf9a161e5c22ced8a81da2f82a033ab5d71c018e140ae46e",
+    "SizeBytes": 32,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-script-default",
+    "Source": "p <script>x\t\nq\t</script>\tout\n",
+    "SHA256": "15c442295d3a083596cb43f08f0065dce8b8319554f6387be49a6b99b006cc3b",
+    "SizeBytes": 29,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          24,
+          25,
+          2,
+          12,
+          2,
+          13
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-script-code",
+    "Source": "p <script>x\t\nq\t</script>\tout\n",
+    "SHA256": "15c442295d3a083596cb43f08f0065dce8b8319554f6387be49a6b99b006cc3b",
+    "SizeBytes": 29,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          24,
+          25,
+          2,
+          12,
+          2,
+          13
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-pre-default",
+    "Source": "a <pre>x\t\ny</pre>\tout\n",
+    "SHA256": "43d32110d991f6d308a1998b85b9e8c0aa45ea99995936d7eb8f6bb868c4e832",
+    "SizeBytes": 22,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          2,
+          8,
+          2,
+          9
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-pre-code",
+    "Source": "a <pre>x\t\ny</pre>\tout\n",
+    "SHA256": "43d32110d991f6d308a1998b85b9e8c0aa45ea99995936d7eb8f6bb868c4e832",
+    "SizeBytes": 22,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          2,
+          8,
+          2,
+          9
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-style-default",
+    "Source": "a <style>x\t\ny</style>\tout\n",
+    "SHA256": "f7550ed67347729255904a926e7a0db9dc06bbfb04ded55ac8139cfff2820129",
+    "SizeBytes": 26,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          22,
+          2,
+          10,
+          2,
+          11
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-style-code",
+    "Source": "a <style>x\t\ny</style>\tout\n",
+    "SHA256": "f7550ed67347729255904a926e7a0db9dc06bbfb04ded55ac8139cfff2820129",
+    "SizeBytes": 26,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          22,
+          2,
+          10,
+          2,
+          11
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-textarea-default",
+    "Source": "a <textarea>x\t\ny</textarea>\tout\n",
+    "SHA256": "56ce9f4aa4258820bd0a2168461bf01858a0b072ab7f144898389a18d6c0232c",
+    "SizeBytes": 32,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          27,
+          28,
+          2,
+          13,
+          2,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-textarea-code",
+    "Source": "a <textarea>x\t\ny</textarea>\tout\n",
+    "SHA256": "56ce9f4aa4258820bd0a2168461bf01858a0b072ab7f144898389a18d6c0232c",
+    "SizeBytes": 32,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          27,
+          28,
+          2,
+          13,
+          2,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-hardbreak-default",
+    "Source": "a <script>x\t  \ny\t\\\nz</script>\tout\n",
+    "SHA256": "d920981357ac1caa8676df8ee98dc527968dcfd648d9d36239bac9410032e68e",
+    "SizeBytes": 34,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          29,
+          30,
+          3,
+          11,
+          3,
+          12
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-hardbreak-code",
+    "Source": "a <script>x\t  \ny\t\\\nz</script>\tout\n",
+    "SHA256": "d920981357ac1caa8676df8ee98dc527968dcfd648d9d36239bac9410032e68e",
+    "SizeBytes": 34,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          29,
+          30,
+          3,
+          11,
+          3,
+          12
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "nonraw-default",
+    "Source": "a <iframe>x\t</iframe>\tout\n",
+    "SHA256": "2dcb0edf2ae0859b9db188ddf9822cdfb2d63d604139e5929a6891ab54c87f3d",
+    "SizeBytes": 26,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          1,
+          12,
+          1,
+          13
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          21,
+          22,
+          1,
+          22,
+          1,
+          23
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "nonraw-code",
+    "Source": "a <iframe>x\t</iframe>\tout\n",
+    "SHA256": "2dcb0edf2ae0859b9db188ddf9822cdfb2d63d604139e5929a6891ab54c87f3d",
+    "SizeBytes": 26,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          1,
+          12,
+          1,
+          13
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          21,
+          22,
+          1,
+          22,
+          1,
+          23
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "malformed-tag-default",
+    "Source": "a <script!>x\t\n",
+    "SHA256": "b05408390ad27147f46744b1877d96755009b033cad971e52b72fd40584db197",
+    "SizeBytes": 14,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          13,
+          1,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "malformed-tag-code",
+    "Source": "a <script!>x\t\n",
+    "SHA256": "b05408390ad27147f46744b1877d96755009b033cad971e52b72fd40584db197",
+    "SizeBytes": 14,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          13,
+          1,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "escaped-tag-default",
+    "Source": "a \\<script>x\t\n",
+    "SHA256": "3a49124fe3b3186f5ffb8377290afccfa8d65cf287cf853d467dff4738c06a18",
+    "SizeBytes": 14,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          13,
+          1,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "escaped-tag-code",
+    "Source": "a \\<script>x\t\n",
+    "SHA256": "3a49124fe3b3186f5ffb8377290afccfa8d65cf287cf853d467dff4738c06a18",
+    "SizeBytes": 14,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          13,
+          1,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "filtered-tag-default",
+    "Source": "a <xmp>x\t\n",
+    "SHA256": "c202ba37b90025d76888005320686bc035a0e720c823c67800b3734b640a5dd9",
+    "SizeBytes": 10,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          1,
+          9,
+          1,
+          10
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "filtered-tag-code",
+    "Source": "a <xmp>x\t\n",
+    "SHA256": "c202ba37b90025d76888005320686bc035a0e720c823c67800b3734b640a5dd9",
+    "SizeBytes": 10,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          1,
+          9,
+          1,
+          10
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-trim-lf-default",
+    "Source": "a <script>x\t\n",
+    "SHA256": "08de84c13ad338c864d6cbd328f5d60eb27ce661192c4da1427a8c7ca2df701a",
+    "SizeBytes": 13,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-trim-lf-code",
+    "Source": "a <script>x\t\n",
+    "SHA256": "08de84c13ad338c864d6cbd328f5d60eb27ce661192c4da1427a8c7ca2df701a",
+    "SizeBytes": 13,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-trim-eof-default",
+    "Source": "a <script>x\t",
+    "SHA256": "04ea18147970ace8eec1c697ea3164bb21dce290d48fa9655d2d531c72a1b9ab",
+    "SizeBytes": 12,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-trim-eof-code",
+    "Source": "a <script>x\t",
+    "SHA256": "04ea18147970ace8eec1c697ea3164bb21dce290d48fa9655d2d531c72a1b9ab",
+    "SizeBytes": 12,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-heading-default",
+    "Source": "a <script>x\t\n\n# h\t\n",
+    "SHA256": "e09344e8996decd34a655e5d07b8215e61d51a32829e76df164de300cf88c2f0",
+    "SizeBytes": 19,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-heading-code",
+    "Source": "a <script>x\t\n\n# h\t\n",
+    "SHA256": "e09344e8996decd34a655e5d07b8215e61d51a32829e76df164de300cf88c2f0",
+    "SizeBytes": 19,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-closer-default",
+    "Source": "a <script>x\t\n\n# h</script>\t\n",
+    "SHA256": "24689e32b5c4d0f71ebccb9404f77f398d186cba1ed05735b737ebf12e9ebd17",
+    "SizeBytes": 28,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          26,
+          27,
+          3,
+          13,
+          3,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-closer-code",
+    "Source": "a <script>x\t\n\n# h</script>\t\n",
+    "SHA256": "24689e32b5c4d0f71ebccb9404f77f398d186cba1ed05735b737ebf12e9ebd17",
+    "SizeBytes": 28,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          26,
+          27,
+          3,
+          13,
+          3,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-code-boundaries-default",
+    "Source": "a <script>x\t\n\n```\t\ncode\t\n```\t\n",
+    "SHA256": "4d363a12f983e388719f42d0a7878c0fd89b2dd8e9f7838ceefad6bc37edc028",
+    "SizeBytes": 30,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-code-boundaries-code",
+    "Source": "a <script>x\t\n\n```\t\ncode\t\n```\t\n",
+    "SHA256": "4d363a12f983e388719f42d0a7878c0fd89b2dd8e9f7838ceefad6bc37edc028",
+    "SizeBytes": 30,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-code-indent-default",
+    "Source": "a <script>x\t\n\n\tcode\t\n",
+    "SHA256": "6ec5e8b3519851bc64df978d32817c7ed8ca65a2f7d0cc7243d6a88924a3f147",
+    "SizeBytes": 21,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-code-indent-code",
+    "Source": "a <script>x\t\n\n\tcode\t\n",
+    "SHA256": "6ec5e8b3519851bc64df978d32817c7ed8ca65a2f7d0cc7243d6a88924a3f147",
+    "SizeBytes": 21,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-list-4-default",
+    "Source": "-   a <script>x\t\n\tq\t\n\n",
+    "SHA256": "edf19bd6e2d6721337da9d1227e4d44a6eb50ae10417e664ddde74ade2342def",
+    "SizeBytes": 22,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-list-4-code",
+    "Source": "-   a <script>x\t\n\tq\t\n\n",
+    "SHA256": "edf19bd6e2d6721337da9d1227e4d44a6eb50ae10417e664ddde74ade2342def",
+    "SizeBytes": 22,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-list-2-default",
+    "Source": "- a <script>x\t\n\tq\t\n\n",
+    "SHA256": "7a02412c1ece02bd1c33e4866f8413a8890e845649eb83d86e5ff5f5cfb1b10d",
+    "SizeBytes": 20,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-list-2-code",
+    "Source": "- a <script>x\t\n\tq\t\n\n",
+    "SHA256": "7a02412c1ece02bd1c33e4866f8413a8890e845649eb83d86e5ff5f5cfb1b10d",
+    "SizeBytes": 20,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-ordered-3-default",
+    "Source": "1. a <script>x\t\n\ty\t\n",
+    "SHA256": "473d925c6986de714d8c6e98897ad4096047a32c7be3bf9f546286f8be07bcf2",
+    "SizeBytes": 20,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-ordered-3-code",
+    "Source": "1. a <script>x\t\n\ty\t\n",
+    "SHA256": "473d925c6986de714d8c6e98897ad4096047a32c7be3bf9f546286f8be07bcf2",
+    "SizeBytes": 20,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-ordered-4-default",
+    "Source": "12. a <script>x\t\n\ty\t\n",
+    "SHA256": "a5889c56de5c3a1ebe563b8dba630a135f294536f623777ae27dd02021e17de6",
+    "SizeBytes": 21,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-ordered-4-code",
+    "Source": "12. a <script>x\t\n\ty\t\n",
+    "SHA256": "a5889c56de5c3a1ebe563b8dba630a135f294536f623777ae27dd02021e17de6",
+    "SizeBytes": 21,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-quote-0-default",
+    "Source": "> a <script>x\t\n>\ty\t\n",
+    "SHA256": "e753cac2c687f321685724fe747aa5fb107907609aec898596e1bd8a3c66bc52",
+    "SizeBytes": 20,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-quote-0-code",
+    "Source": "> a <script>x\t\n>\ty\t\n",
+    "SHA256": "e753cac2c687f321685724fe747aa5fb107907609aec898596e1bd8a3c66bc52",
+    "SizeBytes": 20,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-quote-1-default",
+    "Source": "> a <script>x\t\n >\ty\t\n",
+    "SHA256": "b6c6eb4f7e3960721947814a9d7098fba2b08931c0d5a4078bbeb12976ffaff9",
+    "SizeBytes": 21,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-quote-1-code",
+    "Source": "> a <script>x\t\n >\ty\t\n",
+    "SHA256": "b6c6eb4f7e3960721947814a9d7098fba2b08931c0d5a4078bbeb12976ffaff9",
+    "SizeBytes": 21,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-quote-2-default",
+    "Source": "> a <script>x\t\n  >\ty\t\n",
+    "SHA256": "f69b28cfb776d8c91d3756ab988826d1f5639c02cc3681d3af74e0f49f13f987",
+    "SizeBytes": 22,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          18,
+          19,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-quote-2-code",
+    "Source": "> a <script>x\t\n  >\ty\t\n",
+    "SHA256": "f69b28cfb776d8c91d3756ab988826d1f5639c02cc3681d3af74e0f49f13f987",
+    "SizeBytes": 22,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          18,
+          19,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-shifted-quote-default",
+    "Source": "  > a <script>x\t\n  >\ty\t\n",
+    "SHA256": "ca496d387831053de2c70a132dcf9dcb98ddf5ce64e0089fc42fd753a9e7261e",
+    "SizeBytes": 24,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          20,
+          21,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-shifted-quote-code",
+    "Source": "  > a <script>x\t\n  >\ty\t\n",
+    "SHA256": "ca496d387831053de2c70a132dcf9dcb98ddf5ce64e0089fc42fd753a9e7261e",
+    "SizeBytes": 24,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          20,
+          21,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-blank-eof-default",
+    "Source": "> a <script>x\t\n>\t",
+    "SHA256": "a45dae4ecbbad6ffc9db24a27fb25f88c90c6d4fa325da413395efa1a68788f2",
+    "SizeBytes": 17,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-blank-eof-code",
+    "Source": "> a <script>x\t\n>\t",
+    "SHA256": "a45dae4ecbbad6ffc9db24a27fb25f88c90c6d4fa325da413395efa1a68788f2",
+    "SizeBytes": 17,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-list-blank-eof-default",
+    "Source": "- a <script>x\t\n\t",
+    "SHA256": "b516c81a2ccd5ceb508ceb4ed0e0ceac2fb8f09b93c24e46f5c7748043b09d7c",
+    "SizeBytes": 16,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-list-blank-eof-code",
+    "Source": "- a <script>x\t\n\t",
+    "SHA256": "b516c81a2ccd5ceb508ceb4ed0e0ceac2fb8f09b93c24e46f5c7748043b09d7c",
+    "SizeBytes": 16,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-list-pure-blank-eof-default",
+    "Source": "-   a <script>x\t\n\t",
+    "SHA256": "18a4bd2bcf7d859033679c3957dfe5775216219c92a51b7865220f2e5f502cda",
+    "SizeBytes": 18,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-list-pure-blank-eof-code",
+    "Source": "-   a <script>x\t\n\t",
+    "SHA256": "18a4bd2bcf7d859033679c3957dfe5775216219c92a51b7865220f2e5f502cda",
+    "SizeBytes": 18,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-lazy-default",
+    "Source": "> a <script>x\t\ny\t\n",
+    "SHA256": "df1009eb48313168e4aade353f757e44ba86cd233a72764b20b892ffb3d00899",
+    "SizeBytes": 18,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-lazy-code",
+    "Source": "> a <script>x\t\ny\t\n",
+    "SHA256": "df1009eb48313168e4aade353f757e44ba86cd233a72764b20b892ffb3d00899",
+    "SizeBytes": 18,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-tail-closer-default",
+    "Source": "a <script>x\t\n\n<!-- x --></script>\tout\n",
+    "SHA256": "88eb3495582c6776c3efd503974ffb668dd232fae6e2150850911ef0e30d735d",
+    "SizeBytes": 38,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-tail-closer-code",
+    "Source": "a <script>x\t\n\n<!-- x --></script>\tout\n",
+    "SHA256": "88eb3495582c6776c3efd503974ffb668dd232fae6e2150850911ef0e30d735d",
+    "SizeBytes": 38,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-empty-item-default",
+    "Source": "a <script>x\n\n-\t\n",
+    "SHA256": "1811db995de3a92227a910611f7ee7ecf1023b71c4a3a3c87b9c42d54a514a97",
+    "SizeBytes": 16,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          14,
+          15,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-empty-item-code",
+    "Source": "a <script>x\n\n-\t\n",
+    "SHA256": "1811db995de3a92227a910611f7ee7ecf1023b71c4a3a3c87b9c42d54a514a97",
+    "SizeBytes": 16,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          14,
+          15,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-empty-item-two-default",
+    "Source": "a <script>x\n\n-\t\t\n",
+    "SHA256": "cf8d67219723cc2d6fe4b567658bba08f247eac623ffce4474aa630cc4059ca6",
+    "SizeBytes": 17,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          14,
+          15,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          15,
+          16,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "raw-empty-item-two-code",
+    "Source": "a <script>x\n\n-\t\t\n",
+    "SHA256": "cf8d67219723cc2d6fe4b567658bba08f247eac623ffce4474aa630cc4059ca6",
+    "SizeBytes": 17,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          14,
+          15,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          15,
+          16,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "entity-default",
+    "Source": "a &#9; \\*\n",
+    "SHA256": "710134d9d65a10977bb3c2b750d7214e24a608a053320832e3d602c773fb22a6",
+    "SizeBytes": 10,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "entity-code",
+    "Source": "a &#9; \\*\n",
+    "SHA256": "710134d9d65a10977bb3c2b750d7214e24a608a053320832e3d602c773fb22a6",
+    "SizeBytes": 10,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "backslash-tab-default",
+    "Source": "a\\\tword\n",
+    "SHA256": "1c2b86d666dab0994fd3b62e41d0216bc7d03c9f8ef3c760a70e49b7059e6218",
+    "SizeBytes": 8,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "backslash-tab-code",
+    "Source": "a\\\tword\n",
+    "SHA256": "1c2b86d666dab0994fd3b62e41d0216bc7d03c9f8ef3c760a70e49b7059e6218",
+    "SizeBytes": 8,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "link-default",
+    "Source": "[a\tb](url\t\"x\ty\")\n",
+    "SHA256": "10816453cbd3269c79f3cb1d52ed00708c7ccfcada8036295ebd0a159e11d3e3",
+    "SizeBytes": 17,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          9,
+          10,
+          1,
+          10,
+          1,
+          11
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          13,
+          1,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "link-code",
+    "Source": "[a\tb](url\t\"x\ty\")\n",
+    "SHA256": "10816453cbd3269c79f3cb1d52ed00708c7ccfcada8036295ebd0a159e11d3e3",
+    "SizeBytes": 17,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          9,
+          10,
+          1,
+          10,
+          1,
+          11
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          13,
+          1,
+          14
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "definition-default",
+    "Source": "[id]:\t/u\t'title'\n",
+    "SHA256": "f66a0ba2991570db2d75c4ce99f50cf514685a9ab0effed53e9ff72096d05cfa",
+    "SizeBytes": 17,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          8,
+          9,
+          1,
+          9,
+          1,
+          10
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "definition-code",
+    "Source": "[id]:\t/u\t'title'\n",
+    "SHA256": "f66a0ba2991570db2d75c4ce99f50cf514685a9ab0effed53e9ff72096d05cfa",
+    "SizeBytes": 17,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          8,
+          9,
+          1,
+          9,
+          1,
+          10
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "duplicate-unused-default",
+    "Source": "[id]:\t/u\n[id]:\t/v\n",
+    "SHA256": "8b23692a78bbeff24cb34ac2d3279d97043344ca4414ac6eaf76c7e1d00906f7",
+    "SizeBytes": 18,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          14,
+          15,
+          2,
+          6,
+          2,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "duplicate-unused-code",
+    "Source": "[id]:\t/u\n[id]:\t/v\n",
+    "SHA256": "8b23692a78bbeff24cb34ac2d3279d97043344ca4414ac6eaf76c7e1d00906f7",
+    "SizeBytes": 18,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          14,
+          15,
+          2,
+          6,
+          2,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "table-default",
+    "Source": "| x\t | y |\n| - | - |\n| a\t | b |\n",
+    "SHA256": "ccc87db175184c47167cf1af89a876d4c3b98bd1085e359122cccef394e30776",
+    "SizeBytes": 32,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          24,
+          25,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "table-code",
+    "Source": "| x\t | y |\n| - | - |\n| a\t | b |\n",
+    "SHA256": "ccc87db175184c47167cf1af89a876d4c3b98bd1085e359122cccef394e30776",
+    "SizeBytes": 32,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          24,
+          25,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "task-default",
+    "Source": "- [x]\ttext\n",
+    "SHA256": "02f849a8581354719014c423e8cb0a1d3513cdf051567602b321c4ba56c6e68b",
+    "SizeBytes": 11,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "task-code",
+    "Source": "- [x]\ttext\n",
+    "SHA256": "02f849a8581354719014c423e8cb0a1d3513cdf051567602b321c4ba56c6e68b",
+    "SizeBytes": 11,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "header-yaml-default",
+    "Source": "---\t\na:\t1\n---\t\nbody\t\n",
+    "SHA256": "ad7a67abd43e38ef9081b810423245584a89a76ddcc26a220b490be9dd2fd512",
+    "SizeBytes": 21,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          19,
+          20,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "header-yaml-code",
+    "Source": "---\t\na:\t1\n---\t\nbody\t\n",
+    "SHA256": "ad7a67abd43e38ef9081b810423245584a89a76ddcc26a220b490be9dd2fd512",
+    "SizeBytes": 21,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          19,
+          20,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "header-toml-default",
+    "Source": "+++\t\na=\t1\n+++\t\nbody\t\n",
+    "SHA256": "a2f32e7b83e1f7b7e06ae0537ab2044c3df9c8bc1292786b001eeb13799d965f",
+    "SizeBytes": 21,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          19,
+          20,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "header-toml-code",
+    "Source": "+++\t\na=\t1\n+++\t\nbody\t\n",
+    "SHA256": "a2f32e7b83e1f7b7e06ae0537ab2044c3df9c8bc1292786b001eeb13799d965f",
+    "SizeBytes": 21,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          19,
+          20,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "header-bom-default",
+    "Source": "﻿---\t\na:\t1\n---\t\nbody\t\n",
+    "SHA256": "884e297526d07875c89d7e707bbd8fcfab4a10b6cab39974faf0c937bde5c37e",
+    "SizeBytes": 24,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          22,
+          23,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "header-bom-code",
+    "Source": "﻿---\t\na:\t1\n---\t\nbody\t\n",
+    "SHA256": "884e297526d07875c89d7e707bbd8fcfab4a10b6cab39974faf0c937bde5c37e",
+    "SizeBytes": 24,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          22,
+          23,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "header-unclosed-default",
+    "Source": "---\na:\t1\n",
+    "SHA256": "574c294fb3405252aae1c40ffcb2367c038801c857a6580025b2b07adccaa78c",
+    "SizeBytes": 9,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": true,
+    "Incomplete": true,
+    "Expected": []
+  },
+  {
+    "Name": "header-unclosed-code",
+    "Source": "---\na:\t1\n",
+    "SHA256": "574c294fb3405252aae1c40ffcb2367c038801c857a6580025b2b07adccaa78c",
+    "SizeBytes": 9,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": true,
+    "Incomplete": true,
+    "Expected": []
+  },
+  {
+    "Name": "recognition-off-default",
+    "Source": "---\t\na:\t1\n---\t\nbody\t\n",
+    "SHA256": "ad7a67abd43e38ef9081b810423245584a89a76ddcc26a220b490be9dd2fd512",
+    "SizeBytes": 21,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          7,
+          8,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          13,
+          14,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          19,
+          20,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "recognition-off-code",
+    "Source": "---\t\na:\t1\n---\t\nbody\t\n",
+    "SHA256": "ad7a67abd43e38ef9081b810423245584a89a76ddcc26a220b490be9dd2fd512",
+    "SizeBytes": 21,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          7,
+          8,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          13,
+          14,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          19,
+          20,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "header-only-default",
+    "Source": "---\t\na:\t1\n---\t\n",
+    "SHA256": "5587388bb9a3966073c493a67ba341d59eecd8570f8ecbd63f27a2057013dba9",
+    "SizeBytes": 15,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "header-only-code",
+    "Source": "---\t\na:\t1\n---\t\n",
+    "SHA256": "5587388bb9a3966073c493a67ba341d59eecd8570f8ecbd63f27a2057013dba9",
+    "SizeBytes": 15,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "adjacent-spaces-1",
+    "Source": "a\t\tb\tc\n",
+    "SHA256": "74c04a3a1a3037fd7fdf02d359a0a73e3921f5859f3b22cb914b0c695c992c98",
+    "SizeBytes": 7,
+    "CodeBlocks": false,
+    "Spaces": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "adjacent-spaces-9223372036854775807",
+    "Source": "a\t\tb\tc\n",
+    "SHA256": "74c04a3a1a3037fd7fdf02d359a0a73e3921f5859f3b22cb914b0c695c992c98",
+    "SizeBytes": 7,
+    "CodeBlocks": false,
+    "Spaces": 9223372036854775807,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      },
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  }
+]

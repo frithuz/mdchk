@@ -120,3 +120,7 @@ to the original surplus/deficit START, including shared whole-tab evidence.
 
 MD009 inventories whole physical suffixes before START-based filtering, retaining
 actual code/raw/prefix/hard-break context across disabled and selected regions.
+
+MD010 inventories original TAB bytes and full actual literal/raw/container
+ownership before START-based filtering. Each byte is independently controlled;
+code_blocks never admits CodeSpan or raw/header bytes.

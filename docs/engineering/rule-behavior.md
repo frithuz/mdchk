@@ -633,3 +633,20 @@ rows against the cumulative final item chain. Actual quote columns are neutral
 only when consumed; descendant quotes select their first item-facing marker.
 Postquote body indent, raw/comment regions and literal payload stay protected.
 It is analysis-only and returns manual original-source evidence.
+
+## Original TAB bytes (MD010)
+
+MD010 emits one detached one-byte, one-scalar finding per eligible original TAB.
+The constant message is `Tab character.`. Admitted positive spaces_per_tab is
+analysis-neutral; parser structural tabs retain physical four-column phase.
+CodeBlock actual Content plus genuine intrinsic indentation protects atomic
+shared TABs by default; code_blocks admits only those code contributions.
+CodeSpan remains protected in both modes. Actual literal contributions and
+owned delimiters/tails protect HTML and CodeSpan without coarse prefix gaps.
+Confirmed semantic raw bounds recover trimmed body TABs through actual closer
+or EOF, subtracting only completely consumed actual container prefixes. Final
+confirmed scalar prefix replay preserves residual TAB columns and physical phase;
+empty first-item Prefix segments describe actual consumption beyond effective
+padding. Image-alt raw tags cannot affect outer state. Whole recognized headers
+remain opaque. See [MD010](../rules/whitespace/md010.md) for exact boundaries.
+All findings are manual; MD047 alone can produce corrections.

@@ -5,7 +5,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | Rule | Focus | Status |
 | --- | --- | --- |
 | [MD009](md009.md) | Whitespace at line ends | Analysis implemented; manual |
-| [MD010](md010.md) | Tab characters | Planned |
+| [MD010](md010.md) | Tab characters | Analysis/configuration implemented |
 | [MD012](md012.md) | Runs of empty lines | Planned |
 | [MD013](md013.md) | Maximum line width | Planned |
 | [MD027](md027.md) | Whitespace after blockquote markers | Planned |

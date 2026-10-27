@@ -159,3 +159,8 @@ and protected-line eligibility are established. It grants no correction authorit
 MD009 inspection exposes available analysis with original physical suffix ranges,
 manual findings and START-based directive attribution. Line selection retains full
 parser context. It adds no AST properties or inspection schema.
+
+MD010 inspection exposes available manual analysis and admitted scalar options.
+It classifies full original source ownership before selecting lines; each finding
+covers one original TAB byte and one scalar column. CodeSpan stays protected
+with code_blocks enabled. No MD010 correction proposal or content is returned.

@@ -346,7 +346,7 @@ func TestMD077DistinctInputsAndConcurrency(t *testing.T) {
 
 func TestMD077CatalogOptionsAndDefaultActivation(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD077") || r.Available("MD010") || len(r.Metadata()) != 87 {
+	if !r.Available("MD077") || r.Available("MD011") || len(r.Metadata()) != 87 {
 		t.Fatal("catalog")
 	}
 	enabled := 0

@@ -579,3 +579,13 @@ and the same operation witness. It precharges physical suffix scans, failed byte
 probes, line searches, markers, HTML tails, per-line state, frame/output capacity,
 copied growth prefixes and logical records. Empty, clean and protected inputs
 still consume work. Producer, facade and callback withhold all output on failure.
+
+MD010 borrows completed original production/profile/options/source/index and
+operation authority. Original-byte scanning, TAB inventories, binary associations,
+actual content/markers/tails, confirmed scalar prefix replay, line summaries,
+frames, capacities, copied growth prefixes and logical output records are charged
+before work. Clean, empty and protected inputs still consume work. All output is
+withheld on caller/origin cancellation or sticky work/node/time failure, including
+producer, facade and callback final checks. Storage depends on source facts,
+never spaces_per_tab. No new retention, grammar, source/index/options clone,
+public schema, allowance or correction authority is added.
