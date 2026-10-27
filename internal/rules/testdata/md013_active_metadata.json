@@ -1,0 +1,56 @@
+[
+  {
+    "kind": "yaml",
+    "Source": "---\nx: y\n<!-- mdchk:disable MD013 -->\n---\n雪\tABCDEFGHIJ\n",
+    "SHA256": "ca4f98e04303c375dbe637a4a6704d22f2417dc2d56663547be1ed50c15817eb",
+    "SizeBytes": 57,
+    "Enabled": true,
+    "Length": 8,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "DirectivesEnabled": true,
+    "ExpectedRecognized": [
+      {
+        "Range": [
+          50,
+          51,
+          5,
+          7,
+          5,
+          8
+        ],
+        "Source": "E",
+        "Message": "Line exceeds maximum width."
+      }
+    ],
+    "ExpectedRecognitionOff": []
+  },
+  {
+    "kind": "toml",
+    "Source": "+++\nx = 1\n<!-- mdchk:disable MD013 -->\n+++\n雪\tABCDEFGHIJ\n",
+    "SHA256": "77d93afbde648f68d06f07369f669a8c9b8006cd1d1e3ba916db025b2b15de3e",
+    "SizeBytes": 58,
+    "Enabled": true,
+    "Length": 8,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "DirectivesEnabled": true,
+    "ExpectedRecognized": [
+      {
+        "Range": [
+          51,
+          52,
+          5,
+          7,
+          5,
+          8
+        ],
+        "Source": "E",
+        "Message": "Line exceeds maximum width."
+      }
+    ],
+    "ExpectedRecognitionOff": []
+  }
+]

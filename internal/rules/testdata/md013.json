@@ -1,0 +1,3189 @@
+[
+  {
+    "Name": "page81",
+    "Source": "one one one one one one one one one one one one one one one one one one one one x",
+    "SHA256": "8ed48900de8d08ae5315fd1b1ea09b231e9af967a48542672f8c6cd7d407506b",
+    "SizeBytes": 81,
+    "Length": 80,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      81
+    ],
+    "Expected": [
+      {
+        "Range": [
+          80,
+          81,
+          1,
+          81,
+          1,
+          82
+        ],
+        "Source": "x",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "page80",
+    "Source": "one one one one one one one one one one one one one one one one one one one xxxx",
+    "SHA256": "b6ca8f37ef0b26398cfd98b7fd5a943cb4450535b082f9b9215dfa602423f4da",
+    "SizeBytes": 80,
+    "Length": 80,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      80
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "empty",
+    "Source": "",
+    "SHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "SizeBytes": 0,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [],
+    "Expected": []
+  },
+  {
+    "Name": "length1",
+    "Source": "ab",
+    "SHA256": "fb8e20fc2e4c3f248c60c39bd652f3c1347298bb977b8b4d5903b85055620603",
+    "SizeBytes": 2,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      2
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "b",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "largeLength",
+    "Source": "abc\t界",
+    "SHA256": "108d98a5620a3da78533177c47b8d00680392fd2198a28e057d26a0d286e2ee9",
+    "SizeBytes": 7,
+    "Length": 2147483647,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "tabPhase0",
+    "Source": "\tb",
+    "SHA256": "4fd49138f73d68d5e60746a15872d0e2bf3da19255f327367489e99fd9759d5a",
+    "SizeBytes": 2,
+    "Length": 1,
+    "CodeBlocks": true,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "tabPhase1",
+    "Source": "a\tb",
+    "SHA256": "894891f8b78a9945b0aa07e70d5f71f10b1f1990af127de561cc0ac36024c188",
+    "SizeBytes": 3,
+    "Length": 1,
+    "CodeBlocks": true,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "tabPhase2",
+    "Source": "aa\tb",
+    "SHA256": "6cce072750d455170d604fa728516d636e84c75c44db26bf18d1bb2320e3707b",
+    "SizeBytes": 4,
+    "Length": 2,
+    "CodeBlocks": true,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "tabPhase3",
+    "Source": "aaa\tb",
+    "SHA256": "24f16a36c961c93879dd29a5ed94200efddec4f37a9b5bb3fa211dbb92646723",
+    "SizeBytes": 5,
+    "Length": 3,
+    "CodeBlocks": true,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "tabCrossing",
+    "Source": "a\tb",
+    "SHA256": "894891f8b78a9945b0aa07e70d5f71f10b1f1990af127de561cc0ac36024c188",
+    "SizeBytes": 3,
+    "Length": 3,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "cjk",
+    "Source": "界界",
+    "SHA256": "584cd5dc1371d44a9bc5487ab3e49bb3f95cd262774bea15821584b84b9ed665",
+    "SizeBytes": 6,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      2
+    ],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          6,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "界",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "combining",
+    "Source": "é",
+    "SHA256": "bf12767b0f2a56b2190075bae8169f656e3ce8d6357d4aff184bc6c7ea48f9f6",
+    "SizeBytes": 3,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      2
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          3,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "́",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "emojiZWJ",
+    "Source": "👩‍💻",
+    "SHA256": "427274538f1f24ef137872891551ffb4263f6edd90c80c533534578e8a5a9893",
+    "SizeBytes": 11,
+    "Length": 2,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      3
+    ],
+    "Expected": [
+      {
+        "Range": [
+          7,
+          11,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "💻",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "variation",
+    "Source": "☀️",
+    "SHA256": "41cd5656ea029f1ec26eb5ef9232412283df8dcac518c9fc17d4a9718e3d5701",
+    "SizeBytes": 6,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      2
+    ],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          6,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "️",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "nul",
+    "Source": "a\u0000b",
+    "SHA256": "59b271ae1bbcb1d31d41929817f4b16fb439eb4f31520b5ad1d5ce98920a7138",
+    "SizeBytes": 3,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      3
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\u0000",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "bom",
+    "Source": "﻿abcd",
+    "SHA256": "c5891bb18e0a32e246efafa66b8b06149e896ea748fdfc50cea34e5573cd7f4d",
+    "SizeBytes": 7,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "d",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "endings",
+    "Source": "abcde\r\nfghij\rklmno\n",
+    "SHA256": "d92edc1f5186a9e7daee6d2b5cb723ba0c5ee4f1194aff0419ad7bbfe57bb7ab",
+    "SizeBytes": 19,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5,
+      5,
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "e",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": "j",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          17,
+          18,
+          3,
+          5,
+          3,
+          6
+        ],
+        "Source": "o",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "realWhitespaceEOF",
+    "Source": "abc\n     ",
+    "SHA256": "a28343bab50261b642c6f353495f124ab45536df2ae713496dded95de7761c3e",
+    "SizeBytes": 9,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      3,
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "terminalEnding",
+    "Source": "abcd\n",
+    "SHA256": "fc4b5fd6816f75a7c81fc8eaa9499d6a299bd803397166e8c4cf9280b801d62c",
+    "SizeBytes": 5,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      4
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "quotePhysical",
+    "Source": "> abcde",
+    "SHA256": "2d37782e4814eb922f8c70646a2d958c5493e7322630692f36a027ee2cd5a7f2",
+    "SizeBytes": 7,
+    "Length": 6,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      7
+    ],
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          7,
+          1,
+          8
+        ],
+        "Source": "e",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "entitySource",
+    "Source": "a &amp; b",
+    "SHA256": "be98ed669fb14f998a39460c0e835e8880fc2c11c5fe6b4fb54e220f9179f322",
+    "SizeBytes": 9,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      9
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "m",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "escapeSource",
+    "Source": "abc\\*def",
+    "SHA256": "ccaeb7d036ebcdc154fc66218de5646af1b19e1832b45217b2dd56bfe4768006",
+    "SizeBytes": 8,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      8
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "*",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "definitionSource",
+    "Source": "[longlabel]: destination",
+    "SHA256": "fbd874c1a24c14048247ba3fa71bbbe99c0245e4df7a201313c75bdeff041e65",
+    "SizeBytes": 24,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      24
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "g",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "codeOnly",
+    "Source": "`literal long`",
+    "SHA256": "223de9f7e61a09edd0b80547401df03910dd2566b6e8a89cff89414f352280d5",
+    "SizeBytes": 14,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      14
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "codeTail",
+    "Source": "`literal long` tail",
+    "SHA256": "1f3511662c0d923fec7de572d2da526d0a81179972eda26dccc80252789eaea4",
+    "SizeBytes": 19,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      19
+    ],
+    "Expected": [
+      {
+        "Range": [
+          14,
+          15,
+          1,
+          15,
+          1,
+          16
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "proseBeforeCode",
+    "Source": "abcdef `long`",
+    "SHA256": "62649603445c5c86dd770421ea67fdf3980110e17c0d06da34f95bfd5d002324",
+    "SizeBytes": 13,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      13
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "e",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "htmlMixed",
+    "Source": "ab <b>word</b> end",
+    "SHA256": "54d3f613ec2b0656b1a8cd3d9b9f957e47460e76959e9a4f5daadedc98952b5c",
+    "SizeBytes": 18,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      18
+    ],
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          7,
+          1,
+          8
+        ],
+        "Source": "w",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "commentTail",
+    "Source": "a <!-- protected --> tail",
+    "SHA256": "76a199d2fbde494f1472d78c2578b460704c9e727e8f9eccb61ed3952967ce3c",
+    "SizeBytes": 25,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      25
+    ],
+    "Expected": [
+      {
+        "Range": [
+          20,
+          21,
+          1,
+          21,
+          1,
+          22
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "codeSpanModeFalse",
+    "Source": "`literal long`",
+    "SHA256": "223de9f7e61a09edd0b80547401df03910dd2566b6e8a89cff89414f352280d5",
+    "SizeBytes": 14,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      14
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "fencePayloadFalse",
+    "Source": "```\nlongpayload\n```\n",
+    "SHA256": "3ef970d77708c91ec7d4af96f2bcf78210100d8e8dfc19042a374f4f830a43d0",
+    "SizeBytes": 20,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      3,
+      11,
+      3
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "fenceInfoFalse",
+    "Source": "```longinfo\nx\n```\n",
+    "SHA256": "7b360dc080820ab0d309807a84f7368c2996633ac9a599594f1a1202967a9a8f",
+    "SizeBytes": 18,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      11,
+      1,
+      3
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "o",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "fenceCloseFalse",
+    "Source": "```\nx\n`````  \n",
+    "SHA256": "832e8ad33a87dfe6688aedf899967e5d486ee941b42e010b16085efc26294e06",
+    "SizeBytes": 14,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      3,
+      1,
+      7
+    ],
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          3,
+          5,
+          3,
+          6
+        ],
+        "Source": "`",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "failedCloserFalse",
+    "Source": "```\nx\n``` nope\n",
+    "SHA256": "b5f519d57c051444afee6cc3565229acdc8d0214d8b3da4e30f1c30f982d931f",
+    "SizeBytes": 15,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      3,
+      1,
+      8
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "unclosedFalse",
+    "Source": "```\nlongpayload",
+    "SHA256": "a351fe3d66ea478d004820f0d39cc2db4527126d4675f3c6e8e54c05c71bb9f0",
+    "SizeBytes": 15,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      3,
+      11
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "intrinsicIndentFalse",
+    "Source": "    code\n",
+    "SHA256": "67686d45a99272e1a0fe67cb8a4dab0610da32d0dc2005175dbbe08d6dd23ab9",
+    "SizeBytes": 9,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      8
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "codeSpanModeTrue",
+    "Source": "`literal long`",
+    "SHA256": "223de9f7e61a09edd0b80547401df03910dd2566b6e8a89cff89414f352280d5",
+    "SizeBytes": 14,
+    "Length": 4,
+    "CodeBlocks": true,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      14
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "fencePayloadTrue",
+    "Source": "```\nlongpayload\n```\n",
+    "SHA256": "3ef970d77708c91ec7d4af96f2bcf78210100d8e8dfc19042a374f4f830a43d0",
+    "SizeBytes": 20,
+    "Length": 4,
+    "CodeBlocks": true,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      3,
+      11,
+      3
+    ],
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": "p",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "fenceInfoTrue",
+    "Source": "```longinfo\nx\n```\n",
+    "SHA256": "7b360dc080820ab0d309807a84f7368c2996633ac9a599594f1a1202967a9a8f",
+    "SizeBytes": 18,
+    "Length": 4,
+    "CodeBlocks": true,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      11,
+      1,
+      3
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "o",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "fenceCloseTrue",
+    "Source": "```\nx\n`````  \n",
+    "SHA256": "832e8ad33a87dfe6688aedf899967e5d486ee941b42e010b16085efc26294e06",
+    "SizeBytes": 14,
+    "Length": 4,
+    "CodeBlocks": true,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      3,
+      1,
+      7
+    ],
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          3,
+          5,
+          3,
+          6
+        ],
+        "Source": "`",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "failedCloserTrue",
+    "Source": "```\nx\n``` nope\n",
+    "SHA256": "b5f519d57c051444afee6cc3565229acdc8d0214d8b3da4e30f1c30f982d931f",
+    "SizeBytes": 15,
+    "Length": 4,
+    "CodeBlocks": true,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      3,
+      1,
+      8
+    ],
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          3,
+          5,
+          3,
+          6
+        ],
+        "Source": "n",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "unclosedTrue",
+    "Source": "```\nlongpayload",
+    "SHA256": "a351fe3d66ea478d004820f0d39cc2db4527126d4675f3c6e8e54c05c71bb9f0",
+    "SizeBytes": 15,
+    "Length": 4,
+    "CodeBlocks": true,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      3,
+      11
+    ],
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": "p",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "intrinsicIndentTrue",
+    "Source": "    code\n",
+    "SHA256": "67686d45a99272e1a0fe67cb8a4dab0610da32d0dc2005175dbbe08d6dd23ab9",
+    "SizeBytes": 9,
+    "Length": 1,
+    "CodeBlocks": true,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      8
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "rollbackBlank",
+    "Source": "    code\n     \nparagraph\n",
+    "SHA256": "b2083493856ec172fe343b7aa438f944f9746f67ce02ededee89615eed412d36",
+    "SizeBytes": 25,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      8,
+      5,
+      9
+    ],
+    "Expected": [
+      {
+        "Range": [
+          13,
+          14,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          19,
+          20,
+          3,
+          5,
+          3,
+          6
+        ],
+        "Source": "g",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "codePrefixGap",
+    "Source": "- ```\n  x\n  ```\n",
+    "SHA256": "1d3958b72342ebe92833aaf5686c6bc19f9e90609f2a11ecace5f3725a2fc46d",
+    "SizeBytes": 16,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5,
+      3,
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          7,
+          8,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          11,
+          12,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "codeSharedTab",
+    "Source": "- ```\n\tx\n  ```\n",
+    "SHA256": "724e2fd7076a7ca491b5d301f3a386d8bb09bba67910acc7e077ac5bc0979117",
+    "SizeBytes": 15,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5,
+      5,
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          10,
+          11,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "codeSharedTabOptin",
+    "Source": "- ```\n\tx\n  ```\n",
+    "SHA256": "724e2fd7076a7ca491b5d301f3a386d8bb09bba67910acc7e077ac5bc0979117",
+    "SizeBytes": 15,
+    "Length": 1,
+    "CodeBlocks": true,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5,
+      5,
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          10,
+          11,
+          3,
+          2,
+          3,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "codeSpanPrefixGap",
+    "Source": "- a\n  p `x\n\tq`\tout\n",
+    "SHA256": "7a75f3ab555bf0a5e772c3517dd1b88d5b8af2b19a142ea08690ef8785a044ed",
+    "SizeBytes": 19,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      3,
+      6,
+      11
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          5,
+          6,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          11,
+          12,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "inlineHTMLPrefixGap",
+    "Source": "- a\n  p <span title=\"x\n\tq\">\tout\n",
+    "SHA256": "4e4ff684ff1604d5cdbd09843779399f3aac6910c0d70861f4dcb46465670989",
+    "SizeBytes": 32,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      3,
+      18,
+      11
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          5,
+          6,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          23,
+          24,
+          3,
+          1,
+          3,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "htmlBlockPrefixGap",
+    "Source": "- <div>\n  payload\n\n",
+    "SHA256": "8596eb22312edff150ab6767fcfe6d233296bd3f6ca03cec3147c3d518b06327",
+    "SizeBytes": 19,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      7,
+      9,
+      0
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          9,
+          10,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "htmlBlockSharedTab",
+    "Source": "- <div>\n\tpayload\n\n",
+    "SHA256": "419688de585d536dd44fca0f0deac10ada06fc74df015f2aa3a767ae7ffb1dea",
+    "SizeBytes": 18,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      7,
+      11,
+      0
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "rawResidualTab",
+    "Source": "> a <script>x\n>\ty\n",
+    "SHA256": "522b84bfb2c15952f034defdf916cf1264aaeac6f1f6b420012f38ca40910ef4",
+    "SizeBytes": 18,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      13,
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "rawShiftedTab",
+    "Source": "  > a <script>x\n  >\ty\n",
+    "SHA256": "4c32791e7bdb46b57d322e9ec38d3946a2e9e22730cc12f8c49bff31dc5c0546",
+    "SizeBytes": 22,
+    "Length": 3,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      15,
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          19,
+          20,
+          2,
+          4,
+          2,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "rawOmittedWhitespace",
+    "Source": "> a <script>x  \n>\t\n> </script> ordinary\n",
+    "SHA256": "31b8cd873c7fc1593a565b605f65412efed2bc64f56c8a9cba5d50088a337ce3",
+    "SizeBytes": 40,
+    "Length": 3,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      15,
+      4,
+      20
+    ],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          30,
+          31,
+          3,
+          12,
+          3,
+          13
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "rawBOM",
+    "Source": "﻿> a <script>x\n>\ty\n",
+    "SHA256": "1f667c1e97490213ca1ed10636bdc843cfe0dc46f62c364d91108a41a827be16",
+    "SizeBytes": 21,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      14,
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": ">",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "imageAltIsolation",
+    "Source": "![<script>](x) tail",
+    "SHA256": "188e05b0b331be11c0e49a043ed3efff79138c2a09e8af003c5d35d213414010",
+    "SizeBytes": 19,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      19
+    ],
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          1,
+          11,
+          1,
+          12
+        ],
+        "Source": "]",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "htmlTail",
+    "Source": "<!-- c --><script>\nlongbody\n</script> tail\n",
+    "SHA256": "6ebfb2a7b1b8eeb0583e419ae677bc4ca224856b3ba47019bc11b44fb0952ec1",
+    "SizeBytes": 43,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      18,
+      8,
+      14
+    ],
+    "Expected": [
+      {
+        "Range": [
+          37,
+          38,
+          3,
+          10,
+          3,
+          11
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "atxFalse",
+    "Source": "> # longheading\n",
+    "SHA256": "d0e85ded28b182526e96b6ebf0c7d2f0e6ab503c2a2266a34ca37c95ff73cc9b",
+    "SizeBytes": 16,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      15
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "setextFalse",
+    "Source": "alpha\nbeta long\n==========\n",
+    "SHA256": "f5faa723ac65913228fc907aba892d422e66b1c64dbea915da71420350003550",
+    "SizeBytes": 27,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5,
+      9,
+      10
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "emptyHeadingFalse",
+    "Source": "#     \n",
+    "SHA256": "4edad3feb08aad12d4ffc85660f0b7d302abb4cb41dcfcd3d31c27e304e51ae9",
+    "SizeBytes": 7,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      6
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "atxTrue",
+    "Source": "> # longheading\n",
+    "SHA256": "d0e85ded28b182526e96b6ebf0c7d2f0e6ab503c2a2266a34ca37c95ff73cc9b",
+    "SizeBytes": 16,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      15
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "l",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "setextTrue",
+    "Source": "alpha\nbeta long\n==========\n",
+    "SHA256": "f5faa723ac65913228fc907aba892d422e66b1c64dbea915da71420350003550",
+    "SizeBytes": 27,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5,
+      9,
+      10
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "a",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          10,
+          11,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          20,
+          21,
+          3,
+          5,
+          3,
+          6
+        ],
+        "Source": "=",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "emptyHeadingTrue",
+    "Source": "#     \n",
+    "SHA256": "4edad3feb08aad12d4ffc85660f0b7d302abb4cb41dcfcd3d31c27e304e51ae9",
+    "SizeBytes": 7,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      6
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "tablecommonmarkFalse",
+    "Source": "> a | b\n> --- | ---\n> c | d | excess\n> pipeless\n\nordinary\n",
+    "SHA256": "3282940add270466fa929ed254fd71872f63483929a4a5e8b0ed68313a81d0bd",
+    "SizeBytes": 58,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      7,
+      11,
+      16,
+      10,
+      0,
+      8
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "|",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": "-",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          24,
+          25,
+          3,
+          5,
+          3,
+          6
+        ],
+        "Source": "|",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          41,
+          42,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": "p",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          53,
+          54,
+          6,
+          5,
+          6,
+          6
+        ],
+        "Source": "n",
+        "Message": "Line exceeds maximum width."
+      }
+    ],
+    "Flavor": "commonmark"
+  },
+  {
+    "Name": "tablecommonmarkTrue",
+    "Source": "> a | b\n> --- | ---\n> c | d | excess\n> pipeless\n\nordinary\n",
+    "SHA256": "3282940add270466fa929ed254fd71872f63483929a4a5e8b0ed68313a81d0bd",
+    "SizeBytes": 58,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": true,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      7,
+      11,
+      16,
+      10,
+      0,
+      8
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "|",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": "-",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          24,
+          25,
+          3,
+          5,
+          3,
+          6
+        ],
+        "Source": "|",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          41,
+          42,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": "p",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          53,
+          54,
+          6,
+          5,
+          6,
+          6
+        ],
+        "Source": "n",
+        "Message": "Line exceeds maximum width."
+      }
+    ],
+    "Flavor": "commonmark"
+  },
+  {
+    "Name": "tablegfmFalse",
+    "Source": "> a | b\n> --- | ---\n> c | d | excess\n> pipeless\n\nordinary\n",
+    "SHA256": "3282940add270466fa929ed254fd71872f63483929a4a5e8b0ed68313a81d0bd",
+    "SizeBytes": 58,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      7,
+      11,
+      16,
+      10,
+      0,
+      8
+    ],
+    "Expected": [
+      {
+        "Range": [
+          53,
+          54,
+          6,
+          5,
+          6,
+          6
+        ],
+        "Source": "n",
+        "Message": "Line exceeds maximum width."
+      }
+    ],
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "tablegfmTrue",
+    "Source": "> a | b\n> --- | ---\n> c | d | excess\n> pipeless\n\nordinary\n",
+    "SHA256": "3282940add270466fa929ed254fd71872f63483929a4a5e8b0ed68313a81d0bd",
+    "SizeBytes": 58,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": true,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      7,
+      11,
+      16,
+      10,
+      0,
+      8
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "|",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": "-",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          24,
+          25,
+          3,
+          5,
+          3,
+          6
+        ],
+        "Source": "|",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          41,
+          42,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": "p",
+        "Message": "Line exceeds maximum width."
+      },
+      {
+        "Range": [
+          53,
+          54,
+          6,
+          5,
+          6,
+          6
+        ],
+        "Source": "n",
+        "Message": "Line exceeds maximum width."
+      }
+    ],
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "urlinline",
+    "Source": "[x](relative-long)",
+    "SHA256": "f6ccfddabab3b25093c0273b0fe6588a7e8ac155c5c2f1ecd3d13faacb1c1a00",
+    "SizeBytes": 18,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      18
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlimage",
+    "Source": "![x](#fragment-long)",
+    "SHA256": "1aa0060b117579b7fcc29e464ac2c3b263e34e80d488d3c6090035fd73bcc904",
+    "SizeBytes": 20,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      20
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlangle",
+    "Source": "<ftp://example.test/long>",
+    "SHA256": "8fd3cb82d6b9ce6f8bf94885c6be4036cffc09182d9f79424489cbb92d42eef3",
+    "SizeBytes": 25,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      25
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlemail",
+    "Source": "<long@example.test>",
+    "SHA256": "c6ee6c4f617f8bc59d71ebf381f5f22326d4529f230c7a8a87b8076332aaef0e",
+    "SizeBytes": 19,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      19
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlpercent",
+    "Source": "[x](relative%20long)",
+    "SHA256": "870e438ea05c255c34d3c5bd726f5867e5a6b967d9767833afb38d7d00a1b335",
+    "SizeBytes": 20,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      20
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlentityNoSpace",
+    "Source": "[x](a&amp;longdestination)",
+    "SHA256": "2ab185b7fcb51af190c34334c876f494cce00231b8724661793acc5af951532a",
+    "SizeBytes": 26,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      26
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlescaped",
+    "Source": "[x](a\\*longdestination)",
+    "SHA256": "17af2863d2e3cb3eba4fbf3b89b7e13e43534adb8d2fae7ca6b8ef4c44065dde",
+    "SizeBytes": 23,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      23
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urldefinition",
+    "Source": "[x]: relative-long\n",
+    "SHA256": "d3b3958eeca4714283d2c6825de2a9860794a7e31180193d1138f8441563f6ae",
+    "SizeBytes": 19,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      18
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlunused",
+    "Source": "[unused]: relative-long\n",
+    "SHA256": "8bb4c39224654d65bb1f2b06552c812acc01ba48a5a1a37f9a777968f60f81cf",
+    "SizeBytes": 24,
+    "Length": 10,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      23
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlduplicates",
+    "Source": "[x]: relative-long\n[x]: another-long\n",
+    "SHA256": "54b743dd41e2620d9f2fb5329c19e7bd43630e3e9f26f90218ce532e37d5b892",
+    "SizeBytes": 37,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      18,
+      17
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlLabel",
+    "Source": "[longlabel](destination)",
+    "SHA256": "78c092119dcf29ca736ab211b437f181bb2607a8f80135f23159e04990abb634",
+    "SizeBytes": 24,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      24
+    ],
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "g",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "urlTitle",
+    "Source": "[x](destination \"title\")",
+    "SHA256": "1beb429e2a01bc900c80a35517bbd895d06ad1e3d08e10dd503d998cef5b59ae",
+    "SizeBytes": 24,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      24
+    ],
+    "Expected": [
+      {
+        "Range": [
+          15,
+          16,
+          1,
+          16,
+          1,
+          17
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "urlTitleClose",
+    "Source": "[x](dest \"a\")",
+    "SHA256": "8c5ac9de2d37fe56f916eb37491367858bf5e32039931a4606461da8d08e495c",
+    "SizeBytes": 13,
+    "Length": 12,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      13
+    ],
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          1,
+          13,
+          1,
+          14
+        ],
+        "Source": ")",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "urlTail",
+    "Source": "[x](destination) tail",
+    "SHA256": "20566588e81130418bd20c5bac553c37e0a5ab4703f544505645840c7d95ca3d",
+    "SizeBytes": 21,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      21
+    ],
+    "Expected": [
+      {
+        "Range": [
+          16,
+          17,
+          1,
+          17,
+          1,
+          18
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "urlAngleAdjacent",
+    "Source": "[x](<destination>)",
+    "SHA256": "7cd30e489aa15c5e01752cc3efd654c55b988dd78306a197b2dfb37bebfbca48",
+    "SizeBytes": 18,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      18
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlAngleSpaceClose",
+    "Source": "[x](<destination> )",
+    "SHA256": "b79a53148230f4b38ccd9ef61f534650e27857358aaa84e023e67f3c76731603",
+    "SizeBytes": 19,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      19
+    ],
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          1,
+          18,
+          1,
+          19
+        ],
+        "Source": " ",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "urlSemanticSpace",
+    "Source": "[x](a&#32;longdestination)",
+    "SHA256": "84208366bc997b4b1f0c554c85142434c8675397828849d201cb2a7187fb72dc",
+    "SizeBytes": 26,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      26
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "&",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "urlSemanticControl",
+    "Source": "[x](a&#9;longdestination)",
+    "SHA256": "600f76900f0b0ad9ff916313dff537e9a595f01649169f5ab5b547991b1ad56a",
+    "SizeBytes": 25,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      25
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "&",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "urlUnicodeSpace",
+    "Source": "[x](<a longdestination>)",
+    "SHA256": "5c8ff80d9b38b219738bd15e3283754bc07809f7696d2ede3f914359e85e8c41",
+    "SizeBytes": 25,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      24
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "a",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "urlLiteralSpace",
+    "Source": "[x](<a longdestination>)",
+    "SHA256": "0131449c07b5dd1c20e609b0cc943ff37c633e6d65e3e3bafbf43925f5f8712d",
+    "SizeBytes": 24,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      24
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "a",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "referenceUse",
+    "Source": "[longlabel][x]\n\n[x]: destination\n",
+    "SHA256": "8aad71de5f7037022aa31e4faa65effd7e47d9c5436be3a0b2ae8ecb2f2edb8b",
+    "SizeBytes": 33,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      14,
+      0,
+      16
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "l",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "barecommonmark",
+    "Source": "https://example.test/long",
+    "SHA256": "19d28cc88e765c7d8cccf3a1c5d4fbf5254ed48b79a65c00808809483d3d059b",
+    "SizeBytes": 25,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      25
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": ":",
+        "Message": "Line exceeds maximum width."
+      }
+    ],
+    "Flavor": "commonmark"
+  },
+  {
+    "Name": "barePunctuationcommonmark",
+    "Source": "https://example.test/long.",
+    "SHA256": "56b71f248366169fe8d435fc26a2292951404b206463d8fc07240a7cda39d9ae",
+    "SizeBytes": 26,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      26
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": ":",
+        "Message": "Line exceeds maximum width."
+      }
+    ],
+    "Flavor": "commonmark"
+  },
+  {
+    "Name": "baregfm",
+    "Source": "https://example.test/long",
+    "SHA256": "19d28cc88e765c7d8cccf3a1c5d4fbf5254ed48b79a65c00808809483d3d059b",
+    "SizeBytes": 25,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      25
+    ],
+    "Expected": [],
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "barePunctuationgfm",
+    "Source": "https://example.test/long.",
+    "SHA256": "56b71f248366169fe8d435fc26a2292951404b206463d8fc07240a7cda39d9ae",
+    "SizeBytes": 26,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      26
+    ],
+    "Expected": [
+      {
+        "Range": [
+          25,
+          26,
+          1,
+          26,
+          1,
+          27
+        ],
+        "Source": ".",
+        "Message": "Line exceeds maximum width."
+      }
+    ],
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "urlClassmailto:long@example.test",
+    "Source": "[x](mailto:long@example.test)",
+    "SHA256": "dce0ffe5b363075aee651a96ebda9e731a8eab6ade5d691222bb340b9c3e4f98",
+    "SizeBytes": 29,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      29
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlClassxmpp:long@example.test",
+    "Source": "[x](xmpp:long@example.test)",
+    "SHA256": "dab58b055171e5b64ab1981e7518ac4d70c90e34c8953284236a0516d1653cb4",
+    "SizeBytes": 27,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      27
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlClasshttps://example.test/a",
+    "Source": "[x](https://example.test/a)",
+    "SHA256": "e03bc963ab1f686fc5c530363a7e00d19a063626b553566c0447dbeebe1c3e2e",
+    "SizeBytes": 27,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      27
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlClass#fragment-long",
+    "Source": "[x](#fragment-long)",
+    "SHA256": "184878e3967ca8b6391c4bbcc64f430380c9dd2a23f36246052f1780867ab98b",
+    "SizeBytes": 19,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      19
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlClass../relative-long",
+    "Source": "[x](../relative-long)",
+    "SHA256": "428a486a5b223fd33877b276f30d6552a055e1c58323e1010347f1c632b3af71",
+    "SizeBytes": 21,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      21
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "headeryaml",
+    "Source": "﻿---\nlongproperty = \"longvalue\"\n---\nordinary\n",
+    "SHA256": "4e2a25c98b09f1aea96306b035610bd9a2ae5eb9761d4cad88a99a7bd0824261",
+    "SizeBytes": 47,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": true,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      4,
+      26,
+      3,
+      8
+    ],
+    "Expected": [
+      {
+        "Range": [
+          42,
+          43,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": "n",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "incompleteyaml",
+    "Source": "﻿---\nlongproperty = \"longvalue\"",
+    "SHA256": "883bf46637350798935257665f8d16f88ad25fa827732943b8db529eb60af247",
+    "SizeBytes": 33,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": true,
+    "Incomplete": true,
+    "PhysicalWidths": [
+      4,
+      26
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "headertoml",
+    "Source": "﻿+++\nlongproperty = \"longvalue\"\n+++\nordinary\n",
+    "SHA256": "f7c198f77583e7c8b4eade461c759fb173e9da0e9cbb3e9fd1d2600f4550c31d",
+    "SizeBytes": 47,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": true,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      4,
+      26,
+      3,
+      8
+    ],
+    "Expected": [
+      {
+        "Range": [
+          42,
+          43,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": "n",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "incompletetoml",
+    "Source": "﻿+++\nlongproperty = \"longvalue\"",
+    "SHA256": "6c5642c7333c64cdf13efd538f91c133560e33f13032e93ff262e54ab19ea2e3",
+    "SizeBytes": 33,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": true,
+    "Incomplete": true,
+    "PhysicalWidths": [
+      4,
+      26
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "tabPhaseBoundary",
+    "Source": "ab\tc",
+    "SHA256": "7a83f445a767a84fe4e90da9e43d617c5fa6be658bde1187f13803845b32c988",
+    "SizeBytes": 4,
+    "Length": 4,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      5
+    ],
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "c",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "headingPrefixFalse",
+    "Source": "> # heading\n",
+    "SHA256": "ceff37accd1659b6fbf19968405d75ffc43435b1edb3c01d601a2bf18c4b6c5a",
+    "SizeBytes": 12,
+    "Length": 1,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": false,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      11
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "urlSourceControl",
+    "Source": "[x](a\u0000longdestination)",
+    "SHA256": "89dc3972558181649ce9213e69e021f54ff6fdfa12ae52ca6d7768fcf214b98e",
+    "SizeBytes": 22,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      22
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "\u0000",
+        "Message": "Line exceeds maximum width."
+      }
+    ]
+  },
+  {
+    "Name": "rawStrongerOptins",
+    "Source": "a <script>x\n# longheading\n\n| a | b |\n| --- | --- |\n| long | values |\n",
+    "SHA256": "1d03453b8f0ee5ee8f9081c96fe8ae3f2df4c0e30b9080ad4d5a66aee695a7a2",
+    "SizeBytes": 69,
+    "Length": 4,
+    "CodeBlocks": true,
+    "Tables": true,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      11,
+      13,
+      0,
+      9,
+      13,
+      17
+    ],
+    "Expected": []
+  },
+  {
+    "Name": "barewwwcommonmark",
+    "Source": "www.example.test/long",
+    "SHA256": "8ce030d094e42f1d3b7b5ac37c3713f1f198525a3c3a70f7f03971f276db5d3a",
+    "SizeBytes": 21,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      21
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "x",
+        "Message": "Line exceeds maximum width."
+      }
+    ],
+    "Flavor": "commonmark"
+  },
+  {
+    "Name": "barewwwgfm",
+    "Source": "www.example.test/long",
+    "SHA256": "8ce030d094e42f1d3b7b5ac37c3713f1f198525a3c3a70f7f03971f276db5d3a",
+    "SizeBytes": 21,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      21
+    ],
+    "Expected": [],
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "bareemailcommonmark",
+    "Source": "long@example.test",
+    "SHA256": "f136f8bb2aa021a1c2610b60f1b15cb6d83287572f930f4fd712d6fc0921b293",
+    "SizeBytes": 17,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      17
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "e",
+        "Message": "Line exceeds maximum width."
+      }
+    ],
+    "Flavor": "commonmark"
+  },
+  {
+    "Name": "bareemailgfm",
+    "Source": "long@example.test",
+    "SHA256": "f136f8bb2aa021a1c2610b60f1b15cb6d83287572f930f4fd712d6fc0921b293",
+    "SizeBytes": 17,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      17
+    ],
+    "Expected": [],
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "baremailtocommonmark",
+    "Source": "mailto:long@example.test",
+    "SHA256": "78f27d548791c079cdac6d01f694634a5cc9dc63faeca3b8519241f1f0c07936",
+    "SizeBytes": 24,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      24
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "o",
+        "Message": "Line exceeds maximum width."
+      }
+    ],
+    "Flavor": "commonmark"
+  },
+  {
+    "Name": "baremailtogfm",
+    "Source": "mailto:long@example.test",
+    "SHA256": "78f27d548791c079cdac6d01f694634a5cc9dc63faeca3b8519241f1f0c07936",
+    "SizeBytes": 24,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      24
+    ],
+    "Expected": [],
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "barexmppcommonmark",
+    "Source": "xmpp:long@example.test",
+    "SHA256": "209ece78634660d9a568ffe091f9fdb422ac27c157ee0fb1946e78400bdf1ce8",
+    "SizeBytes": 22,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      22
+    ],
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "l",
+        "Message": "Line exceeds maximum width."
+      }
+    ],
+    "Flavor": "commonmark"
+  },
+  {
+    "Name": "barexmppgfm",
+    "Source": "xmpp:long@example.test",
+    "SHA256": "209ece78634660d9a568ffe091f9fdb422ac27c157ee0fb1946e78400bdf1ce8",
+    "SizeBytes": 22,
+    "Length": 5,
+    "CodeBlocks": false,
+    "Tables": false,
+    "Headings": true,
+    "Recognize": false,
+    "Incomplete": false,
+    "PhysicalWidths": [
+      22
+    ],
+    "Expected": [],
+    "Flavor": "gfm"
+  }
+]

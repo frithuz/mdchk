@@ -129,3 +129,5 @@ MD012 constructs full maximal physical blank runs before filtering the chosen
 first-excess body START. Earlier hidden blanks consume the configured maximum;
 protected lines break runs. A later enable cannot create a suffix finding from
 an earlier anchored run. Inspection slicing retains full original context.
+
+MD013 inventories physical width and full actual protected/URL context before chosen-scalar START filtering. Protected comment bytes can precede an eligible same-line scalar; earlier context remains available to inspection slicing.

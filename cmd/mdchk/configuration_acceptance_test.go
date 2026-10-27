@@ -314,7 +314,7 @@ func testConfigurationStrict(t *testing.T, binary string) {
 	t.Run("capability preflight", func(t *testing.T) {
 		for _, tc := range []configurationNegative{
 			{"explicit enabled default", availableConfiguration + "rules: {MD011: {}}\n", "rules.MD011", "explicitly enabled rule is unavailable", 4, 16},
-			{"explicit enabled unavailable", availableConfiguration + "rules: {MD013: {enabled: true}}\n", "rules.MD013", "explicitly enabled rule is unavailable", 4, 16},
+			{"explicit enabled unavailable", availableConfiguration + "rules: {MD040: {enabled: true}}\n", "rules.MD040", "explicitly enabled rule is unavailable", 4, 16},
 			{"removed flavor", "version: 1\nflavor: pandoc\ndirectives: {enabled: false}\n", "flavor", "expected commonmark or gfm", 2, 9},
 			{"resources unavailable", availableConfiguration + "resources: {index_file: index.md}\n", "resources.index_file", "resource index handling is unavailable", 4, 25},
 		} {

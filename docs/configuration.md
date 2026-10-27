@@ -475,3 +475,5 @@ is a nonnegative integer, default 1; zero reports each run's first blank, while
 MaxInt admits finite source runs. Empty mappings retain defaults. Invalid values,
 unknown options and invalid shared settings fail even while disabled. See
 [MD012](rules/whitespace/md012.md).
+
+MD013 is available but disabled by default for CommonMark and GFM. Explicit `enabled: true` activates it; omission, `{}` and options alone retain disablement. Options remain `length: 80` (positive integer), `code_blocks: false`, `tables: false` and `headings: true`. Invalid options reject even when disabled. Permitted directives can enable it with admitted options retained. See [MD013](rules/whitespace/md013.md).

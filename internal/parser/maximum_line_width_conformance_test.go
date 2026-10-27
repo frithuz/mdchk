@@ -1,0 +1,39 @@
+//go:build mdchk_conformance
+
+package parser_test
+
+import (
+	"context"
+	"github.com/frithuz/mdchk/internal/parser"
+	"testing"
+)
+
+func TestMaximumLineWidthProjectionRejectsPrivateScopes(t *testing.T) {
+	for _, scope := range []string{"tables-only", "tasks-only", "strike-only", "bare-only", "filter-only"} {
+		s := parser.NewSource([]byte("- H"))
+		b, _ := parser.NewOperationBudget(parser.DefaultLimits())
+		p, e := parser.ParseConformance(context.Background(), s, b, scope)
+		if e != nil || p.Status != parser.Complete {
+			t.Fatal(p, e)
+		}
+		if got, e := p.Document.MaximumLineWidth(context.Background(), b, parser.NewLineIndex(s), parser.ParseOptions{}, 1, false, false, true); e == nil || got != nil {
+			t.Fatal("private scope accepted", scope, got, e)
+		}
+	}
+}
+
+func TestMaximumLineWidthProjectionFullGFMProduction(t *testing.T) {
+	for _, gfm := range []bool{false, true} {
+		s := parser.NewSource([]byte("a\t\n"))
+		b, _ := parser.NewOperationBudget(parser.DefaultLimits())
+		options := parser.ParseOptions{GFM: gfm}
+		p := parser.ParseWithOptions(context.Background(), s, b, options)
+		if p.Status != parser.Complete {
+			t.Fatal(p)
+		}
+		got, e := p.Document.MaximumLineWidth(context.Background(), b, parser.NewLineIndex(s), options, 1, false, false, true)
+		if e != nil || len(got) != 1 || got[0].Start() != 1 || got[0].End() != 2 {
+			t.Fatal(got, e)
+		}
+	}
+}

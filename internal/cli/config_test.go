@@ -47,7 +47,7 @@ func TestLintConfigurationStopsBeforeTargets(t *testing.T) {
 	for _, tc := range []struct{ name, body, explicit, want string }{
 		{"invalid nearest", "version: 2\n", "", "version"},
 		{"missing explicit", availableConfig, "missing.yaml", "missing.yaml"},
-		{"explicit unavailable rule", availableConfig + "rules: {MD013: {enabled: true}}\n", "", "MD013"},
+		{"explicit unavailable rule", availableConfig + "rules: {MD040: {enabled: true}}\n", "", "MD040"},
 		{"invalid disabled options", availableConfig + "rules: {MD013: {enabled: false, length: -1}}\n", "", "length"},
 		{"removed flavor", "version: 1\nflavor: pandoc\n", "", "flavor"},
 		{"invalid pattern", availableConfig + "exclude: ['bad/**x']\n", "", "exclude"},

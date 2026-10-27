@@ -596,3 +596,5 @@ Physical ownership includes empty protected payload endings and exclusive interv
 ends. All state, lookups, visits, capacities, copies and output records reserve
 before work. Final failure withholds detached spans; no parse-time retention,
 public model fields, source copies or fresh allowance are added.
+
+MD013 borrows completed original source/index/options/profile/reference facts. Its detached scalar spans use physical width and separately charged contribution/raw/category/URL eligibility. Confirmed raw-prefix replay preserves original TAB phase; semantic destinations are borrowed without decoding. Every probe, interval/frame/output capacity and copied prefix is reserved before work, with caller/origin and final atomic withholding.

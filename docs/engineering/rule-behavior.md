@@ -657,3 +657,5 @@ first-excess remaining-body finding per run. Actual protected code/raw/header
 lines break runs, including empty payload lines with retained endings. Count real
 BOF/EOF blanks without a virtual line. Present zero-width ranges are manual source
 evidence, never edit authority. See [MD012](../rules/whitespace/md012.md).
+
+MD013 specializes original physical-source scalar width, including prefixes and syntax, with four-column TAB stops. Protected bytes occupy width but cannot anchor; the first eligible overflowing scalar is the sole manual finding per physical line. Code/literal contribution gaps remain ordinary; table/heading false options deliberately exempt whole physical lines. See [MD013](../rules/whitespace/md013.md) for exact raw, destination and option boundaries.

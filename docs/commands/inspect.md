@@ -170,3 +170,5 @@ Full original physical runs and protected context precede line slicing and START
 suppression: hidden earlier blanks consume the allowance, and selecting a later
 suffix cannot invent a finding. Empty-body ranges can have equal byte endpoints.
 No MD012 correction proposal or corrected content is returned.
+
+MD013 inspection exposes available but default-disabled manual analysis and all four admitted options. Full original physical width and protected/URL context precede line slicing. Each finding selects one original overflowing scalar, retaining exclusive scalar coordinates and exact snapshot identity; no MD013 correction or returned content is produced.
