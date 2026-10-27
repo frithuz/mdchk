@@ -124,3 +124,8 @@ actual code/raw/prefix/hard-break context across disabled and selected regions.
 MD010 inventories original TAB bytes and full actual literal/raw/container
 ownership before START-based filtering. Each byte is independently controlled;
 code_blocks never admits CodeSpan or raw/header bytes.
+
+MD012 constructs full maximal physical blank runs before filtering the chosen
+first-excess body START. Earlier hidden blanks consume the configured maximum;
+protected lines break runs. A later enable cannot create a suffix finding from
+an earlier anchored run. Inspection slicing retains full original context.

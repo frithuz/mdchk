@@ -369,3 +369,9 @@ MD010 reports one original TAB byte per manual finding, with message
 “Tab character.”, one scalar column and exclusive end. Adjacent TABs produce
 separate findings. `fix_available` is false; MD010 produces no changes or returned
 content. MD047 candidate reanalysis uses candidate ranges and snapshot identity.
+
+MD012 reports one manual finding per excessive maximal physical blank body run,
+with message `Too many consecutive blank body lines.`. Its first-excess remaining
+body range excludes prefixes and endings and can be present zero-width evidence.
+`fix_available` is false; MD012 adds no changes or returned documents. After an
+MD047 candidate, MD012 ranges and snapshot identify that exact candidate.

@@ -650,3 +650,10 @@ empty first-item Prefix segments describe actual consumption beyond effective
 padding. Image-alt raw tags cannot affect outer state. Whole recognized headers
 remain opaque. See [MD010](../rules/whitespace/md010.md) for exact boundaries.
 All findings are manual; MD047 alone can produce corrections.
+
+MD012 specializes blank body runs: ASCII space/TAB after each physical line's
+actual final prefix bytes, globally consecutive across container changes, one
+first-excess remaining-body finding per run. Actual protected code/raw/header
+lines break runs, including empty payload lines with retained endings. Count real
+BOF/EOF blanks without a virtual line. Present zero-width ranges are manual source
+evidence, never edit authority. See [MD012](../rules/whitespace/md012.md).

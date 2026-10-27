@@ -120,7 +120,7 @@ facts, directives, protected regions and candidate reparsing. MD047 is the first
 production correction; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
 analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation
 analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis,
-MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD018 missing opening-hash spacing, MD019 extra
+MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD018 missing opening-hash spacing, MD019 extra
 opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading
 delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation
 analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026
@@ -288,7 +288,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 analysis callbacks.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001, MD025 and MD041 opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
@@ -692,3 +692,11 @@ actual code Content/intrinsic indentation and trimmed semantic raw-body boundari
 follow [MD010 policy](rules/whitespace/md010.md). Charged confirmed-prefix replay
 preserves physical phase and residual atomic TAB ownership without grammar or
 public model changes. MD047 remains the only correction producer.
+
+MD012 projects manual first-excess body spans from global maximal original
+physical blank runs. It borrows completed production syntax, actual local prefix
+ends and protected code/raw/header intervals under the original allowance. Empty
+payload endings retain ownership; protected lines break runs. Full context precedes
+START suppression and inspection slicing. Capacity, copies, records and lookups
+are reserved before work; caller/origin final checks withhold interrupted output.
+See [MD012 policy](rules/whitespace/md012.md); no correction provider is added.

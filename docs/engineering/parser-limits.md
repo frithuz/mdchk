@@ -589,3 +589,10 @@ withheld on caller/origin cancellation or sticky work/node/time failure, includi
 producer, facade and callback final checks. Storage depends on source facts,
 never spaces_per_tab. No new retention, grammar, source/index/options clone,
 public schema, allowance or correction authority is added.
+
+MD012 borrows the completed original production/profile/options/source/index and
+operation witness, rejecting private conformance scopes or constructed syntax.
+Physical ownership includes empty protected payload endings and exclusive interval
+ends. All state, lookups, visits, capacities, copies and output records reserve
+before work. Final failure withholds detached spans; no parse-time retention,
+public model fields, source copies or fresh allowance are added.

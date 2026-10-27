@@ -230,3 +230,10 @@ associations and confirmed prefix replay, including failed probes, capacity,
 copies and logical records. spaces_per_tab has no numeric-sized work or storage.
 Caller/origin controls and final atomic withholding apply to empty, clean and
 protected-only inputs as well as violations.
+
+MD012 uses the original finite operation for physical-line state, source visits
+and failed probes, actual prefix/protected associations, lookups, traversal frames,
+capacity growth, copied prefixes and detached records. It compares observed counts
+to `maximum` without threshold-sized storage or maximum+1 arithmetic. Caller and
+origin cancellation/deadline, sticky original limits and final publication checks
+withhold incomplete output at producer, facade and manual callback boundaries.

@@ -469,3 +469,9 @@ MD010 is available and enabled by default for both flavors, with boolean
 `code_blocks: false` and positive integer `spaces_per_tab: 4`. The latter is
 analysis-neutral in Pass 1, including maximum admitted int, and never changes
 parser tab stops. All findings are manual; see [MD010](rules/whitespace/md010.md).
+
+MD012 is available and enabled by default for CommonMark and GFM. `maximum`
+is a nonnegative integer, default 1; zero reports each run's first blank, while
+MaxInt admits finite source runs. Empty mappings retain defaults. Invalid values,
+unknown options and invalid shared settings fail even while disabled. See
+[MD012](rules/whitespace/md012.md).

@@ -1,0 +1,1286 @@
+[
+  {
+    "Name": "violating",
+    "Source": "One\n\n\nTwo\n",
+    "SHA256": "e2765b73d51d7e193dcf9e483bcb2572a9af161bb151c07c4eb4a64492aa04fa",
+    "SizeBytes": 10,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "accepted",
+    "Source": "One\n\nTwo\n",
+    "SHA256": "4f972f39001f31f7023b494f4e94a23152e0ef3802ca70f8d6e79ef6120718d4",
+    "SizeBytes": 9,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "whitespace",
+    "Source": "a\n\n \t\nb\n",
+    "SHA256": "9b8542018d2c6e1d79cc1dc09f5eeeaf45a62b736a82ed4aed8fd19d28a89942",
+    "SizeBytes": 8,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          5,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": " \t",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "quote-tab",
+    "Source": "> a\n>\n> \t\n> b\n",
+    "SHA256": "e45620424de01fbd14e9a759ccc1943041e9932ddc98d4bf01f9c0eae4022e9c",
+    "SizeBytes": 14,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "item-indent",
+    "Source": "- a\n\n    \n  b\n",
+    "SHA256": "e0572ac503994742e0f0e3b1cb9ace620f34c2fd893e9cd0dd2cc55caa14e542",
+    "SizeBytes": 14,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          9,
+          3,
+          3,
+          3,
+          5
+        ],
+        "Source": "  ",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "empty-items",
+    "Source": "-\n\n-\n",
+    "SHA256": "0dabec1e117df4a5c5c82ce9378a2284f80720a90b1176e4f0a86f4dcc4d97a4",
+    "SizeBytes": 5,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          2,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "quote-transition",
+    "Source": "> a\n>\n\n>\n> b\n",
+    "SHA256": "1fe16b445732a0c6cb2abcb04c9d20f2799e45e85bbe1dda2196035a32b13a45",
+    "SizeBytes": 13,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          6,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "shared-tab",
+    "Source": "- a\n\t\n\t\n  b\n",
+    "SHA256": "e8229a5de17e396c48335499caf4c6c2bd6d52f7ae81c7e224fdef1287235ed0",
+    "SizeBytes": 12,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          7,
+          3,
+          2,
+          3,
+          2
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "container-transition",
+    "Source": "- a\n  \n\n>\n\nend\n",
+    "SHA256": "d9c96ce4d53e5547d4c9654a4a9d4be93f5f6e666181ef62273095063753c5ed",
+    "SizeBytes": 15,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          7,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "nested-empty",
+    "Source": "> -\n>\n> -\n",
+    "SHA256": "59ef376ba6a856d5e88fb1b1be14f5ba4e70a45ea8bab3725e5319ed9dc4005e",
+    "SizeBytes": 10,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "nested-transitions",
+    "Source": "- >\n  >\n\n- >\n",
+    "SHA256": "75aea24bb6d4cbdd5f454864eb4ea6c7ba5e146c0f36aea7b9c3bb77b22effcd",
+    "SizeBytes": 13,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          7,
+          2,
+          4,
+          2,
+          4
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "task-content",
+    "Source": "- [ ]\n\n- [x]\n",
+    "SHA256": "486e8f5a7f72e6d39e4058b506b2b2090d5b8e5bc06fec5b2b5b71d69825068c",
+    "SizeBytes": 13,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "lazy-content",
+    "Source": "- a\n\nb\n\n\nc\n",
+    "SHA256": "aeecab8b1391d2e606ae45d03d8810876d5631ff54c6925306a06b7d5c71b48d",
+    "SizeBytes": 11,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          8,
+          5,
+          1,
+          5,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "unicode-nul-content",
+    "Source": "\n \n\n \n\n\u0000\n\nend\n",
+    "SHA256": "919639f0d64d745182db3a570ded9dad8a3112a350d0384d4f126a1dc396b9d7",
+    "SizeBytes": 17,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "escaped-content",
+    "Source": "\n\\>\n\n\\-\n\nend\n",
+    "SHA256": "a381f8fed89389c34a7a769236d7e828584eb132f523f0f21d8aa4260f43bb6b",
+    "SizeBytes": 13,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "definition-content",
+    "Source": "\n[x]: /url\n\nend\n",
+    "SHA256": "f187ee6a99f80a7974988e3daa49f287f91adfaaccbf752c323d50699596cdbc",
+    "SizeBytes": 16,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty",
+    "Source": "",
+    "SHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "SizeBytes": 0,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "single-ending",
+    "Source": "\n",
+    "SHA256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "SizeBytes": 1,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "all-blank",
+    "Source": "\n\n\n\n",
+    "SHA256": "545c38b0922de19734fbffde62792c37c2aef6a3216cfa472449173165220f7d",
+    "SizeBytes": 4,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          1,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "leading-trailing",
+    "Source": "\n\na\n\n\n",
+    "SHA256": "38c90db5980606a69db8c63f5776e887ec2c9b82bdd7f80fd384d6899a246823",
+    "SizeBytes": 6,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          1,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          5,
+          5,
+          5,
+          1,
+          5,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "whitespace-eof",
+    "Source": "a\n\n \t",
+    "SHA256": "fc3e7ef73187d85fe69bc97252578acab02067ee77d0e4cc5cb291adfb9ff938",
+    "SizeBytes": 5,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          5,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": " \t",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "no-virtual-eof",
+    "Source": "a\n\n",
+    "SHA256": "a7da489976d0047490617adb4f7a1f27f7af8b52a5176fd002ffe471863520ab",
+    "SizeBytes": 3,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "many-excess-one",
+    "Source": "a\n\n\n\n\n\nb\n",
+    "SHA256": "ec2216afdd5a6d64f2f93c14f0852682944ee7e67e1c874893aec3aa3acaa9d9",
+    "SizeBytes": 9,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          3,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "five-real-outputs",
+    "Source": "a\n\n\nb\n\n\nc\n\n\nd\n\n\ne\n\n\n",
+    "SHA256": "d60aa768bbe95a683aa40cffd26683c174c3a10567670acd179ed1e192c8eb6e",
+    "SizeBytes": 20,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          3,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          7,
+          7,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          11,
+          11,
+          9,
+          1,
+          9,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          15,
+          15,
+          12,
+          1,
+          12,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          19,
+          19,
+          15,
+          1,
+          15,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "maximum-zero",
+    "Source": "a\n\n\nb\n\n",
+    "SHA256": "b882d1d32081afffd3de2dd00cae41ba9e3c089a695959995814535f8e95034d",
+    "SizeBytes": 7,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          2,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          6,
+          6,
+          5,
+          1,
+          5,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "maximum-maxint",
+    "Source": "\n\n\n",
+    "SHA256": "6a3cf5192354f71615ac51034b3e97c20eda99643fcaf5bbe6d41ad59bd12167",
+    "SizeBytes": 3,
+    "Maximum": 9223372036854775807,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "lf",
+    "Source": "a\n\n\nb\n",
+    "SHA256": "ebbfa3d605b9dd23739e36d89f299a2906608cde597a866dc890dd6816af3d7a",
+    "SizeBytes": 6,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          3,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "crlf",
+    "Source": "a\r\n\r\n\r\nb\r\n",
+    "SHA256": "48587c7ab6484abb7a268d2d4ed93c10eff505f0e2b0097f1edea4dfb3899a09",
+    "SizeBytes": 10,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "cr",
+    "Source": "a\r\r\rb\r",
+    "SHA256": "e45fa2851e076a1ebbcf0883e6c297ef9bd45b5559ab4ebd9d6b833e17845f94",
+    "SizeBytes": 6,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          3,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "mixed",
+    "Source": "a\r\n\r\n\r\nb\r\r\n\nc",
+    "SHA256": "3120039d807e2d4e751dd2f5f50eb412114c38d7c09e0491ba68a9a509593b08",
+    "SizeBytes": 13,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          11,
+          11,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "fenced-empty-payload",
+    "Source": "```\n\n\n```\n\n\nend\n",
+    "SHA256": "a8505026421ce3e58656a8614f228dafc6c7d30a2566518a773dbcdd905d70f6",
+    "SizeBytes": 16,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          11,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "fenced-indent-payload",
+    "Source": "```\n\n \t\n```\n\n\n",
+    "SHA256": "548007d3dca9cd9ebbda65f339652708fdb179f8a457b9547426006de8b182a0",
+    "SizeBytes": 14,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          13,
+          13,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "unclosed-fence",
+    "Source": "```\n\n\n",
+    "SHA256": "ca89b9f7d6c194116d1a77c83c1a48b154268a8b5d78d3625c6a3da151228bbc",
+    "SizeBytes": 6,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "quote-fence-boundary",
+    "Source": "> ```\n>\n\n> ```\n",
+    "SHA256": "1597942854a6d4af0bc2ef7dcf570f3b422bcdd68aa7cff65c6553c9c874a4fe",
+    "SizeBytes": 15,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          8,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "indented-rollback",
+    "Source": "    a\n\n    b\n\n\nend\n",
+    "SHA256": "167396d6fe5ff2986e5cb6c6a8eed9ef4dbb489028a9503fd0b46a8c082c0839",
+    "SizeBytes": 19,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          14,
+          14,
+          5,
+          1,
+          5,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "indented-interior",
+    "Source": "    a\n\n    \n    b\n\n \t\ntext\n",
+    "SHA256": "4f6edb6d3a57fabd773b6965e134562cbc3e919c490dd0ee3700256d6537cd18",
+    "SizeBytes": 27,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          19,
+          21,
+          6,
+          1,
+          6,
+          3
+        ],
+        "Source": " \t",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "quoted-indented",
+    "Source": ">     a\n>\n>     \n>     b\n>\n> \n> text\n",
+    "SHA256": "55a59393db3016e5cd0cc2ad0754a7b6568c8a334dbd895207e394c4ac34f601",
+    "SizeBytes": 37,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          29,
+          29,
+          6,
+          3,
+          6,
+          3
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "item-fence",
+    "Source": "- ```\n\n\n  ```\n\n\nend\n",
+    "SHA256": "7ddbafa4919a59d31db094f3d3a4c1b23ee6916bf0c8b28c5419d3bd24366c80",
+    "SizeBytes": 20,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          15,
+          15,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "unmatched-code",
+    "Source": "a `x\n\n\ny` z\n",
+    "SHA256": "6494cfb2749b3f0646ccf99e004ac1c2f4299df3f2c073861aa635c7e371d160",
+    "SizeBytes": 12,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          6,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "actual-code-span",
+    "Source": "a `x\n y` z\n\n\nend\n",
+    "SHA256": "6c1058adfa1d5067ba64b65ee29c1d2c662cebba6eb60e69e0715f8072b71128",
+    "SizeBytes": 17,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          12,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "unmatched-html",
+    "Source": "a <x title=\"x\n\n\ny\"> z\n",
+    "SHA256": "273e56e421a6a4b2e47ad0a81d9ea91641c1e6de1c7cce30ca0edab96f46f924",
+    "SizeBytes": 22,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          15,
+          15,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "comment-protected",
+    "Source": "<!-- x\n\n\ny --> tail\n\n\nend\n",
+    "SHA256": "27d595ad1f7da35e062665c39fec9fbc5e63b8cb08d8b1bdbb73b25857405da3",
+    "SizeBytes": 26,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "comment-breaks",
+    "Source": "\n<!-- x\n\n\ny -->\n\nend\n",
+    "SHA256": "0b29e42744ea1799fa4d6aefbfabc549564f03202a030d900f9e813bac1f231e",
+    "SizeBytes": 21,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-gap",
+    "Source": "x <script>\n\n\n</script>\n\n\nend\n",
+    "SHA256": "298a9024869a132d7ef13fa1fe3d21c3a4c370c3319a6944c6afed4b3f679110",
+    "SizeBytes": 29,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          24,
+          24,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "raw-eof",
+    "Source": "x <script>\n\n\n",
+    "SHA256": "924fd66ef09c4668ea75fbe6d9d184d101a669f28354395abd24e539a6dec3a2",
+    "SizeBytes": 13,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-quote-gap",
+    "Source": "> x <script>\n>\n> \n> </script>\n>\n>\n> end\n",
+    "SHA256": "a3a0e81979fdc6e65efa77c4167d99865030c058fa27b449bf9d3b0ebfac5b6d",
+    "SizeBytes": 40,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          33,
+          33,
+          6,
+          2,
+          6,
+          2
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "html-tail",
+    "Source": "<!-- a --> <script>x\n\n\n</script>\n\n\nend\n",
+    "SHA256": "9189a58df2928232650d058457d023df42f747069f239403764861eb8371f650",
+    "SizeBytes": 39,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          34,
+          34,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "image-alt-isolation",
+    "Source": "![<script>](u)\n\n\n",
+    "SHA256": "f6bba45f74b63494aec5d3e229809235887ae9fbfba532dec4b6cfe9d7b8b854",
+    "SizeBytes": 17,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          16,
+          16,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "yaml",
+    "Source": "---\n\n\n---\n\n\nend\n",
+    "SHA256": "6f608147bf003c8a24adff07f733d1f7eda8f67d7fb1f126e0735d350bee8a89",
+    "SizeBytes": 16,
+    "Maximum": 1,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          11,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "yaml-off",
+    "Source": "---\n\n\n---\n\n\nend\n",
+    "SHA256": "6f608147bf003c8a24adff07f733d1f7eda8f67d7fb1f126e0735d350bee8a89",
+    "SizeBytes": 16,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          11,
+          11,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "toml",
+    "Source": "+++\n\n\n+++\n\n\nend\n",
+    "SHA256": "3c33599ef7220a1b62fc55030a45aa3d856a170cad9a26c4ea8b73291518887d",
+    "SizeBytes": 16,
+    "Maximum": 1,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          11,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "toml-off",
+    "Source": "+++\n\n\n+++\n\n\nend\n",
+    "SHA256": "3c33599ef7220a1b62fc55030a45aa3d856a170cad9a26c4ea8b73291518887d",
+    "SizeBytes": 16,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          11,
+          11,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "bom-yaml",
+    "Source": "﻿---\n\n\n---\n\n\nend\n",
+    "SHA256": "161bd85f1f4144c185bc8dfdeaf94433e98a777e7636fe305ac607f7c5dd3c98",
+    "SizeBytes": 19,
+    "Maximum": 1,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          14,
+          14,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "bom-yaml-off",
+    "Source": "﻿---\n\n\n---\n\n\nend\n",
+    "SHA256": "161bd85f1f4144c185bc8dfdeaf94433e98a777e7636fe305ac607f7c5dd3c98",
+    "SizeBytes": 19,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          8,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          14,
+          14,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "bom-toml",
+    "Source": "﻿+++\n\n\n+++\n\n\nend\n",
+    "SHA256": "cf5e2becb3965034d9a8f9d85e2277721eafb29cedf796963ba5fe25218970ad",
+    "SizeBytes": 19,
+    "Maximum": 1,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          14,
+          14,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "bom-toml-off",
+    "Source": "﻿+++\n\n\n+++\n\n\nend\n",
+    "SHA256": "cf5e2becb3965034d9a8f9d85e2277721eafb29cedf796963ba5fe25218970ad",
+    "SizeBytes": 19,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          8,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          14,
+          14,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "header-only",
+    "Source": "---\n\n\n---\n",
+    "SHA256": "c6ddd75e19bbdfe089713f3555a258f75e4eb22e3b943e4f949f48436fd6d19d",
+    "SizeBytes": 10,
+    "Maximum": 1,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "incomplete-header",
+    "Source": "---\n\n\nx\n",
+    "SHA256": "b928b9dccb051300be2d545852e070bcd2bdab2cf81751bff0a7d9e829491ab3",
+    "SizeBytes": 8,
+    "Maximum": 1,
+    "Recognize": true,
+    "Incomplete": true,
+    "Expected": []
+  }
+]

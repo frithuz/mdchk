@@ -1958,3 +1958,10 @@ scalar replay of final confirmed prefix facts distinguishes fully consumed TABs
 from residual body columns at original physical phase. Empty first items borrow
 the actual Prefix segment widths. This projection adds no retained parser model
 fields or public inspection schema.
+
+MD012 derives detached first-excess body spans from completed original physical
+lines, actual final prefixes and protected code/raw/header intervals. Empty payload
+endings retain physical ownership. Global runs cross container transitions but
+protected lines break them. Original source, profile, options, index and allowance
+authority, precharged growth/copies and final withholding apply without new retained
+syntax or inspection fields. Zero-width findings are manual evidence only.
