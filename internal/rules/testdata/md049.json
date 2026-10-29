@@ -1,0 +1,1830 @@
+{
+  "authority": "Root source-authored literal eligibility decisions and marker anchors BEFORE engineer/product probes. Offsets from literal anchor arithmetic only; no parser/matcher/output used. Repeated flavors/orders/concurrency are not independent oracle count.",
+  "base": "e33eadc2910a31e156bbc5dbb958b7a53c9fecf8",
+  "batch_instruction": "Reuse page-violation and reverse-baseline as separate logical documents in both orders and concurrently; baseline never crosses documents.",
+  "cases": [
+    {
+      "id": "page-violation",
+      "source": "*one* and _two_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            10,
+            11
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 15,
+      "source_sha256": "4bd1af3dc5c2fb02a72dbfda47f890fe826711cf7755ce42df731967283d441e"
+    },
+    {
+      "id": "page-accepted",
+      "source": "*one* and *two*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [],
+      "source_bytes": 15,
+      "source_sha256": "cb0ab1aa0c141b1a698858a20b8e3710792f2a1506d3c8eef2bf680991941e63"
+    },
+    {
+      "id": "reverse-baseline",
+      "source": "_one_ and *two*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            10,
+            11
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 15,
+      "source_sha256": "bf7f3d477ccf65d15a2f39bd0c286457cba41dcf70fce661dd53909b34174e5f"
+    },
+    {
+      "id": "fixed-asterisk",
+      "source": "_one_ and *two*",
+      "style": "asterisk",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            1
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            2
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 15,
+      "source_sha256": "bf7f3d477ccf65d15a2f39bd0c286457cba41dcf70fce661dd53909b34174e5f"
+    },
+    {
+      "id": "fixed-underscore",
+      "source": "*one* and _two_",
+      "style": "underscore",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            1
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            2
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 15,
+      "source_sha256": "4bd1af3dc5c2fb02a72dbfda47f890fe826711cf7755ce42df731967283d441e"
+    },
+    {
+      "id": "strong-only",
+      "source": "__one__ and **two**",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [],
+      "source_bytes": 19,
+      "source_sha256": "bd1c425e90d5f953d2990eaa7fa630d0bf926c996407ba63700fe66bec5effce"
+    },
+    {
+      "id": "strong-does-not-seed",
+      "source": "**bold** _a_ *b*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            13,
+            14
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 16,
+      "source_sha256": "a5196c02c62261c14d77c4caeb208296e9a0af5a2bc9f68ae7e1c78a594d6ea2"
+    },
+    {
+      "id": "nested-opening-order",
+      "source": "*outer _inner_*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            7,
+            8
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 15,
+      "source_sha256": "1be6f81cd8ded760fe9bd0099190467a0e7c101269864acc080a85acad4dd75e"
+    },
+    {
+      "id": "nested-reverse-order",
+      "source": "_outer *inner*_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            7,
+            8
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 15,
+      "source_sha256": "8836e5562f6a7fb80849ace540d13dedf328c628b83c5fcf1c22ca3d166c59aa"
+    },
+    {
+      "id": "triple-baseline",
+      "source": "***a*** _b_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            9
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 11,
+      "source_sha256": "3cea1efefd3b42c8274fb18da229ba0561947c331c4cc78959de6ba9024f7976"
+    },
+    {
+      "id": "triple-opening-one-byte",
+      "source": "***a***",
+      "style": "underscore",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            1
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            2
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 7,
+      "source_sha256": "b99d966c0c87040804359b3472a3f4e30029353b16081e0ec843ced212016af5"
+    },
+    {
+      "id": "underscore-triple",
+      "source": "___a___ *b*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            9
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 11,
+      "source_sha256": "de28d57250f3322025f852dabe96f1378d5f0340d662661ad20aa695803f16ac"
+    },
+    {
+      "id": "italic-inside-strong",
+      "source": "**bold _italic_** and *later*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            22,
+            23
+          ],
+          "start": [
+            1,
+            23
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 29,
+      "source_sha256": "1d6b652023375038b4447bcad3b2e56083981e3b2ca11ff2b2da4d475e9be42c"
+    },
+    {
+      "id": "cross-owner-baseline",
+      "source": "*a*\n\n> _b_\n\n- _c_\n",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            7,
+            8
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        },
+        {
+          "bytes": [
+            14,
+            15
+          ],
+          "start": [
+            5,
+            3
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 18,
+      "source_sha256": "e4a6d73e429b7df8d32e6e7bcf87a8b86212136b999e9799aa062e562b0ce4f8"
+    },
+    {
+      "id": "multiline-italic",
+      "source": "_a_\n*b\nc*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            2
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 9,
+      "source_sha256": "c88be7dad7e05678be6e64d2a9bd1ee7933eebc5d1df18c1e20eb8e41d2a42ec"
+    },
+    {
+      "id": "unicode-scalar",
+      "source": "é *one* and _two_\r\n",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            13,
+            14
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 20,
+      "source_sha256": "e8742f247ee2032f3d47789b515c145644b306d5cd4f2dbdf403b82867940a3e"
+    },
+    {
+      "id": "lf",
+      "source": "*a*\n_b_\n",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            2
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 8,
+      "source_sha256": "f558ab50b990819363a65651dd9a79f18a661d126a6d8309e410b71e294b2109"
+    },
+    {
+      "id": "crlf",
+      "source": "*a*\r\n_b_\r\n",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            5,
+            6
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            2
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 10,
+      "source_sha256": "20de4fffb6989f4b9d00c4ab5adb0247023cf91bd6862aaacbdc06a2f13c0f17"
+    },
+    {
+      "id": "bare-cr",
+      "source": "*a*\r_b_\r",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            2
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 8,
+      "source_sha256": "725019d30b42eafc232e33a4c52295b16816f0fcd2699ffff9c933be87497348"
+    },
+    {
+      "id": "authored-label",
+      "source": "*a* [_b_](dest)",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            5,
+            6
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 15,
+      "source_sha256": "32af78353c34fa15678bf2f48def9a5a07c10f00c585aca23c114f6817f50c65"
+    },
+    {
+      "id": "authored-alt",
+      "source": "*a* ![_b_](dest)",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            6,
+            7
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 16,
+      "source_sha256": "0e2edd5542535e84b023429c85f3b825cc9938ac029b90b06ab2d04f110083ec"
+    },
+    {
+      "id": "label-seeds",
+      "source": "[_a_](dest) *b*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            12,
+            13
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 15,
+      "source_sha256": "9e2a7da6e3003a27fcad2827278c08f41554b498bfa953b53a12ee9af144b0c9"
+    },
+    {
+      "id": "alt-seeds",
+      "source": "![_a_](dest) *b*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            13,
+            14
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 16,
+      "source_sha256": "f4d13f6b60b11857ee829f9f749d8b46852f7762549d68a6a6e4dcf5624d795b"
+    },
+    {
+      "id": "destination-excluded",
+      "source": "[link](dest_*a*_) _b_ *c*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            22,
+            23
+          ],
+          "start": [
+            1,
+            23
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 25,
+      "source_sha256": "ae44162e695e03258bb8f01b1a77742f7618d436ae9a37f321edd744e431850e"
+    },
+    {
+      "id": "reference-definition",
+      "source": "[x]: dest_*a*_\n\n_b_ *c*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            20,
+            21
+          ],
+          "start": [
+            3,
+            5
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 23,
+      "source_sha256": "cecc1ceb6b1374756eea18b5631768e0a89148cdeda738ef3e6d6735c50236e0"
+    },
+    {
+      "id": "code-span-excluded",
+      "source": "`_a_` *b* _c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            10,
+            11
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 13,
+      "source_sha256": "cba4e65e38b4c982fad4c26c48104d9a06f848415cb575ac2ced2fa5fc188f48"
+    },
+    {
+      "id": "fenced-code-excluded",
+      "source": "~~~\n_a_\n~~~\n\n*b* _c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            17,
+            18
+          ],
+          "start": [
+            5,
+            5
+          ],
+          "end": [
+            5,
+            6
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 20,
+      "source_sha256": "9769617e859bd62ab1ddf9b5149480f582a03574e1ad74187202346728a472a3"
+    },
+    {
+      "id": "indented-code-excluded",
+      "source": "    _a_\n\n*b* _c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            13,
+            14
+          ],
+          "start": [
+            3,
+            5
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 16,
+      "source_sha256": "9f8cf30f603c0e2c73236aebbc759365797b1bb1d95509c4fbd638fff0c4ee3f"
+    },
+    {
+      "id": "angle-autolink-excluded",
+      "source": "<https://example.test/_a_> *b* _c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            31,
+            32
+          ],
+          "start": [
+            1,
+            32
+          ],
+          "end": [
+            1,
+            33
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 34,
+      "source_sha256": "c33680d8bf94cdd7dca800e2b964e552d123c780cdbc6f78cb1e86587a625bfd"
+    },
+    {
+      "id": "gfm-bare-link-excluded",
+      "source": "https://example.test/_a_ *b* _c_",
+      "style": "consistent",
+      "flavors": [
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            29,
+            30
+          ],
+          "start": [
+            1,
+            30
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 32,
+      "source_sha256": "d5c864bcfd08f566fe7fd38c097b090ab48c20a916d01dc3668cc9e67ed2edfa"
+    },
+    {
+      "id": "commonmark-url-italic",
+      "source": "https://example.test/_a_ *b* _c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            25,
+            26
+          ],
+          "start": [
+            1,
+            26
+          ],
+          "end": [
+            1,
+            27
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 32,
+      "source_sha256": "d5c864bcfd08f566fe7fd38c097b090ab48c20a916d01dc3668cc9e67ed2edfa"
+    },
+    {
+      "id": "raw-eof",
+      "source": "a <script>_a_ *b*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [],
+      "source_bytes": 17,
+      "source_sha256": "d535c253b4133f6f09a1240c657977cf8349f943985bcddd98fd7bd082b4dd19"
+    },
+    {
+      "id": "raw-closer",
+      "source": "a <script>_a_</script> *b* _c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            27,
+            28
+          ],
+          "start": [
+            1,
+            28
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 30,
+      "source_sha256": "defb87f54e007b7e69ade843c55be0d0eb4884b0a01ea2b812cf252633076139"
+    },
+    {
+      "id": "raw-html-block",
+      "source": "<script>\n_a_\n</script>\n\n*b* _c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            28,
+            29
+          ],
+          "start": [
+            5,
+            5
+          ],
+          "end": [
+            5,
+            6
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 31,
+      "source_sha256": "da3f6b73e55cb7fb8cb34276b3532724aa7d4ee50f735774bf80206c64438cda"
+    },
+    {
+      "id": "ordinary-inline-tag",
+      "source": "*a* <i>_b_</i>",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            7,
+            8
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 14,
+      "source_sha256": "816b616ac8d3a8f82a5911f021c091309fb5eab2ccde6b0931633228fc4ab38c"
+    },
+    {
+      "id": "comment-excluded",
+      "source": "*a* <!-- _b_ --> _c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            17,
+            18
+          ],
+          "start": [
+            1,
+            18
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 20,
+      "source_sha256": "d05c70d8a6638a8bdf974379f52bfaf6fe0cb751e4001e61a74c7882333377c5"
+    },
+    {
+      "id": "image-raw-isolated",
+      "source": "![<script>x](img) _a_ *b*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            22,
+            23
+          ],
+          "start": [
+            1,
+            23
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 25,
+      "source_sha256": "3954b07bcf45207e6c7d05fba9353336d5d0b7d5fe8079679a9a05d0875108a9"
+    },
+    {
+      "id": "escaped-markers",
+      "source": "\\_a\\_ *b* _c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            10,
+            11
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 13,
+      "source_sha256": "c109a8a728e10787cb3bc89d252288ea8f1609a927faf9dce12845665dbee6b1"
+    },
+    {
+      "id": "entity-markers",
+      "source": "&#95;a&#95; *b* _c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            16,
+            17
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 19,
+      "source_sha256": "15ff46eb5197a5572d94b115f408ee25ef770944c5c0c63100699cc3e962f331"
+    },
+    {
+      "id": "entity-inside-italic",
+      "source": "_a &amp; b_ *c*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            12,
+            13
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 15,
+      "source_sha256": "5be677c7daa498157d7b619ee662a822333b02ccacb5d4b179db93ff2d9caa7e"
+    },
+    {
+      "id": "escape-inside-italic",
+      "source": "_a \\* b_ *c*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            9,
+            10
+          ],
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 12,
+      "source_sha256": "82ae23e48ae9e0e914f5d9176069264a8258df09afd5c2bc3bc23bb4fc824a84"
+    },
+    {
+      "id": "malformed-candidate-not-baseline",
+      "source": "A * text * example.\n\n_a_ *b*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            25,
+            26
+          ],
+          "start": [
+            3,
+            5
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 28,
+      "source_sha256": "034fd4cc2e48e2173af88fc4b7b616fe1ec8fdc891e4a79ab734a5a4efa5434b"
+    },
+    {
+      "id": "intraword-underscore",
+      "source": "foo_bar_baz *a* _b_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            16,
+            17
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 19,
+      "source_sha256": "a7007a7266d2e14eea5817410393a8d76db16bc23dc6f10ad6ddb430f87cdab0"
+    },
+    {
+      "id": "intraword-asterisk",
+      "source": "foo*bar*baz _c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            12,
+            13
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 15,
+      "source_sha256": "ecb17541293a2f046200cdcede672be92852ce0f09d0964ba41f41cebb06f717"
+    },
+    {
+      "id": "unmatched-not-baseline",
+      "source": "*unmatched\n\n_a_ *b*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            16,
+            17
+          ],
+          "start": [
+            3,
+            5
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 19,
+      "source_sha256": "006f62b430637428c1156d5c4bc2ccdca93b96a72a7af9001810223b4dd67cc4"
+    },
+    {
+      "id": "strike-child",
+      "source": "~~_a_~~ *b*",
+      "style": "consistent",
+      "flavors": [
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            9
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 11,
+      "source_sha256": "be7036c86e00edbe5f667238b0c769a131e2a7ebaef1c5232e2b7b7699f0f529"
+    },
+    {
+      "id": "gfm-table-owners",
+      "source": "| _a_ | *b* |\n| --- | --- |\n| *c* | _d_ |\n",
+      "style": "consistent",
+      "flavors": [
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            9
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        },
+        {
+          "bytes": [
+            30,
+            31
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 42,
+      "source_sha256": "ebd576d31c3648ef342d11ee2af43eec561051e3f00bfdd62c4f9da7aa716f50"
+    },
+    {
+      "id": "gfm-task-owner",
+      "source": "- [x] _a_\n- *b*",
+      "style": "consistent",
+      "flavors": [
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            12,
+            13
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 15,
+      "source_sha256": "c0f746be20507a64098bb9cb8d3e3ef29dab938537d952eb6359621a9d2aa524"
+    },
+    {
+      "id": "yaml-opaque",
+      "source": "---\ntitle: _hidden_\n---\n\n*a* _b_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            29,
+            30
+          ],
+          "start": [
+            5,
+            5
+          ],
+          "end": [
+            5,
+            6
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 32,
+      "source_sha256": "bf5e468ac9917eee8df1bfe2b7c907e61813012bf3aa66f22915bdfab80a0792",
+      "frontmatter": true
+    },
+    {
+      "id": "metadata-disabled-context",
+      "source": "---\ntitle: _hidden_\n---\n\n*a* _b_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            25,
+            26
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            2
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 32,
+      "source_sha256": "bf5e468ac9917eee8df1bfe2b7c907e61813012bf3aa66f22915bdfab80a0792",
+      "frontmatter": false
+    },
+    {
+      "id": "toml-opaque",
+      "source": "+++\ntitle = '_hidden_'\n+++\n\n*a* _b_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            32,
+            33
+          ],
+          "start": [
+            5,
+            5
+          ],
+          "end": [
+            5,
+            6
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 35,
+      "source_sha256": "df80d94375942bc0575e83ae03620c5bac130d1b599e71216cfb034093e8b991",
+      "frontmatter": true
+    },
+    {
+      "id": "malformed-recognized-header",
+      "source": "---\ntitle: _hidden_\ntitle: _other_\n---\n\n*a* _b_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            44,
+            45
+          ],
+          "start": [
+            6,
+            5
+          ],
+          "end": [
+            6,
+            6
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 47,
+      "source_sha256": "2fe5097d4799dbb2f0870a1fdf82c113367db352e6eac5f1b5a9af89bfdaf45a",
+      "frontmatter": true
+    },
+    {
+      "id": "suppressed-first-seeds",
+      "source": "<!-- mdchk:disable MD049 -->\n_a_\n<!-- mdchk:enable MD049 -->\n*b*\n",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            61,
+            62
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            2
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 65,
+      "source_sha256": "36e2018c3c3f8d6a6ab1061f9e596dfb74c6e58c59259514f2c6f241ca30c5ba"
+    },
+    {
+      "id": "denied-first-still-seeds",
+      "source": "<!-- mdchk:disable MD049 -->\n_a_\n<!-- mdchk:enable MD049 -->\n*b*\n",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            61,
+            62
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            2
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 65,
+      "source_sha256": "36e2018c3c3f8d6a6ab1061f9e596dfb74c6e58c59259514f2c6f241ca30c5ba",
+      "allow_directives": false
+    },
+    {
+      "id": "configured-off-then-on",
+      "source": "<!-- mdchk:disable MD049 -->\n_a_\n<!-- mdchk:enable MD049 -->\n*b*\n",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            61,
+            62
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            2
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 65,
+      "source_sha256": "36e2018c3c3f8d6a6ab1061f9e596dfb74c6e58c59259514f2c6f241ca30c5ba",
+      "enabled": false
+    },
+    {
+      "id": "configured-off-denied-enable",
+      "source": "<!-- mdchk:disable MD049 -->\n_a_\n<!-- mdchk:enable MD049 -->\n*b*\n",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [],
+      "source_bytes": 65,
+      "source_sha256": "36e2018c3c3f8d6a6ab1061f9e596dfb74c6e58c59259514f2c6f241ca30c5ba",
+      "enabled": false,
+      "allow_directives": false
+    },
+    {
+      "id": "hidden-mismatch",
+      "source": "*a*\n\n<!-- mdchk:disable MD049 -->\n_b_\n<!-- mdchk:enable MD049 -->\n_c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            66,
+            67
+          ],
+          "start": [
+            6,
+            1
+          ],
+          "end": [
+            6,
+            2
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 69,
+      "source_sha256": "5866789b71954fec16422bff7798e9420b54325e7c82061327eb87d795b77c60"
+    },
+    {
+      "id": "directive-denied",
+      "source": "*a*\n\n<!-- mdchk:disable MD049 -->\n_b_\n<!-- mdchk:enable MD049 -->\n_c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            34,
+            35
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            2
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        },
+        {
+          "bytes": [
+            66,
+            67
+          ],
+          "start": [
+            6,
+            1
+          ],
+          "end": [
+            6,
+            2
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 69,
+      "source_sha256": "5866789b71954fec16422bff7798e9420b54325e7c82061327eb87d795b77c60",
+      "allow_directives": false
+    },
+    {
+      "id": "global-directive-denied",
+      "source": "*a*\n\n<!-- mdchk:disable MD049 -->\n_b_\n<!-- mdchk:enable MD049 -->\n_c_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            34,
+            35
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            2
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        },
+        {
+          "bytes": [
+            66,
+            67
+          ],
+          "start": [
+            6,
+            1
+          ],
+          "end": [
+            6,
+            2
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 69,
+      "source_sha256": "5866789b71954fec16422bff7798e9420b54325e7c82061327eb87d795b77c60",
+      "directives_enabled": false
+    },
+    {
+      "id": "opening-active-closing-disabled",
+      "source": "*a*\n\n_b\nz <!-- mdchk:disable MD049 -->\nc_\n\n<!-- mdchk:enable MD049 -->\n_d_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            5,
+            6
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            2
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        },
+        {
+          "bytes": [
+            71,
+            72
+          ],
+          "start": [
+            8,
+            1
+          ],
+          "end": [
+            8,
+            2
+          ],
+          "text": "_",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 74,
+      "source_sha256": "09e52fdc7f542afa8f108195ec1dd11dbca0ebf68af12a2723a8dcd476bb1e69"
+    },
+    {
+      "id": "opening-disabled-closing-active",
+      "source": "_a_\n\n<!-- mdchk:disable MD049 -->\n*b\nz <!-- mdchk:enable MD049 -->\nc*\n\n*d*",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            71,
+            72
+          ],
+          "start": [
+            8,
+            1
+          ],
+          "end": [
+            8,
+            2
+          ],
+          "text": "*",
+          "message": "Italic delimiter style does not match the expected style."
+        }
+      ],
+      "source_bytes": 74,
+      "source_sha256": "1f8cf7f32da5bb878da2e8e2d9e541773baaa63c76352083728afdb44178c326"
+    },
+    {
+      "id": "empty",
+      "source": "",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [],
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "protected-only",
+      "source": "~~~\n_a_ *b*\n~~~\n\n`_c_`\n",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [],
+      "source_bytes": 23,
+      "source_sha256": "52568a38fcde098a96c13e10c0b65392abb7d11989e8b30f627a9af72bcaa7f8"
+    },
+    {
+      "id": "configured-disabled",
+      "source": "*one* and _two_",
+      "style": "consistent",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [],
+      "source_bytes": 15,
+      "source_sha256": "4bd1af3dc5c2fb02a72dbfda47f890fe826711cf7755ce42df731967283d441e",
+      "enabled": false
+    }
+  ]
+}

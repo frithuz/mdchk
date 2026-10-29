@@ -564,3 +564,18 @@ clean, protected and no-name path observes caller and origin cancellation and st
 work/nodes/elapsed limits; final producer/facade/callback failure atomically withdraws
 detached output. No reparse, mutable tree/index/operation access, fresh allowance,
 normalization or correction authority is added. Default OFF and PlannedFix remain.
+
+### MD049 italic delimiter style
+
+MD049 reuses the original parser delimiter inventory. It selects the minimum
+eligible actual Emphasis opening position per document, including suppressed
+and inactive intervals when the callback executes. Strong and malformed
+Whitespace candidates cannot establish the baseline. Authored labels and image
+alternatives participate; raw lifetimes, code, metadata and actual URL owners
+remain protected. Fixed styles select asterisk or underscore directly.
+
+Each mismatch is one manual original opening-byte finding. Suppression uses
+its opening START even when closing state differs. The same delimiter facade
+preserves MD037 empty options and narrowly admits one valid resolved style;
+MD049 additionally rejects absent internal style. All projections and final
+publication retain caller/origin authority and the original finite allowance.

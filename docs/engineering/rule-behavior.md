@@ -99,6 +99,23 @@ a narrow valid-UTF8 list domain, including disabled validation; no other lists
 are narrowed. See [MD044](../rules/formatting/md044.md) for the full policy.
 Pass 1 produces manual analysis only; MD047 remains the sole correction producer.
 
+### Md049
+
+MD049 consumes only actual Valid Emphasis facts of width one from the shared
+parser delimiter inventory. Strong and malformed Whitespace facts never seed
+or produce italic findings. Consistent style uses the minimum original opening
+position in the whole document, including suppressed or inactive intervals
+whenever the callback executes. Fixed styles select their configured marker.
+No container reset or cross-document mutable baseline is permitted.
+
+One manual finding identifies each mismatching original opening byte with
+`Italic delimiter style does not match the expected style.` Shared suppression
+uses that opening START independently of closing state. Actual nested/triple
+emphasis, authored labels/alternatives and transformed children remain eligible;
+actual code, metadata, raw lifetimes/tails and URL ownership stay protected.
+The same shared facade admits MD037 empty options or exactly one valid style;
+MD049 independently requires a resolved style. No MD049 correction is produced.
+
 ### Md011
 
 Recognize flat, immediately adjacent (label)[URL] candidates with nonblank label and a valid
