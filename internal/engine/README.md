@@ -522,3 +522,13 @@ reserve work/nodes before use. Empty, clean and protected paths retain caller
 and origin cancellation, sticky work/nodes/elapsed and final atomic withholding
 at producer, facade and callback. No reparse, tree/source/index clone, retained
 AST facts, decoder, new allowance or correction authority is introduced.
+
+MD035 borrows completed original thematic-marker spans, private raw tags and HTML
+tails through ThematicStyle. A single global borrowed original pattern survives
+container changes and disabled intervals; image alternatives isolate raw state.
+Traversal frames, marker/source associations, comparisons, state, capacity, copied
+prefixes and detached span/finding records reserve the original finite allowance
+before work. Empty, clean and protected inputs retain caller/origin controls and
+final atomic withholding at producer, facade and callback. No reparse, retained
+AST, source/index/options clone, decoder, new allowance or correction authority
+is added. MD035 is default enabled and manual; MD047 alone supplies corrections.

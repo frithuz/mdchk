@@ -147,3 +147,7 @@ MD085 establishes the full actual Paragraph baseline, protected-prefix ownership
 MD089 establishes complete original prose ownership and raw lifetime before
 filtering each zero-width insertion START. Hidden or unselected earlier context
 remains binding; line selection cannot create source adjacency or reset raw state.
+
+MD035 establishes the global first eligible original thematic pattern, including
+disabled breaks, before START suppression or inspection selection. Protected raw
+lifetimes remain full-document context. Later enabling never resets the baseline.

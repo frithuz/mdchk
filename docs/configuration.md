@@ -494,3 +494,10 @@ MD085 is available but disabled by default for CommonMark and GFM, with no rule-
 MD089 is available for CommonMark and GFM, disabled by default with no options.
 Empty mappings retain that default; strict shared settings and inherited directive
 denials apply even while disabled. PlannedFix metadata supplies no correction.
+
+MD035 is available and enabled by default for CommonMark and GFM. Its `style`
+option accepts exactly `consistent` (default), `dash`, `asterisk` or `underscore`.
+Consistent compares exact original first-to-last marker bytes against the global
+first eligible break; named styles require only the marker family. Full protected
+and earlier disabled context precedes suppression and line selection. Findings
+remain manual with no MD035 edits or previews.

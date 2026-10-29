@@ -15,7 +15,7 @@ After preparation, target I/O and invalid UTF-8 return `13`; successful empty
 selection returns `11`. MD047 terminating-newline, MD001 heading-increment, MD003
 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis,
 MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD030
-list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD018 missing
+list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD018 missing
 opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash
 spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis,
 MD023 heading indentation analysis, MD024 repeated heading analysis, MD025

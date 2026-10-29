@@ -188,3 +188,10 @@ MD085 is available but disabled by default. Full original Paragraph content fixe
 MD089 establishes complete original prose ownership and raw lifetime before
 filtering each zero-width insertion START. Hidden or unselected earlier context
 remains binding; line selection cannot create source adjacency or reset raw state.
+
+MD035 is available and enabled by default for CommonMark and GFM. Its `style`
+option accepts exactly `consistent` (default), `dash`, `asterisk` or `underscore`.
+Consistent compares exact original first-to-last marker bytes against the global
+first eligible break; named styles require only the marker family. Full protected
+and earlier disabled context precedes suppression and line selection. Findings
+remain manual with no MD035 edits or previews.
