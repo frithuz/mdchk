@@ -399,15 +399,39 @@ func TestCompiledPlatformMD027ManualApplyAndInvalidUTF8(t *testing.T) {
 				t.Fatal(e)
 			}
 			before := configurationBytes(t, root)
+			beforeApply := readinessState(t, root)
 			got := runConfigurationProcess(t, binary, root, "fix", "doc.md", "--format=json")
 			out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "fix")
 			after, e := os.Stat(path)
 			if e != nil {
 				t.Fatal(e)
 			}
-			if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].FixAvailable || len(out.Changes) != 0 || len(out.Documents) != 0 || !reflect.DeepEqual(before, configurationBytes(t, root)) || info.Mode() != after.Mode() {
+			if !out.Complete || len(out.Changes) != 0 || len(out.Documents) != 0 || !reflect.DeepEqual(before, configurationBytes(t, root)) || info.Mode() != after.Mode() {
 				t.Fatal(got)
 			}
+			readinessAssertEqual(t, "manual-only apply", beforeApply, readinessState(t, root))
+			// The actual acquisition result establishes native capability, not GOOS.
+			// Unsupported adapters refuse before analysis, even with no MD027 edits.
+			if got.Status == 13 {
+				if out.Status != "error" || len(out.Errors) != 1 || len(out.Diagnostics) != 0 || len(out.Files) != 0 || len(out.CheckedFiles) != 0 {
+					t.Fatal("not an explicit no-effect adapter refusal", got)
+				}
+				failure := out.Errors[0]
+				if failure.Category != result.IO || failure.Code != "write-acquisition" || failure.Scope != "operation" || failure.Message != "native replacement requires verified Darwin arm64 APFS and cgo; this adapter is unsupported" {
+					t.Fatal(failure)
+				}
+				t.Log("actual native adapter unsupported; exact refusal and no effects verified")
+			} else {
+				if got.Status != 10 || out.Status != "violations" || len(out.Errors) != 0 || len(out.Diagnostics) != 1 {
+					t.Fatal(got)
+				}
+				d := out.Diagnostics[0]
+				if d.Rule != "MD027" || d.FixAvailable || d.Message != "Extra spaces after blockquote marker." || d.ByteRange.Start != 2 || d.ByteRange.End != 3 {
+					t.Fatal(d)
+				}
+				t.Log("actual native acquisition succeeded; manual MD027 finding and no effects verified")
+			}
+			// Continue mandatory encoding checks on both native capability paths.
 			if e = os.WriteFile(path, []byte{'>', ' ', ' ', 0xff, '\n'}, 0600); e != nil {
 				t.Fatal(e)
 			}
@@ -432,6 +456,7 @@ func TestCompiledPlatformMD027ManualApplyAndInvalidUTF8(t *testing.T) {
 				if got.Status != 13 || out.Complete || len(out.Errors) != map[string]int{"lint": 1, "fix": 2}[args[0]] || len(out.Diagnostics) != 0 || len(out.Changes) != 0 || len(out.Documents) != 0 {
 					t.Fatal(got)
 				}
+				t.Logf("invalid UTF-8 %s verified after manual apply", args[0])
 			}
 			if !reflect.DeepEqual(before, configurationBytes(t, root)) {
 				t.Fatal("invalid input changed")
