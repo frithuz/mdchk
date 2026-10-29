@@ -66,6 +66,22 @@ Incomplete required syntax yields affected coverage rather than guessed candidat
 
 See the [MD037 rule page](../rules/formatting/md037.md) for examples and configuration.
 
+### Md038
+
+MD038 analyzes actual parsed CodeSpan nodes in eligible Markdown inline contexts.
+Both original delimiter-adjacent edges must have ASCII SPACE runs. One-sided runs
+of every length and all-SPACE normalized Literal values are meaningful and accepted.
+For other paired runs, actual Literal edge SPACE or backtick requires one innermost
+bounding byte at each edge; report only outer excess. Otherwise report both full
+runs. TAB/FF/VT/Unicode spacing and physical line endings are never padding ranges.
+Use retained original Content/marker ownership for geometry, including trimmed
+empty-semantic segments, rather than semantic offsets or envelope reconstruction.
+Protect actual raw HTML lifetimes and closing tails; image alternatives isolate
+raw state. Each range uses its own start for suppression and the fixed message
+`Whitespace within inline code delimiters.`. These are manual style findings,
+not permission to delete bytes or proof of preserved code value. See
+[MD038](../rules/formatting/md038.md) for the complete analysis policy.
+
 ### Md011
 
 Recognize flat, immediately adjacent (label)[URL] candidates with nonblank label and a valid

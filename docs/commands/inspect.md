@@ -201,3 +201,11 @@ rule-specific options. Shared `enabled` and `allow_directives` remain strict
 booleans, including when disabled. It analyzes full-source ordinary Text islands
 before directive or line filtering and reports each original inside-whitespace
 edge separately. Findings are manual; MD047 alone supplies corrections.
+
+MD038 is available and enabled by default for CommonMark and GFM, with no
+rule-specific options. Shared `enabled` and `allow_directives` settings apply;
+unknown options fail even when disabled. Analysis first resolves actual CodeSpan
+ownership, normalized value and original paired ASCII SPACE edges over the full
+source. Each excess edge range uses its own start for directive suppression;
+selected inspection lines filter results after full-source analysis. All findings
+remain manual, with no correction eligibility, edits or previews.

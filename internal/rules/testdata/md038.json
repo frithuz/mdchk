@@ -1,0 +1,768 @@
+{
+  "issue": 73,
+  "base": "7aa1e6f0271e512f4a5b986323cd5c7996ce2dc1",
+  "authority": "Root source-authored literals and exact original bytes BEFORE engineer; no parser/product/runtime call; adopted-policy authoritative",
+  "flavors": [
+    "commonmark",
+    "gfm"
+  ],
+  "count": 60,
+  "unique_ranges": 61,
+  "cases": [
+    {
+      "name": "accepted-plain",
+      "source": "`text`",
+      "sha256": "8d4dd35ecafb3ba24e8e09a6848e189d000402cb53ef4b5b43d31ea28bd527e4",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "ordinary-single-pair",
+      "source": "` text `",
+      "sha256": "29ed00d7ab469839198c9b2c90d4b8030c6970ea8eeacfd154111d95e08f4b1a",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "why": "No Literal-edge SPACE/backtick; both complete raw edge bytes are excess.",
+      "context": {}
+    },
+    {
+      "name": "documented-double-pair",
+      "source": "`  text  `",
+      "sha256": "d08302cf9c4ddfbcf6e7e399c1677c79df4bc8025ff53df96de11a46c9c25ec1",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "why": "Literal edge SPACE requires innermost one-byte pair; outer excess only.",
+      "context": {}
+    },
+    {
+      "name": "asymmetric-one-two",
+      "source": "` text  `",
+      "sha256": "0598549e03886979b956e4899a9f1cd701ddbd6befee618a9edf1b9416288c48",
+      "ranges": [
+        [
+          7,
+          8
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "asymmetric-two-one",
+      "source": "`  text `",
+      "sha256": "048641d7d60eae10527f7cf4b4e78733a92899079258a7b6ffae1f83b753b887",
+      "ranges": [
+        [
+          1,
+          2
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "three-one",
+      "source": "`   x `",
+      "sha256": "c6c1ba4c32d051e6689e61054da9c28218c74f35d8639e4067c34a4e930ec63b",
+      "ranges": [
+        [
+          1,
+          3
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "two-three",
+      "source": "`  x   `",
+      "sha256": "0f0339d117b6d1999a30174b69e005e7ce1cd075410dab6ecad965338bf7dddc",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          5,
+          7
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "one-sided-leading-single",
+      "source": "` text`",
+      "sha256": "aa9217a4c29eef97a9c1fa6a8791932245dd7c4b130dfdde225eff3685758d01",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "one-sided-leading-many",
+      "source": "`   text`",
+      "sha256": "c485089adbdbaee105826fbf53a44b44bcccf603bc5ce23c9345b0e6f57f1f64",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "one-sided-trailing-single",
+      "source": "`text `",
+      "sha256": "3511ccca3b662190f195583b133313c58b4813e87236ff0cec2ef36768ca4ce2",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "one-sided-trailing-many",
+      "source": "`text   `",
+      "sha256": "c816127a19eef93916e1a5621c4f349b0bfa325ea7c87bbba80fc1f822420e4b",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "all-space-single",
+      "source": "` `",
+      "sha256": "301d6e188c2e66adef392f657d08754b3c6c21457f87e48055f91c78e3c5c05a",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "all-space-many",
+      "source": "`     `",
+      "sha256": "d417c2fec5ae92cb5530866003ad89d37744a0dcb5093253f5928ce42cd4685c",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "all-space-normalized-crlf",
+      "source": "` \r\n `",
+      "sha256": "076b01a2dfb30c714271fe20b54af65e626104ac1217b44f4bab846bc8b17fd5",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "all-space-normalized-lf",
+      "source": "` \n `",
+      "sha256": "589bf874e2cb9f36198211368f23cce8dbd325d4a04227e62055adf5eaba6950",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "all-space-normalized-cr",
+      "source": "` \r `",
+      "sha256": "51394ee7e00dbc54348521f11920e41b234702b36642ea78008c16f0c0ec4d8e",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "required-backtick-pair",
+      "source": "`` `x` ``",
+      "sha256": "6a170346bebd37573f32e03ca46ff614cb2c19831c7498b8ae1895c6566e3cfe",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "required-backtick-excess",
+      "source": "``  `x`  ``",
+      "sha256": "e0980a67459d8c8ac87d6661b05c1fe278fd6295a912952eb44e155ff72d1d39",
+      "ranges": [
+        [
+          2,
+          3
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "required-only-leading-backtick",
+      "source": "`` `x ``",
+      "sha256": "112864d2c851f9a6c56ccd43a6363df40662070dd57581790531277cf917daf3",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "required-only-trailing-backtick",
+      "source": "`` x` ``",
+      "sha256": "a73ca04bc80a86b040c4523121ae0c7d177feb453a157aa397cbf6808680b4b8",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "interior-spaces-no-padding-need",
+      "source": "` a b `",
+      "sha256": "9ada06c9a05874daddefff04e9a7381c71fddc6f306edb61ceedf36eb611275d",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "tabs-as-content",
+      "source": "`\tx\t`",
+      "sha256": "2f0be01ca53bfd8fc2641997733c0183dae287e8737644fdaddf291989459923",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "formfeed-as-content",
+      "source": "`\fx\f`",
+      "sha256": "b8a72d58ca861ddfc893c97c17250dcf3130fb6633c83ce0b4c2c3e9560bb871",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "vertical-tab-as-content",
+      "source": "`\u000bx\u000b`",
+      "sha256": "23d29fe5b50d27d74b3fed325458cc845364ae14994ca74c7c8cea4d518abfb7",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "nbsp-as-content",
+      "source": "` x `",
+      "sha256": "9485a44ca0233545c61cd03e987049e7f7afddd1ccd9ffd80f8a8e731787e1b0",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "ascii-pair-around-tab",
+      "source": "` \t `",
+      "sha256": "f97e88dc987b56e22e6727e8c3b6d063a5e1e8e83a7be11ca9254363be0e9eec",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "ascii-pair-around-formfeed",
+      "source": "` \f `",
+      "sha256": "897353ebdd23e684a82a315ec38a4f24675fe02480d0aad0f28e37b16349a60e",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "ascii-pair-around-nbsp",
+      "source": "`   `",
+      "sha256": "7efb36226db8a34d10733a1e01ea6938f66a8cf4beb1c1266364b574e6e36802",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "newline-only-boundaries",
+      "source": "`\ntext\n`",
+      "sha256": "87d42e329d6a4dadeb57daf243d42be03281d30698f127c7acb3fa0e0aa66385",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "newline-derived-meaningful-boundary",
+      "source": "` \ntext\n `",
+      "sha256": "5039d2494d4113ddd535c5d7f1b6e46ce5297f54729041b939347f1696b37e9a",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "multiline-lf",
+      "source": "`  a\nb  `",
+      "sha256": "d9b6e623e086b2f58969e75ddd771de115db0e693fea8819ca3c87d4396c693d",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "multiline-crlf",
+      "source": "`  a\r\nb  `",
+      "sha256": "418666a41d40812da8515ef78cdb0762761ca0e441235e2f8e42a894e1ec6592",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "multiline-cr",
+      "source": "`  a\rb  `",
+      "sha256": "b1c4b8cbddb74cd6171caceb4a80420155b990bbe092ffb34beb7716b5cb627a",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "nul-normalized-not-space",
+      "source": "` \u0000 `",
+      "sha256": "5b5dceab7a5f78c9fc7e24857eda03cec0bf83d3a8b73c1a3e6f129869a63041",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "entity-stays-literal",
+      "source": "` &amp; `",
+      "sha256": "f918d8a0a7b439a10fd687ea1f6490bcef783149f71828de7324b1c9411c5742",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "backslash-stays-literal",
+      "source": "` \\* `",
+      "sha256": "ac66554b5c10c91433bbb97188cbe3cbb35d083c285a8d92ae1f8a80826a64fc",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "unicode-original-bytes",
+      "source": "é `  文  `",
+      "sha256": "90a38a1986ae7e0a134765cb929fec1cb3f79b06823691ef2fdba27640ea74d2",
+      "ranges": [
+        [
+          4,
+          5
+        ],
+        [
+          10,
+          11
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "quote-list-nesting",
+      "source": "> - `  x  `",
+      "sha256": "599ec3d2393851d95308455ab54787098f4bb961c124c5ca419deef70d0a1f2d",
+      "ranges": [
+        [
+          5,
+          6
+        ],
+        [
+          9,
+          10
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "heading-child",
+      "source": "# `  x  `",
+      "sha256": "0a915401e645463a33e25dcb6fa13a4514d1c0665c7a3859da62b3f28095b554",
+      "ranges": [
+        [
+          3,
+          4
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "emphasis-child",
+      "source": "*`  x  `*",
+      "sha256": "7eb85634097f9e0d5f98d67971274f943427fc8b1942274c4ef0867d7ef7caaa",
+      "ranges": [
+        [
+          2,
+          3
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "link-label",
+      "source": "[`  x  `](dest)",
+      "sha256": "f08d529219446a5a68f4874757fc0a3f2a854dcbd0a57ebe87e9033fa642c536",
+      "ranges": [
+        [
+          2,
+          3
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "image-alternative",
+      "source": "![`  x  `](pic)",
+      "sha256": "99572fcc67b7e4879bfa6caddb356da07b021e90552b0113d33b1c6fc819f461",
+      "ranges": [
+        [
+          3,
+          4
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "quote-physical-prefix-gap",
+      "source": "> `  a\n> b  `",
+      "sha256": "6522ad4d0a72923b5dd0673c222a2e8748706361b2167e2fd54f21606ceb911b",
+      "ranges": [
+        [
+          3,
+          4
+        ],
+        [
+          11,
+          12
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "list-physical-prefix-gap",
+      "source": "- `  a\n  b  `",
+      "sha256": "bdda6198f20cd3da32492890f0d888b89b2b7e2fd8005a8354a242ae4f481b5c",
+      "ranges": [
+        [
+          3,
+          4
+        ],
+        [
+          11,
+          12
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "quote-lazy-continuation",
+      "source": "> `  a\nb  `",
+      "sha256": "901691cc3beb5f07b8660bd19bca84ba3b6a00705d067a85c23232ae1281d38e",
+      "ranges": [
+        [
+          3,
+          4
+        ],
+        [
+          9,
+          10
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "gfm-table-escaped-pipe",
+      "source": "| a |\n| - |\n| `  a\\|b  ` |\n",
+      "sha256": "06e2ac1481167d9955a899d59b940c147fb41ff2af78b447e5a33b9a3f124c5d",
+      "ranges": [
+        [
+          15,
+          16
+        ],
+        [
+          22,
+          23
+        ]
+      ],
+      "why": "Both flavors own original edge bytes; GFM pipe Literal differs, positions do not use Literal offsets.",
+      "context": {}
+    },
+    {
+      "name": "after-raw-close",
+      "source": "A <script>body</script> `  x  `",
+      "sha256": "bea7120548439107f4f9d4d82dd29330e337d284ef8ce33211636410f0e28e8d",
+      "ranges": [
+        [
+          25,
+          26
+        ],
+        [
+          29,
+          30
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "image-raw-state-isolation",
+      "source": "![<script>x](pic) `  x  `",
+      "sha256": "b1534916ffa94de8d998653c300fd6f9ece2c62b7942824a33f8d0272dc394fe",
+      "ranges": [
+        [
+          19,
+          20
+        ],
+        [
+          23,
+          24
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "inline-tag-neighbor",
+      "source": "A <span>`  x  `</span>",
+      "sha256": "31dc733c50b58c9f70af99a8f34964661630f67c71c76a74e75e4db8f862ac05",
+      "ranges": [
+        [
+          9,
+          10
+        ],
+        [
+          13,
+          14
+        ]
+      ],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "fenced-protection",
+      "source": "```\n`  x  `\n```\n",
+      "sha256": "342de5a20e646c1532fe5e4abaf96ae5391f4accb63f31b74f4f711dfccefa30",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "indented-protection",
+      "source": "    `  x  `\n",
+      "sha256": "663c703851e4151a850a7c351ecbb13f00a128b65562866a16453e1e677e9cdd",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "comment-protection",
+      "source": "<!-- `  x  ` -->\n",
+      "sha256": "35be8f5cce0385ff723f511c2bd25cd5599a0b67989d02048a6082c6c517bf7a",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "html-attribute-protection",
+      "source": "A <a title='`  x  `'>z</a>\n",
+      "sha256": "b1ebad4e1b33c8b8b2e7e050853bbb68ba4b61750600e81f0107d166ad41a834",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "raw-script-protection",
+      "source": "A <script>`  x  `</script> tail\n",
+      "sha256": "6bb3b308c422e7048ec053a938a5e6218571e5788189be4a6c016b5a5cfc6df0",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "raw-style-protection",
+      "source": "A <style>`  x  `</style> tail\n",
+      "sha256": "f6bdac6b11a0a92e2326cd913c49a6148e6da3e948a923b1f83dd257e777d8db",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "escaped-opener",
+      "source": "\\`  x  `",
+      "sha256": "2954787c9584f08a617151285ff1f588ba2f3e9bc96cc3257e3b91c7152ef0c1",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "unmatched-opener",
+      "source": "`  x  ",
+      "sha256": "b50b8d5fdeed7a7f9aca9ad82c0119fcd3b172ccf3ff000fa007433872e35118",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "entity-backticks-are-text",
+      "source": "&#96;  x  &#96;",
+      "sha256": "24110c925049b37ed3c4a1b0ef56c03c2995a036cadb4d38f5c2e7af515c25da",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "code-interior-not-recursive",
+      "source": "``x `  y  ` z``",
+      "sha256": "46c73674547c066aedd4d89e32abb61b355f208b407aada851d49076827bf86e",
+      "ranges": [],
+      "why": "",
+      "context": {}
+    },
+    {
+      "name": "two-independent-spans",
+      "source": "`  x  ` and ` y `",
+      "sha256": "187a7c72172afbb072f8ee65fcde41ccede696419228b354aa52e012ca7fc825",
+      "ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          13,
+          14
+        ],
+        [
+          15,
+          16
+        ]
+      ],
+      "why": "First excess pair; second ordinary single pair also expected.",
+      "context": {}
+    }
+  ]
+}

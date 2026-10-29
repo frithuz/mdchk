@@ -667,3 +667,13 @@ clean and protected input retain caller/origin controls, sticky finite work/node
 elapsed limits and atomic final producer/facade/callback withholding. No reparse,
 decoder, tree/source clone or new allowance is introduced. Source-derived bounded
 reservation tests establish specific fixtures, without a performance claim.
+
+MD038 CodeSpanSpaces borrows the completed original production parse and allowance.
+It scans actual retained SPACE edges and actual normalized Literal separately,
+without reconstructing payload or using semantic offsets for original geometry.
+Source/marker/segment associations, failed byte and end probes, traversal and raw
+state, output/growth capacity, copied prefixes and logical records reserve original
+work/nodes before use. Empty/clean/protected results retain caller/origin and sticky
+finite controls with atomic final withholding. Source-authored exact residual
+reservation tests cover small inputs, long failed probes and multi-span growth;
+these are finite accounting examples, not process-memory or throughput promises.

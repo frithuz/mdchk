@@ -541,3 +541,15 @@ Each authored edge-whitespace span is detached and manual; caller/origin control
 precharged scalar/traversal/capacity/copy/record work and final atomic withholding
 apply at producer, facade and callback. No reparse, decoder or correction authority
 is introduced; MD047 alone supplies corrections.
+
+MD038 borrows actual completed CodeSpan ownership through CodeSpanSpaces under
+original source/index/options/profile and operation authority. Actual normalized
+Literal decides the required innermost padding pair; only retained original ASCII
+SPACE edge bytes supply detached manual ranges. Both edges must participate;
+one-sided runs and all-SPACE values remain meaningful. Raw lifetimes, HTML tails
+and image-alternative isolation preserve protected contexts. Traversal, source
+associations, failed byte probes, capacity/copies and logical ranges/findings
+reserve original work/nodes before use. Caller/origin cancellation, sticky limits
+and final producer/facade/callback checks withhold failed dependent output, including
+empty/clean/protected cases. PlannedFix metadata grants no correction authority;
+MD047 alone supplies executable corrections.

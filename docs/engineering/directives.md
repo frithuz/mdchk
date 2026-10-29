@@ -155,3 +155,11 @@ lifetimes remain full-document context. Later enabling never resets the baseline
 MD037 constructs complete ordinary Text islands and resolves all competing runs
 before suppression. Each interior whitespace edge uses its own original START,
 independently of the opener. Inspection filtering preserves full original state.
+
+MD038 is available and enabled by default for CommonMark and GFM, with no
+rule-specific options. Shared `enabled` and `allow_directives` settings apply;
+unknown options fail even when disabled. Analysis first resolves actual CodeSpan
+ownership, normalized value and original paired ASCII SPACE edges over the full
+source. Each excess edge range uses its own start for directive suppression;
+selected inspection lines filter results after full-source analysis. All findings
+remain manual, with no correction eligibility, edits or previews.

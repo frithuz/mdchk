@@ -306,3 +306,15 @@ clean and protected input retain caller/origin controls, sticky finite work/node
 elapsed limits and atomic final producer/facade/callback withholding. No reparse,
 decoder, tree/source clone or new allowance is introduced. Source-derived bounded
 reservation tests establish specific fixtures, without a performance claim.
+
+MD038 borrows actual completed CodeSpan ownership through CodeSpanSpaces under
+original source/index/options/profile and operation authority. Actual normalized
+Literal decides the required innermost padding pair; only retained original ASCII
+SPACE edge bytes supply detached manual ranges. Both edges must participate;
+one-sided runs and all-SPACE values remain meaningful. Raw lifetimes, HTML tails
+and image-alternative isolation preserve protected contexts. Traversal, source
+associations, failed byte probes, capacity/copies and logical ranges/findings
+reserve original work/nodes before use. Caller/origin cancellation, sticky limits
+and final producer/facade/callback checks withhold failed dependent output, including
+empty/clean/protected cases. PlannedFix metadata grants no correction authority;
+MD047 alone supplies executable corrections.
