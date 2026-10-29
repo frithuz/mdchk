@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/frithuz/mdchk/internal/result"
 )
 
 func md037Configuration(flavor string) string {
@@ -278,7 +280,16 @@ func TestCompiledPlatformMD037HeadersAndInheritedPermissions(t *testing.T) {
 }
 
 func TestCompiledPlatformMD037MixedEncodingIndependentCorrection(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	md037MixedEncodingIndependentCorrection(t, buildConfigurationExecutable(t, ""), false)
+}
+
+func TestCompiledPlatformMD037MixedEncodingIndependentCorrectionNoCGO(t *testing.T) {
+	t.Setenv("CGO_ENABLED", "0")
+	md037MixedEncodingIndependentCorrection(t, buildConfigurationExecutable(t, ""), true)
+}
+
+func md037MixedEncodingIndependentCorrection(t *testing.T, binary string, requireUnsupported bool) {
+	t.Helper()
 	root := configurationProject(t)
 	config := strings.Replace(md037Configuration("gfm"), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
 	config = strings.Replace(config, "MD094: {enabled: false}", "MD094: {enabled: true}", 1)
@@ -299,6 +310,23 @@ func TestCompiledPlatformMD037MixedEncodingIndependentCorrection(t *testing.T) {
 			}
 			got := runConfigurationProcess(t, binary, root, args...)
 			out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "fix")
+			// Unsupported adapters refuse write acquisition before document analysis.
+			// Validate that terminal result before expecting mixed-encoding output.
+			if !dry && len(out.Errors) == 1 && out.Errors[0].Code == "write-acquisition" {
+				failure := out.Errors[0]
+				if got.Status != 13 || out.Status != "error" || !out.Complete || failure.Category != result.IO || failure.Scope != "operation" || failure.Message != "native replacement requires verified Darwin arm64 APFS and cgo; this adapter is unsupported" {
+					t.Fatal(got)
+				}
+				if len(out.CheckedFiles)+len(out.Files)+len(out.Diagnostics)+len(out.SuppressedDiagnostics)+len(out.Coverage)+len(out.Changes)+len(out.DeferredFixes)+len(out.Documents)+len(out.Interruptions)+len(out.Omissions) != 0 {
+					t.Fatal("unsupported adapter invented analysis or changes", got)
+				}
+				readinessAssertEqual(t, "unsupported mixed apply", before, readinessState(t, root))
+				t.Log("actual native adapter unsupported; exact early refusal and no effects verified")
+				return
+			}
+			if !dry && requireUnsupported {
+				t.Fatal("no-cgo executable did not refuse write acquisition", got)
+			}
 			if got.Status != 13 || out.Complete {
 				t.Fatal(got)
 			}
@@ -311,13 +339,6 @@ func TestCompiledPlatformMD037MixedEncodingIndependentCorrection(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, "doc.md"))
 			if err != nil {
 				t.Fatal(err)
-			}
-			if !dry && len(out.Errors) == 1 && out.Errors[0].Code == "write-acquisition" {
-				if !strings.Contains(out.Errors[0].Message, "unsupported") {
-					t.Fatal(got)
-				}
-				readinessAssertEqual(t, "unsupported mixed apply", before, readinessState(t, root))
-				return
 			}
 			if len(out.Errors) != 1 || out.Errors[0].Code != "invalid-utf8" || out.Errors[0].Path != "zz-bad.md" || out.Errors[0].ByteOffset == nil || *out.Errors[0].ByteOffset != 1 || len(out.Diagnostics) != 2 || len(out.Changes) != 1 || len(out.CheckedFiles) != 2 {
 				t.Fatal(got)
