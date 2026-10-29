@@ -163,3 +163,7 @@ ownership, normalized value and original paired ASCII SPACE edges over the full
 source. Each excess edge range uses its own start for directive suppression;
 selected inspection lines filter results after full-source analysis. All findings
 remain manual, with no correction eligibility, edits or previews.
+
+MD050 retains the earliest actual eligible Strong opening across full original
+context, including hidden intervals. Finding suppression uses only that Strong's
+two-byte Opening START, independently of closing state or inspect selection.

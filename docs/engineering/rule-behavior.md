@@ -116,6 +116,18 @@ actual code, metadata, raw lifetimes/tails and URL ownership stay protected.
 The same shared facade admits MD037 empty options or exactly one valid style;
 MD049 independently requires a resolved style. No MD049 correction is produced.
 
+### Md050
+
+MD050 consumes actual Valid Strong width-two facts from the same delimiter
+projection and resolved-style getter. Emphasis and malformed Whitespace never
+seed or report. Consistent selects the minimum original Strong Opening.Start
+per immutable document before suppression or inspection slicing; fixed styles
+select their marker. Nested/triple/longer consumed roles, transformed children,
+authored labels and alternatives retain actual ownership and shared protections.
+One manual finding per mismatch covers exactly the complete two-byte Opening
+with `Bold delimiter style does not match the expected style.` Opening START
+alone governs suppression. No correction authority or alternate parser is added.
+
 ### Md011
 
 Recognize flat, immediately adjacent (label)[URL] candidates with nonblank label and a valid

@@ -1,0 +1,1655 @@
+{
+  "issue": 76,
+  "base": "a84d2081ca613b7e7541b909c26a9600e5d3a150",
+  "authorship": "Original65records source-authored before engineering. ExplicitV2 AFTER preservedfirstfailures and twoindependentprimarygrammarassessments:2corrected semanticexpectations/accurateIDs+3newcontrols source-authored before their execution. No production-derived acceptancepolicy or silenthistoricalrewrite.",
+  "message": "Bold delimiter style does not match the expected style.",
+  "cases": [
+    {
+      "id": "page-violation",
+      "source": "**one** and __two__",
+      "style": "consistent",
+      "source_bytes": 19,
+      "source_sha256": "1d88efa52b52991083195093275e621ce79239a7d0ae87a8ede289b12913d84f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            12,
+            14
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "__",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "page-accepted",
+      "source": "**one** and **two**",
+      "style": "consistent",
+      "source_bytes": 19,
+      "source_sha256": "c8976a1902b6a53bc055684bf5f4ecd594444c08a76c260c20f5e0c37aa54e26",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "reverse-baseline",
+      "source": "__one__ and **two**",
+      "style": "consistent",
+      "source_bytes": 19,
+      "source_sha256": "bd1c425e90d5f953d2990eaa7fa630d0bf926c996407ba63700fe66bec5effce",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            12,
+            14
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "fixed-asterisk",
+      "source": "**a** __b__",
+      "style": "asterisk",
+      "source_bytes": 11,
+      "source_sha256": "bafd0acd01880f9dc36ae84eb54c9a5aaf16554fd0db0370e151162f4fa36cf7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            6,
+            8
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "__",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "fixed-underscore",
+      "source": "**a** __b__",
+      "style": "underscore",
+      "source_bytes": 11,
+      "source_sha256": "bafd0acd01880f9dc36ae84eb54c9a5aaf16554fd0db0370e151162f4fa36cf7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            2
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "fixed-asterisk-allwrong",
+      "source": "__a__ __b__",
+      "style": "asterisk",
+      "source_bytes": 11,
+      "source_sha256": "d5f741a48c673bafc1ce8d172f15a75d82dd02f9a7a648d67cf696a42895c5f1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            2
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "__",
+          "message": "Bold delimiter style does not match the expected style."
+        },
+        {
+          "bytes": [
+            6,
+            8
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "__",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "fixed-underscore-allwrong",
+      "source": "**a** **b**",
+      "style": "underscore",
+      "source_bytes": 11,
+      "source_sha256": "e26709886f2e384a93b03b9b6d3ae9117a238dff0990dcbf020ec95dc3de3d25",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            2
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        },
+        {
+          "bytes": [
+            6,
+            8
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "empty",
+      "source": "",
+      "style": "consistent",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "only-italic",
+      "source": "*a* _b_",
+      "style": "consistent",
+      "source_bytes": 7,
+      "source_sha256": "5183a8b75b26f69b8e9ed2a0071914c2d93c1941edc6a5dfb384aeb2e7e3a833",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "only-italic-fixed",
+      "source": "*a* _b_",
+      "style": "underscore",
+      "source_bytes": 7,
+      "source_sha256": "5183a8b75b26f69b8e9ed2a0071914c2d93c1941edc6a5dfb384aeb2e7e3a833",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "italic-cannot-seed",
+      "source": "*i* __a__ **b**",
+      "style": "consistent",
+      "source_bytes": 15,
+      "source_sha256": "1e5b0dbe53cbe8091ffc452579549040dad69d0d1580036af43f86d565f666f7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            10,
+            12
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "italic-reverse-cannot-seed",
+      "source": "_i_ **a** __b__",
+      "style": "consistent",
+      "source_bytes": 15,
+      "source_sha256": "2b34f542a4b08c21fc8cca1e38764bc98a83931e79d7338c5dfbb273328c9f8b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            10,
+            12
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "text": "__",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "nested-strong",
+      "source": "**outer __inner__ tail**",
+      "style": "consistent",
+      "source_bytes": 24,
+      "source_sha256": "225d650ac78f190e3aeac54057c0abfd3c7b96293d01dd7c40cdb4c90c7162d9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            10
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "__",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "nested-strong-reverse",
+      "source": "__outer **inner** tail__",
+      "style": "consistent",
+      "source_bytes": 24,
+      "source_sha256": "9be3d226180b5e1abf9020ba34633f7ac977128f6741c54922a6299289870722",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            10
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "strong-with-italic",
+      "source": "__outer *inner*__ **later**",
+      "style": "consistent",
+      "source_bytes": 27,
+      "source_sha256": "ac1339d9ec48cdf78540d63c36b4b3bc4c40235f34f0c575b2384f3db1ba580b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            18,
+            20
+          ],
+          "start": [
+            1,
+            19
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "italic-with-strong",
+      "source": "*outer __inner__* **later**",
+      "style": "consistent",
+      "source_bytes": 27,
+      "source_sha256": "600913e614b1c5f6ad656713af991ba1f4d88f61a8016b6f0de06b87f92122a7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            18,
+            20
+          ],
+          "start": [
+            1,
+            19
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "triple-actual-strong",
+      "source": "***a*** ___b___",
+      "style": "consistent",
+      "source_bytes": 15,
+      "source_sha256": "57acc5cd9e3166081a99bf6b260674d18d6a9b23d8a09940c7bafdbbe1df8325",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            9,
+            11
+          ],
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "__",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "triple-fixed-owned-role",
+      "source": "***a***",
+      "style": "underscore",
+      "source_bytes": 7,
+      "source_sha256": "b99d966c0c87040804359b3472a3f4e30029353b16081e0ec843ced212016af5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            3
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "four-run-two-actual-strong",
+      "source": "****a****",
+      "style": "underscore",
+      "source_bytes": 9,
+      "source_sha256": "ca275c1fac9cb8121bbbb9b7c28545541f38b4a3ee6a7efcb2b49f6d77933d18",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            2
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        },
+        {
+          "bytes": [
+            2,
+            4
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "six-run-three-actual-strong",
+      "source": "******a******",
+      "style": "underscore",
+      "source_bytes": 13,
+      "source_sha256": "a43a6d1fe8a39acc52da70d7601015d6d03e0aa023d5e21f11cc3a91499119ba",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            2
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        },
+        {
+          "bytes": [
+            2,
+            4
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        },
+        {
+          "bytes": [
+            4,
+            6
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "malformed-cannot-seed",
+      "source": "A ** x **\n\n__a__ **b**",
+      "style": "consistent",
+      "source_bytes": 22,
+      "source_sha256": "02ba13ca6e321e31e9ae63c899e77dd9d441c1ae1043fd05b82b7d4eb1a01fa3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            17,
+            19
+          ],
+          "start": [
+            3,
+            7
+          ],
+          "end": [
+            3,
+            9
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "escaped-markers-cannot-seed",
+      "source": "\\*\\*a\\*\\* __b__",
+      "style": "consistent",
+      "source_bytes": 15,
+      "source_sha256": "43fdde1fc495a19592e6bdf8f3c4ed25aec7b484ea4674d03638f545a9e37e54",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "entity-markers-cannot-seed",
+      "source": "&ast;&ast;a&ast;&ast; __b__",
+      "style": "consistent",
+      "source_bytes": 27,
+      "source_sha256": "89e92535456ad752a1b6928108e32af19158ea4fb6eb36b93427e000f27f40a5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "unmatched-cannot-seed",
+      "source": "A **unclosed\n\n__b__",
+      "style": "consistent",
+      "source_bytes": 19,
+      "source_sha256": "6860be6378a952e6773db6cd9e90a3bd6d4871754fe60b0a3920650c46d4964f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "intraword-underscore-not-strong",
+      "source": "foo__a__bar **b**",
+      "style": "consistent",
+      "source_bytes": 17,
+      "source_sha256": "a26cbc2da2e107aea3ed783596bdddf1c8a3a34fcda0ddd1e8cc3a24d728fe45",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "intraword-asterisk-actual",
+      "source": "foo**a**bar __b__",
+      "style": "consistent",
+      "source_bytes": 17,
+      "source_sha256": "6970e5c5997130dc6f34486f1f5eee56f24424c8e27bcb5c9bf5db552a2bfeef",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            12,
+            14
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "__",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "heading-to-paragraph",
+      "source": "# __a__\n\n**b**",
+      "style": "consistent",
+      "source_bytes": 14,
+      "source_sha256": "b831a664f7f4ab783051e3f1b9316e521ab85c09b3c7095f5899547fe262f01d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            9,
+            11
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "list-to-quote",
+      "source": "- __a__\n\n> **b**",
+      "style": "consistent",
+      "source_bytes": 16,
+      "source_sha256": "2d66ac2e35a4247e58301c92ab87240240a342e522a4dc7cfa07856caae5920a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            11,
+            13
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "task-to-prose",
+      "source": "- [x] __a__\n\n**b**",
+      "style": "consistent",
+      "source_bytes": 18,
+      "source_sha256": "427a039ee3263866f5ed52ca7781f2df93a91f651592f4b300d9a978c159522c",
+      "flavors": [
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            13,
+            15
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "gfm-cells",
+      "source": "**a** | __b__\n--- | ---\n",
+      "style": "consistent",
+      "source_bytes": 24,
+      "source_sha256": "a6397459459fa033581c88540cc0e8a10e1507a090448b1dbd0aea43db5b41fc",
+      "flavors": [
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            10
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "__",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "gfm-strike-wrapper",
+      "source": "~~__a__~~ **b**",
+      "style": "consistent",
+      "source_bytes": 15,
+      "source_sha256": "16f565201170611a1d8679b739de7fab769067459e8a4fe715a5b241901f682c",
+      "flavors": [
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            10,
+            12
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "inline-link-label",
+      "source": "[__a__](target) **b**",
+      "style": "consistent",
+      "source_bytes": 21,
+      "source_sha256": "a4f14a8a0df126677e7a852f2e8c33f27c43644c32da2b27318f656cab124d79",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            16,
+            18
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "reference-link-label",
+      "source": "[__a__][ref] **b**\n\n[ref]: target\n",
+      "style": "consistent",
+      "source_bytes": 34,
+      "source_sha256": "c785ddd007ee5aaf2a0988f95373c6ce485ef4e0faf45dd112c7d34f77110b2f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            13,
+            15
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "image-alternative",
+      "source": "![__a__](image.png) **b**",
+      "style": "consistent",
+      "source_bytes": 25,
+      "source_sha256": "96562cf3126256085016987a1278d6bb961ef34c60f428f28d53366da2b81e37",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            20,
+            22
+          ],
+          "start": [
+            1,
+            21
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "destination-not-baseline",
+      "source": "[x](https://x/__a__) **b**",
+      "style": "consistent",
+      "source_bytes": 26,
+      "source_sha256": "81fdac1f0273e4c2dd3bd150bac921d48ef315c9a1e3bd437a449bd7c371e5e6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "title-not-baseline",
+      "source": "[x](target \"__a__\") **b**",
+      "style": "consistent",
+      "source_bytes": 25,
+      "source_sha256": "6255adbb2ef43417c72fe5716bf10b55758f9cc575a79fa49514c5dbb49fb6e7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "reference-definition-not-baseline",
+      "source": "[ref]: https://x/__a__\n\n**b**",
+      "style": "consistent",
+      "source_bytes": 29,
+      "source_sha256": "64735131d4bf4e5421672075718618d0eb53b6b4a7e1215bee7eb9f1d64114a3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "autolink-not-baseline",
+      "source": "<https://x/__a__> **b**",
+      "style": "consistent",
+      "source_bytes": 23,
+      "source_sha256": "59a41b10540ee9bda4e6c39ec515e728f38b2b0a156050b350548fe068455911",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "commonmark-url-looking-text",
+      "source": "https://x/__a__ **b**",
+      "style": "consistent",
+      "source_bytes": 21,
+      "source_sha256": "cc006c92b0cd429ee1547d5311026f00a376c8d4f0f6c58513d15c42ea4e8d34",
+      "flavors": [
+        "commonmark"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            16,
+            18
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "gfm-single-label-domain-remains-prose",
+      "source": "https://x/__a__ **b**",
+      "style": "consistent",
+      "source_bytes": 21,
+      "source_sha256": "cc006c92b0cd429ee1547d5311026f00a376c8d4f0f6c58513d15c42ea4e8d34",
+      "flavors": [
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            16,
+            18
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "codespan-not-baseline",
+      "source": "`__a__` **b**",
+      "style": "consistent",
+      "source_bytes": 13,
+      "source_sha256": "062d1cda317fe5cbbafcf642eb482df50687484e56056ece39e9996b0eadce60",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "fence-not-baseline",
+      "source": "```\n__a__\n```\n\n**b**",
+      "style": "consistent",
+      "source_bytes": 20,
+      "source_sha256": "b12a160ced564d3537bf0295ca8e85b41b331443c4f50f240fed84b5ff40ddcc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "indentcode-not-baseline",
+      "source": "    __a__\n\n**b**",
+      "style": "consistent",
+      "source_bytes": 16,
+      "source_sha256": "c2f77e23e9cd8351e5cb50535db8c4f1268240c52b675b040c8225b5a62247db",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "comment-not-baseline",
+      "source": "A <!-- __a__ --> **b**",
+      "style": "consistent",
+      "source_bytes": 22,
+      "source_sha256": "18518519d76046e558d850f8badcd8f40d5416a2d0dab77093f1c3023289ee37",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "raw-lifetime-not-baseline",
+      "source": "<script>__a__</script>\n\n**b**",
+      "style": "consistent",
+      "source_bytes": 29,
+      "source_sha256": "4ff2c7dfc12bfdee3911567e4290726000ff55fee985e3f63f6917aa135a2e1e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "raw-through-eof",
+      "source": "<script>\n__a__ **b**",
+      "style": "consistent",
+      "source_bytes": 20,
+      "source_sha256": "d3d221f7e79d9d5242a105ecae50a6319b7d0020b3347db1c69679d87370813e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "strong-containing-code",
+      "source": "__`a`__ **b**",
+      "style": "consistent",
+      "source_bytes": 13,
+      "source_sha256": "dd158e11f1f0d711ba740e6290ad43ba3d8e387909fac01854df3f954b38b00d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            10
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "transformed-entity-child",
+      "source": "__a &amp; b__ **c**",
+      "style": "consistent",
+      "source_bytes": 19,
+      "source_sha256": "117f7e9fd7f59e79a32f703ed68d88bc93510583a8c7b441f38cf29e79c6f17c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            14,
+            16
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "transformed-escape-child",
+      "source": "__a \\* b__ **c**",
+      "style": "consistent",
+      "source_bytes": 16,
+      "source_sha256": "ae0a7c03c833f471cc33a6cbd96a8c18b22a9922ed018ef514d29d07d600adec",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            11,
+            13
+          ],
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "transformed-nul-child",
+      "source": "__a\u0000b__ **c**",
+      "style": "consistent",
+      "source_bytes": 13,
+      "source_sha256": "a0fb2eb95f937f74ca7dca63f458dcb99456e1abbb237b241d503929a1317115",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            10
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "tab-child",
+      "source": "__a\tb__ **c**",
+      "style": "consistent",
+      "source_bytes": 13,
+      "source_sha256": "0d70b415b5d9ac40f76b973392a5970c700b7fdb4fd7b95571d2e0768ad34c99",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            10
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "unicode-lf",
+      "source": "é🙂 __a__\n\t**b**",
+      "style": "consistent",
+      "source_bytes": 19,
+      "source_sha256": "60ad7474f9de8cd5f088fa14bca4836f81896232093cee8ef784f200a761a9b6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            14,
+            16
+          ],
+          "start": [
+            2,
+            2
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "unicode-crlf",
+      "source": "é🙂 __a__\r\n\t**b**",
+      "style": "consistent",
+      "source_bytes": 20,
+      "source_sha256": "8a830dc7a5c189aea23ca7ed612eb19c1b9666093f5d2e23413b197916e3155e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            15,
+            17
+          ],
+          "start": [
+            2,
+            2
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "unicode-cr",
+      "source": "é🙂 __a__\r\t**b**",
+      "style": "consistent",
+      "source_bytes": 19,
+      "source_sha256": "00b6ab1c9fbbdc1121d0b8bb8f9713ab652b57ee6408c9424bded17c48286bb9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            14,
+            16
+          ],
+          "start": [
+            2,
+            2
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "bom-disqualifies-underscore-opener",
+      "source": "﻿__a__ **b**",
+      "style": "consistent",
+      "source_bytes": 14,
+      "source_sha256": "2b059be5ee64a4d767e10290ce410583928aa540efa7d740bb9e6c596d7761fc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "yaml-recognized",
+      "source": "---\ntitle: __a__\n---\n**b**",
+      "style": "consistent",
+      "source_bytes": 26,
+      "source_sha256": "aa6f8e4431666c5826b92139864fa8508fbb7f3a3cc39a764cc43f45482483d2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [],
+      "frontmatter": true
+    },
+    {
+      "id": "yaml-unrecognized",
+      "source": "---\ntitle: __a__\n---\n**b**",
+      "style": "consistent",
+      "source_bytes": 26,
+      "source_sha256": "aa6f8e4431666c5826b92139864fa8508fbb7f3a3cc39a764cc43f45482483d2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            21,
+            23
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            3
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ],
+      "frontmatter": false
+    },
+    {
+      "id": "toml-recognized",
+      "source": "+++\ntitle='__a__'\n+++\n**b**",
+      "style": "consistent",
+      "source_bytes": 27,
+      "source_sha256": "ea8ae75ff70c516a57737cc407c65de052bb79bb97cb700ae8dc5632b955f5be",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [],
+      "frontmatter": true
+    },
+    {
+      "id": "suppressed-baseline",
+      "source": "<!-- mdchk:disable MD050 -->\n__a__\n<!-- mdchk:enable MD050 -->\n**b**",
+      "style": "consistent",
+      "source_bytes": 68,
+      "source_sha256": "14607cbf5b3de951e5b1b9d118eb8863ebd36ac11505d790fff4e9553ffb4fca",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            63,
+            65
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            3
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "initially-off-baseline",
+      "source": "__a__\n<!-- mdchk:enable MD050 -->\n**b**",
+      "style": "consistent",
+      "source_bytes": 39,
+      "source_sha256": "b2609e666104a06cbdbe09e931fd4a952c115b697d088fa8673e0567b9cea632",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            34,
+            36
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ],
+      "enabled": false
+    },
+    {
+      "id": "opening-active-closing-disabled",
+      "source": "__a__ **b <!-- mdchk:disable MD050 --> c**",
+      "style": "consistent",
+      "source_bytes": 42,
+      "source_sha256": "eaadc4004f923797aabb5cbdd4cc65e292529e91b5c0f45070dd5e0b1794d30a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            6,
+            8
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "opening-disabled-closing-active",
+      "source": "__a__ <!-- mdchk:disable MD050 --> **b <!-- mdchk:enable MD050 --> c**",
+      "style": "consistent",
+      "source_bytes": 70,
+      "source_sha256": "674277452b72072645d80c894dcd44ae8c92a8e3abfcc880cd78779eb31dee18",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "rule-directives-denied",
+      "source": "__a__ <!-- mdchk:disable MD050 --> **b**",
+      "style": "consistent",
+      "source_bytes": 40,
+      "source_sha256": "4710fb1a4c6e679472b5d4a2dbb1d77a2b5360655b9d9047410092878dbf47d6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            35,
+            37
+          ],
+          "start": [
+            1,
+            36
+          ],
+          "end": [
+            1,
+            38
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ],
+      "allow_directives": false
+    },
+    {
+      "id": "global-directives-denied",
+      "source": "__a__ <!-- mdchk:disable MD050 --> **b**",
+      "style": "consistent",
+      "source_bytes": 40,
+      "source_sha256": "4710fb1a4c6e679472b5d4a2dbb1d77a2b5360655b9d9047410092878dbf47d6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            35,
+            37
+          ],
+          "start": [
+            1,
+            36
+          ],
+          "end": [
+            1,
+            38
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ],
+      "directives_enabled": false
+    },
+    {
+      "id": "configured-off-denied-enable",
+      "source": "__a__ <!-- mdchk:enable MD050 --> **b**",
+      "style": "consistent",
+      "source_bytes": 39,
+      "source_sha256": "d0d5b52304185789bd887b8297d3094ea7426069404a228478451dfbd078f184",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [],
+      "enabled": false,
+      "allow_directives": false
+    },
+    {
+      "id": "valid-domain-commonmark-prose",
+      "source": "https://x.test/__a__/z **b**",
+      "style": "consistent",
+      "source_bytes": 28,
+      "source_sha256": "7b5e1a3f2517b565cbf59bf103e329733d341711ab5a1f166c1d7d63c8b5ae80",
+      "flavors": [
+        "commonmark"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            23,
+            25
+          ],
+          "start": [
+            1,
+            24
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    },
+    {
+      "id": "valid-domain-gfm-link-protection",
+      "source": "https://x.test/__a__/z **b**",
+      "style": "consistent",
+      "source_bytes": 28,
+      "source_sha256": "7b5e1a3f2517b565cbf59bf103e329733d341711ab5a1f166c1d7d63c8b5ae80",
+      "flavors": [
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "bom-space-original-offset",
+      "source": "﻿ __a__ **b**",
+      "style": "consistent",
+      "source_bytes": 15,
+      "source_sha256": "d2c00267a201bd6a8fb95066c215d42345497378cbed6e3e3176761c666cbb65",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            10,
+            12
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "**",
+          "message": "Bold delimiter style does not match the expected style."
+        }
+      ]
+    }
+  ],
+  "revision": 2,
+  "prior_oracle_sha256": "94ed060f2cbd3e9b7607e287262bf2b30cb0e413fbdded44a20a630be0671a18"
+}
