@@ -182,3 +182,5 @@ MD028 is available and enabled by default. Full original same-parent quote neigh
 MD064 is available and enabled by default. Full actual Paragraph/Heading ownership,
 transparent word witnesses and raw/protected context precede slicing. Findings use
 only the surplus original SPACE range START and retain earlier directive state.
+
+MD085 is available but disabled by default. Full original Paragraph content fixes the baseline before directive filtering at the surplus START and line selection. Protected multiline prefixes and actual HardBreak successor exemptions retain their outside-selection context. Inspection reports manual findings and never creates edits.

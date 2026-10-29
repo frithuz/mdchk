@@ -141,3 +141,5 @@ MD028 establishes full original sibling, gap and protected ownership before filt
 MD064 establishes complete semantic word, actual raw and authored SPACE ownership
 before filtering the surplus range START. Hidden context remains available to
 inspection slicing; configured-off enables retain the admitted maximum.
+
+MD085 establishes the full actual Paragraph baseline, protected-prefix ownership and actual HardBreak successor context before filtering at the surplus START. Earlier disabled content remains structural context; inspection selection never resets the baseline.

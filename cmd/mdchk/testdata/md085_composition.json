@@ -1,0 +1,59 @@
+[
+  {
+    "Name": "LF",
+    "Source": "A\n  b",
+    "Candidate": "A\n  b\n",
+    "SourceSHA256": "e3e29ec3a93950f3721626fa6d283363c98514f4d3e1d41f60402e7241c0cfb8",
+    "CandidateSHA256": "8933b92c6f2454fcc2cbed9e458040a7737cc551b34a9e1e45cfe9813e933ba9",
+    "SourceSizeBytes": 5,
+    "CandidateSizeBytes": 6,
+    "ExpectedRange": [
+      2,
+      4,
+      2,
+      1,
+      2,
+      3
+    ],
+    "ExpectedSource": "  ",
+    "ExpectedMessage": "Additional indentation on paragraph continuation."
+  },
+  {
+    "Name": "CRLF",
+    "Source": "A\r\n  b",
+    "Candidate": "A\r\n  b\r\n",
+    "SourceSHA256": "4cd9f03d74cccbe8b7485890d69597d94bbc7d3ff0c525942b29b4a15152deef",
+    "CandidateSHA256": "301ccb4bf57402845b63aa576a8b88b8179e9c6f5980f602b8e1bcf7866e355a",
+    "SourceSizeBytes": 6,
+    "CandidateSizeBytes": 8,
+    "ExpectedRange": [
+      3,
+      5,
+      2,
+      1,
+      2,
+      3
+    ],
+    "ExpectedSource": "  ",
+    "ExpectedMessage": "Additional indentation on paragraph continuation."
+  },
+  {
+    "Name": "CR",
+    "Source": "A\r  b",
+    "Candidate": "A\r  b\r",
+    "SourceSHA256": "be4d3638599ed78785c7efd08a2eb4c4cf32ed724738a097a6d389d208e593bb",
+    "CandidateSHA256": "26fec63a0030eaee841ae8469c3a358f51c21301cebaab531700080efd9b913b",
+    "SourceSizeBytes": 5,
+    "CandidateSizeBytes": 6,
+    "ExpectedRange": [
+      2,
+      4,
+      2,
+      1,
+      2,
+      3
+    ],
+    "ExpectedSource": "  ",
+    "ExpectedMessage": "Additional indentation on paragraph continuation."
+  }
+]

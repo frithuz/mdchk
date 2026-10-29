@@ -493,3 +493,18 @@ before work, including empty/clean/protected input. Caller and original controls
 sticky finite work/nodes/time and final producer/facade/callback checks atomically
 withhold failure. No reparse, renderer, source/tree clone, retained AST, new allowance
 or correction authority is added; MD047 remains the sole correction producer.
+
+
+MD085 borrows the completed original production source, index, options, profile
+and operation through ParagraphIndentation. Actual root Paragraph content fixes
+one baseline; all container descendants are excluded. Ordinary semantic Text
+witnesses prose separately from protected multiline physical prefixes. Actual raw
+state crosses Paragraph boundaries and HTML tails, with isolated image labels.
+Actual unprotected HardBreaks exempt only their physical successors. Original
+ASCII SPACE/TAB surplus spans remain detached and manual. Physical-line state,
+failed byte probes, semantic/provenance associations, bounded lookups, raw state,
+traversal frames, growth capacity, copied prefixes and logical spans/findings are
+reserved before work. Empty/clean/protected input retains caller and originating
+controls, sticky finite work/nodes/elapsed and atomic producer/facade/callback
+publication. No reparse, source/index/tree clone, renderer, decoder, new allowance
+or correction authority is introduced. MD047 remains the sole correction producer.

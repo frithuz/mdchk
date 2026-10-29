@@ -1,0 +1,1122 @@
+[
+  {
+    "Name": "root-published",
+    "Source": "A paragraph\n  continues here.\n",
+    "SHA256": "e44b68f0f0ee93851acb2f75d3d8a272439aaa99868240dbfa3a0ee43bff6306",
+    "SizeBytes": 30,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          14,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-published-crlf",
+    "Source": "A paragraph\r\n  continues here.\r\n",
+    "SHA256": "44c12f99dd45e8121e7c6dda427fe34a473a536d27390d3b294795c78383d1bd",
+    "SizeBytes": 32,
+    "Expected": [
+      {
+        "Range": [
+          13,
+          15,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-relative",
+    "Source": "   a\n b\n   c\n    d\n",
+    "SHA256": "cd6e85f9863e71bb50c84c351fb073625a1cf2c1b056b2bb304b6a9f2f4ae82e",
+    "SizeBytes": 19,
+    "Expected": [
+      {
+        "Range": [
+          16,
+          17,
+          4,
+          4,
+          4,
+          5
+        ],
+        "Source": " ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-definitions",
+    "Source": "[r]: /x\n  a\n    b\n",
+    "SHA256": "f096b5c4cbe2ec63c6626c97788dc2c36aa3ba310b96ef93cd0c9dd03e4f5b6f",
+    "SizeBytes": 18,
+    "Expected": [
+      {
+        "Range": [
+          14,
+          16,
+          3,
+          3,
+          3,
+          5
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-crossing-tab",
+    "Source": "  a\n\tb\n",
+    "SHA256": "3d403671e64824c8f15595fdb179520b94e93df76047c51f4b0f6a3b56ec056c",
+    "SizeBytes": 7,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": "\t",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-tab-phase",
+    "Source": "   a\n \tb\n",
+    "SHA256": "781f4345b1bc14d29ece03155252f37053a3445d422e99461cc8cf316d63c2d5",
+    "SizeBytes": 9,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-hard-successor",
+    "Source": "a  \n  b\n  c\n",
+    "SHA256": "c1b97f5faab7e9de19f2b6436c3ed5944422da499f066cd11e4736191e5542fa",
+    "SizeBytes": 12,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          10,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-hard-crlf",
+    "Source": "a\\\r\n  b\r\n  c\r\n",
+    "SHA256": "be553fb90be709a0bbe0d4cc1d2eaba794f4851263d6552c325e865023e76b1b",
+    "SizeBytes": 14,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          11,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-ordinary-tag",
+    "Source": "a\n  <i>two</i>\n",
+    "SHA256": "e332bb045877a9528975bf69a58ba72435e2a97dfdc8c6a55b4754e31d9b8398",
+    "SizeBytes": 15,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-code-only-then-prose",
+    "Source": "a\n  `two`\n  c\n",
+    "SHA256": "b4f55b6b96c31d16c61186c7dcbe62c6ceffa4f898b71f1b1de1aedea6635e0d",
+    "SizeBytes": 14,
+    "Expected": [
+      {
+        "Range": [
+          10,
+          12,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-new-code-prose",
+    "Source": "a\n  `two` tail\n",
+    "SHA256": "7a7309fe78cc501071fbda832d500b4ff2a87887d6b720e2d9daeba2de0b4478",
+    "SizeBytes": 15,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-multicode-prefix",
+    "Source": "a `x\n  payload` after\n  b\n",
+    "SHA256": "11a1c35d5d357c597f98577974b03e29296623c1be0125b139a7618e96677e67",
+    "SizeBytes": 26,
+    "Expected": [
+      {
+        "Range": [
+          22,
+          24,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-raw-prefix",
+    "Source": "a <script>\n  payload\n  </script> after\n  b\n",
+    "SHA256": "96e3f7b6a65d5fef504b89f1b68233041550617b13f5013aa3831e6aa7f70222",
+    "SizeBytes": 43,
+    "Expected": [
+      {
+        "Range": [
+          39,
+          41,
+          4,
+          1,
+          4,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-quote-owner",
+    "Source": "> a\n>   b\n",
+    "SHA256": "4e02f58be4c1bfb9a5e7e3d3a05304712f3ac5dc4f30a12609972bc4151157d9",
+    "SizeBytes": 10,
+    "Expected": []
+  },
+  {
+    "Name": "root-list-owner",
+    "Source": "- a\n    b\n",
+    "SHA256": "79d2cb02cbb48dc64918d7dfa700798fb75cb9d31c5708188acb0928471a0243",
+    "SizeBytes": 10,
+    "Expected": []
+  },
+  {
+    "Name": "root-following-root",
+    "Source": "> a\n\nb\n  c\n",
+    "SHA256": "c9cc0afca2c0ca313c3a8c84374595a806dc0c6e6aa7864bf505599f03dd665e",
+    "SizeBytes": 11,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          9,
+          4,
+          1,
+          4,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-nbsp-only",
+    "Source": "a\n  \u00a0\n",
+    "SHA256": "48e8477854e357b4073f48bb789b497d6749c836506936da7a7a45de42b28d84",
+    "SizeBytes": 7,
+    "Expected": []
+  },
+  {
+    "Name": "root-format-only",
+    "Source": "a\n  \u200d\n",
+    "SHA256": "b85c4c5ac9cba93e9c9f012579a1c9384d580a182ad2ca8d9ea0937dcdfc2944",
+    "SizeBytes": 8,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-nul-only",
+    "Source": "a\n  \u0000\n",
+    "SHA256": "c904ce43e1fc239a4fdbf722918c947d125199fc02aff514dacf56167c1b78f5",
+    "SizeBytes": 6,
+    "Expected": []
+  },
+  {
+    "Name": "root-replacement-only",
+    "Source": "a\n  \ufffd\n",
+    "SHA256": "7f0f0a53c0961a8f924acc1e48bf3c2ebecede78bf0004869fb19c1ae7e303fc",
+    "SizeBytes": 8,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-punctuation-only",
+    "Source": "a\n  !\n",
+    "SHA256": "b31080f8b629a2f2536fdd75267484820875efe892beaa283ecb477ecbf50f52",
+    "SizeBytes": 6,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "root-clean",
+    "Source": "A paragraph\ncontinues here.\n",
+    "SHA256": "20a954c98dc2e0d8cfb7f0d3263a1fd4c5a3ed2ecae7223d15f9b1da5d9e673f",
+    "SizeBytes": 28,
+    "Expected": []
+  },
+  {
+    "Name": "first-code",
+    "Source": "  `a`\n   b\n",
+    "SHA256": "802741f33dd533aafaf87ff03dbdf469152b710e72f1e327cf15aa61a32363a9",
+    "SizeBytes": 11,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "first-tag",
+    "Source": "  <i>a</i>\n   b\n",
+    "SHA256": "9dcc1969509320e626c7099d84b3865927a517a7e13be434968d299cc98e8948",
+    "SizeBytes": 16,
+    "Expected": [
+      {
+        "Range": [
+          13,
+          14,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "first-link",
+    "Source": "  [a](/u)\n   b\n",
+    "SHA256": "1a1522ccb182ef8086cef48363af440af73a5e2eac1396aaae60424811a2e08c",
+    "SizeBytes": 15,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          13,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "first-code-only",
+    "Source": "`a`\n  b\n",
+    "SHA256": "9f8cdb995056352411f71e5c65d807a068fdc066b245d63c5e946e7ac24bf05f",
+    "SizeBytes": 8,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          6,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "definition-only",
+    "Source": "[r]: /x\n",
+    "SHA256": "a50118589a414b323e42c282fb7b8e85d53e6b0cec01c5934212b1ddda97381f",
+    "SizeBytes": 8,
+    "Expected": []
+  },
+  {
+    "Name": "setext",
+    "Source": "a\n  b\n---\n",
+    "SHA256": "cd13f18dfc2c1895dcfede20e7eacac8b924882484ca9128fcd363dc43d8d4da",
+    "SizeBytes": 10,
+    "Expected": []
+  },
+  {
+    "Name": "atx",
+    "Source": "# a\n\n  # b\n",
+    "SHA256": "7aef57af08404b13bd3e31d522b85a315bff2f9ba670b4e870fc2c74840a1b8f",
+    "SizeBytes": 11,
+    "Expected": []
+  },
+  {
+    "Name": "gfm-table",
+    "Source": "a | b\n--- | ---\n  c | d\n",
+    "SHA256": "4b468d6822cd441add371910447cab52d8f8df158a9ac2cd7fb67c7a565869ea",
+    "SizeBytes": 24,
+    "Expected": [],
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "cm-pipe",
+    "Source": "a | b\n--- | ---\n  c | d\n",
+    "SHA256": "4b468d6822cd441add371910447cab52d8f8df158a9ac2cd7fb67c7a565869ea",
+    "SizeBytes": 24,
+    "Expected": [
+      {
+        "Range": [
+          16,
+          18,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ],
+    "Flavor": "commonmark"
+  },
+  {
+    "Name": "lazy-quote",
+    "Source": "> a\n  b\n",
+    "SHA256": "4d73c2ff1061d911bb3dd4b8eec1c69d2ef184f80618e176cd52e3a4b6c65a41",
+    "SizeBytes": 8,
+    "Expected": []
+  },
+  {
+    "Name": "lazy-list",
+    "Source": "- a\n  b\n",
+    "SHA256": "2b0e135a2d37d8a304cce86df292e3e7c69670597b1d150128b9a2423f1fadf6",
+    "SizeBytes": 8,
+    "Expected": []
+  },
+  {
+    "Name": "nested-owner",
+    "Source": "> - a\n>     b\n",
+    "SHA256": "061104574f173b560715dde2664f1757199116e7abcab5163ee63434d0ef7bc4",
+    "SizeBytes": 14,
+    "Expected": []
+  },
+  {
+    "Name": "list-quote",
+    "Source": "- > a\n  >   b\n",
+    "SHA256": "5fadb6b535dfc35e6e4286e0e14d77cafccad6013ccc66a63e0532e0c1983113",
+    "SizeBytes": 14,
+    "Expected": []
+  },
+  {
+    "Name": "multiline-attribute",
+    "Source": "a <i x=\"y\n  z\"> after\n  b\n",
+    "SHA256": "e414f1eb9e794fa7a6a745874446b6333adfa8181f5deb5b6588bbcf2008b1de",
+    "SizeBytes": 26,
+    "Expected": [
+      {
+        "Range": [
+          22,
+          24,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "multiline-comment",
+    "Source": "a <!-- x\n  --> after\n  b\n",
+    "SHA256": "1232c7c88beec89181cc7fae59f059dca312ee8fa95546e58e6b51e704ffcc93",
+    "SizeBytes": 25,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          23,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "raw-hard-break",
+    "Source": "a <script>\n  payload  \n  </script> after\n  b\n",
+    "SHA256": "041b93ca7d5da0483eea8fac2911cfd318c31ad4e596ff6103d6c1f4008201c4",
+    "SizeBytes": 45,
+    "Expected": [
+      {
+        "Range": [
+          41,
+          43,
+          4,
+          1,
+          4,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "image-isolation",
+    "Source": "a ![<script>](/u)\n  b\n",
+    "SHA256": "48406b76e13fa0976fc4bd6186b23fc2c160934a1fcbfbf3ec7e5638859d4273",
+    "SizeBytes": 22,
+    "Expected": [
+      {
+        "Range": [
+          18,
+          20,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "html-tail",
+    "Source": "a <script><!-- </script> -->\n  b\n",
+    "SHA256": "1e90b1c67874af6bec84bca8027b9f311f3c7424c67f3989bfbdb05468cfb365",
+    "SizeBytes": 33,
+    "Expected": []
+  },
+  {
+    "Name": "fake-code-break",
+    "Source": "a `x  \n  y`\n  z\n",
+    "SHA256": "f9edcb1b00acd302b14907f4fbf19c8dfe223daa533c52675966f876600104bd",
+    "SizeBytes": 16,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          14,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "control-only",
+    "Source": "a\n  \u0001\n",
+    "SHA256": "0a09bdd4e943e037e85180e635ffb1a0ca6b692b9e7c95f4b69e7f6ec5bc6a13",
+    "SizeBytes": 6,
+    "Expected": []
+  },
+  {
+    "Name": "nbsp-stops-indent",
+    "Source": "a\n \u00a0 b\n",
+    "SHA256": "d296a63513f7bd8b9c967bc156b260128e3681d48e0597cf8ec1498451d6063b",
+    "SizeBytes": 8,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": " ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "nul-stops-indent",
+    "Source": "a\n \u0000b\n",
+    "SHA256": "b6a9c2a0c92128b168937bd79a9010ec062677233880d1f6a9ba58b27ade7831",
+    "SizeBytes": 6,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          2,
+          1,
+          2,
+          2
+        ],
+        "Source": " ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "entity-witness",
+    "Source": "a\n  &excl;\n",
+    "SHA256": "408177f33ff1155e9b5e50e9d276ed4a15fbbfe9cc59b32d0edac7cac98eed94",
+    "SizeBytes": 11,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "entity-blank",
+    "Source": "a\n  &nbsp;\n",
+    "SHA256": "a7cea18a7098e87542ab3c732e5c415127d1bae14c9ba73b1fef5ae52c2f83a9",
+    "SizeBytes": 11,
+    "Expected": []
+  },
+  {
+    "Name": "escape-witness",
+    "Source": "a\n  \\!\n",
+    "SHA256": "9ea6ac87085ef141c8f81c90fed2148205e3d1e7ff1fa26996b9fdd9754d8d89",
+    "SizeBytes": 7,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "formatting",
+    "Source": "a\n  **b** [c](/u) ![d](/u)\n",
+    "SHA256": "441bd018450091a1c027ff2e6890420273ae13772fde07cdb5b19af051d7e0ba",
+    "SizeBytes": 27,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "cr",
+    "Source": "a\r  b\r",
+    "SHA256": "ef8bf13b15b02774081f96a0a89e42687e854510f1e7ede4ecc95a1a429e6387",
+    "SizeBytes": 6,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "mixed",
+    "Source": "a\r\n  b\r  c\n",
+    "SHA256": "de18360171912fb26ec2c53f233fe0736cc38bdb3d5869844e0b587499580463",
+    "SizeBytes": 11,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          5,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      },
+      {
+        "Range": [
+          7,
+          9,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "no-final",
+    "Source": "a\n  b",
+    "SHA256": "ff0de82e255bee8738dd1279853c50f5e7f9f3eb50b14611c7298b221bb468dc",
+    "SizeBytes": 5,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "trailing",
+    "Source": "a\n  b  \n",
+    "SHA256": "2ee56f835551738a6fbeb88bb995cb30f2b78e351f35ccee998164c224fb66f3",
+    "SizeBytes": 8,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "blank-separator",
+    "Source": "a\n\n  b\n",
+    "SHA256": "91e901fd0b2fbaf03be3015a432418a64c352a05539fd83f965fab193c20d8a3",
+    "SizeBytes": 7,
+    "Expected": []
+  },
+  {
+    "Name": "empty",
+    "Source": "",
+    "SHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "SizeBytes": 0,
+    "Expected": []
+  },
+  {
+    "Name": "code-block",
+    "Source": "```\na\n  b\n```\n",
+    "SHA256": "c0e0b8b543ea49bf7c120b4e5c4f6f5b9b7349af81bdbcaca0b6dcc5bb96d86c",
+    "SizeBytes": 14,
+    "Expected": []
+  },
+  {
+    "Name": "html-block",
+    "Source": "<div>\na\n  b\n</div>\n",
+    "SHA256": "a138cebdac3487dbbe5c6832c05a7b5fd7194df145e36ca050a6be733de73c7c",
+    "SizeBytes": 19,
+    "Expected": []
+  },
+  {
+    "Name": "yaml-opaque",
+    "Source": "\ufeff---\ninvalid: [\n  opaque\n---\na\n  b\n",
+    "SHA256": "0739b40853c42f2deb3e7b5bf7db96e034b8bf3cd989a152143e70da94769ef4",
+    "SizeBytes": 37,
+    "Expected": [
+      {
+        "Range": [
+          33,
+          35,
+          6,
+          1,
+          6,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "yaml-recognition-off",
+    "Source": "\ufeff---\ninvalid: [\n  opaque\n---\na\n  b\n",
+    "SHA256": "0739b40853c42f2deb3e7b5bf7db96e034b8bf3cd989a152143e70da94769ef4",
+    "SizeBytes": 37,
+    "Expected": [
+      {
+        "Range": [
+          33,
+          35,
+          6,
+          1,
+          6,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "yaml-unselected",
+    "Source": "\ufeff---\ninvalid: [\n  opaque\n---\na\n  b\n",
+    "SHA256": "0739b40853c42f2deb3e7b5bf7db96e034b8bf3cd989a152143e70da94769ef4",
+    "SizeBytes": 37,
+    "Expected": [
+      {
+        "Range": [
+          33,
+          35,
+          6,
+          1,
+          6,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ],
+    "Recognize": true,
+    "Formats": [
+      "toml"
+    ]
+  },
+  {
+    "Name": "yaml-incomplete",
+    "Source": "\ufeff---\na\n  b\n",
+    "SHA256": "4ba882294214167a3eb9f721b6f9a6ec7fae5d4d42b4a913ad92085e7c81a94c",
+    "SizeBytes": 13,
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "toml-opaque",
+    "Source": "\ufeff+++\ninvalid: [\n  opaque\n+++\na\n  b\n",
+    "SHA256": "03aa76034ce24d13d4c877c75d5cb38e5fbb2b458dee797d289265b190f8dfcd",
+    "SizeBytes": 37,
+    "Expected": [
+      {
+        "Range": [
+          33,
+          35,
+          6,
+          1,
+          6,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ],
+    "Recognize": true
+  },
+  {
+    "Name": "toml-recognition-off",
+    "Source": "\ufeff+++\ninvalid: [\n  opaque\n+++\na\n  b\n",
+    "SHA256": "03aa76034ce24d13d4c877c75d5cb38e5fbb2b458dee797d289265b190f8dfcd",
+    "SizeBytes": 37,
+    "Expected": [
+      {
+        "Range": [
+          18,
+          20,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      },
+      {
+        "Range": [
+          33,
+          35,
+          6,
+          1,
+          6,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "toml-unselected",
+    "Source": "\ufeff+++\ninvalid: [\n  opaque\n+++\na\n  b\n",
+    "SHA256": "03aa76034ce24d13d4c877c75d5cb38e5fbb2b458dee797d289265b190f8dfcd",
+    "SizeBytes": 37,
+    "Expected": [
+      {
+        "Range": [
+          18,
+          20,
+          3,
+          1,
+          3,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      },
+      {
+        "Range": [
+          33,
+          35,
+          6,
+          1,
+          6,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ],
+    "Recognize": true,
+    "Formats": [
+      "yaml"
+    ]
+  },
+  {
+    "Name": "toml-incomplete",
+    "Source": "\ufeff+++\na\n  b\n",
+    "SHA256": "23344025ceee07fb2f0e77b7e6b7a4bcbec1b7536fec08dbecc91612583e18c5",
+    "SizeBytes": 13,
+    "Expected": [],
+    "Recognize": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "cross-paragraph-open",
+    "Source": "a <script>\n\nb\n  c\n",
+    "SHA256": "4e6cf3fbe066674230a38867177b3a325253c51d850a35ecdfbab1a8432af409",
+    "SizeBytes": 18,
+    "Expected": []
+  },
+  {
+    "Name": "cross-html-tail-close",
+    "Source": "a <script>\n\n<!-- c --></script>\n\nb\n  c\n",
+    "SHA256": "2e0c23b9c2648f6ee5584808c6273b52c2b085cc04521f7c3c31702555bda9c2",
+    "SizeBytes": 39,
+    "Expected": [
+      {
+        "Range": [
+          35,
+          37,
+          6,
+          1,
+          6,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ]
+  },
+  {
+    "Name": "raw-cross-paragraph-open",
+    "Source": "a <script>\n\nb\n  c",
+    "Expected": [],
+    "SHA256": "9db478f7504328b17048c7f1f7096a49e63084913add18d27cbe3b258f00f111",
+    "SizeBytes": 17
+  },
+  {
+    "Name": "raw-htmltail-close-then-root",
+    "Source": "a <script>\n\n<!--x--></script>\n\nb\n  c",
+    "Expected": [
+      {
+        "Range": [
+          33,
+          35,
+          6,
+          1,
+          6,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ],
+    "SHA256": "e0dfe14dc88eed4af3fd7d3bdba507843b7c1b9b18bbe35701dfe3a6849f168d",
+    "SizeBytes": 36
+  },
+  {
+    "Name": "raw-paragraph-close-then-root",
+    "Source": "a <script>\n\nx </script>\n\nb\n  c",
+    "Expected": [
+      {
+        "Range": [
+          27,
+          29,
+          6,
+          1,
+          6,
+          3
+        ],
+        "Source": "  ",
+        "Message": "Additional indentation on paragraph continuation."
+      }
+    ],
+    "SHA256": "94e6871e16d7d15ddb7a2aca1885320053c10cbbf60a6d78c4b583cec4b2d14e",
+    "SizeBytes": 30
+  }
+]
