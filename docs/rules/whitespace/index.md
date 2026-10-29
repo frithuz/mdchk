@@ -9,7 +9,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD012](md012.md) | Runs of empty lines | Analysis/configuration implemented |
 | [MD013](md013.md) | Maximum line width | Analysis/configuration implemented |
 | [MD027](md027.md) | Whitespace after blockquote markers | Analysis/configuration implemented; manual |
-| [MD028](md028.md) | Empty lines separating blockquotes | Planned |
+| [MD028](md028.md) | Empty lines separating blockquotes | Analysis/configuration implemented; manual |
 | [MD047](md047.md) | Exactly one terminating newline | CommonMark analysis, configuration, previews and Darwin arm64+cgo/local APFS apply implemented; protected EOF remains manual |
 | [MD064](md064.md) | Repeated spaces in prose | Planned |
 | [MD085](md085.md) | Indented paragraph continuation lines | Planned |

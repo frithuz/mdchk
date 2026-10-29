@@ -240,3 +240,6 @@ withhold incomplete output at producer, facade and manual callback boundaries.
 
 
 MD027 shares the completed original finite operation for compact physical-line state, actual prefix replay and failed probes, final Paragraph contribution associations, inline/raw continuation, HTML tails, traversal capacity/copies and detached span/finding records. Entry, loop and final caller/origin controls atomically withhold failed output, including empty, clean and protected input.
+
+
+MD028 shares the original finite operation for physical-line state, suffix probes, actual atomic prefix associations, protected raw/literal ownership, bounded lookups, final sibling comparisons, traversal frames, capacity growth, copied prefixes and detached records. Empty, clean and protected inputs retain both caller/origin controls and final atomic withholding at producer, facade and callback.

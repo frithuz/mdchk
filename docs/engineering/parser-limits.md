@@ -601,3 +601,6 @@ MD013 borrows completed original source/index/options/profile/reference facts. I
 
 
 MD027 borrows completed private original syntax, source/index/options/profile and operation. It charges physical state, source and failed probes, bounded lookups, actual prefix replay with residual TAB phase, Paragraph/inline/raw associations, HTML tails, traversal frames, capacity, copied prefixes and logical output records before work. It creates no parse-time facts, source/index/options clones or new allowance; final failures withhold the dependent inventory.
+
+
+MD028 borrows completed original syntax/profile/options/source/index and operation authority. BlockquoteGaps associates actual retained atomic prefix ends and source-ordered raw/literal protection before comparing final direct siblings. Original nonblank gap bytes prevent stepping over removed definitions. All state, probes, lookups, comparisons, frames, capacities, copies and records are precharged. No parse-time retention, reparse, clone or new allowance is added; failure withholds all output.

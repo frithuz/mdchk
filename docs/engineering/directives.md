@@ -134,3 +134,6 @@ MD013 inventories physical width and full actual protected/URL context before ch
 
 
 MD027 establishes full final Paragraph, actual nested/lazy prefix and literal/raw ownership before filtering at the excess-SPACE range START. A later same-line disable cannot suppress it retroactively; slicing retains earlier context.
+
+
+MD028 establishes full original sibling, gap and protected ownership before filtering each remaining-body START. A comment in the gap breaks adjacency; a later second-quote comment cannot suppress an earlier gap. Inspection slices retain outside neighbors and raw state.

@@ -662,3 +662,6 @@ MD013 specializes original physical-source scalar width, including prefixes and 
 
 
 MD027 specializes final ordinary Paragraph contributions and actual prose-facing quote markers. Only wholly ASCII SPACE separators participate; any TAB exempts the whole separator. One manual range covers only excess spaces after retaining the first. Newly opening inline code and ordinary markup can qualify, HTML/comment-only contributions cannot, and already-open multiline literal/raw continuation stays protected through closer+tail. See [MD027](../rules/whitespace/md027.md).
+
+
+MD028 compares consecutive final quote siblings with the same direct parent. Only an entire ordinary ASCII blank-body gap qualifies; actual literal/raw/header ownership and removed definitions intervene. Each physical line reports its remaining original body, including a present empty span after an atomic prefix-owned TAB. See [MD028](../rules/whitespace/md028.md).

@@ -1,0 +1,164 @@
+[
+  {
+    "kind": "ordinary",
+    "ending": "lf",
+    "Source": "> 雪\n\n> Two",
+    "Candidate": "> 雪\n\n> Two\n",
+    "CandidateSHA256": "14f7e9590839b12ff874be8903e55fba3cba0d767164c0378949ceea7ed6576a",
+    "CandidateSizeBytes": 13,
+    "ExpectedRange": [
+      6,
+      6,
+      2,
+      1,
+      2,
+      1
+    ],
+    "ExpectedSource": "",
+    "ExpectedMessage": "Blank line separates adjacent blockquotes."
+  },
+  {
+    "kind": "list-quote",
+    "ending": "lf",
+    "Source": "- > A\n\n  > B",
+    "Candidate": "- > A\n\n  > B\n",
+    "CandidateSHA256": "f953fa11c290409dcef7dcaf8a67bb0c91891d2f5030f7077a63f9a88517b75f",
+    "CandidateSizeBytes": 13,
+    "ExpectedRange": [
+      6,
+      6,
+      2,
+      1,
+      2,
+      1
+    ],
+    "ExpectedSource": "",
+    "ExpectedMessage": "Blank line separates adjacent blockquotes."
+  },
+  {
+    "kind": "nested-tab",
+    "ending": "lf",
+    "Source": "> > A\n>\t\n> > B",
+    "Candidate": "> > A\n>\t\n> > B\n",
+    "CandidateSHA256": "9d154e9ef14386d52a9c7f55155fb9b8a7f4becf4cb303803d2f1934c69b27e3",
+    "CandidateSizeBytes": 15,
+    "ExpectedRange": [
+      8,
+      8,
+      2,
+      3,
+      2,
+      3
+    ],
+    "ExpectedSource": "",
+    "ExpectedMessage": "Blank line separates adjacent blockquotes."
+  },
+  {
+    "kind": "ordinary",
+    "ending": "crlf",
+    "Source": "> 雪\r\n\r\n> Two",
+    "Candidate": "> 雪\r\n\r\n> Two\r\n",
+    "CandidateSHA256": "cecbb6ce2fa16ed8efb2ef55caf2b16ee076643417454b9365cf6ba4878e5603",
+    "CandidateSizeBytes": 16,
+    "ExpectedRange": [
+      7,
+      7,
+      2,
+      1,
+      2,
+      1
+    ],
+    "ExpectedSource": "",
+    "ExpectedMessage": "Blank line separates adjacent blockquotes."
+  },
+  {
+    "kind": "list-quote",
+    "ending": "crlf",
+    "Source": "- > A\r\n\r\n  > B",
+    "Candidate": "- > A\r\n\r\n  > B\r\n",
+    "CandidateSHA256": "7c5ae9ade683a037898a1d421633fcca2aacf59cdecbb009bbebc3d8a9ef094e",
+    "CandidateSizeBytes": 16,
+    "ExpectedRange": [
+      7,
+      7,
+      2,
+      1,
+      2,
+      1
+    ],
+    "ExpectedSource": "",
+    "ExpectedMessage": "Blank line separates adjacent blockquotes."
+  },
+  {
+    "kind": "nested-tab",
+    "ending": "crlf",
+    "Source": "> > A\r\n>\t\r\n> > B",
+    "Candidate": "> > A\r\n>\t\r\n> > B\r\n",
+    "CandidateSHA256": "6fb528e7e4edd90e80dd262f1924dc54f9d1a1d38d7fe815a24975f52944c5b2",
+    "CandidateSizeBytes": 18,
+    "ExpectedRange": [
+      9,
+      9,
+      2,
+      3,
+      2,
+      3
+    ],
+    "ExpectedSource": "",
+    "ExpectedMessage": "Blank line separates adjacent blockquotes."
+  },
+  {
+    "kind": "ordinary",
+    "ending": "cr",
+    "Source": "> 雪\r\r> Two",
+    "Candidate": "> 雪\r\r> Two\r",
+    "CandidateSHA256": "c9d4afb615b3aa4c1d15973f0908dc89149b5f652829e7a914be348f7ea06eb1",
+    "CandidateSizeBytes": 13,
+    "ExpectedRange": [
+      6,
+      6,
+      2,
+      1,
+      2,
+      1
+    ],
+    "ExpectedSource": "",
+    "ExpectedMessage": "Blank line separates adjacent blockquotes."
+  },
+  {
+    "kind": "list-quote",
+    "ending": "cr",
+    "Source": "- > A\r\r  > B",
+    "Candidate": "- > A\r\r  > B\r",
+    "CandidateSHA256": "8d7c7aacacd3805199785800c27c15fa7e20ca0b6aa1602d635c0dfa4ca8401f",
+    "CandidateSizeBytes": 13,
+    "ExpectedRange": [
+      6,
+      6,
+      2,
+      1,
+      2,
+      1
+    ],
+    "ExpectedSource": "",
+    "ExpectedMessage": "Blank line separates adjacent blockquotes."
+  },
+  {
+    "kind": "nested-tab",
+    "ending": "cr",
+    "Source": "> > A\r>\t\r> > B",
+    "Candidate": "> > A\r>\t\r> > B\r",
+    "CandidateSHA256": "71f65ed89c5e6407e58516ec2ab990945bd1945b242d5554349a4c16dd194773",
+    "CandidateSizeBytes": 15,
+    "ExpectedRange": [
+      8,
+      8,
+      2,
+      3,
+      2,
+      3
+    ],
+    "ExpectedSource": "",
+    "ExpectedMessage": "Blank line separates adjacent blockquotes."
+  }
+]

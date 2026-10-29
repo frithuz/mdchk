@@ -1,0 +1,635 @@
+[
+  {
+    "Name": "published",
+    "Source": "> One\n\n> Two",
+    "SHA256": "dfeb208dccc2cf4c05e492536d505a10e096e63ef9ecc653df7a368a6b677b9c",
+    "SizeBytes": 12,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          6,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "marked",
+    "Source": "> One\n>\n> Two",
+    "SHA256": "6b97a75e3405a21fcc80fbb3f07fdf15cf7f29c28c3e8c3b6e0faf7abaa0cfb7",
+    "SizeBytes": 13,
+    "Expected": []
+  },
+  {
+    "Name": "multi",
+    "Source": "> One\n\n \t \n> Two",
+    "SHA256": "689a9ddca6b936bc2d6440ed8eebea2cec0cab1317e68019b33ff5fffc4ca138",
+    "SizeBytes": 16,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          6,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      },
+      {
+        "Range": [
+          7,
+          10,
+          3,
+          1,
+          3,
+          4
+        ],
+        "Source": " \t ",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "nested",
+    "Source": ">> One\n>\n>> Two",
+    "SHA256": "c262cc833018b1eb154f20623a5cebc21e38103cd253c249a2bc86702c551046",
+    "SizeBytes": 15,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          8,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "atomic-tab",
+    "Source": ">> One\n>\t\n>> Two",
+    "SHA256": "d1eabbb10371bdd8b604426e56ee7438293f00284ff4f27c8d70b4c331aecb81",
+    "SizeBytes": 16,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "residual-tab",
+    "Source": ">> One\n> \t  \n>> Two",
+    "SHA256": "1a93d7e5d2b4644c5e8e4f6801dcbd1fe265e3d8eb7649f8e782fb783e0da253",
+    "SizeBytes": 19,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          12,
+          2,
+          3,
+          2,
+          6
+        ],
+        "Source": "\t  ",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "ancestor-split",
+    "Source": ">> One\n\n>> Two",
+    "SHA256": "1c83741df5723405cedadbd05d1334c57180eba4b947c60d20441206c6cf9d6b",
+    "SizeBytes": 14,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          7,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "same-item",
+    "Source": "- > A\n\n  > B",
+    "SHA256": "20ba0c78d79d71a38704dfc0f633775a6860d3bfa34e3d630f5c253ffcc3089e",
+    "SizeBytes": 12,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          6,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "distinct-items",
+    "Source": "- > A\n\n- > B",
+    "SHA256": "35729a6a4c59abb7c2f0eacc58d39e7f80a50c9536654c675c90b4d192f9acf7",
+    "SizeBytes": 12,
+    "Expected": []
+  },
+  {
+    "Name": "empty",
+    "Source": ">\n\n>",
+    "SHA256": "b8ff59b8713d935f96280a377f8f415c4a779e6a779d8785715277da7dd6c3de",
+    "SizeBytes": 4,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          2,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "heading",
+    "Source": "> # A\n\n> # B",
+    "SHA256": "0771d54a634f150cf8cad713d3ab63a2230082e1773f33a1c5c39c08b8376511",
+    "SizeBytes": 12,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          6,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "code",
+    "Source": "> ```\n> x\n> ```\n\n> B",
+    "SHA256": "819b1bb2be323db679d2b3b97da85776bad5aa3c60a7f3c85659d83f1da12f6c",
+    "SizeBytes": 20,
+    "Expected": [
+      {
+        "Range": [
+          16,
+          16,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "html",
+    "Source": "> <!--x-->\n\n> B",
+    "SHA256": "a83a32b942f9805f1883fad66d4c47468fb182d621cfe55e9c60a5d72d7419b8",
+    "SizeBytes": 15,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          11,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "lazy",
+    "Source": "> A\nlazy\n\n> B",
+    "SHA256": "176562abc553c56e60bcfd9a3e83242c2ba6d209159c07b4cc2f6bc4cfde74ce",
+    "SizeBytes": 13,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          9,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "fence-negative",
+    "Source": "```\n> A\n\n> B\n```",
+    "SHA256": "77eba1918a387490724f2a98e637f7ac59970d248071905bbd3a1c71ee9aac16",
+    "SizeBytes": 16,
+    "Expected": []
+  },
+  {
+    "Name": "html-negative",
+    "Source": "<pre>\n> A\n\n> B\n</pre>",
+    "SHA256": "09f4eac27b6d7e3f88e72e7819cca532b64084dd2eb41c3a9c2bd433764fb966",
+    "SizeBytes": 21,
+    "Expected": []
+  },
+  {
+    "Name": "definition",
+    "Source": "> A\n\n[x]: /url\n\n> B",
+    "SHA256": "2fd5852adaf84163be761e7b5c8bc9634a436da4deddbdebd4ef753dd3005a03",
+    "SizeBytes": 19,
+    "Expected": []
+  },
+  {
+    "Name": "content",
+    "Source": "> A\n\nx\n\n> B",
+    "SHA256": "d7c509e6291b1b6de062b1ef284db0fd35eec29d1267f440cd6a073aef6a1ec6",
+    "SizeBytes": 11,
+    "Expected": []
+  },
+  {
+    "Name": "comment",
+    "Source": "> A\n\n<!-- x -->\n\n> B",
+    "SHA256": "d9bf743ce809e4c862be2dd1cb5431c603329e268cd89d22a4606af9f29a8796",
+    "SizeBytes": 20,
+    "Expected": []
+  },
+  {
+    "Name": "raw-crossing",
+    "Source": "> A <script>\n\n> B </script>",
+    "SHA256": "9bf996ea595987ae22c5b031151f4ab5f4cb8c3f7431245dedb94a3eec72505c",
+    "SizeBytes": 27,
+    "Expected": []
+  },
+  {
+    "Name": "raw-eof",
+    "Source": "> A <textarea>\n\n> B",
+    "SHA256": "85ef3e0ef4de5b903612d2a5c28c40fb2498695b82ee3ec6b20221ad28b0026c",
+    "SizeBytes": 19,
+    "Expected": []
+  },
+  {
+    "Name": "image-alt",
+    "Source": "> ![<script>](x)\n\n> B",
+    "SHA256": "1a03b03c9e494211bd48bc44e36ebd28d6d7730be8a27f0917a71a3e7e8c5a20",
+    "SizeBytes": 21,
+    "Expected": [
+      {
+        "Range": [
+          17,
+          17,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "html-tail",
+    "Source": "> <!--x--> <script>\n\n> B </script>",
+    "SHA256": "11c8bfc2a328a6d5ca4f05c947517a128fa3eded2512b6c23e262c03b8d99e14",
+    "SizeBytes": 34,
+    "Expected": []
+  },
+  {
+    "Name": "nbsp",
+    "Source": "> A\n \n> B",
+    "SHA256": "e01cfe7faa5724e765b1ed61f9a92ee1604efaf9162577c66f1a5bff4d5cdb22",
+    "SizeBytes": 10,
+    "Expected": []
+  },
+  {
+    "Name": "nul",
+    "Source": "> A\n\u0000\n> B",
+    "SHA256": "4e55442e49bcaf5a9282176abe8347a2399675de046e414fb5280fe7eddbf8d1",
+    "SizeBytes": 9,
+    "Expected": []
+  },
+  {
+    "Name": "unicode-space",
+    "Source": "> A\n \n> B",
+    "SHA256": "2fa1682de5d8f3fda9d7e72b098145f2acbfeb295e481caf6d53b825142c4a0a",
+    "SizeBytes": 11,
+    "Expected": []
+  },
+  {
+    "Name": "crlf",
+    "Source": "> One\r\n\r\n> Two",
+    "SHA256": "f155a3afb1cfcc2b4ea9ec99f0772afaf08045c3784cf3a71a8ce2b5b0b4f288",
+    "SizeBytes": 14,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          7,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "cr",
+    "Source": "> One\r\r> Two",
+    "SHA256": "4ae8911fb2e56c56162029121d107dce84a5126191ca767ece6c5ede8da31751",
+    "SizeBytes": 12,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          6,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "mixed",
+    "Source": "> A\r\n \t\r> B\n",
+    "SHA256": "7b7f9d56c44297c908b13e337997db5385fe96efad9d734063fb6a0df225966a",
+    "SizeBytes": 12,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          7,
+          2,
+          1,
+          2,
+          3
+        ],
+        "Source": " \t",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "edge-blanks",
+    "Source": "\n> A\n\n",
+    "SHA256": "eb70536b1b3df17db229bd7fb53f53d73726cadd46ecc6e57698f4679fc1acc3",
+    "SizeBytes": 6,
+    "Expected": []
+  },
+  {
+    "Name": "table",
+    "Source": "> a|b\n> -|-\n\n> B",
+    "SHA256": "4c5c964dc733dd463a34fe86afaf004c0990ed9af4aaad15fdd359a81e416b35",
+    "SizeBytes": 16,
+    "Expected": [
+      {
+        "Range": [
+          12,
+          12,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ],
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "yaml-False",
+    "Source": "﻿---\n> A\n\n> B\n---\n> C\n\n> D\n",
+    "Recognize": false,
+    "SHA256": "dd1d842463a28cb9b346783baf410fb7258613d1f203bd428648e905be6b6b0d",
+    "SizeBytes": 29,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          11,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      },
+      {
+        "Range": [
+          24,
+          24,
+          7,
+          1,
+          7,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "yaml-True",
+    "Source": "﻿---\n> A\n\n> B\n---\n> C\n\n> D\n",
+    "Recognize": true,
+    "SHA256": "dd1d842463a28cb9b346783baf410fb7258613d1f203bd428648e905be6b6b0d",
+    "SizeBytes": 29,
+    "Expected": [
+      {
+        "Range": [
+          24,
+          24,
+          7,
+          1,
+          7,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "yaml-incomplete",
+    "Source": "﻿---\n> A\n\n> B",
+    "Recognize": true,
+    "Incomplete": true,
+    "SHA256": "cbb969b90f8a2d2c88d08103474405c85804d0328c395af31c4701db54dc2424",
+    "SizeBytes": 15,
+    "Expected": []
+  },
+  {
+    "Name": "toml-False",
+    "Source": "﻿+++\n> A\n\n> B\n+++\n> C\n\n> D\n",
+    "Recognize": false,
+    "SHA256": "a54c80092890293fef68c1c0e61c31155512adc7ecbfd043fd99c5cbd0ddee89",
+    "SizeBytes": 29,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          11,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      },
+      {
+        "Range": [
+          24,
+          24,
+          7,
+          1,
+          7,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "toml-True",
+    "Source": "﻿+++\n> A\n\n> B\n+++\n> C\n\n> D\n",
+    "Recognize": true,
+    "SHA256": "a54c80092890293fef68c1c0e61c31155512adc7ecbfd043fd99c5cbd0ddee89",
+    "SizeBytes": 29,
+    "Expected": [
+      {
+        "Range": [
+          24,
+          24,
+          7,
+          1,
+          7,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  },
+  {
+    "Name": "toml-incomplete",
+    "Source": "﻿+++\n> A\n\n> B",
+    "Recognize": true,
+    "Incomplete": true,
+    "SHA256": "a601c4555bb5c73f4948fab07d02a059e1afa11b0d7187c99e48f88ab775687d",
+    "SizeBytes": 15,
+    "Expected": []
+  },
+  {
+    "Name": "mixed-root-nested-order",
+    "Source": "> > A\n>\n> > B\n\n> C\n\n> > D\n>\n> > E",
+    "SizeBytes": 33,
+    "SHA256": "8aa6848048a6e82ed9150fb4dd3feb07e2b9bde63e4a484ec6745b212a7f0e9f",
+    "Expected": [
+      {
+        "Range": [
+          7,
+          7,
+          2,
+          2,
+          2,
+          2
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      },
+      {
+        "Range": [
+          14,
+          14,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      },
+      {
+        "Range": [
+          19,
+          19,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      },
+      {
+        "Range": [
+          27,
+          27,
+          8,
+          2,
+          8,
+          2
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ]
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "kind": "yaml",
+    "Source": "﻿---\nx: y\n<!-- mdchk:disable MD028 -->\n---\n> One\n\n> Two\n",
+    "SHA256": "bbf07f94b1967616085e2a76098d068688547ab2e24d7121a2384269be4511e5",
+    "SizeBytes": 58,
+    "ExpectedRecognized": [
+      {
+        "Range": [
+          51,
+          51,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ],
+    "ExpectedUnrecognizedSuppressed": 1
+  },
+  {
+    "kind": "toml",
+    "Source": "﻿+++\nx = 1\n<!-- mdchk:disable MD028 -->\n+++\n> One\n\n> Two\n",
+    "SHA256": "60c64fe650c82e50a13bf3be5f6b9e0b96181ae7840fff71dcbd8714a91effa8",
+    "SizeBytes": 59,
+    "ExpectedRecognized": [
+      {
+        "Range": [
+          52,
+          52,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Blank line separates adjacent blockquotes."
+      }
+    ],
+    "ExpectedUnrecognizedSuppressed": 1
+  }
+]

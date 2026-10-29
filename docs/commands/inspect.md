@@ -175,3 +175,6 @@ MD013 inspection exposes available but default-disabled manual analysis and all 
 
 
 MD027 inspection exposes available default-enabled manual analysis. Full final Paragraph, actual quote-prefix and literal/raw ownership precede slicing. Findings select original excess ASCII spaces after the first SPACE; any TAB in the whole separator exempts it. No correction or returned content is produced.
+
+
+MD028 is available and enabled by default. Full original same-parent quote neighbors and protected gap context precede slicing and START suppression. Each qualifying physical line selects its remaining blank body, including a present zero-width position after an atomic retained prefix. Selecting only the later quote does not relocate a gap finding.

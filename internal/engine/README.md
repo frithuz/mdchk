@@ -476,3 +476,6 @@ unchanged; MD047 is the sole correction producer.
 
 
 MD027 borrows the narrow completed-original BlockquoteSpaces projection through a no-options facade. Actual Paragraph contributions, confirmed prefix replay and source-ordered literal/raw continuation govern eligibility. Detached excess SPACE ranges remain manual under both caller and origin controls, sticky work/node/time limits and final atomic withholding. MD047 alone supplies corrections.
+
+
+MD028 borrows BlockquoteGaps through a no-options facade. Completed original sibling ownership and whole physical blank gaps determine detached manual body spans, including present empty positions. Caller and origin controls, sticky work/node/time limits and final atomic withholding apply at all seams. NoFix metadata grants no correction authority.

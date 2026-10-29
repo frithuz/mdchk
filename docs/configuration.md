@@ -480,3 +480,6 @@ MD013 is available but disabled by default for CommonMark and GFM. Explicit `ena
 
 
 MD027 is available and enabled by default for CommonMark and GFM, with no rule-specific options. Empty mappings retain defaults. Shared enabled/allow_directives booleans and inherited denials apply; unknown options and invalid shared values fail even while disabled. PlannedFix metadata grants no executable correction authority.
+
+
+MD028 is available and enabled by default for CommonMark and GFM, with no rule-specific options. Empty mappings preserve defaults; strict shared enabled/allow_directives booleans and inherited denials apply, including validation while disabled. All findings remain manual under NoFix metadata.
