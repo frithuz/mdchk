@@ -172,3 +172,6 @@ suffix cannot invent a finding. Empty-body ranges can have equal byte endpoints.
 No MD012 correction proposal or corrected content is returned.
 
 MD013 inspection exposes available but default-disabled manual analysis and all four admitted options. Full original physical width and protected/URL context precede line slicing. Each finding selects one original overflowing scalar, retaining exclusive scalar coordinates and exact snapshot identity; no MD013 correction or returned content is produced.
+
+
+MD027 inspection exposes available default-enabled manual analysis. Full final Paragraph, actual quote-prefix and literal/raw ownership precede slicing. Findings select original excess ASCII spaces after the first SPACE; any TAB in the whole separator exempts it. No correction or returned content is produced.

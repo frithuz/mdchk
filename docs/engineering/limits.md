@@ -237,3 +237,6 @@ capacity growth, copied prefixes and detached records. It compares observed coun
 to `maximum` without threshold-sized storage or maximum+1 arithmetic. Caller and
 origin cancellation/deadline, sticky original limits and final publication checks
 withhold incomplete output at producer, facade and manual callback boundaries.
+
+
+MD027 shares the completed original finite operation for compact physical-line state, actual prefix replay and failed probes, final Paragraph contribution associations, inline/raw continuation, HTML tails, traversal capacity/copies and detached span/finding records. Entry, loop and final caller/origin controls atomically withhold failed output, including empty, clean and protected input.

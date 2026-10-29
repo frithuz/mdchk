@@ -1,0 +1,44 @@
+[
+  {
+    "kind": "yaml",
+    "Source": "﻿---\nx: y\n<!-- mdchk:disable MD027 -->\n---\n>  雪\n",
+    "SHA256": "adf6d80672bdfd0d7d9afc514d3fbbfc5c3e16769e760842fe3581ef7e0f5956",
+    "SizeBytes": 52,
+    "ExpectedRecognized": [
+      {
+        "Range": [
+          47,
+          48,
+          5,
+          3,
+          5,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ],
+    "ExpectedUnrecognizedSuppressed": 1
+  },
+  {
+    "kind": "toml",
+    "Source": "﻿+++\nx = 1\n<!-- mdchk:disable MD027 -->\n+++\n>  雪\n",
+    "SHA256": "cf9d6c3a30f7a6b50c70dc5403640959319434d26a57813b6041266ed35cabfa",
+    "SizeBytes": 53,
+    "ExpectedRecognized": [
+      {
+        "Range": [
+          48,
+          49,
+          5,
+          3,
+          5,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ],
+    "ExpectedUnrecognizedSuppressed": 1
+  }
+]

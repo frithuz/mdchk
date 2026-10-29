@@ -659,3 +659,6 @@ BOF/EOF blanks without a virtual line. Present zero-width ranges are manual sour
 evidence, never edit authority. See [MD012](../rules/whitespace/md012.md).
 
 MD013 specializes original physical-source scalar width, including prefixes and syntax, with four-column TAB stops. Protected bytes occupy width but cannot anchor; the first eligible overflowing scalar is the sole manual finding per physical line. Code/literal contribution gaps remain ordinary; table/heading false options deliberately exempt whole physical lines. See [MD013](../rules/whitespace/md013.md) for exact raw, destination and option boundaries.
+
+
+MD027 specializes final ordinary Paragraph contributions and actual prose-facing quote markers. Only wholly ASCII SPACE separators participate; any TAB exempts the whole separator. One manual range covers only excess spaces after retaining the first. Newly opening inline code and ordinary markup can qualify, HTML/comment-only contributions cannot, and already-open multiline literal/raw continuation stays protected through closer+tail. See [MD027](../rules/whitespace/md027.md).

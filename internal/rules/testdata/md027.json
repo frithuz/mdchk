@@ -1,0 +1,1250 @@
+[
+  {
+    "Name": "empty",
+    "Source": "",
+    "SHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "SizeBytes": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "zero",
+    "Source": ">Text",
+    "SHA256": "50b27bfb8dcddf64759fec1d3969818c2e3bd6077478e0baff515c1e02c5d109",
+    "SizeBytes": 5,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "one",
+    "Source": "> Text",
+    "SHA256": "3911e36a067be40df17b025b7d90a27f344c3087fee850e52c6b28615967b7d7",
+    "SizeBytes": 6,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "two",
+    "Source": ">  Text",
+    "SHA256": "182e35b8605343002365a25b79a522e45413d0d5862a154f8f9c281f0bb55d1d",
+    "SizeBytes": 7,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "three",
+    "Source": ">   Text",
+    "SHA256": "8dd1bd4a728925840ff60197e190d5ea1567cfe147b3a486dbd7aacad7919127",
+    "SizeBytes": 8,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          4,
+          1,
+          3,
+          1,
+          5
+        ],
+        "Source": "  ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "four",
+    "Source": ">    Text",
+    "SHA256": "0f6bbfe10843395f1319a4d3e8e90b06b623fc50b2b8bf82636893ec98b947c5",
+    "SizeBytes": 9,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          5,
+          1,
+          3,
+          1,
+          6
+        ],
+        "Source": "   ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "actual-code",
+    "Source": ">     Text",
+    "SHA256": "48836b7f2793ba906db71a4a68c09fe124558696726b8050bf0413ed9c2424d1",
+    "SizeBytes": 10,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "continuation",
+    "Source": "> a\n>     Text",
+    "SHA256": "963b25ee1f79f0bb144c2bed167231f69328dc185c9d9751c08e860b43b79a36",
+    "SizeBytes": 14,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          10,
+          2,
+          3,
+          2,
+          7
+        ],
+        "Source": "    ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "nested",
+    "Source": ">  >  Text",
+    "SHA256": "423d51b8f78b061036bfcf4013d979bf537eebe60e629508437ac7d4e9e83487",
+    "SizeBytes": 10,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "nested-clean",
+    "Source": ">  > Text",
+    "SHA256": "6e82cc443dfdbea5e5d773d0a9dc900cd920f15800b87f538356ce5785754b8a",
+    "SizeBytes": 9,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "nested-list",
+    "Source": ">  - Text",
+    "SHA256": "a07c10b81f541b4d9402ffa411e637823988ce1752a0cbc1d0b7ec3c4f0e3f04",
+    "SizeBytes": 9,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "list-quote",
+    "Source": "- >  Text",
+    "SHA256": "c70731088d5a3b4dcf7ce65d161d62bf14a1fac2f5c60e4011e5ff0177298f34",
+    "SizeBytes": 9,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "lazy",
+    "Source": "> a\n  lazy",
+    "SHA256": "1b5e7b36f9619e7b53ef350c177bf54a3ec8e79d79e9cc442c77be802ab785a7",
+    "SizeBytes": 10,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "lazy-inner",
+    "Source": "> > Text\n>  lazy",
+    "SHA256": "06f4bec232888e865b11e08cbd618a0b28ec419791eb22ab9fe6be1a5690c202",
+    "SizeBytes": 16,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "blank",
+    "Source": ">\n> \n>  \n>\t ",
+    "SHA256": "f15c9e6262317f97b4955b255a5a64e713b944d7c4f5c8d1b4d9941353401b5d",
+    "SizeBytes": 12,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "code",
+    "Source": "    >  Text",
+    "SHA256": "f8493183a5250bc9aa3de1afd65e62fa8737a5c331a58a0c0d544bdc481eb8ab",
+    "SizeBytes": 11,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "fence",
+    "Source": "> ```\n>  >  text\n> ```",
+    "SHA256": "b5f5dbbcd3fec411fe4ce7eabcb58a65e532e8da1025b72ab7ffd2c9263838bb",
+    "SizeBytes": 22,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "definition",
+    "Source": ">  [r]: /x\n>  Text",
+    "SHA256": "a6e4c21b72dde6d0fb5425e94e5e6d0d8a12d697bc8bfa76d0e97a5a8046bfa3",
+    "SizeBytes": 18,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          13,
+          14,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "thematic",
+    "Source": ">  ***",
+    "SHA256": "4d601dd8e8beebf021a9cde5e34fde40864aa6dd306c617b8c39dbef348deeee",
+    "SizeBytes": 6,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "atx",
+    "Source": ">  # Head",
+    "SHA256": "f3c9eebf2a4d2e0c3afa2394625e034a6623225654077363a7c70c77645717c8",
+    "SizeBytes": 9,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "setext",
+    "Source": ">  a\n>  ---",
+    "SHA256": "7090923bf49a2d73d4bbda6ed60ffa3d4806d934baede608c397d6701ac51a6a",
+    "SizeBytes": 11,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "codespan",
+    "Source": ">  `x`",
+    "SHA256": "e2db117d614d62e785e90daa2c1b72e711a9031101fff2f0aa3bca2902555243",
+    "SizeBytes": 6,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "emphasis",
+    "Source": ">  *x*",
+    "SHA256": "f3c2221d0cf9d1dbdd53827e85fac7e9d0ccde38ab651b581e6ba693f80ca200",
+    "SizeBytes": 6,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "link",
+    "Source": ">  [x](/u)",
+    "SHA256": "606f0c36fc47d2df77fad08ab26dfd71314efb96a83af740853fd19ec4c88bcc",
+    "SizeBytes": 10,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "image",
+    "Source": ">  ![x](/u)",
+    "SHA256": "342e46f5deaf2201cd1cf9c1662f0b90055ca29c9d12c8240465f35c682f598f",
+    "SizeBytes": 11,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "html-only",
+    "Source": ">  <span></span>",
+    "SHA256": "0a3b8871ebb1ed6cebea1b4cdaf211279637b83e46477122003fd0713fb96331",
+    "SizeBytes": 16,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "html-mixed",
+    "Source": ">  <span>x</span> tail",
+    "SHA256": "f3ddb9dcc92145f6079d6f5dd8cbabbe0666a8710de4ba3796ded0c3c624703f",
+    "SizeBytes": 22,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "comment-block",
+    "Source": ">  <!-- x -->",
+    "SHA256": "5815f897bd371c6504763783d158963ba481396a4a65973d7e67ba691ef7945d",
+    "SizeBytes": 13,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "html-block",
+    "Source": ">  <div>\n>  Text\n>",
+    "SHA256": "3026b0c8f826176d6f6b16cee2c4dbb6716d9a5645ec51bba7870f65a3170298",
+    "SizeBytes": 18,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "inline-comment",
+    "Source": "> a\n>  <!--x--> tail",
+    "SHA256": "ebccb3b590f17586a7d26fa4992deaf21fcf221bc55cf08220f020f4a51e7c84",
+    "SizeBytes": 20,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "inline-comment-only",
+    "Source": "> a\n>  <!--x-->",
+    "SHA256": "7680975bc3bbf15e0f302aca157319429354eb749b191dd16af7cf5027e58d35",
+    "SizeBytes": 15,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "code-continuation",
+    "Source": "> a `open\n>  close` tail",
+    "SHA256": "2aad2d6aae06ca980e6b39e64cc6acf7661ede488dfc7906c953d38d3b3c0de1",
+    "SizeBytes": 24,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "html-continuation",
+    "Source": "> a <span\n>  class=\"x\"> tail",
+    "SHA256": "64270209db786504e78fd0cb51c7c5a4a5eb2fb191eb758c576b5f0240a845e5",
+    "SizeBytes": 28,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-continuation",
+    "Source": "> a <script>\n>  text\n>  </script> tail",
+    "SHA256": "c04fc8d1dc5a8c9650ac9ad346d28a9aebd35be7f01882c6dc548bfac2645e7a",
+    "SizeBytes": 38,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-tail",
+    "Source": "> <!-- c --><script>\n>  text\n>  </script> tail",
+    "SHA256": "2db2fb46578be17593c4ca6a7c9e5693981e27d7785810bf9796e17e0acdd3c4",
+    "SizeBytes": 46,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "image-alt",
+    "Source": "> ![<script>](/x)\n>  text",
+    "SHA256": "064ff572088d1f2327ae1b28ed6796aa9d8139aadc862657df7e9245818226f9",
+    "SizeBytes": 25,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          20,
+          21,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "escaped",
+    "Source": "\\>  text",
+    "SHA256": "aa79132228c81c0e5067239c447ffc1e27fdc77e6ef949fd4c7e9a54f71834f3",
+    "SizeBytes": 8,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "nbsp-one",
+    "Source": ">  x",
+    "SHA256": "fcba92008e90ea8bcdd13ec898e9debc7c68626d0a8dec30dacc83511a3fddfb",
+    "SizeBytes": 5,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "nbsp-two",
+    "Source": ">   x",
+    "SHA256": "6b25d5546b3d0ea7219dca46895838a69e15d02d7f766e1d19dab233ae148405",
+    "SizeBytes": 6,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "nul",
+    "Source": ">  \u0000x",
+    "SHA256": "8490ba01ad8f5b217aec9a2a66477cd410a4797ec7bfd983da97bd30b34a65f4",
+    "SizeBytes": 5,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "unicode",
+    "Source": ">  é😀é�",
+    "SHA256": "83b36c2b9f50c894ac8fb52bb5e81c7aeeded6be651e5379ca9c3faf9cc699ae",
+    "SizeBytes": 15,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "tab-0",
+    "Source": ">\tText",
+    "SHA256": "5b97b0858e22fcaf5dc390a04424704116c91e1e33a13305cff10b4b218f40a6",
+    "SizeBytes": 6,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "tab-1",
+    "Source": "> \tText",
+    "SHA256": "884d2c713b33397f0349dffdeb7172d0fe48c42b45ddc4f1232b4617fdfe28a6",
+    "SizeBytes": 7,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "tab-2",
+    "Source": ">  \tText",
+    "SHA256": "83496a6b9da63116900a61f5aec4afd2ac9d2499e70e41187d1367aa1619e2e0",
+    "SizeBytes": 8,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "tab-3",
+    "Source": ">\t  Text",
+    "SHA256": "0fcfdfc9a045a5c26db9a421ba97ec877eb223202e08815e8182e72ad6ca308b",
+    "SizeBytes": 8,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "tab-4",
+    "Source": "- >\t Text",
+    "SHA256": "7663ffdc81d461c6f62ff870cc403f863b2c28493ba507c4ef91c8dad0b9179a",
+    "SizeBytes": 9,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "tab-5",
+    "Source": "> -\t>  Text",
+    "SHA256": "d8795ae86194c01af89a1a75c659f3f9efad1d05558aedc90df3959c8afeb893",
+    "SizeBytes": 11,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          7,
+          1,
+          8
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "tab-6",
+    "Source": ">\t>  Text",
+    "SHA256": "9aab8fcf68675a3d385b1da8d06731a5b658dd16b8a8a95086601ef816fa9e45",
+    "SizeBytes": 9,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "lf",
+    "Source": "- >  é\n>   x",
+    "SHA256": "3e3e19d63e3758afd85f0bd75d34eda6fbf0a93ebbbc771613092b4ca1e71f14",
+    "SizeBytes": 13,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      },
+      {
+        "Range": [
+          10,
+          12,
+          2,
+          3,
+          2,
+          5
+        ],
+        "Source": "  ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "crlf",
+    "Source": "- >  é\r\n>   x",
+    "SHA256": "bd68c23d6b5a10cc5f096ffda0cc06edd4802b636526e5b037a6a6eb8b4e835c",
+    "SizeBytes": 14,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      },
+      {
+        "Range": [
+          11,
+          13,
+          2,
+          3,
+          2,
+          5
+        ],
+        "Source": "  ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "cr",
+    "Source": "- >  é\r>   x",
+    "SHA256": "a1991607eb2d0ce90e3918034133e42b3ceac164cfebc911676f5efffa280a21",
+    "SizeBytes": 13,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      },
+      {
+        "Range": [
+          10,
+          12,
+          2,
+          3,
+          2,
+          5
+        ],
+        "Source": "  ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "mixed-endings",
+    "Source": ">  é\r\n>   x\r>  z\n",
+    "SHA256": "a7597ced9c14777e4a816f5e6228977a05da788401df048ff2de584b4808be4f",
+    "SizeBytes": 18,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      },
+      {
+        "Range": [
+          9,
+          11,
+          2,
+          3,
+          2,
+          5
+        ],
+        "Source": "  ",
+        "Message": "Extra spaces after blockquote marker."
+      },
+      {
+        "Range": [
+          15,
+          16,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "table-commonmark",
+    "Source": ">  |a|b|\n>  |-|-|\n>  |c|d|",
+    "SHA256": "73ca6e9f5dd80b7fd730c739e13769dbee811df0132715b701de5fc51abb93f7",
+    "SizeBytes": 26,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      },
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      },
+      {
+        "Range": [
+          20,
+          21,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ],
+    "Flavor": "commonmark"
+  },
+  {
+    "Name": "table-gfm",
+    "Source": ">  |a|b|\n>  |-|-|\n>  |c|d|",
+    "SHA256": "73ca6e9f5dd80b7fd730c739e13769dbee811df0132715b701de5fc51abb93f7",
+    "SizeBytes": 26,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [],
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "yaml-off",
+    "Source": "---\n>  text\n---\n\n>  body",
+    "SHA256": "a1cfcb95688b65106062e550f83e8e4b9c9b9ad65edf3f9e91b96eb2534ece7f",
+    "SizeBytes": 24,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      },
+      {
+        "Range": [
+          19,
+          20,
+          5,
+          3,
+          5,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "yaml-on",
+    "Source": "---\n>  text\n---\n\n>  body",
+    "SHA256": "a1cfcb95688b65106062e550f83e8e4b9c9b9ad65edf3f9e91b96eb2534ece7f",
+    "SizeBytes": 24,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          19,
+          20,
+          5,
+          3,
+          5,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "yaml-incomplete",
+    "Source": "---\n>  text",
+    "SHA256": "8556e9e6a01bf3e8f20f892f182b69f4dd5db440ee66213828317d42007a5461",
+    "SizeBytes": 11,
+    "Recognize": true,
+    "Incomplete": true,
+    "Expected": []
+  },
+  {
+    "Name": "toml-off",
+    "Source": "+++\n>  text\n+++\n\n>  body",
+    "SHA256": "2b2afeb22ffb106bb1fc050aa390f94039d8d0bbb594d27de44d7b1686271537",
+    "SizeBytes": 24,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      },
+      {
+        "Range": [
+          19,
+          20,
+          5,
+          3,
+          5,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "toml-on",
+    "Source": "+++\n>  text\n+++\n\n>  body",
+    "SHA256": "2b2afeb22ffb106bb1fc050aa390f94039d8d0bbb594d27de44d7b1686271537",
+    "SizeBytes": 24,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          19,
+          20,
+          5,
+          3,
+          5,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "toml-incomplete",
+    "Source": "+++\n>  text",
+    "SHA256": "7a2ed5a56afbd45910bc0c65da6d77ad648f2be83f4c6b981d5d8d4f52738742",
+    "SizeBytes": 11,
+    "Recognize": true,
+    "Incomplete": true,
+    "Expected": []
+  },
+  {
+    "Name": "inline-comment-with-prose",
+    "Source": ">  a <!--x--> tail",
+    "SHA256": "edd5a5b52773fab3ba2d07bf2108391772cd81c47728a16ad7c030cda62b8682",
+    "SizeBytes": 18,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "deep-mixed-prefix",
+    "Source": "- > - >  text",
+    "SHA256": "fc1b17aef037940face969f282ef915849a450e02abc0ac4f7bfa0066624aef6",
+    "SizeBytes": 13,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          1,
+          9,
+          1,
+          10
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "deep-nested-prefix",
+    "Source": "> - >  >  text",
+    "SHA256": "70dedc8f3167807050512a5d2b7bb07eb4ae1f1a1cd18facd1b4aa1bf87bef7a",
+    "SizeBytes": 14,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          9,
+          10,
+          1,
+          10,
+          1,
+          11
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "raw-eof",
+    "Source": "> a <script>\n>  text",
+    "SHA256": "03df514af0d75479cd4c9a710d0305edcef8729bc87c3ced6d8d5b432020675d",
+    "SizeBytes": 20,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "raw-omitted-whitespace",
+    "Source": "> a <script>\n>     \n>  text\n>  </script> tail",
+    "SHA256": "540aafb4c91aa8233a5ded54a02f2008a745745a41571327126cd7dabf0d41fd",
+    "SizeBytes": 45,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "codespan-closer-tail",
+    "Source": "> a `open\n>  close` tail\n>  later",
+    "SHA256": "7fc703a0a6dda126254bfab4f7fdc9224a0e909a304b8dc89cefd5a4aeb48433",
+    "SizeBytes": 33,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          27,
+          28,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "inline-html-only-continuation",
+    "Source": "> a\n>  <span></span>",
+    "SHA256": "a1b50dbb556e06b7a1fc681e77d00874237622330c0932d5b7cd26617aed8f54",
+    "SizeBytes": 20,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "ordinary-link-image-empty",
+    "Source": ">  ![](/x)",
+    "SHA256": "b6c98205acd31414c97533afb4cf30548ce14e38e0126c46146596b99f027b7e",
+    "SizeBytes": 10,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "new-inline-tag-text",
+    "Source": ">  <a>text</a>",
+    "SHA256": "695c0dfd6757e3e4827214fa0e5e70793a358dbf4a7fdea15bdfc6cb4af888ce",
+    "SizeBytes": 14,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "raw-spelling-in-code",
+    "Source": "> a `<script>`\n>  text",
+    "SHA256": "6c8c8f5328ebb0208534f3e0a11005e5c2236284a59df9bd7ccaada5db82f827",
+    "SizeBytes": 22,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          17,
+          18,
+          2,
+          3,
+          2,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "image-alt-closer-isolation",
+    "Source": "> a <script> ![</script>](/x)\n>  text\n>  </script> tail",
+    "SHA256": "53d2ed05dc647560b407d3c181e7b4e1e5f61dcb4146717c455bbf7342da1395",
+    "SizeBytes": 55,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "bom-yaml",
+    "Source": "﻿---\n: [ invalid\n>  text\n---\n\n>  body",
+    "SHA256": "d172c049814d5a0a61c62a970cdc8cf0e9a3d70f5a58c541137e7e8e36268edb",
+    "SizeBytes": 39,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          34,
+          35,
+          6,
+          3,
+          6,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  },
+  {
+    "Name": "bom-toml",
+    "Source": "﻿+++\n: [ invalid\n>  text\n+++\n\n>  body",
+    "SHA256": "74c7ed33d77f83cbb77291b394e14ab186a888c8fbab6173b793b7ff1c02b5e0",
+    "SizeBytes": 39,
+    "Recognize": true,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          34,
+          35,
+          6,
+          3,
+          6,
+          4
+        ],
+        "Source": " ",
+        "Message": "Extra spaces after blockquote marker."
+      }
+    ]
+  }
+]

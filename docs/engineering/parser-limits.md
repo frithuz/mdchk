@@ -598,3 +598,6 @@ before work. Final failure withholds detached spans; no parse-time retention,
 public model fields, source copies or fresh allowance are added.
 
 MD013 borrows completed original source/index/options/profile/reference facts. Its detached scalar spans use physical width and separately charged contribution/raw/category/URL eligibility. Confirmed raw-prefix replay preserves original TAB phase; semantic destinations are borrowed without decoding. Every probe, interval/frame/output capacity and copied prefix is reserved before work, with caller/origin and final atomic withholding.
+
+
+MD027 borrows completed private original syntax, source/index/options/profile and operation. It charges physical state, source and failed probes, bounded lookups, actual prefix replay with residual TAB phase, Paragraph/inline/raw associations, HTML tails, traversal frames, capacity, copied prefixes and logical output records before work. It creates no parse-time facts, source/index/options clones or new allowance; final failures withhold the dependent inventory.

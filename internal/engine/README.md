@@ -473,3 +473,6 @@ caller and originating operation controls. Callback findings reserve capacity,
 copied prefixes and logical records before publication, which is atomic on
 interruption. The default-enabled NoFix metadata and optionless schema remain
 unchanged; MD047 is the sole correction producer.
+
+
+MD027 borrows the narrow completed-original BlockquoteSpaces projection through a no-options facade. Actual Paragraph contributions, confirmed prefix replay and source-ordered literal/raw continuation govern eligibility. Detached excess SPACE ranges remain manual under both caller and origin controls, sticky work/node/time limits and final atomic withholding. MD047 alone supplies corrections.
