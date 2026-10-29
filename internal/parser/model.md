@@ -1979,3 +1979,14 @@ before work, including empty/clean/protected input. Caller and original controls
 sticky finite work/nodes/time and final producer/facade/callback checks atomically
 withhold failure. No reparse, renderer, source/tree clone, retained AST, new allowance
 or correction authority is added; MD047 remains the sole correction producer.
+
+
+ConfiguredNames is an original-operation projection for MD044. One Text owner,
+touching Exact ranges and one physical line define eligible islands. Non-Exact
+semantic first/last scalars retain outside word facts without supplying match bytes.
+Actual Link/Image owners, rawTag/rawClosing/htmlTail and opaque header ownership
+remain authoritative. Opt-in code uses actual CodeBlock Content, never an envelope
+or info string. Source scalars retain original endpoints and borrowed Unicode17
+full folds once; bounded name-prefix comparisons cannot split expansions. All
+arrays, failed probes, comparisons, copies/growth and detached spans reserve work
+and records before use. Final failure withdraws output, including early returns.

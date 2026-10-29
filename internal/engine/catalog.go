@@ -42,7 +42,7 @@ func Catalog() []Metadata {
 		{ID: "MD041", Name: "Opening document heading", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"level": headingLevel(1), "frontmatter_title": boolean(false)}},
 		{ID: "MD042", Name: "Links without destinations", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD043", Name: "Required heading outline", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"headings": {Kind: Strings, Default: []string{}, Domain: HeadingOutline}}},
-		{ID: "MD044", Name: "Capitalization of configured names", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"names": list(), "code_blocks": boolean(false)}},
+		{ID: "MD044", Name: "Capitalization of configured names", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"names": {Kind: Strings, Default: []string{}, Domain: ConfiguredNameUTF8}, "code_blocks": boolean(false)}},
 		{ID: "MD045", Name: "Images without alternative text", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"allow_decorative": boolean(false)}},
 		{ID: "MD046", Name: "Indented versus fenced code", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "fenced", "indented")}},
 		{ID: "MD047", Name: "Exactly one terminating newline", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: false, Options: OptionSchema{}},

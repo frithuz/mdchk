@@ -53,7 +53,7 @@ func documentedOptions() map[string]engine.OptionSchema {
 		"MD040": {"allowed_languages": list()},
 		"MD041": {"level": level(1), "frontmatter_title": b(false)},
 		"MD043": {"headings": domain(engine.HeadingOutline)},
-		"MD044": {"names": list(), "code_blocks": b(false)},
+		"MD044": {"names": domain(engine.ConfiguredNameUTF8), "code_blocks": b(false)},
 		"MD045": {"allow_decorative": b(false)},
 		"MD046": {"style": choice("consistent", "fenced", "indented")},
 		"MD048": {"style": choice("consistent", "backtick", "tilde")},

@@ -553,3 +553,14 @@ reserve original work/nodes before use. Caller/origin cancellation, sticky limit
 and final producer/facade/callback checks withhold failed dependent output, including
 empty/clean/protected cases. PlannedFix metadata grants no correction authority;
 MD047 alone supplies executable corrections.
+
+MD044 borrows ConfiguredNames through a narrow facade binding the actual original
+source/index/options/profile and budget. Option list copies, one fold per name,
+one borrowed fold record per exact scalar, bounded candidate-prefix comparisons,
+transformed semantic neighbor facts, traversal frames and all capacity/copy/output
+work reserve the original allowance before use. No source suffix is repeatedly
+folded. Original scalar endpoints govern complete full-fold matches. Every empty,
+clean, protected and no-name path observes caller and origin cancellation and sticky
+work/nodes/elapsed limits; final producer/facade/callback failure atomically withdraws
+detached output. No reparse, mutable tree/index/operation access, fresh allowance,
+normalization or correction authority is added. Default OFF and PlannedFix remain.

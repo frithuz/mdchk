@@ -515,3 +515,13 @@ ownership, normalized value and original paired ASCII SPACE edges over the full
 source. Each excess edge range uses its own start for directive suppression;
 selected inspection lines filter results after full-source analysis. All findings
 remain manual, with no correction eligibility, edits or previews.
+
+
+MD044 configured-name analysis is available but disabled by default for CommonMark
+and GFM. `names` defaults to an empty string list; `code_blocks` defaults to false.
+Names must be valid UTF-8 even when disabled; empty and duplicate entries are valid,
+and all other characters remain literal. This narrow domain does not constrain
+other rules' lists. Shared enabled/allow_directives types and inherited denials
+remain strict. Code opt-in exposes actual block payload only, never inline code.
+All findings are manual under PlannedFix; see [MD044](rules/formatting/md044.md)
+for Unicode folding, whole-word, exact-island and accepted-variant matching.

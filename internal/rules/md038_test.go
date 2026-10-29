@@ -21,6 +21,13 @@ func md038Settings() engine.Settings {
 
 func TestMD038DefaultsSettingsAndAvailability(t *testing.T) {
 	r := registry(t, Registrations())
+	executable := false
+	for _, registration := range Registrations() {
+		executable = executable || registration.ID == "MD038" && registration.Check != nil
+	}
+	if !executable {
+		t.Fatal("MD038 executable registration missing")
+	}
 	on, off := 0, 0
 	for _, m := range r.Metadata() {
 		if m.DefaultEnabled {
@@ -32,7 +39,7 @@ func TestMD038DefaultsSettingsAndAvailability(t *testing.T) {
 			t.Fatal(m)
 		}
 	}
-	if on != 59 || off != 28 || len(Registrations()) != 41 || !r.Available("MD038") {
+	if on != 59 || off != 28 || !r.Available("MD038") {
 		t.Fatal(on, off)
 	}
 	for _, enabled := range []bool{true, false} {

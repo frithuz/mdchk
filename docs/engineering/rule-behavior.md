@@ -82,6 +82,23 @@ raw state. Each range uses its own start for suppression and the fixed message
 not permission to delete bytes or proof of preserved code value. See
 [MD038](../rules/formatting/md038.md) for the complete analysis policy.
 
+### Md044
+
+MD044 matches configured names only within Exact, touching-source, single-line
+Text islands under one actual inline owner. Transformed barriers preserve semantic
+outside-neighbor word facts. Unicode17 full C/F folding uses original scalar
+endpoints, no normalization, and Letter/Number/Mark/ASCII-underscore boundaries.
+Leftmost then longest original occurrences are consumed even when exact; fold-equal
+configured spellings are accepted exact alternatives independent of list order.
+Every differing winner reports the complete original occurrence with
+`Configured name uses different capitalization.`. Authored labels and alt text
+are eligible; actual URLs, raw lifetimes, comments and recognized headers remain
+protected. Ordinary CommonMark bare URL-looking Text remains eligible. Code opt-in
+admits literal actual CodeBlock Content only; CodeSpan stays protected. Names have
+a narrow valid-UTF8 list domain, including disabled validation; no other lists
+are narrowed. See [MD044](../rules/formatting/md044.md) for the full policy.
+Pass 1 produces manual analysis only; MD047 remains the sole correction producer.
+
 ### Md011
 
 Recognize flat, immediately adjacent (label)[URL] candidates with nonblank label and a valid
