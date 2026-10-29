@@ -243,3 +243,17 @@ MD027 shares the completed original finite operation for compact physical-line s
 
 
 MD028 shares the original finite operation for physical-line state, suffix probes, actual atomic prefix associations, protected raw/literal ownership, bounded lookups, final sibling comparisons, traversal frames, capacity growth, copied prefixes and detached records. Empty, clean and protected inputs retain both caller/origin controls and final atomic withholding at producer, facade and callback.
+
+
+MD064 borrows the completed original production profile/options/source/index and
+operation through RepeatedProseSpaces. Actual Paragraph/Heading Text, transparent
+formatting and visible labels supply semantic Unicode Letter/Number/Mark tokens;
+whitespace, Cc, original NUL and opaque syntax are barriers. Only contiguous exact
+original SPACE runs count; hidden link fields never supply events. Actual raw tags,
+HTML tails and isolated image-alt state protect payload without whole-line hiding.
+The detached surplus [start+maximum,end) remains manual. Every source/semantic
+probe, traversal frame, capacity, copied prefix and logical span/finding is reserved
+before work, including empty/clean/protected input. Caller and original controls,
+sticky finite work/nodes/time and final producer/facade/callback checks atomically
+withhold failure. No reparse, renderer, source/tree clone, retained AST, new allowance
+or correction authority is added; MD047 remains the sole correction producer.

@@ -5,7 +5,7 @@ Use inline HTML comments with canonical MDxxx rule IDs to enable or disable rule
 Directives are intended for exceptions to specific rules within a document. To exclude a whole file from all rule linting, add its path to `exclude` in configuration. Do not enumerate every rule in a directive to suppress linting across the file. A whole-file exclusion does not prevent an explicitly requested inspection.
 
 Current availability: CommonMark/GFM directive processing is delivered in lint,
-fix and inspect. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 are production checks; the MD040 examples below
+fix and inspect. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 are production checks; the MD040 examples below
 illustrate rule-state syntax for an unavailable check. Permitted directives that
 enable unavailable rules produce incomplete coverage. Independently recognized
 YAML/TOML headers remain protected from directives, including when MD001, MD025 or MD041 consumes
@@ -138,3 +138,7 @@ enablement cannot invent another finding from the same run. Protected lines brea
 runs, and inspection slicing retains full original context.
 
 MD013 computes original physical width and full literal/raw/category/URL context before chosen-scalar START filtering. A protected directive comment may precede the first eligible scalar on the same line. A later disable cannot retroactively suppress an earlier scalar. Configured-off enables retain admitted options; inherited denials remain binding.
+
+MD064 establishes complete semantic word, actual raw and authored SPACE ownership
+before filtering the surplus range START. Hidden context remains available to
+inspection slicing; configured-off enables retain the admitted maximum.

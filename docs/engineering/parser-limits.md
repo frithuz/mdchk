@@ -604,3 +604,17 @@ MD027 borrows completed private original syntax, source/index/options/profile an
 
 
 MD028 borrows completed original syntax/profile/options/source/index and operation authority. BlockquoteGaps associates actual retained atomic prefix ends and source-ordered raw/literal protection before comparing final direct siblings. Original nonblank gap bytes prevent stepping over removed definitions. All state, probes, lookups, comparisons, frames, capacities, copies and records are precharged. No parse-time retention, reparse, clone or new allowance is added; failure withholds all output.
+
+
+MD064 borrows the completed original production profile/options/source/index and
+operation through RepeatedProseSpaces. Actual Paragraph/Heading Text, transparent
+formatting and visible labels supply semantic Unicode Letter/Number/Mark tokens;
+whitespace, Cc, original NUL and opaque syntax are barriers. Only contiguous exact
+original SPACE runs count; hidden link fields never supply events. Actual raw tags,
+HTML tails and isolated image-alt state protect payload without whole-line hiding.
+The detached surplus [start+maximum,end) remains manual. Every source/semantic
+probe, traversal frame, capacity, copied prefix and logical span/finding is reserved
+before work, including empty/clean/protected input. Caller and original controls,
+sticky finite work/nodes/time and final producer/facade/callback checks atomically
+withhold failure. No reparse, renderer, source/tree clone, retained AST, new allowance
+or correction authority is added; MD047 remains the sole correction producer.

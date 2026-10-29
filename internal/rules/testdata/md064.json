@@ -1,0 +1,1349 @@
+[
+  {
+    "Name": "basic",
+    "Source": "One  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "7b866844164d693a89fbde61126cc0de617ec0e1d6cc46541f71be3803762459",
+    "SizeBytes": 8,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "clean",
+    "Source": "One two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "b244e9e9f9b89496b49a36f79a63005255762ace7b8fdf92035490c133cfb312",
+    "SizeBytes": 7,
+    "Expected": []
+  },
+  {
+    "Name": "empty",
+    "Source": "",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "SizeBytes": 0,
+    "Expected": []
+  },
+  {
+    "Name": "multiple",
+    "Source": "one  two   three",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "ddc3a181f2bcbb8b99d4214f783a70fb46bcc29a28332fdf351953d0de6c177c",
+    "SizeBytes": 16,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      },
+      {
+        "Range": [
+          9,
+          11,
+          1,
+          10,
+          1,
+          12
+        ],
+        "Source": "  ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "maximum-two",
+    "Source": "One   two",
+    "Maximum": 2,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "8414ed3da0e012f4f645cf4f38f52e6411519b38f1beded45dacfc45de9897c1",
+    "SizeBytes": 9,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "equal",
+    "Source": "One   two",
+    "Maximum": 3,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "8414ed3da0e012f4f645cf4f38f52e6411519b38f1beded45dacfc45de9897c1",
+    "SizeBytes": 9,
+    "Expected": []
+  },
+  {
+    "Name": "huge",
+    "Source": "One  two",
+    "Maximum": 9223372036854775807,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "7b866844164d693a89fbde61126cc0de617ec0e1d6cc46541f71be3803762459",
+    "SizeBytes": 8,
+    "Expected": []
+  },
+  {
+    "Name": "unicode",
+    "Source": "\u00e9  \u4e8c",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "2e47c7fcb1d54a7f45c9e44d5a6f9d452d91aed47bec827b10e402c88668e311",
+    "SizeBytes": 7,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "combining",
+    "Source": "a\u0301  12",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "4c2f95cb2b624c625ce113ecb17fd196fe473d96a9d1579e9ebe68f47e94c9f8",
+    "SizeBytes": 7,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "mark-only",
+    "Source": "\u0301  2",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "50b0bd34992f0f6b3160ef75a119121942b0ba5a08f6ae8c4facc29f91668462",
+    "SizeBytes": 5,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "numeric",
+    "Source": "12  34",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "faaf120fb541c598a416dd5696e4a0be4b05dfa194e1ebdb4a1e47f13089126b",
+    "SizeBytes": 6,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "punctuation",
+    "Source": "One.  Two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "52cbfcaebc3808337f9faa8423081330a1f58d162809c480e233587d67def898",
+    "SizeBytes": 9,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "punctuation-only",
+    "Source": "!  ? one  , \ud83d\ude00  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "39cdf8f2a7c883f4a244ead242fe91acbd4713f934ab532237949832f168f7c3",
+    "SizeBytes": 21,
+    "Expected": []
+  },
+  {
+    "Name": "emphasis-edge",
+    "Source": "one  **two**",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "c3e74dcc0d73ef309d76b8fe08f5b0d0a7dd735b3f902001e45e7afa5fc6a7e1",
+    "SizeBytes": 12,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "space-child",
+    "Source": "**one**  **two**",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "54417332d0b602f539b796ff685d2a62035812edca6417c3b9406ea201295a63",
+    "SizeBytes": 16,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          1,
+          9,
+          1,
+          10
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "nested",
+    "Source": "one  ***two***",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "3182f7895af6366212f481143e39adf4b02e68425a06df70048dd6ff1ddbda7d",
+    "SizeBytes": 14,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "link-exit",
+    "Source": "[one](url)  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "6d2177df3f926575aeb4a272a75138f034a7cf5aab261fb0e55b8e6297103f27",
+    "SizeBytes": 15,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          1,
+          12,
+          1,
+          13
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "link-label",
+    "Source": "[one  two](url \"a  title\")",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "d66dabf0e64286feb5550827cf9d9c5c04287ed23e2d61c372d8bc6b31a8c131",
+    "SizeBytes": 26,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "image-label",
+    "Source": "![one  two](img)",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "daa06cb3e90d6deaaaae8cd352e30147291c1f380aecb362414877b72e2b59d7",
+    "SizeBytes": 16,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          7,
+          1,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "reference",
+    "Source": "[one  two][a  id]\n\n[a  id]: /url \"a  title\"",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "4cc40332f8b59f14ff9fc6538cf6500546b0a390ca47751513a068325ad18099",
+    "SizeBytes": 43,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "empty-label",
+    "Source": "one![](u)  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "407b80c98a165077c872f8438af5ab9bee5ff5f882bacaf796ae98a7c6b4e5c6",
+    "SizeBytes": 14,
+    "Expected": []
+  },
+  {
+    "Name": "entity-letter",
+    "Source": "one  &#65;",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "99b7658642c9f8df6a9ab1cbabbb762170de4453e1d1cc45b333c0be8f72a2d8",
+    "SizeBytes": 10,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "entity-space",
+    "Source": "one  &#32;",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "700a1f9e591ff7af0b05cffe2f026dfb43759f7369bf28fa5dae2b2d0e3a548d",
+    "SizeBytes": 10,
+    "Expected": []
+  },
+  {
+    "Name": "synthesized",
+    "Source": "one&#32;&#32;two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "0134b0a621568edf8f061d2c25dcd144c9897d7ae2f921b1c29f98f836a5edfe",
+    "SizeBytes": 16,
+    "Expected": []
+  },
+  {
+    "Name": "escape",
+    "Source": "one\\*  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "c157c5eb3330fbc348e6b3b8acda72b933af7d5e244d346a678aa3b5112474c4",
+    "SizeBytes": 10,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          7,
+          1,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "escape-only",
+    "Source": "\\*  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "be93c2c8d80231e7ffdfaf697e8de87f6dd9bde7cc94d179f5b0b9d14d844e83",
+    "SizeBytes": 7,
+    "Expected": []
+  },
+  {
+    "Name": "tab",
+    "Source": "one \t  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "7a608e03b22fd27b689505c1432c8c5eec61b4031c6c161e38548b57290bf98b",
+    "SizeBytes": 10,
+    "Expected": []
+  },
+  {
+    "Name": "nbsp",
+    "Source": "one\u00a0  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "27b09e2602718b75b83512ad30be81e8d5f0b9621ed14e3b403f91193a3f63f2",
+    "SizeBytes": 10,
+    "Expected": []
+  },
+  {
+    "Name": "nul",
+    "Source": "one\u0000  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "67a8af4d64b00c7a2c810a2485dae65e91ba440d29cd54189847556c7b96e24d",
+    "SizeBytes": 9,
+    "Expected": []
+  },
+  {
+    "Name": "control",
+    "Source": "one\u0001  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "858e5ae355b2a6cbf3e74e019f7e4f1314cfc485e5e397cc6885e25dd4cf4ca4",
+    "SizeBytes": 9,
+    "Expected": []
+  },
+  {
+    "Name": "format",
+    "Source": "one\u200d  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "ceec219b782f9c1944723691591b7b5c464bda5b4def72c1618a59eff3312b95",
+    "SizeBytes": 11,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "format-only",
+    "Source": "one  \u200d",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "e17c815afa492c09731dff5e14c004a1a7c9e9283e848b0890e7d3a5d681d8ff",
+    "SizeBytes": 8,
+    "Expected": []
+  },
+  {
+    "Name": "replacement",
+    "Source": "one\ufffd  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "422ff10130546fccb237077481dd92907fb48d9e15cc40ad95ea45d200979c8f",
+    "SizeBytes": 11,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "code",
+    "Source": "one  `two` and `a  b`\n\nthree  four",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "81a8375387666fcf1832ad62e36cf3a33e65b2a9f49dd56a3d59ba0861a40508",
+    "SizeBytes": 34,
+    "Expected": [
+      {
+        "Range": [
+          29,
+          30,
+          3,
+          7,
+          3,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "raw",
+    "Source": "one <script>x  y</script> after  tail",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "e03e70a37cf459ce5117ad3b723cef10261362a5471ac5f7faf199df3ba655fb",
+    "SizeBytes": 37,
+    "Expected": [
+      {
+        "Range": [
+          32,
+          33,
+          1,
+          33,
+          1,
+          34
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "raw-open",
+    "Source": "one <script>x  y",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "29018c0ba237e368f50ad949700710fa968b497271b5e2d8407a2a13beb0e9c1",
+    "SizeBytes": 16,
+    "Expected": []
+  },
+  {
+    "Name": "alt-isolation",
+    "Source": "![<script>x  y](img) after  tail",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "4a7dafaae37b83779bf07195269686dd91a2e5e6c68854d4523773f1e1616147",
+    "SizeBytes": 32,
+    "Expected": [
+      {
+        "Range": [
+          27,
+          28,
+          1,
+          28,
+          1,
+          29
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "html-tail",
+    "Source": "<!-- c --><script>\nx  y\n</script> after  tail",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "4eeda138b0e6d2c37dfadc49753f809fa773876a4928ff7a7b98b3a7db844913",
+    "SizeBytes": 45,
+    "Expected": [
+      {
+        "Range": [
+          40,
+          41,
+          3,
+          17,
+          3,
+          18
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "ordinary-tags",
+    "Source": "<i>one  two</i>",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "d46636f3a368f77ea8291d74917e6c43c2f1e5d53ad446992a5cf073800060aa",
+    "SizeBytes": 15,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          1,
+          8,
+          1,
+          9
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "tag-barrier",
+    "Source": "one  <i>two</i>",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "6b5130f461af7562949623cd1093e5b1a47be701d7accd1f5fe9da6431f8e777",
+    "SizeBytes": 15,
+    "Expected": []
+  },
+  {
+    "Name": "comparison",
+    "Source": "one < two  three",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "f82c527aab73941ed2d900fb1ccd5ae3482bcfcee0366b51973601775a570827",
+    "SizeBytes": 16,
+    "Expected": [
+      {
+        "Range": [
+          10,
+          11,
+          1,
+          11,
+          1,
+          12
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "heading",
+    "Source": "# One  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "f437a1209328e16bc655db3bd8df2d380f4be69b53efbd333a61af43004a6fdd",
+    "SizeBytes": 10,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          7,
+          1,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "setext",
+    "Source": "One  two\n===",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "e9bd6cfaadc7fb951e7d656e24d5890907242e3e3ff241cb2e00c9ccdd86505f",
+    "SizeBytes": 12,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "list",
+    "Source": "- One  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "d0f3a24401e81df75d751c13ca2fdbe08628d96eb095e30d7e273bc5141f3ff0",
+    "SizeBytes": 10,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          7,
+          1,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "quote",
+    "Source": "> One  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "ae7b4d6222d347e5fbbe145b6c92905ae03346b1a02f546590d188dac76f70af",
+    "SizeBytes": 10,
+    "Expected": [
+      {
+        "Range": [
+          6,
+          7,
+          1,
+          7,
+          1,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "definitions",
+    "Source": "[id]: /a\n\nOne  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "3627abf66bc248a6a033f39b3b75904b72bf4f58efaa9f0386973fbc65d037a9",
+    "SizeBytes": 18,
+    "Expected": [
+      {
+        "Range": [
+          14,
+          15,
+          3,
+          5,
+          3,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "trailing",
+    "Source": "   One  two  \n   three  four\n",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "69d452b8cdf708baa1d68aa0bd5ec3aa9b074665c115784083cc5fe0f5e40db0",
+    "SizeBytes": 29,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          1,
+          8,
+          1,
+          9
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      },
+      {
+        "Range": [
+          23,
+          24,
+          2,
+          10,
+          2,
+          11
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "lf",
+    "Source": "One  two\nthree  four",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "3654b2d8708e86b146cd68baf4354489a05dfb393013407f6b21332dea64292b",
+    "SizeBytes": 20,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      },
+      {
+        "Range": [
+          15,
+          16,
+          2,
+          7,
+          2,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "crlf",
+    "Source": "One  two\r\nthree  four",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "c6e0bec834ce7ba6a59cb35a2e7b7e19168145d2ae930326365e2e21d0d6da91",
+    "SizeBytes": 21,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      },
+      {
+        "Range": [
+          16,
+          17,
+          2,
+          7,
+          2,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "cr",
+    "Source": "One  two\rthree  four",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "6bbd91480785a959003b46d121c0106b3cb5b61032e0707b5d35f01b486623fe",
+    "SizeBytes": 20,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      },
+      {
+        "Range": [
+          15,
+          16,
+          2,
+          7,
+          2,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "mixed",
+    "Source": "One  two\r\nthree  four\rfive  six\nseven  eight",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "8ad199e5212295d61c6263b6b9b4ceb5948e2d78efa84d770e1b65b53e2b63e2",
+    "SizeBytes": 44,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      },
+      {
+        "Range": [
+          16,
+          17,
+          2,
+          7,
+          2,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      },
+      {
+        "Range": [
+          27,
+          28,
+          3,
+          6,
+          3,
+          7
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      },
+      {
+        "Range": [
+          38,
+          39,
+          4,
+          7,
+          4,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "cm-pipes",
+    "Source": "one  two | x\n--- | ---\na  b | c",
+    "Maximum": 1,
+    "Flavor": "commonmark",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "22c3a1568973e957071cee3e8f4229164e0d4867add7e87bb20377d0b7627bd8",
+    "SizeBytes": 31,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      },
+      {
+        "Range": [
+          25,
+          26,
+          3,
+          3,
+          3,
+          4
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "gfm-table",
+    "Source": "one  two | x\n--- | ---\na  b | c",
+    "Maximum": 1,
+    "Flavor": "gfm",
+    "Recognize": false,
+    "Incomplete": false,
+    "SHA256": "22c3a1568973e957071cee3e8f4229164e0d4867add7e87bb20377d0b7627bd8",
+    "SizeBytes": 31,
+    "Expected": []
+  },
+  {
+    "Name": "yaml",
+    "Source": "\ufeff---\nkey: a  b\n---\nOne  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": true,
+    "Incomplete": false,
+    "SHA256": "8ec79e35988a5e0121e6bcfe34606bd203a207584dc474b5b0f08c0325d0ecae",
+    "SizeBytes": 29,
+    "Expected": [
+      {
+        "Range": [
+          25,
+          26,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "toml",
+    "Source": "\ufeff+++\nkey = \"a  b\"\n+++\nOne  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": true,
+    "Incomplete": false,
+    "SHA256": "f1c031ed996f3ba66b30c177f84255bcbc0cbc0580ab4502e42f7b310dfc42b4",
+    "SizeBytes": 32,
+    "Expected": [
+      {
+        "Range": [
+          28,
+          29,
+          4,
+          5,
+          4,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "incomplete",
+    "Source": "---\none  two",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": true,
+    "Incomplete": true,
+    "SHA256": "09296698c83be03d47576b10eb310445f4faa4e505ad151a653822b9ceab1a9d",
+    "SizeBytes": 12,
+    "Expected": []
+  },
+  {
+    "Name": "header-only",
+    "Source": "---\nkey: a  b\n---",
+    "Maximum": 1,
+    "Flavor": "",
+    "Recognize": true,
+    "Incomplete": false,
+    "SHA256": "a48bce9fde396d13d6bebcff0f8539e2be002604bb4a46dd94c6ab30eeabf87a",
+    "SizeBytes": 17,
+    "Expected": []
+  },
+  {
+    "Name": "yaml-off",
+    "Source": "---\nOne  two\n---\nthree  four",
+    "Maximum": 1,
+    "Recognize": false,
+    "Formats": [],
+    "SHA256": "577d9d1442a35eed1c3b17a58e7feb62969615282f56c1bcdc79b3f913fcce78",
+    "SizeBytes": 28,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      },
+      {
+        "Range": [
+          23,
+          24,
+          4,
+          7,
+          4,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "yaml-on",
+    "Source": "---\nOne  two\n---\nthree  four",
+    "Maximum": 1,
+    "Recognize": true,
+    "Formats": [],
+    "SHA256": "577d9d1442a35eed1c3b17a58e7feb62969615282f56c1bcdc79b3f913fcce78",
+    "SizeBytes": 28,
+    "Expected": [
+      {
+        "Range": [
+          23,
+          24,
+          4,
+          7,
+          4,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "toml-unselected",
+    "Source": "+++\nOne  two\n+++\nthree  four",
+    "Maximum": 1,
+    "Recognize": true,
+    "Formats": [
+      "yaml"
+    ],
+    "SHA256": "8de4a5a62c22f49559ae2e1e8827daf14137d24d9bb8a1e166db4af191ef3774",
+    "SizeBytes": 28,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          2,
+          5,
+          2,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      },
+      {
+        "Range": [
+          23,
+          24,
+          4,
+          7,
+          4,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "malformed-opaque",
+    "Source": "---\nkey: \"one  two\n---\nthree  four",
+    "Maximum": 1,
+    "Recognize": true,
+    "Formats": [],
+    "SHA256": "9f7e94cc7efb8f6eda3c050c38d13c336eae215f3f30da0817f08f833eacc962",
+    "SizeBytes": 34,
+    "Expected": [
+      {
+        "Range": [
+          29,
+          30,
+          4,
+          7,
+          4,
+          8
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  }
+]

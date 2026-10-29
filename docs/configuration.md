@@ -483,3 +483,8 @@ MD027 is available and enabled by default for CommonMark and GFM, with no rule-s
 
 
 MD028 is available and enabled by default for CommonMark and GFM, with no rule-specific options. Empty mappings preserve defaults; strict shared enabled/allow_directives booleans and inherited denials apply, including validation while disabled. All findings remain manual under NoFix metadata.
+
+MD064 is available and enabled by default for CommonMark and GFM. `maximum` is a
+positive integer, default 1; it is validated even while disabled. Empty mappings
+preserve defaults; shared directive denials remain inherited. PlannedFix metadata
+gives no implemented correction; all MD064 findings remain manual.

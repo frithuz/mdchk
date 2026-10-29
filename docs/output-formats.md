@@ -386,3 +386,7 @@ separately identified candidate snapshots receive recomputed manual MD027 findin
 
 
 MD028 reports manual original remaining-body ranges with message `Blank line separates adjacent blockquotes.` and `fix_available: false`. Empty body ranges remain present points. It produces no changes, previews or returned content; MD047 candidates receive recomputed MD028 findings under their own snapshot identity.
+
+MD064 reports manual surplus original SPACE ranges with message `Repeated spaces
+in prose.` and `fix_available: false`. It supplies no changes, previews or returned
+content. MD047 candidate reanalysis retains MD064 ranges under candidate identity.

@@ -1,0 +1,59 @@
+[
+  {
+    "Name": "LF",
+    "Source": "Lead\nOne  two",
+    "Candidate": "Lead\nOne  two\n",
+    "SourceSHA256": "976a511a2cf49f7181ed393f5cebc292816ca7fe538a8592710ac88200b56b40",
+    "CandidateSHA256": "af9af74c847153e58fbc49c80b1182c13d38fb3b2dffaba5f9e3332cbe7b8cb7",
+    "SourceSizeBytes": 13,
+    "CandidateSizeBytes": 14,
+    "ExpectedRange": [
+      9,
+      10,
+      2,
+      5,
+      2,
+      6
+    ],
+    "ExpectedSource": " ",
+    "ExpectedMessage": "Repeated spaces in prose."
+  },
+  {
+    "Name": "CRLF",
+    "Source": "Lead\r\nOne  two",
+    "Candidate": "Lead\r\nOne  two\r\n",
+    "SourceSHA256": "61f6ba065230a467f5bcf892ca3a9abeea05bdbde787d32ce55670a52a7fd0f6",
+    "CandidateSHA256": "9b9ed20ff81109420554f99e25401877cce76b0a3c0b0f5f6da2a44c674047da",
+    "SourceSizeBytes": 14,
+    "CandidateSizeBytes": 16,
+    "ExpectedRange": [
+      10,
+      11,
+      2,
+      5,
+      2,
+      6
+    ],
+    "ExpectedSource": " ",
+    "ExpectedMessage": "Repeated spaces in prose."
+  },
+  {
+    "Name": "CR",
+    "Source": "Lead\rOne  two",
+    "Candidate": "Lead\rOne  two\r",
+    "SourceSHA256": "46246a17cdec08ca0251e620d4fba3dc0c83f8b78194f2746f8beb828f0bfcbc",
+    "CandidateSHA256": "80fb0ab1736bcf2fe53d9cd7a6da157c8e2d3d44fbff71fe13d6b4c8b0450c73",
+    "SourceSizeBytes": 13,
+    "CandidateSizeBytes": 14,
+    "ExpectedRange": [
+      9,
+      10,
+      2,
+      5,
+      2,
+      6
+    ],
+    "ExpectedSource": " ",
+    "ExpectedMessage": "Repeated spaces in prose."
+  }
+]

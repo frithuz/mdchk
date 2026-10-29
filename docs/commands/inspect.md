@@ -178,3 +178,7 @@ MD027 inspection exposes available default-enabled manual analysis. Full final P
 
 
 MD028 is available and enabled by default. Full original same-parent quote neighbors and protected gap context precede slicing and START suppression. Each qualifying physical line selects its remaining blank body, including a present zero-width position after an atomic retained prefix. Selecting only the later quote does not relocate a gap finding.
+
+MD064 is available and enabled by default. Full actual Paragraph/Heading ownership,
+transparent word witnesses and raw/protected context precede slicing. Findings use
+only the surplus original SPACE range START and retain earlier directive state.

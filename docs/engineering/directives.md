@@ -137,3 +137,7 @@ MD027 establishes full final Paragraph, actual nested/lazy prefix and literal/ra
 
 
 MD028 establishes full original sibling, gap and protected ownership before filtering each remaining-body START. A comment in the gap breaks adjacency; a later second-quote comment cannot suppress an earlier gap. Inspection slices retain outside neighbors and raw state.
+
+MD064 establishes complete semantic word, actual raw and authored SPACE ownership
+before filtering the surplus range START. Hidden context remains available to
+inspection slicing; configured-off enables retain the admitted maximum.

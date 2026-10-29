@@ -1,0 +1,285 @@
+[
+  {
+    "Name": "basic",
+    "Source": "One  two",
+    "SHA256": "7b866844164d693a89fbde61126cc0de617ec0e1d6cc46541f71be3803762459",
+    "SizeBytes": 8,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "surplus",
+    "Source": "One   two",
+    "SHA256": "8414ed3da0e012f4f645cf4f38f52e6411519b38f1beded45dacfc45de9897c1",
+    "SizeBytes": 9,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          6,
+          1,
+          5,
+          1,
+          7
+        ],
+        "Source": "  ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "emphasis-edge",
+    "Source": "one  **two**",
+    "SHA256": "c3e74dcc0d73ef309d76b8fe08f5b0d0a7dd735b3f902001e45e7afa5fc6a7e1",
+    "SizeBytes": 12,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "whitespace-child",
+    "Source": "**one**  **two**",
+    "SHA256": "54417332d0b602f539b796ff685d2a62035812edca6417c3b9406ea201295a63",
+    "SizeBytes": 16,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          9,
+          1,
+          9,
+          1,
+          10
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "link-exit",
+    "Source": "[one](url)  two",
+    "SHA256": "6d2177df3f926575aeb4a272a75138f034a7cf5aab261fb0e55b8e6297103f27",
+    "SizeBytes": 15,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          1,
+          12,
+          1,
+          13
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "entity-letter",
+    "Source": "one  &#65;",
+    "SHA256": "99b7658642c9f8df6a9ab1cbabbb762170de4453e1d1cc45b333c0be8f72a2d8",
+    "SizeBytes": 10,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "entity-space",
+    "Source": "one  &#32;",
+    "SHA256": "700a1f9e591ff7af0b05cffe2f026dfb43759f7369bf28fa5dae2b2d0e3a548d",
+    "SizeBytes": 10,
+    "Expected": []
+  },
+  {
+    "Name": "entity-only-spaces",
+    "Source": "one&#32;&#32;two",
+    "SHA256": "0134b0a621568edf8f061d2c25dcd144c9897d7ae2f921b1c29f98f836a5edfe",
+    "SizeBytes": 16,
+    "Expected": []
+  },
+  {
+    "Name": "unicode",
+    "Source": "é  二",
+    "SHA256": "2e47c7fcb1d54a7f45c9e44d5a6f9d452d91aed47bec827b10e402c88668e311",
+    "SizeBytes": 7,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "tag-interior",
+    "Source": "<i>one  two</i>",
+    "SHA256": "d46636f3a368f77ea8291d74917e6c43c2f1e5d53ad446992a5cf073800060aa",
+    "SizeBytes": 15,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          1,
+          8,
+          1,
+          9
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "tag-barrier",
+    "Source": "one  <i>two</i>",
+    "SHA256": "6b5130f461af7562949623cd1093e5b1a47be701d7accd1f5fe9da6431f8e777",
+    "SizeBytes": 15,
+    "Expected": []
+  },
+  {
+    "Name": "code-barrier",
+    "Source": "one  `two`",
+    "SHA256": "99d0a42330b360244d893c3123ce420150a0d1be959cd8d68cd5a10e7bbcee7b",
+    "SizeBytes": 10,
+    "Expected": []
+  },
+  {
+    "Name": "nul-barrier",
+    "Source": "one\u0000  two",
+    "SHA256": "67a8af4d64b00c7a2c810a2485dae65e91ba440d29cd54189847556c7b96e24d",
+    "SizeBytes": 9,
+    "Expected": []
+  },
+  {
+    "Name": "punctuation",
+    "Source": "One.  Two",
+    "SHA256": "52cbfcaebc3808337f9faa8423081330a1f58d162809c480e233587d67def898",
+    "SizeBytes": 9,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "punctuation-only",
+    "Source": "one  ,",
+    "SHA256": "d2142a6a09d394d524ffb9711fca48fd6841fba3b98afc95f3604ac6c1addfd7",
+    "SizeBytes": 6,
+    "Expected": []
+  },
+  {
+    "Name": "mixed-tab",
+    "Source": "one \t  two",
+    "SHA256": "7a608e03b22fd27b689505c1432c8c5eec61b4031c6c161e38548b57290bf98b",
+    "SizeBytes": 10,
+    "Expected": []
+  },
+  {
+    "Name": "format-token",
+    "Source": "one‍  two",
+    "SHA256": "ceec219b782f9c1944723691591b7b5c464bda5b4def72c1618a59eff3312b95",
+    "SizeBytes": 11,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "format-alone",
+    "Source": "one  ‍",
+    "SHA256": "e17c815afa492c09731dff5e14c004a1a7c9e9283e848b0890e7d3a5d681d8ff",
+    "SizeBytes": 8,
+    "Expected": []
+  },
+  {
+    "Name": "literal-replacement",
+    "Source": "one�  two",
+    "SHA256": "422ff10130546fccb237077481dd92907fb48d9e15cc40ad95ea45d200979c8f",
+    "SizeBytes": 11,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          8,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": " ",
+        "Message": "Repeated spaces in prose."
+      }
+    ]
+  },
+  {
+    "Name": "empty-label",
+    "Source": "one![](u)  two",
+    "SHA256": "407b80c98a165077c872f8438af5ab9bee5ff5f882bacaf796ae98a7c6b4e5c6",
+    "SizeBytes": 14,
+    "Expected": []
+  }
+]

@@ -1965,3 +1965,17 @@ endings retain physical ownership. Global runs cross container transitions but
 protected lines break them. Original source, profile, options, index and allowance
 authority, precharged growth/copies and final withholding apply without new retained
 syntax or inspection fields. Zero-width findings are manual evidence only.
+
+
+MD064 borrows the completed original production profile/options/source/index and
+operation through RepeatedProseSpaces. Actual Paragraph/Heading Text, transparent
+formatting and visible labels supply semantic Unicode Letter/Number/Mark tokens;
+whitespace, Cc, original NUL and opaque syntax are barriers. Only contiguous exact
+original SPACE runs count; hidden link fields never supply events. Actual raw tags,
+HTML tails and isolated image-alt state protect payload without whole-line hiding.
+The detached surplus [start+maximum,end) remains manual. Every source/semantic
+probe, traversal frame, capacity, copied prefix and logical span/finding is reserved
+before work, including empty/clean/protected input. Caller and original controls,
+sticky finite work/nodes/time and final producer/facade/callback checks atomically
+withhold failure. No reparse, renderer, source/tree clone, retained AST, new allowance
+or correction authority is added; MD047 remains the sole correction producer.
