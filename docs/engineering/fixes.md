@@ -294,3 +294,11 @@ self-authorize preservation through requirement flags. Keep ambiguous rules
 report-only until independent proof and production acceptance exist. Retained
 compiled fixtures in `cmd/mdchk/testdata/md047_corrections.json` are available
 for later consumer acceptance; they do not claim filesystem apply or MCP support.
+
+Original selected-file UTF-8 failures remain local observations during correction
+validation. They withhold their correction component and selected-target proof
+dependents, including resource edges, while independent analysis and approved
+corrections continue. Blocked peers retain justified original findings and receive
+no producer, final candidate reanalysis or private publication approval. The final
+observed snapshot reports its encoding error once. Generated invalid replacements,
+other shared failures and runtime stops retain fail-closed behavior.

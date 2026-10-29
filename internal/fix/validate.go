@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/bits"
 	"reflect"
 	"slices"
 
@@ -260,6 +261,8 @@ type Observation struct {
 	Analysis result.Result
 }
 type validatedFile struct {
+	encodingBlocked bool // original decoding failure or dependent proof component
+
 	runtimeRollback     bool
 	observations        []observation
 	path                string
@@ -362,6 +365,8 @@ func retainedAnalysis(raw []byte, retained *result.Result) result.Result {
 }
 
 type validationState struct {
+	encodingFailed bool // only the original pre-parse gate can establish this
+
 	target    Target
 	trace     *engine.InspectionTrace
 	analysis  []byte
@@ -415,6 +420,121 @@ func analyze(ctx context.Context, t Target, source parser.Source, m meter) (vali
 	}
 	return state, nil
 }
+
+// originalEncodingFailure is deliberately restricted to the first original
+// analysis pass. Generic analyze remains fail-closed for generated candidates,
+// callback errors, runtime stops and every other operational failure.
+func originalEncodingFailure(s validationState, err error, m meter) (bool, error) {
+	if reserveErr := m.work(4*int64(len(s.target.Path)) + 512); reserveErr != nil {
+		return false, errors.Join(err, reserveErr)
+	}
+	// analyze checks trace interruption, callback failures and parser causes before
+	// returning this precise unjoined structured-error type. No source rescan.
+	//nolint:errorlint // Recovery requires the exact unjoined original failure; wrapped causes stay fatal.
+	failure, ok := err.(*AnalysisFailure)
+	if !ok || failure.Category != result.IO || failure.Code != "invalid-utf8" || failure.Path != s.target.Path || s.source.Token() != s.target.Source.Token() || s.trace == nil || s.retained == nil {
+		return false, nil
+	}
+	r := s.retained
+	if len(r.Errors) != 1 || len(r.Interruptions) != 0 || len(r.Omissions) != 0 || len(r.Files) != 1 || len(r.CheckedFiles) != 1 || r.CheckedFiles[0] != s.target.Path || len(r.Diagnostics) != 0 {
+		return false, nil
+	}
+	e, f := r.Errors[0], r.Files[0]
+	if e.Category != result.IO || e.Code != "invalid-utf8" || e.Path != s.target.Path || e.Scope != "operation" || e.ByteOffset == nil || *e.ByteOffset < 0 || *e.ByteOffset >= s.source.Len() || e.Snapshot == nil || f.InputSnapshot == nil || *e.Snapshot != *f.InputSnapshot || e.Snapshot.SizeBytes != s.source.Len() || f.Path != s.target.Path || f.Analysis != "failed" {
+		return false, nil
+	}
+	return true, nil
+}
+
+// blockEncodingComponents closes original failures over correction components
+// and directed selected-target proof edges, including ResourceDependencies.
+// Independent components remain eligible; no failed proof reaches a producer.
+func blockEncodingComponents(states []validationState, out *Validated, u union, m meter) error {
+	n, edges := len(states), 0
+	for _, s := range states {
+		if err := m.work(int64(len(s.target.Path)) + 2); err != nil {
+			return err
+		}
+		for _, key := range out.publicationDependencies[s.target.Path] {
+			if err := m.work(int64(len(key)) + 2); err != nil {
+				return err
+			}
+			if _, ok := out.publicationIndex[key]; ok {
+				edges++
+			}
+		}
+	}
+	if err := m.reserve(5*int64(n)+3*int64(edges)+1, 5*int64(n)+3*int64(edges)); err != nil {
+		return err
+	}
+	roots, heads := make([]int, n), make([]int, n)
+	blocked := make([]bool, n)
+	queue := make([]int, 0, n)
+	next, to := make([]int, edges), make([]int, edges)
+	for i, s := range states {
+		if err := m.work(2*int64(bits.Len(uint(n))) + 3); err != nil {
+			return err
+		}
+		roots[i] = u.root(i)
+		heads[i] = -1
+		if s.encodingFailed && !blocked[roots[i]] {
+			blocked[roots[i]] = true
+			queue = append(queue, roots[i])
+		}
+	}
+	edge := 0
+	for i, s := range states {
+		if err := m.work(int64(len(s.target.Path)) + 2); err != nil {
+			return err
+		}
+		for _, key := range out.publicationDependencies[s.target.Path] {
+			if err := m.work(int64(len(key)) + 4); err != nil {
+				return err
+			}
+			if j, ok := out.publicationIndex[key]; ok {
+				root := roots[j]
+				to[edge] = roots[i]
+				next[edge] = heads[root]
+				heads[root] = edge
+				edge++
+			}
+		}
+	}
+	for i := 0; i < len(queue); i++ {
+		if err := m.work(2); err != nil {
+			return err
+		}
+		for e := heads[queue[i]]; e >= 0; e = next[e] {
+			if err := m.work(4); err != nil {
+				return err
+			}
+			root := to[e]
+			if !blocked[root] {
+				blocked[root] = true
+				queue = append(queue, root)
+			}
+		}
+	}
+	for i, s := range states {
+		if err := m.work(2); err != nil {
+			return err
+		}
+		if !blocked[roots[i]] {
+			continue
+		}
+		if err := m.reserve(1, 2); err != nil {
+			return err
+		}
+		out.files[i].encodingBlocked = true
+		reason := "context-unavailable"
+		if s.encodingFailed {
+			reason = "decoding-failed"
+		}
+		out.files[i].reasons = []string{reason}
+	}
+	return m.work(0)
+}
+
 func reserveJSON(m meter, v reflect.Value) error {
 	if !v.IsValid() {
 		return m.work(1)
@@ -639,6 +759,7 @@ func (v *Validator) Validate(ctx context.Context, targets []Target, options Vali
 	for i, t := range targets {
 		out.files[i] = validatedFile{path: t.Path, original: t.Source, candidate: t.Source}
 	}
+	hasEncodingFailure := false
 	for i, t := range targets {
 		t.Plan = targets[i].Plan
 		s, err := analyze(ctx, t, t.Source, m)
@@ -662,6 +783,17 @@ func (v *Validator) Validate(ctx context.Context, targets []Target, options Vali
 		out.files[i] = validatedFile{path: t.Path, original: t.Source, candidate: t.Source, analysis: s.analysis, retained: s.retained, trace: s.trace}
 		if err != nil {
 			out.complete = false
+			local, classificationErr := originalEncodingFailure(s, err, m)
+			if classificationErr != nil {
+				return out, classificationErr
+			}
+			if local {
+				s.encodingFailed = true
+				states[i] = s
+				initial[i] = s
+				hasEncodingFailure = true
+				continue
+			}
 			out.files[i].reasons = append(out.files[i].reasons, "analysis-failed")
 			return out, err
 		}
@@ -681,9 +813,22 @@ func (v *Validator) Validate(ctx context.Context, targets []Target, options Vali
 		}
 		components[key] = append(components[key], i)
 	}
+	if hasEncodingFailure {
+		if err := blockEncodingComponents(states, &out, u, m); err != nil {
+			out.complete = false
+			return out, err
+		}
+	}
 	overlayBytes := total
 	for _, key := range order {
 		members := components[key]
+		if err := m.work(1); err != nil {
+			out.complete = false
+			return out, err
+		}
+		if out.files[members[0]].encodingBlocked {
+			continue
+		}
 		if err := m.reserve(int64(len(members))*4+1, int64(len(members))*4+1); err != nil {
 			out.complete = false
 			return out, err
@@ -744,6 +889,10 @@ func (v *Validator) Validate(ctx context.Context, targets []Target, options Vali
 	// Reanalyze every retained final source after component rollback. Results
 	// never describe a mixture of provisional and retained dependency states.
 	for i, s := range states {
+		// Closure construction prepaid these original blocked-state probes.
+		if out.files[i].encodingBlocked {
+			continue
+		}
 		refreshed, err := analyze(ctx, s.target, s.source, m)
 		if refreshed.trace != nil {
 			if err == nil && !bytes.Equal(refreshed.analysis, s.analysis) {
@@ -1048,7 +1197,7 @@ func (v Validated) PublishMapped(ctx context.Context, native *files.WriteSet, pa
 	if i, ok := v.publicationIndex[path]; ok && i >= 0 && i < len(v.files) && v.files[i].path == path {
 		target = &v.files[i]
 	}
-	if target == nil || target.trace == nil || target.runtimeRollback || len(target.reasons) != 0 {
+	if target == nil || target.trace == nil || target.encodingBlocked || target.runtimeRollback || len(target.reasons) != 0 {
 		return refused("no retained semantic approval for target")
 	}
 	if target.original == target.candidate {
@@ -1086,6 +1235,9 @@ func (v Validated) PublishMapped(ctx context.Context, native *files.WriteSet, pa
 			return files.Publication{Path: path, Err: err}
 		}
 		seen[key] = true
+		if i, ok := v.publicationIndex[key]; ok && v.files[i].encodingBlocked {
+			return refused("selected dependency has no encoding proof: " + key)
+		}
 		observed, ok := v.publicationSources[key]
 		if !ok || observed.State == ResourceUnavailable || !native.MatchesObservation(nativeName(key), observed.Source, observed.State == ResourceAbsent) {
 			return refused("native dependency does not match validated observation: " + key)

@@ -54,7 +54,7 @@ mdchk fix docs/ --dry-run --format json
 ```
 
 Text and JSON previews include proposed diffs when a registered correction
-passes shared candidate validation. MD047 final-newline correction is implemented. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 remain report-only, with no edits or previews for their findings.
+passes shared candidate validation. MD047 final-newline correction is implemented. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 remain report-only, with no edits or previews for their findings.
 Other corrections remain planned. VS Code and GitHub describe findings remaining
 in proposed content for dry runs, without diffs or raw corrected Markdown. Use
 [lint](lint.md) when highlighted locations must match files currently on disk.
@@ -73,3 +73,10 @@ defers coupled target changes rather than claiming such checks ran. After projec
 Exit code `0` means analysis completed and no violations remain after corrections. Code `10` means a complete check found remaining problems, including those that cannot be safely fixed. Code `15` means post-fix analysis is incomplete; available safe changes and findings remain in the report, and uncertain regions remain protected. For a dry run, those codes describe the predicted content; even a `0` can accompany changes that still need to be applied.
 
 Errors can occur after other files have changed. Inspect both successful changes and failures before retrying. If a file changes during fixing, mdchk refuses stale edits rather than overwriting the newer contents. See the [exit code guide](../exit-codes.md) for usage, configuration, I/O, and internal error codes.
+
+An invalid original UTF-8 target retains one encoding I/O error and receives no
+content correction. Independent valid targets continue analysis and eligible
+MD047 correction; proof-dependent components remain unchanged and explicitly
+unavailable. Preview reports only independently approved proposals; supported
+apply reports actual saved snapshots. Unsupported adapters retain their explicit
+write refusal. Encoding-local incompleteness does not waive runtime or proof checks.

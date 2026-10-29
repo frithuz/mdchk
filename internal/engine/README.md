@@ -532,3 +532,12 @@ before work. Empty, clean and protected inputs retain caller/origin controls and
 final atomic withholding at producer, facade and callback. No reparse, retained
 AST, source/index/options clone, decoder, new allowance or correction authority
 is added. MD035 is default enabled and manual; MD047 alone supplies corrections.
+
+MD037 borrows the completed original source/index/options/profile and operation
+through DelimiterStyle. Actual Emphasis/Strong marker facts remain distinct from
+malformed whitespace candidates. Maximal contiguous ordinary Text islands retain
+escape/entity payload, raw lifetimes, HTML tails and isolated image alternatives.
+Each authored edge-whitespace span is detached and manual; caller/origin controls,
+precharged scalar/traversal/capacity/copy/record work and final atomic withholding
+apply at producer, facade and callback. No reparse, decoder or correction authority
+is introduced; MD047 alone supplies corrections.

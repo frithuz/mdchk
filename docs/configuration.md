@@ -501,3 +501,9 @@ Consistent compares exact original first-to-last marker bytes against the global
 first eligible break; named styles require only the marker family. Full protected
 and earlier disabled context precedes suppression and line selection. Findings
 remain manual with no MD035 edits or previews.
+
+MD037 is available and enabled by default for CommonMark and GFM, with no
+rule-specific options. Shared `enabled` and `allow_directives` remain strict
+booleans, including when disabled. It analyzes full-source ordinary Text islands
+before directive or line filtering and reports each original inside-whitespace
+edge separately. Findings are manual; MD047 alone supplies corrections.

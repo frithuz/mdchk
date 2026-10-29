@@ -210,14 +210,14 @@ func TestCompiledPlatformMD035ManualApplyAndInvalidUTF8(t *testing.T) {
 						if failure.ByteOffset == nil || *failure.ByteOffset != 3 {
 							t.Fatal(failure)
 						}
-					} else if failure.Code != "validation-failed" || args[0] != "fix" {
+					} else {
 						t.Fatal(failure)
 					}
 				}
 				if encoding != 1 {
 					t.Fatal(out.Errors)
 				}
-				if got.Status != 13 || out.Complete || len(out.Errors) != map[string]int{"lint": 1, "fix": 2}[args[0]] || len(out.Diagnostics) != 0 || len(out.Changes) != 0 || len(out.Documents) != 0 {
+				if got.Status != 13 || out.Complete || len(out.Errors) != 1 || len(out.Diagnostics) != 0 || len(out.Changes) != 0 || len(out.Documents) != 0 {
 					t.Fatal(got)
 				}
 				t.Logf("invalid UTF-8 %s verified after manual apply", args[0])

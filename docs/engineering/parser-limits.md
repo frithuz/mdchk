@@ -657,3 +657,13 @@ before work. Empty, clean and protected inputs retain caller/origin controls and
 final atomic withholding at producer, facade and callback. No reparse, retained
 AST, source/index/options clone, decoder, new allowance or correction authority
 is added. MD035 is default enabled and manual; MD047 alone supplies corrections.
+
+MD037 borrows completed original source/index/options/profile and operation
+through DelimiterStyle. Actual recognized Emphasis/Strong facts remain distinct
+from malformed whitespace ranges. Semantic contributions, original associations,
+UTF-8/scalar/word/whitespace and failed marker probes, raw state, traversal frames,
+capacity, copied prefixes and retained records are reserved before use. Empty,
+clean and protected input retain caller/origin controls, sticky finite work/node/
+elapsed limits and atomic final producer/facade/callback withholding. No reparse,
+decoder, tree/source clone or new allowance is introduced. Source-derived bounded
+reservation tests establish specific fixtures, without a performance claim.

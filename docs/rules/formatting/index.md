@@ -5,7 +5,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | Rule | Focus | Status |
 | --- | --- | --- |
 | [MD035](md035.md) | Horizontal rule marker style | Analysis implemented; corrections planned |
-| [MD037](md037.md) | Whitespace within emphasis delimiters | Planned |
+| [MD037](md037.md) | Whitespace within emphasis delimiters | Analysis implemented; report only |
 | [MD038](md038.md) | Whitespace within inline code delimiters | Planned |
 | [MD044](md044.md) | Capitalization of configured names | Planned |
 | [MD049](md049.md) | Italic delimiter style | Planned |

@@ -1,0 +1,938 @@
+{
+  "status": "root source-authored before MD037 implementation, frozen against adopted policy; exact expected per-edge ranges",
+  "cases": [
+    {
+      "name": "ascii-both",
+      "source": "A * text * example.",
+      "source_sha256": "b850a6f61c41aa9a29bb2991c340118e43007d4f4deee16b5ff3e53ce17d3cdc",
+      "ranges": [
+        [
+          3,
+          4
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ]
+        },
+        {
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ascii-open",
+      "source": "A * text* end",
+      "source_sha256": "1542b5dc4d767cc94c17eaabbd36a1e27f76d8ca438f0f9b326fdc36ecc9325b",
+      "ranges": [
+        [
+          3,
+          4
+        ]
+      ],
+      "range_text": [
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ascii-close",
+      "source": "A *text * end",
+      "source_sha256": "b8ca98292e4acbe0e46926a09f566ea672416f1f249cd918a28c85b5b183337f",
+      "ranges": [
+        [
+          7,
+          8
+        ]
+      ],
+      "range_text": [
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "name": "strong-both",
+      "source": "A ** text ** end",
+      "source_sha256": "9a6d2d6a48750bb260d05a435de5ad4c037c41be554e9fced01e51bcb243f78b",
+      "ranges": [
+        [
+          4,
+          5
+        ],
+        [
+          9,
+          10
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            6
+          ]
+        },
+        {
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            11
+          ]
+        }
+      ]
+    },
+    {
+      "name": "underscore-both",
+      "source": "A _ text _ end",
+      "source_sha256": "9c065801cc6889cc0e10addf05011bb327d7e8613a0940fc278586011ab71dce",
+      "ranges": [
+        [
+          3,
+          4
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ]
+        },
+        {
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "strong-underscore",
+      "source": "A __ text __ end",
+      "source_sha256": "710dc5bbcb5c2d2a6291324cfe2071f419e6b9a8459b68db01e9b352873c7a3a",
+      "ranges": [
+        [
+          4,
+          5
+        ],
+        [
+          9,
+          10
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            6
+          ]
+        },
+        {
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            11
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tabs-both",
+      "source": "A *\ttext\t* end",
+      "source_sha256": "5aa79cd09ebdbdea398896786ca618268d0658165529d4d7faca4863032fbd28",
+      "ranges": [
+        [
+          3,
+          4
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "range_text": [
+        "\t",
+        "\t"
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ]
+        },
+        {
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "spaces-multiple",
+      "source": "A *  text  * end",
+      "source_sha256": "583d2060b72a996d446ca80c8e2709c6efe232bbb7607c1f2689d9920798d1a3",
+      "ranges": [
+        [
+          3,
+          5
+        ],
+        [
+          9,
+          11
+        ]
+      ],
+      "range_text": [
+        "  ",
+        "  "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            6
+          ]
+        },
+        {
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "name": "unicode-before-content",
+      "source": "é * 文 *.",
+      "source_sha256": "e091c0293e8103886f9e08f7263f624f298b8bdb44bea6e12454ea29e9f99427",
+      "ranges": [
+        [
+          4,
+          5
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ]
+        },
+        {
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "name": "blockquote",
+      "source": "> A * text *\n",
+      "source_sha256": "a5b51b25f6e1f53b6742d555b3d78023f3092c2311433c686e52cd59a196c5b4",
+      "ranges": [
+        [
+          5,
+          6
+        ],
+        [
+          10,
+          11
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            7
+          ]
+        },
+        {
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "name": "list-prose",
+      "source": "- A * text *\n",
+      "source_sha256": "87745b96b232431e30992a67526fd5ef7e23a84c5d923f97f474dc4b8d4ddb7c",
+      "ranges": [
+        [
+          5,
+          6
+        ],
+        [
+          10,
+          11
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            7
+          ]
+        },
+        {
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "name": "heading-prose",
+      "source": "# A * text *\n",
+      "source_sha256": "5d980600df981b385d777d564688226b8c57af1fcc481c4d6824dbdce56f32e8",
+      "ranges": [
+        [
+          5,
+          6
+        ],
+        [
+          10,
+          11
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            7
+          ]
+        },
+        {
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "name": "task-prose",
+      "source": "- [ ] A * text *\n",
+      "source_sha256": "a817834b49194517a7fbb5e122fa94ae490d7df0d3c53788e4b2f86033aa3711",
+      "ranges": [
+        [
+          9,
+          10
+        ],
+        [
+          14,
+          15
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            11
+          ]
+        },
+        {
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            16
+          ]
+        }
+      ]
+    },
+    {
+      "name": "crlf",
+      "source": "A * text *\r\n",
+      "source_sha256": "3e54f82747cf9f4ad83bf6b63fdf3ca65c9e1bf5ae172b23bbd121ee2c08ce43",
+      "ranges": [
+        [
+          3,
+          4
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ]
+        },
+        {
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "bare-cr",
+      "source": "A * text *\r",
+      "source_sha256": "9cc7a2b8bcb61222d7cf0c50adc7ca673225bdbd654801f2043f2cff72257a3e",
+      "ranges": [
+        [
+          3,
+          4
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ]
+        },
+        {
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nbsp",
+      "source": "A * text * end",
+      "source_sha256": "213bf79b1d605b76c57e19ecbdd7921192035bf7534d30cef082543dca8ef423",
+      "ranges": [
+        [
+          3,
+          5
+        ],
+        [
+          9,
+          11
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ]
+        },
+        {
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "formfeed",
+      "source": "A *\ftext\f* end",
+      "source_sha256": "7ab2ab156001afb4337d44cae7070bed6b29f99e7f4205b0727ea37e88f1d918",
+      "ranges": [
+        [
+          3,
+          4
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "range_text": [
+        "\f",
+        "\f"
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ]
+        },
+        {
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "entity-payload",
+      "source": "A * a&amp;b * end",
+      "source_sha256": "c9be295cd2a37f6dab07c262f4d186753754c2aae2e0380ecaaff10dd49d0809",
+      "ranges": [
+        [
+          3,
+          4
+        ],
+        [
+          11,
+          12
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ]
+        },
+        {
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            13
+          ]
+        }
+      ]
+    },
+    {
+      "name": "escape-payload",
+      "source": "A * a\\*b * end",
+      "source_sha256": "e4b8ab3a014a36f07053c749dd0e02f94bbbc783362ba3829f99dfe0fe08ac0b",
+      "ranges": [
+        [
+          3,
+          4
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "range_text": [
+        " ",
+        " "
+      ],
+      "positions": [
+        {
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ]
+        },
+        {
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "valid-emphasis",
+      "source": "A *text* example.",
+      "source_sha256": "e5053dffe5a4c9b81f3af826eead2ce889d39210574c86840663029bc32ccad4",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "valid-strong",
+      "source": "A **text**.",
+      "source_sha256": "2ac48be9ae1e463069286bd67c9c120e94a6370af178ef80f648b193079d2364",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "blank",
+      "source": "A *   *.",
+      "source_sha256": "1cfe1ecdc9a122233a73da140a223e7ff3cbf41957bfc4d7fa2fd3e8ad62f266",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "entity-blank",
+      "source": "A * &nbsp; *",
+      "source_sha256": "dfd5f119f4a32d22420d8f3f5440c415472f74276ce32231053e3ab5c0b431e9",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "four-runs",
+      "source": "A * one * and * two *",
+      "source_sha256": "6528b36ef41edf7c71379dba8c8062cce8c2f8c66550fd34d6d6dc88a68fcd14",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "third-run",
+      "source": "A * one * stray *",
+      "source_sha256": "16b0e6e3b66c2529b0a6e9b43c38f2412d1a930773e1c76ebabdbf14a603f8ae",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "mixed-runs",
+      "source": "A * one _ two *",
+      "source_sha256": "11e4a51d1e917675c28bdd5444cb370f91edbc53c2e26d1df8e5e7bf4a16d354",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "width-three",
+      "source": "A *** one ***",
+      "source_sha256": "99d551804cd7d4ea1ad9e64724b4421e590ec56ece259c9cceb0df978e889dbb",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "mixed-width",
+      "source": "A * text **",
+      "source_sha256": "b2215673e93b1952294e4c75f6f91ed655f07a9d8394dfa45137c7651e51a0c1",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "bullet-owned",
+      "source": "* text *",
+      "source_sha256": "c889d6d33803391e15cece027426cdd2693d4f4b76f06590a4831f171f81630f",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "thematic-owned",
+      "source": "* * *",
+      "source_sha256": "109510644bb4c21f8eb3bdf0be4db1175a5311a1f6ce66b3f05a8bacae47a8b4",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "escaped-markers",
+      "source": "A \\* text \\*",
+      "source_sha256": "9e65e0a0afcc05bc280fe808cd3c5155d1286d52fc5182ba669250734e129b30",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "generated-markers",
+      "source": "A &#42; text &#42;",
+      "source_sha256": "182fdeda0be42dc27388bded6b67d53a1e7132e9250ab2afe01a29b97121ac76",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "word-before",
+      "source": "α* text *.",
+      "source_sha256": "0f4641796406e1a72afe4baf6cbc06fc9232f681573ea32ee16bf00938419ec6",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "word-after",
+      "source": "A * text *β",
+      "source_sha256": "b834d93d1cd7d1f009ffe9e06f4b2278ccb5869a67e3c57f55d3d0aa77644664",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "mark-after",
+      "source": "A * text *́",
+      "source_sha256": "60d2504d780d94b5e96b3970fd5d5809f92453cd557341b2ca5a63b1ddf4e457",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "cross-line",
+      "source": "A * text\nmore *",
+      "source_sha256": "3d408a765c2688f9755f36447f94e3ed1765004589237d8f6f68f93677340d80",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "code-barrier",
+      "source": "A *a `code` b *",
+      "source_sha256": "4f308084fb9c6d622485b0c292b757eb335df4035ea4d8220e9a248a80db6b0e",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "strong-barrier",
+      "source": "A * one **valid** two *",
+      "source_sha256": "f0e250f09c2797980d1edf7fd51e024d7489833daff4f676a2489ceef9978898",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "link-barrier",
+      "source": "A * one [label](x) two *",
+      "source_sha256": "55ebf0771802217098267337cc4218417e14c0391f652b41073763c6b07816cf",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "codespan",
+      "source": "`A * text *`",
+      "source_sha256": "4bcbfdbdeab51946711e0fc7ae556d12903665b1164118e4bd52eab9c9670c49",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "raw-script",
+      "source": "<script>A * text *</script>",
+      "source_sha256": "8311d3d3f3e7c0acdbbc935e5d43a3952c2922f125e43506ca6af6eb9b310c81",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    },
+    {
+      "name": "comment",
+      "source": "<!-- A * text * -->",
+      "source_sha256": "22da80d79877982f9deab2a5093642e1fe1e2bb53eaa210a56f5fd1af04fbf3b",
+      "ranges": [],
+      "range_text": [],
+      "positions": []
+    }
+  ]
+}

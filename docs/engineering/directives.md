@@ -151,3 +151,7 @@ remains binding; line selection cannot create source adjacency or reset raw stat
 MD035 establishes the global first eligible original thematic pattern, including
 disabled breaks, before START suppression or inspection selection. Protected raw
 lifetimes remain full-document context. Later enabling never resets the baseline.
+
+MD037 constructs complete ordinary Text islands and resolves all competing runs
+before suppression. Each interior whitespace edge uses its own original START,
+independently of the opener. Inspection filtering preserves full original state.

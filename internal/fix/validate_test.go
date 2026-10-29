@@ -471,8 +471,8 @@ func TestCandidateResourcesAdmissionAndResidualBudget(t *testing.T) {
 func TestCandidateInvalidOriginalAndForeignAuthority(t *testing.T) {
 	f := semanticSetup(t, nil, nil)
 	out, err := validateSynthetic(t, f, string([]byte{0xff}), prefixOnce(t), blankPrefixProof)
-	if err == nil || out.Complete() {
-		t.Fatal("invalid source accepted")
+	if err != nil || out.Complete() {
+		t.Fatal("invalid original must be locally retained without operation termination", err)
 	}
 	file, _ := out.File("a.md")
 	if !bytes.Equal(file.Candidate.Bytes(), []byte{0xff}) || len(file.Analysis.Errors) != 1 {

@@ -379,7 +379,16 @@ func TestCompiledFixUnstartedTargetsHaveNoCandidate(t *testing.T) {
 				t.Fatal(got.Status, got.Stdout)
 			}
 			r := got.Result
-			if len(r.Files) != 2 || r.Files[1].Analysis != "not-started" || r.Files[1].ResultSnapshot != nil || len(r.CheckedFiles) != 1 || r.CheckedFiles[0] != "a.md" || len(r.Files[1].CoverageIDs) == 0 {
+			if len(r.Files) != 2 {
+				t.Fatal(r)
+			}
+			// Encoding is local; cancellation still leaves later work unstarted.
+			if tc.name == "invalid-encoding" {
+				candidate := r.Files[1].ResultSnapshot
+				if len(r.Files) != 2 || r.Files[0].Analysis != "failed" || r.Files[1].Analysis != "complete" || candidate == nil || candidate.View != "candidate" || candidate.SizeBytes != 6 || candidate.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte("hello\n"))) || !reflect.DeepEqual(r.CheckedFiles, []string{"a.md", "b.md"}) || len(r.Changes) != 1 || r.Changes[0].Path != "b.md" || r.Changes[0].Disposition != "proposed" || r.Changes[0].EditCount != 1 || !reflect.DeepEqual(r.Changes[0].Rules, []string{"MD047"}) || len(r.Errors) != 1 || r.Errors[0].Code != "invalid-utf8" || r.Errors[0].Path != "a.md" || r.Errors[0].ByteOffset == nil || *r.Errors[0].ByteOffset != 0 || len(r.Diagnostics) != 0 || r.Complete {
+					t.Fatal(r)
+				}
+			} else if len(r.Files) != 2 || r.Files[1].Analysis != "not-started" || r.Files[1].ResultSnapshot != nil || len(r.CheckedFiles) != 1 || r.CheckedFiles[0] != "a.md" || len(r.Files[1].CoverageIDs) == 0 {
 				t.Fatal(r)
 			}
 			identity := r.Files[1].InputSnapshot

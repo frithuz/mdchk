@@ -5,7 +5,7 @@ Use inline HTML comments with canonical MDxxx rule IDs to enable or disable rule
 Directives are intended for exceptions to specific rules within a document. To exclude a whole file from all rule linting, add its path to `exclude` in configuration. Do not enumerate every rule in a directive to suppress linting across the file. A whole-file exclusion does not prevent an explicitly requested inspection.
 
 Current availability: CommonMark/GFM directive processing is delivered in lint,
-fix and inspect. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 are production checks; the MD040 examples below
+fix and inspect. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 are production checks; the MD040 examples below
 illustrate rule-state syntax for an unavailable check. Permitted directives that
 enable unavailable rules produce incomplete coverage. Independently recognized
 YAML/TOML headers remain protected from directives, including when MD001, MD025 or MD041 consumes
@@ -152,3 +152,7 @@ remains binding; line selection cannot create source adjacency or reset raw stat
 MD035 establishes the global first eligible original thematic pattern, including
 disabled breaks, before START suppression or inspection selection. Protected raw
 lifetimes remain full-document context. Later enabling never resets the baseline.
+
+MD037 resolves complete ordinary Text islands and competing original runs before
+suppression or inspection selection. Each inside-whitespace edge is independently
+anchored at its original START; enabling later does not reset source ownership.
