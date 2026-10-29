@@ -633,3 +633,17 @@ reserved before work. Empty/clean/protected input retains caller and originating
 controls, sticky finite work/nodes/elapsed and atomic producer/facade/callback
 publication. No reparse, source/index/tree clone, renderer, decoder, new allowance
 or correction authority is introduced. MD047 remains the sole correction producer.
+
+
+MD089 shares the original completed production source/index/options/profile and
+operation through a narrow CJKSpacing projection. Actual Paragraph, Heading and
+TableCell Exact scalars supply physical pairs under Unicode 17 Han intersect
+Ideographic, Latin intersect Letter and ASCII digits. Actual recognized URL
+owners, raw tags, HTML tails and isolated image alternatives retain protection.
+Zero-width insertion spans and findings are detached and manual. Source/semantic
+association comparisons, failed UTF-8/scalar probes, bounded Unicode table
+lookups, traversal state/frames, capacity, copied prefixes and logical records
+reserve work/nodes before use. Empty, clean and protected paths retain caller
+and origin cancellation, sticky work/nodes/elapsed and final atomic withholding
+at producer, facade and callback. No reparse, tree/source/index clone, retained
+AST facts, decoder, new allowance or correction authority is introduced.

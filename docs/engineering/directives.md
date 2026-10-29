@@ -143,3 +143,7 @@ before filtering the surplus range START. Hidden context remains available to
 inspection slicing; configured-off enables retain the admitted maximum.
 
 MD085 establishes the full actual Paragraph baseline, protected-prefix ownership and actual HardBreak successor context before filtering at the surplus START. Earlier disabled content remains structural context; inspection selection never resets the baseline.
+
+MD089 establishes complete original prose ownership and raw lifetime before
+filtering each zero-width insertion START. Hidden or unselected earlier context
+remains binding; line selection cannot create source adjacency or reset raw state.

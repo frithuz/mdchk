@@ -1,0 +1,1086 @@
+[
+  {
+    "name": "root-page",
+    "source": "版本2\n",
+    "sha256": "1ef73e3386d400907cbe6209ae36dfa56537f61a59cbedc64b1ffd646a5b286a",
+    "sizeBytes": 8,
+    "expected": [
+      {
+        "range": [
+          6,
+          6,
+          1,
+          3,
+          1,
+          3
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "root-reverse",
+    "source": "2版本\n",
+    "sha256": "8a01efbd496b3047cb3167599a3657255709b8d606011a759f64162ae1cb858d",
+    "sizeBytes": 8,
+    "expected": [
+      {
+        "range": [
+          1,
+          1,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "root-both",
+    "source": "A中2\n",
+    "sha256": "5d96d24a76843ec8b058893e707ef3dab42e6991358758bf39fadeb4cedbe21c",
+    "sizeBytes": 6,
+    "expected": [
+      {
+        "range": [
+          1,
+          1,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      },
+      {
+        "range": [
+          4,
+          4,
+          1,
+          3,
+          1,
+          3
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "root-many",
+    "source": "中A文B\n",
+    "sha256": "4623d3fe09baa681e8b4e327f47b2b6f5c40ea25294922397ab346146d7bd506",
+    "sizeBytes": 9,
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      },
+      {
+        "range": [
+          4,
+          4,
+          1,
+          3,
+          1,
+          3
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      },
+      {
+        "range": [
+          7,
+          7,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "root-accepted",
+    "source": "版本 2\n",
+    "sha256": "fcca4bfe96ac3c3aca57c5ecddabffa288654b313b2ba8bf394f7386221fc8d8",
+    "sizeBytes": 9,
+    "expected": []
+  },
+  {
+    "name": "root-tab",
+    "source": "中\tA\n",
+    "sha256": "fae8f836e146190b1e8be2a548ecd487135c0df2b8978ccdd9227bc3298e54d3",
+    "sizeBytes": 6,
+    "expected": []
+  },
+  {
+    "name": "root-punctuation",
+    "source": "中，A\n",
+    "sha256": "e9195d31b3e92b65ecf58cb6d4e56caa66c0807dad8f666eaf7766390b4324b6",
+    "sizeBytes": 8,
+    "expected": []
+  },
+  {
+    "name": "root-only_han",
+    "source": "中文\n",
+    "sha256": "a20758305f24aa08fdd593d564de930e95c652027327bd291c5559db3d03f76c",
+    "sizeBytes": 7,
+    "expected": []
+  },
+  {
+    "name": "root-only_latin",
+    "source": "abc123\n",
+    "sha256": "5ecf8d2cc410094e8b82dd0bc178a57f3aa1e80916689beb00fe56148b1b1256",
+    "sizeBytes": 7,
+    "expected": []
+  },
+  {
+    "name": "root-digits",
+    "source": "中９\n",
+    "sha256": "2f53712b93c4f054855a86417b79b7ad3fdf9160fe6eeeb3e27ed51886253aa5",
+    "sizeBytes": 7,
+    "expected": []
+  },
+  {
+    "name": "root-inline_code",
+    "source": "`中A`\n",
+    "sha256": "517eb833fb21e86bf8a8e947932f01c2f10d4947e4b0c1dd0cd86daf2fea7928",
+    "sizeBytes": 7,
+    "expected": []
+  },
+  {
+    "name": "root-fence",
+    "source": "```\n中A\n```\n",
+    "sha256": "82ccb8919294ecaff02e19fd6c1859f1f2782a60abc0b7adb392b5f8a5b89a98",
+    "sizeBytes": 13,
+    "expected": []
+  },
+  {
+    "name": "root-comment",
+    "source": "<!-- 中A -->\n",
+    "sha256": "852c3dc977fcf2ffe903f5531166aab50983dd2bc621ededc1d1548c15279cf0",
+    "sizeBytes": 14,
+    "expected": []
+  },
+  {
+    "name": "root-autolink",
+    "source": "<https://example.com/中A>\n",
+    "sha256": "eba92a300db232d0c7c3633fec8008ebeb2f86a67df0e5e5d78afba7cc7b483a",
+    "sizeBytes": 27,
+    "expected": []
+  },
+  {
+    "name": "root-list",
+    "source": "- 中A\n",
+    "sha256": "4a334585116170cd224071d1882e71f52da8619d70f99bd8fc4c8acf0b982042",
+    "sizeBytes": 7,
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "root-quote",
+    "source": "> 中A\n",
+    "sha256": "fc6eeba194c190ff3e052cb99623269c10f5ac2ff98363dbbedb2913c3c7eeb6",
+    "sizeBytes": 7,
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "root-heading",
+    "source": "# 中A\n",
+    "sha256": "f819014cfa392c1b11788094e1aabd1d4ee7b7317fe7a57aab7befc18c1129fb",
+    "sizeBytes": 7,
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "root-crlf",
+    "source": "x\r\n\r\n中A\r\n",
+    "sha256": "5cea58f7ba8d63765b2c04ffe886b34f2e45c0dedd0da778883cc2869738a10b",
+    "sizeBytes": 11,
+    "expected": [
+      {
+        "range": [
+          8,
+          8,
+          3,
+          2,
+          3,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "root-soft_break",
+    "source": "中\nA\n",
+    "sha256": "cb2548f91b4da04f7b8c905f5397d0ba0fbcca3b739a102d36827ba4ec9f3489",
+    "sizeBytes": 6,
+    "expected": []
+  },
+  {
+    "name": "root-hard_break",
+    "source": "中  \nA\n",
+    "sha256": "d9a66fe811767c1d5e51c961cc0852a9cff9b48fd1f04ce5779f259c12188997",
+    "sizeBytes": 8,
+    "expected": []
+  },
+  {
+    "name": "root-supplementary",
+    "source": "𠀀A\n",
+    "sha256": "08565c3fdfb83102593b631d8e36c5b9e20ac04ea20c84509ddc0b42a0cd7f0e",
+    "sizeBytes": 6,
+    "expected": [
+      {
+        "range": [
+          4,
+          4,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "root-supplementary_reverse",
+    "source": "A𠀀\n",
+    "sha256": "221fd6c2d2e891cd8b63215d1e7d80306bbcc19f161533613506b3baccf13c8e",
+    "sizeBytes": 6,
+    "expected": [
+      {
+        "range": [
+          1,
+          1,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-han-latin",
+    "source": "漢é\n",
+    "sha256": "3792b2810e578a8376c737904a58c68da0c4b1a66adc9f4e34d6c261221051eb",
+    "sizeBytes": 6,
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-latin-han",
+    "source": "é漢\n",
+    "sha256": "66a229b96b29c352b6fed1bc552a7989f47aafce47a812f0a4b9698842d81443",
+    "sizeBytes": 6,
+    "expected": [
+      {
+        "range": [
+          2,
+          2,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-fullwidth-latin",
+    "source": "漢Ａ\n",
+    "sha256": "d45dc09ced516ecadafc08b3592a0934c63163b7ce849cc142f22c096b48badc",
+    "sizeBytes": 7,
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-fullwidth-digit",
+    "source": "漢２\n",
+    "sha256": "3ba70eeba70e1544695b09fa30d1f69580a8ba46aab641ee4aa6ecb8077aed7d",
+    "sizeBytes": 7,
+    "expected": []
+  },
+  {
+    "name": "qa-ideographic-zero",
+    "source": "〇A\n",
+    "sha256": "f7ba319de6a0de62f4a819b8d723d3983d9fcb0cc8b7d6561f7f0f954a458b9f",
+    "sizeBytes": 5,
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-iteration-mark",
+    "source": "々A\n",
+    "sha256": "df8581cf254091a1e5fb7f82c306972e12950c12218609aa76967653fea6e42c",
+    "sizeBytes": 5,
+    "expected": []
+  },
+  {
+    "name": "qa-radical",
+    "source": "⼀A\n",
+    "sha256": "c38b8e8af6a7b0953a76f01181472c7c8dad6fa521f1d39fb4914e9789577598",
+    "sizeBytes": 5,
+    "expected": []
+  },
+  {
+    "name": "qa-compatibility",
+    "source": "﨑A\n",
+    "sha256": "1e397cb9ae0f724521bff67f61f5bf39bc5caca3364d8951138cd27bfb3697a2",
+    "sizeBytes": 5,
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-kana",
+    "source": "あA カA 한A\n",
+    "sha256": "0044c81601969b7348efc8906564a7d2ee918a12697ace1061a668128d8acb07",
+    "sizeBytes": 15,
+    "expected": []
+  },
+  {
+    "name": "qa-decomposed-reverse",
+    "source": "Á漢\n",
+    "sha256": "5345f4c9c0f5aa7adb6f66750fba94fb2ed6a4571abe83bb869f54ee5073c754",
+    "sizeBytes": 7,
+    "expected": []
+  },
+  {
+    "name": "qa-decomposed-forward",
+    "source": "漢Á\n",
+    "sha256": "8cd1cdf87d69a6174ff284c475be6a0031a6a1458ea6ecc0e47a48e89ee6b447",
+    "sizeBytes": 7,
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-variation-selector",
+    "source": "漢️A\n",
+    "sha256": "c62a42e819e83789973e154ad8104efbb7bedb78c293bfbd3f6e60faaf16a0c1",
+    "sizeBytes": 8,
+    "expected": []
+  },
+  {
+    "name": "qa-supplementary-variation",
+    "source": "漢󠄀A\n",
+    "sha256": "06e3f3bba442c2160204a05157048e621bf968ae0958f432b887cd81d20e9141",
+    "sizeBytes": 9,
+    "expected": []
+  },
+  {
+    "name": "qa-formatted-inside",
+    "source": "*漢A*\n",
+    "sha256": "b0a08782992e773c9e14535eeca414c8fd9ec92b3a208bb6bd1f7b211ce7b242",
+    "sizeBytes": 7,
+    "expected": [
+      {
+        "range": [
+          4,
+          4,
+          1,
+          3,
+          1,
+          3
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-formatted-outside",
+    "source": "漢*A* *A*漢\n",
+    "sha256": "e85c8417f76e722943b9496d40f8626080841da1d37646db39403e91cc1554a4",
+    "sizeBytes": 14,
+    "expected": []
+  },
+  {
+    "name": "qa-link-label",
+    "source": "[漢A](https://example.com/漢B)\n",
+    "sha256": "3934db1557fef266c8a83516da4c42d406b37e0532cd366a6fce9a192fbe5a0e",
+    "sizeBytes": 33,
+    "expected": [
+      {
+        "range": [
+          4,
+          4,
+          1,
+          3,
+          1,
+          3
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-image-alt",
+    "source": "![漢A](u)\n",
+    "sha256": "ec89aaccfd5a953080c73e59f64586c6951e7e57c53dc5fd3c32ca46f09b57f6",
+    "sizeBytes": 11,
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-entity",
+    "source": "漢&#65; &#x6f22;A\n",
+    "sha256": "e665896447b13b48bf33909b2b980ff141dea7c7776e4921395857a46af705f6",
+    "sizeBytes": 19,
+    "expected": []
+  },
+  {
+    "name": "qa-escaped",
+    "source": "漢\\*A\n",
+    "sha256": "072dc4db88aa159f146bc30b0a60b2db7efba6c85f69798d9b4d764a48c525de",
+    "sizeBytes": 7,
+    "expected": []
+  },
+  {
+    "name": "qa-table",
+    "source": "| 漢A |\n| --- |\n",
+    "sha256": "6765b6263ea4ebd60c99db10f3cd3f2120809afb1a3fc94070282cfde6b41f71",
+    "sizeBytes": 17,
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-reference-setext",
+    "source": "[漢A]: /漢B\n\n漢A\n---\n",
+    "sha256": "b5b59dff595d37e8bf3b8ccd85d061171461c22d300f815568f01f080d54102c",
+    "sizeBytes": 24,
+    "expected": [
+      {
+        "range": [
+          18,
+          18,
+          3,
+          2,
+          3,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-nested-crlf",
+    "source": "> - 漢A\r\n>   𠀀B\r\n",
+    "sha256": "2cc09b7bf4daa109c22cd6a68f8e3e5a1ff5f55568d2a4981d277c02fa102538",
+    "sizeBytes": 21,
+    "expected": [
+      {
+        "range": [
+          7,
+          7,
+          1,
+          6,
+          1,
+          6
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      },
+      {
+        "range": [
+          18,
+          18,
+          2,
+          6,
+          2,
+          6
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-raw-cross-owner",
+    "source": "x<script>漢A\n\n漢B\n\n</script>漢C\n",
+    "sha256": "f77673ea6509d5115e84c194889dde1fced5743a1412fe3661815d0856e36c78",
+    "sizeBytes": 35,
+    "expected": [
+      {
+        "range": [
+          33,
+          33,
+          5,
+          11,
+          5,
+          11
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-isolated-alt",
+    "source": "![<script>漢A](u) 漢B\n",
+    "sha256": "1c0d101154d053a06bc30ad78483bda36734a399b4614755caafae2a18ff6c07",
+    "sizeBytes": 24,
+    "expected": [
+      {
+        "range": [
+          22,
+          22,
+          1,
+          19,
+          1,
+          19
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "qa-comment-barrier",
+    "source": "漢<!-- c -->A\n",
+    "sha256": "0f816e96cf9d0badff35ff0670d28664830b5e7d9534709701ec8448016d1cb4",
+    "sizeBytes": 15,
+    "expected": []
+  },
+  {
+    "name": "qa-html-tag-barrier",
+    "source": "漢<span>A</span>漢\n",
+    "sha256": "0ddf3ddce7c518689de81f70b24488cbe455077e217a2b38ef1b929891c43e79",
+    "sizeBytes": 21,
+    "expected": []
+  },
+  {
+    "name": "qa-soft-break",
+    "source": "漢\nA\n",
+    "sha256": "8f8bac050fad6d71a3dcc718b516e9978f1328ea146320936d19e3a151e99c37",
+    "sizeBytes": 6,
+    "expected": []
+  },
+  {
+    "name": "qa-hard-break",
+    "source": "漢  \nA\n",
+    "sha256": "ec1406bf827c0b280427634c00c8ca5c9293f40be7dcf7f031da8b4fcc6b23fe",
+    "sizeBytes": 8,
+    "expected": []
+  },
+  {
+    "name": "tangut-nushu",
+    "source": "𗀀A 𛅰A\n",
+    "flavor": "",
+    "sha256": "c4cbaefd343dfadb9eb9fe8bfc87f787a56f86dded2d71133b3d14aadfb87054",
+    "sizeBytes": 12,
+    "expected": []
+  },
+  {
+    "name": "ordinary-url",
+    "source": "中https://x/中A\n",
+    "flavor": "",
+    "sha256": "6afc91897311a06e53248214c20a04f174ee3b7face1c1f27512b3dbc182c662",
+    "sizeBytes": 18,
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      },
+      {
+        "range": [
+          16,
+          16,
+          1,
+          13,
+          1,
+          13
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "bare-url-gfm",
+    "source": "https://example.com/中A\n",
+    "flavor": "gfm",
+    "sha256": "eda455462b2e3f72a53075272941118af34856d25abfb6fb7eb3e6ad3c087fda",
+    "sizeBytes": 25,
+    "expected": []
+  },
+  {
+    "name": "bare-url-cm",
+    "source": "https://example.com/中A\n",
+    "flavor": "commonmark",
+    "sha256": "eda455462b2e3f72a53075272941118af34856d25abfb6fb7eb3e6ad3c087fda",
+    "sizeBytes": 25,
+    "expected": [
+      {
+        "range": [
+          23,
+          23,
+          1,
+          22,
+          1,
+          22
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "eof",
+    "source": "中A",
+    "flavor": "",
+    "sha256": "5aecad4f09dfec754adfb1ef963c006bca95f8eb831eda11a97faffb881a735d",
+    "sizeBytes": 4,
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "cr-mixed",
+    "source": "中A\r中B\r\n中C\n",
+    "flavor": "",
+    "sha256": "b9c54cd47f327eb41d8d898934e571aac23be251d9461f9ac438e7a84b811a15",
+    "sizeBytes": 16,
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          2,
+          1,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      },
+      {
+        "range": [
+          8,
+          8,
+          2,
+          2,
+          2,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      },
+      {
+        "range": [
+          14,
+          14,
+          3,
+          2,
+          3,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "table-body",
+    "source": "| 中A |\n| --- |\n| B中 |\n",
+    "flavor": "gfm",
+    "sha256": "a3fbf7901e64de0c345f15c47a6391a2068a46773125417d12160d9922588ca2",
+    "sizeBytes": 26,
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      },
+      {
+        "range": [
+          20,
+          20,
+          3,
+          4,
+          3,
+          4
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "raw-html-tail",
+    "source": "<script>中A\n</script>中B\n",
+    "flavor": "",
+    "sha256": "d7dda50e5862df98e60132d2dc2c59ea7da72803de1ef0cea9ffa85ec2cf677c",
+    "sizeBytes": 27,
+    "expected": []
+  },
+  {
+    "name": "normalization",
+    "source": "中\u0000A\n",
+    "flavor": "",
+    "sha256": "2d82fd57800ea456df6cce4ae30847ff69134d82a0fd520dec42b885e39d5289",
+    "sizeBytes": 6,
+    "expected": []
+  },
+  {
+    "name": "raw-tag-inline",
+    "source": "<span>中A</span>\n",
+    "flavor": "",
+    "sha256": "14b5a0ab0bbe669b4a81086a4a5e425e2ffeb9e36f70edec37432c4d6030db34",
+    "sizeBytes": 18,
+    "expected": [
+      {
+        "range": [
+          9,
+          9,
+          1,
+          8,
+          1,
+          8
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "lazy",
+    "source": "> 中A\n中B\n",
+    "flavor": "",
+    "sha256": "4081f2d2563ef730dc0518f435020e121e75c164c2e6463c8580d91501459546",
+    "sizeBytes": 12,
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      },
+      {
+        "range": [
+          10,
+          10,
+          2,
+          2,
+          2,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "malformed-complete",
+    "source": "[中A](bad\n",
+    "flavor": "",
+    "sha256": "ca21c2469b1badea0668f9dcb5d9672c40bb63f1ad5b73ae9376a9b58be51a9b",
+    "sizeBytes": 11,
+    "expected": [
+      {
+        "range": [
+          4,
+          4,
+          1,
+          3,
+          1,
+          3
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "yaml-on",
+    "source": "﻿---\n中A: [\n---\n中B\n",
+    "recognize": true,
+    "formats": [],
+    "incomplete": false,
+    "sha256": "5efab327debc6c501d3a4e8698c9e97e0fc6232699c02655dca57edca339d370",
+    "sizeBytes": 24,
+    "expected": [
+      {
+        "range": [
+          22,
+          22,
+          4,
+          2,
+          4,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "toml-on",
+    "source": "﻿+++\n中A = [\n+++\n中B\n",
+    "recognize": true,
+    "formats": [],
+    "incomplete": false,
+    "sha256": "ff085ceb32e564e7b2d0bd1c3247df5dafcb224d02f43a8dd3c51b1a0cfc79a9",
+    "sizeBytes": 25,
+    "expected": [
+      {
+        "range": [
+          23,
+          23,
+          4,
+          2,
+          4,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "yaml-off",
+    "source": "---\n中A\n---\n",
+    "recognize": false,
+    "formats": [],
+    "incomplete": false,
+    "sha256": "517f899da9cbab7c97df77325480fa264f759e030b669d5a36335d72e16aa194",
+    "sizeBytes": 13,
+    "expected": [
+      {
+        "range": [
+          7,
+          7,
+          2,
+          2,
+          2,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "yaml-unselected",
+    "source": "---\n中A\n---\n",
+    "recognize": true,
+    "formats": [
+      "toml"
+    ],
+    "incomplete": false,
+    "sha256": "517f899da9cbab7c97df77325480fa264f759e030b669d5a36335d72e16aa194",
+    "sizeBytes": 13,
+    "expected": [
+      {
+        "range": [
+          7,
+          7,
+          2,
+          2,
+          2,
+          2
+        ],
+        "source": "",
+        "message": "Missing space between CJK and Latin text."
+      }
+    ]
+  },
+  {
+    "name": "yaml-incomplete",
+    "source": "﻿---\n中A\n",
+    "recognize": true,
+    "formats": [],
+    "incomplete": true,
+    "sha256": "90a39ac1287fae03f308f600bc43f71a56c985753dcaf37ec6a8971efe7fbccb",
+    "sizeBytes": 12,
+    "expected": []
+  },
+  {
+    "name": "toml-incomplete",
+    "source": "+++\n中A\n",
+    "recognize": true,
+    "formats": [],
+    "incomplete": true,
+    "sha256": "f5b7f097a12a60475d7c7758848f3a10b80fe00dff39c9f230ff52ec3eaca721",
+    "sizeBytes": 9,
+    "expected": []
+  }
+]

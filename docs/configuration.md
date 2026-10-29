@@ -490,3 +490,7 @@ preserve defaults; shared directive denials remain inherited. PlannedFix metadat
 gives no implemented correction; all MD064 findings remain manual.
 
 MD085 is available but disabled by default for CommonMark and GFM, with no rule-specific options. Empty mappings preserve that default. Strict shared enabled/allow_directives booleans and inherited denials apply, including validation while disabled. PlannedFix metadata grants no executable correction; all findings remain manual.
+
+MD089 is available for CommonMark and GFM, disabled by default with no options.
+Empty mappings retain that default; strict shared settings and inherited directive
+denials apply even while disabled. PlannedFix metadata supplies no correction.
