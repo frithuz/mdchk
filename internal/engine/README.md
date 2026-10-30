@@ -658,3 +658,30 @@ list domain; equal-length whole-name ASCII comparison has no trim/Unicode fold.
 MD033 remains default OFF, RequiresSyntax, UsesFrontmatter=false and NoFix; MD047
 alone supplies corrections. Finite application accounting is not a hard CPU/RSS,
 throughput or OS preemption guarantee.
+
+## MD086 original unmatched-comment inventory
+
+`UnclosedHTMLComments` borrows the completed private CommonMark/full-GFM parse,
+original source/index/options and original operation. It visits actual HTML
+owners in source order, including mapped form-6/7 interiors and owned tails once.
+Whole Images are opaque; actual Link labels remain eligible. Existing lexer
+short forms, quote/PI/declaration/CDATA precedence and four-name raw lifetimes
+are preserved. Matching never crosses the actual owner/container boundary.
+
+Owner scratch capacity, mapping/source association, traversal, terminator indexes,
+failed suffixes, raw/quote comparisons, copied prefixes, output capacities and
+logical facts/findings reserve finite original work/records before use. Scratch
+length arithmetic remains checked and wide before multiplication; saturation
+fails closed through the same original allowance. Actual lexer work is metered
+as well. Producer, empty-options facade, comparison and distinct outer callback
+final publication observe caller AND originating controls, including empty,
+clean, protected, unavailable and post-output paths. Any failure atomically
+withholds output. Failed owned named-token context gives explicit coverage;
+an established unmatched comment is a violation instead. No reparse, retained
+parse-time facts, decoder, source/tree/index clone or replacement allowance is
+introduced. Finite application accounting is not a CPU/RSS guarantee.
+
+MD086 is default ON, RequiresSyntax, UsesFrontmatter=false and permanently NoFix.
+Findings use `HTML comment is missing a closing delimiter.` over exactly the
+original four-byte opener. Shared START suppression precedes inspection slicing;
+MD047 remains the sole correction producer.

@@ -815,3 +815,17 @@ opaque payload. Failed owned named context withholds the entire inventory with
 coverage. The existing permissive allowed_tags string list uses whole-name ASCII
 folding only, applied after inventory/raw context. Default OFF and NoFix remain;
 MD047 alone produces corrections.
+
+## Unmatched HTML comments (MD086)
+
+[MD086](../rules/html-and-comments/md086.md) is default enabled with no options
+and permanently NoFix. Actual form-2, form-6/7, InlineHTML and closing-tail owners
+are analyzed once in source order; whole Images, actual raw payload and opaque
+HTML tokens are protected. Ordinary rejected inline Text is deliberately excluded.
+Matching stays within the actual owner/container, with EOF as the final decision
+deadline. The first eligible closer ends a non-nesting comment, including actual
+short forms. Each unmatched opener reports exactly its original four bytes with
+`HTML comment is missing a closing delimiter.` Full context precedes START
+suppression and inspection intersection. Failed owned named-token context
+withholds the entire inventory with coverage; an unclosed comment itself is a
+violation. No directive grammar or parser grammar changes are implied.

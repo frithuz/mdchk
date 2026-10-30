@@ -1,5 +1,14 @@
 # mdchk lint
 
+[MD086 unmatched-comment analysis](../rules/html-and-comments/md086.md) is available for CommonMark and GFM,
+enabled by default with no rule-specific options and permanently report-only.
+Actual eligible HTML owners and their tails are analyzed once; matching ends at
+the owner/container boundary. Each unmatched opener reports only its original
+four bytes. Code, metadata, whole Images, raw payload and opaque HTML tokens stay
+protected; ordinary unowned Text is excluded. Unavailable owned named-token
+context withholds the complete MD086 inventory with explicit coverage. MD047
+remains the sole current correction producer; MCP parity remains downstream.
+
 [MD033 embedded-HTML analysis](../rules/html-and-comments/md033.md) is available for CommonMark and GFM,
 disabled by default and permanently report-only. `allowed_tags: []` accepts a
 string list and matches whole names with ASCII case folding, without trimming.
@@ -49,7 +58,7 @@ error attribution. It reports the first invalid sequence's original byte offset
 and Unicode position, retaining the original size and SHA-256 snapshot identity.
 
 The admitted plan runs the internal parser and available registered checks with
-the original source and validated options. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing and MD021 closed-heading delimiter spacing
+the original source and validated options. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing and MD021 closed-heading delimiter spacing
 analysis are implemented; other enabled missing defaults produce real coverage deficits and
 return `15`. Disabling all ordinary rules permits a clean `0` for valid UTF-8.
 Available registered checks can return violations (`10`); interruptions retain
@@ -115,7 +124,7 @@ the current CommonMark parser, while many enabled ordinary defaults still lack
 production implementations. MD047 terminating-newline, MD001 heading-increment, MD003
 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis,
 MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD030
-list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD018 missing
+list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD018 missing
 opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash
 spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis,
 MD023 heading indentation analysis, MD024 repeated heading analysis, MD025

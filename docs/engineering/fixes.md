@@ -309,3 +309,13 @@ candidate and saved analysis after an independent MD047 newline correction.
 MD033 produces no edits, eligibility, previews or corrected contents. MD047 is
 the sole current fixer. Unsupported native apply, including CGO0, retains its
 early complete I/O refusal 13 with empty analysis/effects and unchanged files.
+
+## MD086 manual findings
+
+MD086 unmatched-comment analysis is enabled by default for CommonMark and GFM,
+with no rule-specific options and permanent NoFix. It emits no edits, eligibility,
+previews or corrected content. MD047 remains the sole current correction producer.
+An unmatched opener in an ended quote owner remains a manual MD086 finding when
+MD047 adds an eligible final LF to later ordinary text. An unclosed comment at
+physical EOF protects that EOF, so MD047 remains deferred and MD086 remains manual.
+Candidate and saved diagnostics retain their exact source identities.

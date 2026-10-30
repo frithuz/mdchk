@@ -186,3 +186,15 @@ permitted enable directive uses the admitted `allowed_tags` string list; inherit
 global/per-rule denials remain binding. Allowed raw names still protect payload.
 Failed named context in an actual HTMLBlock withholds the entire MD033 inventory
 with explicit coverage. No MD033 edits or previews are produced.
+
+## MD086 unmatched comment analysis
+
+MD086 is enabled by default, has no rule-specific options and is permanently
+report-only for CommonMark and GFM. Full actual HTML-owner context is computed
+before shared START suppression and inspection selection. A permitted complete
+disable can suppress a later opener; an unclosed directive-looking comment
+cannot suppress itself, and an apparent enable inside comment payload is not an
+instruction. Inherited directive denial preserves configured state. Findings
+cover only the four-byte original opener, so selecting later payload lines does
+not intersect the finding. Missing owned named-token context withholds the whole
+inventory with coverage. Existing directive comment recognition is unchanged.

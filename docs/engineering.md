@@ -1,5 +1,14 @@
 # Markdown linter engineering design
 
+[MD086 unmatched-comment analysis](rules/html-and-comments/md086.md) is available for CommonMark and GFM,
+enabled by default with no rule-specific options and permanently report-only.
+Actual eligible HTML owners and their tails are analyzed once; matching ends at
+the owner/container boundary. Each unmatched opener reports only its original
+four bytes. Code, metadata, whole Images, raw payload and opaque HTML tokens stay
+protected; ordinary unowned Text is excluded. Unavailable owned named-token
+context withholds the complete MD086 inventory with explicit coverage. MD047
+remains the sole current correction producer; MCP parity remains downstream.
+
 [MD033 embedded-HTML analysis](rules/html-and-comments/md033.md) is available for CommonMark and GFM,
 disabled by default and permanently report-only. `allowed_tags: []` accepts a
 string list and matches whole names with ASCII case folding, without trimming.
@@ -134,7 +143,7 @@ facts, directives, protected regions and candidate reparsing. MD047 is the first
 production correction; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
 analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation
 analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis,
-MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD065 horizontal-rule blank-line analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD018 missing opening-hash spacing, MD019 extra
+MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD065 horizontal-rule blank-line analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD018 missing opening-hash spacing, MD019 extra
 opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading
 delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation
 analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026
@@ -303,7 +312,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD033, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD033, MD086, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 analysis callbacks.
 
 [MD081 paragraph-emphasis analysis](rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.

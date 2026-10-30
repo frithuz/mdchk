@@ -1,0 +1,1049 @@
+{
+  "issue": 81,
+  "base": "9d4a9f801b58a6817aeb521fc2e06560b43246b1",
+  "policy_sha256": "c00135ca1bdb796a2396b159158b593294fecf29067710e001836c56a58fbf44",
+  "oracle_sha256": "040049a12181feead5852bd61b889b0a68ded6da44b45b6c6c7a8941eda3391f",
+  "authorship": "Root preauthored literal source and expected results BEFORE engineering or probes; only substring/geometry and bytes arithmetic.",
+  "literal_calls": [
+    {
+      "id": "literal-01",
+      "oracle_case": {
+        "id": "page-violation",
+        "source": "<!-- note",
+        "source_bytes": 9,
+        "source_sha256": "dc1f974e883fa899cd2dd1efbb4c5fad78dc9dada2b1a8b2512a9078f6acb524",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [
+          {
+            "bytes": [
+              0,
+              4
+            ],
+            "start": [
+              1,
+              1
+            ],
+            "end": [
+              1,
+              5
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "findings": [
+          {
+            "bytes": [
+              0,
+              4
+            ],
+            "start": [
+              1,
+              1
+            ],
+            "end": [
+              1,
+              5
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "enabled": true,
+        "analysis_complete": true
+      },
+      "flavor": "commonmark",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "text": "<!--",
+          "message": "HTML comment is missing a closing delimiter.",
+          "active_at_range_start": true
+        }
+      ],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-02",
+      "oracle_case": {
+        "id": "page-accepted",
+        "source": "<!-- note -->",
+        "source_bytes": 13,
+        "source_sha256": "c2790dc9c16d0dabd3f81c4357a384ce13b0d276b1393c08b25c5a0aad3af6ac",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [],
+        "findings": [],
+        "enabled": true,
+        "analysis_complete": true
+      },
+      "flavor": "gfm",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-03",
+      "oracle_case": {
+        "id": "form6-inner",
+        "source": "<div>\n<!-- open",
+        "source_bytes": 15,
+        "source_sha256": "4581d9603cb00eaa57daaf440f4d3eba2e4241dee28c5c1058bb56a554bef719",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [
+          {
+            "bytes": [
+              6,
+              10
+            ],
+            "start": [
+              2,
+              1
+            ],
+            "end": [
+              2,
+              5
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "findings": [
+          {
+            "bytes": [
+              6,
+              10
+            ],
+            "start": [
+              2,
+              1
+            ],
+            "end": [
+              2,
+              5
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "enabled": true,
+        "analysis_complete": true
+      },
+      "flavor": "commonmark",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [
+        {
+          "bytes": [
+            6,
+            10
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "text": "<!--",
+          "message": "HTML comment is missing a closing delimiter.",
+          "active_at_range_start": true
+        }
+      ],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-04",
+      "oracle_case": {
+        "id": "form7-inner",
+        "source": "<custom>\n<!-- open",
+        "source_bytes": 18,
+        "source_sha256": "e9165203034b4aaffae90b1dc83edad3bf7eb4de22489e3336ddbeaff6d8f2fd",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [
+          {
+            "bytes": [
+              9,
+              13
+            ],
+            "start": [
+              2,
+              1
+            ],
+            "end": [
+              2,
+              5
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "findings": [
+          {
+            "bytes": [
+              9,
+              13
+            ],
+            "start": [
+              2,
+              1
+            ],
+            "end": [
+              2,
+              5
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "enabled": true,
+        "analysis_complete": true
+      },
+      "flavor": "gfm",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [
+        {
+          "bytes": [
+            9,
+            13
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "text": "<!--",
+          "message": "HTML comment is missing a closing delimiter.",
+          "active_at_range_start": true
+        }
+      ],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-05",
+      "oracle_case": {
+        "id": "container-end-not-EOF",
+        "source": "> <!-- open\n\n-->",
+        "source_bytes": 16,
+        "source_sha256": "483502fdebee13a44bbab5488ce71f505583c3a1f4140932bf1f8094f0174c96",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [
+          {
+            "bytes": [
+              2,
+              6
+            ],
+            "start": [
+              1,
+              3
+            ],
+            "end": [
+              1,
+              7
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "findings": [
+          {
+            "bytes": [
+              2,
+              6
+            ],
+            "start": [
+              1,
+              3
+            ],
+            "end": [
+              1,
+              7
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "enabled": true,
+        "analysis_complete": true
+      },
+      "flavor": "commonmark",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [
+        {
+          "bytes": [
+            2,
+            6
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<!--",
+          "message": "HTML comment is missing a closing delimiter.",
+          "active_at_range_start": true
+        }
+      ],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-06",
+      "oracle_case": {
+        "id": "tail-owner-end",
+        "source": "<!--ok--><!--bad\n-->",
+        "source_bytes": 20,
+        "source_sha256": "b9c66608f93525a6312343f8cba69ef42d0f466e68e66c8b538fce2748b17cd4",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [
+          {
+            "bytes": [
+              9,
+              13
+            ],
+            "start": [
+              1,
+              10
+            ],
+            "end": [
+              1,
+              14
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "findings": [
+          {
+            "bytes": [
+              9,
+              13
+            ],
+            "start": [
+              1,
+              10
+            ],
+            "end": [
+              1,
+              14
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "enabled": true,
+        "analysis_complete": true
+      },
+      "flavor": "gfm",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [
+        {
+          "bytes": [
+            9,
+            13
+          ],
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "<!--",
+          "message": "HTML comment is missing a closing delimiter.",
+          "active_at_range_start": true
+        }
+      ],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-07",
+      "oracle_case": {
+        "id": "ordinary-inline-unowned",
+        "source": "text <!-- open",
+        "source_bytes": 14,
+        "source_sha256": "03f75ed63a081485cf27fe490daf34cccea71b5b74b996401dc45e0be164c97c",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [],
+        "findings": [],
+        "enabled": true,
+        "analysis_complete": true
+      },
+      "flavor": "commonmark",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-08",
+      "oracle_case": {
+        "id": "tag-attribute-opaque",
+        "source": "<div x=\"<!-- open\">",
+        "source_bytes": 19,
+        "source_sha256": "b52b66acf36e3f0bebd349ea8ed0f00484f403239f578eee24e88e1e3d5105c5",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [],
+        "findings": [],
+        "enabled": true,
+        "analysis_complete": true
+      },
+      "flavor": "gfm",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-09",
+      "oracle_case": {
+        "id": "raw-script",
+        "source": "<script>\n<!-- open",
+        "source_bytes": 18,
+        "source_sha256": "b9237f8855a7965d46343fc89d7e8bd825dfab0fee2fbf82a0473a4a8afb9f48",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [],
+        "findings": [],
+        "enabled": true,
+        "analysis_complete": true
+      },
+      "flavor": "commonmark",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-10",
+      "oracle_case": {
+        "id": "raw-mismatched-form1-close",
+        "source": "<script>\n</style><!-- open",
+        "source_bytes": 26,
+        "source_sha256": "4952154d155e87eb84324e16c085adcb96f44565f40d12bf9a4e71e7ce9f61bb",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [
+          {
+            "bytes": [
+              17,
+              21
+            ],
+            "start": [
+              2,
+              9
+            ],
+            "end": [
+              2,
+              13
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "findings": [
+          {
+            "bytes": [
+              17,
+              21
+            ],
+            "start": [
+              2,
+              9
+            ],
+            "end": [
+              2,
+              13
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "enabled": true,
+        "analysis_complete": true
+      },
+      "flavor": "gfm",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [
+        {
+          "bytes": [
+            17,
+            21
+          ],
+          "start": [
+            2,
+            9
+          ],
+          "end": [
+            2,
+            13
+          ],
+          "text": "<!--",
+          "message": "HTML comment is missing a closing delimiter.",
+          "active_at_range_start": true
+        }
+      ],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-11",
+      "oracle_case": {
+        "id": "closed-short-block",
+        "source": "<!-->",
+        "source_bytes": 5,
+        "source_sha256": "fc8e48565a645c8ca8e754aa01c1c74c8ff3672dda4ece374c8d69497032a907",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [],
+        "findings": [],
+        "enabled": true,
+        "analysis_complete": true
+      },
+      "flavor": "commonmark",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-12",
+      "oracle_case": {
+        "id": "malformed-owned-tag",
+        "source": "<div x=\"unterminated <!-- open",
+        "source_bytes": 30,
+        "source_sha256": "bb4642500010cbc3fd2847521aa4b1eb8b6f681fac3d7df068faf316293cdbe4",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [],
+        "findings": [],
+        "enabled": true,
+        "analysis_complete": false,
+        "note": "MD086 context-unavailable, entire inventory withheld, no normal findings/errors."
+      },
+      "flavor": "gfm",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [],
+      "expected_complete": false
+    },
+    {
+      "id": "literal-13",
+      "oracle_case": {
+        "id": "earlier-prefix-then-unavailable",
+        "source": "> <!-- first\n\n<div x=\"bad <!-- second",
+        "source_bytes": 37,
+        "source_sha256": "245a5bc53311dafa0c966a711c9de99b7023786010bb0ab33d71c1e62dab24b0",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [],
+        "findings": [],
+        "enabled": true,
+        "analysis_complete": false,
+        "note": "Earlier genuine unmatched opener withheld atomically when later owned named context unavailable."
+      },
+      "flavor": "commonmark",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [],
+      "expected_complete": false
+    },
+    {
+      "id": "literal-14",
+      "oracle_case": {
+        "id": "yaml-protected",
+        "source": "---\nvalue: \"<!-- open\"\n---\ntext\n",
+        "source_bytes": 32,
+        "source_sha256": "7b3e297e53feb31ff72bb3335cc817ec1ebf961e00e6ec2bf6d13146350bbe9a",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [],
+        "findings": [],
+        "enabled": true,
+        "analysis_complete": true,
+        "frontmatter": true
+      },
+      "flavor": "gfm",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-15",
+      "oracle_case": {
+        "id": "directive-disabled",
+        "source": "<!-- mdchk:disable MD086 -->\n\n<!-- open",
+        "source_bytes": 39,
+        "source_sha256": "f4f444f9c2b80a5acbe2ae2a6c84121b9d001071d67c8e92c969b24604027423",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [
+          {
+            "bytes": [
+              30,
+              34
+            ],
+            "start": [
+              3,
+              1
+            ],
+            "end": [
+              3,
+              5
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": false
+          }
+        ],
+        "findings": [],
+        "enabled": true,
+        "analysis_complete": true
+      },
+      "flavor": "commonmark",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-16",
+      "oracle_case": {
+        "id": "directive-per-rule-denied",
+        "source": "<!-- mdchk:disable MD086 -->\n\n<!-- open",
+        "source_bytes": 39,
+        "source_sha256": "f4f444f9c2b80a5acbe2ae2a6c84121b9d001071d67c8e92c969b24604027423",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [
+          {
+            "bytes": [
+              30,
+              34
+            ],
+            "start": [
+              3,
+              1
+            ],
+            "end": [
+              3,
+              5
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "findings": [
+          {
+            "bytes": [
+              30,
+              34
+            ],
+            "start": [
+              3,
+              1
+            ],
+            "end": [
+              3,
+              5
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "enabled": true,
+        "analysis_complete": true,
+        "allow_directives": false
+      },
+      "flavor": "gfm",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [
+        {
+          "bytes": [
+            30,
+            34
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "text": "<!--",
+          "message": "HTML comment is missing a closing delimiter.",
+          "active_at_range_start": true
+        }
+      ],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-17",
+      "oracle_case": {
+        "id": "default-omitted",
+        "source": "<!-- open",
+        "source_bytes": 9,
+        "source_sha256": "99e8a53a9d0365c23b893c917431f4465df8bc511e742d5f9a672a03a92841dc",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [
+          {
+            "bytes": [
+              0,
+              4
+            ],
+            "start": [
+              1,
+              1
+            ],
+            "end": [
+              1,
+              5
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "findings": [
+          {
+            "bytes": [
+              0,
+              4
+            ],
+            "start": [
+              1,
+              1
+            ],
+            "end": [
+              1,
+              5
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "enabled": null,
+        "analysis_complete": true
+      },
+      "flavor": "commonmark",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "text": "<!--",
+          "message": "HTML comment is missing a closing delimiter.",
+          "active_at_range_start": true
+        }
+      ],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-18",
+      "oracle_case": {
+        "id": "unicode-tail",
+        "source": "<!-- 😀 --><!-- bad",
+        "source_bytes": 21,
+        "source_sha256": "2078ed442fbcd201a2fa3f361dc5c968fa7f412a225c7ca50000afa844401f2c",
+        "flavors": [
+          "commonmark",
+          "gfm"
+        ],
+        "candidates": [
+          {
+            "bytes": [
+              13,
+              17
+            ],
+            "start": [
+              1,
+              11
+            ],
+            "end": [
+              1,
+              15
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "findings": [
+          {
+            "bytes": [
+              13,
+              17
+            ],
+            "start": [
+              1,
+              11
+            ],
+            "end": [
+              1,
+              15
+            ],
+            "text": "<!--",
+            "message": "HTML comment is missing a closing delimiter.",
+            "active_at_range_start": true
+          }
+        ],
+        "enabled": true,
+        "analysis_complete": true
+      },
+      "flavor": "gfm",
+      "mode": "lint",
+      "inspect_lines": null,
+      "expected_findings": [
+        {
+          "bytes": [
+            13,
+            17
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "<!--",
+          "message": "HTML comment is missing a closing delimiter.",
+          "active_at_range_start": true
+        }
+      ],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-19",
+      "source": "<!-- note\npayload",
+      "source_bytes": 17,
+      "source_sha256": "d97436907d437bbe26df891af222e69c603f1f304df1d52bc896093c22a7476d",
+      "flavor": "commonmark",
+      "mode": "inspect",
+      "inspect_lines": [
+        1,
+        1
+      ],
+      "expected_findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "text": "<!--",
+          "message": "HTML comment is missing a closing delimiter."
+        }
+      ],
+      "expected_complete": true
+    },
+    {
+      "id": "literal-20",
+      "source": "<!-- note\npayload",
+      "source_bytes": 17,
+      "source_sha256": "d97436907d437bbe26df891af222e69c603f1f304df1d52bc896093c22a7476d",
+      "flavor": "commonmark",
+      "mode": "inspect",
+      "inspect_lines": [
+        2,
+        2
+      ],
+      "expected_findings": [],
+      "expected_complete": true
+    }
+  ],
+  "composition_modes": [
+    "fix-dry-run",
+    "fix-apply"
+  ],
+  "composition": [
+    {
+      "id": "md047-positive-surviving-md086",
+      "source": "> <!-- note\n\nend",
+      "MD086_settings": {
+        "enabled": true
+      },
+      "before_bytes": 16,
+      "after_bytes": 17,
+      "expected_source_after": "> <!-- note\n\nend\n",
+      "expected_manual_findings": [
+        {
+          "bytes": [
+            2,
+            6
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<!--",
+          "message": "HTML comment is missing a closing delimiter."
+        }
+      ]
+    },
+    {
+      "id": "md047-protected-eof",
+      "source": "<!-- note",
+      "MD086_settings": {
+        "enabled": true
+      },
+      "before_bytes": 9,
+      "after_bytes": 9,
+      "expected_source_after": "<!-- note",
+      "expected_manual_findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "text": "<!--",
+          "message": "HTML comment is missing a closing delimiter."
+        }
+      ]
+    }
+  ],
+  "actual_cgo0": {
+    "source": "> <!-- note\n\nend",
+    "MD086_settings": {
+      "enabled": true
+    },
+    "mode": "fix-apply",
+    "MD047_enabled": true,
+    "exit": 13,
+    "status": "error",
+    "complete": true,
+    "empty_analysis_effects": true,
+    "unchanged_source_config_fs": true,
+    "error": {
+      "category": "io",
+      "code": "write-acquisition",
+      "scope": "operation",
+      "message": "native replacement requires verified Darwin arm64 APFS and cgo; this adapter is unsupported"
+    }
+  },
+  "total_actual_calls": 25,
+  "requirements": [
+    "ordinary env overrides UNSET",
+    "all stdout JSON Schema plus semantic invariant validation",
+    "immediate full filesystem before/after before writing capture artifacts",
+    "independent source/config exact bytes/modes before and after",
+    "actual CGO1 and CGO0 binary metadata",
+    "all build-source identities before and after",
+    "preserve entire capture attempt on failure; fresh destination only"
+  ]
+}

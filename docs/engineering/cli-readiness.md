@@ -1,5 +1,14 @@
 # Delivered CLI readiness
 
+[MD086 unmatched-comment analysis](../rules/html-and-comments/md086.md) is available for CommonMark and GFM,
+enabled by default with no rule-specific options and permanently report-only.
+Actual eligible HTML owners and their tails are analyzed once; matching ends at
+the owner/container boundary. Each unmatched opener reports only its original
+four bytes. Code, metadata, whole Images, raw payload and opaque HTML tokens stay
+protected; ordinary unowned Text is excluded. Unavailable owned named-token
+context withholds the complete MD086 inventory with explicit coverage. MD047
+remains the sole current correction producer; MCP parity remains downstream.
+
 [MD033 embedded-HTML analysis](../rules/html-and-comments/md033.md) is available for CommonMark and GFM,
 disabled by default and permanently report-only. `allowed_tags: []` accepts a
 string list and matches whole names with ASCII case folding, without trimming.
@@ -85,7 +94,7 @@ context tests establish interruption behavior separately.
 Readiness is bounded by the [current capabilities](../index.md) and
 [platform limitations](../engineering.md#platform-and-process-acceptance). The CommonMark 652-example parser gate
 establishes core syntax conformance, not every consumer or rule. MD047 is the
-first ordinary production rule and correction; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD033, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 analysis are also available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033 and MD093 are disabled by default. Unavailable implicit rules
+first ordinary production rule and correction; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD033, MD086, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 analysis are also available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033 and MD093 are disabled by default. Unavailable implicit rules
 remain coverage gaps (15), explicit unavailable rules reject configuration (12),
 and default GFM now uses the verified whole profile. Actual GFM lint/fix/inspect
 consumer journeys include source facts and native saved-byte checks. Optional contexts/resources, MCP delivery, broader traversal accounting, the remaining
