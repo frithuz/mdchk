@@ -1,0 +1,121 @@
+{
+  "issue": 84,
+  "authority": "Root independently selected concrete unknown-vs-known-opaque literal workflows from adopted atomic/incomplete policy, after STATIC production inspection but BEFORE any runtime or engineer test rows; no observed outputs or calibration.",
+  "policy_unchanged": "69f0dd0e4626a55af67b98ef6eac3a78a8d90892014fa5c2fcff61d485dad21e",
+  "original_oracle_unchanged": "1a60725172f8b8e5038604145766f2c9cd9c9ce00b3acb16d8b3ca078477bb25",
+  "profiles": [
+    "commonmark",
+    "gfm"
+  ],
+  "literal_case_count": 3,
+  "planned_case_flavor_repetitions": 6,
+  "unavailable_reason": "Conflict-marker protection context is unavailable; the complete MD092 inventory is withheld.",
+  "cases": [
+    {
+      "name": "unknown-owned-tag-withholds-earlier-opener",
+      "source": "<<<<<<< before\n\n<div>\n<x title=\"\n",
+      "source_bytes": 33,
+      "source_sha256": "1fb71de9cb3636d0160c85342e5045752d83733ff83f705b9277eba9c8da7e92",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": false,
+        "md092_evaluation": "unavailable",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md092_corrections": true
+      }
+    },
+    {
+      "name": "md087-unknown-withheld-prefix-uncertain",
+      "source": "<!-- mdchk:disable MD092 -->\n<<<<<<< before\n\n<div>\n<x title=\"\n",
+      "source_bytes": 62,
+      "source_sha256": "a733a6bd9c5ebf21082f2197e4cb76c70207043dfa527fb6736030c9ea24652c",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": false,
+        "md092_evaluation": "unavailable",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD092",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 62,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-uncertain"
+          }
+        ],
+        "source_unchanged": true,
+        "no_md092_corrections": true
+      }
+    },
+    {
+      "name": "known-unclosed-opaque-keeps-earlier-opener",
+      "source": "<<<<<<< before\n\n<div>\n<!--\n",
+      "source_bytes": 27,
+      "source_sha256": "3aad5bdc65ed05456b97b96a5c631d20468f5ec5b81d223073cbbca6c28cee2a",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md092_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD092",
+            "message": "Unresolved version-control conflict marker.",
+            "marker": "<<<<<<<",
+            "byte_range": {
+              "start": 0,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 1
+              },
+              "end": {
+                "line": 1,
+                "column": 8
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md092_corrections": true
+      }
+    }
+  ]
+}

@@ -249,3 +249,10 @@ The audit produces no edit or preview. A separately authorized MD047 correction
 recomputes the audit against candidate and actual saved source with the original
 residual budget. Hidden observations bypass correction eligibility; ordinary
 active MD047 corrections retain their established behavior.
+
+MD092 evaluates conflict state on the full original source before inspection
+focus. A selected separator can depend on an earlier hidden or out-of-focus
+opening; a hidden closer still clears state. Focus does not strip container
+prefixes or reset the Boolean. Unknown original protection context withholds the
+whole MD092 inventory, and MD087 reports uncertain suppression usefulness instead
+of treating the missing prefix as proof of absence. MD092 remains report-only.

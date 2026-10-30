@@ -1,5 +1,14 @@
 # Rules to implement
 
+[MD092 conflict-marker analysis](html-and-comments/md092.md) is available for
+CommonMark and GFM, enabled by default, with no rule-specific options and
+permanent report-only support. Maximal original column-one ASCII runs use one
+document-wide Boolean state; full-source analysis precedes directive suppression
+and inspection focus. Actual marker-byte protection and original owned HTML raw
+lifetimes remain authoritative. Unknown required protection withholds the entire
+inventory with reduced coverage. MD047 remains the sole current correction
+producer; MD092 emits no edits or previews. MCP parity remains downstream.
+
 [MD087 unused-suppression analysis](html-and-comments/md087.md) is available for CommonMark and GFM,
 disabled by default, with no rule-specific options and permanent report-only support.
 Each allowed disable target is judged using its actual owned interval and shared

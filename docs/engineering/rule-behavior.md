@@ -881,3 +881,33 @@ establishes absence; unavailable inventory or discarded prefix establishes none.
 Real MD087 shares the one actual callback, preserving its capability/would-be
 semantics and interruption rules. MD047 alone may independently correct safe
 ordinary EOF content under residual allowance; MD091 supplies no edit/preview.
+
+## MD092 conflict-marker inventory
+
+MD092 uses a completed private production parser projection and an optionless
+engine facade, borrowing original source, index, selected recognition/profile
+and the cumulative operation. Physical column 1 and maximal homogeneous ASCII
+`<`, `>`, `|`, `=` runs of at least seven determine candidates; every family
+accepts an arbitrary suffix. One saturating document Boolean activates on an
+admitted opening and clears on an admitted closer. Ancestors report without
+changing state; separators require active state. Owner/container/protected,
+directive and inspection boundaries do not reset it. Every document starts fresh.
+
+Protection tests marker-byte overlap, with whole physical CodeBlock ownership
+including owned prefixes, opaque recognized metadata, actual HTML/token/raw
+lifetimes, and whole Image isolation. Later suffix syntax does not mask an
+earlier marker. Original HTMLBlock Content includes closing tails once; its
+owned-token scan carries semantic raw transitions across owners. Actual form-1
+ANY4 boundaries remain distinct from matching an incoming inline raw name.
+Unknown necessary ownership withholds the complete inventory, rather than
+proving absence. MD087 shares the one actual callback and cannot credit a
+withheld prefix or infer unused suppression from incomplete observations.
+
+Producer, facade, comparison and distinct outer callback publication all retain
+caller and originating interruption plus sticky work/node/time checks. The HTML
+lexer adapter uses one private wrapper for all owners in a projection under the
+original operation mutex. Its document-node field is an additional scratch guard,
+not inherited original parse-local node accounting; original cumulative work,
+total nodes, elapsed state and sticky failures never reset. Provisional output
+is withdrawn atomically on late failure. No public model clone, reparse,
+replacement source/index, resource or metadata decoding access is granted.

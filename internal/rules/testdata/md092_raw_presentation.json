@@ -1,0 +1,837 @@
+{
+  "provenance": "Authored after failed attempt01. Static accepted engine API/interval source derivation, qualified by having observed failures; not an independent pre-production oracle. Original immutable fixtures unchanged.",
+  "source_basis": [
+    "internal/engine/suppression_audit.go: applied disable effects create one raw owner; MD087 disabled at target token sets suppression-not-requested, not a requested usefulness conclusion.",
+    "internal/engine/directives.go: transition at closing delimiter end, prior interval ends at next applied enable closing delimiter end; final interval alone owns EOF.",
+    "All90 source/config records inspected: nine directive sources; four requested MD087 owners already recorded; two applied disables with MD087 off; denied disable has no applied effect; enable-only cases have no disable owner; remaining81 have no directives."
+  ],
+  "fixture_identities": {
+    "internal/rules/testdata/md092.json": "1a60725172f8b8e5038604145766f2c9cd9c9ce00b3acb16d8b3ca078477bb25",
+    "internal/rules/testdata/md092_raw_lifetime.json": "1d5ab8daa2ce6d3315e7439f36311d22a24881aac59b9d3f3831f81a2131df32",
+    "internal/rules/testdata/md092_unknown.json": "486afc71751f0ea8c3ffd8a94f7bdfb09dced1731cd36a9ded5e0ce801827aed"
+  },
+  "cases": [
+    {
+      "name": "empty",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "resolved",
+      "source_sha256": "e1eaaac4033b7ecd9ba05676b1ad37af4dbd145fa0c5e10f1433e7fe2d9700d6",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "published-cycle",
+      "source_sha256": "e9e61879bd0b052e21122ece9459c3a94003c1a030fd7f6c436bf019abaff780",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "default-on-omitted",
+      "source_sha256": "6bc98804cd1c27b34e97a595af0fb6ccd6a1e4859417472638be3183d97393d2",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "explicit-disabled",
+      "source_sha256": "07aeca7e4afda23720981ff1f3287da6ce415b96b630d173d17597c9fbee7620",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "bare-open",
+      "source_sha256": "7e5f6d24eea282d0b832634f98f8ed6ffec849c7cea8183e289624379f5beba0",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "bare-close",
+      "source_sha256": "2d18b6d67d7195c5063d70571ee17a9b0a1032cd1c5894c16bce818720c9464e",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "bare-ancestor",
+      "source_sha256": "543082649ab324aed040584422da1cfe576ec16860460b0c3571c2f49b2b24bb",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "bare-separator",
+      "source_sha256": "b2f5041b3a4f710c8fda3bb0aecb049bd66567f573f60bc8323c9ef95b20476a",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "six-all",
+      "source_sha256": "fd7625ccd8c2189f598f23d2c7e91cfdab332ef026420ba4c70a582eb2ba50af",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "eight-open",
+      "source_sha256": "0872a73f4a6492703b5d77c9156fc784fac51eeaa97fcf3faf12e8233d2d9d71",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "nine-close",
+      "source_sha256": "f43fd00e59c2748fd237499dbd3504071dcfbd20986f7ff09cce4fd2d52b146f",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "nine-ancestor",
+      "source_sha256": "2428c96c9cae1771701a83820f2499f57d834c60d566b9b79c70abe7c61bb6cd",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "nine-separator",
+      "source_sha256": "e686e013d7ef59cd2c88a31a18d19484536c14dd182cd8a40ced86264fd69100",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "arbitrary-suffix-all",
+      "source_sha256": "a645f976683a620412046914062884f64202a30c6c63ded61093ee3da01de3cc",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "mixed-marker-suffix",
+      "source_sha256": "65876019f12c36aab420511f71c9c042c26f3090f661f5174453a2eb33c1edf2",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "interrupted-short-runs",
+      "source_sha256": "d9afba6e03508a0287dbf2062c547d7b95a1e14605092149e0d6a06c08ac6087",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "leading-space",
+      "source_sha256": "3eb5642d6b83d34b5caecc991e05e8d6093ca4d69a64e376fbca0c65533429e7",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "leading-three-spaces",
+      "source_sha256": "fef5ce35f04226504402fa771716370fcf8067769aed63409baf6a8e7e889f60",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "leading-tab",
+      "source_sha256": "b3e808bcc398ea8b27d58d1e363f0afd26a30b003a5a3206d9be6718163c4008",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "leading-nbsp",
+      "source_sha256": "b1ace462d29efff4c9b84eaed5cc4b251772fd47e98c3c1979f8783f5aeef046",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "leading-bom",
+      "source_sha256": "dcea8f648da806d5435e039708d6a964834db5b904ef69563e27bfa9c606e60d",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "escaped-spelling",
+      "source_sha256": "97caca05a205cc42003bd19e1ef04a276c99578a73f2f726af64b9f95c37ba3b",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "entity-spelling",
+      "source_sha256": "868d6e69d7700533bc176c83af7269ff215c650bfa8d0a7cf54e90b9225603ac",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "inline-spelling",
+      "source_sha256": "761c34d95c042a7358f7e485b8e5fd207a9fd1f68bcad7358728109a1054fa59",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "quoted-open-excluded",
+      "source_sha256": "0cf6a26d9f8805ccb372bbd3f0f6effd6edf85ed5e6aa4ac838e05f32640d908",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "list-open-excluded",
+      "source_sha256": "040865b904fd80aeb6262f7de8d75ade94fd54c149b0a1b267e29203f81d0e1d",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "nested-prefix-open-excluded",
+      "source_sha256": "ab23ff7c1e745c8fcb02fc05571af9253d484694971852bc727b334609540914",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "spaced-quote-not-run",
+      "source_sha256": "a03472e2bf379f5a4dc8d0cc5bdadd97023614a4e2f61dc5a14d59d9d797924a",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "physical-close-before-quote-stripping",
+      "source_sha256": "6556fb861baa9576da61132f40068b0e9ba7ec19225b5c8c62553acbfaf17774",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "nested-open-saturation",
+      "source_sha256": "eb6e15b5a303d777da9427bf41fd0eadf0daca5be4e2d13cd8c2e3f041ff0815",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "repeated-separators",
+      "source_sha256": "330829ede671c96bf7c5ac9deec71f3b7ce1ec8bc4e7179050b56a445ecdcf9a",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "ancestor-no-activation",
+      "source_sha256": "41ae58945380323ecb0c640f859e24e249cb76c161a435f13a56833f4c779329",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "close-no-activation",
+      "source_sha256": "e02a6bed8b64473002674dc0b807ed93db115db02dd8cc5e60ddd8c6c7405245",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "ancestor-keeps-active",
+      "source_sha256": "69665f1b1d949622690f4d1c8b8e880027c99e1c7cfcb7ab28c99736ca3951a1",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "owner-changes-keep-active",
+      "source_sha256": "eb3f380a75568363078c38dd2f034f261855e359fa86cb28f3ec3147b9bb7781",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "mismatched-widths",
+      "source_sha256": "2f2af0e292780ea4e097b6d64f392270ea3b1d2eda3e702a99484e9e77c281a7",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "separator-unicode-suffix",
+      "source_sha256": "44c31b3219480a74044f71573005f5da3fdfcf7c8f4491a12aa328fab2c512b0",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "separator-space-tab-suffix",
+      "source_sha256": "53a57f4639f84a7ddfde0983e8cce38fffbe0e525d44e1236d2c8cc4a5872f6c",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "fenced-all-protected",
+      "source_sha256": "24c375ca1e48902e88ea5a77b38025f6bb86c729655ce0b0871e5c3c1b50e2c4",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "tilde-fenced-all-protected",
+      "source_sha256": "9350e2de576231de3d0c23b13ec2abe38659e1d6442fa653efe15e5cae4c67c2",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "indented-protected",
+      "source_sha256": "0782e5de7843ccee6580b67849304f7cc734d8737fddc77f5fe3e03841ccd53a",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "protected-close-keeps-active",
+      "source_sha256": "e5d23b33fc83951352057169ed74e98191711312f1e6fecef82072c950088482",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "protected-open-no-activation",
+      "source_sha256": "ecf982d4a7320667f0d5760df4a5ed016a595af96fed0c87f4f8cd19ce6930ba",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "unclosed-fence-keeps-protected",
+      "source_sha256": "cdcad162c53f92926182315eda59ffa0aafebc9f93857c53accc19c4ef35766e",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "nested-quote-fence-physical-close-protected",
+      "source_sha256": "0f1397c3b941542197aefdf2b450e5c04fc09ff9e4552ad64f93e3240d817bc1",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "nested-list-fence",
+      "source_sha256": "e0fafe4d16d2066e80d12acad23d1812516bc5930f79b9eb09c6640fc004c0c4",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "multiline-codespan-open-protected",
+      "source_sha256": "73980a142af4c3e0002082c31c91b1f4ac29dde55ac932d9fe75c9d9b36d0a69",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "multiline-codespan-ancestor-protected",
+      "source_sha256": "db1cefeb19f936a11d9591dcffd5f4fea1c0515f4c92c8f018ec372e99192c10",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "later-codespan-does-not-mask",
+      "source_sha256": "60a258af3a229b8dad9c92adccf59f1eeda89778823b2ae6518ec2c33480abd3",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "later-comment-does-not-mask",
+      "source_sha256": "ec5498aa7ae5ed3cd91b403c275abf49ec7814432d23eef4fb622415cded3430",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "later-tag-does-not-mask",
+      "source_sha256": "fe8006d500647a522a02fc166eaea4b98e1b86d4266b3e0d4a0aa31893bd5f8b",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "comment-prefix-not-start",
+      "source_sha256": "bdb52a2751ea5ed09d45d21116f5d2741a9bc225755930e168dbb031dcd1c769",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "html-comment-protected",
+      "source_sha256": "cad7d4eef0d011da626eaf551abd57eed6156682e21d33a4aca83f29d5530b03",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "unclosed-comment-protected",
+      "source_sha256": "b3374a284dab6eed8ecee8747795069c8aff7d2eecae788b7c93bf064fc0751f",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "html-block-protected",
+      "source_sha256": "7063155155a52a9f312197b1a1f92a1a92ee7583b6304e09a0bcbbc9cc95112e",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "html-block-does-not-reset-active",
+      "source_sha256": "d160868a5fffb1b660f34a408111d77e6e9de998784b15911c15371b844e2910",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "raw-script-protected",
+      "source_sha256": "cd93dc129d3c453d45621adea95579915747e492d2cd975f0b292faa638f3a19",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "inline-raw-protected",
+      "source_sha256": "9514378fe7849c32bdf5824d6739842b2ccfb7cc7762fb521402e0dad8c3a684",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "unclosed-inline-raw-protected",
+      "source_sha256": "1ab4a71486983502fda2e955ba403da1b88ea604b133163fcc910c3f25fa4aa3",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "closed-raw-resumes",
+      "source_sha256": "220369b51caebcedc106f348de8cd2c25b6fd32fbb8dbe1ed3f86f1f4365b0cb",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "html-attribute-protected",
+      "source_sha256": "50c0a86ae7177be4d0046e3d3a55c8b9c6ca515a3de083cc4d4b7f20cf50a98a",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "whole-image-protected",
+      "source_sha256": "3a94bc71547478a1730d96b249b4876448fabe5116966a154b6e656bb353054d",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "yaml-recognized-protected",
+      "source_sha256": "5e0a5b8b541d677d62b05cba7de068af0df76b3b3bae632588d166d8e8ed69c8",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "yaml-unrecognized-body",
+      "source_sha256": "5e0a5b8b541d677d62b05cba7de068af0df76b3b3bae632588d166d8e8ed69c8",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "toml-recognized-protected",
+      "source_sha256": "8a2f6cd44775b947b18df19a70fbf59b16e43189734830924e521a7b782ddc0b",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "toml-unrecognized-body",
+      "source_sha256": "8a2f6cd44775b947b18df19a70fbf59b16e43189734830924e521a7b782ddc0b",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "unicode-labels-lf-no-final",
+      "source_sha256": "d4bbcb9df48125ac63b4ae263c80e2a3e071454b1589e6c0b6d934a7fe677f26",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "unicode-labels-lf-final",
+      "source_sha256": "e0283c3ed204e9e675fe5213bb2bac3e4e8b3355b4da6327ac3abf378af877ae",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "unicode-labels-crlf",
+      "source_sha256": "076e1def2b08d4be1acc37f779aa3546f16b3e893eef7f54875aca3d60bc1f20",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "unicode-labels-cr",
+      "source_sha256": "a9fbdc2c721c1c691909e494c539bd2965ea598af2fbe40d405e77160aaa04f4",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "mixed-endings",
+      "source_sha256": "110d010c9ab2e67a431d6eb990d0135633d24d8c58f9e5a80583b7d4f25689aa",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "unicode-line-separators-not-physical",
+      "source_sha256": "de46f5f7e214d2c37b924b9bbb968e73448fa027dd7971b386bfef029aa2fefe",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "hidden-open-keeps-context",
+      "source_sha256": "be0f078266354d334ccb5dc295c80d69f615da628ceec5fe07ae2d0f2de00a80",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [
+        {
+          "owner": 0,
+          "effect": 0,
+          "rule": "MD092",
+          "token": {
+            "start": 19,
+            "end": 24
+          },
+          "interval": {
+            "start": 28,
+            "end": 69,
+            "includes_final_eof": false
+          },
+          "reason": "suppression-not-requested"
+        }
+      ],
+      "complete_raw_decisions": [
+        {
+          "owner": 0,
+          "effect": 0,
+          "rule": "MD092",
+          "token": {
+            "start": 19,
+            "end": 24
+          },
+          "interval": {
+            "start": 28,
+            "end": 69,
+            "includes_final_eof": false
+          },
+          "reason": "suppression-not-requested"
+        }
+      ]
+    },
+    {
+      "name": "hidden-close-ends-context",
+      "source_sha256": "6b9a87a9cdd24b7ef616ca5d11dab5e1988bac65a8660efbe3486bf3ba7db0de",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [
+        {
+          "owner": 0,
+          "effect": 0,
+          "rule": "MD092",
+          "token": {
+            "start": 32,
+            "end": 37
+          },
+          "interval": {
+            "start": 41,
+            "end": 84,
+            "includes_final_eof": false
+          },
+          "reason": "suppression-not-requested"
+        }
+      ],
+      "complete_raw_decisions": [
+        {
+          "owner": 0,
+          "effect": 0,
+          "rule": "MD092",
+          "token": {
+            "start": 32,
+            "end": 37
+          },
+          "interval": {
+            "start": 41,
+            "end": 84,
+            "includes_final_eof": false
+          },
+          "reason": "suppression-not-requested"
+        }
+      ]
+    },
+    {
+      "name": "permission-denied-disable",
+      "source_sha256": "f538bbcaa3491f2c01ee4d3cd42dbd4cb6ce8036fee3d6f787ca0369911311d7",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "configured-off-enable",
+      "source_sha256": "c6033566c592509127a0a7142d243dd867e3116535313824a68f7c30f2609388",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "configured-off-enable-denied",
+      "source_sha256": "c6033566c592509127a0a7142d243dd867e3116535313824a68f7c30f2609388",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "md087-used-hidden-open",
+      "source_sha256": "f538bbcaa3491f2c01ee4d3cd42dbd4cb6ce8036fee3d6f787ca0369911311d7",
+      "requested_md087_decisions": [
+        {
+          "owner": 0,
+          "effect": 0,
+          "rule": "MD092",
+          "token": {
+            "start": 19,
+            "end": 24
+          },
+          "interval": {
+            "start": 28,
+            "end": 50,
+            "includes_final_eof": true
+          },
+          "reason": "suppression-used"
+        }
+      ],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": [
+        {
+          "owner": 0,
+          "effect": 0,
+          "rule": "MD092",
+          "token": {
+            "start": 19,
+            "end": 24
+          },
+          "interval": {
+            "start": 28,
+            "end": 50,
+            "includes_final_eof": true
+          },
+          "reason": "suppression-used"
+        }
+      ]
+    },
+    {
+      "name": "md087-unused-no-open",
+      "source_sha256": "a3f948d1f3dc61128923a153d4af5cbf9d2fdaad5114ea93dc01d8abbf246179",
+      "requested_md087_decisions": [
+        {
+          "owner": 0,
+          "effect": 0,
+          "rule": "MD092",
+          "token": {
+            "start": 19,
+            "end": 24
+          },
+          "interval": {
+            "start": 28,
+            "end": 37,
+            "includes_final_eof": true
+          },
+          "reason": "suppression-unused"
+        }
+      ],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": [
+        {
+          "owner": 0,
+          "effect": 0,
+          "rule": "MD092",
+          "token": {
+            "start": 19,
+            "end": 24
+          },
+          "interval": {
+            "start": 28,
+            "end": 37,
+            "includes_final_eof": true
+          },
+          "reason": "suppression-unused"
+        }
+      ]
+    },
+    {
+      "name": "md087-used-hidden-standalone-close",
+      "source_sha256": "6ac9bb62fe4ef6e343de6d5dc7add534ec8bc8de1645731f385bc8e41d1c9250",
+      "requested_md087_decisions": [
+        {
+          "owner": 0,
+          "effect": 0,
+          "rule": "MD092",
+          "token": {
+            "start": 19,
+            "end": 24
+          },
+          "interval": {
+            "start": 28,
+            "end": 52,
+            "includes_final_eof": true
+          },
+          "reason": "suppression-used"
+        }
+      ],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": [
+        {
+          "owner": 0,
+          "effect": 0,
+          "rule": "MD092",
+          "token": {
+            "start": 19,
+            "end": 24
+          },
+          "interval": {
+            "start": 28,
+            "end": 52,
+            "includes_final_eof": true
+          },
+          "reason": "suppression-used"
+        }
+      ]
+    },
+    {
+      "name": "incoming-raw-htmlblock-matched-closer",
+      "source_sha256": "30fe788252fb3f97f976d87799a4e7143eca63c9b042af82cd52d31376c1ba4c",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "incoming-raw-htmlblock-no-closer",
+      "source_sha256": "9bf3c5e45a66bae9053ad9f4a87236e84ca448daa1e4cd8aa937cda1458cb26d",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "incoming-raw-htmlblock-different-closer",
+      "source_sha256": "b189098c7e291a7fd710de66af9408383ee636c232ad4c7644a1f30a7f5020de",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "htmlblock-raw-open-persists",
+      "source_sha256": "241ef130c75753b7f12f215448c6ddc249446187e0bd20b61c4ebf8fa2a4b782",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "htmlblock-raw-open-close-resumes",
+      "source_sha256": "3d54493620aa3c1d6834c10cb5c033cb51f6f09de9400c270e75b681d80efa55",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "form1-any4-close-resumes",
+      "source_sha256": "05bef516f986ca6be1e17da26600b88dc40f1453fe475741826d83cc1817ef89",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "unknown-owned-tag-withholds-earlier-opener",
+      "source_sha256": "1fb71de9cb3636d0160c85342e5045752d83733ff83f705b9277eba9c8da7e92",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    },
+    {
+      "name": "md087-unknown-withheld-prefix-uncertain",
+      "source_sha256": "a733a6bd9c5ebf21082f2197e4cb76c70207043dfa527fb6736030c9ea24652c",
+      "requested_md087_decisions": [
+        {
+          "owner": 0,
+          "effect": 0,
+          "rule": "MD092",
+          "token": {
+            "start": 19,
+            "end": 24
+          },
+          "interval": {
+            "start": 28,
+            "end": 62,
+            "includes_final_eof": true
+          },
+          "reason": "suppression-uncertain"
+        }
+      ],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": [
+        {
+          "owner": 0,
+          "effect": 0,
+          "rule": "MD092",
+          "token": {
+            "start": 19,
+            "end": 24
+          },
+          "interval": {
+            "start": 28,
+            "end": 62,
+            "includes_final_eof": true
+          },
+          "reason": "suppression-uncertain"
+        }
+      ]
+    },
+    {
+      "name": "known-unclosed-opaque-keeps-earlier-opener",
+      "source_sha256": "3aad5bdc65ed05456b97b96a5c631d20468f5ec5b81d223073cbbca6c28cee2a",
+      "requested_md087_decisions": [],
+      "additional_nonrequested_presentation": [],
+      "complete_raw_decisions": []
+    }
+  ]
+}

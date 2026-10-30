@@ -1,0 +1,276 @@
+{
+  "issue": 84,
+  "authority": "Root literal source and manual explicit marker offsets BEFORE any runtime or production repair; no product/parser output. Expanded BEFORE production repair with owned HTML raw open/close and existing form1 ANY4 boundary controls; original3 literal records byte-equivalent.",
+  "original_oracle_unchanged": "1a60725172f8b8e5038604145766f2c9cd9c9ce00b3acb16d8b3ca078477bb25",
+  "policy_unchanged": "69f0dd0e4626a55af67b98ef6eac3a78a8d90892014fa5c2fcff61d485dad21e",
+  "profiles": [
+    "commonmark",
+    "gfm"
+  ],
+  "literal_case_count": 6,
+  "planned_case_flavor_repetitions": 12,
+  "cases": [
+    {
+      "name": "incoming-raw-htmlblock-matched-closer",
+      "source": "prefix <script>\n<div>\n</script>\n\n<<<<<<< outside\n=======\n",
+      "source_bytes": 57,
+      "source_sha256": "30fe788252fb3f97f976d87799a4e7143eca63c9b042af82cd52d31376c1ba4c",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md092_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD092",
+            "message": "Unresolved version-control conflict marker.",
+            "marker": "<<<<<<<",
+            "byte_range": {
+              "start": 33,
+              "end": 40
+            },
+            "range": {
+              "start": {
+                "line": 5,
+                "column": 1
+              },
+              "end": {
+                "line": 5,
+                "column": 8
+              }
+            },
+            "fix_available": false
+          },
+          {
+            "rule": "MD092",
+            "message": "Unresolved version-control conflict marker.",
+            "marker": "=======",
+            "byte_range": {
+              "start": 49,
+              "end": 56
+            },
+            "range": {
+              "start": {
+                "line": 6,
+                "column": 1
+              },
+              "end": {
+                "line": 6,
+                "column": 8
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md092_corrections": true
+      }
+    },
+    {
+      "name": "incoming-raw-htmlblock-no-closer",
+      "source": "prefix <script>\n<div>\ntext\n\n<<<<<<< outside\n=======\n",
+      "source_bytes": 52,
+      "source_sha256": "9bf3c5e45a66bae9053ad9f4a87236e84ca448daa1e4cd8aa937cda1458cb26d",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md092_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md092_corrections": true
+      }
+    },
+    {
+      "name": "incoming-raw-htmlblock-different-closer",
+      "source": "prefix <script>\n<div>\n</style>\n\n<<<<<<< outside\n=======\n",
+      "source_bytes": 56,
+      "source_sha256": "b189098c7e291a7fd710de66af9408383ee636c232ad4c7644a1f30a7f5020de",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md092_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md092_corrections": true
+      }
+    },
+    {
+      "name": "htmlblock-raw-open-persists",
+      "source": "<div><script>\n\n<<<<<<< inside\n=======\n",
+      "source_bytes": 38,
+      "source_sha256": "241ef130c75753b7f12f215448c6ddc249446187e0bd20b61c4ebf8fa2a4b782",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md092_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md092_corrections": true
+      }
+    },
+    {
+      "name": "htmlblock-raw-open-close-resumes",
+      "source": "<div><script>\n</script>\n\n<<<<<<< outside\n=======\n",
+      "source_bytes": 49,
+      "source_sha256": "3d54493620aa3c1d6834c10cb5c033cb51f6f09de9400c270e75b681d80efa55",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md092_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD092",
+            "message": "Unresolved version-control conflict marker.",
+            "marker": "<<<<<<<",
+            "byte_range": {
+              "start": 25,
+              "end": 32
+            },
+            "range": {
+              "start": {
+                "line": 4,
+                "column": 1
+              },
+              "end": {
+                "line": 4,
+                "column": 8
+              }
+            },
+            "fix_available": false
+          },
+          {
+            "rule": "MD092",
+            "message": "Unresolved version-control conflict marker.",
+            "marker": "=======",
+            "byte_range": {
+              "start": 41,
+              "end": 48
+            },
+            "range": {
+              "start": {
+                "line": 5,
+                "column": 1
+              },
+              "end": {
+                "line": 5,
+                "column": 8
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md092_corrections": true
+      }
+    },
+    {
+      "name": "form1-any4-close-resumes",
+      "source": "<script>\n</style>\n\n<<<<<<< outside\n=======\n",
+      "source_bytes": 43,
+      "source_sha256": "05bef516f986ca6be1e17da26600b88dc40f1453fe475741826d83cc1817ef89",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md092_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD092",
+            "message": "Unresolved version-control conflict marker.",
+            "marker": "<<<<<<<",
+            "byte_range": {
+              "start": 19,
+              "end": 26
+            },
+            "range": {
+              "start": {
+                "line": 4,
+                "column": 1
+              },
+              "end": {
+                "line": 4,
+                "column": 8
+              }
+            },
+            "fix_available": false
+          },
+          {
+            "rule": "MD092",
+            "message": "Unresolved version-control conflict marker.",
+            "marker": "=======",
+            "byte_range": {
+              "start": 35,
+              "end": 42
+            },
+            "range": {
+              "start": {
+                "line": 5,
+                "column": 1
+              },
+              "end": {
+                "line": 5,
+                "column": 8
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md092_corrections": true
+      }
+    }
+  ],
+  "preserved_v1_sha256": "ef6153c0aa4b26a10456678ba8667f8c023722898b66726a1dbebda2731aacdf"
+}
