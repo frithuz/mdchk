@@ -632,3 +632,29 @@ Exactly one original three-byte/one-code-point range per eligible scalar uses
 `Use ASCII quotes and dashes in prose.` Full context precedes shared START
 suppression and inspect intersection. Default OFF/style ascii/PlannedFix remain;
 this pass creates no MD088 edits, previews or corrected content. MD047 is sole fixer.
+
+## MD033 embedded HTML inventory
+
+`EmbeddedHTMLTags` borrows completed private original production syntax, source,
+profile, parse options, physical index and operation. It returns detached Tag/Name
+spans and explicit availability. Actual HTMLBlock/InlineHTML owned content is
+lexed with existing mapped CommonMark machinery; whole Images are opaque. Complete
+named tokens in form-6/7 owners provide local transition proof. Independently
+owned InlineHTML requires private rawTag/rawClosing proof under incoming raw state.
+Opaque tokens and quoted attributes cannot create a cross-owner closer. Form 1
+retains the parser's literal any-of-four closer boundary. Full owners include
+closing tails exactly once; no public-tree clone, new parse, renderer, source,
+index, allowance, decoder or browser/foreign model is added.
+
+Traversal, failed/terminal scans, names, quotes, mapping/association bytes, raw
+comparisons, stack/output capacity, copied prefixes and logical records reserve
+original work/storage before use. Existing lexer terminator indexes prevent
+repeated failed suffix scans; the first failed owned named candidate atomically
+withholds the inventory with context-unavailable coverage. Empty, clean, protected,
+allowed and post-output paths observe caller AND origin controls and sticky
+work/nodes/elapsed limits through producer/getter/facade/comparison/distinct outer
+final publication. The detached allowlist getter preserves the permissive string
+list domain; equal-length whole-name ASCII comparison has no trim/Unicode fold.
+MD033 remains default OFF, RequiresSyntax, UsesFrontmatter=false and NoFix; MD047
+alone supplies corrections. Finite application accounting is not a hard CPU/RSS,
+throughput or OS preemption guarantee.

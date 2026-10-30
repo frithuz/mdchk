@@ -1,5 +1,14 @@
 # Configuration examples and fixture cases
 
+[MD033 embedded-HTML analysis](../rules/html-and-comments/md033.md) is available for CommonMark and GFM,
+disabled by default and permanently report-only. `allowed_tags: []` accepts a
+string list and matches whole names with ASCII case folding, without trimming.
+Each disallowed complete named tag has its own full original range. Opaque HTML
+tokens and actual raw payload stay protected; unavailable owned-tag context
+withholds the entire MD033 inventory with explicit coverage. No MD033 edits or
+previews are produced; MD047 remains the sole current fixer.
+
+
 These cases specify inputs and expected outcomes for the approved
 [configuration contract](../configuration.md). They are examples for loader and
 integration fixtures. Strict YAML decoding, semantic validation, bounded
@@ -94,8 +103,8 @@ flavor: commonmark
 ```
 
 This configuration works with the current production executable: CommonMark
-0.31.2, GFM, directive processing, MD001/MD003/MD004/MD005/MD007/MD029/MD030/MD032/MD069/MD076/MD077/MD009/MD010/MD012/MD013/MD027/MD028/MD064/MD085/MD089/MD035/MD037/MD038/MD081/MD088/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD090/MD093 analysis and MD047 analysis/correction
-are available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
+0.31.2, GFM, directive processing, MD001/MD003/MD004/MD005/MD007/MD029/MD030/MD032/MD069/MD076/MD077/MD009/MD010/MD012/MD013/MD027/MD028/MD064/MD085/MD089/MD035/MD037/MD038/MD081/MD088/MD033/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD090/MD093 analysis and MD047 analysis/correction
+are available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
 independently enabled header recognition. Other ordinary rule implementations
 remain unavailable. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
@@ -433,3 +442,18 @@ MD088 is available but disabled by default. Omitted, empty and style-only mappin
 retain OFF. The sole style is the exact string `ascii`; null, empty, wrong-case
 or non-string values and unknown `replacements` reject even when disabled.
 Shared enabled/allow_directives fields require actual booleans.
+
+Enable MD033 without changing the available catalog's defaults:
+
+```yaml
+version: 1
+rules:
+  MD033:
+    enabled: true
+    allowed_tags: [SPAN, x-card]
+```
+
+These whole names allow opening, closing and self-closing spellings using ASCII
+case folding. Empty, whitespace, malformed and non-ASCII string entries remain
+accepted but unmatchable. Null, scalar, mixed lists and unknown options reject
+even when the rule is disabled. No automatic correction is available.

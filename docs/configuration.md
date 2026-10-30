@@ -1,5 +1,14 @@
 # Configuring mdchk
 
+[MD033 embedded-HTML analysis](rules/html-and-comments/md033.md) is available for CommonMark and GFM,
+disabled by default and permanently report-only. `allowed_tags: []` accepts a
+string list and matches whole names with ASCII case folding, without trimming.
+Each disallowed complete named tag has its own full original range. Opaque HTML
+tokens and actual raw payload stay protected; unavailable owned-tag context
+withholds the entire MD033 inventory with explicit coverage. No MD033 edits or
+previews are produced; MD047 remains the sole current fixer.
+
+
 Use `.mdchk.yaml` to define your project's Markdown expectations. Lint and fix use the same rules and exclusions from the terminal; the planned MCP modes share this contract. Without a configuration file, mdchk uses its defaults, including the supported GFM profile. Missing default rule implementations produce incomplete analysis (`15`).
 
 This is the approved configuration contract. Lint loads and validates configuration before target access, then acquires source snapshots and executes the shared parser and available registered checks. Lint, fix and config validate support text, schema-v1 JSON, VS Code and GitHub reports; inspect supports text/JSON. MD047 terminating-newline analysis, safe previews and apply on the verified Darwin arm64+cgo/local APFS adapter are implemented; MD001 heading-increment analysis and its opt-in `frontmatter_title` setting are also implemented for CommonMark/GFM. MD004 bullet-marker analysis is implemented for both flavors, enabled by default,
@@ -17,7 +26,7 @@ multiple-title analysis, MD026 heading-end punctuation analysis, MD036
 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline
 analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision
 analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and
-MD093 inline-formatting-in-headings analysis and MD081 paragraph-emphasis analysis and MD088 ASCII-punctuation analysis are implemented. MD093 is available but
+MD093 inline-formatting-in-headings analysis and MD081 paragraph-emphasis analysis and MD088 ASCII-punctuation analysis and MD033 embedded-HTML analysis are implemented. MD093 is available but
 disabled by default, with exact `allowed_constructs` choices and nested behavior
 documented on its [rule page](rules/headings/md093.md); MD026 is available but disabled
 by default and accepts an exact Unicode scalar `punctuation` string (default `.,:;!?`,
@@ -36,7 +45,7 @@ rule-specific options; MD025 and MD041 accept integer `level` from 1 through 6 (
 `siblings_only`, default false; MD022 accepts nonnegative integer `before` and `after`
 minima, each defaulting to 1. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009,
 MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043,
-MD063, MD080, MD082, MD090, MD081, MD088 and MD093 are report-only. Other ordinary rule
+MD063, MD080, MD082, MD090, MD081, MD088, MD033 and MD093 are report-only. Other ordinary rule
 implementations remain pending. Missing enabled defaults produce coverage deficits
 rather than clean results; valid UTF-8 with all ordinary rules disabled can return clean
 `0`. See [initial capability handling](#initial-capability-handling) for how development

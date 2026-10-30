@@ -1,0 +1,7063 @@
+{
+  "issue": 80,
+  "base": "3e8d8e54e725ee7e1dc2051b0668f8d8b947be01",
+  "policy_sha256": "c84253685b664b5765743fd7d4e9790bfe110d80a4eb1a88db367bdb35ba1af4",
+  "authorship": "Root source-authored AFTER both actualFINAL HOLDs/FULLrootread/hash and explicitpolicy, BEFORE engineering or ANY product/parser/helper/test/build/quota/counter/elapsedprobe. Only rawsource substring arithmetic. Literal eligible tags/occurrence ordinals/states explicitly authored; no Markdown/HTML parse, decoder, renderer or production imports.",
+  "message": "Embedded HTML tag is not allowed.",
+  "cases": [
+    {
+      "id": "page-violation",
+      "source": "<span>Text</span>",
+      "source_bytes": 17,
+      "source_sha256": "a2f563db918185b18cbaab06a14ee4dcc24dc5f9b306998b5ab566339a34575e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<span>",
+          "name": "span",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            10,
+            17
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "text": "</span>",
+          "name": "span",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<span>",
+          "name": "span",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            10,
+            17
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "text": "</span>",
+          "name": "span",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "page-valid",
+      "source": "Text",
+      "source_bytes": 4,
+      "source_sha256": "71988c4d8e0803ba4519f0b2864c1331c14a1890bf8694e251379177bfedb5c3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "default-omitted",
+      "source": "<b>x</b>",
+      "source_bytes": 8,
+      "source_sha256": "e31e3a8eedaa655937bfed7e66be6af1ec5b31b3850ac669dedda6c3de453c79",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": false,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            4,
+            8
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": false,
+          "allowed": false
+        }
+      ],
+      "findings": [],
+      "enabled": null,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "explicit-off",
+      "source": "<b>x</b>",
+      "source_bytes": 8,
+      "source_sha256": "e31e3a8eedaa655937bfed7e66be6af1ec5b31b3850ac669dedda6c3de453c79",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": false,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            4,
+            8
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": false,
+          "allowed": false
+        }
+      ],
+      "findings": [],
+      "enabled": false,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "allow-empty",
+      "source": "<span>x</span><br/>",
+      "source_bytes": 19,
+      "source_sha256": "726f6d4546fcff02bbeb59c7e8c8a4e36e8405b1b807a18075f54bfee4f04716",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<span>",
+          "name": "span",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            7,
+            14
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "</span>",
+          "name": "span",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            14,
+            19
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "text": "<br/>",
+          "name": "br",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<span>",
+          "name": "span",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            7,
+            14
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "</span>",
+          "name": "span",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            14,
+            19
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "text": "<br/>",
+          "name": "br",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "allow-case",
+      "source": "<SPAN>x</span>",
+      "source_bytes": 14,
+      "source_sha256": "a01aec91eebc4efeb88f17337a9142b0942dd11dd51ae3826aad608db474eef7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<SPAN>",
+          "name": "SPAN",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": true
+        },
+        {
+          "bytes": [
+            7,
+            14
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "</span>",
+          "name": "span",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": true
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [
+        "sPaN"
+      ],
+      "analysis_complete": true
+    },
+    {
+      "id": "allow-duplicates",
+      "source": "<b>x</B><i>",
+      "source_bytes": 11,
+      "source_sha256": "19be3320a2ddebd3762b6c94df612f96c204e49b3d01748832e78324c0f2bc74",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": true
+        },
+        {
+          "bytes": [
+            4,
+            8
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "</B>",
+          "name": "B",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": true
+        },
+        {
+          "bytes": [
+            8,
+            11
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            11
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [
+        "b",
+        "B",
+        "b"
+      ],
+      "analysis_complete": true
+    },
+    {
+      "id": "allow-parent-only",
+      "source": "<div><b>x</b></div>",
+      "source_bytes": 19,
+      "source_sha256": "ce3a44c1adeb37ba9b9cd7b7123775097992cfe2bdaf46f38ebad1fc3bfb17bc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<div>",
+          "name": "div",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": true
+        },
+        {
+          "bytes": [
+            5,
+            8
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            9,
+            13
+          ],
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            19
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "text": "</div>",
+          "name": "div",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            5,
+            8
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            9,
+            13
+          ],
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [
+        "div"
+      ],
+      "analysis_complete": true
+    },
+    {
+      "id": "allow-unmatchable",
+      "source": "<span>x</span>",
+      "source_bytes": 14,
+      "source_sha256": "8e328646e71fd9902b569d970dd2e233583d6c8d7681f1308dc3dadb8c0e7ec6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<span>",
+          "name": "span",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            7,
+            14
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "</span>",
+          "name": "span",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<span>",
+          "name": "span",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            7,
+            14
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "</span>",
+          "name": "span",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [
+        "",
+        " span ",
+        "<span>",
+        "/span",
+        "span/",
+        "svg:path",
+        "x_y",
+        "1x",
+        "ſpan",
+        "\u0000"
+      ],
+      "analysis_complete": true
+    },
+    {
+      "id": "allow-ascii-not-unicode",
+      "source": "<s><K></K></s>",
+      "source_bytes": 14,
+      "source_sha256": "550688e9f9acf9747619a3eeff730024a200b65d42de9c2f193d20abd65ecf1d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "text": "<s>",
+          "name": "s",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            3,
+            6
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<K>",
+          "name": "K",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            6,
+            10
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "</K>",
+          "name": "K",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            10,
+            14
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "</s>",
+          "name": "s",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "text": "<s>",
+          "name": "s",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            3,
+            6
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<K>",
+          "name": "K",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            6,
+            10
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "</K>",
+          "name": "K",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            10,
+            14
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "</s>",
+          "name": "s",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [
+        "ſ",
+        "K"
+      ],
+      "analysis_complete": true
+    },
+    {
+      "id": "custom-allowed",
+      "source": "<x-card data-x=\">\"/>",
+      "source_bytes": 20,
+      "source_sha256": "574d73a30960517af404568c208355a23264bee8e726e1821d82fc07ae8aa9dd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            20
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "text": "<x-card data-x=\">\"/>",
+          "name": "x-card",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": true
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [
+        "X-CARD"
+      ],
+      "analysis_complete": true
+    },
+    {
+      "id": "custom-unallowed",
+      "source": "<x-card data-x=\">\"/>",
+      "source_bytes": 20,
+      "source_sha256": "574d73a30960517af404568c208355a23264bee8e726e1821d82fc07ae8aa9dd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            20
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "text": "<x-card data-x=\">\"/>",
+          "name": "x-card",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            20
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "text": "<x-card data-x=\">\"/>",
+          "name": "x-card",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "digits-hyphens",
+      "source": "a <h7><a-1></a-1></h7>",
+      "source_bytes": 22,
+      "source_sha256": "ea5b5dbaf43bfa3d777a25ee7134b397f340d9545b2331f3bd0026daad2e4f3f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            6
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<h7>",
+          "name": "h7",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            6,
+            11
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "<a-1>",
+          "name": "a-1",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            11,
+            17
+          ],
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "text": "</a-1>",
+          "name": "a-1",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            17,
+            22
+          ],
+          "start": [
+            1,
+            18
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "text": "</h7>",
+          "name": "h7",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            6
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<h7>",
+          "name": "h7",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            6,
+            11
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "<a-1>",
+          "name": "a-1",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            11,
+            17
+          ],
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "text": "</a-1>",
+          "name": "a-1",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            17,
+            22
+          ],
+          "start": [
+            1,
+            18
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "text": "</h7>",
+          "name": "h7",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "self-closing",
+      "source": "<br/>",
+      "source_bytes": 5,
+      "source_sha256": "dabb19eeacc1a8266455d6af1146aff233d788f9dc824f5145d3ce1315c6d386",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<br/>",
+          "name": "br",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<br/>",
+          "name": "br",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "ordinary-unmatched-close",
+      "source": "a </x> z",
+      "source_bytes": 8,
+      "source_sha256": "b46be7ed1b3d081c03c3608864b881e60b24e359070917496be36eaab481e562",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            6
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            6
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "quoted-angle",
+      "source": "a <x title=\">\">b</x>",
+      "source_bytes": 20,
+      "source_sha256": "cab4dcccca2de0caa503130b9596d305b07f251351e54c688d7051f038b87240",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            15
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "text": "<x title=\">\">",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            16,
+            20
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            15
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "text": "<x title=\">\">",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            16,
+            20
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "quoted-tag-payload",
+      "source": "a <x title=\"<b>\" data-z='<i>'>z</x>",
+      "source_bytes": 35,
+      "source_sha256": "ee2ba5ed954e09616f3aa48097a8aad50237e7ace35d5fec9bf8f144421a5a97",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            30
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "text": "<x title=\"<b>\" data-z='<i>'>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            31,
+            35
+          ],
+          "start": [
+            1,
+            32
+          ],
+          "end": [
+            1,
+            36
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            30
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "text": "<x title=\"<b>\" data-z='<i>'>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            31,
+            35
+          ],
+          "start": [
+            1,
+            32
+          ],
+          "end": [
+            1,
+            36
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "bare-attribute",
+      "source": "a <x hidden>z</x>",
+      "source_bytes": 17,
+      "source_sha256": "f2c18b77e6c7b98ccf67c03a4bda1a609f53fac7d62334bfd6cc81bdc78116a1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            12
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "text": "<x hidden>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            17
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            12
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "text": "<x hidden>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            17
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "unquoted-attribute",
+      "source": "a <x data-x=y>z</x>",
+      "source_bytes": 19,
+      "source_sha256": "51c455914f7ef9c561262c68218c39c9382833229f82c60289d778778f0e4082",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            14
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "<x data-x=y>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            15,
+            19
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            14
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "<x data-x=y>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            15,
+            19
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "colon-attribute",
+      "source": "a <x :a=1 _b=2 a.b=3>",
+      "source_bytes": 21,
+      "source_sha256": "50f95967038ac83e9ef5f871de7c21ff2cfa8a78ea8866fe3e6c132fea74993b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            21
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "text": "<x :a=1 _b=2 a.b=3>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            21
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "text": "<x :a=1 _b=2 a.b=3>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "namespace-is-text",
+      "source": "a <svg:path> z",
+      "source_bytes": 14,
+      "source_sha256": "b378194705b9e87ef61eff1e3879ba28aa4f6dbe9a4fb957a817c8145f426b1b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "underscore-is-text",
+      "source": "a <x_y> z",
+      "source_bytes": 9,
+      "source_sha256": "6ea55eb6b721afa68528be2fe4f0a23ad2f319de465f87d6e2fc81a150931d0e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "unicode-name-is-text",
+      "source": "a <é> z",
+      "source_bytes": 8,
+      "source_sha256": "85b3aa257aa7902f30b215aed34794b3799bd93959a0d4b77ac19270ddd58703",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "incomplete-inline-text",
+      "source": "a <x",
+      "source_bytes": 4,
+      "source_sha256": "2d10700221590833f58cc86aeb877fa03940b743d3ed94512ecb3e99c9a8c737",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "malformed-inline-text",
+      "source": "a <x foo=\"unfinished",
+      "source_bytes": 20,
+      "source_sha256": "d050d83859d15bb47ac031369a8b31ac31aaf213e2915f8fcc36f8823f151a60",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "block6-incomplete",
+      "source": "<div\n",
+      "source_bytes": 5,
+      "source_sha256": "48a393fa86ce495f1f7d89f02aa5e5ad14d7ee3a639deb7662eb4b202532ac91",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": false
+    },
+    {
+      "id": "block6-unfinished-attribute",
+      "source": "<div title='unfinished\n<b>\n",
+      "source_bytes": 27,
+      "source_sha256": "d6460025a7e2279f7c1ef52520c5bb6e89d7441ff0c061fa4a2564ac54a51ed9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": false
+    },
+    {
+      "id": "late-unavailable-withholds-prefix",
+      "source": "<b>ok</b>\n\n<div title='unfinished\n<i>\n",
+      "source_bytes": 38,
+      "source_sha256": "0b81f6f14bb87769211f8396b8c6ba3e164a6224bc2f11fe7c172ed448262eca",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": false
+    },
+    {
+      "id": "block6-nested",
+      "source": "<div>\n<b>x</b>\n</div>",
+      "source_bytes": 21,
+      "source_sha256": "eba0b7b21ce7237cd1fe78725fbf292f2fbbd02d5f1db0cb6c9ae4e3fa575b55",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<div>",
+          "name": "div",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            6,
+            9
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            10,
+            14
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            15,
+            21
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "text": "</div>",
+          "name": "div",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<div>",
+          "name": "div",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            6,
+            9
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            10,
+            14
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            15,
+            21
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "text": "</div>",
+          "name": "div",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "block6-text",
+      "source": "<div>\nordinary text\n</div>",
+      "source_bytes": 26,
+      "source_sha256": "7a3216a78d224562d1891c85e7ea885b2b469450f2f1f3918a1320bc1494ae30",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<div>",
+          "name": "div",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            20,
+            26
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "text": "</div>",
+          "name": "div",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<div>",
+          "name": "div",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            20,
+            26
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "text": "</div>",
+          "name": "div",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "block7-custom",
+      "source": "<x-card>\n<b>x</b>\n</x-card>",
+      "source_bytes": 27,
+      "source_sha256": "279d4a90c00a03646ec1de57983338978822a9ffd8c5ca35a9318ea324f9f1b0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<x-card>",
+          "name": "x-card",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            9,
+            12
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            17
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            18,
+            27
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            10
+          ],
+          "text": "</x-card>",
+          "name": "x-card",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<x-card>",
+          "name": "x-card",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            9,
+            12
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            17
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            18,
+            27
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            10
+          ],
+          "text": "</x-card>",
+          "name": "x-card",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "comment-block-tail",
+      "source": "<!-- <b> --><i>",
+      "source_bytes": 15,
+      "source_sha256": "7b3b4f8c2dc9e4b2e77bbf5ff025e8ee40348f5ccfb2b601ccc28ef922c454af",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            12,
+            15
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            12,
+            15
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "comment-pair-tail",
+      "source": "<!--x--><b>x</b>",
+      "source_bytes": 16,
+      "source_sha256": "d584ac2cc2e385c14b1ab665017b231759b2eef2e988097ca867383080e9dc75",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            8,
+            11
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            12,
+            16
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            11
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            12,
+            16
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "comment-inline",
+      "source": "a <!-- <b> --> <i>",
+      "source_bytes": 18,
+      "source_sha256": "d24ac6774a72948a41dc06584db7e24f383c28bd49a1bcc44e897d4770f9f5fe",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            15,
+            18
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            15,
+            18
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "comment-short",
+      "source": "<!--><b>",
+      "source_bytes": 8,
+      "source_sha256": "e49b933d3be7ddb76fa2186f514f4c4ca8a7e8a982315fc59fc3e9ca5f7a7ada",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            5,
+            8
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            5,
+            8
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "comment-other-short",
+      "source": "<!---><b>",
+      "source_bytes": 9,
+      "source_sha256": "7f641e1d4cb2245acfa9e2b55986be5718f49ea7e14a71b8875367d78fca34b4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            6,
+            9
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            6,
+            9
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "unclosed-comment",
+      "source": "<!-- <b>",
+      "source_bytes": 8,
+      "source_sha256": "ccc895a5fd31eb5697bc99f49720fa57b165297d55b8f484df686da72cf7a582",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "tail-unclosed-comment",
+      "source": "<!--x--><b><!-- <i>",
+      "source_bytes": 19,
+      "source_sha256": "f11f2650bf807ff51642f5d1c3caf3ca1747f81c1249bdc66d06da0ada40cebe",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            8,
+            11
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            11
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "pi-block-tail",
+      "source": "<?p <b> ?><i>",
+      "source_bytes": 13,
+      "source_sha256": "79683640cf724b7a5d68037da9a8c119bf1f7284fa0e85f2945c5eb8f3f0d984",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            10,
+            13
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            10,
+            13
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "unclosed-pi",
+      "source": "<?p <b>",
+      "source_bytes": 7,
+      "source_sha256": "ab3a33928c3544a860fcef18112ee6a1a48ed68340fb509efd0ea969289631f9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "declaration-block-tail",
+      "source": "<!DOCTYPE html><i>",
+      "source_bytes": 18,
+      "source_sha256": "b1cec89e213649bbfc7cec45b5c6611d5bb083754c74677d6f6bfa1ee7d71178",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            15,
+            18
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            15,
+            18
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "unclosed-declaration",
+      "source": "<!DOCTYPE html <b",
+      "source_bytes": 17,
+      "source_sha256": "6732232630e3199cd58ca0ef2931e3a767042818a4a22328fcbdfaec142d1859",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "cdata-block-tail",
+      "source": "<![CDATA[<b>]]><i>",
+      "source_bytes": 18,
+      "source_sha256": "f346e8c3268a143a9fe504601e9d6932b89a8af9b7eecc3825f15f8496ff5147",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            15,
+            18
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            15,
+            18
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "unclosed-cdata",
+      "source": "<![CDATA[<b>",
+      "source_bytes": 12,
+      "source_sha256": "1b9d3de1588ea27ddf587593f184a7cafd0d64f0c2263c3120a3ee2b7f9dd7bd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "unnamed-inline-tokens",
+      "source": "a <?p?><!DOCTYPE html><![CDATA[<b>]]>",
+      "source_bytes": 37,
+      "source_sha256": "9b4a2bd26bf05e8934431cf7363d81a4a3821a0d59c82a1b0a1c0d735ae19e5e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "script-payload",
+      "source": "<script>\"<b>\"</script><i>",
+      "source_bytes": 25,
+      "source_sha256": "b6db5adca18736b64cf778c0132133748664e9d1e1e4ebec35b0e0bf322bd839",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            22
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            22,
+            25
+          ],
+          "start": [
+            1,
+            23
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            22
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            22,
+            25
+          ],
+          "start": [
+            1,
+            23
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "style-payload",
+      "source": "<style><b></style><i>",
+      "source_bytes": 21,
+      "source_sha256": "2828c3495bfef336d49ee8fe7d8e181b3d69f089bf93c7d636e5ebd3e13d524e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            7
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "text": "<style>",
+          "name": "style",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            10,
+            18
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "</style>",
+          "name": "style",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            18,
+            21
+          ],
+          "start": [
+            1,
+            19
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            7
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "text": "<style>",
+          "name": "style",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            10,
+            18
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "</style>",
+          "name": "style",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            18,
+            21
+          ],
+          "start": [
+            1,
+            19
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "textarea-payload",
+      "source": "<textarea><b></textarea><i>",
+      "source_bytes": 27,
+      "source_sha256": "ece308d77d9e0fe5ccfb51dbc10118fab9a93da470b3b33043bb6370bb57a1fa",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "<textarea>",
+          "name": "textarea",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            24
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            25
+          ],
+          "text": "</textarea>",
+          "name": "textarea",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            24,
+            27
+          ],
+          "start": [
+            1,
+            25
+          ],
+          "end": [
+            1,
+            28
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "<textarea>",
+          "name": "textarea",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            24
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            25
+          ],
+          "text": "</textarea>",
+          "name": "textarea",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            24,
+            27
+          ],
+          "start": [
+            1,
+            25
+          ],
+          "end": [
+            1,
+            28
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "pre-payload",
+      "source": "<pre><b>x</b></pre>",
+      "source_bytes": 19,
+      "source_sha256": "06d751b0dde8270cbca774a31f73fb565666018e5eafe72755d41807dffb64d5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<pre>",
+          "name": "pre",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            19
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "text": "</pre>",
+          "name": "pre",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<pre>",
+          "name": "pre",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            19
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "text": "</pre>",
+          "name": "pre",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "allowed-raw-still-protects",
+      "source": "<script>\"<b>\"</script><i>",
+      "source_bytes": 25,
+      "source_sha256": "b6db5adca18736b64cf778c0132133748664e9d1e1e4ebec35b0e0bf322bd839",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": true
+        },
+        {
+          "bytes": [
+            13,
+            22
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": true
+        },
+        {
+          "bytes": [
+            22,
+            25
+          ],
+          "start": [
+            1,
+            23
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            22,
+            25
+          ],
+          "start": [
+            1,
+            23
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [
+        "SCRIPT"
+      ],
+      "analysis_complete": true
+    },
+    {
+      "id": "raw-unclosed-eof",
+      "source": "<pre><b>",
+      "source_bytes": 8,
+      "source_sha256": "c67c79b1cd6b18a838f45c306bbbcf0964060d301cb4126c50c16b293e652d20",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<pre>",
+          "name": "pre",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<pre>",
+          "name": "pre",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "form1-mismatched-closer",
+      "source": "<pre><b></script><i>",
+      "source_bytes": 20,
+      "source_sha256": "7c1e51bbc8a6cf30a22ee8fa4bce43083df5f8c5c5a0b0beb553f919228ddda4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<pre>",
+          "name": "pre",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            8,
+            17
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            17,
+            20
+          ],
+          "start": [
+            1,
+            18
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<pre>",
+          "name": "pre",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            8,
+            17
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            17,
+            20
+          ],
+          "start": [
+            1,
+            18
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "form1-mixed-case",
+      "source": "<ScRiPt>\"<b>\"</sTyLe><i>",
+      "source_bytes": 24,
+      "source_sha256": "49d71db525141be8b0b80d84f9a69cb03af5e5f5ee558554bf21d688cc616f34",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<ScRiPt>",
+          "name": "ScRiPt",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            21
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "text": "</sTyLe>",
+          "name": "sTyLe",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            21,
+            24
+          ],
+          "start": [
+            1,
+            22
+          ],
+          "end": [
+            1,
+            25
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<ScRiPt>",
+          "name": "ScRiPt",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            21
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "text": "</sTyLe>",
+          "name": "sTyLe",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            21,
+            24
+          ],
+          "start": [
+            1,
+            22
+          ],
+          "end": [
+            1,
+            25
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "raw-inline-global",
+      "source": "a <script>\n\n<b>\n\n</script><i>",
+      "source_bytes": 29,
+      "source_sha256": "9bf0a5166a3a22114a95488563db0bcf7234a314bce5d10c9543b4ab1826766e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "<script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            17,
+            26
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            10
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            26,
+            29
+          ],
+          "start": [
+            5,
+            10
+          ],
+          "end": [
+            5,
+            13
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "<script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            17,
+            26
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            10
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            26,
+            29
+          ],
+          "start": [
+            5,
+            10
+          ],
+          "end": [
+            5,
+            13
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "raw-block6-global",
+      "source": "<div><script>\n\n<b>\n\n</script><i>",
+      "source_bytes": 32,
+      "source_sha256": "991a0b2b4d62c4599868c85d5b7ae05c98205cf533e6a47f99b9423a7c50b018",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<div>",
+          "name": "div",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            5,
+            13
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "<script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            20,
+            29
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            10
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            29,
+            32
+          ],
+          "start": [
+            5,
+            10
+          ],
+          "end": [
+            5,
+            13
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<div>",
+          "name": "div",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            5,
+            13
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "<script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            20,
+            29
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            10
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            29,
+            32
+          ],
+          "start": [
+            5,
+            10
+          ],
+          "end": [
+            5,
+            13
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "extra-htmlid-raw-names-not-inherited",
+      "source": "<title><b>x</b></title>",
+      "source_bytes": 23,
+      "source_sha256": "d5cd9b43f223e6c9022df4468fdfbdb02b53f6725547873c71eed001b0cd8e13",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            7
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "text": "<title>",
+          "name": "title",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            7,
+            10
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            11,
+            15
+          ],
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            15,
+            23
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "text": "</title>",
+          "name": "title",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            7
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "text": "<title>",
+          "name": "title",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            7,
+            10
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            11,
+            15
+          ],
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            15,
+            23
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "text": "</title>",
+          "name": "title",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "foreign-not-browser",
+      "source": "a <svg><title><b>x</b></title></svg>",
+      "source_bytes": 36,
+      "source_sha256": "79f758960ced3c23596f024ac9ef63c7dd7cc3755ca423d068cb6de30f270fe2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            7
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "text": "<svg>",
+          "name": "svg",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            7,
+            14
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "<title>",
+          "name": "title",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            14,
+            17
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            18,
+            22
+          ],
+          "start": [
+            1,
+            19
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            22,
+            30
+          ],
+          "start": [
+            1,
+            23
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "text": "</title>",
+          "name": "title",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            30,
+            36
+          ],
+          "start": [
+            1,
+            31
+          ],
+          "end": [
+            1,
+            37
+          ],
+          "text": "</svg>",
+          "name": "svg",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            7
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "text": "<svg>",
+          "name": "svg",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            7,
+            14
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "<title>",
+          "name": "title",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            14,
+            17
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            18,
+            22
+          ],
+          "start": [
+            1,
+            19
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            22,
+            30
+          ],
+          "start": [
+            1,
+            23
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "text": "</title>",
+          "name": "title",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            30,
+            36
+          ],
+          "start": [
+            1,
+            31
+          ],
+          "end": [
+            1,
+            37
+          ],
+          "text": "</svg>",
+          "name": "svg",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "filtered-gfm-authored",
+      "source": "<iframe><i>x</i></iframe>",
+      "source_bytes": 25,
+      "source_sha256": "490a8d65421be63204946c98a3b0f1e161c4c09ec6f6feee1f13a918730d5ca3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<iframe>",
+          "name": "iframe",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            8,
+            11
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            12,
+            16
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "text": "</i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            16,
+            25
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "text": "</iframe>",
+          "name": "iframe",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<iframe>",
+          "name": "iframe",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            8,
+            11
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            12,
+            16
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "text": "</i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            16,
+            25
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "text": "</iframe>",
+          "name": "iframe",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "raw-comment-looking-payload",
+      "source": "<script><!-- <b> --></script><i>",
+      "source_bytes": 32,
+      "source_sha256": "fcdb20a7e2fb4351a55f2098a282753b78b3f9c4308b23016c55f71971afd6ef",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            20,
+            29
+          ],
+          "start": [
+            1,
+            21
+          ],
+          "end": [
+            1,
+            30
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            29,
+            32
+          ],
+          "start": [
+            1,
+            30
+          ],
+          "end": [
+            1,
+            33
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            20,
+            29
+          ],
+          "start": [
+            1,
+            21
+          ],
+          "end": [
+            1,
+            30
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            29,
+            32
+          ],
+          "start": [
+            1,
+            30
+          ],
+          "end": [
+            1,
+            33
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "raw-closer-in-quote-is-cm-boundary",
+      "source": "<script>\"</script>\"<i>",
+      "source_bytes": 22,
+      "source_sha256": "4756f2c9872898e7aa8b5e29a4489df8cae8ad956a9ca28512d4fa34495c304e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            9,
+            18
+          ],
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            19,
+            22
+          ],
+          "start": [
+            1,
+            20
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "<script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            9,
+            18
+          ],
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            19,
+            22
+          ],
+          "start": [
+            1,
+            20
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "escaped-angle",
+      "source": "a \\<b> z",
+      "source_bytes": 8,
+      "source_sha256": "63750ca028fb2ffd2db0c37ba9a323d21e9188f1708fcd6b0998007459a1bbff",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "entity-angle",
+      "source": "a &lt;b&gt; z",
+      "source_bytes": 13,
+      "source_sha256": "f256b15b92696f60b53ca9f7e17496108c00e5fb3f9ceafe7baab1549a1ab99f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "inline-code",
+      "source": "`<b>x</b>`",
+      "source_bytes": 10,
+      "source_sha256": "ab54357398682cdb3cec36904d0ba7c635d25652e6a869dea95b4c485051ed8b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "fenced-code",
+      "source": "```html\n<b>x</b>\n```\n",
+      "source_bytes": 21,
+      "source_sha256": "73b3309eae03b46308ba016b11b6acedd26a3290b9b12377a30d31042403c99d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "indented-code",
+      "source": "    <b>x</b>\n",
+      "source_bytes": 13,
+      "source_sha256": "33f65c8a3bd9860a173330483df565ed10a3b77a21bafbb35b3f3d5fbd3a6d6d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "code-info",
+      "source": "```<b>\nx\n```\n",
+      "source_bytes": 13,
+      "source_sha256": "82fe56880baf55935b2ff21e1f7d0ce0c2a53b10a528fd1427e7fcbd8c31006e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "link-label",
+      "source": "[<b>x</b>](u)",
+      "source_bytes": 13,
+      "source_sha256": "b222aebc7043f76f021efe40123e16d8621ee4f2ae3d552eae25d3beb8a80542",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            5,
+            9
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            5,
+            9
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "image-alt",
+      "source": "![<b>x</b>](u)",
+      "source_bytes": 14,
+      "source_sha256": "b214bca8b8b62823fe76fb80114319ecfa1d764780b5538ba184e36aeae774f7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "image-raw-isolated",
+      "source": "![a <script>](u) <b>z</b>",
+      "source_bytes": 25,
+      "source_sha256": "66651cfe030f21c9519ed163269d18bbb7843fce0cae2327b7eab80713c57657",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            17,
+            20
+          ],
+          "start": [
+            1,
+            18
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            21,
+            25
+          ],
+          "start": [
+            1,
+            22
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            17,
+            20
+          ],
+          "start": [
+            1,
+            18
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            21,
+            25
+          ],
+          "start": [
+            1,
+            22
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "destination-title",
+      "source": "[x](<foo> \"<b>\")",
+      "source_bytes": 16,
+      "source_sha256": "5d6ecb351af401f23229fc96e43cd8be86cb55cf70680f0c62a95edd5e3688ad",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "autolink",
+      "source": "<https://example.test/a> <a@b.test>",
+      "source_bytes": 35,
+      "source_sha256": "03c0650a66299ea87057fb02662db866f28f5a17f30bf0d519977c4ac50f62f0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "reference-definition",
+      "source": "[x]: <foo> \"<b>\"\n\n[x]\n",
+      "source_bytes": 22,
+      "source_sha256": "37cea34dce9663661ffc0b3bfd3fe709bc903aad049341ba8cf97aef2dfabb96",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "heading",
+      "source": "## <b>x</b>\n",
+      "source_bytes": 12,
+      "source_sha256": "f2e3eece27560af1eb0feee9949e5a29f81b029f5ac2e4ac3d514b85a89d6b8e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            3,
+            6
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            7,
+            11
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            3,
+            6
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            7,
+            11
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "setext-heading",
+      "source": "<x>hi</x>\n===\n",
+      "source_bytes": 14,
+      "source_sha256": "1d41c60dce02d7cd94d72763666fd8544cf56126e25eef53fbbfefe1b68a06ef",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "text": "<x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            5,
+            9
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "text": "<x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            5,
+            9
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "nested-emphasis",
+      "source": "a *<b>x</b>* z",
+      "source_bytes": 14,
+      "source_sha256": "e8a5a13a1ecac85a099fcbdb656658e731ab2288c9adca82bdfe724fef9919d6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            3,
+            6
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            7,
+            11
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            3,
+            6
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            7,
+            11
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "gfm-table",
+      "source": "| h |\n| - |\n| <b>x</b> |\n",
+      "source_bytes": 25,
+      "source_sha256": "f422a7c04d27d73d072f0a16248d3e70a5bd603238d0a11854d9b56da09941b2",
+      "flavors": [
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            14,
+            17
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            18,
+            22
+          ],
+          "start": [
+            3,
+            7
+          ],
+          "end": [
+            3,
+            11
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            14,
+            17
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            18,
+            22
+          ],
+          "start": [
+            3,
+            7
+          ],
+          "end": [
+            3,
+            11
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "gfm-table-escaped-pipe",
+      "source": "| h |\n| - |\n| <i title=\"a\\|b\">x</i> |\n",
+      "source_bytes": 38,
+      "source_sha256": "ffcdf3469631bbbf64038a17101b35936d64b69631538b3dd2e9079ebd7a7109",
+      "flavors": [
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            14,
+            30
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            19
+          ],
+          "text": "<i title=\"a\\|b\">",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            31,
+            35
+          ],
+          "start": [
+            3,
+            20
+          ],
+          "end": [
+            3,
+            24
+          ],
+          "text": "</i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            14,
+            30
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            19
+          ],
+          "text": "<i title=\"a\\|b\">",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            31,
+            35
+          ],
+          "start": [
+            3,
+            20
+          ],
+          "end": [
+            3,
+            24
+          ],
+          "text": "</i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "unicode-tab-crlf",
+      "source": "> 😀\t<x>\r\n> </x>",
+      "source_bytes": 18,
+      "source_sha256": "5717362903bd3568381a1b7d027c352c43b207fa6f29465eedfadb39cebce9c3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            7,
+            10
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "text": "<x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            14,
+            18
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            7,
+            10
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "text": "<x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            14,
+            18
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "text": "</x>",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "list-quote-unicode",
+      "source": "> - 😀 <b>x</b>\r\n",
+      "source_bytes": 19,
+      "source_sha256": "002e587a72c36a65f2fcbb64710406226226c748d4d4e9b85f5d3071f0131bbf",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            9,
+            12
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            17
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            9,
+            12
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            13,
+            17
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "multiline-prefix",
+      "source": "> <x\n> a=\">\">\n",
+      "source_bytes": 14,
+      "source_sha256": "003f5b323e65cef3c8f3819d10bff6ce338630977f9c324c52aea4c8bb6b0f07",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            13
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "text": "<x\n> a=\">\">",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            13
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "text": "<x\n> a=\">\">",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "multiline-prefix-crlf",
+      "source": "> <x\r\n> a=\">\">\r\n",
+      "source_bytes": 16,
+      "source_sha256": "2b85023b3154f37352e6c0064fbe3d0f300362d09ed0a14eff6c7a62301327b8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            14
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "text": "<x\r\n> a=\">\">",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            14
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "text": "<x\r\n> a=\">\">",
+          "name": "x",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "multiline-quoted",
+      "source": "A <b\r\n title='>'>x</b>",
+      "source_bytes": 22,
+      "source_sha256": "013d75751216c031c75b2801f843005bddfc39477ec09df511791d7b77d69520",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            17
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            12
+          ],
+          "text": "<b\r\n title='>'>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            18,
+            22
+          ],
+          "start": [
+            2,
+            13
+          ],
+          "end": [
+            2,
+            17
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            17
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            12
+          ],
+          "text": "<b\r\n title='>'>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            18,
+            22
+          ],
+          "start": [
+            2,
+            13
+          ],
+          "end": [
+            2,
+            17
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "cr-only",
+      "source": "a <b>\r</b>",
+      "source_bytes": 10,
+      "source_sha256": "54d300329646e870088ff8c1c9e446f7b3a508772cca5a85f148d34fd4b3e473",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            6,
+            10
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            6,
+            10
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "entities-in-attribute",
+      "source": "a <b title=\"&gt;&#60;\">x</b>",
+      "source_bytes": 28,
+      "source_sha256": "81f71fbac11c3cf9acebd510557213c980069fb789dc61bce71ed3e65a26b378",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            23
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "text": "<b title=\"&gt;&#60;\">",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            24,
+            28
+          ],
+          "start": [
+            1,
+            25
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            23
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "text": "<b title=\"&gt;&#60;\">",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            24,
+            28
+          ],
+          "start": [
+            1,
+            25
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "text": "</b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "recognized-yaml",
+      "source": "---\nx: \"<b>\"\n---\n<i>",
+      "source_bytes": 20,
+      "source_sha256": "6147ae9a660037a13e4f57614870e0c3a98ab17ce45017b48e09fa55531ff3fe",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            17,
+            20
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            17,
+            20
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true,
+      "frontmatter": true
+    },
+    {
+      "id": "recognized-toml",
+      "source": "+++\nx = \"<b>\"\n+++\n<i>",
+      "source_bytes": 21,
+      "source_sha256": "c1fac7d0aa3028aaf3fb14a1bf30f4cb3b9ed354fb433c5acd01254db2257075",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            18,
+            21
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            18,
+            21
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true,
+      "frontmatter": true
+    },
+    {
+      "id": "incomplete-yaml",
+      "source": "---\nx: \"<b>\"\n",
+      "source_bytes": 13,
+      "source_sha256": "f4b6537a9455da79f46b5d69d070d7de4a64620c54ea94924daa572b79c068b5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": false,
+      "frontmatter": true
+    },
+    {
+      "id": "incomplete-toml",
+      "source": "+++\nx = \"<b>\"\n",
+      "source_bytes": 14,
+      "source_sha256": "c878acde723602180fa5f00dd2e16a48f14c8f79ab9bcc049900a7856470844b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [],
+      "findings": [],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": false,
+      "frontmatter": true
+    },
+    {
+      "id": "inline-disable",
+      "source": "a <b> <!-- mdchk:disable MD033 --> <i>",
+      "source_bytes": 38,
+      "source_sha256": "1ad794850f6ef9daa7738cf947e4e5409a251dff9ba25ee750989308000a6a5e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            35,
+            38
+          ],
+          "start": [
+            1,
+            36
+          ],
+          "end": [
+            1,
+            39
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": false,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "inline-enable",
+      "source": "a <b> <!-- mdchk:enable MD033 --> <i>",
+      "source_bytes": 37,
+      "source_sha256": "f8c0591544eed1c0272fb6e33f3994ed4ff9ffe0c3b491333ddc375b4bd751cb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": false,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            34,
+            37
+          ],
+          "start": [
+            1,
+            35
+          ],
+          "end": [
+            1,
+            38
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            34,
+            37
+          ],
+          "start": [
+            1,
+            35
+          ],
+          "end": [
+            1,
+            38
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": false,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "standalone-disable-enable",
+      "source": "<!-- mdchk:disable MD033 -->\n<b>\n\n<!-- mdchk:enable MD033 -->\n<i>",
+      "source_bytes": 65,
+      "source_sha256": "6460bb9dd180e2dea35b5b3deff0c0796f458e8ad1248df67f99af0da1f5caa6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            29,
+            32
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": false,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            62,
+            65
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            62,
+            65
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "denied-rule-disable",
+      "source": "<!-- mdchk:disable MD033 -->\n<b>",
+      "source_bytes": 32,
+      "source_sha256": "5594bd960e31001599f0a6b0bf099cd152b74ee809c3d9a8b7313d3676453c98",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            29,
+            32
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            29,
+            32
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true,
+      "allow_directives": false
+    },
+    {
+      "id": "denied-global-disable",
+      "source": "<!-- mdchk:disable MD033 -->\n<b>",
+      "source_bytes": 32,
+      "source_sha256": "5594bd960e31001599f0a6b0bf099cd152b74ee809c3d9a8b7313d3676453c98",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            29,
+            32
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            29,
+            32
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true,
+      "directives_enabled": false
+    },
+    {
+      "id": "denied-default-enable",
+      "source": "<!-- mdchk:enable MD033 -->\n<b>",
+      "source_bytes": 31,
+      "source_sha256": "45e44d90b88831a4af76b916a7de643330618aff8a24e519b5d63c7626290be3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            28,
+            31
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": false,
+          "allowed": false
+        }
+      ],
+      "findings": [],
+      "enabled": null,
+      "allowed_tags": [],
+      "analysis_complete": true,
+      "allow_directives": false
+    },
+    {
+      "id": "directive-inside-code-inert",
+      "source": "`<!-- mdchk:disable MD033 -->` <b>",
+      "source_bytes": 34,
+      "source_sha256": "17484c96943ff132322fc904c3ae74d168f987c0c4c7caf25ef782c46d5d0fd1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            31,
+            34
+          ],
+          "start": [
+            1,
+            32
+          ],
+          "end": [
+            1,
+            35
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            31,
+            34
+          ],
+          "start": [
+            1,
+            32
+          ],
+          "end": [
+            1,
+            35
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    },
+    {
+      "id": "directive-inside-header-inert",
+      "source": "---\nx: \"<!-- mdchk:disable MD033 -->\"\n---\n<b>",
+      "source_bytes": 45,
+      "source_sha256": "11139fd3ac5db448197447d68ded15ed8dff305e75c299b37fd21f23c9422dc9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            42,
+            45
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            42,
+            45
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "text": "<b>",
+          "name": "b",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true,
+      "frontmatter": true
+    },
+    {
+      "id": "raw-opener-before-disable",
+      "source": "a <script>\n\n<!-- mdchk:disable MD033 -->\n<b>\n\n</script><i>",
+      "source_bytes": 58,
+      "source_sha256": "5162956facf914e7355cf5870f64e9e08adc43dffadd80e1d275c8149865cdac",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "candidates": [
+        {
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "<script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            46,
+            55
+          ],
+          "start": [
+            6,
+            1
+          ],
+          "end": [
+            6,
+            10
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            55,
+            58
+          ],
+          "start": [
+            6,
+            10
+          ],
+          "end": [
+            6,
+            13
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "<script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            46,
+            55
+          ],
+          "start": [
+            6,
+            1
+          ],
+          "end": [
+            6,
+            10
+          ],
+          "text": "</script>",
+          "name": "script",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        },
+        {
+          "bytes": [
+            55,
+            58
+          ],
+          "start": [
+            6,
+            10
+          ],
+          "end": [
+            6,
+            13
+          ],
+          "text": "<i>",
+          "name": "i",
+          "message": "Embedded HTML tag is not allowed.",
+          "active_at_range_start": true,
+          "allowed": false
+        }
+      ],
+      "enabled": true,
+      "allowed_tags": [],
+      "analysis_complete": true
+    }
+  ]
+}

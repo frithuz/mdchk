@@ -1,5 +1,14 @@
 # Configuration engineering design
 
+[MD033 embedded-HTML analysis](../rules/html-and-comments/md033.md) is available for CommonMark and GFM,
+disabled by default and permanently report-only. `allowed_tags: []` accepts a
+string list and matches whole names with ASCII case folding, without trimming.
+Each disallowed complete named tag has its own full original range. Opaque HTML
+tokens and actual raw payload stay protected; unavailable owned-tag context
+withholds the entire MD033 inventory with explicit coverage. No MD033 edits or
+previews are produced; MD047 remains the sole current fixer.
+
+
 The shared configuration loader implements the approved
 [configuration contract](../configuration.md) for lint preparation and target
 execution through the shared parser/rule engine. Shared decoding, semantic
@@ -309,8 +318,8 @@ and per-file references before deriving the shared outcome. Public CLI paths
 are relative to the invocation directory; acquisition keeps native names private.
 Lint text and JSON reporters present the canonical result without rereading
 configuration sources or target documents. CommonMark/GFM, MD001 analysis with opt-in metadata titles, MD003 heading-style
-analysis, MD004 bullet marker analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD018/MD019 opening-hash spacing analysis, MD020 terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis, MD047, directives,
-shared suppression and VS Code/GitHub reporters are implemented. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088 and MD093 are disabled by default. Other rule
+analysis, MD004 bullet marker analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD018/MD019 opening-hash spacing analysis, MD020 terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis, MD047, directives,
+shared suppression and VS Code/GitHub reporters are implemented. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033 and MD093 are disabled by default. Other rule
 callbacks and optional contexts remain separate deliveries.
 
 [MD081 paragraph-emphasis analysis](../rules/formatting/md081.md) is available for CommonMark and

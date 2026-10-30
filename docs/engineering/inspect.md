@@ -105,3 +105,11 @@ A normally excluded explicit target is still acquired. Normal lint/inspect
 exclusion status uses only the selected definition's patterns and defining
 directory; ancestor configurations contribute validation and inherited permission
 denials, without merging their exclusion patterns.
+
+MD033 embedded-HTML analysis is available for CommonMark and GFM, disabled by
+default and report-only. Its full original named-tag inventory and global raw
+context precede finding-START suppression and selected-line intersection. A
+permitted enable directive uses the admitted `allowed_tags` string list; inherited
+global/per-rule denials remain binding. Allowed raw names still protect payload.
+Failed named context in an actual HTMLBlock withholds the entire MD033 inventory
+with explicit coverage. No MD033 edits or previews are produced.

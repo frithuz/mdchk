@@ -1,5 +1,14 @@
 # mdchk lint
 
+[MD033 embedded-HTML analysis](../rules/html-and-comments/md033.md) is available for CommonMark and GFM,
+disabled by default and permanently report-only. `allowed_tags: []` accepts a
+string list and matches whole names with ASCII case folding, without trimming.
+Each disallowed complete named tag has its own full original range. Opaque HTML
+tokens and actual raw payload stay protected; unavailable owned-tag context
+withholds the entire MD033 inventory with explicit coverage. No MD033 edits or
+previews are produced; MD047 remains the sole current fixer.
+
+
 Check Markdown files against the enabled rules and report problems without modifying files.
 
 ```text
@@ -40,7 +49,7 @@ error attribution. It reports the first invalid sequence's original byte offset
 and Unicode position, retaining the original size and SHA-256 snapshot identity.
 
 The admitted plan runs the internal parser and available registered checks with
-the original source and validated options. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing and MD021 closed-heading delimiter spacing
+the original source and validated options. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing and MD021 closed-heading delimiter spacing
 analysis are implemented; other enabled missing defaults produce real coverage deficits and
 return `15`. Disabling all ordinary rules permits a clean `0` for valid UTF-8.
 Available registered checks can return violations (`10`); interruptions retain
@@ -106,7 +115,7 @@ the current CommonMark parser, while many enabled ordinary defaults still lack
 production implementations. MD047 terminating-newline, MD001 heading-increment, MD003
 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis,
 MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD030
-list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD018 missing
+list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD018 missing
 opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash
 spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis,
 MD023 heading indentation analysis, MD024 repeated heading analysis, MD025
@@ -115,7 +124,7 @@ emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-out
 analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision
 analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and
 MD093 inline-formatting-in-headings analysis are available. MD013, MD026, MD036, MD043, MD063,
-MD080, MD082, MD085, MD089, MD090, MD081, MD088 and MD093 are available but disabled by default. The catalog
+MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033 and MD093 are available but disabled by default. The catalog
 contains 87 entries, with 59 enabled
 and 28 disabled by default; the mandatory UTF-8 gate is available independently
 of ordinary checks. Explicitly requesting an unavailable rule returns `12`.

@@ -302,3 +302,10 @@ corrections continue. Blocked peers retain justified original findings and recei
 no producer, final candidate reanalysis or private publication approval. The final
 observed snapshot reports its encoding error once. Generated invalid replacements,
 other shared failures and runtime stops retain fail-closed behavior.
+
+MD033 embedded-HTML analysis is available for CommonMark and GFM, disabled by
+default and permanently NoFix. Full original tag ranges remain manual, including
+candidate and saved analysis after an independent MD047 newline correction.
+MD033 produces no edits, eligibility, previews or corrected contents. MD047 is
+the sole current fixer. Unsupported native apply, including CGO0, retains its
+early complete I/O refusal 13 with empty analysis/effects and unchanged files.

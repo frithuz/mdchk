@@ -802,3 +802,16 @@ trimmed Paragraph Content hull, including markup and interior container gaps.
 The fixed message is `Paragraph contains excessive bold or italic text.` Full
 original counts precede START suppression and inspection filtering. See the
 [MD081 rule page](../rules/formatting/md081.md) for options and exact exclusions.
+
+## Embedded HTML (MD033)
+
+The [MD033 source policy](../rules/html-and-comments/md033.md) reports each
+complete named parser-owned tag separately with full original geometry and the
+fixed message `Embedded HTML tag is not allowed.` Opaque unnamed tokens, actual
+four-name raw payload, code/metadata and whole Images remain protected; actual
+Link-label HTML is eligible. Form 1 uses any literal parser raw closer; other
+owned tokens preserve source order/global lifetimes without entering quoted or
+opaque payload. Failed owned named context withholds the entire inventory with
+coverage. The existing permissive allowed_tags string list uses whole-name ASCII
+folding only, applied after inventory/raw context. Default OFF and NoFix remain;
+MD047 alone produces corrections.

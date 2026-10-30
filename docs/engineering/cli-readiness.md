@@ -1,5 +1,14 @@
 # Delivered CLI readiness
 
+[MD033 embedded-HTML analysis](../rules/html-and-comments/md033.md) is available for CommonMark and GFM,
+disabled by default and permanently report-only. `allowed_tags: []` accepts a
+string list and matches whole names with ASCII case folding, without trimming.
+Each disallowed complete named tag has its own full original range. Opaque HTML
+tokens and actual raw payload stay protected; unavailable owned-tag context
+withholds the entire MD033 inventory with explicit coverage. No MD033 edits or
+previews are produced; MD047 remains the sole current fixer.
+
+
 The ordinary executable has a compiled acceptance journey in
 [`TestCompiledCLIReadinessJourney`](../../cmd/mdchk/readiness_acceptance_test.go).
 It uses one physical disposable project and the same production binary for
@@ -76,7 +85,7 @@ context tests establish interruption behavior separately.
 Readiness is bounded by the [current capabilities](../index.md) and
 [platform limitations](../engineering.md#platform-and-process-acceptance). The CommonMark 652-example parser gate
 establishes core syntax conformance, not every consumer or rule. MD047 is the
-first ordinary production rule and correction; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 analysis are also available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088 and MD093 are disabled by default. Unavailable implicit rules
+first ordinary production rule and correction; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD033, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 analysis are also available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033 and MD093 are disabled by default. Unavailable implicit rules
 remain coverage gaps (15), explicit unavailable rules reject configuration (12),
 and default GFM now uses the verified whole profile. Actual GFM lint/fix/inspect
 consumer journeys include source facts and native saved-byte checks. Optional contexts/resources, MCP delivery, broader traversal accounting, the remaining

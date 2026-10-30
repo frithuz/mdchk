@@ -178,3 +178,11 @@ ownership, normalized value and original paired ASCII SPACE edges over the full
 source. Each excess edge range uses its own start for directive suppression;
 selected inspection lines filter results after full-source analysis. All findings
 remain manual, with no correction eligibility, edits or previews.
+
+MD033 embedded-HTML analysis is available for CommonMark and GFM, disabled by
+default and report-only. Its full original named-tag inventory and global raw
+context precede finding-START suppression and selected-line intersection. A
+permitted enable directive uses the admitted `allowed_tags` string list; inherited
+global/per-rule denials remain binding. Allowed raw names still protect payload.
+Failed named context in an actual HTMLBlock withholds the entire MD033 inventory
+with explicit coverage. No MD033 edits or previews are produced.
