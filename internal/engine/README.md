@@ -591,3 +591,18 @@ facade, comparison and whole callback reserve work/storage before use and finali
 under both caller and originating controls; any error withholds dependent output,
 including empty, clean, protected-only and post-construction paths. MD065 remains
 default enabled and report-only for CommonMark and GFM.
+
+
+MD081 uses ParagraphEmphasis to borrow the completed private original production
+source/index/options/profile and operation. Detached full Content-hull/count facts
+retain actual Paragraph ownership, semantic Text provenance, Emphasis/Strong
+boolean union and full raw-tag/closing-tail lifetime. Image descriptions are
+opaque and cannot change outer raw state. No renderer, reparse, public AST/schema,
+source/index/options clone, resource/metadata or correction authority is added.
+Every traversal, terminal probe, provenance/byte/scalar/raw/option test, capacity,
+copy and fact/finding reservation precedes work under the original finite controls.
+Unicode table shape is guarded before bounded scalar classifications. Producer,
+getter, facade, comparison and distinct whole-callback final checks bind caller
+and origin and atomically withhold all dependent output on error, including empty,
+clean, protected, minimum-skipped and post-output paths. MD081 remains disabled
+and manual; MD047 alone produces corrections.

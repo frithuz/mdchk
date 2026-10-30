@@ -1,0 +1,5257 @@
+{
+  "issue": 78,
+  "base": "90793d2ad633461065d333dee56fdbee79158edd",
+  "policy_sha256": "963e1b0a95ce53b4a54178eaeef3668a3cd7778944ab247d88249e5890eb4fd7",
+  "authorship": "Root independently source-authored BEFORE MD081 engineering/product/parser/helper/test/build/quota/counter/elapsed probes. Witness text/counts/ranges follow explicit adopted policy; generator performs only raw-source geometry/scalar arithmetic and binary64 arithmetic, never Markdown parsing/decoding or production imports.",
+  "message": "Paragraph contains excessive bold or italic text.",
+  "cases": [
+    {
+      "id": "page-violation",
+      "source": "**This entire paragraph is strongly emphasized.**",
+      "source_bytes": 49,
+      "source_sha256": "d0fd4f0731428a55a99387399995fac285263c376858910baf3a115c7f5d61b7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**This entire paragraph is strongly emphasized.**",
+          "bytes": [
+            0,
+            49
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            50
+          ],
+          "eligible_scalar_witness": "Thisentireparagraphisstronglyemphasized.",
+          "emphasized_scalar_witness": "Thisentireparagraphisstronglyemphasized.",
+          "total": 40,
+          "emphasized": 40,
+          "binary64_ratio": 1.0,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            49
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            50
+          ],
+          "text": "**This entire paragraph is strongly emphasized.**",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 40,
+          "emphasized": 40
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "page-accepted",
+      "source": "This paragraph contains **some** emphasized words.",
+      "source_bytes": 50,
+      "source_sha256": "a5f400c4391301f4609d16913f01ed5fddc9b1d2d8bbf7b42ffc48e47a862e34",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "This paragraph contains **some** emphasized words.",
+          "bytes": [
+            0,
+            50
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            51
+          ],
+          "eligible_scalar_witness": "Thisparagraphcontainssomeemphasizedwords.",
+          "emphasized_scalar_witness": "some",
+          "total": 41,
+          "emphasized": 4,
+          "binary64_ratio": 0.0975609756097561,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true
+    },
+    {
+      "id": "minimum-default-19",
+      "source": "**aaaaaaaaaaaaaaaaaaa**",
+      "source_bytes": 23,
+      "source_sha256": "83843a4f8184f002e13faacc25ec83c9383748f0c21c56849def1047f6f371bd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**aaaaaaaaaaaaaaaaaaa**",
+          "bytes": [
+            0,
+            23
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "eligible_scalar_witness": "aaaaaaaaaaaaaaaaaaa",
+          "emphasized_scalar_witness": "aaaaaaaaaaaaaaaaaaa",
+          "total": 19,
+          "emphasized": 19,
+          "binary64_ratio": 1.0,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true
+    },
+    {
+      "id": "minimum-default-20",
+      "source": "**aaaaaaaaaaaaaaaaaaaa**",
+      "source_bytes": 24,
+      "source_sha256": "983502799809b9a9c583096ab88883a919b4f2eced226a27a66688726892a1d9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**aaaaaaaaaaaaaaaaaaaa**",
+          "bytes": [
+            0,
+            24
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            25
+          ],
+          "eligible_scalar_witness": "aaaaaaaaaaaaaaaaaaaa",
+          "emphasized_scalar_witness": "aaaaaaaaaaaaaaaaaaaa",
+          "total": 20,
+          "emphasized": 20,
+          "binary64_ratio": 1.0,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            24
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            25
+          ],
+          "text": "**aaaaaaaaaaaaaaaaaaaa**",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 20,
+          "emphasized": 20
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "minimum-default-21",
+      "source": "**aaaaaaaaaaaaaaaaaaaaa**",
+      "source_bytes": 25,
+      "source_sha256": "2100ad53cae15950e00326e7e09a21266d2322b532ce5ae7fa483654f20d73e8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**aaaaaaaaaaaaaaaaaaaaa**",
+          "bytes": [
+            0,
+            25
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "eligible_scalar_witness": "aaaaaaaaaaaaaaaaaaaaa",
+          "emphasized_scalar_witness": "aaaaaaaaaaaaaaaaaaaaa",
+          "total": 21,
+          "emphasized": 21,
+          "binary64_ratio": 1.0,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            25
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "text": "**aaaaaaaaaaaaaaaaaaaaa**",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 21,
+          "emphasized": 21
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "half-equality",
+      "source": "**ab** cd",
+      "source_bytes": 9,
+      "source_sha256": "0100bc74d2e8eb7922c1440e14ffae3583d3584e196a88ecd8d2907fee3ea7f3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** cd",
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "eligible_scalar_witness": "abcd",
+          "emphasized_scalar_witness": "ab",
+          "total": 4,
+          "emphasized": 2,
+          "binary64_ratio": 0.5,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 4
+    },
+    {
+      "id": "half-below-threshold",
+      "source": "**ab** cd",
+      "source_bytes": 9,
+      "source_sha256": "0100bc74d2e8eb7922c1440e14ffae3583d3584e196a88ecd8d2907fee3ea7f3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** cd",
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "eligible_scalar_witness": "abcd",
+          "emphasized_scalar_witness": "ab",
+          "total": 4,
+          "emphasized": 2,
+          "binary64_ratio": 0.5,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "**ab** cd",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 4,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "maximum_ratio": 0.49,
+      "minimum_characters": 4
+    },
+    {
+      "id": "minimum-skips-qualified-ratio",
+      "source": "**ab** cd",
+      "source_bytes": 9,
+      "source_sha256": "0100bc74d2e8eb7922c1440e14ffae3583d3584e196a88ecd8d2907fee3ea7f3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** cd",
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "eligible_scalar_witness": "abcd",
+          "emphasized_scalar_witness": "ab",
+          "total": 4,
+          "emphasized": 2,
+          "binary64_ratio": 0.5,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0.49,
+      "minimum_characters": 5
+    },
+    {
+      "id": "minimum-on-denominator",
+      "source": "**ab** c",
+      "source_bytes": 8,
+      "source_sha256": "ded95727a00a8a1fedc9a8e92995e64b8470677093a655555805b864e8fc6d9e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "**ab** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 3
+    },
+    {
+      "id": "ratio-int-zero",
+      "source": "**ab** c",
+      "source_bytes": 8,
+      "source_sha256": "ded95727a00a8a1fedc9a8e92995e64b8470677093a655555805b864e8fc6d9e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "**ab** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "ratio-int-one",
+      "source": "**ab** c",
+      "source_bytes": 8,
+      "source_sha256": "ded95727a00a8a1fedc9a8e92995e64b8470677093a655555805b864e8fc6d9e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 1,
+      "minimum_characters": 1
+    },
+    {
+      "id": "ratio-float-one",
+      "source": "**ab** c",
+      "source_bytes": 8,
+      "source_sha256": "ded95727a00a8a1fedc9a8e92995e64b8470677093a655555805b864e8fc6d9e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 1.0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "ratio-negative-floating-zero",
+      "source": "**ab** c",
+      "source_bytes": 8,
+      "source_sha256": "ded95727a00a8a1fedc9a8e92995e64b8470677093a655555805b864e8fc6d9e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "**ab** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "maximum_ratio": -0.0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "huge-positive-minimum",
+      "source": "**ab** c",
+      "source_bytes": 8,
+      "source_sha256": "ded95727a00a8a1fedc9a8e92995e64b8470677093a655555805b864e8fc6d9e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 2147483647
+    },
+    {
+      "id": "zero-emphasis-at-ratio-zero",
+      "source": "plain",
+      "source_bytes": 5,
+      "source_sha256": "a116c9ed46d6207734a43317d30fd88f52ac8634c37d904bbf4e41d865f90475",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "plain",
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "eligible_scalar_witness": "plain",
+          "emphasized_scalar_witness": "",
+          "total": 5,
+          "emphasized": 0,
+          "binary64_ratio": 0.0,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "division-nondyadic-equality",
+      "source": "**a** bc",
+      "source_bytes": 8,
+      "source_sha256": "5fd64a8c79f3fab24a15870939c8408395d5192ea17eb9564c356d5ffdd9abb1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a** bc",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "a",
+          "total": 3,
+          "emphasized": 1,
+          "binary64_ratio": 0.3333333333333333,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0.3333333333333333,
+      "minimum_characters": 1
+    },
+    {
+      "id": "division-nondyadic-previous-float",
+      "source": "**a** bc",
+      "source_bytes": 8,
+      "source_sha256": "5fd64a8c79f3fab24a15870939c8408395d5192ea17eb9564c356d5ffdd9abb1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a** bc",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "a",
+          "total": 3,
+          "emphasized": 1,
+          "binary64_ratio": 0.3333333333333333,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "**a** bc",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 1
+        }
+      ],
+      "enabled": true,
+      "maximum_ratio": 0.33333333333333326,
+      "minimum_characters": 1
+    },
+    {
+      "id": "division-nondyadic-next-float",
+      "source": "**a** bc",
+      "source_bytes": 8,
+      "source_sha256": "5fd64a8c79f3fab24a15870939c8408395d5192ea17eb9564c356d5ffdd9abb1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a** bc",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "a",
+          "total": 3,
+          "emphasized": 1,
+          "binary64_ratio": 0.3333333333333333,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0.33333333333333337,
+      "minimum_characters": 1
+    },
+    {
+      "id": "triple-union",
+      "source": "***ab*** c",
+      "source_bytes": 10,
+      "source_sha256": "40bda9acd646ee8e091fb6e780d39c3a31ba492dc5a12d9a8c30111956314d2c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "***ab*** c",
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "***ab*** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "strong-in-emphasis",
+      "source": "*a **bc** d* e",
+      "source_bytes": 14,
+      "source_sha256": "2b7a0c98422480e811c6a7256034b061b51652a058b1a3dbfb5163c78e47fe0c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "*a **bc** d* e",
+          "bytes": [
+            0,
+            14
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "eligible_scalar_witness": "abcde",
+          "emphasized_scalar_witness": "abcd",
+          "total": 5,
+          "emphasized": 4,
+          "binary64_ratio": 0.8,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            14
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "*a **bc** d* e",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 5,
+          "emphasized": 4
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "emphasis-in-strong",
+      "source": "**a *bc* d** e",
+      "source_bytes": 14,
+      "source_sha256": "e71a0d9f3ff08f83394404b2fe9620985a5063102ef80c49b1fc5740ed00a550",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a *bc* d** e",
+          "bytes": [
+            0,
+            14
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "eligible_scalar_witness": "abcde",
+          "emphasized_scalar_witness": "abcd",
+          "total": 5,
+          "emphasized": 4,
+          "binary64_ratio": 0.8,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            14
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "**a *bc* d** e",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 5,
+          "emphasized": 4
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "sibling-runs",
+      "source": "**a** *b* c",
+      "source_bytes": 11,
+      "source_sha256": "463e70d3bd210fcc0dbd2bf678395122d0a6cd4d76875e5d10a0620ba310d8c8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a** *b* c",
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "**a** *b* c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "mixed-markers",
+      "source": "__a__ *b* c",
+      "source_bytes": 11,
+      "source_sha256": "4984816dcbd596831cea85e163bc89410514c47584cf3cea82d7f5ec95145560",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "__a__ *b* c",
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "__a__ *b* c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "strike-alone-commonmark",
+      "source": "~~ab~~ c",
+      "source_bytes": 8,
+      "source_sha256": "c14f9c4ec9b520bda7fb9379fcb0e312b1ee98278b6d23c8a0d23db9106db706",
+      "flavors": [
+        "commonmark"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "~~ab~~ c",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "~~ab~~c",
+          "emphasized_scalar_witness": "",
+          "total": 7,
+          "emphasized": 0,
+          "binary64_ratio": 0.0,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "strike-alone-gfm",
+      "source": "~~ab~~ c",
+      "source_bytes": 8,
+      "source_sha256": "c14f9c4ec9b520bda7fb9379fcb0e312b1ee98278b6d23c8a0d23db9106db706",
+      "flavors": [
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "~~ab~~ c",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "",
+          "total": 3,
+          "emphasized": 0,
+          "binary64_ratio": 0.0,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "strike-transparent-gfm",
+      "source": "~~**ab**~~ c",
+      "source_bytes": 12,
+      "source_sha256": "dbf97e91a64ddc9feb2e338f8af43fc5a92d08b3f525cc1d7c5d70eb024835ad",
+      "flavors": [
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "~~**ab**~~ c",
+          "bytes": [
+            0,
+            12
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            12
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "text": "~~**ab**~~ c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "strike-literal-commonmark",
+      "source": "~~**ab**~~ c",
+      "source_bytes": 12,
+      "source_sha256": "dbf97e91a64ddc9feb2e338f8af43fc5a92d08b3f525cc1d7c5d70eb024835ad",
+      "flavors": [
+        "commonmark"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "~~**ab**~~ c",
+          "bytes": [
+            0,
+            12
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "eligible_scalar_witness": "~~ab~~c",
+          "emphasized_scalar_witness": "ab",
+          "total": 7,
+          "emphasized": 2,
+          "binary64_ratio": 0.2857142857142857,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "interior-space-excluded",
+      "source": "**a b** c",
+      "source_bytes": 9,
+      "source_sha256": "074bd79dda84786762c795494203a82305f3f4bc22566deb1660ce8962c6e5b2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a b** c",
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "**a b** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "interior-tab-excluded",
+      "source": "**a\tb** c",
+      "source_bytes": 9,
+      "source_sha256": "e3e1222a736f13c4fa13d8fac04a2f7f0738d1f80d9cf82d01d812dd063cf8a3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a\tb** c",
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "**a\tb** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "nbsp-excluded",
+      "source": "**a b** c",
+      "source_bytes": 10,
+      "source_sha256": "e868a0698b1b00a6712390775d2c4ad1afa0aaf58d9b9bc7ab8bdc26ac90df53",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a b** c",
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "**a b** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "formfeed-excluded",
+      "source": "**a\fb** c",
+      "source_bytes": 9,
+      "source_sha256": "cea83a883f2b9ad400c6905f865512a23e7123bfb56d17ba40c53f0c8e0fb5d0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a\fb** c",
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "**a\fb** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "vertical-tab-control-excluded",
+      "source": "**a\u000bb** c",
+      "source_bytes": 9,
+      "source_sha256": "7f472eff0ae973e4f26463d706ca8075f0f61f5da23d057bbdb1cfc4cf15eb05",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a\u000bb** c",
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "**a\u000bb** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "nel-control-excluded",
+      "source": "**ab** c",
+      "source_bytes": 10,
+      "source_sha256": "f676a984a4d8e733f7834cc7b2781f1452a014a6e7926dd1caa2052673273e88",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "**ab** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "line-separator-scalar-counted",
+      "source": "**a b** c",
+      "source_bytes": 11,
+      "source_sha256": "de182e3c09e4e184fbd3ab079674a36965d594715b077cb8069a3cd9eb51c444",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a b** c",
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "eligible_scalar_witness": "a bc",
+          "emphasized_scalar_witness": "a b",
+          "total": 4,
+          "emphasized": 3,
+          "binary64_ratio": 0.75,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "**a b** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 4,
+          "emphasized": 3
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "paragraph-separator-scalar-counted",
+      "source": "**a b** c",
+      "source_bytes": 11,
+      "source_sha256": "d53872d6df66002947fdbfe90103efe351980593825eba8811f8142600105ffa",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a b** c",
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "eligible_scalar_witness": "a bc",
+          "emphasized_scalar_witness": "a b",
+          "total": 4,
+          "emphasized": 3,
+          "binary64_ratio": 0.75,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "**a b** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 4,
+          "emphasized": 3
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "combining-scalars-not-graphemes",
+      "source": "**á** b",
+      "source_bytes": 9,
+      "source_sha256": "2587123169d9c8311637a09d041efb34a3bd6ee4aa79d1b2ce510ad7fa77e95e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**á** b",
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "áb",
+          "emphasized_scalar_witness": "á",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "**á** b",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "astral-one-scalar",
+      "source": "**😀** ab",
+      "source_bytes": 11,
+      "source_sha256": "36897f77d5aab1834f4ddffc4ac4c97cf2a1cbae9f2690490a34fec38860629a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**😀** ab",
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "😀ab",
+          "emphasized_scalar_witness": "😀",
+          "total": 3,
+          "emphasized": 1,
+          "binary64_ratio": 0.3333333333333333,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "zwj-format-scalar-counted",
+      "source": "**a‍b** c",
+      "source_bytes": 11,
+      "source_sha256": "d4b3d59290eb7ec17d01e20984cf955c84ebc0cfe4c1b5c0fb36ba0ec14e6cc5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a‍b** c",
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "eligible_scalar_witness": "a‍bc",
+          "emphasized_scalar_witness": "a‍b",
+          "total": 4,
+          "emphasized": 3,
+          "binary64_ratio": 0.75,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "**a‍b** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 4,
+          "emphasized": 3
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "variation-selector-counted",
+      "source": "**a️** b",
+      "source_bytes": 10,
+      "source_sha256": "698b6f0929c230763568f01d93184fa655843e4fcf6e4fc71f6c4763fc27eab1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a️** b",
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "a️b",
+          "emphasized_scalar_witness": "a️",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "**a️** b",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "normalized-nul-replacement",
+      "source": "**\u0000** ab",
+      "source_bytes": 8,
+      "source_sha256": "b798c2f8e03a96b1dd9da3008dfc6f389d511bdc20b82b3f54347c58952ef084",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**\u0000** ab",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "�ab",
+          "emphasized_scalar_witness": "�",
+          "total": 3,
+          "emphasized": 1,
+          "binary64_ratio": 0.3333333333333333,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "**\u0000** ab",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 1
+        }
+      ],
+      "enabled": true,
+      "maximum_ratio": 0.3,
+      "minimum_characters": 1
+    },
+    {
+      "id": "literal-replacement-scalar",
+      "source": "**�** ab",
+      "source_bytes": 10,
+      "source_sha256": "e49452cdf7fa04d81365c5d901d7a030b3429ad0f9f2a0bce8007fdf4cc0c235",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**�** ab",
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "�ab",
+          "emphasized_scalar_witness": "�",
+          "total": 3,
+          "emphasized": 1,
+          "binary64_ratio": 0.3333333333333333,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "**�** ab",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 1
+        }
+      ],
+      "enabled": true,
+      "maximum_ratio": 0.3,
+      "minimum_characters": 1
+    },
+    {
+      "id": "two-scalar-entity",
+      "source": "**&NotEqualTilde;** a",
+      "source_bytes": 21,
+      "source_sha256": "b6ac36ba89bdd65e86d2dc99824c8103107c6b8f530e946850257b17cc0aa1e3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**&NotEqualTilde;** a",
+          "bytes": [
+            0,
+            21
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "eligible_scalar_witness": "≂̸a",
+          "emphasized_scalar_witness": "≂̸",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            21
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "text": "**&NotEqualTilde;** a",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "entity-whitespace-excluded",
+      "source": "**a&nbsp;b** c",
+      "source_bytes": 14,
+      "source_sha256": "17365f7a89a787ebc48f0930312934a53fb5cc023101712f518a0bbdd8c0b5a0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a&nbsp;b** c",
+          "bytes": [
+            0,
+            14
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            14
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "text": "**a&nbsp;b** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "entity-one-semantic-scalar",
+      "source": "**&amp;** ab",
+      "source_bytes": 12,
+      "source_sha256": "c4ef515128932878fab43b69746e433c328c6373b5cf39f43be657f8f66991c2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**&amp;** ab",
+          "bytes": [
+            0,
+            12
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "eligible_scalar_witness": "&ab",
+          "emphasized_scalar_witness": "&",
+          "total": 3,
+          "emphasized": 1,
+          "binary64_ratio": 0.3333333333333333,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "entity-delimiters-never-emphasize",
+      "source": "&ast;a&ast; b",
+      "source_bytes": 13,
+      "source_sha256": "34e0a0bd97473e109a69475237a2308eb7d2a0981f2b18fcb58625dd96d93f12",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "&ast;a&ast; b",
+          "bytes": [
+            0,
+            13
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "eligible_scalar_witness": "*a*b",
+          "emphasized_scalar_witness": "",
+          "total": 4,
+          "emphasized": 0,
+          "binary64_ratio": 0.0,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "invalid-entity-literal-text",
+      "source": "&madeup; **a**",
+      "source_bytes": 14,
+      "source_sha256": "d130e8b1d6676c69f75f6fb98b179c71d8b80e6ae1f7a7056d955a0e5b6844ad",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "&madeup; **a**",
+          "bytes": [
+            0,
+            14
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "eligible_scalar_witness": "&madeup;a",
+          "emphasized_scalar_witness": "a",
+          "total": 9,
+          "emphasized": 1,
+          "binary64_ratio": 0.1111111111111111,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "escaped-punctuation-excluded",
+      "source": "\\*a\\* **b**",
+      "source_bytes": 11,
+      "source_sha256": "eb001bde328a51ea69727db8db05446c76c5df531a2032506c4a6a66524ee3f9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "\\*a\\* **b**",
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "eligible_scalar_witness": "ab",
+          "emphasized_scalar_witness": "b",
+          "total": 2,
+          "emphasized": 1,
+          "binary64_ratio": 0.5,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "escaped-punctuation-not-dilution",
+      "source": "\\*a\\* **b**",
+      "source_bytes": 11,
+      "source_sha256": "eb001bde328a51ea69727db8db05446c76c5df531a2032506c4a6a66524ee3f9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "\\*a\\* **b**",
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "eligible_scalar_witness": "ab",
+          "emphasized_scalar_witness": "b",
+          "total": 2,
+          "emphasized": 1,
+          "binary64_ratio": 0.5,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "\\*a\\* **b**",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 2,
+          "emphasized": 1
+        }
+      ],
+      "enabled": true,
+      "maximum_ratio": 0.49,
+      "minimum_characters": 1
+    },
+    {
+      "id": "escape-inside-strong-excluded",
+      "source": "**ab\\*** c",
+      "source_bytes": 10,
+      "source_sha256": "773c831ababae13beae1371b295adf8571653fd5a60ff93372481a74f2f316df",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab\\*** c",
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "**ab\\*** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "escape-only-zero-population",
+      "source": "\\*",
+      "source_bytes": 2,
+      "source_sha256": "e999b3d3b45ee36b2ac106b0f5fe843f1f77456bae2a420886e2a373d470928a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "\\*",
+          "bytes": [
+            0,
+            2
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "eligible_scalar_witness": "",
+          "emphasized_scalar_witness": "",
+          "total": 0,
+          "emphasized": 0,
+          "binary64_ratio": null,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "soft-lf",
+      "source": "**a\nb** c",
+      "source_bytes": 9,
+      "source_sha256": "dbe3603bfebf7d8f7a5b2c18507ff16012e081c08e1654e9a01d1ea99ce3bab8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a\nb** c",
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "text": "**a\nb** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "soft-crlf",
+      "source": "**a\r\nb** c",
+      "source_bytes": 10,
+      "source_sha256": "e52419800577674c9931a35a8a5c10efe82f9c2ba991c3c29c419ee93922b127",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a\r\nb** c",
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "text": "**a\r\nb** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "soft-cr",
+      "source": "**a\rb** c",
+      "source_bytes": 9,
+      "source_sha256": "871ef516049b0a23a087062e6a0d0b7c1958ff8c30cd751f045d2a388a435343",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a\rb** c",
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "text": "**a\rb** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "hard-spaces",
+      "source": "**a  \nb** c",
+      "source_bytes": 11,
+      "source_sha256": "b27fe67e58a6c1d891eef48cfc0efbe3cde0e211c6791881c2ae04aa3cc748db",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a  \nb** c",
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "text": "**a  \nb** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "hard-backslash",
+      "source": "**a\\\nb** c",
+      "source_bytes": 10,
+      "source_sha256": "ce95f5113f15c05b0be3285ad251f5ab6491b67b1f36918e5e55210a4c181a62",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a\\\nb** c",
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "text": "**a\\\nb** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "code-cannot-dilute",
+      "source": "**ab** `a very long plain code suffix`",
+      "source_bytes": 38,
+      "source_sha256": "347b05498648192c1e5c716a1486ee64ccb23cb113e0542576626dfda9940da6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** `a very long plain code suffix`",
+          "bytes": [
+            0,
+            38
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            39
+          ],
+          "eligible_scalar_witness": "ab",
+          "emphasized_scalar_witness": "ab",
+          "total": 2,
+          "emphasized": 2,
+          "binary64_ratio": 1.0,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            38
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            39
+          ],
+          "text": "**ab** `a very long plain code suffix`",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 2,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "emphasized-code-excluded",
+      "source": "**`ab`** c",
+      "source_bytes": 10,
+      "source_sha256": "13eac4e6d420e6ad02788a507f80cca3e8a97407e6116b9e09d6ce604874a73b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**`ab`** c",
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "eligible_scalar_witness": "c",
+          "emphasized_scalar_witness": "",
+          "total": 1,
+          "emphasized": 0,
+          "binary64_ratio": 0.0,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "code-only-paragraph-zero",
+      "source": "`**ab**`",
+      "source_bytes": 8,
+      "source_sha256": "522b609896542c79792f2f3c1b0b1837d38af155f1ac744cbf56af32708759c1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "`**ab**`",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "",
+          "emphasized_scalar_witness": "",
+          "total": 0,
+          "emphasized": 0,
+          "binary64_ratio": null,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "atx-heading",
+      "source": "# **ab**",
+      "source_bytes": 8,
+      "source_sha256": "58a0bdaf8c5e0b13044a191b4ab766776085ab7f86cbb8bb0b3a2833f75862f8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "setext-heading",
+      "source": "**ab**\n---",
+      "source_bytes": 10,
+      "source_sha256": "112741823b40da2a6751a0dd9b2bad77bc7f29d7fc5b736e1b087b334e1b38f7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "fenced-code",
+      "source": "```\n**ab**\n```",
+      "source_bytes": 14,
+      "source_sha256": "16354e177325baa53ad08a075f87ae11d63ad70b511f1ed0eadadb6aa4289eee",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "indented-code",
+      "source": "    **ab**",
+      "source_bytes": 10,
+      "source_sha256": "faa7c0476ad48fa2d5c36a0e491c6c9c6d13030ddbd8dfc5b73418fc43fde584",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "thematic-break",
+      "source": "***",
+      "source_bytes": 3,
+      "source_sha256": "596f4162a52f315b2ad0fa53fd30a2769d02a41ed7439123790966eee4ceb5cd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "comment-not-dilution",
+      "source": "**ab** <!-- a very long plain comment --> c",
+      "source_bytes": 43,
+      "source_sha256": "88a88a9d4868839840442509f56019915d22dcfad9167a9b0162bd27204c4e35",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** <!-- a very long plain comment --> c",
+          "bytes": [
+            0,
+            43
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            44
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            43
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            44
+          ],
+          "text": "**ab** <!-- a very long plain comment --> c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "ordinary-html-tag-text",
+      "source": "**ab** <b>c</b>",
+      "source_bytes": 15,
+      "source_sha256": "d9c84345ffac563e9a3a8e1c841fa445b010c2e1c3850b10dadd36b522e20eea",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** <b>c</b>",
+          "bytes": [
+            0,
+            15
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            15
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "text": "**ab** <b>c</b>",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "html-strong-is-not-markdown-emphasis",
+      "source": "<strong>ab</strong> c",
+      "source_bytes": 21,
+      "source_sha256": "a179da341f939bf5c55bf70c206b99d6e2fe6acb36f3d1399c3cd16f293300a3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "<strong>ab</strong> c",
+          "bytes": [
+            0,
+            21
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "",
+          "total": 3,
+          "emphasized": 0,
+          "binary64_ratio": 0.0,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "raw-inline-lifetime-and-close",
+      "source": "a <script>**hidden**</script> **bb** c",
+      "source_bytes": 38,
+      "source_sha256": "d51b8c256aa8003089e48e96800c4364f25eb04a9c05eee6cad082a0132edc2d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "a <script>**hidden**</script> **bb** c",
+          "bytes": [
+            0,
+            38
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            39
+          ],
+          "eligible_scalar_witness": "abbc",
+          "emphasized_scalar_witness": "bb",
+          "total": 4,
+          "emphasized": 2,
+          "binary64_ratio": 0.5,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "raw-inline-lifetime-below-half",
+      "source": "a <script>**hidden**</script> **bb** c",
+      "source_bytes": 38,
+      "source_sha256": "d51b8c256aa8003089e48e96800c4364f25eb04a9c05eee6cad082a0132edc2d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "a <script>**hidden**</script> **bb** c",
+          "bytes": [
+            0,
+            38
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            39
+          ],
+          "eligible_scalar_witness": "abbc",
+          "emphasized_scalar_witness": "bb",
+          "total": 4,
+          "emphasized": 2,
+          "binary64_ratio": 0.5,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            38
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            39
+          ],
+          "text": "a <script>**hidden**</script> **bb** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 4,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "maximum_ratio": 0.49,
+      "minimum_characters": 1
+    },
+    {
+      "id": "raw-across-paragraphs",
+      "source": "a <script>\n\n**hidden**\n\n</script>\n\n**bb** c",
+      "source_bytes": 43,
+      "source_sha256": "95087f72e98fab1109e7b441bbd8643e892891be8c25f2f41971bc96c0e4ed57",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "a <script>",
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "eligible_scalar_witness": "a",
+          "emphasized_scalar_witness": "",
+          "total": 1,
+          "emphasized": 0,
+          "binary64_ratio": 0.0,
+          "active_at_range_start": true,
+          "report": false
+        },
+        {
+          "source_content": "**hidden**",
+          "bytes": [
+            12,
+            22
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            11
+          ],
+          "eligible_scalar_witness": "",
+          "emphasized_scalar_witness": "",
+          "total": 0,
+          "emphasized": 0,
+          "binary64_ratio": null,
+          "active_at_range_start": true,
+          "report": false
+        },
+        {
+          "source_content": "**bb** c",
+          "bytes": [
+            35,
+            43
+          ],
+          "start": [
+            7,
+            1
+          ],
+          "end": [
+            7,
+            9
+          ],
+          "eligible_scalar_witness": "bbc",
+          "emphasized_scalar_witness": "bb",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            35,
+            43
+          ],
+          "start": [
+            7,
+            1
+          ],
+          "end": [
+            7,
+            9
+          ],
+          "text": "**bb** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "html-closing-tail-opens-raw",
+      "source": "<script>\n</script>a <style>\n\n**hidden**\n\n</style>\n\n**bb** c",
+      "source_bytes": 59,
+      "source_sha256": "9c2033227f27ea93450bc697fd3de24c8e4b308cca39f08a5563162f07c79c7e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**hidden**",
+          "bytes": [
+            29,
+            39
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            11
+          ],
+          "eligible_scalar_witness": "",
+          "emphasized_scalar_witness": "",
+          "total": 0,
+          "emphasized": 0,
+          "binary64_ratio": null,
+          "active_at_range_start": true,
+          "report": false
+        },
+        {
+          "source_content": "**bb** c",
+          "bytes": [
+            51,
+            59
+          ],
+          "start": [
+            8,
+            1
+          ],
+          "end": [
+            8,
+            9
+          ],
+          "eligible_scalar_witness": "bbc",
+          "emphasized_scalar_witness": "bb",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            51,
+            59
+          ],
+          "start": [
+            8,
+            1
+          ],
+          "end": [
+            8,
+            9
+          ],
+          "text": "**bb** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "image-cannot-dilute",
+      "source": "**ab** ![very long plain alternative](x)",
+      "source_bytes": 40,
+      "source_sha256": "09ce1d36a1400953a78bf1ab2cf5b552d3e43a90d194ab825d5a4519e066b491",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** ![very long plain alternative](x)",
+          "bytes": [
+            0,
+            40
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            41
+          ],
+          "eligible_scalar_witness": "ab",
+          "emphasized_scalar_witness": "ab",
+          "total": 2,
+          "emphasized": 2,
+          "binary64_ratio": 1.0,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            40
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            41
+          ],
+          "text": "**ab** ![very long plain alternative](x)",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 2,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "image-alt-strong-excluded",
+      "source": "![**ab**](x)",
+      "source_bytes": 12,
+      "source_sha256": "14233a07edac7814dbd6f0dbfa34a87097c860c332664160301b714e5bbd1a5a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "![**ab**](x)",
+          "bytes": [
+            0,
+            12
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "eligible_scalar_witness": "",
+          "emphasized_scalar_witness": "",
+          "total": 0,
+          "emphasized": 0,
+          "binary64_ratio": null,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "outer-strong-over-image-excluded",
+      "source": "**![alt](x)** c",
+      "source_bytes": 15,
+      "source_sha256": "2dec782cc213836f58b6286fc72c0c47c570af74d292bcbc4bcd97ad2695e496",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**![alt](x)** c",
+          "bytes": [
+            0,
+            15
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "eligible_scalar_witness": "c",
+          "emphasized_scalar_witness": "",
+          "total": 1,
+          "emphasized": 0,
+          "binary64_ratio": 0.0,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "image-raw-opener-isolated",
+      "source": "![<script>](x) **ab** c",
+      "source_bytes": 23,
+      "source_sha256": "6a37bd3669148e5266f54dc18f37577b6b1357c750f8ae80cfb47145d74a3d42",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "![<script>](x) **ab** c",
+          "bytes": [
+            0,
+            23
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            23
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "text": "![<script>](x) **ab** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "image-raw-closer-cannot-release-outer",
+      "source": "a <script>![</script>](x)\n\n**hidden**",
+      "source_bytes": 37,
+      "source_sha256": "c72c6cd9cca6eb4e9e0e7a3d34e3ba387f182040f8bfa14e852b736dda895241",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "a <script>![</script>](x)",
+          "bytes": [
+            0,
+            25
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "eligible_scalar_witness": "a",
+          "emphasized_scalar_witness": "",
+          "total": 1,
+          "emphasized": 0,
+          "binary64_ratio": 0.0,
+          "active_at_range_start": true,
+          "report": false
+        },
+        {
+          "source_content": "**hidden**",
+          "bytes": [
+            27,
+            37
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            11
+          ],
+          "eligible_scalar_witness": "",
+          "emphasized_scalar_witness": "",
+          "total": 0,
+          "emphasized": 0,
+          "binary64_ratio": null,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "inline-link-label-transparent",
+      "source": "**[ab](very/long/destination \"long title\")** c",
+      "source_bytes": 46,
+      "source_sha256": "ba891c2f8dc7d36e2f132fa821840d4d7d3c45d143c41038dbc3b06664244b3b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**[ab](very/long/destination \"long title\")** c",
+          "bytes": [
+            0,
+            46
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            47
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            46
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            47
+          ],
+          "text": "**[ab](very/long/destination \"long title\")** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "strong-inside-link-label",
+      "source": "[**ab**](x) c",
+      "source_bytes": 13,
+      "source_sha256": "983eb6d6555654393946ac745d8382057fbae7d608d177b69fb7dfcb1a09d608",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "[**ab**](x) c",
+          "bytes": [
+            0,
+            13
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            13
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "[**ab**](x) c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "reference-label-transparent",
+      "source": "[r]: /very/long/destination \"long title\"\n\n**[ab][r]** c",
+      "source_bytes": 55,
+      "source_sha256": "9e9b6ea80bc1763e93b55cee4b614fd7363d670ea590ac15149be5ba06b8be09",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**[ab][r]** c",
+          "bytes": [
+            42,
+            55
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            14
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            42,
+            55
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            14
+          ],
+          "text": "**[ab][r]** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "angle-autolink-label-counted",
+      "source": "**ab** <https://x.test/z>",
+      "source_bytes": 25,
+      "source_sha256": "535dcdd061151dedf45059bf0e48d1d4a52712dcadec5ff3a1aba3799b8446d3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** <https://x.test/z>",
+          "bytes": [
+            0,
+            25
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "eligible_scalar_witness": "abhttps://x.test/z",
+          "emphasized_scalar_witness": "ab",
+          "total": 18,
+          "emphasized": 2,
+          "binary64_ratio": 0.1111111111111111,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "bare-url-label-counted",
+      "source": "**ab** https://x.test/z",
+      "source_bytes": 23,
+      "source_sha256": "bb32bdb484283920c806bff63b007d9ae2415ddd9bb2db00ab533764611702d2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** https://x.test/z",
+          "bytes": [
+            0,
+            23
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "eligible_scalar_witness": "abhttps://x.test/z",
+          "emphasized_scalar_witness": "ab",
+          "total": 18,
+          "emphasized": 2,
+          "binary64_ratio": 0.1111111111111111,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "gfm-table-excluded",
+      "source": "| **ab** |\n| --- |\n| c |",
+      "source_bytes": 24,
+      "source_sha256": "4cfad1a4bb466165bc74dc8c1b635029f03ac06f7d85e6504e53bf2ca3cb6ab3",
+      "flavors": [
+        "gfm"
+      ],
+      "paragraph_witnesses": [],
+      "findings": [],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "commonmark-pipe-paragraph",
+      "source": "| **ab** |\n| --- |\n| c |",
+      "source_bytes": 24,
+      "source_sha256": "4cfad1a4bb466165bc74dc8c1b635029f03ac06f7d85e6504e53bf2ca3cb6ab3",
+      "flavors": [
+        "commonmark"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "| **ab** |\n| --- |\n| c |",
+          "bytes": [
+            0,
+            24
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "eligible_scalar_witness": "|ab||---||c|",
+          "emphasized_scalar_witness": "ab",
+          "total": 12,
+          "emphasized": 2,
+          "binary64_ratio": 0.16666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            24
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "text": "| **ab** |\n| --- |\n| c |",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 12,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "maximum_ratio": 0,
+      "minimum_characters": 1
+    },
+    {
+      "id": "quote-multiline-envelope",
+      "source": "> **ab**\n> c",
+      "source_bytes": 12,
+      "source_sha256": "0cc92fa8c8928a7056beee0f452d074412001896f84d9a1b970cf62d292507cb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab**\n> c",
+          "bytes": [
+            2,
+            12
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            12
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "**ab**\n> c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "quote-lazy-envelope",
+      "source": "> **ab**\nc",
+      "source_bytes": 10,
+      "source_sha256": "2fd3fae3f7bb45d443700706788ef4006440fba7e72c3d875dd5687e35a65b56",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab**\nc",
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            2
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            2
+          ],
+          "text": "**ab**\nc",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "list-multiline-envelope",
+      "source": "- **ab**\n  c",
+      "source_bytes": 12,
+      "source_sha256": "5fd567d60f292df00f9a31632f16b7866a9ed61168c764d39c6853e824403adb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab**\n  c",
+          "bytes": [
+            2,
+            12
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            12
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "**ab**\n  c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "separate-item-paragraphs",
+      "source": "- **ab**\n\n- c",
+      "source_bytes": 13,
+      "source_sha256": "ebde0716368e97839bd5d978c14b5138fe6a2a8410b6babfe52c503583a083e2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab**",
+          "bytes": [
+            2,
+            8
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "ab",
+          "emphasized_scalar_witness": "ab",
+          "total": 2,
+          "emphasized": 2,
+          "binary64_ratio": 1.0,
+          "active_at_range_start": true,
+          "report": true
+        },
+        {
+          "source_content": "c",
+          "bytes": [
+            12,
+            13
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "eligible_scalar_witness": "c",
+          "emphasized_scalar_witness": "",
+          "total": 1,
+          "emphasized": 0,
+          "binary64_ratio": 0.0,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            8
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "**ab**",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 2,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "nested-item-paragraphs",
+      "source": "- **ab**\n  - c",
+      "source_bytes": 14,
+      "source_sha256": "9a6b6a3f87cd3c7c9da8628a6b4b0563fa24da97b0b23d2ac2bf4ab6ce940236",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab**",
+          "bytes": [
+            2,
+            8
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "ab",
+          "emphasized_scalar_witness": "ab",
+          "total": 2,
+          "emphasized": 2,
+          "binary64_ratio": 1.0,
+          "active_at_range_start": true,
+          "report": true
+        },
+        {
+          "source_content": "c",
+          "bytes": [
+            13,
+            14
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "eligible_scalar_witness": "c",
+          "emphasized_scalar_witness": "",
+          "total": 1,
+          "emphasized": 0,
+          "binary64_ratio": 0.0,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            8
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "**ab**",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 2,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "gfm-task-prefix-excluded",
+      "source": "- [x] **ab**",
+      "source_bytes": 12,
+      "source_sha256": "0488dc80f5839f95acda0953f5b1d6376f431ef48926f97e88ff0ad090980082",
+      "flavors": [
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab**",
+          "bytes": [
+            6,
+            12
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "eligible_scalar_witness": "ab",
+          "emphasized_scalar_witness": "ab",
+          "total": 2,
+          "emphasized": 2,
+          "binary64_ratio": 1.0,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            6,
+            12
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "text": "**ab**",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 2,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "commonmark-task-looking-text",
+      "source": "- [x] **ab**",
+      "source_bytes": 12,
+      "source_sha256": "0488dc80f5839f95acda0953f5b1d6376f431ef48926f97e88ff0ad090980082",
+      "flavors": [
+        "commonmark"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "[x] **ab**",
+          "bytes": [
+            2,
+            12
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "eligible_scalar_witness": "[x]ab",
+          "emphasized_scalar_witness": "ab",
+          "total": 5,
+          "emphasized": 2,
+          "binary64_ratio": 0.4,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "two-paragraph-two-findings",
+      "source": "**ab**\n\n**cd**",
+      "source_bytes": 14,
+      "source_sha256": "327de706494543594f08db774aecfd11f0da33d9f9556d4dbacb12f34c949f16",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab**",
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "eligible_scalar_witness": "ab",
+          "emphasized_scalar_witness": "ab",
+          "total": 2,
+          "emphasized": 2,
+          "binary64_ratio": 1.0,
+          "active_at_range_start": true,
+          "report": true
+        },
+        {
+          "source_content": "**cd**",
+          "bytes": [
+            8,
+            14
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "eligible_scalar_witness": "cd",
+          "emphasized_scalar_witness": "cd",
+          "total": 2,
+          "emphasized": 2,
+          "binary64_ratio": 1.0,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "**ab**",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 2,
+          "emphasized": 2
+        },
+        {
+          "bytes": [
+            8,
+            14
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "text": "**cd**",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 2,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "minimum-never-aggregates-paragraphs",
+      "source": "**a**\n\n**b**",
+      "source_bytes": 12,
+      "source_sha256": "59aecc32b637a6595bef0a6965d375ac0eca3bf49e32acdbb2249fd58ac7dfb3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**a**",
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "eligible_scalar_witness": "a",
+          "emphasized_scalar_witness": "a",
+          "total": 1,
+          "emphasized": 1,
+          "binary64_ratio": 1.0,
+          "active_at_range_start": true,
+          "report": false
+        },
+        {
+          "source_content": "**b**",
+          "bytes": [
+            7,
+            12
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "eligible_scalar_witness": "b",
+          "emphasized_scalar_witness": "b",
+          "total": 1,
+          "emphasized": 1,
+          "binary64_ratio": 1.0,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 2
+    },
+    {
+      "id": "leading-indent-and-trailing-trim",
+      "source": "  **ab** c  \n",
+      "source_bytes": 13,
+      "source_sha256": "ed639fa05699adae166ed73591bcc272b1d91df530a4fc8a46cf45b0be50f55e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "**ab** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "quote-crlf-content-envelope",
+      "source": "> **ab**\r\n> c\r\n",
+      "source_bytes": 15,
+      "source_sha256": "6431650ba6c9170e7bfd08f25c1ff4981822918d598db6c878343bdc4d18c392",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab**\r\n> c",
+          "bytes": [
+            2,
+            13
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            13
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "text": "**ab**\r\n> c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "definition-before-paragraph-remainder",
+      "source": "[r]: /x\n**ab** c",
+      "source_bytes": 16,
+      "source_sha256": "7642bc95d0527042d81aee24c8f63a10ba948c9606b2fa7d67a8226e56b7440b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            8,
+            16
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            16
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "text": "**ab** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "recognized-header-excluded",
+      "source": "---\na: x\n---\n**ab** c",
+      "source_bytes": 21,
+      "source_sha256": "205af61d35ae3901bb4d1bd72022dc00ed74dbf4f5e1cf214a4a83d38cd7256c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            13,
+            21
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            13,
+            21
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            9
+          ],
+          "text": "**ab** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1,
+      "frontmatter": true
+    },
+    {
+      "id": "recognized-bom-header",
+      "source": "﻿---\na: x\n---\n**ab** c",
+      "source_bytes": 24,
+      "source_sha256": "b536278f73e5cf499ac8be01c8ee99dca8eda56242807118a648d9ccf2ea3af9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            16,
+            24
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            16,
+            24
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            9
+          ],
+          "text": "**ab** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1,
+      "frontmatter": true
+    },
+    {
+      "id": "unrecognized-bom-is-format-scalar",
+      "source": "﻿**ab** c",
+      "source_bytes": 11,
+      "source_sha256": "b91c43f1887ac299ce9aa62c7f39ba8b902de1abbe81610da38d070f56cec5e8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "﻿**ab** c",
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "eligible_scalar_witness": "﻿abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 4,
+          "emphasized": 2,
+          "binary64_ratio": 0.5,
+          "active_at_range_start": true,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "original-unicode-range",
+      "source": "雪 **ab** c",
+      "source_bytes": 12,
+      "source_sha256": "1dfa34ed25fbdc6b95234765367633eb5e8418a9eb352679e4a1341a48e3edd1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "雪 **ab** c",
+          "bytes": [
+            0,
+            12
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "eligible_scalar_witness": "雪abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 4,
+          "emphasized": 2,
+          "binary64_ratio": 0.5,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            12
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "雪 **ab** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 4,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "maximum_ratio": 0.49,
+      "minimum_characters": 1
+    },
+    {
+      "id": "default-omitted-disabled",
+      "source": "**ab** c",
+      "source_bytes": 8,
+      "source_sha256": "ded95727a00a8a1fedc9a8e92995e64b8470677093a655555805b864e8fc6d9e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": false,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "minimum_characters": 1
+    },
+    {
+      "id": "explicit-disabled",
+      "source": "**ab** c",
+      "source_bytes": 8,
+      "source_sha256": "ded95727a00a8a1fedc9a8e92995e64b8470677093a655555805b864e8fc6d9e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": false,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": false,
+      "minimum_characters": 1
+    },
+    {
+      "id": "disable-before-paragraph",
+      "source": "<!-- mdchk:disable MD081 -->\n**ab** c",
+      "source_bytes": 37,
+      "source_sha256": "ef93a9a041711dafa8b88420e741b22c629f16d81d1f16ff1d0575f9b1bfcf38",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            29,
+            37
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": false,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "rule-directive-denied",
+      "source": "<!-- mdchk:disable MD081 -->\n**ab** c",
+      "source_bytes": 37,
+      "source_sha256": "ef93a9a041711dafa8b88420e741b22c629f16d81d1f16ff1d0575f9b1bfcf38",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            29,
+            37
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            29,
+            37
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "text": "**ab** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1,
+      "allow_directives": false
+    },
+    {
+      "id": "global-directive-denied",
+      "source": "<!-- mdchk:disable MD081 -->\n**ab** c",
+      "source_bytes": 37,
+      "source_sha256": "ef93a9a041711dafa8b88420e741b22c629f16d81d1f16ff1d0575f9b1bfcf38",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            29,
+            37
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            29,
+            37
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "text": "**ab** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1,
+      "directives_enabled": false
+    },
+    {
+      "id": "internal-disable-does-not-split",
+      "source": "**ab** <!-- mdchk:disable MD081 --> c",
+      "source_bytes": 37,
+      "source_sha256": "f61f5100885c8b5cdb1778b3dda51917be977cb876c6a1b3a5ac5a631edf90c2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** <!-- mdchk:disable MD081 --> c",
+          "bytes": [
+            0,
+            37
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            38
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            37
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            38
+          ],
+          "text": "**ab** <!-- mdchk:disable MD081 --> c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": true,
+      "minimum_characters": 1
+    },
+    {
+      "id": "initial-off-enabled-before-paragraph",
+      "source": "<!-- mdchk:enable MD081 -->\n**ab** c",
+      "source_bytes": 36,
+      "source_sha256": "b8eabca70371f0677fe5dd0af951ed048c46b4e18529f09c8d9a7057c787e541",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** c",
+          "bytes": [
+            28,
+            36
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": true,
+          "report": true
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            28,
+            36
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "text": "**ab** c",
+          "message": "Paragraph contains excessive bold or italic text.",
+          "total": 3,
+          "emphasized": 2
+        }
+      ],
+      "enabled": false,
+      "minimum_characters": 1
+    },
+    {
+      "id": "initial-off-enable-inside-not-retroactive",
+      "source": "**ab** <!-- mdchk:enable MD081 --> c",
+      "source_bytes": 36,
+      "source_sha256": "2b04bdb7869865844d318a0684aa143b55a2af370752e011ab7a591789bfd9af",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "paragraph_witnesses": [
+        {
+          "source_content": "**ab** <!-- mdchk:enable MD081 --> c",
+          "bytes": [
+            0,
+            36
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            37
+          ],
+          "eligible_scalar_witness": "abc",
+          "emphasized_scalar_witness": "ab",
+          "total": 3,
+          "emphasized": 2,
+          "binary64_ratio": 0.6666666666666666,
+          "active_at_range_start": false,
+          "report": false
+        }
+      ],
+      "findings": [],
+      "enabled": false,
+      "minimum_characters": 1
+    }
+  ]
+}

@@ -767,3 +767,21 @@ gap, at present zero-width original points: before own indentation after actual
 prefixes, and after trailing content before the whole physical ending. Full raw
 and body context precedes START suppression and inspection selection. This rule
 is analysis-only and grants no insertion/correction authority.
+
+
+## Paragraph emphasis population (MD081)
+
+MD081 is default disabled, RequiresSyntax and permanently NoFix for CommonMark
+and GFM. Each actual Paragraph independently counts non-CommonMark-whitespace,
+non-Cc semantic Text scalars; actual Emphasis/Strong ancestry is a boolean union.
+Escapes, breaks, code, images, headings/tables, raw/comment payload and recognized
+headers are excluded from both populations. All actual link-label origins count
+once. Entity/Normalized/PartialTab values are consumed semantically without a new
+decode; Cf, LS/PS, combining and astral scalars retain individual contributions.
+
+D>0 and inclusive total D>=minimum precede strict binary64 E/D>ratio, without an
+epsilon or multiplication substitution. One manual finding owns the full original
+trimmed Paragraph Content hull, including markup and interior container gaps.
+The fixed message is `Paragraph contains excessive bold or italic text.` Full
+original counts precede START suppression and inspection filtering. See the
+[MD081 rule page](../rules/formatting/md081.md) for options and exact exclusions.
