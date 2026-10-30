@@ -167,3 +167,10 @@ remain manual, with no correction eligibility, edits or previews.
 MD050 retains the earliest actual eligible Strong opening across full original
 context, including hidden intervals. Finding suppression uses only that Strong's
 two-byte Opening START, independently of closing state or inspect selection.
+
+MD065 evaluates full immediate source-body context, including retained definitions,
+before filtering each missing-side zero-width point at its own START. Recognized
+headers are outside the root body; nested containers keep independent edges.
+Before points follow actual ancestor/owner prefixes, and after points precede
+physical endings on the same thematic line. Disabled neighbors remain context;
+inspection selection cannot recompute adjacency or reset semantic raw lifetimes.

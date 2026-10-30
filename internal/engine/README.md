@@ -579,3 +579,15 @@ its opening START even when closing state differs. The same delimiter facade
 preserves MD037 empty options and narrowly admits one valid resolved style;
 MD049 additionally rejects absent internal style. All projections and final
 publication retain caller/origin authority and the original finite allowance.
+
+MD065 analysis uses a narrow completed-original ThematicSpacing projection and an
+optionless RuleContext facade. A full tree/inline/tail walk preserves semantic raw
+lifetimes and image isolation; a separate body walk merges retained definitions
+with direct source participants. Actual prefix rollback and terminal list/item
+content floors preserve immediate physical separators. Detached Point/Before facts
+carry present zero-width original evidence only. No source, parse, index, options,
+allowance, AST inspection field or correction capability is added. Producer,
+facade, comparison and whole callback reserve work/storage before use and finalize
+under both caller and originating controls; any error withholds dependent output,
+including empty, clean, protected-only and post-construction paths. MD065 remains
+default enabled and report-only for CommonMark and GFM.

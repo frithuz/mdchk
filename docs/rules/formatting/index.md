@@ -10,6 +10,6 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD044](md044.md) | Capitalization of configured names | Planned |
 | [MD049](md049.md) | Italic delimiter style | Analysis implemented; corrections planned |
 | [MD050](md050.md) | Bold delimiter style | Analysis implemented; corrections planned |
-| [MD065](md065.md) | Blank lines around horizontal rules | Planned |
+| [MD065](md065.md) | Blank lines around horizontal rules | Analysis implemented; corrections deferred |
 | [MD081](md081.md) | Overuse of bold and italic text | Planned |
 | [MD088](md088.md) | Quote and dash normalization | Planned |

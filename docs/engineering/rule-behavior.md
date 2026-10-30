@@ -754,3 +754,16 @@ MD027 specializes final ordinary Paragraph contributions and actual prose-facing
 
 
 MD028 compares consecutive final quote siblings with the same direct parent. Only an entire ordinary ASCII blank-body gap qualifies; actual literal/raw/header ownership and removed definitions intervene. Each physical line reports its remaining original body, including a present empty span after an atomic prefix-owned TAB. See [MD028](../rules/whitespace/md028.md).
+
+### Horizontal-rule body spacing
+
+MD065 compares actual unprotected thematic breaks only within their immediate
+Document, BlockQuote or ListItem body. Retained reference definitions remain
+source participants; recognized headers are outside root body edges. Only actual
+owner/ancestor prefixes may be removed when checking the immediately adjacent
+physical ASCII SPACE/TAB blank. Deeper syntax and opaque payload blanks remain
+content. Emit each deficient side separately, including both sides of a shared
+gap, at present zero-width original points: before own indentation after actual
+prefixes, and after trailing content before the whole physical ending. Full raw
+and body context precedes START suppression and inspection selection. This rule
+is analysis-only and grants no insertion/correction authority.
