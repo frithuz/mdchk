@@ -1,0 +1,825 @@
+{
+  "issue": 82,
+  "base": "6f6f283053f2ebc9986c6a708d9115967b4ac75c",
+  "authority": "Root independently authored literal expectations after adopted policy; no product/parser/counter/timing probes.",
+  "conventions": {
+    "settings": "Disable unrelated rules; enable MD087 and named production target unless a case overrides. Preserve normal resource/permission admission.",
+    "ranges": "byte start inclusive/end exclusive; public one-based Unicode scalar line/column; final owner interval includes EOF",
+    "message": "Suppression for TARGET hides no findings.",
+    "fix_available": false,
+    "result_order": "Normal canonical output ordering; compare target decisions by owner and ID, not incidental callback order."
+  },
+  "cases": [
+    {
+      "name": "single-clean-heading",
+      "source": "<!-- mdchk:disable MD001 -->\n# A\n",
+      "findings": [
+        {
+          "target": "MD001",
+          "bytes": [
+            19,
+            24
+          ],
+          "range": [
+            1,
+            20,
+            1,
+            25
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "unused",
+          "interval": [
+            28,
+            33
+          ],
+          "eof": true
+        }
+      ],
+      "complete": true
+    },
+    {
+      "name": "one-hidden-jump",
+      "source": "# A\n<!-- mdchk:disable MD001 -->\n### B\n",
+      "findings": [],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "used",
+          "interval": [
+            32,
+            39
+          ],
+          "eof": true
+        }
+      ],
+      "complete": true
+    },
+    {
+      "name": "repeated-disable-owns-new-interval",
+      "source": "# A\n<!-- mdchk:disable MD001 -->\n<!-- mdchk:disable MD001 -->\n### B\n",
+      "findings": [
+        {
+          "target": "MD001",
+          "bytes": [
+            23,
+            28
+          ],
+          "range": [
+            2,
+            20,
+            2,
+            25
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "unused",
+          "interval": [
+            32,
+            61
+          ],
+          "eof": false
+        },
+        {
+          "owner": 1,
+          "target": "MD001",
+          "status": "used",
+          "interval": [
+            61,
+            68
+          ],
+          "eof": true
+        }
+      ],
+      "complete": true,
+      "obligation": "One shared target callback; no deletion/replay."
+    },
+    {
+      "name": "mixed-order-and-duplicate",
+      "source": "# A\n<!-- mdchk:disable MD047 MD001 MD047 -->\n### B\n",
+      "findings": [
+        {
+          "target": "MD047",
+          "bytes": [
+            23,
+            28
+          ],
+          "range": [
+            2,
+            20,
+            2,
+            25
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD047",
+          "status": "unused",
+          "interval": [
+            44,
+            51
+          ],
+          "eof": true
+        },
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "used",
+          "interval": [
+            44,
+            51
+          ],
+          "eof": true
+        }
+      ],
+      "named_tokens": [
+        [
+          23,
+          28
+        ],
+        [
+          29,
+          34
+        ],
+        [
+          35,
+          40
+        ]
+      ],
+      "complete": true
+    },
+    {
+      "name": "eof-terminal-finding-owned",
+      "source": "<!-- mdchk:disable MD047 -->",
+      "findings": [],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD047",
+          "status": "used",
+          "interval": [
+            28,
+            28
+          ],
+          "eof": true
+        }
+      ],
+      "complete": true,
+      "obligation": "Real MD047 EOF finding at byte28; observational execution bypasses TerminalEditEligible and extra candidate parse."
+    },
+    {
+      "name": "terminal-clean-lf",
+      "source": "<!-- mdchk:disable MD047 -->\n",
+      "findings": [
+        {
+          "target": "MD047",
+          "bytes": [
+            19,
+            24
+          ],
+          "range": [
+            1,
+            20,
+            1,
+            25
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD047",
+          "status": "unused",
+          "interval": [
+            28,
+            29
+          ],
+          "eof": true
+        }
+      ],
+      "complete": true
+    },
+    {
+      "name": "eof-no-heading-finding",
+      "source": "<!-- mdchk:disable MD001 -->",
+      "findings": [
+        {
+          "target": "MD001",
+          "bytes": [
+            19,
+            24
+          ],
+          "range": [
+            1,
+            20,
+            1,
+            25
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "unused",
+          "interval": [
+            28,
+            28
+          ],
+          "eof": true
+        }
+      ],
+      "complete": true
+    },
+    {
+      "name": "astral-crlf",
+      "source": "😀 <!-- mdchk:disable MD001 -->\r\n# A\r\n",
+      "findings": [
+        {
+          "target": "MD001",
+          "bytes": [
+            24,
+            29
+          ],
+          "range": [
+            1,
+            22,
+            1,
+            27
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "unused",
+          "interval": [
+            33,
+            40
+          ],
+          "eof": true
+        }
+      ],
+      "complete": true
+    },
+    {
+      "name": "blockquote-original-source",
+      "source": "> <!-- mdchk:disable MD001 -->\n",
+      "findings": [
+        {
+          "target": "MD001",
+          "bytes": [
+            21,
+            26
+          ],
+          "range": [
+            1,
+            22,
+            1,
+            27
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "unused",
+          "interval": [
+            30,
+            31
+          ],
+          "eof": true
+        }
+      ],
+      "complete": true
+    },
+    {
+      "name": "list-original-source",
+      "source": "- <!-- mdchk:disable MD001 -->\n",
+      "findings": [
+        {
+          "target": "MD001",
+          "bytes": [
+            21,
+            26
+          ],
+          "range": [
+            1,
+            22,
+            1,
+            27
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "unused",
+          "interval": [
+            30,
+            31
+          ],
+          "eof": true
+        }
+      ],
+      "complete": true
+    },
+    {
+      "name": "multiline-token",
+      "source": "<!-- mdchk:disable\nMD001 -->\n",
+      "findings": [
+        {
+          "target": "MD001",
+          "bytes": [
+            19,
+            24
+          ],
+          "range": [
+            2,
+            1,
+            2,
+            6
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "unused",
+          "interval": [
+            28,
+            29
+          ],
+          "eof": true
+        }
+      ],
+      "complete": true
+    },
+    {
+      "name": "self-turns-off-only-after-close",
+      "source": "<!-- mdchk:disable MD087 MD001 -->\n",
+      "findings": [
+        {
+          "target": "MD001",
+          "bytes": [
+            25,
+            30
+          ],
+          "range": [
+            1,
+            26,
+            1,
+            31
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD087",
+          "status": "excluded"
+        },
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "unused",
+          "interval": [
+            34,
+            35
+          ],
+          "eof": true
+        }
+      ],
+      "complete": true
+    },
+    {
+      "name": "audit-off-at-token",
+      "source": "<!-- mdchk:disable MD087 MD001 -->\n",
+      "settings": {
+        "MD087": false,
+        "MD001": true
+      },
+      "findings": [],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD087",
+          "status": "excluded"
+        },
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "not-requested"
+        }
+      ],
+      "audit_target_demand": 0,
+      "complete": true
+    },
+    {
+      "name": "configured-off-target-incapable",
+      "source": "# A\n<!-- mdchk:disable MD001 -->\n### B\n",
+      "settings": {
+        "MD087": true,
+        "MD001": false
+      },
+      "findings": [
+        {
+          "target": "MD001",
+          "bytes": [
+            23,
+            28
+          ],
+          "range": [
+            2,
+            20,
+            2,
+            25
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "unused"
+        }
+      ],
+      "audit_target_demand": 0,
+      "complete": true
+    },
+    {
+      "name": "allowed-enable-before-disable",
+      "source": "<!-- mdchk:enable MD001 -->\n# A\n<!-- mdchk:disable MD001 -->\n### B\n",
+      "settings": {
+        "MD087": true,
+        "MD001": false
+      },
+      "findings": [],
+      "decisions": [
+        {
+          "owner": 1,
+          "target": "MD001",
+          "status": "used",
+          "interval": [
+            60,
+            67
+          ],
+          "eof": true
+        }
+      ],
+      "complete": true
+    },
+    {
+      "name": "denied-instructions-do-not-create-capability",
+      "source": "<!-- mdchk:enable MD001 -->\n# A\n<!-- mdchk:disable MD001 -->\n### B\n",
+      "settings": {
+        "MD087": true,
+        "MD001": false
+      },
+      "policy": "Inherited MD001 allow_directives=false applies to both enable and disable.",
+      "findings": [],
+      "decisions": [],
+      "audit_target_demand": 0,
+      "complete": true,
+      "obligation": "Both comments blocked with denial provenance; neither owns an interval. No target demand."
+    },
+    {
+      "name": "disable-then-enable-ends-owner",
+      "source": "# A\n<!-- mdchk:disable MD001 -->\n<!-- mdchk:enable MD001 -->\n### B\n",
+      "findings": [
+        {
+          "target": "MD001",
+          "bytes": [
+            23,
+            28
+          ],
+          "range": [
+            2,
+            20,
+            2,
+            25
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "unused",
+          "interval": [
+            32,
+            60
+          ],
+          "eof": false
+        }
+      ],
+      "ordinary_target_violation": true,
+      "complete": true
+    },
+    {
+      "name": "known-unavailable-mixed",
+      "source": "# A\n<!-- mdchk:disable MD047 MD001 MD047 MD011 -->\n### B\n",
+      "settings": "Default-enabled unavailable MD011 retained; do not explicitly enable it in config. Explicitly enable MD087, MD001, MD047.",
+      "findings": [
+        {
+          "target": "MD047",
+          "bytes": [
+            23,
+            28
+          ],
+          "range": [
+            2,
+            20,
+            2,
+            25
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD047",
+          "status": "unused"
+        },
+        {
+          "owner": 0,
+          "target": "MD001",
+          "status": "used"
+        },
+        {
+          "owner": 0,
+          "target": "MD011",
+          "status": "uncertain"
+        }
+      ],
+      "md087_incomplete": true,
+      "complete": false
+    },
+    {
+      "name": "unknown-id-invalidates-entire-comment",
+      "source": "<!-- mdchk:disable MD001 MD999 -->\n",
+      "findings": [],
+      "decisions": [],
+      "audit_target_demand": 0,
+      "obligation": "Retain ordinary directive syntax diagnostic, not MD087."
+    },
+    {
+      "name": "blocked-disable",
+      "source": "<!-- mdchk:disable MD001 -->\n",
+      "policy": "Inherited MD001 allow_directives=false for all document directives.",
+      "findings": [],
+      "decisions": [],
+      "audit_target_demand": 0,
+      "obligation": "Inspection retains blocked permission/effect and restriction provenance, no fabricated interval/usefulness."
+    },
+    {
+      "name": "global-directives-off",
+      "source": "<!-- mdchk:disable MD001 -->\n",
+      "policy": "Global directives disabled.",
+      "findings": [],
+      "decisions": [],
+      "audit_target_demand": 0,
+      "obligation": "Raw inactive inspection, no syntax diagnostic."
+    },
+    {
+      "name": "fenced-literal",
+      "source": "```\n<!-- mdchk:disable MD001 -->\n```\n",
+      "findings": [],
+      "decisions": [],
+      "audit_target_demand": 0
+    },
+    {
+      "name": "inline-code-literal",
+      "source": "`<!-- mdchk:disable MD001 -->`\n",
+      "findings": [],
+      "decisions": [],
+      "audit_target_demand": 0
+    },
+    {
+      "name": "metadata-literal",
+      "source": "---\nnote: '<!-- mdchk:disable MD001 -->'\n---\n",
+      "context": "Recognize YAML frontmatter without decoding it.",
+      "findings": [],
+      "decisions": [],
+      "audit_target_demand": 0
+    },
+    {
+      "name": "production-md086-use",
+      "source": "<!-- mdchk:disable MD086 -->\n<!-- open",
+      "findings": [],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD086",
+          "status": "used",
+          "interval": [
+            28,
+            38
+          ],
+          "eof": true
+        }
+      ],
+      "obligation": "Real MD086 published opener finding starts29, not directive-like data inside unclosed text."
+    },
+    {
+      "name": "production-md086-clean",
+      "source": "<!-- mdchk:disable MD086 -->\n<!-- ok -->\n",
+      "findings": [
+        {
+          "target": "MD086",
+          "bytes": [
+            19,
+            24
+          ],
+          "range": [
+            1,
+            20,
+            1,
+            25
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "owner": 0,
+          "target": "MD086",
+          "status": "unused"
+        }
+      ],
+      "complete": true
+    },
+    {
+      "name": "candidate-and-saved-md047",
+      "source": "<!-- mdchk:disable MD001 -->\ntext",
+      "findings": [
+        {
+          "target": "MD001",
+          "bytes": [
+            19,
+            24
+          ],
+          "range": [
+            1,
+            20,
+            1,
+            25
+          ]
+        }
+      ],
+      "original_bytes": 33,
+      "candidate": "<!-- mdchk:disable MD001 -->\ntext\n",
+      "saved": "<!-- mdchk:disable MD001 -->\ntext\n",
+      "candidate_bytes": 34,
+      "saved_bytes": 34,
+      "obligation": "Separately authorize real ordinary MD047 only; original EOF33 then candidate/saved EOF34. Same MD087 token/message, view-specific snapshots, cumulative residual budget, second run stable. MD087 creates no edits/previews."
+    }
+  ],
+  "controlled_provider_cases": [
+    {
+      "name": "reliable-partial-positive",
+      "source_case": "repeated-disable-owns-new-interval",
+      "provider": "Publish a valid otherwise-reportable finding starting62 plus IncompleteReason.",
+      "decisions": [
+        "owner0 uncertain",
+        "owner1 used"
+      ],
+      "findings": [],
+      "md087_incomplete": true
+    },
+    {
+      "name": "noninterrupt-error-positive",
+      "source_case": "one-hidden-jump",
+      "provider": "Publish valid finding starting33 plus a typed noninterrupt error; validation remains possible.",
+      "decisions": [
+        "owner0 used"
+      ],
+      "obligation": "Preserve typed operational error; no absence credit."
+    },
+    {
+      "name": "atomic-md086-failure",
+      "source_case": "production-md086-use",
+      "provider": "Fault actual MD086 publication/facade gate so it returns nil Findings with error.",
+      "decisions": [
+        "owner0 uncertain"
+      ],
+      "findings": [],
+      "obligation": "No recovery of private discarded finding."
+    },
+    {
+      "name": "foreign-or-invalid-span",
+      "source_case": "single-clean-heading",
+      "provider": "Publish foreign-source/out-of-range/non-scalar-boundary finding.",
+      "decisions": [
+        "owner0 uncertain"
+      ],
+      "findings": [],
+      "obligation": "Existing invalid-finding error; no use or absence credit."
+    },
+    {
+      "name": "crossing-owner-boundary",
+      "source_case": "repeated-disable-owns-new-interval",
+      "provider": "Publish eligible valid finding [60,63), crossing boundary61.",
+      "decisions": [
+        "owner0 used",
+        "owner1 unused"
+      ],
+      "obligation": "Attribute by START60 alone; complete provider."
+    },
+    {
+      "name": "byte-zero-before-disable",
+      "source_case": "single-clean-heading",
+      "provider": "Publish complete valid file-wide finding starting0.",
+      "decisions": [
+        "owner0 unused"
+      ],
+      "obligation": "Byte-zero finding belongs configuration, not later disable."
+    },
+    {
+      "name": "boundary-at-owner-start",
+      "source_case": "repeated-disable-owns-new-interval",
+      "provider": "Publish complete valid zero-width finding [61,61).",
+      "decisions": [
+        "owner0 unused",
+        "owner1 used"
+      ]
+    },
+    {
+      "name": "earlier-conclusion-later-interruption",
+      "provider": "Conclude and publish an independent unused target, then a different target callback cancels/exhausts original operation.",
+      "obligation": "Keep earlier finding/conclusion, typed actual cause/limit; remaining relevant candidates uncertain. No fresh validation or unmetered source work after sticky failure."
+    },
+    {
+      "name": "returned-unvalidated-interrupted-findings",
+      "source_case": "one-hidden-jump",
+      "provider": "Exhaust/cancel inside callback then return a finding not previously engine validated.",
+      "decisions": [
+        "owner0 uncertain"
+      ],
+      "obligation": "Do not newly project/credit after sticky interruption."
+    },
+    {
+      "name": "later-catalog-id",
+      "provider": "Register actual source-view callback for a catalog target after MD087; disable it in original source.",
+      "obligation": "Audit after valid shared observation, not catalog-order guessed absence; one callback per target."
+    },
+    {
+      "name": "affirmative-inapplicability",
+      "source_case": "single-clean-heading",
+      "provider": "Actual applicability predicate returns false for supplied supported flavor/context.",
+      "decisions": [
+        "owner0 unused"
+      ],
+      "obligation": "Do not substitute missing context/integration for this affirmative proof."
+    },
+    {
+      "name": "missing-integration",
+      "source_case": "single-clean-heading",
+      "provider": "Required authorized integration unavailable, no findings.",
+      "decisions": [
+        "owner0 uncertain"
+      ],
+      "findings": [],
+      "md087_incomplete": true
+    },
+    {
+      "name": "excluded-targets",
+      "provider": "One valid disable lists MD074 MD094 MD087 and eligible MD001.",
+      "obligation": "Only eligible MD001 audited; MD087 excluded; MD074/094 retain ordinary inapplicable effects. No completeness loss from exclusions."
+    },
+    {
+      "name": "inspect-full-before-focus",
+      "source_case": "repeated-disable-owns-new-interval",
+      "focus": "line4",
+      "obligation": "Full-source owner0 unused/owner1 used unchanged; relevant preceding owning directive/interval retained context_only. Validate schema and semantics."
+    },
+    {
+      "name": "operation-isolation",
+      "source_case": "single-clean-heading",
+      "obligation": "Independent documents/requests cannot reuse another source's observations, token, state, budget or snapshots."
+    },
+    {
+      "name": "actual-native-no-cgo",
+      "source_case": "candidate-and-saved-md047",
+      "obligation": "Normal actual CGO0 CLI refuses requested metadata write early under existing contract; no fabricated engine-only proof."
+    },
+    {
+      "name": "bounded-all-stages",
+      "obligation": "Source-only cost authority required before runtime. Cover candidates, dedupe, owner/anchor joins, shared observations, retained records, focus and output omission using original finite budget; no empirical fitting."
+    }
+  ]
+}

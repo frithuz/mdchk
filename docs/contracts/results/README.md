@@ -3,7 +3,7 @@
 The accepted schema-1 producer contract uses JSON Schema 2020-12. The
 [semantic contract](../../engineering/results.md) supplies cross-record,
 byte-identity, completeness, and operation-specific requirements beyond JSON Schema.
-`fixtures.json` identifies the 18 result/projection fixtures and expected CLI exits.
+`fixtures.json` identifies the result/projection fixtures and expected CLI exits.
 
 Validate in an isolated Python environment:
 
@@ -49,3 +49,11 @@ The delivered document-context projection retains the existing `slides`,
 configured pattern. Optional `slide_match` adds its exact index and origin without
 changing schema version or granting metadata/resource authority. Unresolved context
 uses section availability rather than a guessed false or absent value.
+
+The suppression-audit directive fixture shows independent per-target reasons
+while retaining all duplicate named tokens and ordinary permission/effect
+state. Actual MD087 producer tests validate both the closed schema and semantic
+owner/token/state joins for full and selected inspection. Negative mutations
+reject invented reasons, blocked-effect conclusions, missing first tokens,
+wrong self exclusion and missing disable ownership. Existing non-audit reason
+strings retain their open explanation grammar.

@@ -87,6 +87,16 @@ def inspection_semantic(x):
     for d in directives:
         bounded(d['byte_range']);require(d['byte_range']['start']<=d['closing_offset']<=d['byte_range']['end'],'directive closing offset outside envelope')
         for token in d.get('named_tokens',[]):bounded(token['byte_range']);require(d['byte_range']['start']<=token['byte_range']['start']<=token['byte_range']['end']<=d['byte_range']['end'],'directive token outside envelope')
+    audit_reasons={'suppression-used','suppression-unused','suppression-uncertain','suppression-excluded','suppression-not-requested'}
+    for d in directives:
+        for effect in d['effects']:
+            reason=effect.get('reason','')
+            if reason.startswith('suppression-'):
+                require(reason in audit_reasons,'unknown suppression audit reason')
+                require(d.get('operation')=='disable' and effect['effect']=='disable' and effect['permission']=='allowed','audit conclusion on ineligible effect')
+                require(effect['rule'] not in ('MD074','MD094'),'audit conclusion on nondocument target')
+                require((reason=='suppression-excluded')==(effect['rule']=='MD087'),'invalid suppression self exclusion')
+                require(any(t['name']==effect['rule'] for t in d.get('named_tokens',[])),'audit decision lacks actual target token')
     ast=section('ast')
     if ast:
         require(ast['snapshot']==snapshot,'AST snapshot identity mismatch')
@@ -204,6 +214,18 @@ def inspection_semantic(x):
                 for region in coverage['byte_ranges']:bounded(region)
                 if coverage['availability']=='complete':require(r[status]=='complete' and coverage['byte_ranges']==[{'start':0,'end':size}],'unproven complete rule source coverage')
                 else:require(not coverage['byte_ranges'] and not coverage['ranges'],'unknown coverage claims evaluated regions')
+    if section('rules') is not None:
+        for d in directives:
+            for effect in d['effects']:
+                if effect.get('reason','') in audit_reasons:
+                    require(any(r['rule']==effect['rule'] and any(i.get('directive_id')==d['id'] and not i['enabled'] for i in r['intervals']) for r in rules),'audit decision lacks actual disable ownership')
+                    if effect['rule']!='MD087':
+                        token=next(t for t in d['named_tokens'] if t['name']==effect['rule'])
+                        audit=next((r for r in rules if r['rule']=='MD087'),None)
+                        if audit and audit['effective_state']!='unresolved':
+                            at=token['byte_range']['start']
+                            enabled=any(i['enabled'] and i['byte_range']['start']<=at and (at<i['byte_range']['end'] or at==i['byte_range']['end']==size) for i in audit['intervals'])
+                            require((effect['reason']=='suppression-not-requested')== (not enabled),'audit token state mismatch')
     if selected_region:
         counts=section('rule_counts')
         resolved=all(r['effective_state']!='unresolved' for r in rules) and section('rules') is not None

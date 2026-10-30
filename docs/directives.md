@@ -9,8 +9,9 @@ fix and inspect. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, 
 illustrate rule-state syntax for an unavailable check. Permitted directives that
 enable unavailable rules produce incomplete coverage. Independently recognized
 YAML/TOML headers remain protected from directives, including when MD001, MD025 or MD041 consumes
-a title. Resource consumers, MCP and MD087 counterfactual checks remain planned;
-their semantics below describe the accepted future contract.
+a title. MD087 suppression audits are available. Resource consumers and MCP
+parity retain their separate delivery gates; their semantics below describe
+the accepted future contract.
 
 [MD081 paragraph-emphasis analysis](rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.
@@ -116,7 +117,7 @@ Inspect includes directives in that region and earlier directives still affectin
 
 MD074 is project-scoped and MD094 controls pre-parse UTF-8 error attribution; directives targeting either have an inapplicable effect. A valid mixed-rule comment still applies its other permitted effects. UTF-8 validation cannot be disabled.
 
-Once implemented, MD087 observes otherwise-enabled target rules without disable intervals, on the original source and shared budgets. Last permitted disable instructions own intervals, including repeated disables. A proved hidden finding establishes use; only complete absence establishes an unused suppression. Missing context, unavailable rules or interruption withhold that conclusion and report incomplete coverage. See the [counterfactual contract](engineering/rule-behavior.md#unused-suppressions).
+MD087 observes otherwise-enabled target rules without disable intervals, on the original source and shared budgets. Last permitted disable instructions own intervals, including repeated disables. A proved hidden finding establishes use; only complete absence establishes an unused suppression. Missing context, unavailable rules or interruption withhold that conclusion and report incomplete coverage. See the [counterfactual contract](engineering/rule-behavior.md#unused-suppressions).
 
 MD032 establishes source adjacency and blank ownership before suppression.
 Missing before points use the first list marker; missing after points use the

@@ -20,8 +20,7 @@ is incomplete. Observation errors remain separate from active findings.
 
 Analyze supplies full-document data with counts `not-requested`. Filter adds
 contextual selection and counts as described below. The inspect CLI renders this
-projection in text/JSON and preserves its identities and causal links. It implements neither
-MD087 counterfactual conclusions nor additional rule implementations. Resource,
+projection in text/JSON and preserves its identities and causal links. It includes MD087 per-target suppression conclusions from the shared engine. Resource,
 semantic metadata and slide processing retain their own admission gates;
 no CommonMark substitute or guessed document context is supplied.
 
@@ -152,8 +151,21 @@ work has `not-requested` coverage. The shared validator checks these invariants.
 the same original source, options, parser context and budget. It invokes eligible
 callbacks once, records their separate status, and puts their findings solely in
 `suppressed_diagnostics` with configuration/directive attribution. Disabled
-observation invokes none. MD087 is never recursively observed. This mechanism
-does not infer used/unused suppression counterfactuals.
+observation invokes none. MD087 is never recursively observed. MD087 separately requests the observations needed by active candidate tokens;
+ordinary, audit and optional inactive demand share one actual target execution.
+Observation-only callbacks bypass correction eligibility inside RuleContext,
+including MD047 terminal/GFM eligibility. Ordinary active findings retain their
+existing correction support.
+
+Ordinary active and independently requested inactive presentation can retain
+reliable provider-published findings after execution interruption using the
+existing finite operation-wide reporting reserve. Their evaluation remains
+partial or failed with unknown coverage; finite reporting exhaustion omits whole
+records. That presentation authority cannot establish new MD087 use, unusedness,
+ownership, would-be enablement or complete audit coverage. MD087 admission uses
+the original live execution context and residual meter, and never reads
+presentation records as proof. Audit-only demand adds no independent reporting
+channel, callback, parse, resource access or correction eligibility.
 
 ## Directives and raw candidates
 
@@ -250,3 +262,34 @@ valid. Actual filtered envelopes use the existing shared JSON Schema and semanti
 validator, including unchanged full-root, interval-owner and execution-coverage
 invariants and new selected-bound/count checks. The package API is implemented;
 inspection command reporting is implemented with compiled end-to-end acceptance.
+
+## MD087 per-target audit reasons
+
+The optional typed `DirectiveEffect.reason` preserves the existing open
+explanation grammar. MD087 reserves a finite prefix vocabulary:
+
+| Reason | Meaning |
+| --- | --- |
+| `suppression-used` | Validated otherwise-enabled finding START belongs to this actual disable. |
+| `suppression-unused` | Complete reliable absence, affirmative inapplicability or proved incapability. |
+| `suppression-uncertain` | Required observations cannot establish use or complete absence. |
+| `suppression-excluded` | Intentional MD087 self exclusion. |
+| `suppression-not-requested` | MD087 inactive at the first actual target token. |
+
+Enable instructions, denied effects and nondocument targets do not acquire
+eligible usefulness conclusions. Recognition `state`, `permission`, actual
+`effect` and permission provenance retain their original meanings. Each
+resolved target has its own effect reason. `named_tokens` retains duplicate
+names; the first matching token is the audit anchor. Join `Directive.id` to
+`Rule.intervals[].directive_id` for owned byte/public ranges. Intervals exclude
+their end except the final interval also owns EOF, including a zero-width EOF
+interval. Repeated disables retain distinct owners.
+
+The engine retains typed source-local decisions. Inspection prepares all
+initial reasons before callbacks; charged scalar publications update those
+same prepared owner/effect slots as targets resolve. It never reconstructs
+usefulness from a selected view, replays a directive, or evaluates MD087
+recursively. `Filter` preserves full facts and earlier owners as context_only.
+The semantic validator rejects unrecognized audit reasons, invalid ownership,
+missing target tokens, ineligible effects and contradictory MD087 token state
+when the authoritative rule intervals are available.

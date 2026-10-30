@@ -1,0 +1,86 @@
+{
+  "id": "directive-1",
+  "raw": "<!-- mdchk:disable MD047 MD001 MD047 -->",
+  "range": {
+    "start": {
+      "line": 2,
+      "column": 1
+    },
+    "end": {
+      "line": 2,
+      "column": 41
+    }
+  },
+  "byte_range": {
+    "start": 4,
+    "end": 44
+  },
+  "closing_offset": 44,
+  "operation": "disable",
+  "state": "effective",
+  "effects": [
+    {
+      "rule": "MD047",
+      "permission": "allowed",
+      "effect": "disable",
+      "ranges": [
+        {
+          "start": {
+            "line": 2,
+            "column": 41
+          },
+          "end": {
+            "line": 4,
+            "column": 1
+          }
+        }
+      ],
+      "reason": "suppression-unused"
+    },
+    {
+      "rule": "MD001",
+      "permission": "allowed",
+      "effect": "disable",
+      "ranges": [
+        {
+          "start": {
+            "line": 2,
+            "column": 41
+          },
+          "end": {
+            "line": 4,
+            "column": 1
+          }
+        }
+      ],
+      "reason": "suppression-used"
+    }
+  ],
+  "named_tokens": [
+    {
+      "name": "MD047",
+      "byte_range": {
+        "start": 23,
+        "end": 28
+      }
+    },
+    {
+      "name": "MD001",
+      "byte_range": {
+        "start": 29,
+        "end": 34
+      }
+    },
+    {
+      "name": "MD047",
+      "byte_range": {
+        "start": 35,
+        "end": 40
+      }
+    }
+  ],
+  "resolved_rules": [
+    "MD047",
+    "MD001"
+  ]
+}

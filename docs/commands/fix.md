@@ -106,3 +106,18 @@ An unmatched opener in an ended quote owner remains a manual MD086 finding when
 MD047 adds an eligible final LF to later ordinary text. An unclosed comment at
 physical EOF protects that EOF, so MD047 remains deferred and MD086 remains manual.
 Candidate and saved diagnostics retain their exact source identities.
+
+## MD087 suppression audit
+
+MD087 analysis is available for CommonMark and GFM, disabled by default, with
+no options and permanent report-only support. Inspection's optional per-effect
+reason distinguishes used, unused, uncertain, self-excluded and inactive-audit
+targets while retaining ordinary state, permission, effect and provenance.
+Join each effect's rule to its first matching named token and the directive ID
+to owned rule intervals; final intervals own EOF. Full-document conclusions
+precede focus, retaining preceding owners as context_only.
+
+The audit produces no edit or preview. A separately authorized MD047 correction
+recomputes the audit against candidate and actual saved source with the original
+residual budget. Hidden observations bypass correction eligibility; ordinary
+active MD047 corrections retain their established behavior.

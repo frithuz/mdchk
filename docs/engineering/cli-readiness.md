@@ -1,5 +1,10 @@
 # Delivered CLI readiness
 
+[MD087 unused-suppression analysis](../rules/html-and-comments/md087.md) is available for CommonMark and GFM,
+disabled by default, with no rule-specific options and permanent report-only support.
+Each allowed disable target is judged using its actual owned interval and shared
+original-source observations. Unknown observations retain incomplete coverage.
+
 [MD086 unmatched-comment analysis](../rules/html-and-comments/md086.md) is available for CommonMark and GFM,
 enabled by default with no rule-specific options and permanently report-only.
 Actual eligible HTML owners and their tails are analyzed once; matching ends at
@@ -94,7 +99,7 @@ context tests establish interruption behavior separately.
 Readiness is bounded by the [current capabilities](../index.md) and
 [platform limitations](../engineering.md#platform-and-process-acceptance). The CommonMark 652-example parser gate
 establishes core syntax conformance, not every consumer or rule. MD047 is the
-first ordinary production rule and correction; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD033, MD086, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 analysis are also available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033 and MD093 are disabled by default. Unavailable implicit rules
+first ordinary production rule and correction; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 analysis are also available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 are disabled by default. Unavailable implicit rules
 remain coverage gaps (15), explicit unavailable rules reject configuration (12),
 and default GFM now uses the verified whole profile. Actual GFM lint/fix/inspect
 consumer journeys include source facts and native saved-byte checks. Optional contexts/resources, MCP delivery, broader traversal accounting, the remaining
@@ -120,3 +125,26 @@ alone supplies candidate corrections; MD012 reanalysis identifies that snapshot.
 disabled by default with sole string option `style: ascii`. Invalid styles and
 unknown `replacements` reject even when disabled. Findings are manual in Pass 1;
 PlannedFix retains future correction scope. No MD088 edits or previews are emitted.
+
+## MD087 CLI examples
+
+With MD087 and MD001 enabled, `<!-- mdchk:disable MD001 -->` followed by a
+single clean heading reports `Suppression for MD001 hides no findings.` on the
+first full MD001 token. A hidden heading jump instead makes its owner used.
+
+```sh
+mdchk lint doc.md --format=json
+mdchk inspect doc.md --lines=4-4 --format=json
+mdchk fix --dry-run doc.md --format=json
+```
+
+Inspection evaluates the complete document before selecting lines and retains
+preceding owners as context_only. Its per-target reasons distinguish used,
+unused, uncertain, self-excluded and inactive-audit decisions while preserving
+blocked-effect provenance. Coverage deficits keep inspection's existing
+complete=false/exit policy; actual operational errors remain separate.
+A separately authorized MD047 correction recomputes MD087 on candidate and
+actual saved snapshots. The audit itself supplies no edit, preview or corrected
+content. A second successful write run is stable; a dry run repeats its proposal
+from the unchanged original. Native write-acquisition refusal without CGO
+retains the existing early refusal contract.

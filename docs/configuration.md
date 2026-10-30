@@ -1,5 +1,10 @@
 # Configuring mdchk
 
+[MD087 unused-suppression analysis](rules/html-and-comments/md087.md) is available for CommonMark and GFM,
+disabled by default, with no rule-specific options and permanent report-only support.
+Each allowed disable target is judged using its actual owned interval and shared
+original-source observations. Unknown observations retain incomplete coverage.
+
 [MD086 unmatched-comment analysis](rules/html-and-comments/md086.md) is available for CommonMark and GFM,
 enabled by default with no rule-specific options and permanently report-only.
 Actual eligible HTML owners and their tails are analyzed once; matching ends at
@@ -35,7 +40,7 @@ multiple-title analysis, MD026 heading-end punctuation analysis, MD036
 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline
 analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision
 analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and
-MD093 inline-formatting-in-headings analysis and MD081 paragraph-emphasis analysis and MD088 ASCII-punctuation analysis and MD033 embedded-HTML analysis and MD086 unmatched-comment analysis are implemented. MD093 is available but
+MD093 inline-formatting-in-headings analysis and MD081 paragraph-emphasis analysis and MD088 ASCII-punctuation analysis and MD033 embedded-HTML analysis and MD086 unmatched-comment analysis and MD087 unused-suppression analysis are implemented. MD093 is available but
 disabled by default, with exact `allowed_constructs` choices and nested behavior
 documented on its [rule page](rules/headings/md093.md); MD026 is available but disabled
 by default and accepts an exact Unicode scalar `punctuation` string (default `.,:;!?`,
@@ -54,7 +59,7 @@ rule-specific options; MD025 and MD041 accept integer `level` from 1 through 6 (
 `siblings_only`, default false; MD022 accepts nonnegative integer `before` and `after`
 minima, each defaulting to 1. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009,
 MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043,
-MD063, MD080, MD082, MD090, MD081, MD088, MD033, MD086 and MD093 are report-only. Other ordinary rule
+MD063, MD080, MD082, MD090, MD081, MD088, MD033, MD086, MD087 and MD093 are report-only. Other ordinary rule
 implementations remain pending. Missing enabled defaults produce coverage deficits
 rather than clean results; valid UTF-8 with all ordinary rules disabled can return clean
 `0`. See [initial capability handling](#initial-capability-handling) for how development

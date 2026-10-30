@@ -3,6 +3,7 @@ package engine
 import (
 	"context"
 	"errors"
+	"math/bits"
 	"slices"
 	"strings"
 	"unicode"
@@ -77,16 +78,18 @@ type DirectiveState struct {
 // DirectiveResult owns its records and never exposes writable aliases. Incomplete results
 // withhold intervals entirely: unprocessed comments cannot imply stable state.
 type DirectiveResult struct {
-	operation   parser.OperationToken
-	catalogs    map[string]*registryIdentity
-	source      parser.Source
-	complete    bool
-	candidates  []DirectiveCandidate
-	diagnostics []result.Diagnostic
-	notes       []DirectiveNote
-	intervals   map[string][]DirectiveInterval
-	rules       map[string]ResolvedRule
-	err         error
+	operation      parser.OperationToken
+	catalogs       map[string]*registryIdentity
+	source         parser.Source
+	complete       bool
+	candidates     []DirectiveCandidate
+	hasSuppression bool
+	hasAuditEnable bool
+	diagnostics    []result.Diagnostic
+	notes          []DirectiveNote
+	intervals      map[string][]DirectiveInterval
+	rules          map[string]ResolvedRule
+	err            error
 }
 
 func (r DirectiveResult) Complete() bool { return r.complete }
@@ -123,28 +126,36 @@ func (r DirectiveResult) Intervals(id string) []DirectiveInterval {
 	return slices.Clone(r.intervals[id])
 }
 func (r DirectiveResult) StateAt(id string, offset int) (DirectiveState, error) {
+	v, err := r.anchorState(id, offset)
+	if err != nil {
+		return DirectiveState{}, err
+	}
+	return DirectiveState{v.Enabled, v.Owner, v.Token, cloneDirectiveOptions(r.rules[id].Options)}, nil
+}
+
+// anchorState borrows private immutable interval storage. Internal attribution
+// needs no option snapshot; callers meter the lookup before entering it.
+func (r DirectiveResult) anchorState(id string, offset int) (DirectiveInterval, error) {
 	if !r.complete || offset < 0 || offset > r.source.Len() {
-		return DirectiveState{}, errors.New("unresolved directive state or source offset")
+		return DirectiveInterval{}, errors.New("unresolved directive state or source offset")
 	}
 	intervals, known := r.intervals[id]
 	if !known {
-		return DirectiveState{}, errors.New("unknown directive rule")
+		return DirectiveInterval{}, errors.New("unknown directive rule")
 	}
-	i, _ := slices.BinarySearchFunc(intervals, offset, func(v DirectiveInterval, at int) int {
-		if v.Start < at {
-			return -1
+	// Upper-bound search also resolves coincident EOF transitions without a
+	// linear duplicate walk: the last permitted instruction owns the anchor.
+	lo, hi := 0, len(intervals)
+	for lo < hi {
+		mid := lo + (hi-lo)/2
+		if intervals[mid].Start <= offset {
+			lo = mid + 1
+		} else {
+			hi = mid
 		}
-		if v.Start > at {
-			return 1
-		}
-		return 0
-	})
-	// Several transitions may share EOF; the last instruction owns the anchor.
-	for i < len(intervals) && intervals[i].Start <= offset {
-		i++
 	}
-	v := intervals[i-1]
-	return DirectiveState{v.Enabled, v.Owner, v.Token, cloneDirectiveOptions(r.rules[id].Options)}, nil
+	v := intervals[lo-1]
+	return v, nil
 }
 func cloneDirectiveOptions(in Options) Options {
 	out := make(Options, len(in))
@@ -346,6 +357,11 @@ func ProcessDirectives(ctx context.Context, parsed parser.ParseResult, configura
 				effect.Disposition = DirectiveInapplicable
 				r.notes = append(r.notes, DirectiveNote{Code: "directive-inapplicable", Message: "document directives do not control this rule", Rule: id, Span: token})
 			default:
+				if c.Operation == DirectiveDisable {
+					r.hasSuppression = true
+				} else if id == "MD087" {
+					r.hasAuditEnable = true
+				}
 				intervals := r.intervals[id]
 				at := fact.Close.End()
 				intervals[len(intervals)-1].End = at
@@ -428,3 +444,7 @@ func (r DirectiveResult) EnabledSomewhere(id string) bool {
 	}
 	return false
 }
+
+// directiveLookupWork bounds the upper-bound binary search including its final
+// scalar read. No source bytes, options or interval arrays are copied.
+func directiveLookupWork(n int) int64 { return int64(bits.Len(uint(n))) + 1 }

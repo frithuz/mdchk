@@ -344,6 +344,22 @@ if ast and ast.get('frontmatter'):
   try:m.validator.validate(bad);m.semantic(bad)
   except Exception:pass
   else:raise AssertionError('invalid actual frontmatter '+mutation+' accepted')
+directives=x['inspection']['directives'].get('data',[])
+for di,directive in enumerate(directives):
+ for ei,effect in enumerate(directive['effects']):
+  if not effect.get('reason','').startswith('suppression-'):continue
+  for mutation in ('unknown','blocked','token','self','ownership'):
+   bad=copy.deepcopy(x);d=bad['inspection']['directives']['data'][di];e=d['effects'][ei]
+   if mutation=='unknown':e['reason']='suppression-invented'
+   elif mutation=='blocked':e['permission']='denied';e['effect']='blocked'
+   elif mutation=='token':d['named_tokens']=[t for t in d.get('named_tokens',[]) if t['name']!=e['rule']]
+   elif mutation=='self':e['reason']='suppression-used' if e['rule']=='MD087' else 'suppression-excluded'
+   else:
+    for r in bad['inspection']['rules'].get('data',[]):
+     if r['rule']==e['rule']:r['intervals']=[i for i in r['intervals'] if i.get('directive_id')!=d['id']]
+   try:m.validator.validate(bad);m.semantic(bad)
+   except Exception:pass
+   else:raise AssertionError('invalid suppression audit '+mutation+' accepted')
 rules=x['inspection']['rules'].get('data',[])
 if rules:
  bad=copy.deepcopy(x);bad['inspection']['rules']['data'][0]['source_coverage']['active']={'availability':'complete','ranges':[],'byte_ranges':[{'start':0,'end':x['inspection']['file']['size_bytes']+1}]}
@@ -361,9 +377,9 @@ if x['inspection']['file'].get('selected_region'):
   try:m.validator.validate(bad);m.semantic(bad)
   except Exception:pass
   else:raise AssertionError('nonphysical selected line accepted')
-for hidden in x['suppressed_diagnostics']:
+for index,hidden in enumerate(x['suppressed_diagnostics']):
  if hidden['suppressed_by']['kind']=='directive':
-  bad=copy.deepcopy(x);bad['suppressed_diagnostics'][0]['suppressed_by']['directive_id']='dangling'
+  bad=copy.deepcopy(x);bad['suppressed_diagnostics'][index]['suppressed_by']['directive_id']='dangling'
   try:m.validator.validate(bad);m.semantic(bad)
   except Exception:pass
   else:raise AssertionError('dangling suppression accepted')

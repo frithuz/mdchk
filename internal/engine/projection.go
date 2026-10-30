@@ -47,6 +47,7 @@ type projector struct {
 	index     parser.LineIndex
 	cached    map[int]parser.Position
 	stop      error
+	strict    bool // MD087 evidence cannot spend the reporting reserve
 }
 
 func (p *projector) checkpoint(units int64) error {
@@ -59,11 +60,40 @@ func (p *projector) checkpoint(units int64) error {
 			}
 		}
 	}
+	if p.strict {
+		return p.stop
+	}
 	if err := p.reporting.charge(units); err != nil {
 		return &reportingStopped{err}
 	}
 	return nil
 }
+
+// charge bounds retained presentation as well as projection. Falling back uses
+// the same operation-wide reporting reserve; strict audit work cannot fall back.
+func (p *projector) charge(work, nodes int64) error {
+	if err := p.checkpoint(work); err != nil {
+		return err
+	}
+	if p.stop == nil {
+		if err := p.budget.ChargeNodes(nodes); err == nil {
+			return nil
+		} else {
+			p.stop = err
+		}
+		if p.strict {
+			return p.stop
+		}
+		if err := p.reporting.charge(work); err != nil {
+			return &reportingStopped{err}
+		}
+	}
+	if err := p.reporting.budget.ChargeNodes(nodes); err != nil {
+		return &reportingStopped{err}
+	}
+	return nil
+}
+
 func (p *projector) position(offset int) (parser.Position, error) {
 	if position, ok := p.cached[offset]; ok {
 		if err := p.checkpoint(1); err != nil {

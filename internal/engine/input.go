@@ -91,6 +91,7 @@ type RuleContext struct {
 	directives       DirectiveResult
 	syntaxReliable   bool
 	frontmatterAware bool
+	observational    bool
 }
 
 // Frontmatter exposes opaque source metadata only to a rule whose catalog
@@ -119,6 +120,27 @@ func (c RuleContext) Checkpoint(ctx context.Context, units int64) error {
 // TerminalEditEligible assesses an exact terminal edit against engine-owned
 // syntax, protection and directive authority. It never generates corrections.
 func (c RuleContext) TerminalEditEligible(ctx context.Context, id string, span parser.Span) (bool, error) {
+	// Hidden observations cannot enter correction eligibility or its candidate parse.
+	if c.observational {
+		return false, c.auditCharge(ctx, 0, 0)
+	}
+	// A reused ordinary callback can also observe a hidden finding. Resolve its
+	// actual START state before entering any correction eligibility machinery.
+	if c.directives.complete {
+		if err := c.auditCharge(ctx, directiveLookupWork(len(c.directives.intervals[id]))+1, 0); err != nil {
+			return false, err
+		}
+		if _, err := c.Source().Text(span); err != nil {
+			return false, err
+		}
+		state, err := c.directives.anchorState(id, span.Start())
+		if err != nil {
+			return false, err
+		}
+		if !state.Enabled {
+			return false, nil
+		}
+	}
 	if !c.syntaxReliable {
 		return false, c.Checkpoint(ctx, 1)
 	}

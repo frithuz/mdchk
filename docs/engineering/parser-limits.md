@@ -756,3 +756,41 @@ MD086 is default ON, RequiresSyntax, UsesFrontmatter=false and permanently NoFix
 Findings use `HTML comment is missing a closing delimiter.` over exactly the
 original four-byte opener. Shared START suppression precedes inspection slicing;
 MD047 remains the sole correction producer.
+
+## MD087 source-local audit coordination
+
+The directive pass records whether an allowed disable or MD087 enable exists.
+Without registration or actual audit work, the coordinator allocates nothing,
+retains no originating context and adds no scheduling charge. Empty detached
+views still validate caller, originating operation token and residual budget;
+nonempty audit records also retain the originating context control.
+
+The audit borrows private immutable directive arrays. Before allocation it
+counts effects and reserves source-local owner/decision capacities. Requested
+diagnostic slots and the pending uncertainty-coverage slot use checked geometric
+operation-wide growth before callbacks. Only reached growth charges prior copies
+and new capacity; spare buffers are reused. Clean later files never recopy or
+debit an earlier finding inventory. Each demanded
+target indexes its actual intervals and candidate owners once. Upper-bound
+anchor lookup handles coincident EOF transitions without a duplicate walk.
+The first permitted enable is a monotone would-be-enablement threshold.
+
+Candidate filtering, target indexing, deduplication reuse, token projection,
+owner lookup, finding validation and retained output growth all charge the
+original cumulative work/node meter before their work. The audit adds no parse,
+resource permission, budget or counter reset. Strict MD087 evidence admission
+cannot switch to the diagnostic reporting reserve. Ordinary active presentation
+and independently requested inactive inspection may validate reliable published
+positives under the existing finite operation-wide reporting reserve after
+execution stops. Retained presentation capacity, copies and serialization bounds
+use that same finite authority. Such records never establish audit use or
+complete target coverage; audit-only demand adds no reporting channel. Prospective MD087 token
+diagnostics remain private until absence is proved. Each target materializes
+its conclusive decisions before the next callback; unresolved candidates retain
+preconstructed uncertainty/coverage when an operation stops. Reporting those
+facts does not establish new proof after exhaustion.
+
+Inspection copies initial typed audit records and reserves its prepared source
+projection before callbacks. Later per-effect reason updates use precharged
+owner/effect indices. Selected output filters these full-source conclusions
+under the residual operation allowance and preserves context-only owners.

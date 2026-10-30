@@ -24,6 +24,10 @@ type Evaluation struct {
 // InspectionOptions selects optional observation and pre-callback projection.
 type InspectionOptions struct {
 	ObserveInactive bool
+	// PublishSuppression updates a prepared presentation using bounded indices.
+	// It must not inspect source, allocate, or execute a provider. The engine
+	// charges each invocation before publication.
+	PublishSuppression func(SuppressionDecision)
 	// Prepare reserves/materializes source projections before callbacks can exhaust
 	// their shared budget. It receives owned trace views and must use that budget.
 	Prepare func(*InspectionTrace) error
@@ -32,19 +36,48 @@ type InspectionOptions struct {
 // InspectionTrace owns observations of the shared lint pipeline. Accessors return
 // detached collections; parser objects retain their immutable original source.
 type InspectionTrace struct {
-	prepare         func(*InspectionTrace) error
-	documentContext DocumentContext
-	contextKnown    bool
-	preassessed     map[string]bool
-	parsed          parser.ParseResult
-	lines           parser.LineIndex
-	directives      DirectiveResult
-	evaluations     []Evaluation
-	observeInactive bool
-	suppressed      []DirectiveSuppression
-	errors          []result.Error
-	interruption    error
-	failures        []error
+	publishSuppression func(SuppressionDecision)
+	audits             []SuppressionDecision
+	auditOperation     context.Context
+	prepare            func(*InspectionTrace) error
+	documentContext    DocumentContext
+	contextKnown       bool
+	preassessed        map[string]bool
+	parsed             parser.ParseResult
+	lines              parser.LineIndex
+	directives         DirectiveResult
+	evaluations        []Evaluation
+	observeInactive    bool
+	suppressed         []DirectiveSuppression
+	errors             []result.Error
+	interruption       error
+	failures           []error
+}
+
+// SuppressionDecisions copies the source-local records using the originating
+// meter. Prepared inspection calls this before callbacks, then accepts charged
+// scalar publications; it never rescans source after interruption.
+func (t *InspectionTrace) SuppressionDecisions(ctx context.Context, budget *parser.OperationBudget) ([]SuppressionDecision, error) {
+	if ctx == nil || budget == nil || budget.Token() != t.directives.operation {
+		return nil, parser.ErrModel
+	}
+	if t.auditOperation != nil {
+		if err := t.auditOperation.Err(); err != nil {
+			return nil, err
+		}
+	} else if len(t.audits) != 0 {
+		return nil, parser.ErrModel
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	if err := budget.ChargeWork(int64(len(t.audits)) + 1); err != nil {
+		return nil, err
+	}
+	if err := budget.ChargeNodes(int64(len(t.audits))); err != nil {
+		return nil, err
+	}
+	return slices.Clone(t.audits), nil
 }
 
 func (t *InspectionTrace) Parsed() parser.ParseResult {
@@ -173,93 +206,6 @@ func (t *InspectionTrace) ran(id string, outcome RuleOutcome, observational bool
 		e.ActiveCoverage = coverage
 	}
 }
-func (t *InspectionTrace) observe(ctx context.Context, r *Registry, rc RuleContext, parsed parser.ParseResult, directives DirectiveResult, projection *projector, snap result.Snapshot, reliable bool) {
-	if !t.observeInactive {
-		return
-	}
-	for _, id := range r.ids {
-		if id == "MD094" || id == "MD087" || directives.EnabledSomewhere(id) {
-			continue
-		}
-		e := t.entry(id)
-		e.Observational = "skipped"
-		m := r.metadata[id]
-		rc.options = directives.rules[id].Options
-		applies, assessed := t.preassessed[id]
-		var applyErr error
-		if !assessed {
-			applies, applyErr = r.applicable(ctx, rc, m)
-		}
-		if applyErr != nil {
-			if isInterruption(applyErr) {
-				t.interruption = applyErr
-				return
-			}
-			t.errors = append(t.errors, result.Error{Category: result.Internal, Code: "rule-applicability", Scope: "operation", Path: rc.Path(), Rule: id, Message: applyErr.Error()})
-			e.Reasons = []string{"context-unavailable"}
-			continue
-		}
-		switch {
-		case !applies:
-			e.Reasons = []string{"inapplicable"}
-			continue
-		case r.checks[id] == nil:
-			e.Reasons = []string{"rule-unavailable"}
-			continue
-		case m.RequiresSyntax && !reliable:
-			e.Reasons = []string{"parser-uncertain"}
-			continue
-		}
-		if err := rc.Checkpoint(ctx, 1); err != nil {
-			t.interruption = err
-			return
-		}
-		rc.options = directives.rules[id].Options
-		rc.frontmatterAware = m.UsesFrontmatter
-		rc.document = parsed.Document
-		if !reliable {
-			rc.document = nil
-		}
-		outcome := r.checks[id](ctx, rc)
-		recorded := outcome
-		if recorded.Err == nil {
-			recorded.Err = rc.Checkpoint(ctx, 0)
-		}
-		t.ran(id, recorded, true, rc.Source().Len(), m.UsesFrontmatter)
-		for _, f := range outcome.Findings {
-			d, err := makeDiagnostic(rc.input, projection, snap, m, f)
-			if err != nil {
-				if isInterruption(err) {
-					t.interruption = err
-					return
-				}
-				t.invalid(id, true)
-				t.errors = append(t.errors, result.Error{Category: result.Internal, Code: "invalid-finding", Scope: "operation", Path: rc.Path(), Rule: id, Message: err.Error()})
-				continue
-			}
-			if !frontmatterFindingAllowed(rc.Source(), parsed, m, f) {
-				continue
-			}
-			state, err := directives.StateAt(id, f.Span.Start())
-			if err != nil {
-				t.errors = append(t.errors, result.Error{Category: result.Internal, Code: "directive-state", Scope: "operation", Path: rc.Path(), Rule: id, Message: err.Error()})
-				continue
-			}
-			t.suppressed = append(t.suppressed, DirectiveSuppression{Diagnostic: d, Owner: state.Owner, Token: state.Token})
-		}
-		if outcome.Err != nil {
-			if isInterruption(outcome.Err) {
-				t.interruption = outcome.Err
-				return
-			}
-			t.errors = append(t.errors, result.Error{Category: result.Internal, Code: "observational-rule-failure", Scope: "operation", Path: rc.Path(), Rule: id, Message: outcome.Err.Error()})
-		}
-		if err := rc.Checkpoint(ctx, 0); err != nil {
-			t.interruption = err
-			return
-		}
-	}
-}
 
 // Inspect executes exactly one admitted original input through Lint and retains
 // parsing and actual scheduling observations. It does not reset the shared meter.
@@ -267,7 +213,7 @@ func (p *ExecutionPlan) Inspect(ctx context.Context, in Input, options RunOption
 	if p == nil || p.registry == nil || in.plan != p {
 		return result.Result{}, nil, fmt.Errorf("input does not belong to inspection plan")
 	}
-	trace := &InspectionTrace{observeInactive: inspection.ObserveInactive, prepare: inspection.Prepare}
+	trace := &InspectionTrace{observeInactive: inspection.ObserveInactive, prepare: inspection.Prepare, publishSuppression: inspection.PublishSuppression}
 	options.inspection = trace
 	out, err := p.Lint(ctx, []Input{in}, options)
 	return out, trace, err
@@ -282,7 +228,11 @@ func (t *InspectionTrace) invalid(id string, observational bool) {
 		e.Active = "failed"
 		e.ActiveCoverage = []parser.Span{}
 	}
-	e.Reasons = append(e.Reasons, "invalid-finding")
+	// One target executes once; repeated invalid findings do not duplicate
+	// this finite execution reason or grow an unbounded reason inventory.
+	if len(e.Reasons) == 0 || e.Reasons[len(e.Reasons)-1] != "invalid-finding" {
+		e.Reasons = append(e.Reasons, "invalid-finding")
+	}
 }
 
 // InspectCandidate runs shared analysis with candidate snapshot identity on every

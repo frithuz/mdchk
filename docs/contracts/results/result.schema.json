@@ -1457,6 +1457,7 @@
           }
         },
         "reason": {
+          "description": "Optional explanation. MD087 uses suppression-used, suppression-unused, suppression-uncertain, suppression-excluded or suppression-not-requested on eligible allowed disable effects. Join rule to the first matching named_tokens entry and directive id to rule intervals; final interval owns EOF. Recognition, permission and effect retain their ordinary meaning.",
           "type": "string",
           "pattern": "^[a-z][a-z0-9-]*$"
         },

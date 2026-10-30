@@ -219,6 +219,7 @@ type Rule struct {
 	SourceCoverage          SourceCoverage `json:"source_coverage"`
 }
 type DirectiveEffect struct {
+	Reason     string              `json:"reason,omitempty"`
 	Rule       string              `json:"rule"`
 	Permission string              `json:"permission"`
 	Effect     string              `json:"effect"`
@@ -496,6 +497,16 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 			return err
 		}
 		p.Directives = available(ds)
+		decisions, err := trace.SuppressionDecisions(ctx, s.budget)
+		if err != nil {
+			return err
+		}
+		if err := build.charge(int64(len(decisions)) + 1); err != nil {
+			return err
+		}
+		for _, d := range decisions {
+			(*p.Directives.Data)[d.Owner].Effects[d.Effect].Reason = d.Reason
+		}
 		rs, err := build.rules(trace, build.knownRules)
 		if err != nil {
 			return err
@@ -519,7 +530,15 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 		prepared = true
 		return nil
 	}
-	active, trace, err := s.plan.Inspect(ctx, input, engine.RunOptions{Mode: "cli", Budget: s.budget}, engine.InspectionOptions{ObserveInactive: options.ObserveInactive, Prepare: prepare})
+	// The engine charges each scalar update before publishing. The immutable
+	// owner/effect indices are identical to the prepared full-document arrays;
+	// selection is applied later, so preceding owners retain their conclusions.
+	publishSuppression := func(d engine.SuppressionDecision) {
+		if prepared {
+			(*p.Directives.Data)[d.Owner].Effects[d.Effect].Reason = d.Reason
+		}
+	}
+	active, trace, err := s.plan.Inspect(ctx, input, engine.RunOptions{Mode: "cli", Budget: s.budget}, engine.InspectionOptions{ObserveInactive: options.ObserveInactive, Prepare: prepare, PublishSuppression: publishSuppression})
 	if err != nil {
 		return Analysis{}, err
 	}

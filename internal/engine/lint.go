@@ -270,6 +270,25 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			out.Files = append(out.Files, file)
 			continue
 		}
+		rc := RuleContext{input: in, index: index, document: parsed.Document, budget: budget, operation: ctx, parsed: parsed, directives: directives, syntaxReliable: syntaxReliable}
+		audit, auditErr := planSuppressionAudit(ctx, r, rc, &projection, snap, &out, options.inspection)
+		if auditErr != nil {
+			if isInterruption(auditErr) {
+				stopped = recordInterruption(&out, in.path, "analysis", auditErr)
+			} else {
+				out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "suppression-audit", Scope: "operation", Path: in.path, Rule: "MD087", Message: auditErr.Error()})
+			}
+			out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: "MD087", Reason: result.ContextUnavailable, Message: "Suppression audit preparation did not complete."})
+			out.RetainAnalysis(analysis)
+			file.Analysis = "partial"
+			file.ResultSnapshot = &snap
+			out.Files = append(out.Files, file)
+			continue
+		}
+		analysis.audits = audit.decisions
+		if len(audit.decisions) != 0 {
+			analysis.auditOperation = ctx
+		}
 		if options.inspection != nil && options.inspection.prepare != nil {
 			if err := options.inspection.prepare(options.inspection); err != nil {
 				if isInterruption(err) {
@@ -284,19 +303,62 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				continue
 			}
 		}
-		rc := RuleContext{input: in, index: index, document: parsed.Document, budget: budget, operation: ctx, parsed: parsed, directives: directives, syntaxReliable: syntaxReliable}
+		auditStartFailed := false
+		if err := audit.start(ctx); err != nil {
+			auditStartFailed = true
+			if isInterruption(err) {
+				stopped = recordInterruption(&out, in.path, "analysis", err)
+			} else {
+				out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "suppression-audit", Scope: "operation", Path: in.path, Rule: "MD087", Message: err.Error()})
+			}
+		}
 
 		for _, id := range r.ids {
+			if stopped != "" || auditStartFailed {
+				break
+			}
+			if id == "MD087" && audit.registered {
+				if options.inspection != nil && len(audit.decisions) == 0 && !directives.rules[id].Enabled {
+					options.inspection.skip(id, "inactive")
+				}
+				continue
+			}
+			if len(audit.decisions) != 0 || options.inspection != nil && options.inspection.observeInactive {
+				// Catalog/interval scans and trace entry lookups are charged
+				// before scheduling, even when no callback can run.
+				if err := rc.auditCharge(ctx, int64(len(directives.intervals[id]))+4*int64(len(r.ids))+8, 0); err != nil {
+					stopped = recordInterruption(&out, in.path, "analysis", err)
+					break
+				}
+			}
 			state := settings[i][id]
 			m := r.metadata[id]
 			active := directives.EnabledSomewhere(id)
-			if !active || id == "MD094" {
+			observational := !active
+			demanded := audit.demanded(id)
+			observe := options.inspection != nil && options.inspection.observeInactive && id != "MD087"
+			if observational && (demanded || observe) && options.inspection != nil && id != "MD094" {
+				options.inspection.entry(id).Observational = "skipped"
+			}
+			if id == "MD094" || !active && !demanded && !observe {
 				if options.inspection != nil && id != "MD094" {
 					options.inspection.skip(id, "inactive")
 				}
 				continue
 			}
+			if demanded || observational {
+				if err := reserveAuditFailures(ctx, rc, &out); err != nil {
+					if isInterruption(err) {
+						stopped = recordInterruption(&out, in.path, "analysis", err)
+					} else {
+						out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "suppression-audit", Scope: "operation", Path: in.path, Rule: id, Message: err.Error()})
+						out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: "Audit retention could not be represented safely."})
+					}
+					break
+				}
+			}
 			rc.options = state.Options
+			rc.observational = observational
 			rc.document = parsed.Document
 			if !syntaxReliable {
 				rc.document = nil
@@ -316,6 +378,10 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				continue
 			}
 			if !applies {
+				if err := audit.completeTarget(ctx, id); err != nil {
+					stopped = recordInterruption(&out, in.path, "analysis", err)
+					break
+				}
 				if options.inspection != nil {
 					options.inspection.skip(id, "inapplicable")
 				}
@@ -330,14 +396,18 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				if options.inspection != nil {
 					options.inspection.skip(id, "rule-unavailable")
 				}
-				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.RuleUnavailable, Message: "No executable implementation is registered."})
+				if active {
+					out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.RuleUnavailable, Message: "No executable implementation is registered."})
+				}
 				continue
 			}
 			if m.RequiresSyntax && !syntaxReliable {
 				if options.inspection != nil {
 					options.inspection.skip(id, "parser-uncertain")
 				}
-				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ParserUncertain, Message: "Rule requires reliable complete parser context."})
+				if active {
+					out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ParserUncertain, Message: "Rule requires reliable complete parser context."})
+				}
 				continue
 			}
 			rc.options = state.Options
@@ -347,48 +417,223 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			if !syntaxReliable {
 				rc.document = nil
 			}
+			if demanded || observational {
+				if err := rc.auditCharge(ctx, 32, 16); err != nil {
+					stopped = recordInterruption(&out, in.path, "analysis", err)
+					break
+				}
+			}
 			outcome := check(ctx, rc)
+			targetComplete := outcome.Err == nil && outcome.IncompleteReason == ""
+			// Independent presentation and MD087 evidence have distinct authority.
+			// The callback is shared, but a reporting-funded record is never proof.
+			present := active || observe
+			strictProjection := projection
+			strictProjection.strict = true
+			findingProjection := &projection
+			if !present {
+				findingProjection = &strictProjection
+			}
+			proofLive := demanded && !isInterruption(outcome.Err)
+			if demanded || observational {
+				if err := rc.auditCharge(ctx, 0, 0); err != nil {
+					outcome.Err = errors.Join(outcome.Err, err)
+					proofLive, targetComplete = false, false
+				}
+			}
+			findings := outcome.Findings
+			if !present && !proofLive {
+				findings = nil
+			}
+			if isInterruption(outcome.Err) {
+				projection.stop = outcome.Err
+				findingProjection.stop = outcome.Err
+			}
+			if len(findings) != 0 && (demanded || observational) {
+				if err := findingProjection.charge(513, 257); err != nil {
+					if !omittedProjection(err) {
+						outcome.Err = errors.Join(outcome.Err, err)
+					}
+					targetComplete = false
+					if present && omittedProjection(err) {
+						count := len(findings)
+						out.Omissions = append(out.Omissions, result.Omission{Section: "/diagnostics", Reason: "output-limit", Path: in.path, Count: &count, Message: err.Error()})
+					}
+					findings = nil
+				}
+			}
+
 			if options.inspection != nil {
 				recorded := outcome
 				if recorded.Err == nil {
 					recorded.Err = rc.Checkpoint(ctx, 0)
 				}
-				options.inspection.ran(id, recorded, false, in.source.Len(), m.UsesFrontmatter)
+				options.inspection.ran(id, recorded, observational, in.source.Len(), m.UsesFrontmatter)
 			}
 			if isInterruption(outcome.Err) {
 				projection.stop = outcome.Err
 			}
-			for findingIndex, finding := range outcome.Findings {
-				diagnostic, err := makeDiagnostic(in, &projection, snap, m, finding)
+			stopFinding := func(err error, index int) {
+				targetComplete = false
 				if omittedProjection(err) {
-					count := len(outcome.Findings) - findingIndex
+					count := len(findings) - index
 					out.Omissions = append(out.Omissions, result.Omission{Section: "/diagnostics", Reason: "output-limit", Path: in.path, Count: &count, Message: err.Error()})
+					return
+				}
+				projection.stop = err
+			}
+
+			for findingIndex, finding := range findings {
+				if demanded || observational {
+					if err := findingProjection.charge(directiveLookupWork(len(directives.intervals[id]))+int64(len(r.ids))+32, 16); err != nil {
+						stopFinding(err, findingIndex)
+						break
+					}
+				}
+				diagnostic, err := makeDiagnostic(in, findingProjection, snap, m, finding)
+				if omittedProjection(err) {
+					stopFinding(err, findingIndex)
 					break
 				}
 				if err != nil {
-					if options.inspection != nil {
-						options.inspection.invalid(id, false)
+					targetComplete = false
+					if isInterruption(err) {
+						projection.stop = err
+						break
 					}
-					out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "invalid-finding", Scope: "operation", Path: in.path, Rule: id, Message: err.Error()})
-					out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: "Rule returned an invalid finding."})
+					if options.inspection != nil {
+						options.inspection.invalid(id, observational)
+					}
+					invalidRecord := result.Error{Category: result.Internal, Code: "invalid-finding", Scope: "operation", Path: in.path, Rule: id, Message: err.Error()}
+					invalidCoverage := result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: "Rule returned an invalid finding."}
+					if demanded || observational {
+						if retainedErr := publishInvalidFinding(&out, invalidRecord, invalidCoverage, findingProjection.charge); retainedErr != nil {
+							stopFinding(retainedErr, findingIndex)
+							break
+						}
+					} else {
+						out.Errors = append(out.Errors, invalidRecord)
+						out.Coverage = append(out.Coverage, invalidCoverage)
+					}
 					continue
 				}
 				if !frontmatterFindingAllowed(in.source, parsed, m, finding) {
 					continue
 				}
-				effective, stateErr := directives.StateAt(id, finding.Span.Start())
+				effective, stateErr := directives.anchorState(id, finding.Span.Start())
 				if stateErr != nil {
 					out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "directive-state", Scope: "operation", Path: in.path, Rule: id, Message: stateErr.Error()})
 					continue
 				}
-				if !effective.Enabled {
+				if demanded || observational {
+					serializationWork, err := auditSerializationWork(diagnostic.Message, diagnostic.Path, snap.SHA256)
+					if err != nil {
+						stopFinding(err, findingIndex)
+						break
+					}
+					if err := findingProjection.charge(serializationWork, 1); err != nil {
+						stopFinding(err, findingIndex)
+						break
+					}
+				}
+				if proofLive && findingProjection.stop == nil {
+					if err := audit.positive(ctx, id, finding.Span); err != nil {
+						projection.stop = err
+						findingProjection.stop = err
+						proofLive, targetComplete = false, false
+						if !isInterruption(err) || !present {
+							break
+						}
+					}
+				}
+				if observational {
+					if options.inspection != nil {
+						retained, err := reservePresentedSlice(findingProjection, options.inspection.suppressed)
+						if err != nil {
+							stopFinding(err, findingIndex)
+							break
+						}
+						options.inspection.suppressed = retained
+						options.inspection.suppressed = append(options.inspection.suppressed, DirectiveSuppression{Diagnostic: diagnostic, Owner: effective.Owner, Token: effective.Token})
+					}
+				} else if !effective.Enabled {
+					if demanded {
+						retained, err := reservePresentedSlice(findingProjection, analysis.suppressed)
+						if err != nil {
+							stopFinding(err, findingIndex)
+							break
+						}
+						analysis.suppressed = retained
+						raw, err := reservePresentedSlice(findingProjection, out.SuppressedDiagnostics)
+						if err != nil {
+							stopFinding(err, findingIndex)
+							break
+						}
+						out.SuppressedDiagnostics = raw
+					}
 					analysis.suppressed = append(analysis.suppressed, DirectiveSuppression{Diagnostic: diagnostic, Owner: effective.Owner, Token: effective.Token})
 					appendSuppressed(&out, diagnostic, effective.Owner)
 				} else {
+					if demanded {
+						retained, err := reservePresentedSlice(findingProjection, out.Diagnostics)
+						if err != nil {
+							stopFinding(err, findingIndex)
+							break
+						}
+						out.Diagnostics = retained
+					}
 					out.Diagnostics = append(out.Diagnostics, diagnostic)
 				}
 			}
+			if targetComplete && projection.stop == nil && findingProjection.stop == nil {
+				if err := audit.completeTarget(ctx, id); err != nil {
+					projection.stop = err
+				}
+			}
 			if projection.stop != nil {
+				if !isInterruption(projection.stop) {
+					if options.inspection != nil && (demanded || observational) {
+						e := options.inspection.entry(id)
+						if observational {
+							e.Observational = "failed"
+							e.ObservationalCoverage = []parser.Span{}
+						} else {
+							e.Active = "failed"
+							e.ActiveCoverage = []parser.Span{}
+						}
+						if len(e.Reasons) == 0 || e.Reasons[len(e.Reasons)-1] != "invalid-finding" {
+							e.Reasons = []string{"rule-failure"}
+						}
+					}
+					out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "suppression-audit", Scope: "operation", Path: in.path, Rule: id, Message: projection.stop.Error()})
+					out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: "Audit retention could not be represented safely."})
+					// A retention failure does not erase a provider's already
+					// published noninterrupt failure or incomplete context.
+					if outcome.IncompleteReason != "" {
+						out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: outcome.IncompleteReason})
+					}
+					if outcome.Err != nil {
+						out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "rule-failure", Scope: "operation", Path: in.path, Rule: id, Message: outcome.Err.Error()})
+						out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: "Rule did not complete."})
+					}
+					break
+				}
+				if options.inspection != nil && (demanded || observational) {
+					e := options.inspection.entry(id)
+					if observational {
+						if e.Observational != "failed" {
+							e.Observational = "partial"
+							e.Reasons = []string{"interrupted"}
+						}
+						e.ObservationalCoverage = []parser.Span{}
+					} else {
+						if e.Active != "failed" {
+							e.Active = "partial"
+							e.Reasons = []string{"interrupted"}
+						}
+						e.ActiveCoverage = []parser.Span{}
+					}
+				}
 				stopped = recordInterruption(&out, in.path, "analysis", projection.stop)
 			}
 			if outcome.IncompleteReason != "" {
@@ -412,9 +657,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				break
 			}
 		}
-		if options.inspection != nil && stopped == "" {
-			options.inspection.observe(ctx, r, rc, parsed, directives, &projection, snap, syntaxReliable)
-		}
+		audit.finish()
 		out.RetainAnalysis(analysis)
 		file.ResultSnapshot = &snap
 		out.Files = append(out.Files, file)

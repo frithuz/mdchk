@@ -644,6 +644,37 @@ Use the shared diagnostic start-position rule, including file-wide and EOF ancho
 spans or overlap. Preserve all existing permission, configured-option and protected-source behavior.
 Recompute after any separately authorized safe fix against the candidate source.
 
+### Delivered observation publication
+
+A provider's retained `RuleOutcome.Findings` are published reliable affirmative
+observations, including when returned with `IncompleteReason` or a noninterrupt
+error. The engine validates original source ownership, scalar bounds, message,
+frontmatter eligibility, actual START/EOF owner and would-be enablement before
+crediting use. Atomic providers must return no findings when publication fails;
+MD086's discarded internal prefix is never recovered. Partial/error outcomes
+cannot establish absence; an unproved capable owner remains uncertain.
+
+Cancellation and sticky quota exhaustion prohibit new MD087 evidence admission
+from returned arrays. Earlier independently validated and materialized target
+conclusions survive. Ordinary active presentation and independently requested
+inactive inspection may still validate and present reliable published positives
+through the existing finite operation-wide reporting reserve. Evaluation stays
+partial or failed with unknown coverage. Reporting-funded records establish no
+audit use, absence, ownership or would-be state, and never complete a target.
+Audit-only demand adds no independent post-interruption presentation channel.
+The reporting reserve never runs callbacks, parsing, resource construction,
+correction eligibility or writes, and never resets execution or reporting limits.
+Ordinary, audit and inactive-inspection demand share one actual target execution. Observation-only execution, and hidden findings from
+reused ordinary MD047 execution, bypass correction eligibility inside the
+context before any terminal/GFM machinery. Ordinary active eligibility remains.
+
+The exact diagnostic is `Suppression for MD001 hides no findings.`, substituting
+the canonical target, on the entire first actual target token. Typed source-local
+audit decisions project through optional per-effect `reason` values documented
+in the [inspection contract](inspection-projection-v1.md#md087-per-target-audit-reasons).
+These preserve recognition, permission, instruction and provenance; full-source
+evaluation precedes focus.
+
 ## UTF-8 validation
 
 ### Mandatory gate

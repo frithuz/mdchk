@@ -90,7 +90,7 @@ collection, returned source documents or undeclared wire fields are fabricated.
 Both text and JSON reporters include these observations and count whole-record
 omissions under reporting limits. The inspection package now projects these observations and optionally runs
 disabled-throughout callbacks on the shared budget. Inspection/fix/MCP commands
-and MD087 counterfactual conclusions remain downstream.
+remain downstream. MD087 counterfactual conclusions are implemented on the shared engine path.
 
 MD029 compares full actual ordered groups before marker-start suppression. Hidden
 first items supply the start; hidden later mismatches consume direct ordinals.
@@ -211,3 +211,28 @@ instruction. Inherited directive denial preserves configured state. Findings
 cover only the four-byte original opener, so selecting later payload lines does
 not intersect the finding. Missing owned named-token context withholds the whole
 inventory with coverage. Existing directive comment recognition is unchanged.
+
+## Delivered MD087 suppression audit
+
+MD087 is available, default disabled, with no options and permanent NoFix.
+The shared catalog loop serves ordinary, audit and inactive inspection demand
+once per actual target and source view, including targets after MD087. Would-be
+enablement is monotone: configured-on remains on; configured-off becomes on at
+the earliest allowed enable closing offset. Disables change ownership but do
+not turn would-be state off. Blocked instructions never create capability.
+
+A validated retained provider finding can prove used even with partial context
+or a noninterrupt failure. Incomplete/error outcomes cannot prove absence.
+An atomic MD086 publication failure supplies no finding, including any private
+discarded prefix. Interruption prohibits new validation of returned arrays;
+only earlier independently validated and materialized conclusions survive.
+The diagnostic reporting reserve does not fund fresh audit proof.
+
+Typed source-local decisions retain owner, rule, first token, actual interval
+and reason. The existing per-effect reason field exposes these decisions via
+[documented joins](inspection-projection-v1.md#md087-per-target-audit-reasons),
+without replacing recognition, permission, effect or provenance. All work uses
+the original source/parse/context/options/resource authority and cumulative
+finite meter. Candidate and actual saved views recompute on their own snapshots
+with residual original allowance. No audit replay, extra audit parse or reset
+budget is introduced.

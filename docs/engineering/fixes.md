@@ -319,3 +319,14 @@ An unmatched opener in an ended quote owner remains a manual MD086 finding when
 MD047 adds an eligible final LF to later ordinary text. An unclosed comment at
 physical EOF protects that EOF, so MD047 remains deferred and MD086 remains manual.
 Candidate and saved diagnostics retain their exact source identities.
+
+## MD087 manual findings
+
+MD087 is permanently NoFix. It never produces edits, previews, safe-checker
+work or corrected contents. Hidden MD047 observations bypass terminal edit
+eligibility before its protection checks or GFM candidate parse; ordinary
+active MD047 findings retain their established correction behavior. The engine
+also bypasses eligibility for hidden findings discovered by a reused ordinary
+callback. Separately authorized MD047 fixes recompute the audit on candidate
+and actual observed saved source using the original operation's residual
+allowance, preserving the remaining manual MD087 finding.

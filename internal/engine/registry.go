@@ -58,7 +58,16 @@ type Finding struct {
 }
 
 // RuleOutcome requires IncompleteReason for unavailable prerequisites. Reliable
-// partial findings can accompany it. Cancellation/limits are separate causes.
+// partial findings can accompany it and a noninterrupt Err: retained Findings
+// are published reliable observations, not provisional private inventories.
+// Atomic providers must withhold their findings when publication fails. The
+// engine validates each finding before using it; incomplete/error outcomes
+// never prove absence. Cancellation/limits forbid new MD087 evidence admission
+// from returned arrays. Ordinary and independently requested ObserveInactive
+// presentation may validate published positives using the existing finite,
+// operation-wide reporting reserve, with partial/unknown evaluation coverage.
+// Reporting-funded records never establish audit use or completeness. An
+// audit-only demand does not authorize independent post-interruption reporting.
 type RuleOutcome struct {
 	Findings         []Finding
 	IncompleteReason string

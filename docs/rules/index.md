@@ -1,5 +1,10 @@
 # Rules to implement
 
+[MD087 unused-suppression analysis](html-and-comments/md087.md) is available for CommonMark and GFM,
+disabled by default, with no rule-specific options and permanent report-only support.
+Each allowed disable target is judged using its actual owned interval and shared
+original-source observations. Unknown observations retain incomplete coverage.
+
 [MD086 unmatched-comment analysis](html-and-comments/md086.md) is available for CommonMark and GFM,
 enabled by default with no rule-specific options and permanently report-only.
 Actual eligible HTML owners and their tails are analyzed once; matching ends at
@@ -40,9 +45,9 @@ opening-heading analysis, MD043 required-outline analysis, MD063 heading-capital
 analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090
 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis
 and configuration are implemented for both flavors. MD001, MD003, MD004, MD005, MD007,
-MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD044, MD049, MD050, MD065, MD081, MD088, MD033, MD086, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026,
+MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD044, MD049, MD050, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026,
 MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 are report-only. MD013, MD026, MD036,
-MD043, MD044, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033 and MD093 are available but disabled by default. Other
+MD043, MD044, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 are available but disabled by default. Other
 ordinary rule callbacks remain planned. The mandatory UTF-8 gate is implemented
 independently; MD094 controls attribution, not an ordinary production callback. Each
 linked page defines its behavior, configuration, examples, correction policy, and

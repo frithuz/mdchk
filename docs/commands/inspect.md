@@ -234,3 +234,18 @@ instruction. Inherited directive denial preserves configured state. Findings
 cover only the four-byte original opener, so selecting later payload lines does
 not intersect the finding. Missing owned named-token context withholds the whole
 inventory with coverage. Existing directive comment recognition is unchanged.
+
+## MD087 suppression audit
+
+MD087 analysis is available for CommonMark and GFM, disabled by default, with
+no options and permanent report-only support. Inspection's optional per-effect
+reason distinguishes used, unused, uncertain, self-excluded and inactive-audit
+targets while retaining ordinary state, permission, effect and provenance.
+Join each effect's rule to its first matching named token and the directive ID
+to owned rule intervals; final intervals own EOF. Full-document conclusions
+precede focus, retaining preceding owners as context_only.
+
+The audit produces no edit or preview. A separately authorized MD047 correction
+recomputes the audit against candidate and actual saved source with the original
+residual budget. Hidden observations bypass correction eligibility; ordinary
+active MD047 corrections retain their established behavior.

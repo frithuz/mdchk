@@ -1,5 +1,10 @@
 # Configuration examples and fixture cases
 
+[MD087 unused-suppression analysis](../rules/html-and-comments/md087.md) is available for CommonMark and GFM,
+disabled by default, with no rule-specific options and permanent report-only support.
+Each allowed disable target is judged using its actual owned interval and shared
+original-source observations. Unknown observations retain incomplete coverage.
+
 [MD086 unmatched-comment analysis](../rules/html-and-comments/md086.md) is available for CommonMark and GFM,
 enabled by default with no rule-specific options and permanently report-only.
 Actual eligible HTML owners and their tails are analyzed once; matching ends at
@@ -112,8 +117,8 @@ flavor: commonmark
 ```
 
 This configuration works with the current production executable: CommonMark
-0.31.2, GFM, directive processing, MD001/MD003/MD004/MD005/MD007/MD029/MD030/MD032/MD069/MD076/MD077/MD009/MD010/MD012/MD013/MD027/MD028/MD064/MD085/MD089/MD035/MD037/MD038/MD081/MD088/MD033/MD086/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD090/MD093 analysis and MD047 analysis/correction
-are available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
+0.31.2, GFM, directive processing, MD001/MD003/MD004/MD005/MD007/MD029/MD030/MD032/MD069/MD076/MD077/MD009/MD010/MD012/MD013/MD027/MD028/MD064/MD085/MD089/MD035/MD037/MD038/MD081/MD088/MD033/MD086/MD087/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD090/MD093 analysis and MD047 analysis/correction
+are available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
 independently enabled header recognition. Other ordinary rule implementations
 remain unavailable. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
@@ -483,3 +488,20 @@ An empty `MD086: {}` keeps the enabled default. Null, nonboolean shared settings
 and unknown options reject even when disabled. A complete permitted
 `<!-- mdchk:disable MD086 -->` controls later opener START anchors; an unclosed
 comment spelling cannot disable itself. No MD086 correction is available.
+
+## MD087 report-only suppression audit
+
+Enable the available audit explicitly; it has no rule-specific options:
+
+```yaml
+version: 1
+rules:
+  MD087: {enabled: true}
+```
+
+Omitting MD087 or using `MD087: {}` keeps it disabled. Only boolean `enabled`
+and `allow_directives` shared settings are accepted; null, undeclared options
+and options wrappers are rejected even when disabled. MD087 never removes a
+directive. A target configured off with no permitted enabling instruction is
+incapable of making a disable useful; unavailable target observations remain
+uncertain when that target could otherwise be enabled.
