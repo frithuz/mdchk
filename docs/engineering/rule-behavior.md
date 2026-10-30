@@ -288,6 +288,23 @@ replacements as an unknown option under the shared strict schema.
 Replace only those six source characters in eligible prose. Keep other Unicode characters unchanged.
 Preserve code, URLs/destinations, metadata, and existing protected syntax.
 
+### Implemented analysis scope
+
+MD088 includes actual Paragraph, Heading and GFM prose TableCell Exact Text, with
+transparent Emphasis/Strong/Strike. Entire Links and Images are excluded for
+findings. Genuine Link-descendant raw transitions remain global; Image children
+and private tails cannot change outer raw protection. URL protection is actual
+parser Link ownership: CommonMark bare URI Text remains eligible. No lexical URI
+scanner is added. Private rawTag/rawClosing/htmlTail lifetime, code/info, comments,
+attributes, opaque headers and retained definitions remain excluded. Entities,
+escapes, normalized and partial-tab contributions create no source candidates.
+
+Emit one original three-byte/one-code-point range per eligible scalar with exactly
+`Use ASCII quotes and dashes in prose.` Em dash is one finding. Full context
+precedes shared START suppression and inspect intersection. This pass is analysis
+and configuration only: PlannedFix remains future metadata; MD047 is sole fixer;
+MD088 creates no edits, previews or corrected content.
+
 ### Corrections
 
 Use the existing source-span correction and preservation checks. Defer a correction if reparsing or

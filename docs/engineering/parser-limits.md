@@ -677,3 +677,29 @@ work/nodes before use. Empty/clean/protected results retain caller/origin and st
 finite controls with atomic final withholding. Source-authored exact residual
 reservation tests cover small inputs, long failed probes and multi-span growth;
 these are finite accounting examples, not process-memory or throughput promises.
+
+
+## MD088 original ASCII punctuation analysis
+
+ASCIIPunctuation borrows the completed private original parse, source, production
+profile, options, physical index and operation budget. It returns detached scalar
+ranges only: actual Paragraph/Heading/GFM prose-cell Exact Text, transparent
+formatting, all Link findings excluded with global Link raw transitions, and fully
+opaque Image children/tails. It follows private rawTag/rawClosing/htmlTail lifetime
+without resetting at owners. Code, comments/attributes, headers and retained
+definitions stay protected. Entity/Escape/Normalized/PartialTab contributions
+supply no candidates; Exact bytes are validated against original source.
+
+Reservations precede structural and terminal visits, source/provenance checks,
+byte association, bounded UTF-8 decode and fixed-six classification, raw comparisons,
+stack/output growth, copied prefixes and retained facts/findings. Producer, style
+getter, facade, comparison and distinct outer callback final gates retain caller
+AND originating controls and sticky work/node/elapsed limits; any error atomically
+withholds all dependent MD088 output, including empty/clean/protected/post-output.
+No reparse, renderer, public-tree/source/index clone, new allowance or calibration
+is used. Finite application accounting is not a CPU/RSS or throughput guarantee.
+
+Exactly one original three-byte/one-code-point range per eligible scalar uses
+`Use ASCII quotes and dashes in prose.` Full context precedes shared START
+suppression and inspect intersection. Default OFF/style ascii/PlannedFix remain;
+this pass creates no MD088 edits, previews or corrected content. MD047 is sole fixer.

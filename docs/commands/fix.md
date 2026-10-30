@@ -22,6 +22,11 @@ The examples below assume the [current reduced setup](../index.md#get-started-wi
 a CommonMark+MD047 configuration and readable fixture paths. Without it,
 default GFM and CommonMark both retain missing default-rule coverage (`15`). Apply additionally requires the verified native adapter above.
 
+[MD088 ASCII-punctuation analysis](../rules/formatting/md088.md) is available for CommonMark and GFM,
+disabled by default with sole string option `style: ascii`. Invalid styles and
+unknown `replacements` reject even when disabled. Findings are manual in Pass 1;
+PlannedFix retains future correction scope. No MD088 edits or previews are emitted.
+
 ## Select files
 
 Pass one or more files or directories. Directories are searched recursively for `.md` and `.markdown` files. With no paths, fix processes the working directory. It uses the same selection and exclusion behavior as [lint](lint.md).
@@ -54,7 +59,7 @@ mdchk fix docs/ --dry-run --format json
 ```
 
 Text and JSON previews include proposed diffs when a registered correction
-passes shared candidate validation. MD047 final-newline correction is implemented. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 remain report-only, with no edits or previews for their findings.
+passes shared candidate validation. MD047 final-newline correction is implemented. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 remain report-only, with no edits or previews for their findings.
 
 [MD081 paragraph-emphasis analysis](../rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.

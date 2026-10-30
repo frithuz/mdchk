@@ -5,7 +5,7 @@ Use inline HTML comments with canonical MDxxx rule IDs to enable or disable rule
 Directives are intended for exceptions to specific rules within a document. To exclude a whole file from all rule linting, add its path to `exclude` in configuration. Do not enumerate every rule in a directive to suppress linting across the file. A whole-file exclusion does not prevent an explicitly requested inspection.
 
 Current availability: CommonMark/GFM directive processing is delivered in lint,
-fix and inspect. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 are production checks; the MD040 examples below
+fix and inspect. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 are production checks; the MD040 examples below
 illustrate rule-state syntax for an unavailable check. Permitted directives that
 enable unavailable rules produce incomplete coverage. Independently recognized
 YAML/TOML headers remain protected from directives, including when MD001, MD025 or MD041 consumes
@@ -14,6 +14,11 @@ their semantics below describe the accepted future contract.
 
 [MD081 paragraph-emphasis analysis](rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.
+
+[MD088 ASCII-punctuation analysis](rules/formatting/md088.md) is available for CommonMark and GFM,
+disabled by default with sole string option `style: ascii`. Invalid styles and
+unknown `replacements` reject even when disabled. Findings are manual in Pass 1;
+PlannedFix retains future correction scope. No MD088 edits or previews are emitted.
 
 ## Disable and enable rules
 
@@ -39,6 +44,12 @@ Name one or more rules, separated by whitespace:
 Here, the second comment enables only `MD001`; `MD040` remains disabled. Rule IDs and the `mdchk:disable` and `mdchk:enable` commands are case-sensitive. Descriptive aliases and lowercase IDs are invalid. At least one rule name is required. There is no implicit all-rules form, wildcard, or comma-separated list.
 
 Directives can be standalone comments or appear between other content on a line. Content before the closing comment marker retains its previous rule state; content after it uses the new state. Recognized comments may span lines, with whitespace separating rule names.
+
+MD088 analyzes full original prose and raw protection before shared START-based
+suppression. Genuine raw transitions inside protected Link labels still affect
+surrounding prose; Image descendants cannot change outer raw state. A later inline
+directive cannot retroactively suppress an earlier scalar, and inspect retains
+context outside its selected lines. Its findings are manual in this pass.
 
 ## Understand scope
 

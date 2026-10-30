@@ -17,6 +17,11 @@ processor, and applicable rules are implemented, no ancestor restricts the
 definition, and all configuration paths are inside the discovery boundary. These
 conditions describe a test environment, not the current implementation status.
 
+[MD088 ASCII-punctuation analysis](../rules/formatting/md088.md) is available for CommonMark and GFM,
+disabled by default with sole string option `style: ascii`. Invalid styles and
+unknown `replacements` reject even when disabled. Findings are manual in Pass 1;
+PlannedFix retains future correction scope. No MD088 edits or previews are emitted.
+
 ## Valid definitions
 
 ### Explicit project settings
@@ -89,8 +94,8 @@ flavor: commonmark
 ```
 
 This configuration works with the current production executable: CommonMark
-0.31.2, GFM, directive processing, MD001/MD003/MD004/MD005/MD007/MD029/MD030/MD032/MD069/MD076/MD077/MD009/MD010/MD012/MD013/MD027/MD028/MD064/MD085/MD089/MD035/MD037/MD038/MD081/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD090/MD093 analysis and MD047 analysis/correction
-are available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
+0.31.2, GFM, directive processing, MD001/MD003/MD004/MD005/MD007/MD029/MD030/MD032/MD069/MD076/MD077/MD009/MD010/MD012/MD013/MD027/MD028/MD064/MD085/MD089/MD035/MD037/MD038/MD081/MD088/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD090/MD093 analysis and MD047 analysis/correction
+are available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
 independently enabled header recognition. Other ordinary rule implementations
 remain unavailable. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
@@ -414,3 +419,17 @@ equal zero, or exactly indent with start_indented. Bullet children use the
 actual parent marker width and padding; numbered parents target the content
 column without additional indent. Quotes retain ancestry after stripping their
 prefix. MD007 findings are manual, and PlannedFix describes future work.
+
+
+## ASCII punctuation
+
+```yaml
+version: 1
+rules:
+  MD088: {enabled: true, style: ascii}
+```
+
+MD088 is available but disabled by default. Omitted, empty and style-only mappings
+retain OFF. The sole style is the exact string `ascii`; null, empty, wrong-case
+or non-string values and unknown `replacements` reject even when disabled.
+Shared enabled/allow_directives fields require actual booleans.

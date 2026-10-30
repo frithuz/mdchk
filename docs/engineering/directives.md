@@ -182,3 +182,12 @@ or retroactively change that starting state. Full-range intersection selects
 inspection observations after full-source analysis; hidden context and original
 raw lifetimes remain binding. Inherited directive denials and last permitted
 suppression ownership follow the shared processor. No corrections are generated.
+
+
+MD088 establishes all original prose/raw/Link/Image ownership before shared
+finding START suppression. Its default is OFF, but permitted directives may
+enable it with the admitted ascii style. Link-descendant raw transitions remain
+global even when labels are ineligible; images are isolated. Earlier unselected
+raw context remains effective for inspect line intersections. Later inline
+instructions cannot retroactively suppress an earlier scalar. This analysis
+produces manual findings only; it adds no correction authority.
