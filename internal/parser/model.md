@@ -2069,3 +2069,31 @@ list domain; equal-length whole-name ASCII comparison has no trim/Unicode fold.
 MD033 remains default OFF, RequiresSyntax, UsesFrontmatter=false and NoFix; MD047
 alone supplies corrections. Finite application accounting is not a hard CPU/RSS,
 throughput or OS preemption guarantee.
+
+## MD091 literal Markdown candidates
+
+`HTMLMarkdownCandidates` borrows completed private original production syntax,
+source, physical index, options, profile and cumulative operation allowance.
+Its detached internal Marker/Extent/Kind records identify manual opening markers
+and the complete extents consumed before suppression or inspection selection.
+Only actual HTMLBlock mapped payload supplies candidates. InlineHTML retains
+incoming raw protection, Image alternatives are isolated, and complete owner
+content includes private closing tails exactly once.
+
+The finite flat emphasis/link/ATX grammar is documented on MD091. Token/attribute
+union protection is independent of actual form1 ANY4 literal termination;
+lexically entered raw lifetimes require corresponding confirmed closers and
+survive owner boundaries. Opaque forms2–5 retain actual delimiter semantics.
+Only contiguous Exact original contributions form candidate islands; physical
+endings, gaps, known transformations and control scalars are barriers. Known
+unclosed raw/opaque context protects its remainder; genuinely unknown plausible
+named-token boundaries make the atomic inventory unavailable. Impossible colon
+boundaries do not create uncertainty.
+
+All scratch, association checks, scalar visits, failed probes, reverse indexes,
+capacities, copies and logical records reserve original finite work/storage
+before use. Reverse delimiter/label/destination indexes avoid repeated suffix
+scans. Producer, optionless facade, comparison and distinct outer callback final
+checks retain caller AND origin controls and withhold every provisional prefix
+on failure. No new parse, Source, LineIndex, public tree, model/options clone,
+allowance, resource authority or correction capability is introduced.

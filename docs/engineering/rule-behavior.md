@@ -860,3 +860,24 @@ short forms. Each unmatched opener reports exactly its original four bytes with
 suppression and inspection intersection. Failed owned named-token context
 withholds the entire inventory with coverage; an unclosed comment itself is a
 violation. No directive grammar or parser grammar changes are implied.
+
+## MD091 literal Markdown analysis
+
+MD091 is available for CommonMark/GFM, default disabled, optionless and
+permanently NoFix. Use actual completed original HTMLBlock mapped payload with
+protected HTML tokens/attributes, four literal names, owner lifetimes and
+closing tails once. Its initial bounded flat emphasis/link/ATX grammar, opening
+marker ranges, same-line code/image protection and intentional exclusions are
+documented on the rule page. Full candidate consumption precedes finding-START
+suppression and inspection focus; an outer finding does not release nested text
+when suppressed. ATX consumption does not skip later protection transitions.
+
+The whole candidate inventory and callback publish atomically under original
+source/index/options/profile/operation and caller/origin controls, including a
+distinct outer final check after comparison. Unknown required named-token
+context uses `HTML Markdown candidate context is unavailable; the complete MD091 inventory is withheld.`
+Known unclosed opaque/raw remainders remain protected. Available empty inventory
+establishes absence; unavailable inventory or discarded prefix establishes none.
+Real MD087 shares the one actual callback, preserving its capability/would-be
+semantics and interruption rules. MD047 alone may independently correct safe
+ordinary EOF content under residual allowance; MD091 supplies no edit/preview.

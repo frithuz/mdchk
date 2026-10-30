@@ -1,5 +1,11 @@
 # mdchk
 
+[MD091 Markdown-in-HTML analysis](docs/rules/html-and-comments/md091.md) is available
+for CommonMark and GFM, disabled by default, with no rule-specific options and
+permanent report-only support. It checks bounded emphasis, link and ATX heading
+candidates in actual literal HTML block payload. Tokens, attributes and literal
+interiors stay protected; unknown required context withholds the whole inventory.
+
 [MD087 unused-suppression analysis](docs/rules/html-and-comments/md087.md) is available for CommonMark and GFM,
 disabled by default, with no rule-specific options and permanent report-only support.
 Each allowed disable target is judged using its actual owned interval and shared
@@ -34,7 +40,7 @@ facts, directives, protected regions and candidate reparsing. MD047 is the first
 production correction; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
 analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation
 analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis,
-MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD065 horizontal-rule blank-line analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD018 missing opening-hash spacing, MD019 extra
+MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD065 horizontal-rule blank-line analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD091 literal-Markdown analysis, MD018 missing opening-hash spacing, MD019 extra
 opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading
 delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation
 analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026
@@ -43,7 +49,7 @@ opening-heading analysis, MD043 required-outline analysis, MD063 heading-capital
 analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090
 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis
 are also available. MD065 is enabled by default for CommonMark and GFM; its
-findings are manual and corrections are deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 are
+findings are manual and corrections are deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087, MD091 and MD093 are
 available but disabled by default. Other named rules remain unavailable. See the [parser
 verification record](docs/engineering/gfm-verification.md).
 

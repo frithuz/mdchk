@@ -1,0 +1,634 @@
+{
+  "issue": 83,
+  "kind": "R1-QA-1 independent literal regression supplement",
+  "authority": "Root authored after accepted QA reproduction but BEFORE production repair/new probes, from existing adopted confirmed-opaque policy and actual inline_html.go grammar plus literal spelling/scalar arithmetic. No product/parser/candidate scanner imports, outputs or counters derive expectations. Original six authorities and111-case fixture stay exact.",
+  "original_oracle_sha256": "2110047ce76969edbe4970529358d4caef98a4d0021bcff824db3426f013f05d",
+  "qa_report_sha256": "521f802971e6acf8c1cc3f0c78b0bdc687993e544e201b244356ae52b7e8aab6",
+  "profiles": [
+    "commonmark",
+    "gfm"
+  ],
+  "literal_case_count": 18,
+  "planned_case_flavor_repetitions": 36,
+  "not_execution_counts": true,
+  "message": "Markdown syntax is literal inside this HTML block.",
+  "cases": [
+    {
+      "name": "invalid-bang-space",
+      "source": "<div>\n<! **x**\n</div>\n",
+      "source_bytes": 22,
+      "source_sha256": "d78fecae70af29292e7fd78c9b8dc4c108fd52b208852846673e1993f636c427",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 9,
+              "end": 11
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 4
+              },
+              "end": {
+                "line": 2,
+                "column": 6
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "invalid-bang-digit",
+      "source": "<div>\n<!1 **x**\n</div>\n",
+      "source_bytes": 23,
+      "source_sha256": "49236d1436d0cf4889b24889bfd8c06c49eed72b9f251cd6732ae0ab6262412c",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 10,
+              "end": 12
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 5
+              },
+              "end": {
+                "line": 2,
+                "column": 7
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "invalid-cdata-name",
+      "source": "<div>\n<![oops **x**\n</div>\n",
+      "source_bytes": 27,
+      "source_sha256": "1b826c19e4fc1e3807aa9cc45f10a7b2a3d54305f70aff3e4d411db690bd013c",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 14,
+              "end": 16
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 9
+              },
+              "end": {
+                "line": 2,
+                "column": 11
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "invalid-bang-line",
+      "source": "<div>\n<!\n**x**\n</div>\n",
+      "source_bytes": 22,
+      "source_sha256": "d0272f6e884fc8d7e35fa70c1fdb5ad47c9e20ad8ee15a97e659d7a5c51a2b84",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 9,
+              "end": 11
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "invalid-cdata-case",
+      "source": "<div>\n<![cdata[ **x**\n</div>\n",
+      "source_bytes": 29,
+      "source_sha256": "455b8c2b9efabe8dbb58d4e28771cb5428e4ec1dbc29fb2458946e5d15e41b95",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 16,
+              "end": 18
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 11
+              },
+              "end": {
+                "line": 2,
+                "column": 13
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "unclosed-declaration-uppercase",
+      "source": "<div>\n<!DOCTYPE **x**",
+      "source_bytes": 21,
+      "source_sha256": "5689689a7344e28fd4556b82bf352b2aea70ef5c71fea883af9908174bbb57ee",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "unclosed-declaration-lowercase",
+      "source": "<div>\n<!doctype **x**",
+      "source_bytes": 21,
+      "source_sha256": "f97f21ab0b1247301377e566fe5cd2652894d168497f04380a02cbbf01bc40d2",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "unclosed-cdata",
+      "source": "<div>\n<![CDATA[ **x**",
+      "source_bytes": 21,
+      "source_sha256": "4244bd601756976803f0933e75cd2224d218d2d6ae19aed63fd54bfa07a334f4",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "unclosed-comment",
+      "source": "<div>\n<!-- **x**",
+      "source_bytes": 16,
+      "source_sha256": "28a9913fe7a164b009d59163a0dc786f0e579639779416f0d262fd46fcd0af08",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "unclosed-processing-instruction",
+      "source": "<div>\n<? **x**",
+      "source_bytes": 14,
+      "source_sha256": "80b11d64c50f445668ef4c30bc867dabf3cbfbd1298dbd58c6eba1ab0fbb127b",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "unclosed-actual-raw-prefix-is-exempt",
+      "source": "<pre>\n<! **x**",
+      "source_bytes": 14,
+      "source_sha256": "73dd058f31db273b0087a317041b09e5631c7a7eb7457b7ec8a53e2e1ebb8a50",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "incoming-lexical-raw-prefix-is-exempt",
+      "source": "<div><pre>\n<! **x**\n\n<div>\n**y**\n</div>\n",
+      "source_bytes": 40,
+      "source_sha256": "56f86ef34b734b5ed194e1378085609122cecf0f52dbb6aafd08fe1de3c23d0f",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "malformed-prefix-does-not-skip-later-raw-transition",
+      "source": "<div>\n<! **x** <pre>\n\n<div>\n**y**\n</div>\n",
+      "source_bytes": 41,
+      "source_sha256": "fb2e54b7bd162e8298eb331ef3eb7badf88c209b6fcf266aeb51f720fa3ea501",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 9,
+              "end": 11
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 4
+              },
+              "end": {
+                "line": 2,
+                "column": 6
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "malformed-prefix-form1-tail",
+      "source": "<script></style><! **x**\n",
+      "source_bytes": 25,
+      "source_sha256": "7076290d2790c6651ac365046a33ad5138030b2c8b44711eb46d737753448289",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 19,
+              "end": 21
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 20
+              },
+              "end": {
+                "line": 1,
+                "column": 22
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "malformed-prefix-outside-html-owner",
+      "source": "<! **x**\n",
+      "source_bytes": 9,
+      "source_sha256": "e19f1d8e38d3f7f5afb2f0dbaf51ca4e467dae8b166bf747fc1208dca0d7a9ae",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "malformed-prefix-inside-confirmed-attribute",
+      "source": "<div title=\"<! **x**\">\n</div>\n",
+      "source_bytes": 30,
+      "source_sha256": "15726144868bb231ac0be3ec828c91d022fb6eded9e4f7341c65b9964e17377f",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "malformed-hidden-proves-md087-used",
+      "source": "<!-- mdchk:disable MD091 -->\n<div>\n<! **x**\n</div>\n",
+      "source_bytes": 51,
+      "source_sha256": "0e5030a8d379297c107bb85808ecc72161ea7efb35a62658c2cc17635a1a53d4",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 38,
+              "end": 40
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 4
+              },
+              "end": {
+                "line": 3,
+                "column": 6
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "md087_findings": [],
+        "audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD091",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 51,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-used"
+          }
+        ],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    },
+    {
+      "name": "confirmed-declaration-absence-proves-md087-unused",
+      "source": "<!-- mdchk:disable MD091 -->\n<div>\n<!DOCTYPE **x**",
+      "source_bytes": 50,
+      "source_sha256": "ed11416f5c2640992034a0f59aebe4cee70330a4318394a39f915c3a035e21f7",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [
+          {
+            "rule": "MD087",
+            "message": "Suppression for MD091 hides no findings.",
+            "marker": "MD091",
+            "byte_range": {
+              "start": 19,
+              "end": 24
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 20
+              },
+              "end": {
+                "line": 1,
+                "column": 25
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD091",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 50,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-unused"
+          }
+        ],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      }
+    }
+  ]
+}

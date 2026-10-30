@@ -1,0 +1,3962 @@
+{
+  "issue": 83,
+  "base": "25b4217cbd77094deb0a4cf145258071b03aaa88",
+  "authority": "Root-authored literal source and independently selected opening-byte ranges; no product/parser execution or observed output. Scalar coordinates and SHA/length verified by plain text arithmetic only.",
+  "profiles": [
+    "commonmark",
+    "gfm"
+  ],
+  "message": "Markdown syntax is literal inside this HTML block.",
+  "default_enabled": false,
+  "fix": "NoFix",
+  "rule_specific_options": {},
+  "registry": "full-production",
+  "settings": "Disable unrelated catalog rules; apply each explicit MD091/MD087/shared permission/frontmatter configuration. No observed result supplies expected constants.",
+  "literal_case_count": 111,
+  "planned_case_flavor_repetitions": 222,
+  "cases": [
+    {
+      "name": "basic-strong",
+      "source": "<div>\n**Guide**\n</div>\n",
+      "source_bytes": 23,
+      "source_sha256": "11a7724ae4fa4914a41b74e3db3924fd982f9d8a0256ac0e79d5744fea907f52",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 6,
+              "end": 8
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "actual-html-markup",
+      "source": "<div>\n<strong>Guide</strong>\n</div>\n",
+      "source_bytes": 36,
+      "source_sha256": "c05b244682a561cd090ecdd501a62671cf7d41e3a05138e90079c29f22b1098e",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "inline-html-exempt",
+      "source": "<span>**Guide**</span>\n",
+      "source_bytes": 23,
+      "source_sha256": "62ecb2e124e195bdff0fbd690f5bbe551103c96096a730c1c3972c58dcae8c9d",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "standalone-custom-form7",
+      "source": "<span>\n**Guide**\n</span>\n",
+      "source_bytes": 25,
+      "source_sha256": "a6acb6c6d604bdeb093cab97511e11ba7268a0fd8b28c84e9744cd20e2bca61e",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 7,
+              "end": 9
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "blank-transition-parsed-markdown",
+      "source": "<div>\n\n**Guide**\n\n</div>\n",
+      "source_bytes": 25,
+      "source_sha256": "13014f0fa9378ccb140b44b277158fed661fcbc26ee4d4599a5655e95efcae39",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "closing-tag-does-not-end-form6",
+      "source": "<div>\n</div>\n**x**\n",
+      "source_bytes": 19,
+      "source_sha256": "f78f209cdf44d767dfc0d17c5f293aa102aa50b8272323dfe8816dd1d91034bf",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 13,
+              "end": 15
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "one-line-block-payload",
+      "source": "<div>**x**</div>\n",
+      "source_bytes": 17,
+      "source_sha256": "f891c7295038c0029ee48ee7d2b9e0375fea1d0ee4c3d170bab13d96aa1c7dcc",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 5,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 6
+              },
+              "end": {
+                "line": 1,
+                "column": 8
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "nested-tags-once",
+      "source": "<div>\n<x>\n**x**\n</x>\n</div>\n",
+      "source_bytes": 28,
+      "source_sha256": "770f1b1d705b7be646d5ed4aaa63c14d0d87023537128727a00c76a6f4360c07",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 10,
+              "end": 12
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "empty-source",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "no-html",
+      "source": "**x** [y](u)\n",
+      "source_bytes": 13,
+      "source_sha256": "ae688d34e5020b6205ac2f07f577dbc859a89a30d5c4904bc2d163dd255f9804",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "actual-fenced-code",
+      "source": "```\n<div>\n**x**\n</div>\n```\n",
+      "source_bytes": 27,
+      "source_sha256": "fc9cfc3fb537d5a3c317366c44969e898dcdb0b5780682895dcfad1ab59b70cb",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "actual-indented-code",
+      "source": "    <div>\n    **x**\n    </div>\n",
+      "source_bytes": 31,
+      "source_sha256": "15492a896bd9572518fbed7452a375506e2fd43153a1bc15cb0c0155b682fe08",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "actual-code-span",
+      "source": "`<div>**x**</div>`\n",
+      "source_bytes": 19,
+      "source_sha256": "9efd03163797a39022f2d6645bca47b010c936718ff1f653b49befe7891f459b",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "actual-image-alternative",
+      "source": "![<div>**x**</div>](u)\n",
+      "source_bytes": 23,
+      "source_sha256": "c9c20d6cb4a7e59caf06729cf961b820d522384916209ea9bf6bb41a012930ca",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "image-raw-state-does-not-leak",
+      "source": "![<pre>](u)\n\n<div>**x**</div>\n",
+      "source_bytes": 30,
+      "source_sha256": "a5d29bfbf083ccda63a48781e83b323693962342deae0ba1502701521172612e",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 18,
+              "end": 20
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 6
+              },
+              "end": {
+                "line": 3,
+                "column": 8
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "escaped-angle-no-block",
+      "source": "\\<div> **x**\n",
+      "source_bytes": 13,
+      "source_sha256": "0082a5ec58608f7e9e8b5c0e27e78836389522a13a6c7aba2244bf4392207410",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "gfm-cell-inline-html",
+      "source": "a | b\n--- | ---\na | <span>**x**</span>\n",
+      "source_bytes": 39,
+      "source_sha256": "c3883d56b3baad3375e746e8f23efaa82cfc432f70b17cf71f84f1c9eb4f693a",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "atx-heading",
+      "source": "<div>\n# H\n</div>\n",
+      "source_bytes": 17,
+      "source_sha256": "9ccfa6fe35cc249751d17f3f7ab6f2114c100c80be69235ab9b667215e1a1257",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "#",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "empty-atx-heading",
+      "source": "<div>\n###\n</div>",
+      "source_bytes": 16,
+      "source_sha256": "31f7c621cc4711b0cc830a674f35cd428301796626660cdcd008dc705d6efc7f",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "###",
+            "byte_range": {
+              "start": 6,
+              "end": 9
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 4
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "three-space-atx",
+      "source": "<div>\n   ## H\n</div>",
+      "source_bytes": 20,
+      "source_sha256": "f912bc3d130c04eb00c2e11063cb1a6e0899d9ec440f70914f9cc3071dbea596",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "##",
+            "byte_range": {
+              "start": 9,
+              "end": 11
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 4
+              },
+              "end": {
+                "line": 2,
+                "column": 6
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "six-hash-atx",
+      "source": "<div>\n###### H\n</div>",
+      "source_bytes": 21,
+      "source_sha256": "2c9b181a61aadaec4b80739b182053025160e99f9b34d6f6e3ca6ae0571b267f",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "######",
+            "byte_range": {
+              "start": 6,
+              "end": 12
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 7
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "seven-hash-excluded",
+      "source": "<div>\n####### H\n</div>",
+      "source_bytes": 22,
+      "source_sha256": "22ec8d27b2dd93a4c6e0671a683c1cbdf4315ab767f6594314205ae1fd70c65b",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "hash-without-separator",
+      "source": "<div>\n#H\n</div>",
+      "source_bytes": 15,
+      "source_sha256": "16538cbc73e5fc0a83ec01ed4bf54e025d2dff04bea068d72f9e7920575004fb",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "four-space-atx-excluded",
+      "source": "<div>\n    # H\n</div>",
+      "source_bytes": 20,
+      "source_sha256": "b4f7595ef50cd9135f8e6fabad04fbdd627102faf4532001c9db00f460cdacfc",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "tab-indent-atx-excluded",
+      "source": "<div>\n\t# H\n</div>",
+      "source_bytes": 17,
+      "source_sha256": "d3f6197f9c05156782610ea263d0782a6932fbff71dd6949f833c7ca0c3c19e7",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "tab-heading-separator",
+      "source": "<div>\n#\tH\n</div>",
+      "source_bytes": 16,
+      "source_sha256": "a15a12ea37327c1475882129453c46d7465fa8dbef77c362b50b5dddacc5c0c5",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "#",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "nbsp-not-heading-separator",
+      "source": "<div>\n# H\n</div>",
+      "source_bytes": 17,
+      "source_sha256": "58bba4b9da2ce9611886e8e13d0ca8e6a4940c13eb2f2c64e11406583ed8074f",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "setext-not-adopted",
+      "source": "<div>\nH\n---\n</div>",
+      "source_bytes": 18,
+      "source_sha256": "6c4df3e2ab907363601314ef27d9c6a145f96160ec7cd0b7bd60015a2c970d09",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "heading-consumes-inner-candidates",
+      "source": "<div>\n# **x** [y](u)\n</div>",
+      "source_bytes": 27,
+      "source_sha256": "992632759f72bfdd6e3ada65781158a7d53ac63505abf7b1f6ff8bbb3dcd7b88",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "#",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "midline-tail-not-heading",
+      "source": "<pre>x</pre># H\n",
+      "source_bytes": 16,
+      "source_sha256": "464da8888371486916a43c9d765f0b967611e571a8006a4ab6762006cae2a587",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "quote-prefix-mapping",
+      "source": "> <div>\n> **x**\n> </div>\n",
+      "source_bytes": 25,
+      "source_sha256": "9627adeb70d4382bbcdc5a62ab0a4abfe7921beaa9df9dde15d755e5c12197a5",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 10,
+              "end": 12
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 3
+              },
+              "end": {
+                "line": 2,
+                "column": 5
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "list-quote-prefix-mapping",
+      "source": "- > <div>\n  > **x**\n  > </div>\n",
+      "source_bytes": 31,
+      "source_sha256": "ce33e3ba12ff6da2b218b8456cedd92ed544cc053a2d9d8e7fa7775637782c0e",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 14,
+              "end": 16
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 5
+              },
+              "end": {
+                "line": 2,
+                "column": 7
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "multiple-flat-candidates",
+      "source": "<div>\n**a** [b](u) *c*\n</div>\n",
+      "source_bytes": 30,
+      "source_sha256": "daec17f0e5406d68ced13aa37fdec0e2cc082e6673d675e23bfe4e060bb620ae",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 6,
+              "end": 8
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          },
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "[",
+            "byte_range": {
+              "start": 12,
+              "end": 13
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 7
+              },
+              "end": {
+                "line": 2,
+                "column": 8
+              }
+            },
+            "fix_available": false
+          },
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "*",
+            "byte_range": {
+              "start": 19,
+              "end": 20
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 14
+              },
+              "end": {
+                "line": 2,
+                "column": 15
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "link-consumes-emphasis-label",
+      "source": "<div>\n[**x**](u)\n</div>",
+      "source_bytes": 23,
+      "source_sha256": "ee65dd978ecc0cb3d47c53cc5bd25389f3c7e3b05ac45f81076f143e3ac809b2",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "[",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "emphasis-consumes-link-looking-payload",
+      "source": "<div>\n*[x](u)*\n</div>",
+      "source_bytes": 21,
+      "source_sha256": "9d2d9b2475abc879185add91d7e55e94b55697be85ec8a2606bf9c795364b303",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "*",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "competing-family-releases-later-flat-pair",
+      "source": "<div>\n**a _b_ c**\n</div>",
+      "source_bytes": 24,
+      "source_sha256": "3b53d3aee3a227d27d60bcbef592ca70fa7aa7e4d51a2a59d8da44e08b27b249",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "_",
+            "byte_range": {
+              "start": 10,
+              "end": 11
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 5
+              },
+              "end": {
+                "line": 2,
+                "column": 6
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "triple-runs-excluded",
+      "source": "<div>\n***x***\n</div>",
+      "source_bytes": 20,
+      "source_sha256": "6066b5db197276b4da5c82f0cd9e5306f211d6f6f12a8ff0c2b1d43be74f5158",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "mixed-width-excluded",
+      "source": "<div>\n**x*\n</div>",
+      "source_bytes": 17,
+      "source_sha256": "001dea5ddb77629a7ecd74cfa02ecce265147de48425e937502d8cf7d6a8e181",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "intraword-stars",
+      "source": "<div>\na*b*c\n</div>",
+      "source_bytes": 18,
+      "source_sha256": "9a2dd12bb421cac63e5b3b519ef688fe665caaf02fed09d2dcf661daab6248ab",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "*",
+            "byte_range": {
+              "start": 7,
+              "end": 8
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 2
+              },
+              "end": {
+                "line": 2,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "intraword-underscores-excluded",
+      "source": "<div>\na_b_c\n</div>",
+      "source_bytes": 18,
+      "source_sha256": "436a2c8a10784eb892671e1f1f2826d968ff8fc9d7f1445a96aa89eca4669ac9",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "whitespace-emphasis-edges-excluded",
+      "source": "<div>\n* x *\n</div>",
+      "source_bytes": 18,
+      "source_sha256": "6c2421b16c8484241f2e1fb68f487e6ab12f3d83cda28c238b325720fed9ed56",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "unicode-emphasis",
+      "source": "<div>\n*é*\n</div>",
+      "source_bytes": 17,
+      "source_sha256": "51883cfdb59b0f35cebc515fabd04478cd3fc74264792cef720244db41cac73b",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "*",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "astral-prefix-scalar-columns",
+      "source": "<div>\n😀 **é**\n</div>",
+      "source_bytes": 24,
+      "source_sha256": "d07bd083d11542bd19db9b3ce54c1caae040ddea90390437b5fe24a0c52e2818",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 11,
+              "end": 13
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 3
+              },
+              "end": {
+                "line": 2,
+                "column": 5
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "nbsp-inner-edge-excluded",
+      "source": "<div>\n* x*\n</div>",
+      "source_bytes": 18,
+      "source_sha256": "300077db628e306faa072a51c3c78703b29f6e157bffbeb4140aaa6f167f638a",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "line-separator-is-not-physical-ending",
+      "source": "<div>\n* *\n</div>",
+      "source_bytes": 18,
+      "source_sha256": "00829e85c8d13a5edf7308baa943eb1b6056acb579ba8e18c8b002734e4413a3",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "*",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "odd-backslash-excludes-whole-run",
+      "source": "<div>\n\\**x**\n</div>",
+      "source_bytes": 19,
+      "source_sha256": "7b114d55d77f575dfa088856563778816bce77737827c0277beed9d7c029960f",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "even-backslashes",
+      "source": "<div>\n\\\\**x**\n</div>",
+      "source_bytes": 20,
+      "source_sha256": "c7f6ba2ec5159304a5b36ff253e28c8b79f00a6bf8539ada110bc477c549f73d",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 8,
+              "end": 10
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 3
+              },
+              "end": {
+                "line": 2,
+                "column": 5
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "entity-markers-not-decoded",
+      "source": "<div>\n&ast;x&ast; &#35; H\n</div>",
+      "source_bytes": 32,
+      "source_sha256": "17185c64dbf64174351bd8ebb7156fac497c4081cbdc52fa3606125d9c8c6089",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "normalized-nul-island-barrier",
+      "source": "<div>\n*a\u0000b*\n</div>",
+      "source_bytes": 18,
+      "source_sha256": "210d018a9060938e9c8940295cffbd17e6b73bf1c6bca4ecac1c9702d0d84916",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "replacement-rune-valid",
+      "source": "<div>\n*�*\n</div>",
+      "source_bytes": 18,
+      "source_sha256": "af4e0d1b9b03297180c8c2a6746a4aa94365f8ab0d1d18c3d24c8665ccdd955d",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "*",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "inline-link",
+      "source": "<div>\n[x](u)\n</div>\n",
+      "source_bytes": 20,
+      "source_sha256": "d00a3bc902d5fcda9651759b8dfc403e0aa674e70df63f6a6ac8fccf6297e2f1",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "[",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "empty-destination-link",
+      "source": "<div>\n[x]()\n</div>",
+      "source_bytes": 18,
+      "source_sha256": "4ef9009e8101e87de3b8f249291b12af563f11809b4cff30dd0c2e4336497e1a",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "[",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "empty-label-excluded",
+      "source": "<div>\n[](u)\n</div>",
+      "source_bytes": 18,
+      "source_sha256": "fdb8cfbd7338ba9458b1df4f6477a3612a417b6920dc8aefe1ffd94db96345bd",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "blank-label-excluded",
+      "source": "<div>\n[ \t](u)\n</div>",
+      "source_bytes": 20,
+      "source_sha256": "e8165d507b83caaf9b994196f5b6f258500a927690c2375153070539d2d89465",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "label-space-link",
+      "source": "<div>\n[a b](u)\n</div>",
+      "source_bytes": 21,
+      "source_sha256": "2954a1ec01e76a62d53c49128135db0fefe1ef9e3427976b80ad5abf6d11ec18",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "[",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "escaped-bracket-in-label",
+      "source": "<div>\n[a\\]b](u)\n</div>",
+      "source_bytes": 22,
+      "source_sha256": "f043553493d0dacfae6de3c09af34ef9fb9562e4de334bc37eb91331e359b42d",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "[",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "nested-label-excluded",
+      "source": "<div>\n[a[b]](u)\n</div>",
+      "source_bytes": 22,
+      "source_sha256": "3fa3aa02578f8ba3c5591486cf57a2487bcb2b5f4272c9622ccece7ab7024d8f",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "nested-parenthesis-excluded",
+      "source": "<div>\n[x](a(b))\n</div>",
+      "source_bytes": 22,
+      "source_sha256": "f3dd4f6e9dd8a486fc988ffe6fb07621b40954bb9ad896e867baa6fb0223291d",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "angle-destination-excluded",
+      "source": "<div>\n[x](<u>)\n</div>",
+      "source_bytes": 21,
+      "source_sha256": "4df59c6ba25ebbcf932f5750f24fcb1177e288d5930149552c54d1effad1c1ea",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "title-link-excluded",
+      "source": "<div>\n[x](u \"t\")\n</div>",
+      "source_bytes": 23,
+      "source_sha256": "d34ffa4fba62464ec3cf13c95c899a87d7bce41a292fa23149b400d9c703163b",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "reference-without-definition",
+      "source": "<div>\n[x][r]\n</div>\n",
+      "source_bytes": 20,
+      "source_sha256": "16d595ac6fc8c4016492f4eb7bc2938369a5cd7227c199fb7695e3114e91f7f6",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "reference-with-definition",
+      "source": "<div>\n[x][r]\n</div>\n\n[r]: /u\n",
+      "source_bytes": 29,
+      "source_sha256": "e1534f9d9448395ff789f618a3b44f4414b6dc1ccd199f5d7a2737df59008e22",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "shortcut-and-collapsed-reference-excluded",
+      "source": "<div>\n[x] [y][]\n</div>",
+      "source_bytes": 22,
+      "source_sha256": "9b84297ba8e9ee9f9fc5e07c2d08550dde8dc2241563e2605d18ead0ebba123f",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "autolink-not-adopted",
+      "source": "<div>\n<https://x>\n</div>",
+      "source_bytes": 24,
+      "source_sha256": "c8dbce3d72b086643c3ccb884fa53c1d31b837509f38b8ac7463457aec882d48",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "image-label-opaque",
+      "source": "<div>\n![**x**](u)\n</div>",
+      "source_bytes": 24,
+      "source_sha256": "f3e5be2d4ae9e40e0a974add9666f7b8db84ec6d8651aab15eccc8a8e34548e3",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "escaped-image-prefix-allows-link",
+      "source": "<div>\n\\![x](u)\n</div>",
+      "source_bytes": 21,
+      "source_sha256": "1c330bff06c9cf3b225090e0ac5307e1527998df12769f8d716efdb02be28cd0",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "[",
+            "byte_range": {
+              "start": 8,
+              "end": 9
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 3
+              },
+              "end": {
+                "line": 2,
+                "column": 4
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "escaped-link-opener",
+      "source": "<div>\n\\[x](u)\n</div>",
+      "source_bytes": 20,
+      "source_sha256": "4945e45d446ddfc48f4995ba16214a83076fb14e29bc72c518a597e27289fc38",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "one-line-code-looking-span-opaque",
+      "source": "<div>\n`**x** [y](u)`\n</div>",
+      "source_bytes": 27,
+      "source_sha256": "292002e63f316f0373fd5e4b17e8448d97de06386d786d394a5bb916f1517652",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "raw-fence-does-not-create-code-owner",
+      "source": "<div>\n```\n**x**\n```\n</div>",
+      "source_bytes": 26,
+      "source_sha256": "b780edf79572b032fd9e7b0bbaada60cd5676cde6896db391d04d50f8d03860f",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 10,
+              "end": 12
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "gfm-only-marker-classes-not-adopted",
+      "source": "<div>\n~~x~~\n- [x] done\na | b\n</div>",
+      "source_bytes": 35,
+      "source_sha256": "84127197ed025686405bea0b3af9ce6f35d3a155b4eaebf2bdc7fd488b1dd1ae",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "attribute-protected-body-eligible",
+      "source": "<div title=\"**attr**\">\n**body**\n</div>",
+      "source_bytes": 38,
+      "source_sha256": "67a3b99ef64e594b0f2faef51f21b111cbb5a24ab98025949d0694a8e6eb94a0",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 23,
+              "end": 25
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "multiline-attribute-protected",
+      "source": "<div title=\"\n**attr**\n\">\n**body**\n</div>",
+      "source_bytes": 40,
+      "source_sha256": "b5463d97673db158a10fa73867b2825a24cdcabb916dd60561e984c14aadb4a8",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 25,
+              "end": 27
+            },
+            "range": {
+              "start": {
+                "line": 4,
+                "column": 1
+              },
+              "end": {
+                "line": 4,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "comment-protected-body-eligible",
+      "source": "<div>\n<!-- **x** -->\n**y**\n</div>",
+      "source_bytes": 33,
+      "source_sha256": "ee0c2d9ab1c0934c96495354dc9a3052b6c149c4759d72009ecf0539c3b54b53",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 21,
+              "end": 23
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "form2-tail-eligible",
+      "source": "<!-- **x** -->**y**\n",
+      "source_bytes": 20,
+      "source_sha256": "6d8974827f7da8d1168455b7b1cc36fc2961fa35aec91bf2cc3a4e98ed958012",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 14,
+              "end": 16
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 15
+              },
+              "end": {
+                "line": 1,
+                "column": 17
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "form3-tail-eligible",
+      "source": "<?p **x** ?>**y**\n",
+      "source_bytes": 18,
+      "source_sha256": "a92cf34f822880d9cd86a76e96c6355038d89f1b94a2aff21045228729df104a",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 12,
+              "end": 14
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 13
+              },
+              "end": {
+                "line": 1,
+                "column": 15
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "form4-tail-eligible",
+      "source": "<!DOCTYPE **x**>**y**\n",
+      "source_bytes": 22,
+      "source_sha256": "f602050abb74bfc6402d50dd737e64e6ea64b659afc073ae3116f4dcd3cf74a8",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 16,
+              "end": 18
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 17
+              },
+              "end": {
+                "line": 1,
+                "column": 19
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "form5-tail-eligible",
+      "source": "<![CDATA[**x**]]>**y**\n",
+      "source_bytes": 23,
+      "source_sha256": "91c43f6a24308af9cc4252b1f096df3bbb275f24783dbd83dc602d689ba1cddd",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 17,
+              "end": 19
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 18
+              },
+              "end": {
+                "line": 1,
+                "column": 20
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "unclosed-comment-protects-remainder",
+      "source": "<!-- **x**\n",
+      "source_bytes": 11,
+      "source_sha256": "b99f0cb3c9aadf4ab825ad89df83c07b4eda24ac75013c3164fac485369b1b6c",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "known-unclosed-opaque-keeps-earlier-candidate",
+      "source": "<div>\n**a** <!-- **b**\n",
+      "source_bytes": 23,
+      "source_sha256": "47319921c2a375d827626d1027c7a71ef715a0a1ab06fa4f2fda096d99d53f85",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 6,
+              "end": 8
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "pre-literal-and-tail",
+      "source": "<pre>**x**</pre>**y**\n",
+      "source_bytes": 22,
+      "source_sha256": "f38cdc86214f45e17cfd1fbf84d5b591fe865b1fd788da571b2607a3e323c169",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 16,
+              "end": 18
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 17
+              },
+              "end": {
+                "line": 1,
+                "column": 19
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "script-literal-and-tail",
+      "source": "<script>**x**</script> **y**\n",
+      "source_bytes": 29,
+      "source_sha256": "0ca1b7f4142788651ea63864e250330100d5a051537c5e3743bab26f9cd2f8c1",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 23,
+              "end": 25
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 24
+              },
+              "end": {
+                "line": 1,
+                "column": 26
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "style-literal-and-tail",
+      "source": "<style>**x**</style> **y**\n",
+      "source_bytes": 27,
+      "source_sha256": "e646fc1713e12f46814bfe17eecdb54cb8c5e217679002c58f588f2ea25272b8",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 21,
+              "end": 23
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 22
+              },
+              "end": {
+                "line": 1,
+                "column": 24
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "textarea-literal-and-tail",
+      "source": "<textarea>**x**</textarea> **y**\n",
+      "source_bytes": 33,
+      "source_sha256": "cdd95ef8253061892246b8bc1fa89a9dc4de9e8977867e98897ad02706449ffb",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 27,
+              "end": 29
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 28
+              },
+              "end": {
+                "line": 1,
+                "column": 30
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "form1-any-four-case-insensitive-closer",
+      "source": "<PrE>**x**</STYLE> **y**\n",
+      "source_bytes": 25,
+      "source_sha256": "4f8dfab998978ae158014ef995ff296c18d374d9313c91b208e1b445e52cf9b1",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 19,
+              "end": 21
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 20
+              },
+              "end": {
+                "line": 1,
+                "column": 22
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "form1-closer-inside-attribute-keeps-attribute-protected",
+      "source": "<pre title=\"</style>\">**y**\n",
+      "source_bytes": 28,
+      "source_sha256": "0213542f1c0ed7cdd09b8916bd3ee1c30e9f401a7dadd0336debfca183e2c647",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 22,
+              "end": 24
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 23
+              },
+              "end": {
+                "line": 1,
+                "column": 25
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "lexical-nested-pre-and-tail",
+      "source": "<div><pre>**x**</pre>**y**</div>\n",
+      "source_bytes": 33,
+      "source_sha256": "a9eeeee9ec8297a6e4f32e66608e9a24c6e1f5f1fe39cad8644475f48fa974b5",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 21,
+              "end": 23
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 22
+              },
+              "end": {
+                "line": 1,
+                "column": 24
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "lexical-raw-requires-corresponding-closer",
+      "source": "<div><pre>**x**</style> **y**</div>",
+      "source_bytes": 35,
+      "source_sha256": "77e060565dbfcf7c32b8ff2e11e2d16dede6aefb1320eb644093de23febf4e2f",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "quoted-fake-closer-does-not-end-lexical-raw",
+      "source": "<div><pre><x a=\"</pre>\">**x**</pre>**y**</div>\n",
+      "source_bytes": 47,
+      "source_sha256": "4e76817cda122127b8d1c821bd219a60dd14a8c5c0507a2ba51d48b9a809abdb",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 35,
+              "end": 37
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 36
+              },
+              "end": {
+                "line": 1,
+                "column": 38
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "raw-protection-survives-owner-blank-boundaries",
+      "source": "<div>\n<pre>\n\n**x**\n\n</pre>\n\n<div>**y**</div>\n",
+      "source_bytes": 45,
+      "source_sha256": "a71b0e636a88c264825d152803a58dbb1cc3601b16c5fe38b16b68e50686f8b4",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 33,
+              "end": 35
+            },
+            "range": {
+              "start": {
+                "line": 8,
+                "column": 6
+              },
+              "end": {
+                "line": 8,
+                "column": 8
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "incoming-raw-not-reset-by-blank",
+      "source": "<div><pre>\n\nordinary\n\n<div>**x**</div>\n",
+      "source_bytes": 39,
+      "source_sha256": "b4bccc3cba509184ba62090a1a1b3fefbfd2e00ee9a33c4043ab85a5519c3670",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "incoming-raw-not-overwritten-by-form1",
+      "source": "<div><pre>\n\n<style>**x**</style>**y**\n",
+      "source_bytes": 38,
+      "source_sha256": "23c6860ca6d034ceb2ba3692bdd37e8f740a852d2dfbd9d2e5932c47e6203727",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "lexical-selfclosing-raw-name-not-browser-void",
+      "source": "<div><pre/>**x**</div>",
+      "source_bytes": 22,
+      "source_sha256": "61714c57757388c5a90b90db2e9506c6380749904fa435ea3e95fdf69df80ce2",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "unclosed-actual-form1-protected",
+      "source": "<pre>**x**",
+      "source_bytes": 10,
+      "source_sha256": "a9c3d434e2bead42c78f4ab3bb3a5914590613937d2ebd2ba7e25622670f760d",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "failed-named-context-atomic-withholding",
+      "source": "<div>\n**a** <x title=\"**bad**\n</div>",
+      "source_bytes": 36,
+      "source_sha256": "8209f93b040f724f2fb325c91153c0fb58a8c52f7d3752829b241a749190bde6",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": false,
+        "md091_evaluation": "unavailable",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "tag-gap-prevents-pairing",
+      "source": "<div>\n*x<b>y</b>*\n</div>",
+      "source_bytes": 24,
+      "source_sha256": "06749875366977b1cd61e5d0a845b607178bfb403c52500b1374344ee9f099c5",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "literal-directive-does-not-disable-tail",
+      "source": "<pre><!-- mdchk:disable MD091 --></pre>**x**\n",
+      "source_bytes": 45,
+      "source_sha256": "dd52bde62df84fcbe18888302e6bcf8cef99b7dc0989f0616a5b40ad6af92650",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 39,
+              "end": 41
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 40
+              },
+              "end": {
+                "line": 1,
+                "column": 42
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "crlf-original-marker",
+      "source": "<div>\r\n**Guide**\r\n</div>\r\n",
+      "source_bytes": 26,
+      "source_sha256": "c1b697cb31d85126841d5e961508167adc7a45d77730937c8618ab33cd374b7c",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 7,
+              "end": 9
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "cr-original-marker",
+      "source": "<div>\r**x**\r</div>\r",
+      "source_bytes": 19,
+      "source_sha256": "d0681df01ff9f29f04f7354c106e83d5f76ece803f7561a3530e71f10e3404ea",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 6,
+              "end": 8
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "missing-final-newline",
+      "source": "<div>\n**x**",
+      "source_bytes": 11,
+      "source_sha256": "4961a95fec27abbb05a85bd0ab98f1066659ecc7cc60ded2502282ac86778235",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 6,
+              "end": 8
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "recognized-yaml-frontmatter-protected",
+      "source": "---\nhtml: |\n  <div>\n  **x**\n  </div>\n---\n\nend\n",
+      "source_bytes": 46,
+      "source_sha256": "b13e300c0e1890d774820fcbb965143c0b3d436f94ce1335d175de2e7b0df4f2",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "yaml"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "disabled-frontmatter-ordinary-classification",
+      "source": "---\nhtml: |\n  <div>\n  **x**\n  </div>\n---\n\nend\n",
+      "source_bytes": 46,
+      "source_sha256": "b13e300c0e1890d774820fcbb965143c0b3d436f94ce1335d175de2e7b0df4f2",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 22,
+              "end": 24
+            },
+            "range": {
+              "start": {
+                "line": 4,
+                "column": 3
+              },
+              "end": {
+                "line": 4,
+                "column": 5
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "recognized-toml-frontmatter-protected",
+      "source": "+++\nhtml = \"<div>**x**</div>\"\n+++\n\nend\n",
+      "source_bytes": 39,
+      "source_sha256": "4f9796108b969977b1475215b98925b722e9053d252890fb8182a538f0b1249d",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "toml"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "default-disabled",
+      "source": "<div>\n**Guide**\n</div>\n",
+      "source_bytes": 23,
+      "source_sha256": "11a7724ae4fa4914a41b74e3db3924fd982f9d8a0256ac0e79d5744fea907f52",
+      "configuration": {
+        "enabled": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "not-requested",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "start-suppression",
+      "source": "<!-- mdchk:disable MD091 -->\n<div>\n**x**\n</div>\n",
+      "source_bytes": 48,
+      "source_sha256": "aacb8f06c005e6c9d6dee3535362de5f70e8721e97a9751c068717e56452cf45",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 35,
+              "end": 37
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "md087_findings": [],
+        "audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD091",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 48,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-not-requested"
+          }
+        ],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "denied-disable-remains-active",
+      "source": "<!-- mdchk:disable MD091 -->\n<div>\n**x**\n</div>\n",
+      "source_bytes": 48,
+      "source_sha256": "aacb8f06c005e6c9d6dee3535362de5f70e8721e97a9751c068717e56452cf45",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": false,
+        "allow_directives": false,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 35,
+              "end": 37
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "permitted-enable-of-configured-off",
+      "source": "<!-- mdchk:enable MD091 -->\n<div>\n**x**\n</div>\n",
+      "source_bytes": 47,
+      "source_sha256": "f98cefc6971f9b3bd32ae6b545592bcad56c11079b62496a440462f99fdbb903",
+      "configuration": {
+        "enabled": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 34,
+              "end": 36
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "denied-enable-remains-off",
+      "source": "<!-- mdchk:enable MD091 -->\n<div>\n**x**\n</div>\n",
+      "source_bytes": 47,
+      "source_sha256": "f98cefc6971f9b3bd32ae6b545592bcad56c11079b62496a440462f99fdbb903",
+      "configuration": {
+        "enabled": false,
+        "md087_enabled": false,
+        "allow_directives": false,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "not-requested",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "md087-real-hidden-finding-used",
+      "source": "<!-- mdchk:disable MD091 -->\n<div>\n**x**\n</div>\n",
+      "source_bytes": 48,
+      "source_sha256": "aacb8f06c005e6c9d6dee3535362de5f70e8721e97a9751c068717e56452cf45",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [
+          {
+            "rule": "MD091",
+            "message": "Markdown syntax is literal inside this HTML block.",
+            "marker": "**",
+            "byte_range": {
+              "start": 35,
+              "end": 37
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "md087_findings": [],
+        "audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD091",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 48,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-used"
+          }
+        ],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "md087-real-complete-absence-unused",
+      "source": "<!-- mdchk:disable MD091 -->\n<div>\n<strong>x</strong>\n</div>\n",
+      "source_bytes": 61,
+      "source_sha256": "20a2c13fb3e154c426f925184f1eaeaaa8b50d209206e74c3dd671d89e2e4317",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [
+          {
+            "rule": "MD087",
+            "message": "Suppression for MD091 hides no findings.",
+            "marker": "MD091",
+            "byte_range": {
+              "start": 19,
+              "end": 24
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 20
+              },
+              "end": {
+                "line": 1,
+                "column": 25
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD091",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 61,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-unused"
+          }
+        ],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "md087-atomic-withheld-prefix-uncertain",
+      "source": "<!-- mdchk:disable MD091 -->\n<div>\n**a** <x title=\"\n",
+      "source_bytes": 52,
+      "source_sha256": "84e51a71aa87d652af6d3af3244fd28dd312f8ef28bb67e01e846b2f03686ee2",
+      "configuration": {
+        "enabled": true,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": false,
+        "md091_evaluation": "unavailable",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD091",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 52,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-uncertain"
+          }
+        ],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "md087-configured-off-incapable-no-callback",
+      "source": "<!-- mdchk:disable MD091 -->\n<div>\n**x**\n</div>\n",
+      "source_bytes": 48,
+      "source_sha256": "aacb8f06c005e6c9d6dee3535362de5f70e8721e97a9751c068717e56452cf45",
+      "configuration": {
+        "enabled": false,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none"
+      },
+      "expected": {
+        "complete": true,
+        "md091_evaluation": "not-requested",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [
+          {
+            "rule": "MD087",
+            "message": "Suppression for MD091 hides no findings.",
+            "marker": "MD091",
+            "byte_range": {
+              "start": 19,
+              "end": 24
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 20
+              },
+              "end": {
+                "line": 1,
+                "column": 25
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD091",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 48,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-unused"
+          }
+        ],
+        "source_unchanged": true,
+        "no_md091_corrections": true
+      },
+      "obligation": ""
+    }
+  ],
+  "admission_cases": [
+    {
+      "name": "invalid-utf8-before-md091",
+      "bytes_hex": "3c6469763e0aff",
+      "md094_enabled": false,
+      "expected": {
+        "io_errors": 1,
+        "error_code": "invalid-utf8",
+        "byte_offset": 6,
+        "rule_attribution": "",
+        "md091_findings": 0,
+        "source_unchanged": true,
+        "normal_rule_callbacks": 0
+      }
+    }
+  ],
+  "composition": {
+    "source": "<div>\n**x**\n</div>\n\nend",
+    "source_bytes": 23,
+    "candidate": "<div>\n**x**\n</div>\n\nend\n",
+    "candidate_bytes": 24,
+    "md091": [
+      {
+        "rule": "MD091",
+        "message": "Markdown syntax is literal inside this HTML block.",
+        "marker": "**",
+        "byte_range": {
+          "start": 6,
+          "end": 8
+        },
+        "range": {
+          "start": {
+            "line": 2,
+            "column": 1
+          },
+          "end": {
+            "line": 2,
+            "column": 3
+          }
+        },
+        "fix_available": false
+      }
+    ],
+    "only_edit_rule": "MD047",
+    "only_edit": "append LF",
+    "second_write_stable": true,
+    "protected_eof_source": "<div>\n**x**",
+    "protected_eof_bytes": 11,
+    "md091_generates_edits": false
+  },
+  "unavailable_reason": "HTML Markdown candidate context is unavailable; the complete MD091 inventory is withheld.",
+  "not_execution_counts": true
+}
