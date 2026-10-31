@@ -1,0 +1,1732 @@
+{
+  "issue": 86,
+  "base": "30fd08302bf44283ed6084300eb89d8d3b927a4e",
+  "authority": "Root-authored static literal expected points; no product execution",
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary text\n",
+      "source_bytes": 14,
+      "source_sha256": "1b559f24dc116d561fdbf07b8edd6a6db406931210659e90fffc428d2eef4db9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "page-bad",
+      "source": "Text\n```text\nExample\n```\n",
+      "source_bytes": 25,
+      "source_sha256": "65b0db64a5cbeed1d16d3274f461ef7871404bfceda9f78c11fcbafc838a1f38",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "page-good",
+      "source": "Text\n\n```text\nExample\n```\n",
+      "source_bytes": 26,
+      "source_sha256": "5278b004b671fcf2b4640312ff7aa5585985cb6d613d7e37ab8aa2b786e4c163",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "both",
+      "source": "Text\n```\nx\n```\nTail\n",
+      "source_bytes": 20,
+      "source_sha256": "78ab2705e19044a1b89c4c1481d720b9008bc65d88bc717ed46fb953f063f6f3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            14,
+            14
+          ],
+          "start": [
+            4,
+            4
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "both-good",
+      "source": "Text\n\n```\nx\n```\n\nTail\n",
+      "source_bytes": 22,
+      "source_sha256": "678124ab712412fdb5ca148f9d1f3d3af428debb991f441b3090b5c92a280781",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "after",
+      "source": "```\nx\n```\nTail\n",
+      "source_bytes": 15,
+      "source_sha256": "9a7891969ab8d935e5bb3518ad6800dd511c1f39d2e4a399ecf6afccce90cbb7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "edges",
+      "source": "```\nx\n```",
+      "source_bytes": 9,
+      "source_sha256": "a7cc9733bfc37e729c17889589aeeb7771a0b95d05977dbcee1ca1107d38a1ee",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "unclosed",
+      "source": "Text\n```\nx",
+      "source_bytes": 10,
+      "source_sha256": "f73ab671530b78e12ef1d92bb7743bb09d5637c8a9e117bc842b83921478327c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "adjacent",
+      "source": "```\na\n```\n~~~\nb\n~~~\n",
+      "source_bytes": 20,
+      "source_sha256": "17c94b2a244fe9605b40a10dc3fa579e2a16e09a553013fe8e5553db023ff868",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        },
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "padding",
+      "source": "Text\n  ```\nx\n ```  \t\nTail",
+      "source_bytes": 25,
+      "source_sha256": "2a81512a1cc44939281e766f0e000a358fa2369fcef9d9feba2e66e26853c4fe",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            20,
+            20
+          ],
+          "start": [
+            4,
+            8
+          ],
+          "end": [
+            4,
+            8
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "quote",
+      "source": "> Text\n> ```\n> x\n> ```\n> Tail\n",
+      "source_bytes": 30,
+      "source_sha256": "d2882b2f797bd51c1e1bbd8ce0b72674ede0eece9787d8cf6945f5605746628b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            3
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            22,
+            22
+          ],
+          "start": [
+            4,
+            6
+          ],
+          "end": [
+            4,
+            6
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "quote-edges",
+      "source": "Outside\n> ```\n> x\n> ```\nOutside\n",
+      "source_bytes": 32,
+      "source_sha256": "3b29cf43ff4c0e9ee520456c5c4adf1b16ce7f29dc0675140a87821ebbec0803",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "items",
+      "source": "- ```\n  x\n  ```\n- next\n",
+      "source_bytes": 23,
+      "source_sha256": "799f8117aaffdb0ddd8d2c84da9283fbd43cc74badbf0cf9724017d598e0af57",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "item-interior",
+      "source": "- Text\n  ```\n  x\n  ```\n  Tail\n",
+      "source_bytes": 30,
+      "source_sha256": "efa98c5b2409a4bb06028d018c2b0f51ad871b3378853e92260ffc0e9f797661",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            3
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            22,
+            22
+          ],
+          "start": [
+            4,
+            6
+          ],
+          "end": [
+            4,
+            6
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "quote-blanks",
+      "source": "> Text\n>\n> ```\n> x\n> ```\n>\n> Tail\n",
+      "source_bytes": 34,
+      "source_sha256": "a2d8fb93133a3e5a2ede4e024f6b79b7a5c1c3b133fe4d123f915d88cfc34b04",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "ascii-blanks",
+      "source": "Text\n\t\n```\nx\n```\n \t\nTail\n",
+      "source_bytes": 25,
+      "source_sha256": "7a835037d422d7011682b668b08f6e8a57b82534b0f14794546cc9daf38c8953",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "nbsp",
+      "source": "Text\n \n```\nx\n```\nTail\n",
+      "source_bytes": 23,
+      "source_sha256": "3d7530563c71a2c69fcb9445c496a4aadd6a59b06e6c8ae68c136259da592a5f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            8,
+            8
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            17,
+            17
+          ],
+          "start": [
+            5,
+            4
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "unicode",
+      "source": "é🙂\n```\nx\n```\n尾\n",
+      "source_bytes": 21,
+      "source_sha256": "7539b1202216b603d4620dca5fd92f68f315dd80b2a7e35ca6fe4421733ff4bd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            7,
+            7
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            16,
+            16
+          ],
+          "start": [
+            4,
+            4
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "empty-payload",
+      "source": "Text\n~~~\n~~~\nTail",
+      "source_bytes": 17,
+      "source_sha256": "f3dd3f55b3422c7220b8a3fbc58336cf786ea8c14a239ffd7ae81c71be0a9731",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            12,
+            12
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "long-closer",
+      "source": "Text\n````lang\nx\n``````\nTail",
+      "source_bytes": 27,
+      "source_sha256": "214475f089c197afc504608061e5f17c5203ba5678f9468ea6b4ca0cdd5993af",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            22,
+            22
+          ],
+          "start": [
+            4,
+            7
+          ],
+          "end": [
+            4,
+            7
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "short-not-closer",
+      "source": "Text\n````\n```\nTail",
+      "source_bytes": 18,
+      "source_sha256": "5d7849d4a62feadc6b673245aec7f2922fec6f8b4ae3b1026ecdaa35ff779e2f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "arbitrary-info",
+      "source": "Text\n~~~λ attr\nx\n~~~\nTail",
+      "source_bytes": 26,
+      "source_sha256": "6d47e49a44ef6b2789c5f2f1bd2d537e67b10e6d4143988b33331543fc0c609a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            21,
+            21
+          ],
+          "start": [
+            4,
+            4
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "nested-quote-item",
+      "source": "> - Text\n>   ```\n>   x\n>   ```\n>   Tail",
+      "source_bytes": 39,
+      "source_sha256": "7ac04b667221bd39d373a1aa8591c0780cead8f69624c97027b3753170ef66f9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            13,
+            13
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            30,
+            30
+          ],
+          "start": [
+            4,
+            8
+          ],
+          "end": [
+            4,
+            8
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "nested-item-quote",
+      "source": "- > Text\n  > ```\n  > x\n  > ```\n  > Tail",
+      "source_bytes": 39,
+      "source_sha256": "8b81b1845317d53f509a4cfa65da41e4415706816a1a9f91d988097d926edb1f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            13,
+            13
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            30,
+            30
+          ],
+          "start": [
+            4,
+            8
+          ],
+          "end": [
+            4,
+            8
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "unclosed-quote",
+      "source": "> Text\n> ```\n> x\noutside",
+      "source_bytes": 24,
+      "source_sha256": "32b21b6472566d6985e2e8840492a3ae4297387bc1cf96dd9deac11f6fabbff4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            3
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "child-after",
+      "source": "```\nx\n```\n> child",
+      "source_bytes": 17,
+      "source_sha256": "3bcdd689000273e2f4bd7ddf250e443703464eb207227a4227024f52c3d7b232",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "definition-before",
+      "source": "[r]: /x\n```\nx\n```",
+      "source_bytes": 17,
+      "source_sha256": "7c7bbac15e44a97c2b5598a12081bd657e95ebb4cfee54041def69af7c1c8bdf",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            8,
+            8
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "definition-after",
+      "source": "```\nx\n```\n[r]: /x",
+      "source_bytes": 17,
+      "source_sha256": "e9fa3171c8fd524652b72f98a7e2585b2a19daf41598f1e6b6311943e60429e0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "duplicate-definitions",
+      "source": "[r]: /x\n[r]: /y\n```\nx\n```",
+      "source_bytes": 25,
+      "source_sha256": "beb592d847f04013df17882a5559bf259bd793c79038f63401f94b8b8fe43e7e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            16,
+            16
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "multiline-definition",
+      "source": "[r]:\n  /x\n```\nx\n```",
+      "source_bytes": 19,
+      "source_sha256": "f8c85f3ecc2678a39bc4c8d587b8dac67a159e0036c834c880db005815227e71",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "list-trailing-blank",
+      "source": "- text\n\n```\nx\n```",
+      "source_bytes": 17,
+      "source_sha256": "cdcbf3ad0a3cbd860bb6d03f4f9070c81f7b2e22e8d21a5017c7c6f6f4155e98",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "empty-item",
+      "source": "-\n```\nx\n```",
+      "source_bytes": 11,
+      "source_sha256": "9613dec2913a1677b079f1f82cdb20d751d2e24745bc668cb3408179f40024ee",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            2,
+            2
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "quote-owned-blank",
+      "source": "> text\n>\n```\nx\n```",
+      "source_bytes": 18,
+      "source_sha256": "014ac37273e585e7a10f5df8cfaf48b05a11486452f6ec833595030f4a7244a9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "indented",
+      "source": "    ```\n    x\n    ```\nTail",
+      "source_bytes": 26,
+      "source_sha256": "dff16df04e1fdd1af95789c7af782b8f54b9d3130916fadeb49e49faa3bd8f00",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "escaped",
+      "source": "\\```\nx\n\\```",
+      "source_bytes": 11,
+      "source_sha256": "120efaae751a3b3f149fbab1dc49481ea79d2143c6bb3b3a063bf3008e047449",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "inline",
+      "source": "Text `` ` `` tail",
+      "source_bytes": 17,
+      "source_sha256": "dcf30ddedbbfe88a69f2b7aec9c55ba4dff7905aba927452c53b264e5d791439",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "outer",
+      "source": "````markdown\nText\n```\nx\n```\nTail\n````",
+      "source_bytes": 37,
+      "source_sha256": "d081ac05ecb18d56907d73c5953f991642eee61404b7fd35cf52ad2778e2f085",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "html",
+      "source": "<pre>\nText\n```\nx\n```\n</pre>",
+      "source_bytes": 27,
+      "source_sha256": "83ef26e4de8f36d6c064b3a642ef0472a1d8b69f05990fbabd2bfea6e3ebbe20",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "comment",
+      "source": "<!--\nText\n```\nx\n```\n-->",
+      "source_bytes": 23,
+      "source_sha256": "a9e387a088244e6acfad522e7c8d9d7681b08d5ea4be884f31182a05550d00b5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "header",
+      "source": "---\nx: value\n---\n```\nx\n```",
+      "source_bytes": 26,
+      "source_sha256": "f253fb243494256de4ce10cdd3b12b4dc03acf23f7f521fcb01feef4b64177fc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "frontmatter": "yaml"
+      },
+      "findings": []
+    },
+    {
+      "name": "toml",
+      "source": "+++\nx = \"value\"\n+++\n```\nx\n```",
+      "source_bytes": 29,
+      "source_sha256": "de6eaf035e1a24dfae8602b10041a1fa37a6742de9c8cd0707742ccd3395549e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "frontmatter": "toml"
+      },
+      "findings": []
+    },
+    {
+      "name": "disabled",
+      "source": "Text\n```\nx\n```\nTail",
+      "source_bytes": 19,
+      "source_sha256": "2a09b8dc6cd9fc57efc225b39593fc06cba5024c034c38ad7b0d5ffb648c0015",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    },
+    {
+      "name": "default-enable",
+      "source": "Text\n```\nx\n```",
+      "source_bytes": 14,
+      "source_sha256": "11501b6237204cc968e5657635ed2d13000ac75d4429b11f7e9f0f5937e17305",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled_omitted": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "empty-options",
+      "source": "Text\n```\nx\n```",
+      "source_bytes": 14,
+      "source_sha256": "11501b6237204cc968e5657635ed2d13000ac75d4429b11f7e9f0f5937e17305",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "empty_options": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "both-crlf",
+      "source": "Text\r\n```\r\nx\r\n```\r\nTail\r\n",
+      "source_bytes": 25,
+      "source_sha256": "7cac5030934f3366096331179217bb4d2b9578adbdb16df2b03c8c5edf04cb51",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            6,
+            6
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            17,
+            17
+          ],
+          "start": [
+            4,
+            4
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "both-cr",
+      "source": "Text\r```\rx\r```\rTail\r",
+      "source_bytes": 20,
+      "source_sha256": "0aace770f69e5ee913c1a4670ea7b68a9c60e7413d5a77483804ae93037bd590",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            14,
+            14
+          ],
+          "start": [
+            4,
+            4
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "quote-crlf",
+      "source": "> Text\r\n> ```\r\n> x\r\n> ```\r\n> Tail\r\n",
+      "source_bytes": 35,
+      "source_sha256": "ec34eb8c068ce87473154b10792295b617b0dfc5851116ca112b0bdf1e9f722a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            3
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            25,
+            25
+          ],
+          "start": [
+            4,
+            6
+          ],
+          "end": [
+            4,
+            6
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "quote-cr",
+      "source": "> Text\r> ```\r> x\r> ```\r> Tail\r",
+      "source_bytes": 30,
+      "source_sha256": "80c61fdcba2bb082b76af3ff5c1a44d82885db8a949ab630707a09766bde1edf",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            3
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            22,
+            22
+          ],
+          "start": [
+            4,
+            6
+          ],
+          "end": [
+            4,
+            6
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "item-interior-crlf",
+      "source": "- Text\r\n  ```\r\n  x\r\n  ```\r\n  Tail\r\n",
+      "source_bytes": 35,
+      "source_sha256": "839c4613108f233cd1e7fba8913f1e36ac97b1f2ba05c1943fa5be924c3d16ab",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            3
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            25,
+            25
+          ],
+          "start": [
+            4,
+            6
+          ],
+          "end": [
+            4,
+            6
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "item-interior-cr",
+      "source": "- Text\r  ```\r  x\r  ```\r  Tail\r",
+      "source_bytes": 30,
+      "source_sha256": "8cf6320ea2d6ab409fe4d971ad1149aa0845d5024b75443bf8e4df40f6de1b22",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            3
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            22,
+            22
+          ],
+          "start": [
+            4,
+            6
+          ],
+          "end": [
+            4,
+            6
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "unicode-crlf",
+      "source": "é🙂\r\n```\r\nx\r\n```\r\n尾\r\n",
+      "source_bytes": 26,
+      "source_sha256": "d0415b840641c2be2d1dd9df22e8d781a691ad20e540f7e9a11448750da44524",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            8,
+            8
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            19,
+            19
+          ],
+          "start": [
+            4,
+            4
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "unicode-cr",
+      "source": "é🙂\r```\rx\r```\r尾\r",
+      "source_bytes": 21,
+      "source_sha256": "d4c006735e79959cccb43e8f4a380fdccf0486d12666d10c16e4fff0a611633a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            7,
+            7
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            16,
+            16
+          ],
+          "start": [
+            4,
+            4
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "adjacent-crlf",
+      "source": "```\r\na\r\n```\r\n~~~\r\nb\r\n~~~\r\n",
+      "source_bytes": 26,
+      "source_sha256": "61a39799a5c8b3cc21ca9af0cc1e5064de0cdd11368c3518162ee618ce72d01c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            11,
+            11
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        },
+        {
+          "bytes": [
+            13,
+            13
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "adjacent-cr",
+      "source": "```\ra\r```\r~~~\rb\r~~~\r",
+      "source_bytes": 20,
+      "source_sha256": "d75e2a87fe03d99f74a6bd0a99c7ae6ff7a92eef40754c8665744b0ddbb70336",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        },
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "padding-crlf",
+      "source": "Text\r\n  ```\r\nx\r\n ```  \t\r\nTail",
+      "source_bytes": 29,
+      "source_sha256": "06b7431bbd90785de662569281782df5892dc6a0547c5d0608b63888be6b98af",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            6,
+            6
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            23,
+            23
+          ],
+          "start": [
+            4,
+            8
+          ],
+          "end": [
+            4,
+            8
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "padding-cr",
+      "source": "Text\r  ```\rx\r ```  \t\rTail",
+      "source_bytes": 25,
+      "source_sha256": "a0e7b74aa5ba8f627caa7146905647c8f98bf58aee3a993bb7adbe4a5afae358",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "side": "before",
+          "message": "Fenced code block requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            20,
+            20
+          ],
+          "start": [
+            4,
+            8
+          ],
+          "end": [
+            4,
+            8
+          ],
+          "side": "after",
+          "message": "Fenced code block requires a blank body line after it."
+        }
+      ]
+    }
+  ],
+  "analysis_only": true
+}

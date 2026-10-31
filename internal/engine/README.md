@@ -685,3 +685,11 @@ MD086 is default ON, RequiresSyntax, UsesFrontmatter=false and permanently NoFix
 Findings use `HTML comment is missing a closing delimiter.` over exactly the
 original four-byte opener. Shared START suppression precedes inspection slicing;
 MD047 remains the sole correction producer.
+
+MD031 analysis uses the completed-original FencedSpacing projection under the
+same parser operation and source/index authority. It combines actual fenced-node
+selection and raw ownership with owning-body participant comparisons, retained
+definitions, scoped ancestor prefixes and list content floors. Detached facts
+carry zero-width before/after points. Necessary unknown context withholds the
+entire inventory; producer, facade, comparison and outer callback each retain
+final interruption gates. No correction producer or new options are registered.
