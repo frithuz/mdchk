@@ -4,7 +4,7 @@ These rules are part of the [implementation ruleset](../index.md).
 
 | Rule | Focus | Status |
 | --- | --- | --- |
-| [MD014](md014.md) | Shell prompts without command output | Planned |
+| [MD014](md014.md) | Shell prompts without command output | Analysis/configuration implemented; manual |
 | [MD031](md031.md) | Blank lines around fenced blocks | Planned |
 | [MD040](md040.md) | Missing fenced block language | Planned |
 | [MD046](md046.md) | Indented versus fenced code | Planned |

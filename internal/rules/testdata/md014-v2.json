@@ -1,0 +1,6152 @@
+{
+  "schema_version": 1,
+  "issue": 85,
+  "base": "1e0787634f9d4614db183fc7505b65b2f77aeab4",
+  "authority": "Root independent literal declarations after both actualFINAL static preassessments and adoptedpolicy, BEFORE implementation or any product/parser/helper/build/test/native/counter/elapsed probe. Only literal source assembly, explicit chosen expectedcoordinates/inventories and static UTF8/line/byte/hash arithmetic; no Markdown recognition or classifier was executed.",
+  "policy_sha256": "dc7707d46ec68d56f9068368de0a10022b8c03a205dc87426c902255b11e2b16",
+  "case_count": 134,
+  "planned_flavor_rows": 268,
+  "planned_views_each_flavor": [
+    "lint",
+    "inspect"
+  ],
+  "runtime_executions": 0,
+  "cases": [
+    {
+      "name": "published-dollar-prompt",
+      "source": "```sh\n$ pwd\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "bfdda3c4c393114c51c2334e2824a6e64478a947a1a148bd80b6d233b2c63962",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "published-without-prompt",
+      "source": "```sh\npwd\n```\n",
+      "source_bytes": 14,
+      "source_sha256": "de1462907138bf115625737b67981294b83c3c4e1057a0043f27359369771286",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "default-enabled-omitted",
+      "source": "```sh\n$ pwd\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "bfdda3c4c393114c51c2334e2824a6e64478a947a1a148bd80b6d233b2c63962",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": true,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "empty-option-mapping-keeps-defaults",
+      "source": "```sh\n$ pwd\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "bfdda3c4c393114c51c2334e2824a6e64478a947a1a148bd80b6d233b2c63962",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": true,
+        "empty_options": true,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "empty-document",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "ordinary-prose-dollar",
+      "source": "$ pwd\n",
+      "source_bytes": 6,
+      "source_sha256": "c87edfb6ffd7cce1fa1004d8855788a1eeb2bb2fc003d23454ff33e0ec2e7d0a",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "empty-closed-fence",
+      "source": "```sh\n```\n",
+      "source_bytes": 10,
+      "source_sha256": "72a61953d08001bd35fe7a7b7ab6699b01d2ca50ebcdd483a82c81e49a967201",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "opener-only-fence",
+      "source": "```sh",
+      "source_bytes": 5,
+      "source_sha256": "8af8182ab1e8f509cf81961103ae39b0aa62a55a70dfd31bb9437408df4b7c20",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "blank-only-payload",
+      "source": "```sh\n\n \t\n```\n",
+      "source_bytes": 14,
+      "source_sha256": "60101bdd683e2e3838122fbe2112e20bd4509e9ca7325d6c7ab7790acbf0ae21",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "multiple-prompts-ignore-ascii-blanks",
+      "source": "```sh\n$ pwd\n\n \t\n$ whoami\n```\n",
+      "source_bytes": 29,
+      "source_sha256": "4ff7f2c3e9f71347bb6182969c1901364b3f1b9c157e00ce0f21267630a9d822",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          },
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 16,
+              "end": 17
+            },
+            "range": {
+              "start": {
+                "line": 5,
+                "column": 1
+              },
+              "end": {
+                "line": 5,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "prompt-tab-separator",
+      "source": "```sh\n$\tpwd\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "d8a4f8cedb6b3a659772ca72a4c002a68288d9f719b8d12ad09a19a56f4847d5",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "prompt-many-ascii-separators",
+      "source": "```sh\n$ \t pwd\n```\n",
+      "source_bytes": 18,
+      "source_sha256": "03db66aae40b9f05b1c93a12f0f051a8c83dc07707eda294e4e971ec874c5ec9",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "prompt-suffix-unicode",
+      "source": "```sh\n$ printf 'é😀'\n```\n",
+      "source_bytes": 28,
+      "source_sha256": "ce3d6f4e7e70ed40c3f3db675ee246593006327932e38f4356f6a134d4903c17",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "unicode-body-whitespace-is-nonblank",
+      "source": "```sh\n$  \n```\n",
+      "source_bytes": 15,
+      "source_sha256": "f64603a785ebc86475b112be53786b70db976cd49cacbaec72e20540d7dab434",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "unicode-line-separator-is-body",
+      "source": "```sh\n$  \n```\n",
+      "source_bytes": 16,
+      "source_sha256": "f3266692fa34b68236d7aafcb59c843b3bf253cc4f7ccd03efa3715c77c255f5",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "normalized-nul-body-is-nonblank",
+      "source": "```sh\n$ \u0000\n```\n",
+      "source_bytes": 14,
+      "source_sha256": "573f7ade5e8abf59d103f70792ed923caf0fc67289e0d75294bb9ada2d5816d8",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "bare-dollar",
+      "source": "```sh\n$\n```\n",
+      "source_bytes": 12,
+      "source_sha256": "a1694ca91d7742f7e2e929e0b1d8c4ff73ba2053d2bd1f855e9a5de654a02e82",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "empty-command-space",
+      "source": "```sh\n$ \n```\n",
+      "source_bytes": 13,
+      "source_sha256": "569bf14e790a402ea366c4347146f2c2d7f935579c7bf43c29a480d633310a7e",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "empty-command-tab",
+      "source": "```sh\n$\t\n```\n",
+      "source_bytes": 13,
+      "source_sha256": "dcbde70e6ab0eeefa1364599f8630b8e12b126c12f8bbea9446df2138b4dabd7",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "variable-dollar-home",
+      "source": "```sh\n$HOME\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "a279a6518266aee200bd7d381049a059b8ec9a9e6da6247f58ca796f9da62ddc",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "double-dollar",
+      "source": "```sh\n$$\n```\n",
+      "source_bytes": 13,
+      "source_sha256": "012c2895158ab3da6456c7a55ab69ceff185c640c9fea19a997cd2e372e63026",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "braced-variable",
+      "source": "```sh\n${HOME}\n```\n",
+      "source_bytes": 18,
+      "source_sha256": "d0e25660b6b56dbd14dd86ba1ffeff05bf2c2c4dec24f41e1eb848a2fdfbd2de",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "status-variable",
+      "source": "```sh\n$?\n```\n",
+      "source_bytes": 13,
+      "source_sha256": "b0bc7c4f6dee58910de0e278b76910c9c0801102fbff2db66b3346e89a618638",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "substitution",
+      "source": "```sh\n$(pwd)\n```\n",
+      "source_bytes": 17,
+      "source_sha256": "50c0440300225e843042cd1de8f37b177b1947ad44030d0a8a9d7e40d46dc253",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "escaped-dollar",
+      "source": "```sh\n\\$ pwd\n```\n",
+      "source_bytes": 17,
+      "source_sha256": "684422c4ca4a4929e9ff393e13f903d296eeaeec3a2b411a73c5629d2cae29e2",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "unicode-lookalike-dollar",
+      "source": "```sh\n＄ pwd\n```\n",
+      "source_bytes": 18,
+      "source_sha256": "fb908f92b0eb700d782fe6425115dcc710693702fa4b75d8601cbae725786128",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "unicode-separator-not-prompt",
+      "source": "```sh\n$ pwd\n```\n",
+      "source_bytes": 17,
+      "source_sha256": "ed81034b9f8bcc6213c484319872e0299fa5734348e7f4fcf02fc73c805e8655",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "retained-space-indent",
+      "source": "```sh\n $ pwd\n```\n",
+      "source_bytes": 17,
+      "source_sha256": "7aa814af1aac8b009061bcfe926c8f41571fd0c17d5e982fc727a3e696916a85",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "retained-tab-indent",
+      "source": "```sh\n\t$ pwd\n```\n",
+      "source_bytes": 17,
+      "source_sha256": "a7070a8910a076ce76c6a5c4beea63d9d6be871efb4fcfb13124691ac2e95aed",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "normalized-nul-before-dollar",
+      "source": "```sh\n\u0000$ pwd\n```\n",
+      "source_bytes": 17,
+      "source_sha256": "eaedb3ed7e319279f694426db58074b294aeb10143e668749263258b4395fd9b",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "literal-entity-is-not-dollar",
+      "source": "```sh\n&#36; pwd\n```\n",
+      "source_bytes": 20,
+      "source_sha256": "24a2042d4a479dc4bdfecd9b4aabe486ee5a047b1bbf9e0db04f59f3859120bc",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "mixed-output-after",
+      "source": "```sh\n$ pwd\n/home/example\n```\n",
+      "source_bytes": 30,
+      "source_sha256": "93e70a56b958805364502d2d0d46556a60b9239c125be4e25d1226c5ce633f9f",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "mixed-bare-dollar",
+      "source": "```sh\n$ pwd\n$\n```\n",
+      "source_bytes": 18,
+      "source_sha256": "e1d39fa71751453ee68d77fdb93475b4e995c8148082e8986e5d871d1749ef92",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "mixed-empty-command",
+      "source": "```sh\n$ pwd\n$ \t\n```\n",
+      "source_bytes": 20,
+      "source_sha256": "144c22e35ab5ca05c6f548d4483ecd5490803b86131bc845210ac155707b0d62",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "mixed-variable",
+      "source": "```sh\n$ pwd\n$HOME\n```\n",
+      "source_bytes": 22,
+      "source_sha256": "4d99d1adf5f6f77b444c830def5389fe30428fdf2a6ddef681741e6d46b5464f",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "mixed-other-command",
+      "source": "```sh\n$ pwd\nwhoami\n```\n",
+      "source_bytes": 23,
+      "source_sha256": "c7900b48e6803792f2840540ec05757f9bf888b8aaefc61e1c1b399cbc3ae218",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "mixed-space-indented-prompt",
+      "source": "```sh\n$ pwd\n $ whoami\n```\n",
+      "source_bytes": 26,
+      "source_sha256": "836e5fe1d188521b59e8b9157518cce4bcc7fa788451893dd3c5d5133ea3f184",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "mixed-unicode-blank",
+      "source": "```sh\n$ pwd\n \n```\n",
+      "source_bytes": 19,
+      "source_sha256": "b102dd1aa1712699eeac041ea931d4259966fa2e54f5b67058ff3a12a6f50a48",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "mixed-literal-entity",
+      "source": "```sh\n$ pwd\n&#36; whoami\n```\n",
+      "source_bytes": 29,
+      "source_sha256": "ef5fb58b64e5981e926629a9a54aa420194441bc27d619c50ef0134599df61b9",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "mixed-root-prompt",
+      "source": "```sh\n$ pwd\n# whoami\n```\n",
+      "source_bytes": 25,
+      "source_sha256": "8e330603c3633c3483d423d2b119bae61b490f0018a4a79aea9dbe304b59217b",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "mixed-output-before",
+      "source": "```sh\n/home/example\n$ pwd\n```\n",
+      "source_bytes": 30,
+      "source_sha256": "805c55e4ddc560ed40aea9312fe53d772fa20e0faee3c90ac41fb2961db6e902",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "shell-continuation-is-nonprompt",
+      "source": "```sh\n$ echo \\\n  continuation\n```\n",
+      "source_bytes": 34,
+      "source_sha256": "de958348401cb79c1370421cbb0db8340379cb4a8dd7ad7e3b2408421863bb7d",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "two-prompt-lines-no-shell-interpretation",
+      "source": "```sh\n$ pwd\n$ echo done\n```\n",
+      "source_bytes": 28,
+      "source_sha256": "aa71755e8a2e516d1d9bd2cfe003b632c8aa13d6b5f17f60f2a1d76c5a6f91ef",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          },
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 12,
+              "end": 13
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "default-language-shell",
+      "source": "```shell\n$ pwd\n```\n",
+      "source_bytes": 19,
+      "source_sha256": "f2fefe7ba4601c428ca950564a5ff483e78779ab5b52da535de2af66213c2bec",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 9,
+              "end": 10
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "default-language-bash",
+      "source": "```bash\n$ pwd\n```\n",
+      "source_bytes": 18,
+      "source_sha256": "0d67e7528e0f8bab6fc884d79a68409308a263a409478b98c3a11d47e1ea9c6f",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 8,
+              "end": 9
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "default-language-zsh",
+      "source": "```zsh\n$ pwd\n```\n",
+      "source_bytes": 17,
+      "source_sha256": "3f32c7e318aa67f9a6d0a39c71e5f18b13f72bfe078df259a24c714be8938543",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 7,
+              "end": 8
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "default-language-console",
+      "source": "```console\n$ pwd\n```\n",
+      "source_bytes": 21,
+      "source_sha256": "7bf37b1701065b69f15e929de691bc9f9a7092a7488f1bda4f8f79e40a0e5ef6",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 11,
+              "end": 12
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "unlisted-language",
+      "source": "```python\n$ pwd\n```\n",
+      "source_bytes": 20,
+      "source_sha256": "7052c84c41e58ed7deb689ced574ebbad6469d973076d7d38beaf4b398440d8c",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "custom-language-selected",
+      "source": "```python\n$ pwd\n```\n",
+      "source_bytes": 20,
+      "source_sha256": "7052c84c41e58ed7deb689ced574ebbad6469d973076d7d38beaf4b398440d8c",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          "python"
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 10,
+              "end": 11
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "custom-list-replaces-defaults",
+      "source": "```sh\n$ pwd\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "bfdda3c4c393114c51c2334e2824a6e64478a947a1a148bd80b6d233b2c63962",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          "python"
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "empty-languages-select-none",
+      "source": "```sh\n$ pwd\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "bfdda3c4c393114c51c2334e2824a6e64478a947a1a148bd80b6d233b2c63962",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "duplicate-languages-single-finding",
+      "source": "```sh\n$ pwd\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "bfdda3c4c393114c51c2334e2824a6e64478a947a1a148bd80b6d233b2c63962",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          "sh",
+          "sh"
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "empty-language-element-does-not-match",
+      "source": "```\n$ pwd\n```\n",
+      "source_bytes": 14,
+      "source_sha256": "96b82f615af83e72cecb8a6d42333f49c9178f6c67e8095d627ddc7104a1869c",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          ""
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "whitespace-language-element-not-trimmed",
+      "source": "```sh\n$ pwd\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "bfdda3c4c393114c51c2334e2824a6e64478a947a1a148bd80b6d233b2c63962",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          " sh "
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "upper-info-default-not-folded",
+      "source": "```SH\n$ pwd\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "f73f00f90ebaa53797805e1affc7fb76bc3b76047e81a9d0676d7cdd65dce0ba",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "custom-upper-info-exact",
+      "source": "```SH\n$ pwd\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "f73f00f90ebaa53797805e1affc7fb76bc3b76047e81a9d0676d7cdd65dce0ba",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          "SH"
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "custom-upper-does-not-select-lower",
+      "source": "```sh\n$ pwd\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "bfdda3c4c393114c51c2334e2824a6e64478a947a1a148bd80b6d233b2c63962",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          "SH"
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "info-trailing-ascii-options",
+      "source": "```sh linenos=1\n$ pwd\n```\n",
+      "source_bytes": 26,
+      "source_sha256": "7ba5d8a2aea666cd96817c41a30f0e3db248107cccedc77ee02d129f25cacc6b",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 16,
+              "end": 17
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "info-tab-options",
+      "source": "```sh\toptions\n$ pwd\n```\n",
+      "source_bytes": 24,
+      "source_sha256": "b1104f1896130a9c3a192532fa5161eb570ce9054150d58cd53638455bc23b96",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 14,
+              "end": 15
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "raw-outer-info-ascii-trim",
+      "source": "``` \tsh\t \n$ pwd\n```\n",
+      "source_bytes": 20,
+      "source_sha256": "9a5964d005dca029a2b6834f9df2c6f05d2339e0f7381e697b44578baa1371e6",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 10,
+              "end": 11
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "info-nbsp-not-token-separator",
+      "source": "```sh options\n$ pwd\n```\n",
+      "source_bytes": 25,
+      "source_sha256": "f2c4847c3f2d51fd1b5b9aca3686760726cffac14c852f80697ba4048860e9bc",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "custom-info-nbsp-token",
+      "source": "```sh options\n$ pwd\n```\n",
+      "source_bytes": 25,
+      "source_sha256": "f2c4847c3f2d51fd1b5b9aca3686760726cffac14c852f80697ba4048860e9bc",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          "sh options"
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 15,
+              "end": 16
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "info-numeric-entity-decoded-once",
+      "source": "```&#115;h\n$ pwd\n```\n",
+      "source_bytes": 21,
+      "source_sha256": "435c5a43de6866446e180b2206e45e854c0ff690a7c1097edfdfca84536a7279",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 11,
+              "end": 12
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "info-decoded-leading-ascii-blanks",
+      "source": "```&#32;&#9;sh\n$ pwd\n```\n",
+      "source_bytes": 25,
+      "source_sha256": "01762b71e236f58c8cbad8620b608c3971e95d73c5e0cc75dd6708a7c7ee1a33",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 15,
+              "end": 16
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "info-no-second-decoding",
+      "source": "```&amp;#115;h\n$ pwd\n```\n",
+      "source_bytes": 25,
+      "source_sha256": "9caf6e8c3a49e7b0640f22963e6b7956c17e60a93f482f5b203e20568e7b7195",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "info-escaped-punctuation-custom",
+      "source": "```sh\\+\n$ pwd\n```\n",
+      "source_bytes": 18,
+      "source_sha256": "dd9daf1ef18f1ebdee97a58198319291ef111c9c2ae9337b9fa089c540a663cf",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          "sh+"
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 8,
+              "end": 9
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "info-attributes-not-interpreted",
+      "source": "```{.sh}\n$ pwd\n```\n",
+      "source_bytes": 19,
+      "source_sha256": "79b488263e25ff470e75d192ec5d8aef4ae6bbfb243179452c7cba58292beae7",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "missing-info-not-selected",
+      "source": "```\n$ pwd\n```\n",
+      "source_bytes": 14,
+      "source_sha256": "96b82f615af83e72cecb8a6d42333f49c9178f6c67e8095d627ddc7104a1869c",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "whitespace-only-info-not-selected",
+      "source": "``` \t\n$ pwd\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "ac423589b103d4a75deee09c3599c2328d6847789e730d21f4304cfe25a16831",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          ""
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "custom-unicode-language",
+      "source": "```ésh\n$ pwd\n```\n",
+      "source_bytes": 18,
+      "source_sha256": "4e586176b95afa586aa726590f5d3c422828905e848228bb83ebcd4f272e27fd",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          "ésh"
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 8,
+              "end": 9
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "normalized-info-nul-not-default",
+      "source": "```\u0000sh\n$ pwd\n```\n",
+      "source_bytes": 17,
+      "source_sha256": "1dccc5d2672580772766beb10280eae07ea7d48d0b583fdf142b09f535f4c46f",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "normalized-info-nul-custom",
+      "source": "```\u0000sh\n$ pwd\n```\n",
+      "source_bytes": 17,
+      "source_sha256": "1dccc5d2672580772766beb10280eae07ea7d48d0b583fdf142b09f535f4c46f",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          "�sh"
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 7,
+              "end": 8
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "semantic-info-lf-not-token-separator",
+      "source": "```sh&#10;next\n$ pwd\n```\n",
+      "source_bytes": 25,
+      "source_sha256": "8e55ab4dfff2147add0fbc8cdcf8ecd7f50c4e2499cf35668113ac5ed14ed922",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "custom-semantic-info-control-token",
+      "source": "```sh&#10;next\n$ pwd\n```\n",
+      "source_bytes": 25,
+      "source_sha256": "8e55ab4dfff2147add0fbc8cdcf8ecd7f50c4e2499cf35668113ac5ed14ed922",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          "sh\nnext"
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 15,
+              "end": 16
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "tilde-fence",
+      "source": "~~~sh\n$ pwd\n~~~\n",
+      "source_bytes": 16,
+      "source_sha256": "077cf66894b7266d8717f40fe75b2428c9b792b3f818edc32737a9e608ce6af3",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "unclosed-eof-without-newline",
+      "source": "```sh\n$ pwd",
+      "source_bytes": 11,
+      "source_sha256": "88734ee4b7386b3b35e7e73dbf789b07d7fc6b1f8d086196b3376c2bc54a2d66",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "lf-without-final-newline",
+      "source": "```sh\n$ pwd\n```",
+      "source_bytes": 15,
+      "source_sha256": "0e4ff91d5cfa08f05fc07e9d47c5684d13418fe1907daec7167686f07a34d487",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "crlf-payload",
+      "source": "```sh\r\n$ pwd\r\n```\r\n",
+      "source_bytes": 19,
+      "source_sha256": "d03fc8a2c5af218c3daaea38e61c31825e9f2cebcf2c1d2db0ddd4c528b7afae",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 7,
+              "end": 8
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "lone-cr-payload",
+      "source": "```sh\r$ pwd\r```\r",
+      "source_bytes": 16,
+      "source_sha256": "0d706221701952a613b0a834494634ffcf763e9666fed85ba2721a03af6ec609",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "unicode-prefix-snapshot-geometry",
+      "source": "😀 é\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 26,
+      "source_sha256": "32bdcb910958c0f5f302b4791b729065895e1f40d36a73eb0c5c6357bde89ffc",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 16,
+              "end": 17
+            },
+            "range": {
+              "start": {
+                "line": 4,
+                "column": 1
+              },
+              "end": {
+                "line": 4,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "quote-owned-payload",
+      "source": "> ```sh\n> $ pwd\n> ```\n",
+      "source_bytes": 22,
+      "source_sha256": "c0361876a5ae8bf43765052c9bd13d2f6ec09a3d2f2beb078cc5dad6be68dc6e",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 10,
+              "end": 11
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 3
+              },
+              "end": {
+                "line": 2,
+                "column": 4
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "list-owned-payload",
+      "source": "- ```sh\n  $ pwd\n  ```\n",
+      "source_bytes": 22,
+      "source_sha256": "6b68ace91b0ee77b6621ef857609979c73bcc3f55d0be32f7e12a4f646a06dec",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 10,
+              "end": 11
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 3
+              },
+              "end": {
+                "line": 2,
+                "column": 4
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "quote-list-owned-payload",
+      "source": "> - ```sh\n>   $ pwd\n>   ```\n",
+      "source_bytes": 28,
+      "source_sha256": "5a23f2a526610f6d6c395e449723f9b10511b6da6dbc266b30f7e8df2a52db37",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 14,
+              "end": 15
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 5
+              },
+              "end": {
+                "line": 2,
+                "column": 6
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "tab-consumed-container-prefix",
+      "source": "-   ```sh\n\t$ pwd\n\t```\n",
+      "source_bytes": 22,
+      "source_sha256": "982dacd3cb3f1ed857487340dd5a0ea56fccbc6d9b72b6365e0777155de34f53",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 11,
+              "end": 12
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 2
+              },
+              "end": {
+                "line": 2,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "partial-tab-retained-payload-is-output",
+      "source": "- ```sh\n\t$ pwd\n  ```\n",
+      "source_bytes": 21,
+      "source_sha256": "e8737b17ee95018069833cecbbb30e53d1e66f570dd6b9a1b514fb75ef4a308f",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "fence-indent-one-removed",
+      "source": " ```sh\n $ pwd\n ```\n",
+      "source_bytes": 19,
+      "source_sha256": "44171f00c24eac0c0a0b4442fac9e3d04ec9c7a82161e717c44e72719bae7454",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 8,
+              "end": 9
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 2
+              },
+              "end": {
+                "line": 2,
+                "column": 3
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "fence-indent-two-removed",
+      "source": "  ```sh\n  $ pwd\n  ```\n",
+      "source_bytes": 22,
+      "source_sha256": "e790363d989fefc2f1e7bb7825112495ce40b2fb8cfa778efdf536be60130fa6",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 10,
+              "end": 11
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 3
+              },
+              "end": {
+                "line": 2,
+                "column": 4
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "fence-indent-three-removed",
+      "source": "   ```sh\n   $ pwd\n   ```\n",
+      "source_bytes": 25,
+      "source_sha256": "767dfccf2188e691e83b567da3e380fc267f2f17ce0739c7e9dcc4238e90462c",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 12,
+              "end": 13
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 4
+              },
+              "end": {
+                "line": 2,
+                "column": 5
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "excess-payload-indent-remains-output",
+      "source": " ```sh\n  $ pwd\n ```\n",
+      "source_bytes": 20,
+      "source_sha256": "c19f29779785417433b140d48699632476f84c5064b2c720f2866e2a99e43894",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "quote-boundary-normal-close",
+      "source": "> ```sh\n> $ pwd\noutside\n",
+      "source_bytes": 24,
+      "source_sha256": "58b813dabc7c396e9a0fd56982d67d9bec3d0ce2f051066551e44da8410fe63d",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 10,
+              "end": 11
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 3
+              },
+              "end": {
+                "line": 2,
+                "column": 4
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "indented-code-not-target",
+      "source": "    $ pwd\n",
+      "source_bytes": 10,
+      "source_sha256": "c9b81d907861fc3382664a4780e54002b47540db86abbea7c302cbc83b219c63",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          ""
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "fence-spelling-in-indented-code",
+      "source": "    ```sh\n    $ pwd\n    ```\n",
+      "source_bytes": 28,
+      "source_sha256": "697df5c16d580dd2349125f801f3cc6eaf2030ff611a585f3c907bd82198a647",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "inline-code-not-target",
+      "source": "`$ pwd`\n",
+      "source_bytes": 8,
+      "source_sha256": "0da8de33a030d727f9a7f27a41b154e115a65bac456f7e4493d5a65541d235c4",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "short-opener-not-fence",
+      "source": "``sh\n$ pwd\n``\n",
+      "source_bytes": 14,
+      "source_sha256": "ad6f1f83eaaaaa99f16fb2e4a51e2cae5057a67ec15f234660bca4e88a6afb2d",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "backtick-in-info-invalid-opener",
+      "source": "```sh`bad\n$ pwd\n```\n",
+      "source_bytes": 20,
+      "source_sha256": "f81051a0bf044f973422bd8e7eeedbaf9d78afcb07e0c24f92d3961cd5b4a273",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "short-closer-remains-output",
+      "source": "````sh\n$ pwd\n```\n",
+      "source_bytes": 17,
+      "source_sha256": "3d0a128f8f16cdb38d20605383b1dcbff23b5d0201f015eaa110855981997770",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "wrong-closer-remains-output",
+      "source": "```sh\n$ pwd\n~~~\n",
+      "source_bytes": 16,
+      "source_sha256": "b21f90264a0e5b97fe002fbc46cbc29c726f9d0b49771e17672d0d52aeedc1d4",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "closer-suffix-remains-output",
+      "source": "```sh\n$ pwd\n``` tail\n",
+      "source_bytes": 21,
+      "source_sha256": "7196a067838530b4b5147e99bd5272b76709f589bb2a1eecd4a2482cf46552c2",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "larger-valid-closer",
+      "source": "```sh\n$ pwd\n`````\n",
+      "source_bytes": 18,
+      "source_sha256": "74275c4e08def31bfd7a40557882c65f12ec721cfa50ec0baa2298b0d962478d",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "output-outside-block-does-not-exempt",
+      "source": "output\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 24,
+      "source_sha256": "c82d3fa5afbf3242386b1812808d13afb00b59a026106b2dc98712c677221391",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 14,
+              "end": 15
+            },
+            "range": {
+              "start": {
+                "line": 4,
+                "column": 1
+              },
+              "end": {
+                "line": 4,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "two-blocks-no-state-leak",
+      "source": "```sh\n$ pwd\n/home\n```\n\n```sh\n$ whoami\n```\n",
+      "source_bytes": 42,
+      "source_sha256": "ca5e583a18fc94ef9045c94c12b772d3804f80fe979702886c730403826590d7",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 29,
+              "end": 30
+            },
+            "range": {
+              "start": {
+                "line": 7,
+                "column": 1
+              },
+              "end": {
+                "line": 7,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "two-clean-prompt-blocks",
+      "source": "```sh\n$ pwd\n```\n\n~~~console\n$ whoami\n~~~\n",
+      "source_bytes": 41,
+      "source_sha256": "cd3c43b63b557f22dc27d4bdf7c6b20852f12ba4a916888263b63491f0e70e50",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          },
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 28,
+              "end": 29
+            },
+            "range": {
+              "start": {
+                "line": 6,
+                "column": 1
+              },
+              "end": {
+                "line": 6,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "yaml-header-opaque",
+      "source": "---\n```sh\n$ pwd\n```\n---\n",
+      "source_bytes": 24,
+      "source_sha256": "36fcbecf3a839fbb7deea90bc6a48292674c28b8ba22848716f80263a8c9a37b",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "yaml",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "yaml-recognition-disabled",
+      "source": "---\n```sh\n$ pwd\n```\n---\n",
+      "source_bytes": 24,
+      "source_sha256": "36fcbecf3a839fbb7deea90bc6a48292674c28b8ba22848716f80263a8c9a37b",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 10,
+              "end": 11
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "toml-header-opaque",
+      "source": "+++\n```sh\n$ pwd\n```\n+++\n",
+      "source_bytes": 24,
+      "source_sha256": "ba86609422bd843f08129a5acb677f257a1e7bb80f6db770a757f9a130385856",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "toml",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "toml-recognition-disabled",
+      "source": "+++\n```sh\n$ pwd\n```\n+++\n",
+      "source_bytes": 24,
+      "source_sha256": "ba86609422bd843f08129a5acb677f257a1e7bb80f6db770a757f9a130385856",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 10,
+              "end": 11
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "html-owned-fake-fence",
+      "source": "<pre>\n```sh\n$ pwd\n```\n</pre>\n",
+      "source_bytes": 29,
+      "source_sha256": "a5ba85c759797bd4064669667ab433af3c28eea182539d426c7594b52cdcbca5",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "incoming-inline-raw-protects-fence",
+      "source": "prefix <script>\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 33,
+      "source_sha256": "9169a5f41661fa26947e8e96a2ce87dfe495a2e398c075b4202bec230282e315",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "closed-inline-raw-resumes",
+      "source": "prefix <script>\n</script>\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 43,
+      "source_sha256": "c9978f810bfbe4ffcad413cb76a82dd789d12543e84b8a9a91b50ec6b6c6de30",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 33,
+              "end": 34
+            },
+            "range": {
+              "start": {
+                "line": 5,
+                "column": 1
+              },
+              "end": {
+                "line": 5,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "incoming-raw-through-html-owner-match",
+      "source": "prefix <script>\n\n<div>\n</script>\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 50,
+      "source_sha256": "27fa1d9df7b0d4e05e3fa6dcd097bd30a74434aa3bd2cd36246f5534de5ed24c",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 40,
+              "end": 41
+            },
+            "range": {
+              "start": {
+                "line": 7,
+                "column": 1
+              },
+              "end": {
+                "line": 7,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "incoming-raw-through-html-owner-different",
+      "source": "prefix <script>\n\n<div>\n</style>\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 49,
+      "source_sha256": "bc020bc87f09adbe55ab56cf46de7d75624e086a3d125d7efbcb6a3284903ef0",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "incoming-raw-through-html-owner-unclosed",
+      "source": "prefix <script>\n\n<div>\ntext\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 45,
+      "source_sha256": "2244b9867b5a63bfd18fb333c94be264d6d2182f8c132f283fe8da79ff89931e",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "form1-any4-owner-close-resumes",
+      "source": "<script>\n</style>\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 35,
+      "source_sha256": "2989389db85149e70c1aed014fc1a50be3b21effce79cc4a07a7b6644a09911a",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 25,
+              "end": 26
+            },
+            "range": {
+              "start": {
+                "line": 5,
+                "column": 1
+              },
+              "end": {
+                "line": 5,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "image-local-raw-open-does-not-protect",
+      "source": "![x <script>](target)\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 39,
+      "source_sha256": "3d08b48f8ddfa89f626bf816afc470eb0796ddc46376c628902bf2ff050dcaed",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 29,
+              "end": 30
+            },
+            "range": {
+              "start": {
+                "line": 4,
+                "column": 1
+              },
+              "end": {
+                "line": 4,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "image-local-raw-close-does-not-end-outer",
+      "source": "prefix <script>\n\n![x </script>](target)\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 57,
+      "source_sha256": "2371c08311dda17083df6b26ecfff3a999c1cdc3cd6ab731676428d69e484469",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "known-opaque-remainder-is-owner-local",
+      "source": "<div><!--\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 27,
+      "source_sha256": "a59b1f7d7f8a1c86865eff8a4bb3355a4b32e63085ab2ddcc8b09ff60ea84175",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 17,
+              "end": 18
+            },
+            "range": {
+              "start": {
+                "line": 4,
+                "column": 1
+              },
+              "end": {
+                "line": 4,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "unknown-required-html-context",
+      "source": "<div>\n<x title=\"\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 34,
+      "source_sha256": "8014d65bb68b95507ad17aef7745f54ce116c17d884a47b494e1cb713f8436df",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": false,
+        "md014_evaluation": "unavailable",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [
+          {
+            "path": "literal.md",
+            "rule": "MD014",
+            "reason": "context-unavailable",
+            "message": "Shell-prompt context is unavailable; the complete MD014 inventory is withheld."
+          }
+        ],
+        "isolated_lint_exit": 15,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "unknown-unselected-language-irrelevant",
+      "source": "<div>\n<x title=\"\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 34,
+      "source_sha256": "8014d65bb68b95507ad17aef7745f54ce116c17d884a47b494e1cb713f8436df",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": [
+          "python"
+        ]
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "empty-languages-ignore-unknown-context",
+      "source": "<div>\n<x title=\"\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 34,
+      "source_sha256": "8014d65bb68b95507ad17aef7745f54ce116c17d884a47b494e1cb713f8436df",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": false,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "unknown-withholds-earlier-prompt",
+      "source": "```sh\n$ pwd\n```\n\n<div>\n<x title=\"\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 51,
+      "source_sha256": "ddc4ff38b164bbd8ba562a7ccad719a3798aeb53b9f53b53d64fa6da944d0010",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": false,
+        "md014_evaluation": "unavailable",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [
+          {
+            "path": "literal.md",
+            "rule": "MD014",
+            "reason": "context-unavailable",
+            "message": "Shell-prompt context is unavailable; the complete MD014 inventory is withheld."
+          }
+        ],
+        "isolated_lint_exit": 15,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "hidden-prompt-nonrequested-raw",
+      "source": "<!-- mdchk:disable MD014 -->\n```sh\n$ pwd\n```\n",
+      "source_bytes": 45,
+      "source_sha256": "58cc7e6ea0f9be1cfa4887ba4fa26abd214b90286610c406904edf3902180b0a",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 35,
+              "end": 36
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "md087_findings": [],
+        "raw_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 45,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-not-requested"
+          }
+        ],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "md087-used-hidden-prompt",
+      "source": "<!-- mdchk:disable MD014 -->\n```sh\n$ pwd\n```\n",
+      "source_bytes": 45,
+      "source_sha256": "58cc7e6ea0f9be1cfa4887ba4fa26abd214b90286610c406904edf3902180b0a",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 35,
+              "end": 36
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "md087_findings": [],
+        "raw_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 45,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-used"
+          }
+        ],
+        "requested_audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 45,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-used"
+          }
+        ],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "md087-unused-mixed-output",
+      "source": "<!-- mdchk:disable MD014 -->\n```sh\n$ pwd\n/home\n```\n",
+      "source_bytes": 51,
+      "source_sha256": "da604853e9f19d7e4864d8039e0ded6201039415659ac2a1bc2a6862dbb5bc01",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [
+          {
+            "rule": "MD087",
+            "message": "Suppression for MD014 hides no findings.",
+            "marker": "MD014",
+            "byte_range": {
+              "start": 19,
+              "end": 24
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 20
+              },
+              "end": {
+                "line": 1,
+                "column": 25
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "raw_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 51,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-unused"
+          }
+        ],
+        "requested_audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 51,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-unused"
+          }
+        ],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "configured-off-not-demanded-unused",
+      "source": "<!-- mdchk:disable MD014 -->\n```sh\n$ pwd\n```\n",
+      "source_bytes": 45,
+      "source_sha256": "58cc7e6ea0f9be1cfa4887ba4fa26abd214b90286610c406904edf3902180b0a",
+      "configuration": {
+        "enabled": false,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "not-demanded",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [
+          {
+            "rule": "MD087",
+            "message": "Suppression for MD014 hides no findings.",
+            "marker": "MD014",
+            "byte_range": {
+              "start": 19,
+              "end": 24
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 20
+              },
+              "end": {
+                "line": 1,
+                "column": 25
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "raw_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 45,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-unused"
+          }
+        ],
+        "requested_audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 45,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-unused"
+          }
+        ],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "configured-off-not-demanded",
+      "source": "```sh\n$ pwd\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "bfdda3c4c393114c51c2334e2824a6e64478a947a1a148bd80b6d233b2c63962",
+      "configuration": {
+        "enabled": false,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "not-demanded",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "configured-off-permitted-enable",
+      "source": "<!-- mdchk:enable MD014 -->\n```sh\n$ pwd\n```\n",
+      "source_bytes": 44,
+      "source_sha256": "5a9cfd6750c057cf98b6ab36103994ec8be9544851afc9ed71413205c659e82e",
+      "configuration": {
+        "enabled": false,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 34,
+              "end": 35
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "configured-off-denied-enable",
+      "source": "<!-- mdchk:enable MD014 -->\n```sh\n$ pwd\n```\n",
+      "source_bytes": 44,
+      "source_sha256": "5a9cfd6750c057cf98b6ab36103994ec8be9544851afc9ed71413205c659e82e",
+      "configuration": {
+        "enabled": false,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": false,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "not-demanded",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "denied-disable-keeps-prompt",
+      "source": "<!-- mdchk:disable MD014 -->\n```sh\n$ pwd\n```\n",
+      "source_bytes": 45,
+      "source_sha256": "58cc7e6ea0f9be1cfa4887ba4fa26abd214b90286610c406904edf3902180b0a",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": true,
+        "allow_directives": false,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 35,
+              "end": 36
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "later-disable-does-not-own-earlier-prompt",
+      "source": "```sh\n$ pwd\n```\n\n<!-- mdchk:disable MD014 -->",
+      "source_bytes": 45,
+      "source_sha256": "f716d539938170a984dfab11a8789d8947e7441d70a056de09aa2384edeba16b",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 6,
+              "end": 7
+            },
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 2,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [],
+        "md087_findings": [
+          {
+            "rule": "MD087",
+            "message": "Suppression for MD014 hides no findings.",
+            "marker": "MD014",
+            "byte_range": {
+              "start": 36,
+              "end": 41
+            },
+            "range": {
+              "start": {
+                "line": 5,
+                "column": 20
+              },
+              "end": {
+                "line": 5,
+                "column": 25
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "raw_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 36,
+              "end": 41
+            },
+            "interval": {
+              "start": 45,
+              "end": 45,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-unused"
+          }
+        ],
+        "requested_audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 36,
+              "end": 41
+            },
+            "interval": {
+              "start": 45,
+              "end": 45,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-unused"
+          }
+        ],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "repeated-disables-last-owner-used",
+      "source": "<!-- mdchk:disable MD014 -->\n<!-- mdchk:disable MD014 -->\n```sh\n$ pwd\n```\n",
+      "source_bytes": 74,
+      "source_sha256": "073385229e07282df99249c7a01f04bf8c3078a5cd55faf201bef569c63788a1",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 64,
+              "end": 65
+            },
+            "range": {
+              "start": {
+                "line": 4,
+                "column": 1
+              },
+              "end": {
+                "line": 4,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "md087_findings": [
+          {
+            "rule": "MD087",
+            "message": "Suppression for MD014 hides no findings.",
+            "marker": "MD014",
+            "byte_range": {
+              "start": 19,
+              "end": 24
+            },
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 20
+              },
+              "end": {
+                "line": 1,
+                "column": 25
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "raw_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 57,
+              "includes_final_eof": false
+            },
+            "reason": "suppression-unused"
+          },
+          {
+            "owner": 1,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 48,
+              "end": 53
+            },
+            "interval": {
+              "start": 57,
+              "end": 74,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-used"
+          }
+        ],
+        "requested_audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 57,
+              "includes_final_eof": false
+            },
+            "reason": "suppression-unused"
+          },
+          {
+            "owner": 1,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 48,
+              "end": 53
+            },
+            "interval": {
+              "start": 57,
+              "end": 74,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-used"
+          }
+        ],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "hidden-first-block-visible-second",
+      "source": "<!-- mdchk:disable MD014 -->\n```sh\n$ pwd\n```\n<!-- mdchk:enable MD014 -->\n```sh\n$ whoami\n```\n",
+      "source_bytes": 92,
+      "source_sha256": "ce6a3a1c531d54475bcc9e2035f1c55cd833da3d6089d4ded0029c0984710f20",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 79,
+              "end": 80
+            },
+            "range": {
+              "start": {
+                "line": 7,
+                "column": 1
+              },
+              "end": {
+                "line": 7,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "suppressed": [
+          {
+            "rule": "MD014",
+            "message": "Shell command has a dollar prompt without output.",
+            "marker": "$",
+            "byte_range": {
+              "start": 35,
+              "end": 36
+            },
+            "range": {
+              "start": {
+                "line": 3,
+                "column": 1
+              },
+              "end": {
+                "line": 3,
+                "column": 2
+              }
+            },
+            "fix_available": false
+          }
+        ],
+        "md087_findings": [],
+        "raw_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 72,
+              "includes_final_eof": false
+            },
+            "reason": "suppression-not-requested"
+          }
+        ],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 10,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "literal-directive-is-output",
+      "source": "```sh\n$ pwd\n<!-- mdchk:disable MD014 -->\n$ whoami\n```\n",
+      "source_bytes": 54,
+      "source_sha256": "c490287b3d51eee02ade4757a5e0fde420020063df2b2e1a9cba14b7c4618faf",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    },
+    {
+      "name": "output-after-prompt-outside-inspect-focus",
+      "source": "```sh\n$ pwd\n/home\n```\n",
+      "source_bytes": 22,
+      "source_sha256": "4bddf898f690713ac3c6234250a829dd3073f2dd0c94e7795afd0697a5ea0179",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": false,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": true,
+        "md014_evaluation": "complete",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [],
+        "requested_audit_decisions": [],
+        "coverage": [],
+        "isolated_lint_exit": 0,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": "A future focused inspection of line2 still has no MD014 finding; fullblock criterion precedes focus."
+    },
+    {
+      "name": "md087-unknown-withheld-prefix-uncertain",
+      "source": "<!-- mdchk:disable MD014 -->\n```sh\n$ pwd\n```\n\n<div>\n<x title=\"\n\n```sh\n$ pwd\n```\n",
+      "source_bytes": 80,
+      "source_sha256": "57aab928e47036b28f949139b2b783bba6d40d969fc10eff39a16108425c182e",
+      "configuration": {
+        "enabled": true,
+        "enabled_omitted": false,
+        "empty_options": false,
+        "md087_enabled": true,
+        "allow_directives": true,
+        "frontmatter": "none",
+        "languages_omitted": true,
+        "languages": []
+      },
+      "expected": {
+        "complete": false,
+        "md014_evaluation": "unavailable",
+        "findings": [],
+        "suppressed": [],
+        "md087_findings": [],
+        "raw_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 80,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-uncertain"
+          }
+        ],
+        "requested_audit_decisions": [
+          {
+            "owner": 0,
+            "effect": 0,
+            "rule": "MD014",
+            "token": {
+              "start": 19,
+              "end": 24
+            },
+            "interval": {
+              "start": 28,
+              "end": 80,
+              "includes_final_eof": true
+            },
+            "reason": "suppression-uncertain"
+          }
+        ],
+        "coverage": [
+          {
+            "path": "literal.md",
+            "rule": "MD014",
+            "reason": "context-unavailable",
+            "message": "Shell-prompt context is unavailable; the complete MD014 inventory is withheld."
+          },
+          {
+            "path": "literal.md",
+            "rule": "MD087",
+            "reason": "context-unavailable",
+            "message": "Suppression usefulness is uncertain; required target observations are incomplete."
+          }
+        ],
+        "isolated_lint_exit": 15,
+        "completed_inspect_exit": 0,
+        "source_unchanged": true,
+        "no_md014_corrections": true
+      },
+      "obligation": ""
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "null-rule",
+      "md014_value": null,
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "sequence-rule",
+      "md014_value": [],
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "boolean-rule",
+      "md014_value": true,
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "null-languages",
+      "md014_value": {
+        "languages": null
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "string-languages",
+      "md014_value": {
+        "languages": "sh"
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "boolean-languages",
+      "md014_value": {
+        "languages": true
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "number-languages",
+      "md014_value": {
+        "languages": 1
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "mapping-languages",
+      "md014_value": {
+        "languages": {}
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "mixed-number-elements",
+      "md014_value": {
+        "languages": [
+          "sh",
+          1
+        ]
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "mixed-null-elements",
+      "md014_value": {
+        "languages": [
+          "sh",
+          null
+        ]
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "mixed-boolean-elements",
+      "md014_value": {
+        "languages": [
+          "sh",
+          false
+        ]
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "null-enabled",
+      "md014_value": {
+        "enabled": null
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "string-enabled",
+      "md014_value": {
+        "enabled": "false"
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "null-permission",
+      "md014_value": {
+        "allow_directives": null
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "number-permission",
+      "md014_value": {
+        "allow_directives": 1
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "unknown-option",
+      "md014_value": {
+        "language": [
+          "sh"
+        ]
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "disabled-null-languages",
+      "md014_value": {
+        "enabled": false,
+        "languages": null
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "disabled-unknown-option",
+      "md014_value": {
+        "enabled": false,
+        "unknown": true
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "disabled-invalid-permission",
+      "md014_value": {
+        "enabled": false,
+        "allow_directives": "true"
+      },
+      "expected_rejected": true,
+      "must_precede_target_acquisition": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    }
+  ],
+  "supersedes_oracle_sha256": "d8409f64cf40b3cb44163afd845e62c36473aa3c008e350b0b0ff704f7982ede",
+  "revision_reason": "Static contract readiness99702dc... identified missing operation scope in invalid-configuration acquisition-order assertions. No source implementation/runtime/probe occurred; all134 source/config/expectedcase records are byte-equivalent data.",
+  "invalid_configuration_operations": [
+    "lint",
+    "fix"
+  ],
+  "invalid_configuration_qualification": "The19 invalid-configuration rows assert rejection-before-Markdown-target-acquisition ONLY for lint/fix preflight admission. Inspect retains its accepted invalid-configuration observational metadata/digest/raw-candidate and inspected/0 semantics after target acquisition. Config validate rejects invalid definitions under its own scan/aggregation semantics; no Markdown-target acquisition ordering is asserted for config validate. Normal134 case planned lint/inspect views contain valid configurations and remain unchanged."
+}
