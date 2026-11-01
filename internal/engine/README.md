@@ -693,3 +693,14 @@ definitions, scoped ancestor prefixes and list content floors. Detached facts
 carry zero-width before/after points. Necessary unknown context withholds the
 entire inventory; producer, facade, comparison and outer callback each retain
 final interruption gates. No correction producer or new options are registered.
+
+MD040 uses the completed-original `FencedLanguages` projection and the admitted
+`allowed_languages` list as a synchronous read-only borrow. Candidate selection
+uses decoded ASCII SPACE/TAB tokens and MD040's leading-brace reservation; allowed
+labels need no diagnostic mapping. Existing raw ownership excludes protected
+candidates before required original token mappings are read. Missing observations
+use opening marker ends; disallowed tokens preserve atomic source transformations.
+The same operation accounts traversal, comparisons, mapping and geometric growth.
+Producer, option-validating facade, comparator and outer callback each retain a
+final caller/origin gate; unknown necessary context withholds all facts. MD040 is
+default-disabled, available, and permanently NoFix; no correction is registered.

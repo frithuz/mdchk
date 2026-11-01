@@ -1,0 +1,2263 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary text\n",
+      "source_bytes": 14,
+      "source_sha256": "1b559f24dc116d561fdbf07b8edd6a6db406931210659e90fffc428d2eef4db9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "page-bad",
+      "source": "```\nExample\n```\n",
+      "source_bytes": 16,
+      "source_sha256": "aa3bbdd53eb893b6a97238b753053b8c897b04dbafe1033b565d01f9322d544c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "page-good",
+      "source": "```text\nExample\n```\n",
+      "source_bytes": 20,
+      "source_sha256": "4ef8007ad532de8af1b9742e1e0308f14f6cae4e6f86ac8974b803564a72b328",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "tilde-empty",
+      "source": "~~~\n~~~",
+      "source_bytes": 7,
+      "source_sha256": "2ba1d9cd2e46a3be5a84ba9d80d03974b8eb12ec849758694667542adfa5194e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "padding",
+      "source": "  ~~~~ \t\nx\n~~~~\n",
+      "source_bytes": 16,
+      "source_sha256": "f562715dd270c530932eb084b75ae7167ce26657161c08213fb552cc96e31c2a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            6,
+            6
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "unclosed",
+      "source": "```\nx",
+      "source_bytes": 5,
+      "source_sha256": "b32bf6e96e13c489652cbff0893f0f41b89ec616ded25ab1eb7d5d28b196aaba",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "opener-only",
+      "source": "```",
+      "source_bytes": 3,
+      "source_sha256": "f1b901847390b0ed7e374e7c1e464ec17b46a427c487a5ad6cbd2906405083d5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "long",
+      "source": "`````\nx\n``````",
+      "source_bytes": 14,
+      "source_sha256": "6d941e765069abb98442826e7984e5c66ee22e7e8ca4793881a61a2b38d481b7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "short-closer",
+      "source": "````\n```",
+      "source_bytes": 8,
+      "source_sha256": "2181b3a91362b86669ff0497c4a57cdad9c9ab58899c6cca79d4b1f407f0f005",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            4,
+            4
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "mismatch",
+      "source": "~~~\n```",
+      "source_bytes": 7,
+      "source_sha256": "1e592c91c71c3fb0ecf119ba2f694585f9a1226e2ce6b221e33a406fc8c87633",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "both",
+      "source": "```\na\n```\n~~~ruby\nb\n~~~\n",
+      "source_bytes": 24,
+      "source_sha256": "314721abbcdbc12dbadf3250dbc57105211acc6db3e48bfc7591a54932163423",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        },
+        {
+          "bytes": [
+            13,
+            17
+          ],
+          "start": [
+            4,
+            4
+          ],
+          "end": [
+            4,
+            8
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "allow-empty",
+      "source": "~~~ruby opts\nx\n~~~",
+      "source_bytes": 18,
+      "source_sha256": "bcb14f1e39e3e870529aa56a4aa756c38f02b91a1a353c8091c0b544bdd5f0be",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": []
+      },
+      "findings": []
+    },
+    {
+      "name": "allow-match",
+      "source": "~~~go opts\nx\n~~~",
+      "source_bytes": 16,
+      "source_sha256": "90e0b2a17aef5c57a972620c10785a9402b4fb50b32f8ff57ac1c094d478c110",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "allow-miss",
+      "source": "~~~ruby opts\nx\n~~~",
+      "source_bytes": 18,
+      "source_sha256": "bcb14f1e39e3e870529aa56a4aa756c38f02b91a1a353c8091c0b544bdd5f0be",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            7
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "case",
+      "source": "~~~Go\nx\n~~~",
+      "source_bytes": 11,
+      "source_sha256": "74b40697e2652c7f4efdf9ae300fae00f867fb7afb0271db7f28c250c465bb72",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            5
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "duplicate",
+      "source": "~~~go\nx\n~~~",
+      "source_bytes": 11,
+      "source_sha256": "9a5671f3a8cafbbb1ea83316769f309929a936ebb1f4bdbc102040d0a20eabce",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go",
+          "go"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "duplicate-miss",
+      "source": "~~~ruby\nx\n~~~",
+      "source_bytes": 13,
+      "source_sha256": "3f113c9e73a017da8c4768dcf3e5c08c57566b1dd6730b2398e15134c5656cad",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go",
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            7
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "empty-member",
+      "source": "~~~\n~~~",
+      "source_bytes": 7,
+      "source_sha256": "2ba1d9cd2e46a3be5a84ba9d80d03974b8eb12ec849758694667542adfa5194e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          ""
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "untrimmed-option",
+      "source": "~~~go\n~~~",
+      "source_bytes": 9,
+      "source_sha256": "77dd0c30d01c011c1dc9b01a973cc72b87493045f4b0374f7fb3085f3727ea26",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          " go "
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            5
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "later-token",
+      "source": "~~~ruby go\n~~~",
+      "source_bytes": 14,
+      "source_sha256": "f7269d1c30d7738e7904ee46e3e421258a4c40290b6eaffa5d871836a07496bb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            7
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "leading-padding",
+      "source": "~~~ \t ruby opts \t\n~~~",
+      "source_bytes": 21,
+      "source_sha256": "b1edfd8ed67f8ff8bd9fc56425fc8b21ae1da19db9027f366262f194a728c7e0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            6,
+            10
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "decoded-label",
+      "source": "~~~g&#111; opts\n~~~",
+      "source_bytes": 19,
+      "source_sha256": "040b15568021ae1673a7a5cd35767ecfd065aa9a0c50dac3fb0380c3bbf3f370",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "decoded-label-miss",
+      "source": "~~~g&#111; opts\n~~~",
+      "source_bytes": 19,
+      "source_sha256": "040b15568021ae1673a7a5cd35767ecfd065aa9a0c50dac3fb0380c3bbf3f370",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "ruby"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            10
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "entity-leading-space",
+      "source": "~~~&#32;go\n~~~",
+      "source_bytes": 14,
+      "source_sha256": "f37524d457ffab6a2407b8cedfcaae3e7a32ebcf76ff68d1c7e527aa224be87b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "entity-leading-space-miss",
+      "source": "~~~&#32;go\n~~~",
+      "source_bytes": 14,
+      "source_sha256": "f37524d457ffab6a2407b8cedfcaae3e7a32ebcf76ff68d1c7e527aa224be87b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "ruby"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            10
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "entity-separator",
+      "source": "~~~go&#32;extra\n~~~",
+      "source_bytes": 19,
+      "source_sha256": "b490b6fe56185a332a832df889d235b8d6ff0a7c0a49b9ebc12b41f12d6228cb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "entity-separator-miss",
+      "source": "~~~go&#32;extra\n~~~",
+      "source_bytes": 19,
+      "source_sha256": "b490b6fe56185a332a832df889d235b8d6ff0a7c0a49b9ebc12b41f12d6228cb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "ruby"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            5
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "entity-whitespace",
+      "source": "~~~&#32;&#9;\n~~~",
+      "source_bytes": 16,
+      "source_sha256": "32ed03e67bac1a27a81f7a4fbeabd862e664962950cfab5e5c828bdbbef6094f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "entity-newline",
+      "source": "~~~&#10;go\n~~~",
+      "source_bytes": 14,
+      "source_sha256": "50175b1211eac622c7f99426ec5d3d90e4be0a5cf487f73dbb72b32633cc39f8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            10
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "escape",
+      "source": "~~~g\\+\n~~~",
+      "source_bytes": 10,
+      "source_sha256": "d59b8b1a0ea0ebd340e6f7414c3b14f17e28289d43455f054d5c4e19cf0e5493",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "g+"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "escape-miss",
+      "source": "~~~g\\+ opts\n~~~",
+      "source_bytes": 15,
+      "source_sha256": "91d84a5284b70dc9d0ba0837050f00fce27aec31687dd0082cc3a3ec3c0b3c5f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            6
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "double-decode",
+      "source": "~~~&amp;#103;o\n~~~",
+      "source_bytes": 18,
+      "source_sha256": "7f575698099de41a57a33a583bb9c9b9fed8bf6fd27e8c5b59617c0aaf75ebda",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            14
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "nul",
+      "source": "~~~\u0000\n~~~",
+      "source_bytes": 8,
+      "source_sha256": "4bdcd2a58bdd1871bf3ec146955fb1c0b026920fddde8365b8dfc3759083c3a3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "�"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "nul-miss",
+      "source": "~~~\u0000\n~~~",
+      "source_bytes": 8,
+      "source_sha256": "4bdcd2a58bdd1871bf3ec146955fb1c0b026920fddde8365b8dfc3759083c3a3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            4
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "unicode",
+      "source": "~~~é opts\n~~~",
+      "source_bytes": 14,
+      "source_sha256": "fb179f0a62d3f97dd001b4f85022f4c56f5b6c43ab17ded3f93aefd8162ede95",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            5
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "unicode-accepted",
+      "source": "~~~λ\n~~~",
+      "source_bytes": 9,
+      "source_sha256": "f324b08b85159db17b366a15c535673d25b64567def29d405883a5cb15adac70",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "λ"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "nbsp",
+      "source": "~~~go extra\n~~~",
+      "source_bytes": 16,
+      "source_sha256": "a4b9b6cd01fe5f5e8a16488bff082f5c2ecca91695f66a2dc749f1d85e3ac15e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            12
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "nbsp-only",
+      "source": "~~~ \n~~~",
+      "source_bytes": 9,
+      "source_sha256": "31e63842c6714dc375af5cf0970682f2403db3793c58d41b4154cff7d16285d7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "unicode-separators",
+      "source": "~~~ go\n~~~",
+      "source_bytes": 14,
+      "source_sha256": "a378a0312600499b9dc1121154c4ce5f0c726627aae5b84850f11aeac85a3ae6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            10
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "brace-id",
+      "source": "~~~{#id}\n~~~",
+      "source_bytes": 12,
+      "source_sha256": "1822b0286ad1db865698cf61a43cd603478ecd9fac7e209902e0e407d930c665",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "{#id}"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "brace-class",
+      "source": "~~~{.go}\n~~~",
+      "source_bytes": 12,
+      "source_sha256": "bf5f17b8e8e773aa770bb66d599ac6948e650a29c4d5765ca9d678d4dc0c2a2d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "{.go}"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "brace-raw",
+      "source": "~~~{=html}\n~~~",
+      "source_bytes": 14,
+      "source_sha256": "d97842b6092de04b0d8f07890ea240506fe6e747bc1d4c6bdc9521894ecca39c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "{=html}"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "brace-empty",
+      "source": "~~~{}\n~~~",
+      "source_bytes": 9,
+      "source_sha256": "03a31b255bc8b356c4b5e50e29ae93320a912668cb063744e93b69e74f5f5c51",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "{}"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "brace-open",
+      "source": "~~~{\n~~~",
+      "source_bytes": 8,
+      "source_sha256": "d472689785b1da5f305572d9042a87de579d6caddb66f1d07e3b6ae6d275156b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "{"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "brace-malformed",
+      "source": "~~~{oops\n~~~",
+      "source_bytes": 12,
+      "source_sha256": "0a5a20d5ff62688e87c6251bdd3b825db8ce12bae3deb21af4b03eeb460177d3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "{oops"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "brace-later",
+      "source": "~~~{#id} go\n~~~",
+      "source_bytes": 15,
+      "source_sha256": "8dd6769bd98fa31b13af4ce79d5c45c22a4a47c89affb9ec761a4cc7e29aad44",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "{#id} go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "brace-entity",
+      "source": "~~~&#123;.go}\n~~~",
+      "source_bytes": 17,
+      "source_sha256": "d8377936d231c09c8e598ec7f4c6f00496b5d023d1b949c63543a7ed13e8cbaa",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "brace-escape",
+      "source": "~~~\\{go}\n~~~",
+      "source_bytes": 12,
+      "source_sha256": "e53a26460946714f5f9157eeae16eda0d32ad4d85077fc0aa3661c82913b0a01",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "brace-lookalike",
+      "source": "~~~｛go｝\n~~~",
+      "source_bytes": 15,
+      "source_sha256": "8be7f025181b289a57fa4167c3fbd9a48b289bd8cd9f4b90ed1f7deeffe95c9d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "later-attributes",
+      "source": "~~~go {#id}\n~~~",
+      "source_bytes": 15,
+      "source_sha256": "8295faa4bb4775d16164eb2128780682dc7c5095501c16f1c1bca5c738fa72f6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "bare-embedded",
+      "source": "~~~x{y}\n~~~",
+      "source_bytes": 11,
+      "source_sha256": "5a5697fb92e5d19d91793767f779426f280673b914bb8b60052de702b54f5e86",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "x{y}"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "bare-key",
+      "source": "~~~key=value\n~~~",
+      "source_bytes": 16,
+      "source_sha256": "06e7ac45559273a6e89e361e9c88e5fe6aa57652e99ea6b0d59902e2bc69a268",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "key=value"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "bare-class",
+      "source": "~~~.go\n~~~",
+      "source_bytes": 10,
+      "source_sha256": "c0b9fd5762384d61a1f37c23f59e99ecb15f154d0e10af767f6955a7ac7e5204",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          ".go"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "bare-id",
+      "source": "~~~#id\n~~~",
+      "source_bytes": 10,
+      "source_sha256": "0dbb9a57a1b15f2de113bf8f0b25347935100f07869509aba4e3d48f51c7b487",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "#id"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "quote",
+      "source": "> ```\n> x\n> ```",
+      "source_bytes": 15,
+      "source_sha256": "5066094082cf60a385edc544d6298d2ac2d4d756433a50e9dc0c69f362d284b9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "item",
+      "source": "- ~~~\n  x\n  ~~~",
+      "source_bytes": 15,
+      "source_sha256": "ea74c1a9e95f657d9f32aa01616f8fb132c640e58ba4cfa807458c37580dda44",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "nested",
+      "source": "> - ~~~\n>   x\n>   ~~~",
+      "source_bytes": 21,
+      "source_sha256": "d9192eca1eb842e1ffb1d2c5737bd28a72ca7c78de2a08b4bc9ac6c89eaaaedb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            7,
+            7
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "nested-language",
+      "source": "> - ~~~é opts\n>   x\n>   ~~~",
+      "source_bytes": 28,
+      "source_sha256": "0231a5cdb9a392ad0eced28ba6dea6d92b67a1ef039612534d7f6b8f831cf399",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            7,
+            9
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "tab-prefix",
+      "source": ">\t~~~\n>\tx\n>\t~~~",
+      "source_bytes": 15,
+      "source_sha256": "aa1871a9bf4d655db6f0f256c0f7b0f0f0fcf9731757e4e7a43bad1cd88cf700",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "unicode-before",
+      "source": "é🙂\n\n~~~ruby\n~~~",
+      "source_bytes": 19,
+      "source_sha256": "631762636b7e7f9603075bd085d080c96cf7efd7283101a8617a1f8854571997",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            15
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            8
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "indented",
+      "source": "    ```\n    x\n    ```",
+      "source_bytes": 21,
+      "source_sha256": "9ebb77620a28753b96874f00e0d82b590569eb5e9ce0ba555e76c64c5fca5641",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "inline",
+      "source": "Text `` ` `` tail",
+      "source_bytes": 17,
+      "source_sha256": "dcf30ddedbbfe88a69f2b7aec9c55ba4dff7905aba927452c53b264e5d791439",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "short",
+      "source": "~~\nx\n~~",
+      "source_bytes": 7,
+      "source_sha256": "202fce8ee97b42a295a7338f88bbce1bf39a32a5c7aca22bebd2a37880e73eb2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "escaped",
+      "source": "\\```\nx\n\\```",
+      "source_bytes": 11,
+      "source_sha256": "120efaae751a3b3f149fbab1dc49481ea79d2143c6bb3b3a063bf3008e047449",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "invalid-backtick",
+      "source": "```a`b\ntext",
+      "source_bytes": 11,
+      "source_sha256": "043bef791fa1504b8172585546c7ba842b7f7e344599086ba60ae504ac54ec64",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "tilde-backtick",
+      "source": "~~~a`b\n~~~",
+      "source_bytes": 10,
+      "source_sha256": "84c8d2b806a1a0e98a4d432a19e8fe9247a653f4317d59a1c135734d2485765e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "a`b"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "outer",
+      "source": "````markdown\n```\nx\n```\n````",
+      "source_bytes": 27,
+      "source_sha256": "55579b484383fd85af0bcb77863bac22278e062d2c9471ba742d4f2af6cfdfa5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "markdown"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "html",
+      "source": "<pre>\n```\nx\n```\n</pre>",
+      "source_bytes": 22,
+      "source_sha256": "cbd4d8649f7b719499132c4bee6a5837deba2b68ec251e52ea17f16c6e84dbf4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "comment",
+      "source": "<!--\n```\nx\n```\n-->",
+      "source_bytes": 18,
+      "source_sha256": "7971e12afc5ed8f38d6ebff84a6a17dd77335b14499c368f7ee42b0f90874840",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "header",
+      "source": "---\nx: value\n---\n~~~\n~~~",
+      "source_bytes": 24,
+      "source_sha256": "5005bd9930fb6530db33c87646d59fd9c1d024403680b36dbe7db377e9f6c5c8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "frontmatter": "yaml"
+      },
+      "findings": [
+        {
+          "bytes": [
+            20,
+            20
+          ],
+          "start": [
+            4,
+            4
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "toml",
+      "source": "+++\nx = \"value\"\n+++\n~~~go\n~~~",
+      "source_bytes": 29,
+      "source_sha256": "66399adecb5d2c2b3ec8bdc33c479e6d198d8909edc2a2c36914ebc679edc815",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ],
+        "frontmatter": "toml"
+      },
+      "findings": []
+    },
+    {
+      "name": "default-disabled",
+      "source": "```\nx\n```",
+      "source_bytes": 9,
+      "source_sha256": "a7cc9733bfc37e729c17889589aeeb7771a0b95d05977dbcee1ca1107d38a1ee",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled_omitted": true
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-options-disabled",
+      "source": "```\nx\n```",
+      "source_bytes": 9,
+      "source_sha256": "a7cc9733bfc37e729c17889589aeeb7771a0b95d05977dbcee1ca1107d38a1ee",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled_omitted": true,
+        "empty_options": true
+      },
+      "findings": []
+    },
+    {
+      "name": "explicit-disabled",
+      "source": "```\nx\n```",
+      "source_bytes": 9,
+      "source_sha256": "a7cc9733bfc37e729c17889589aeeb7771a0b95d05977dbcee1ca1107d38a1ee",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    },
+    {
+      "name": "page-bad-crlf",
+      "source": "```\r\nExample\r\n```\r\n",
+      "source_bytes": 19,
+      "source_sha256": "a8bc334b55664c393ef5af0de7fcddc40aeea2f06331137b0631296bea94ea70",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "page-bad-cr",
+      "source": "```\rExample\r```\r",
+      "source_bytes": 16,
+      "source_sha256": "9549cf9d76a7b783b9c98c707fc109180da7644bbc450b856d80cf0755527a7b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "allow-miss-crlf",
+      "source": "~~~ruby opts\r\nx\r\n~~~",
+      "source_bytes": 20,
+      "source_sha256": "41acda4216ae8e9ea2a7250869bd80943cbf78a176368ae1623d337a0a84e319",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            7
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "allow-miss-cr",
+      "source": "~~~ruby opts\rx\r~~~",
+      "source_bytes": 18,
+      "source_sha256": "9e2c5401333492b4f65f52a04c269c694fc615b6d38d955bcb5e2f33f2efc3c1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            7
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "nested-crlf",
+      "source": "> - ~~~\r\n>   x\r\n>   ~~~",
+      "source_bytes": 23,
+      "source_sha256": "a49240d94375a8c60a4fef910f1dd07b866907f9ca294139f6ca6d74e0c1f6ea",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            7,
+            7
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "nested-cr",
+      "source": "> - ~~~\r>   x\r>   ~~~",
+      "source_bytes": 21,
+      "source_sha256": "beb364a6da3d81c11baad25fee6a67997a954a90e65b7a6b135f261af2621f12",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            7,
+            7
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "kind": "missing",
+          "message": "Fenced code block requires a language identifier."
+        }
+      ]
+    },
+    {
+      "name": "unicode-before-crlf",
+      "source": "é🙂\r\n\r\n~~~ruby\r\n~~~",
+      "source_bytes": 22,
+      "source_sha256": "81503352cc4aaf80e17d00000f7fbb60af823497332d26b896af666bec37a7c9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            13,
+            17
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            8
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "unicode-before-cr",
+      "source": "é🙂\r\r~~~ruby\r~~~",
+      "source_bytes": 19,
+      "source_sha256": "d35c122653b800f4cc43529904b568526f7abd7d546d84c5ef9a86098dab22a7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "allowed_languages": [
+          "go"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            15
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            8
+          ],
+          "kind": "disallowed",
+          "message": "Fenced code block language is not allowed."
+        }
+      ]
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "null",
+      "md040_value": null,
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "scalar",
+      "md040_value": true,
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "unknown",
+      "md040_value": {
+        "enabled": false,
+        "languages": []
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "list-null",
+      "md040_value": {
+        "enabled": false,
+        "allowed_languages": null
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "list-scalar",
+      "md040_value": {
+        "allowed_languages": "go"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "list-map",
+      "md040_value": {
+        "allowed_languages": {}
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "list-number",
+      "md040_value": {
+        "allowed_languages": [
+          1
+        ]
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "list-bool",
+      "md040_value": {
+        "allowed_languages": [
+          true
+        ]
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "list-null-item",
+      "md040_value": {
+        "allowed_languages": [
+          null
+        ]
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "list-mixed",
+      "md040_value": {
+        "allowed_languages": [
+          "go",
+          1
+        ]
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "list-nested",
+      "md040_value": {
+        "allowed_languages": [
+          [
+            "go"
+          ]
+        ]
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "enabled-string",
+      "md040_value": {
+        "enabled": "true"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "enabled-null",
+      "md040_value": {
+        "enabled": null
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "directive-string",
+      "md040_value": {
+        "allow_directives": "false"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "directive-null",
+      "md040_value": {
+        "allow_directives": null
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    }
+  ]
+}
