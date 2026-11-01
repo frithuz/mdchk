@@ -236,3 +236,13 @@ the original source/parse/context/options/resource authority and cumulative
 finite meter. Candidate and actual saved views recompute on their own snapshots
 with residual original allowance. No audit replay, extra audit parse or reset
 budget is introduced.
+
+## MD070 example extents and suppression
+
+The fixed `mdchk-example` comments provide MD070 extents only. They are not
+directives and never enable the default-disabled rule. Bounded payload parsing
+does not execute directives or change the original document's directive inventory.
+Ordinary allowed enable directives can activate MD070; inherited restrictions
+still apply. Full example recognition precedes finding-start suppression and
+focus. A hidden real length or boundary finding proves use for MD087; unknown
+necessary example context withholds that proof rather than claiming no findings.

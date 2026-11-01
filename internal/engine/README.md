@@ -729,3 +729,20 @@ selected mismatches require full opening-marker evidence. Unknown necessary
 context withholds every observation. Producer, facade, comparator and outer
 publication gates retain caller and origin controls. No replacement authority,
 source clone, fresh allowance or payload scan is introduced.
+
+`RuleContext.NestedExamples` supplies MD070 with detached original manual ranges,
+including zero-width structural problems. Exact eligible original comments and
+actual container identities bound delayed unique pairs independently of premature
+outer-fence closure. Mapped payload recognition uses the real CommonMark/GFM parser
+and the same cumulative operation allowance, disabling frontmatter only for the
+isolated code payload. Residual tab columns and nested payload prefixes survive.
+Original and derived raw lifetimes and whole-image opacity remain authoritative.
+Necessary unknown context withholds every observation; distinct publication gates
+retain caller and origin controls. MD070 stays default-disabled, has no options,
+and retains PlannedFix metadata without supplying edits or previews.
+
+Original opening association uses a metered sorted offset/ordinal table and
+binary lookup, avoiding a repeated full-node scan for each independent example.
+The table remains private to the original source and cumulative operation;
+missing required authority and malformed selected associations retain their
+distinct unavailable/error outcomes.

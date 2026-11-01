@@ -9,4 +9,4 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD040](md040.md) | Missing fenced block language | Analysis/configuration implemented; report-only |
 | [MD046](md046.md) | Indented versus fenced code | Analysis/configuration implemented; manual |
 | [MD048](md048.md) | Backtick versus tilde fences | Analysis/configuration implemented; manual |
-| [MD070](md070.md) | Outer fence length for nested examples | Planned |
+| [MD070](md070.md) | Outer fence length for nested examples | Analysis/configuration implemented; manual |

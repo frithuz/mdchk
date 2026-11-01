@@ -1,0 +1,2330 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary text\n",
+      "source_bytes": 14,
+      "source_sha256": "1b559f24dc116d561fdbf07b8edd6a6db406931210659e90fffc428d2eef4db9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "page-bad",
+      "source": "<!-- mdchk-example -->\n```markdown\n```python\nprint(1)\n```\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 85,
+      "source_sha256": "111687ec37451fb77dd41f7346549ed2a705ada24a6a0bf25b65cd7a88615c34",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "page-good",
+      "source": "<!-- mdchk-example -->\n````markdown\n```python\nprint(1)\n```\n````\n<!-- /mdchk-example -->",
+      "source_bytes": 87,
+      "source_sha256": "79834fdea377f93fc239dbcc6ca92443b8d1bb28a215afde73e2bfce4f324706",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "unmarked",
+      "source": "```markdown\n```python\nprint(1)\n```\n```",
+      "source_bytes": 38,
+      "source_sha256": "476405c56e25422f6c0fbbf30ff4bf567cb1c44e5fc0551256f1ed90d12e2363",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "inner-unclosed",
+      "source": "<!-- mdchk-example -->\n```md\n```go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 64,
+      "source_sha256": "ff53258ecf426a2da8382baa298abd7e04339bd63eec55c1419c54c4b897ae26",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "tilde",
+      "source": "<!-- mdchk-example -->\n~~~md\n~~~go\nx\n~~~\n<!-- /mdchk-example -->",
+      "source_bytes": 64,
+      "source_sha256": "dba0182ec7d550fe3fa7d546e729f13223d1773c8544271531083f7f95fc0342",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "long-inner-closer",
+      "source": "<!-- mdchk-example -->\n````md\n```go\nx\n`````\n````\n<!-- /mdchk-example -->",
+      "source_bytes": 72,
+      "source_sha256": "f7c3168cb4de1fd06020c2f5d5de9aeed634514d1b2e66b961640e46f8ed0140",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            27
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "different-character",
+      "source": "<!-- mdchk-example -->\n```md\n~~~go\nx\n~~~\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 68,
+      "source_sha256": "2b41777a1314df9d79db0257a8bf54c2de06dddb52491dc1a117e4fcd9b7cf53",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "wider-outer-closer",
+      "source": "<!-- mdchk-example -->\n```md\n```go\nx\n`````\n<!-- /mdchk-example -->",
+      "source_bytes": 66,
+      "source_sha256": "a92573c490c78c114728fb35b9f6bcf1de853c124a26bbc170ed7ded524f1d45",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "inner-one-short",
+      "source": "<!-- mdchk-example -->\n````md\n```go\nx\n```\n````\n<!-- /mdchk-example -->",
+      "source_bytes": 70,
+      "source_sha256": "fa2fd0451ad7159ea21361d47049194f1004f8065c76c0e2f62496f8403e241e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "inner-one-long",
+      "source": "<!-- mdchk-example -->\n```md\n````go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 65,
+      "source_sha256": "d4c87d09bee18644a1fe72f8f0e25cc3321bde28a3f00c9499ec088d75cb35f3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "several-inner",
+      "source": "<!-- mdchk-example -->\n```md\n```go\nx\n```\n\n```ruby\ny\n```\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 83,
+      "source_sha256": "21105be4d0c68fe1b4ee79ef296b08b544d4a0630e5315536f88d1f35203d2ed",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "two-pairs",
+      "source": "<!-- mdchk-example -->\n```md\n```go\nx\n```\n<!-- /mdchk-example -->\n\n<!-- mdchk-example -->\n```md\n```go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 130,
+      "source_sha256": "db9b51d500e01f4985767a93a280c9d5e7fb82a1d701c00231dd6c5f0fd5a188",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        },
+        {
+          "bytes": [
+            89,
+            92
+          ],
+          "start": [
+            9,
+            1
+          ],
+          "end": [
+            9,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "quote",
+      "source": "> <!-- mdchk-example -->\n> ```md\n> ```go\n> x\n> ```\n> <!-- /mdchk-example -->",
+      "source_bytes": 76,
+      "source_sha256": "222b28165a1df62974ec653f5ad34226fe3b6b8facc3e8ca8db16561de43d56f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            27,
+            30
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "source": "- <!-- mdchk-example -->\n  ```md\n  ```go\n  x\n  ```\n  <!-- /mdchk-example -->",
+      "source_bytes": 76,
+      "source_sha256": "5ae106b4d4a0906b0da94cb63be9cf3be71411b1679558a4701260a1e917b5a5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            27,
+            30
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "nested",
+      "source": "> - <!-- mdchk-example -->\n>   ```md\n>   ```go\n>   x\n>   ```\n>   <!-- /mdchk-example -->",
+      "source_bytes": 88,
+      "source_sha256": "8c7bff6eb36be82f3ef27f4d285bb95c0ec1b70fc2ab65dd4bbb906c3f302a31",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            31,
+            34
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "tab-prefix",
+      "source": ">\t<!-- mdchk-example -->\n>\t```md\n>\t```go\n>\tx\n>\t```\n>\t<!-- /mdchk-example -->",
+      "source_bytes": 76,
+      "source_sha256": "d4cea99f573eac02e958a938716f34b5c4f094be794444581c6d7439a940e67d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            27,
+            30
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "list-four-columns",
+      "source": "10. <!-- mdchk-example -->\n    ```md\n    ```go\n    x\n    ```\n    <!-- /mdchk-example -->",
+      "source_bytes": 88,
+      "source_sha256": "b78dd33661014420e8878bc8940568d243d102239ace6528244636d6ff552b10",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            31,
+            34
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "unicode-before",
+      "source": "é🙂\n\n<!-- mdchk-example -->\n```md\n```go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 72,
+      "source_sha256": "84051043c50d7e66e8a0710c48a6a0571b9f6b0c68da35d6ea4da97cb6a9ca34",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            31,
+            34
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "ending-newline",
+      "source": "<!-- mdchk-example -->\n```md\n```go\nx\n```\n<!-- /mdchk-example -->\n",
+      "source_bytes": 65,
+      "source_sha256": "9f0cbda6fec4d830ad286ba3709d9f29221b1c00d35efed2454364270d2c0fa6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "blank-body-lines",
+      "source": "<!-- mdchk-example -->\n\n```md\n\n```go\nx\n\n```\n\n<!-- /mdchk-example -->",
+      "source_bytes": 68,
+      "source_sha256": "6f194e5e59c355b4ce0e25c8f62eb5b0e6d15d1e4a6a13c8ee7c0364c9c92a6a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            24,
+            27
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "outer-indentation",
+      "source": "<!-- mdchk-example -->\n  ```md\n  ```go\n  x\n  ```\n<!-- /mdchk-example -->",
+      "source_bytes": 72,
+      "source_sha256": "5c3596a790fd8406fe0270d4a7f94eff815ea17bc0fceba96294421cba101cdb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            25,
+            28
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "marker-padding",
+      "source": "  <!-- mdchk-example --> \t\n```md\n```go\nx\n```\n <!-- /mdchk-example -->\t",
+      "source_bytes": 70,
+      "source_sha256": "cf43afa2c9e1d9f3299143bc137371d0a394fee7e8888d04a55aa20d4f2c580f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            27,
+            30
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "language-markdown",
+      "source": "<!-- mdchk-example -->\n```markdown extra\n```go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 76,
+      "source_sha256": "2f5ddbe2e4b4d0461776d34d308459269ee4e28fb4c0db861aa4ab188a7c9c40",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "language-entity",
+      "source": "<!-- mdchk-example -->\n```m&#100;\n```go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 69,
+      "source_sha256": "1ce6839187788a762188c616f10d5539caddcbb33ca842cde474e3e3139559e8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "language-tab",
+      "source": "<!-- mdchk-example -->\n```\tmd more\n```go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 70,
+      "source_sha256": "2f44554eb419f8c90c6299f30c2b72265cd39e6b12ce5a7f31d8dab2b6b92c21",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "inline-runs",
+      "source": "<!-- mdchk-example -->\n```md\nText ``code`` and `more`\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 81,
+      "source_sha256": "9678d1bd5bc95c014383ecab467d553bcef148d109f7c55e29b48a5951762e80",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped-run",
+      "source": "<!-- mdchk-example -->\n```md\n\\```go\ntext\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 68,
+      "source_sha256": "74bae6b49e878dea9e44137f03083dbe9c125cfd71a7f7b9e86287f982b8dc80",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "code-strings",
+      "source": "<!-- mdchk-example -->\n```md\n~~~go\nx = \"```\"\n```\n~~~\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 80,
+      "source_sha256": "be1ab3f0bab552798a594d8654292c6985fff89b3c01a31a62f73f7e87a7e310",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "indented-payload",
+      "source": "<!-- mdchk-example -->\n```md\n    ```go\n    x\n    ```\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 80,
+      "source_sha256": "340de9b4a2267a47a45eef2e069731bdb0a3aae81c1e04820c2d43e89e963ced",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "html-payload",
+      "source": "<!-- mdchk-example -->\n```md\n<pre>\n```go\nx\n```\n</pre>\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 81,
+      "source_sha256": "36723618d75e2e5b672d46d30a1362b47efe0f2994601acf7c45e58f3e34d154",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "raw-payload",
+      "source": "<!-- mdchk-example -->\n```md\nprefix <script>\n\n```go\nx\n```\n\n</script>\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 96,
+      "source_sha256": "d440524a7ca6d89c98c07fa3b968649a1ca890b6e8230cfdd83079e3cef03852",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "payload-nested-quote",
+      "source": "<!-- mdchk-example -->\n```md\n> ```go\n> x\n> ```\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 74,
+      "source_sha256": "8b5d93069e7a78c53842126d9dbd936b8d4b33fad9639e6fe0373810c82a1d76",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "payload-frontmatter-disabled",
+      "source": "<!-- mdchk-example -->\n```md\n---\n```go\nx\n```\n---\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 76,
+      "source_sha256": "4b4d2c0047767e00a815f9d0ba7c7e86de433ddd6c9b416853f2db78ce726ef2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "frontmatter": "yaml"
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "protected-outer-code",
+      "source": "``````\n<!-- mdchk-example -->\n```markdown\n```python\nprint(1)\n```\n```\n<!-- /mdchk-example -->\n``````",
+      "source_bytes": 99,
+      "source_sha256": "7bc81d80e554579d49c75ad7455c855df045ee62237295d46e822f3437fd7aeb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "protected-indented",
+      "source": "    <!-- mdchk-example -->\n    ```markdown\n    ```python\n    print(1)\n    ```\n    ```\n    <!-- /mdchk-example -->",
+      "source_bytes": 113,
+      "source_sha256": "876649a11658063b3a33fb06b896e8f6e4f553e1718a9f9335047aa1ffd1f1dd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "protected-frontmatter",
+      "source": "---\n<!-- mdchk-example -->\n```markdown\n```python\nprint(1)\n```\n```\n<!-- /mdchk-example -->\n---\n",
+      "source_bytes": 94,
+      "source_sha256": "0be3fecee9c78da4fb33390c01a4750740f83370de265d09df23dc12235923e2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "frontmatter": "yaml"
+      },
+      "findings": []
+    },
+    {
+      "name": "protected-raw",
+      "source": "prefix <script>\n\n<!-- mdchk-example -->\n```markdown\n```python\nprint(1)\n```\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 102,
+      "source_sha256": "5986be2471aaa5082c0d046eebe82a954496874a8f1bba5ceabd4792758fe348",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "image-opening",
+      "source": "![<!-- mdchk-example -->](/x)\n```md\n```go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 71,
+      "source_sha256": "c13ed9c2382c7ac865d9250ddbc7dec81b90a3aa7e59315319c1f6ce4d21f243",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "protected-start-in-body",
+      "source": "<!-- mdchk-example -->\n```md\n```go\n<!-- mdchk-example -->\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 85,
+      "source_sha256": "286b3e198d1391fc83f44b4b992f957e758f6a9ffd6789d7ea4f3d4a73460870",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "closing-in-payload-conflict",
+      "source": "<!-- mdchk-example -->\n````md\n```go\n<!-- /mdchk-example -->\n```\n````\n<!-- /mdchk-example -->",
+      "source_bytes": 92,
+      "source_sha256": "f651c4b8d28af29f0c0263c5e65e02daae8524ab835423d2bd84647473d3e15c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "missing-end",
+      "source": "<!-- mdchk-example -->\n```md\n```go\nx\n```",
+      "source_bytes": 40,
+      "source_sha256": "5ce8a38d2d2e27b84b52aaf23f3e6729ae6237959455d72d15e036276735438a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "stray-end",
+      "source": "<!-- /mdchk-example -->",
+      "source_bytes": 23,
+      "source_sha256": "9569c81ef48d948f7cd457211354a25e449177657cb08bc0c535d4266533c64a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "duplicate-end",
+      "source": "<!-- mdchk-example -->\n````markdown\n```python\nprint(1)\n```\n````\n<!-- /mdchk-example -->\n\n<!-- /mdchk-example -->",
+      "source_bytes": 112,
+      "source_sha256": "9ece50a5d1685c79b469aebd9232cdbc1b35225bc84708474ca92201388d19e8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "nested-markers",
+      "source": "<!-- mdchk-example -->\n<!-- mdchk-example -->\n```md\n```\n<!-- /mdchk-example -->\n<!-- /mdchk-example -->",
+      "source_bytes": 103,
+      "source_sha256": "4972b3c44357ed0d26e541b911773b5475f5bc96fafa601c1d38584787239925",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "ambiguous-then-independent",
+      "source": "<!-- mdchk-example -->\n<!-- mdchk-example -->\n<!-- /mdchk-example -->\n<!-- /mdchk-example -->\n\n<!-- mdchk-example -->\n```md\n```go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 159,
+      "source_sha256": "88723e986a2dbe17fde4ab3fcc2ad818b5b3cfc0ea892636bae1e0b9d24bb97e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            118,
+            121
+          ],
+          "start": [
+            7,
+            1
+          ],
+          "end": [
+            7,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "cross-list-items",
+      "source": "- <!-- mdchk-example -->\n  ```md\n  ```go\n  x\n  ```\n- <!-- /mdchk-example -->",
+      "source_bytes": 76,
+      "source_sha256": "f5f8f8e8fe0ae219ea69195a73ef9daf42bfe1ae6b3c1d6ab9cd1838bcfa11d4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "container-exit",
+      "source": "> <!-- mdchk-example -->\n> ```md\n> ```go\n> x\n> ```\n\n<!-- /mdchk-example -->",
+      "source_bytes": 75,
+      "source_sha256": "5372d0492dc33c1471817606501153c5843dc67aa08b4fdcf46bc1f1e1fd7f9c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "case-marker",
+      "source": "<!-- MDCHK-example -->\n```markdown\n```python\nprint(1)\n```\n```\n<!-- /MDCHK-example -->",
+      "source_bytes": 85,
+      "source_sha256": "a007217dfee77f29567c9e3386ac9ff5f896d40caef1a62ea58d7914c9ca713b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "inline-opening",
+      "source": "prefix <!-- mdchk-example -->\n```markdown\n```python\nprint(1)\n```\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 92,
+      "source_sha256": "8cf29f2c84a54e8b60bf4a28a936895daa8e0745f53908f487161e30786cb51a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "adjacent-comment",
+      "source": "<!-- x --><!-- mdchk-example -->\n```markdown\n```python\nprint(1)\n```\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 95,
+      "source_sha256": "2412aaad900aedfe449d0d85e1dae5e0793babba24aa1c18a2b950a1ec7ea926",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "multiline-opening",
+      "source": "<!--\nmdchk-example\n-->\n```md\n```go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 64,
+      "source_sha256": "f25eacfce40e7e6aefd78428d7613431d79bfd01c56b120d80fbac4b06a7cb6a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-region",
+      "source": "<!-- mdchk-example -->\n<!-- /mdchk-example -->",
+      "source_bytes": 46,
+      "source_sha256": "5090221420becc4f22c6ae66e116e266a5cbff663b1590f06afb68f8c1fc6637",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            23
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "expected": "opening",
+          "message": "Expected an outer Markdown opening fence."
+        }
+      ]
+    },
+    {
+      "name": "blank-region",
+      "source": "<!-- mdchk-example -->\n\n \t\n<!-- /mdchk-example -->",
+      "source_bytes": 50,
+      "source_sha256": "01653227005512f02ab3bd370a6a0ff5918680c4a5f5161bcc41a446ed6b6572",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            27,
+            27
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            1
+          ],
+          "expected": "opening",
+          "message": "Expected an outer Markdown opening fence."
+        }
+      ]
+    },
+    {
+      "name": "missing-closer",
+      "source": "<!-- mdchk-example -->\n```md\n<!-- /mdchk-example -->",
+      "source_bytes": 52,
+      "source_sha256": "f1e41d517b418f65b5cc1e00ff3bc7e21a21984e5b6c09cd28f6f24efba2ceb5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            29,
+            29
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            1
+          ],
+          "expected": "closing",
+          "message": "Expected a matching outer closing fence."
+        }
+      ]
+    },
+    {
+      "name": "bad-opening",
+      "source": "<!-- mdchk-example -->\ntext here\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 60,
+      "source_sha256": "1a0b1de7707b2219fb83381f0173c38b37810768cea7bef551febe0227065cb9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            27
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "expected": "opening",
+          "message": "Expected an outer Markdown opening fence."
+        }
+      ]
+    },
+    {
+      "name": "missing-language",
+      "source": "<!-- mdchk-example -->\n```\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 56,
+      "source_sha256": "1de3c6ea5c802444284384235e2bbeab3cc7f98bf9acfd6323ae4bd81c3182e6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            26,
+            26
+          ],
+          "start": [
+            2,
+            4
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "language",
+          "message": "Outer example fence must use md or markdown language."
+        }
+      ]
+    },
+    {
+      "name": "wrong-language",
+      "source": "<!-- mdchk-example -->\n```go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 58,
+      "source_sha256": "a14ee9f2de6d8bf8b71f33fae30dda617edcb1e928ef56f16bd073f744b2dc98",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            26,
+            28
+          ],
+          "start": [
+            2,
+            4
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "language",
+          "message": "Outer example fence must use md or markdown language."
+        }
+      ]
+    },
+    {
+      "name": "case-language",
+      "source": "<!-- mdchk-example -->\n```MD\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 58,
+      "source_sha256": "ffb7fd77717ce1356ef36e055d59dfa2532e2cb82222151795e0a44bef13513f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            26,
+            28
+          ],
+          "start": [
+            2,
+            4
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "language",
+          "message": "Outer example fence must use md or markdown language."
+        }
+      ]
+    },
+    {
+      "name": "brace-language",
+      "source": "<!-- mdchk-example -->\n```{.markdown}\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 67,
+      "source_sha256": "aea38e9421be0cead4b2e18bc6678292bb0a30404d766ceed2771473f9791722",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            26,
+            37
+          ],
+          "start": [
+            2,
+            4
+          ],
+          "end": [
+            2,
+            15
+          ],
+          "expected": "language",
+          "message": "Outer example fence must use md or markdown language."
+        }
+      ]
+    },
+    {
+      "name": "wrong-closer-character",
+      "source": "<!-- mdchk-example -->\n```md\nx\n~~~\n<!-- /mdchk-example -->",
+      "source_bytes": 58,
+      "source_sha256": "92b478a3c754d5e44973267ec269b315e92503259bbc01551b59170bfa9f7e0a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            31,
+            34
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "expected": "closing",
+          "message": "Expected a matching outer closing fence."
+        }
+      ]
+    },
+    {
+      "name": "short-closer",
+      "source": "<!-- mdchk-example -->\n````md\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 59,
+      "source_sha256": "cebd8bc66fb391657165b3b6e1083b1f33c27b39771b2f4f6a184fc07a85aa3a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            32,
+            35
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "expected": "closing",
+          "message": "Expected a matching outer closing fence."
+        }
+      ]
+    },
+    {
+      "name": "closer-suffix",
+      "source": "<!-- mdchk-example -->\n```md\nx\n``` trailing\n<!-- /mdchk-example -->",
+      "source_bytes": 67,
+      "source_sha256": "1c85603648ffb5b03950e4bbb9b758128b74cf58a1add80ea688a95f272f224c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            35,
+            43
+          ],
+          "start": [
+            4,
+            5
+          ],
+          "end": [
+            4,
+            13
+          ],
+          "expected": "closing",
+          "message": "Expected a matching outer closing fence."
+        }
+      ]
+    },
+    {
+      "name": "trailing-prose",
+      "source": "<!-- mdchk-example -->\n```md\nx\n```\nprose after\n<!-- /mdchk-example -->",
+      "source_bytes": 70,
+      "source_sha256": "1d7aa5229791ea02a54ff9e10c5e182bb336f2f004258ee889ba979cda29f68e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            35,
+            40
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            6
+          ],
+          "expected": "closing",
+          "message": "Expected a matching outer closing fence."
+        }
+      ]
+    },
+    {
+      "name": "indented-outer",
+      "source": "<!-- mdchk-example -->\n    ```md\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 62,
+      "source_sha256": "d6ebe1149a7d898b130ea45fa7835e664ec16933637dc5de9e236b97c5c42cb4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            27
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "expected": "opening",
+          "message": "Expected an outer Markdown opening fence."
+        }
+      ]
+    },
+    {
+      "name": "default-disabled",
+      "source": "<!-- mdchk-example -->\n```markdown\n```python\nprint(1)\n```\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 85,
+      "source_sha256": "111687ec37451fb77dd41f7346549ed2a705ada24a6a0bf25b65cd7a88615c34",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": false,
+        "enabled_omitted": true
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-options-disabled",
+      "source": "<!-- mdchk-example -->\n```markdown\n```python\nprint(1)\n```\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 85,
+      "source_sha256": "111687ec37451fb77dd41f7346549ed2a705ada24a6a0bf25b65cd7a88615c34",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": false,
+        "enabled_omitted": true,
+        "empty_options": true
+      },
+      "findings": []
+    },
+    {
+      "name": "explicit-disabled",
+      "source": "<!-- mdchk-example -->\n```markdown\n```python\nprint(1)\n```\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 85,
+      "source_sha256": "111687ec37451fb77dd41f7346549ed2a705ada24a6a0bf25b65cd7a88615c34",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    },
+    {
+      "name": "duplicate-end-positive",
+      "source": "<!-- mdchk-example -->\n```md\n```go\nx\n```\n<!-- /mdchk-example -->\n\n<!-- /mdchk-example -->",
+      "source_bytes": 89,
+      "source_sha256": "89a3257475cac954dbc08f7edd9dd1c28ca535f8353ce59a9254d753d39e9f86",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "known-suffix",
+      "source": "<!-- mdchk-example -->\n```md\n```go\nx\n```\n<!-- /mdchk-example -->\n\nordinary prose",
+      "source_bytes": 80,
+      "source_sha256": "cf95e713b5f1b47c3651f4aaf17ea454f29884674904b02b37a7d43fcae2579a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "other-container-close",
+      "source": "> <!-- mdchk-example -->\n> ```md\n> ```go\n> x\n> ```\n> <!-- /mdchk-example -->\n\n<!-- /mdchk-example -->",
+      "source_bytes": 101,
+      "source_sha256": "0c332c27c8855938f990a59d2e9a8837ec8d762d0c9cc5d59f45c20d28f99db4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            27,
+            30
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "raw-payload-recovery",
+      "source": "<!-- mdchk-example -->\n```md\nprefix <script>\n\n```go\nx\n```\n\n</script>\n\n```go\ny\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 105,
+      "source_sha256": "a49c9fa0cef5e87a7607e59bcaa1b56e610f5e2483392972d0ca30489b6396f3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "raw-looking-inner-code",
+      "source": "<!-- mdchk-example -->\n```md\n~~~go\n<script>\n~~~\n\n```go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 84,
+      "source_sha256": "2d100722b0af7bb8d18e3b7f17da92579dd68373987ee20ed4cf32e8a41c77ab",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "indented-marker-only",
+      "source": " \t<!-- mdchk-example -->\n```md\n```go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 66,
+      "source_sha256": "f0f8c4f0a15db97a1afe952a57e566c7eed8e5c137058d49f0965f21113c54a7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "indented-closer",
+      "source": "<!-- mdchk-example -->\n```md\nx\n    ```\n<!-- /mdchk-example -->",
+      "source_bytes": 62,
+      "source_sha256": "147c329dd1899b4d7d85191c3fe1706b90f620cd701396240910df8a6fa439ec",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            31,
+            35
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            5
+          ],
+          "expected": "closing",
+          "message": "Expected a matching outer closing fence."
+        }
+      ]
+    },
+    {
+      "name": "invalid-backtick-info",
+      "source": "<!-- mdchk-example -->\n```md`x\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 60,
+      "source_sha256": "097d4c9b9864a9d4b2955f2762a38622334ab5f3b3ef6c112eebb1771f651fd9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            30
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "expected": "opening",
+          "message": "Expected an outer Markdown opening fence."
+        }
+      ]
+    },
+    {
+      "name": "image-payload-raw-ignored",
+      "source": "<!-- mdchk-example -->\n```md\n![<script>](/x)\n\n```go\nx\n```\n<!-- /mdchk-example -->",
+      "source_bytes": 81,
+      "source_sha256": "6cbc52ae60570a1862b1e2ba994dc7ded461e78e0e9e54317a8f12b7a82c663a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "page-bad-crlf",
+      "source": "<!-- mdchk-example -->\r\n```markdown\r\n```python\r\nprint(1)\r\n```\r\n```\r\n<!-- /mdchk-example -->",
+      "source_bytes": 91,
+      "source_sha256": "f31e40c510243479e670f0d78ce0b0a551d26c6fe4485f1154ba1e04170cbc4d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            24,
+            27
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "page-bad-cr",
+      "source": "<!-- mdchk-example -->\r```markdown\r```python\rprint(1)\r```\r```\r<!-- /mdchk-example -->",
+      "source_bytes": 85,
+      "source_sha256": "513714e366f5e5e7c11304765894134f16f3d453c80e3ae50d3c3176630d7f86",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "quote-crlf",
+      "source": "> <!-- mdchk-example -->\r\n> ```md\r\n> ```go\r\n> x\r\n> ```\r\n> <!-- /mdchk-example -->",
+      "source_bytes": 81,
+      "source_sha256": "3a10b6f690f6ef0e47c25e7c35cb02eae30d4b5b90eccea1b1fde1e01065a4b3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            28,
+            31
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "quote-cr",
+      "source": "> <!-- mdchk-example -->\r> ```md\r> ```go\r> x\r> ```\r> <!-- /mdchk-example -->",
+      "source_bytes": 76,
+      "source_sha256": "376d4f96e38f9f0ac256ed93c416d05c8758212e7609ae87c47a111be89fae01",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            27,
+            30
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "tab-prefix-crlf",
+      "source": ">\t<!-- mdchk-example -->\r\n>\t```md\r\n>\t```go\r\n>\tx\r\n>\t```\r\n>\t<!-- /mdchk-example -->",
+      "source_bytes": 81,
+      "source_sha256": "eb8673488353b201f8a244e4b16562c258a27f82c6e97c0a4b1a0b0d34a29f23",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            28,
+            31
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "tab-prefix-cr",
+      "source": ">\t<!-- mdchk-example -->\r>\t```md\r>\t```go\r>\tx\r>\t```\r>\t<!-- /mdchk-example -->",
+      "source_bytes": 76,
+      "source_sha256": "116dc08c11aa10dc1cb96d392944d734c03b463d26f01a3814eb4b16da57ba73",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            27,
+            30
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "unicode-before-crlf",
+      "source": "é🙂\r\n\r\n<!-- mdchk-example -->\r\n```md\r\n```go\r\nx\r\n```\r\n<!-- /mdchk-example -->",
+      "source_bytes": 79,
+      "source_sha256": "017519f50fac03852ff946d0f79f42ccf3a0f3da55d48e0890575ca3b044d491",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            34,
+            37
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "unicode-before-cr",
+      "source": "é🙂\r\r<!-- mdchk-example -->\r```md\r```go\rx\r```\r<!-- /mdchk-example -->",
+      "source_bytes": 72,
+      "source_sha256": "d09279d8c22802f641e6a1f4064d7116598c661fec2c9134567118d4c04d10df",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            31,
+            34
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "expected": "length",
+          "message": "Outer Markdown fence must be longer than every matching inner fence."
+        }
+      ]
+    },
+    {
+      "name": "empty-region-crlf",
+      "source": "<!-- mdchk-example -->\r\n<!-- /mdchk-example -->",
+      "source_bytes": 47,
+      "source_sha256": "166c4c7f38eae848577b405a261f28af80b10ecb087fc28422a042b1d9a7a068",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            24,
+            24
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "expected": "opening",
+          "message": "Expected an outer Markdown opening fence."
+        }
+      ]
+    },
+    {
+      "name": "empty-region-cr",
+      "source": "<!-- mdchk-example -->\r<!-- /mdchk-example -->",
+      "source_bytes": 46,
+      "source_sha256": "ad237a97022a8f41ebde37ab7e4e6eba0f293bfe6579fa3685ebcaaeb2a0377b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            23
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "expected": "opening",
+          "message": "Expected an outer Markdown opening fence."
+        }
+      ]
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "null",
+      "md070_value": null,
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "scalar",
+      "md070_value": true,
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "number",
+      "md070_value": 1,
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "list",
+      "md070_value": [],
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "unknown",
+      "md070_value": {
+        "other": true
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style",
+      "md070_value": {
+        "style": "consistent"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "language",
+      "md070_value": {
+        "language": "md"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "disabled-invalid",
+      "md070_value": {
+        "enabled": false,
+        "style": "auto"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "enabled-string",
+      "md070_value": {
+        "enabled": "true"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "enabled-null",
+      "md070_value": {
+        "enabled": null
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "enabled-number",
+      "md070_value": {
+        "enabled": 1
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "directive-string",
+      "md070_value": {
+        "allow_directives": "false"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "directive-null",
+      "md070_value": {
+        "allow_directives": null
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    }
+  ]
+}

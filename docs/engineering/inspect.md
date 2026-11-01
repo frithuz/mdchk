@@ -137,3 +137,15 @@ Full-document decisions remain unchanged by focused presentation; preceding
 owners are context_only. Partial observations retain uncertainty rather than
 claiming absence. Audit and independent inactive observation share each actual
 target evaluation and skip hidden correction eligibility.
+
+## MD070 nested Markdown examples
+
+MD070 analyzes complete original marker extents and bounded Markdown payloads
+before inspection focus. A length finding selects the outer opening run, so
+selecting only an inner payload line or closing extent marker does not retain it.
+Structural findings retain their original token ranges or insertion points.
+Unknown necessary context withholds the complete inventory with explicit coverage.
+Configured-off ordinary inspection skips the rule. The programmatic
+`ObserveInactive` option can request a separate observation with exact original
+ranges and snapshots in suppressed diagnostics; it grants no correction authority.
+There is no public CLI flag for that optional observation.

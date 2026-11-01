@@ -358,3 +358,32 @@ checks retain caller and origin cancellation, sticky limits and publication
 controls, including empty and homogeneous paths. Exact/one-short budget tests
 cover empty producer/facade paths; positive totals are statically derived and
 positive final-gate tests independently prove output discard.
+
+## MD070 nested Markdown examples
+
+MD070 borrows original completed source/index/profile/options and operation
+identity through NestedExamples. Exact comment eligibility and delayed pairing
+use actual container identities, including suffix uniqueness after a tentative
+close. Per-line structural cursors retain partial-tab provenance; derived body
+segments remove only real ancestor prefixes and ordinary outer indentation.
+Container arrays, traversal stacks, source maps and bounded body storage reserve
+work and records before allocation. The real payload parser uses the same
+cumulative allowance and selected CommonMark/GFM profile, with frontmatter
+disabled only for this code payload. It never executes lint directives.
+
+Original and derived raw lifetimes and whole-image opacity are resolved before
+publishing detached original spans. Required unknown context atomically withholds
+the inventory; known bad associations and operational failures clear all facts.
+Producer, facade, comparator and outer publication have separate caller/origin
+control gates. Exact/one-short empty producer and facade tests use independently
+derived costs; positive reached-gate tests prove cancellation, deadline and
+sticky work/node/elapsed failures discard prior findings. No derived source token
+is published as diagnostic authority, and no fresh per-example budget is granted.
+
+Original opening owners are retained in a charged table sorted by opening offset
+and traversal ordinal. Each intended opener uses a binary lookup, preserving
+equal-offset envelope precedence without rescanning all earlier syntax per pair.
+Both-profile scaling fixtures exercise thousands of independent clean and violating
+examples under a source-derived linear/logarithmic work envelope. Their explicit
+node/time ceilings isolate that work regression; they make no default-profile
+whole-document completion or measured throughput claim.
