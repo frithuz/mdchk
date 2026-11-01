@@ -1,0 +1,2462 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary prose\n",
+      "source_bytes": 15,
+      "source_sha256": "922c8578527e7cd2ae1f5047cf1c7d7644035cb6caf0899483ff2ca4e2742c0f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "page-bad",
+      "source": "(Guide)[https://example.org]",
+      "source_bytes": 28,
+      "source_sha256": "aadaa1112206ecff0320a9cac74d0c2e07492ec11a1be4a49ffd56580c3e8db5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            28
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "page-good",
+      "source": "[Guide](https://example.org)",
+      "source_bytes": 28,
+      "source_sha256": "e918ffee73ab63c6a580b689c26f123d935183551aff6b515fa871e2a2891ede",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "surrounding",
+      "source": "See (Guide)[https://example.org].",
+      "source_bytes": 33,
+      "source_sha256": "2c2db85cb7367c4b70330cc96a04f5d8454105795555f127dba93640e04d696c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            32
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            33
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "unicode-prefix",
+      "source": "雪😀 (Guide)[https://example.org]",
+      "source_bytes": 36,
+      "source_sha256": "716fd70f758a67f57200f3d586ec7aefe47938cf9e5441537d94d47d1536810f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            36
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            32
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "unicode-label",
+      "source": "(指南😀)[https://example.org]",
+      "source_bytes": 33,
+      "source_sha256": "f5ae7a11757e837a4f612b0203f0e67fdc644f17049a0cc1aae72dec3917c84e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            33
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            27
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "lf",
+      "source": "before\n(Guide)[https://example.org]\n",
+      "source_bytes": 36,
+      "source_sha256": "6ce0d5f1dae48b2eb37b6843407eae3938557f9a5b2c7a4ce227cd1ce42a16a2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            7,
+            35
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            29
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "crlf",
+      "source": "before\r\n(Guide)[https://example.org]\r\n",
+      "source_bytes": 38,
+      "source_sha256": "c3700098883adf04afdef11457083ad6377cc03be9cf6d360136b98f749e25e9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            36
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            29
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "cr",
+      "source": "before\r(Guide)[https://example.org]\r",
+      "source_bytes": 36,
+      "source_sha256": "1db55f2b82bbbbecbb32f522491f942dfcd2320fb73a4a5e787f149d0e1503be",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            7,
+            35
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            29
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "two-pairs",
+      "source": "(Guide)[https://example.org] and (Next)[http://localhost]",
+      "source_bytes": 57,
+      "source_sha256": "834bcc2a14e200421b5642fcc6dea517a3a503a63b2c1bc4a133759c33c91ddc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            28
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        },
+        {
+          "bytes": [
+            33,
+            57
+          ],
+          "start": [
+            1,
+            34
+          ],
+          "end": [
+            1,
+            58
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "adjacent-pairs",
+      "source": "(Guide)[https://example.org](Next)[http://localhost]",
+      "source_bytes": 52,
+      "source_sha256": "51200c31d08ca0df7f87d065f514db08e61806043cc2ac11f16553d117756de7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "invalid-then-adjacent",
+      "source": "(bad)[relative](Next)[http://localhost]",
+      "source_bytes": 39,
+      "source_sha256": "349f994a5929eea52cbc70231b62a402a29d2e6961b828b7641bc5fb52582f6d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "word-neighbors",
+      "source": "a(Guide)[https://example.org]z",
+      "source_bytes": 30,
+      "source_sha256": "1ba4278bdec485390c24f17c6ece1e85becb28548291f01ade22ccf6d60601f7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            29
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            30
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "heading",
+      "source": "# (Guide)[https://example.org]",
+      "source_bytes": 30,
+      "source_sha256": "32850c9c779e5ea1d33bd81be0eb4483dae5be038a7811fb6b835f0501497d43",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            30
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "quote",
+      "source": "> (Guide)[https://example.org]",
+      "source_bytes": 30,
+      "source_sha256": "5f0ee0c739546a32f8430d530ec8fc64e0133dfa9dbb8221dcee3cb0b8ede063",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            30
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "source": "- (Guide)[https://example.org]",
+      "source_bytes": 30,
+      "source_sha256": "ccb8d0ba260857df74058296dbc7460f8916e6bf056c6b1a411014043af4d60b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            30
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "nested-container",
+      "source": "> - (Guide)[https://example.org]",
+      "source_bytes": 32,
+      "source_sha256": "8ec6bc7574d6d873f4d8cb1875d74d2c9cd542efbed158946c54f3d49772f763",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            32
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            33
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "task",
+      "source": "- [ ] (Guide)[https://example.org]",
+      "source_bytes": 34,
+      "source_sha256": "1f4d060ba160694cc1444b935d920a07cb6ec592c9fb7d836ea4fc154304d686",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            6,
+            34
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            35
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "emphasis",
+      "source": "*(Guide)[https://example.org]*",
+      "source_bytes": 30,
+      "source_sha256": "35a54a9f8ffdca812f477cd7d2d06a1f859a568f36256decf5eb924014a1916a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            29
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            30
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "strong",
+      "source": "**(Guide)[https://example.org]**",
+      "source_bytes": 32,
+      "source_sha256": "74922ef6228a422c565e98f9d8c1d8c90205d22217b1c08a5777be26eccc18d2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            30
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "table",
+      "source": "| value |\n| --- |\n| (Guide)[https://example.org] |\n",
+      "source_bytes": 51,
+      "source_sha256": "179ef3b99b75cea36e8361f6a5ff7a465574779e3ee044648bf0c6c2b06d7b9b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            20,
+            48
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            31
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "http",
+      "source": "(x)[http://localhost]",
+      "source_bytes": 21,
+      "source_sha256": "713ac62914990ccfa19937273c29afcd09fa8abbc3d126e1886301d8182819c8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            21
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "scheme-case",
+      "source": "(x)[HTTPS://EXAMPLE.ORG/path]",
+      "source_bytes": 29,
+      "source_sha256": "3a7248679fece0f5622c0b3c7ec58371d8f3c90549d01e855e71bbc074b92e33",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            29
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            30
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "port",
+      "source": "(x)[https://example.org:8080/a]",
+      "source_bytes": 31,
+      "source_sha256": "0b012e108b7519d4dd1c28e7a304e8cbba5d0fbd482a43117437a015d75f7657",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            31
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            32
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "unicode-url",
+      "source": "(x)[https://例え.example/雪]",
+      "source_bytes": 31,
+      "source_sha256": "efde566aa7ef10783a3b56fab3d36e74afeba016da8d893cb1ef9b4bc9dc9163",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            31
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "percent-path",
+      "source": "(x)[https://example.org/a%20b]",
+      "source_bytes": 30,
+      "source_sha256": "7281e0b3c5898e91950b76d34cbc160e1b7b3348f23e2d12e12294f38b27e4d2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            30
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "percent-query",
+      "source": "(x)[https://example.org?q=%20]",
+      "source_bytes": 30,
+      "source_sha256": "d1a48b1117d97554033b53e0452ecc6d593ae480884c17f5862e88542e261d6f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            30
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "fragment",
+      "source": "(x)[https://example.org/a#part]",
+      "source_bytes": 31,
+      "source_sha256": "aaa320d2c59397656dc9cb698ca076deadd3ccdf2f93424993139f710c51a769",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            31
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            32
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "query",
+      "source": "(x)[https://example.org?a=1&b=2]",
+      "source_bytes": 32,
+      "source_sha256": "cefdf66fb575914bc852c4ac657a06742a1c0b9c752a25a6f330d696fbc9c6dd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            32
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            33
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "encoded-parens",
+      "source": "(x)[https://example.org/%28x%29]",
+      "source_bytes": 32,
+      "source_sha256": "5cbd663287233fdeacd659e9bca37233baa3d023009d370901ac3d3aa62aab2e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            32
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            33
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "relative",
+      "source": "(x)[guide.md]",
+      "source_bytes": 13,
+      "source_sha256": "e9fc84559b7f076bbf5ad5abcb5a18c1f6a19b904faaa5eb0a9052dda1ac8832",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "root-relative",
+      "source": "(x)[/guide]",
+      "source_bytes": 11,
+      "source_sha256": "09e48658b9a4ee9189f6f88c7c2a0fbe49232361cebbe92e9e2b70df2d885570",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "protocol-relative",
+      "source": "(x)[//example.org]",
+      "source_bytes": 18,
+      "source_sha256": "5e3f8ee5f9b454e58b1c8bcae688d65582ebd0c61c7c22e6a1f736c25c6524f5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "fragment-only",
+      "source": "(x)[#part]",
+      "source_bytes": 10,
+      "source_sha256": "197cf1918ea1f075c9e6b1d3d2647808d22d16cfcea3970b2b9d068e1420a34b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "ftp",
+      "source": "(x)[ftp://example.org]",
+      "source_bytes": 22,
+      "source_sha256": "db53f3e84f3abeb9401a1ba67469fe8dab9a6bbaca0ad51691fa9a5d48e7671c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-url",
+      "source": "(x)[]",
+      "source_bytes": 5,
+      "source_sha256": "5bd616d5844dd60ee14ddd89c6f16176cb7fa352a1d84cc2c9a0a69fbee805b1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-host",
+      "source": "(x)[https://]",
+      "source_bytes": 13,
+      "source_sha256": "af90b92a19a9ce4a728e3d42397cf515f69a5cc18346eb0c3acd1b5d0b7d53fa",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "opaque",
+      "source": "(x)[https:example.org]",
+      "source_bytes": 22,
+      "source_sha256": "99d0f1717d28df4f3b1c00a33d875a279128afe7068a998adbfc2411e237a3f4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "userinfo-no-host",
+      "source": "(x)[https://user@]",
+      "source_bytes": 18,
+      "source_sha256": "bd2ab33887063b437bef86bc30538230a5b614a75bac629d948016bf4d0da1dc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "invalid-port",
+      "source": "(x)[https://example.org:bad]",
+      "source_bytes": 28,
+      "source_sha256": "3cb52ac1077c47f786413f5a0c56a0e1ec1c0380fc0a4f0a5710638ec4436d00",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "bad-percent-path",
+      "source": "(x)[https://example.org/%zz]",
+      "source_bytes": 28,
+      "source_sha256": "758cb13ac3b21e35a29461b049651e02596820efe27024fca832f15d55f2ccb3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "bad-percent-query",
+      "source": "(x)[https://example.org?q=%zz]",
+      "source_bytes": 30,
+      "source_sha256": "a89abbc3cb19b2a1d7fda9e45610bedb5b76c6f935da37a2919fd573a319e812",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "trailing-percent-query",
+      "source": "(x)[https://example.org?q=%]",
+      "source_bytes": 28,
+      "source_sha256": "1f533481426addb77047731a26fad24351da52066dec6197c518f2d042d3013b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "short-percent-fragment",
+      "source": "(x)[https://example.org#%2]",
+      "source_bytes": 27,
+      "source_sha256": "21e9bd561e720d7cb2b0247f3352b35591c9bee1fbe5664b8e258b574ee64319",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "url-space",
+      "source": "(x)[https://example.org/a b]",
+      "source_bytes": 28,
+      "source_sha256": "2a08d8f848e61ea5a4230beb1115c3641354bc648ca088a2d21ac20b4adc67e1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "url-tab",
+      "source": "(x)[https://example.org/a\tb]",
+      "source_bytes": 28,
+      "source_sha256": "2bd5783a493c753ef4b9eb217d48c4b7e2e93f4fdd83c3a515f011143301e5d3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "url-nbsp",
+      "source": "(x)[https://example.org/a b]",
+      "source_bytes": 29,
+      "source_sha256": "30ecfe6b96e213eac5131ba7a5ea7e7150abc25dcbb62c447c066f40e55c68b7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "url-ff",
+      "source": "(x)[https://example.org/a\fb]",
+      "source_bytes": 28,
+      "source_sha256": "ff81062530742d5e1e6b4d8dc55991b9b47c554b08084dbc19c07b44a53d9ca4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "url-vt",
+      "source": "(x)[https://example.org/a\u000bb]",
+      "source_bytes": 28,
+      "source_sha256": "1a10719f77e9f17a3d4ffbc45550adbecf1b8a5a114b55cc1e4c253313ba565d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "url-nel",
+      "source": "(x)[https://example.org/ab]",
+      "source_bytes": 29,
+      "source_sha256": "c8dee0b915e9d8d2e81aa1f47b583df4fc1dd7c4ce97055482ccd9abacf991a0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "url-ls",
+      "source": "(x)[https://example.org/a b]",
+      "source_bytes": 30,
+      "source_sha256": "84ff36a0bfa3b165b34ab6c49aab1dc140ade740ab8e537acd9e89cbab7c29c8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "url-braces",
+      "source": "(x)[https://example.org/{x}]",
+      "source_bytes": 28,
+      "source_sha256": "c5e3bed09e41c930a745478b80022253f168d34d872171186bbea33b90766d6d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "literal-ipv6",
+      "source": "(x)[https://[::1]/]",
+      "source_bytes": 19,
+      "source_sha256": "66c5f3d8b30638402cd24befc540833ab22f3e2778dd65346ae6b1710a7c9e3e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "literal-path-parentheses",
+      "source": "(x)[https://example.org/(x)]",
+      "source_bytes": 28,
+      "source_sha256": "4f95d26a560398f5d8b066b081cbe8a6d9e93dd2961a8f6ae4392716782eeec0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "blank-label",
+      "source": "()[https://x]",
+      "source_bytes": 13,
+      "source_sha256": "18b243d6ac861cf830bb9323092a9af524650f9ec15f32931207755c4152a8d0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "space-label",
+      "source": "( \t )[https://x]",
+      "source_bytes": 16,
+      "source_sha256": "baceeab3dbf5633c00db80f9a28072db1fe38d37da452e21b8751c438e12e07a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "entity-blank-label",
+      "source": "(&nbsp;)[https://x]",
+      "source_bytes": 19,
+      "source_sha256": "034d407734d682430d6f6c6311f9ddc6478fc1020a9ff262c8c2c65607cb61e5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "entity-label",
+      "source": "(&amp;)[https://x]",
+      "source_bytes": 18,
+      "source_sha256": "d2eb86435da86f803f80be2d64ae6b2c7274c3dd950e215b880e5d8814536ab8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            18
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "escaped-label",
+      "source": "(a\\)b)[https://x]",
+      "source_bytes": 17,
+      "source_sha256": "a9009c8d11a5527c77cbadafa4c187d783e337dacdde5a27b4472919ea74f97b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            17
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "label-ls",
+      "source": "( )[https://x]",
+      "source_bytes": 16,
+      "source_sha256": "b822000f4db7adb33ae53f5c2e79baef532ef042c9baffdc842e3914bc19d386",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            16
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "scheme-entity",
+      "source": "(x)[https&#58;//example.org]",
+      "source_bytes": 28,
+      "source_sha256": "f58c36f35c4dad88dc2be2dd968abf89e53dce0094c37c9d23d40d238b5b38b6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            28
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "url-entity-space",
+      "source": "(x)[https://example.org/a&#32;b]",
+      "source_bytes": 32,
+      "source_sha256": "d949880fdf9801c9e02fb3339f7a380057d8993532b312831ab8d187a882f856",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "url-entity-query",
+      "source": "(x)[https://example.org?a=1&amp;b=2]",
+      "source_bytes": 36,
+      "source_sha256": "3c1585229d2dd7f71a04fcec90ae9bd4426449e20e73184430fa374cfb0ec529",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            36
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            37
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "url-entity-parens",
+      "source": "(x)[https://example.org/&#40;x&#41;]",
+      "source_bytes": 36,
+      "source_sha256": "5da1c970112f99615b43eba13f4b04df6c0bf84b8da1397cd1e49f072a1e3f97",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            36
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            37
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "url-escaped-slash",
+      "source": "(x)[https:\\/\\/example.org]",
+      "source_bytes": 26,
+      "source_sha256": "4fc0b35da84431ef8240591fc7c1fbd8429223d604aacb14ef34ca714e04978f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            26
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            27
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "entity-outer",
+      "source": "&#40;x)[https://x]",
+      "source_bytes": 18,
+      "source_sha256": "904d6e1bb6b2c404f69946626fe3cd666b59c3836bb45b9ff88ec2bd7a5dc110",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escape-open",
+      "source": "\\(x)[https://x]",
+      "source_bytes": 15,
+      "source_sha256": "278a3c60ac192ef0660cece3d7ca1208fff5b9a25bd1c034227f396c494dbe97",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escape-label-close",
+      "source": "(x\\)[https://x]",
+      "source_bytes": 15,
+      "source_sha256": "890e543b70f873cc6bdce39d6725de1fc0b2b7a3de502df6b4cefa88ccb83934",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escape-url-open",
+      "source": "(x)\\[https://x]",
+      "source_bytes": 15,
+      "source_sha256": "9f4267d018d54065ce8d08fb342585be3e46bb25fdaaa1918331d87fed3812c3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escape-url-close",
+      "source": "(x)[https://x\\]",
+      "source_bytes": 15,
+      "source_sha256": "ee6353c425e43d3fcc9524cee37c5b8c619304665c4e49e376cef51bdbbabeb0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "even-escape",
+      "source": "\\\\(x)[https://x]",
+      "source_bytes": 16,
+      "source_sha256": "6690992e4e3aae7e387a07435cf63d0ed88e3c8448df427007cc06ea55d61465",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            16
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "image-like",
+      "source": "!(Guide)[https://example.org]",
+      "source_bytes": 29,
+      "source_sha256": "8d2096b82e0dc16f8e088a508b5cc4b1645cb8b2643807433471104aeb267086",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped-image-prefix",
+      "source": "\\!(Guide)[https://example.org]",
+      "source_bytes": 30,
+      "source_sha256": "30d23884e60b25a354a9f2482e2c0ea5bdcfe72cb68cf08a14e0575a75d8b7a7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            30
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "nested-parens",
+      "source": "((Guide)[https://example.org])",
+      "source_bytes": 30,
+      "source_sha256": "ef46134679538d50b1e64b3160a03bc16ecde1f586d4b0f91cd31a1648305026",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "nested-label",
+      "source": "(a(b)c)[https://x]",
+      "source_bytes": 18,
+      "source_sha256": "09f8c8f552bf6c9164620c87e89d5e533da4e615d77f61e8443ccf96c0bed751",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "nested-brackets",
+      "source": "[ (Guide)[https://example.org] ]",
+      "source_bytes": 32,
+      "source_sha256": "c59a851cedbfacdc80cf51ae87d08aa0687ac0f8dadbb0d3bc0bca0a6f43cc4d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "extra-close-paren",
+      "source": "(Guide)[https://example.org])",
+      "source_bytes": 29,
+      "source_sha256": "6de6de08a07bb15f151f58f067d3e06d83d476a42006426fd58e0d37e7ceda50",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "extra-close-bracket",
+      "source": "(Guide)[https://example.org]]",
+      "source_bytes": 29,
+      "source_sha256": "31102017d59ada887c8475359225309516da9b4356b0b4c05496703438dd4224",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "stray-close-adjacent",
+      "source": ")(Guide)[https://example.org]",
+      "source_bytes": 29,
+      "source_sha256": "67fa2376f7a9d3f46d07080c40d74da325c31c38f8cdcf4fc9745aa0922f88ba",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "stray-close-separated",
+      "source": ") (Guide)[https://example.org]",
+      "source_bytes": 30,
+      "source_sha256": "f737d55ed011ac69b203335b20f41bb105733753165236659ebd829ffeb07743",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            30
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "balanced-bad-then-good",
+      "source": "((bad)) (Guide)[https://example.org]",
+      "source_bytes": 36,
+      "source_sha256": "350c3f3b63116d862a1fb8d4aeb7bc13ed60ffb9b16b5aa9d605c9a809f32cac",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            36
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            37
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "unmatched-prefix",
+      "source": "(bad (Guide)[https://example.org]",
+      "source_bytes": 33,
+      "source_sha256": "9c2574548eeba4bee89ba7f343f05a21a7f0c949a99cbc97a9680295a21a2b5a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "missing-url-close",
+      "source": "(x)[https://x",
+      "source_bytes": 13,
+      "source_sha256": "34eb44cc224ab2e390c1b82cd4f280080cc1ba39d5a5cfecb924dd6454c4f32d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "space-between",
+      "source": "(x) [https://x]",
+      "source_bytes": 15,
+      "source_sha256": "3e23f56df9c4d7d7b934f4fe5024dfbe9cb1a1f3b8beb61d3116444a66b63694",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "lf-in-label",
+      "source": "(x\ny)[https://x]",
+      "source_bytes": 16,
+      "source_sha256": "5e9c38a6f518deddf9724a58a0c2dfa2eac4e2cafa63888b5450e92294ff77b1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "crlf-between",
+      "source": "(x)\r\n[https://x]",
+      "source_bytes": 16,
+      "source_sha256": "09d898b56cbff5ab9b043e2c9cf8fda372ce29a68b3971d0b4c66ae556641d68",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "cr-in-url",
+      "source": "(x)[https://x/\ry]",
+      "source_bytes": 17,
+      "source_sha256": "d88eaa4f99d334af4225b82abb1e40a9af262c2d78d4a9c083bfa6205f791967",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "nul-label",
+      "source": "(a\u0000b)[https://x]",
+      "source_bytes": 16,
+      "source_sha256": "9168ff7640125daed495d9ed24283ab1a4d06b3ab34af2b3e7254a6ac47d4d77",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "vt-label",
+      "source": "(a\u000bb)[https://x]",
+      "source_bytes": 16,
+      "source_sha256": "230bc00dedbda1519a807f88c49f0da8fb405b99e956d6e5fa95ff799a17c69e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "inline-code",
+      "source": "`(Guide)[https://example.org]`",
+      "source_bytes": 30,
+      "source_sha256": "c22d3201bdb8e83da6aca2299d78efe90fcf7bb3d8fae8e0a25d31abeb88d499",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "fenced-code",
+      "source": "```\n(Guide)[https://example.org]\n```\n",
+      "source_bytes": 37,
+      "source_sha256": "725e41d0e9534db07f620aa31cadc3fdb9d97db1fe1e358091e4f00bc1bd53e7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "indented-code",
+      "source": "    (Guide)[https://example.org]\n",
+      "source_bytes": 33,
+      "source_sha256": "7134b2e1f2de960e3ca9b7c028cff40f4aaea6ef1d4b20f7330631bcf0a3b6dd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "after-code",
+      "source": "`code` (Guide)[https://example.org]",
+      "source_bytes": 35,
+      "source_sha256": "db240713384e2e54591e9288b4de21cbb18c77deaef76ef5142351f2b42cbbf8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            7,
+            35
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            36
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "actual-link",
+      "source": "[(Guide)[https://example.org]](/target)",
+      "source_bytes": 39,
+      "source_sha256": "4994ff9b49bd022f1e6170bd4e57d17f1b7d2b36071da2f020bdc28d0b01476a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "actual-image",
+      "source": "![(Guide)[https://example.org]](image.png)",
+      "source_bytes": 42,
+      "source_sha256": "9e98dfb29f89a5c5bdf054122e31b2288336b7a24b945cae7e2ca6771904a350",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "reference-owned",
+      "source": "(Guide)[https://example.org]\n\n[https://example.org]: /target\n",
+      "source_bytes": 61,
+      "source_sha256": "ad92b86503ba3ac0be4b9c5015ae0b628b1107e79432f63f2df1da59596808fc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "comment",
+      "source": "<!-- (Guide)[https://example.org] -->\n",
+      "source_bytes": 38,
+      "source_sha256": "d872d00bd20bacd9b6f515ff31ac1468df05c952c1b21e7743fae66c683c3e1b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "raw",
+      "source": "<script>\n(Guide)[https://example.org]\n</script>\n",
+      "source_bytes": 48,
+      "source_sha256": "2db0e66db606ca2401eb9bce8e7bf980c792a36ed8b484e8f27de01607423d02",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "raw-tail",
+      "source": "<script>\nignored\n</script> (Guide)[https://example.org]\n",
+      "source_bytes": 56,
+      "source_sha256": "08f5f9dfb2bf122d7ec6a7d98cf69a2b7a67116c1a42ce07bb05c0cfd8535423",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "after-raw",
+      "source": "<script>\nignored\n</script>\n\n(Guide)[https://example.org]",
+      "source_bytes": 56,
+      "source_sha256": "9faa3c2d48a1fcdb1c08a6858362e25495d5e3b9d055fa6e66d797be65d33598",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            28,
+            56
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            29
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "inline-html",
+      "source": "A <span>(Guide)[https://example.org]</span>.",
+      "source_bytes": 44,
+      "source_sha256": "0603f882b65bafcdfa0da4cca194a44128f404f7dec4a515e9b1c544d93c21b7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            36
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            37
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "metadata",
+      "source": "---\ntitle: \"(Guide)[https://example.org]\"\n---\n",
+      "source_bytes": 46,
+      "source_sha256": "6c4f56d2932a3cf7cac8c1ce99bf119bbd5c9a707f3d6a171f0c9025a73fbd4d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "frontmatter": "yaml"
+      },
+      "findings": []
+    },
+    {
+      "name": "format-inside-label",
+      "source": "(*Guide*)[https://example.org]",
+      "source_bytes": 30,
+      "source_sha256": "7e93988a330aef271449c13bc8e46a104fb0b9f5c67d92b44604e01eca5da81f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "container-discontinuity",
+      "source": "> (Guide)\n\n[https://example.org]",
+      "source_bytes": 32,
+      "source_sha256": "5751824e09610cd00a1a2eac7273d7adc0d96ec1a5ba00fbfa84077b38db1758",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "bare-url-label-commonmark",
+      "source": "(https://label.example)[https://example.org]",
+      "source_bytes": 44,
+      "source_sha256": "0750ddb2048f2be053c6dcf7e81aa81b4117234e00f6d36636d9e7a6ffb52e13",
+      "flavors": [
+        "commonmark"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            44
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            45
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "bare-url-label-gfm",
+      "source": "(https://label.example)[https://example.org]",
+      "source_bytes": 44,
+      "source_sha256": "0750ddb2048f2be053c6dcf7e81aa81b4117234e00f6d36636d9e7a6ffb52e13",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "userinfo-commonmark",
+      "source": "(x)[https://user:pass@example.org/a]",
+      "source_bytes": 36,
+      "source_sha256": "1a68c7e72cf13792d6827d89377f93f09f0992fa16974b060af0539a927b74ce",
+      "flavors": [
+        "commonmark"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            36
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            37
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "userinfo-gfm",
+      "source": "(x)[https://user:pass@example.org/a]",
+      "source_bytes": 36,
+      "source_sha256": "1a68c7e72cf13792d6827d89377f93f09f0992fa16974b060af0539a927b74ce",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "adjacent-spaced-label",
+      "source": "(Guide)[https://example.org](Next label)[http://localhost]",
+      "source_bytes": 58,
+      "source_sha256": "c42be7d82850281f534af5fb3a8635c70f62cd35a606a8baefee330580d4f6b6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            28
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        },
+        {
+          "bytes": [
+            28,
+            58
+          ],
+          "start": [
+            1,
+            29
+          ],
+          "end": [
+            1,
+            59
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "invalid-then-spaced-label",
+      "source": "(bad)[relative](Next label)[http://localhost]",
+      "source_bytes": 45,
+      "source_sha256": "73445c8c46c280c600c1af565bfc694ea638c841b7ec7008f8d7c5a74f24a6a2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            45
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            46
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "unbracketed-multicolon",
+      "source": "(x)[https://example.org:80:90/a]",
+      "source_bytes": 32,
+      "source_sha256": "2e01a4c4ef1259cc157403edb052ab404c3eb162f9150e9631c0eddc2abf8f30",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "entity-stray-host-bracket",
+      "source": "(x)[https://exa&#93;mple.org/a]",
+      "source_bytes": 31,
+      "source_sha256": "34b1ec89252d87fe8b74b6fedfecfd8a02a79f849d8f872965b54afa996ef9a2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "entity-ipv6",
+      "source": "(x)[https://&#91;::1&#93;/a]",
+      "source_bytes": 28,
+      "source_sha256": "65a43d029fb445c14b290969bca35792e7ceaff31a7137c0507ee014f25033b3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            28
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "expected": "swapped",
+          "message": "Link label and destination delimiters are swapped."
+        }
+      ]
+    },
+    {
+      "name": "explicit-disabled",
+      "source": "(Guide)[https://example.org]",
+      "source_bytes": 28,
+      "source_sha256": "aadaa1112206ecff0320a9cac74d0c2e07492ec11a1be4a49ffd56580c3e8db5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "unknown-option",
+      "yaml": "MD011: {unknown: true}"
+    },
+    {
+      "name": "style-option",
+      "yaml": "MD011: {style: default}"
+    },
+    {
+      "name": "disabled-invalid",
+      "yaml": "MD011: {enabled: false, unknown: true}"
+    },
+    {
+      "name": "enabled-string",
+      "yaml": "MD011: {enabled: \"true\"}"
+    },
+    {
+      "name": "enabled-null",
+      "yaml": "MD011: {enabled: null}"
+    },
+    {
+      "name": "directives-string",
+      "yaml": "MD011: {allow_directives: \"false\"}"
+    },
+    {
+      "name": "directives-null",
+      "yaml": "MD011: {allow_directives: null}"
+    },
+    {
+      "name": "scalar-rule",
+      "yaml": "MD011: true"
+    },
+    {
+      "name": "null-rule",
+      "yaml": "MD011: null"
+    },
+    {
+      "name": "sequence-rule",
+      "yaml": "MD011: []"
+    },
+    {
+      "name": "duplicate-rule",
+      "yaml": "MD011: {}\n  MD011: {}"
+    },
+    {
+      "name": "duplicate-setting",
+      "yaml": "MD011: {enabled: true, enabled: false}"
+    },
+    {
+      "name": "duplicate-directives",
+      "yaml": "MD011: {allow_directives: true, allow_directives: false}"
+    }
+  ]
+}

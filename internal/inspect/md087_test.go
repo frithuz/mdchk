@@ -83,7 +83,7 @@ func TestMD087UncertainBlockedExcludedAndNotRequested(t *testing.T) {
 		reason                   string
 		complete                 bool
 	}{
-		{"unavailable", "<!-- mdchk:disable MD011 -->\n", strings.Replace(md087Definition(true), "  MD011: {enabled: false}\n", "", 1), "suppression-uncertain", false},
+		{"unavailable", "<!-- mdchk:disable MD034 -->\n", strings.Replace(md087Definition(true), "  MD034: {enabled: false}\n", "", 1), "suppression-uncertain", false},
 		{"blocked", "<!-- mdchk:disable MD001 -->\n", strings.Replace(md087Definition(true, "MD001"), "MD001: {enabled: true}", "MD001: {enabled: true, allow_directives: false}", 1), "", true},
 		{"excluded", "<!-- mdchk:disable MD087 -->\n", md087Definition(true), "suppression-excluded", true},
 		{"not-requested", "<!-- mdchk:disable MD001 -->\n", md087Definition(false, "MD001"), "suppression-not-requested", true},

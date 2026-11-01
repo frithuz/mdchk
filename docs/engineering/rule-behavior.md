@@ -136,6 +136,23 @@ delimiters, nested/ambiguous delimiters, whitespace in the URL and relative dest
 valid parsed constructs take precedence. Preserve the documented conditional correction policy,
 requiring reparse and proof of the intended link structure before any later fix.
 
+MD011 analysis is implemented for CommonMark and GFM with no rule-specific
+options and default enablement. It reports the complete original candidate
+span with `Link label and destination delimiters are swapped.` Only exact
+unescaped delimiter bytes establish syntax; retained entity/escape payload is
+interpreted once. Whole Link/Image owners are opaque, and candidates stay inside
+one local prose island, including emphasis children, without crossing code,
+raw HTML lifetimes/tails, metadata or control boundaries. Balanced excluded
+groups allow later recovery; unmatched groups poison their island remainder.
+
+Validate the retained URL as a hierarchical absolute HTTP(S) URI, including
+whole-URL percent escapes and nonempty hostname, independently of legacy-colon
+compatibility settings. Unknown necessary provenance atomically withholds all
+findings; unknown raw context after the last potential original candidate is
+irrelevant. Finding-start filtering follows complete observation. No MD011
+correction is produced; catalog PlannedFix metadata preserves only future
+conditional correction authority. See the [MD011 contract](../rules/links-and-images/md011.md).
+
 ### Md052
 
 Recognize explicit full and collapsed reference syntax, including images: [text][id], [text][],

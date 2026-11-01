@@ -48,7 +48,7 @@ func TestMD087FrozenProductionOracle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if fmt.Sprintf("%x", sha256.Sum256(raw)) != "f6184989ac6ad5f5e80a884baf5853c843ede3b3ada28c0517c38106088e2d13" {
+	if fmt.Sprintf("%x", sha256.Sum256(raw)) != "e9661a0ff162c983c5ada3ff09294ff5f3f2f50719b0e563d7a770da41f5dc6c" {
 		t.Fatal("immutable root oracle identity")
 	}
 	var oracle struct {
@@ -95,7 +95,7 @@ func TestMD087FrozenProductionOracle(t *testing.T) {
 					}
 				}
 				if tc.Name == "known-unavailable-mixed" {
-					delete(s, "MD011")
+					delete(s, "MD034")
 				}
 				if tc.Name == "blocked-disable" || tc.Name == "denied-instructions-do-not-create-capability" {
 					v := s["MD001"]

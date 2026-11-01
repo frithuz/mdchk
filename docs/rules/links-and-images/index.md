@@ -4,7 +4,7 @@ These rules are part of the [implementation ruleset](../index.md).
 
 | Rule | Focus | Status |
 | --- | --- | --- |
-| [MD011](md011.md) | Swapped link delimiters | Planned |
+| [MD011](md011.md) | Swapped link delimiters | Analysis implemented; manual findings |
 | [MD034](md034.md) | URLs without link markup | Planned |
 | [MD039](md039.md) | Whitespace surrounding link labels | Planned |
 | [MD042](md042.md) | Links without destinations | Planned |
