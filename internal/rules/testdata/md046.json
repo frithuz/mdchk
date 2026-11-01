@@ -1,0 +1,1888 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary text\n",
+      "source_bytes": 14,
+      "source_sha256": "1b559f24dc116d561fdbf07b8edd6a6db406931210659e90fffc428d2eef4db9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "single-indented",
+      "source": "    example\n",
+      "source_bytes": 12,
+      "source_sha256": "fc911b831ff4b647d3b77a00b71a905c7a9f035f807ce286d4efec6b11349a4a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "single-fenced",
+      "source": "```text\nexample\n```\n",
+      "source_bytes": 20,
+      "source_sha256": "b7425aaf21c053313a2ffbcdae12b2fdd36b70c61f466c02fbf7b9194ca2c875",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "page-bad",
+      "source": "    example\n\n```text\nother\n```\n",
+      "source_bytes": 31,
+      "source_sha256": "8cb518bbef1a30ef863aba21f3265506cdd97ab3d8fb3a7c273986372e235936",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            13,
+            16
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "page-good",
+      "source": "```text\nexample\n```\n\n```text\nother\n```\n",
+      "source_bytes": 39,
+      "source_sha256": "3317fdd2ecaf210782b607e8fe2ec8b10364f0573f2e22aa132f3ea22a42129f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "reverse",
+      "source": "~~~\nexample\n~~~\n\n    other\n",
+      "source_bytes": 27,
+      "source_sha256": "646d022afc31894da39f78df98ebebed1f3071f238bfda792342f5e9b8613c27",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            17,
+            21
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "fixed-fenced",
+      "source": "    one\n\nText\n\n    two\n",
+      "source_bytes": 23,
+      "source_sha256": "b4c53039ea577c14a0546c84e0ef05ac5ee354300cf724d7653ed6ad57fb452c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        },
+        {
+          "bytes": [
+            15,
+            19
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "fixed-indented",
+      "source": "```go\none\n```\n\n~~~~ruby\ntwo\n~~~~\n",
+      "source_bytes": 33,
+      "source_sha256": "d18b13a0b8e19e036351f4479c1afd434e344fa6e5a295ce84ce30439dd8620a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        },
+        {
+          "bytes": [
+            15,
+            19
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            5
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "fixed-fenced-pass",
+      "source": "~~~go\nx\n~~~",
+      "source_bytes": 11,
+      "source_sha256": "9a5671f3a8cafbbb1ea83316769f309929a936ebb1f4bdbc102040d0a20eabce",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": []
+    },
+    {
+      "name": "fixed-indented-pass",
+      "source": "    x",
+      "source_bytes": 5,
+      "source_sha256": "c282582f0ef940a15aece231787f6ddcb1e1f243a92c98d69ac80ce9044361db",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": []
+    },
+    {
+      "name": "all-indented",
+      "source": "    one\n\nText\n\n    two",
+      "source_bytes": 22,
+      "source_sha256": "c69e7100c0fee18d20795636f06f6d2cf7577e484f32f2d3c658248d93bbf011",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "one-indented-with-blanks",
+      "source": "    one\n\n    two\n",
+      "source_bytes": 17,
+      "source_sha256": "bbae3c8e672d7cd13cc556e1af5d1fe62497056364194bcaae0a4198692f088a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "extra-indent",
+      "source": "        x\n",
+      "source_bytes": 10,
+      "source_sha256": "08ae4acdda3fa8403a1c5133c5a66905bdd067ce9eedeec3309a3073bc27a55c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "tab",
+      "source": "\tx\n",
+      "source_bytes": 3,
+      "source_sha256": "067892f9103fd1565ad3f1792b3fcd6780f4a70adcbec69499b4833a97c72361",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            1
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            2
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "space-tab",
+      "source": " \tx\n",
+      "source_bytes": 4,
+      "source_sha256": "d633b5c1561c9324bbe7889ba396870b60094fff9bfe1abafa6a3ebe5830e588",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            2
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "three-space-tab",
+      "source": "   \tx\n",
+      "source_bytes": 6,
+      "source_sha256": "10f7a9917b965858953acfc307baf38e51b828822afe665b5b65dbdec24a3e82",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "double-tab",
+      "source": "\t\tx\n",
+      "source_bytes": 4,
+      "source_sha256": "1eeef92c82a3ddd6b990da1301ad18a54a84fc4312d6674c5e06bc7f7ee77cc2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            1
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            2
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "quote-indented",
+      "source": ">     x\n",
+      "source_bytes": 8,
+      "source_sha256": "7cf032a198f71a35ee74aa674999b23579289a2ad904df17ba905bc9bd213f71",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            6
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "quote-shared-tab",
+      "source": ">\t\tcode\n",
+      "source_bytes": 8,
+      "source_sha256": "4b26c8a4d163bbe80c49b042a82bfbec797e5fc781202a08ae293a1e2dd10f4e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            3
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "list-shared-tab",
+      "source": "-\t\tcode\n",
+      "source_bytes": 8,
+      "source_sha256": "d7967ed0095cdb9fb6d431c4eeb1fa8792895e19fc73b346ca0441bb76266448",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            3
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "list-continuation",
+      "source": "- item\n\n      code\n",
+      "source_bytes": 19,
+      "source_sha256": "a0cf04de5314b8001453cf9e68fec1e25f5e0288594a9dcaa9a33104fdb98100",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            10,
+            14
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "list-tab-continuation",
+      "source": "-   a\n\n\t\tcode\n",
+      "source_bytes": 14,
+      "source_sha256": "4ea3e1c47d00540f5ae5049863f080eb7b5de16e4d45d7cda2ded6a0851f92b1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            9
+          ],
+          "start": [
+            3,
+            2
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "nested-indented",
+      "source": "> - item\n>\n>       code\n",
+      "source_bytes": 24,
+      "source_sha256": "b2a808123e9346ef164efdef85777175971e9b6b6f727068963c78c81a5140ae",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            19
+          ],
+          "start": [
+            3,
+            5
+          ],
+          "end": [
+            3,
+            9
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "quote-fenced",
+      "source": "> ```go\n> x\n> ```",
+      "source_bytes": 17,
+      "source_sha256": "74ea5b1b9bf54ae3e51b0a7ba449b53b5bc4ee461d796e08be16ea10d80307fe",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "list-fenced",
+      "source": "- ~~~\n  x\n  ~~~",
+      "source_bytes": 15,
+      "source_sha256": "ea74c1a9e95f657d9f32aa01616f8fb132c640e58ba4cfa807458c37580dda44",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "nested-fenced",
+      "source": "> - ~~~~\n>   x\n>   ~~~~",
+      "source_bytes": 23,
+      "source_sha256": "cb2bec275962df9fc6ef0a0fa37e1c1ad7c218d5f3c285655cef345374ef084e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            8
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "padded-fence",
+      "source": "  ```go\nx\n  ```",
+      "source_bytes": 15,
+      "source_sha256": "066dfb62777aab0669322e74126c7a190953969697b6d1acdc9bd3b3a5485617",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "unclosed",
+      "source": "~~~ruby\nx",
+      "source_bytes": 9,
+      "source_sha256": "b4f37515ef3248a63345a7a6779f37dd891b33531f0161425a7cb5f86d929aeb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "empty-fence",
+      "source": "```\n```",
+      "source_bytes": 7,
+      "source_sha256": "b90a4164732c9e71d5a3bc7d64d9f913bc06c799ce2fa8315804c58fba8c10f9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "opening-only",
+      "source": "````",
+      "source_bytes": 4,
+      "source_sha256": "329bc0e532da6227bff1a033d3636480a2e54be7ce185cdbc78e06372c593248",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "payload-fences",
+      "source": "````markdown\n```\nx\n```\n````",
+      "source_bytes": 27,
+      "source_sha256": "55579b484383fd85af0bcb77863bac22278e062d2c9471ba742d4f2af6cfdfa5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "indented-fence-spelling",
+      "source": "    ```\n    x\n    ```",
+      "source_bytes": 21,
+      "source_sha256": "9ebb77620a28753b96874f00e0d82b590569eb5e9ce0ba555e76c64c5fca5641",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "styles-not-fence-markers",
+      "source": "```go\nx\n```\n\n~~~ruby\nx\n~~~",
+      "source_bytes": 26,
+      "source_sha256": "5e4b9dacbc5f384854584a2e2d7b7a96202b960c85dad68a8041ca7ed51b134d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "nested-exemplar",
+      "source": ">     one\n\n~~~\ntwo\n~~~",
+      "source_bytes": 22,
+      "source_sha256": "999c83a6b0f86adf86ee159effa6d5b3e7f85ec6155b0ecd0e8b305d75bca397",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            11,
+            14
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "global-exemplar",
+      "source": "```\none\n```\n\n>     two\n",
+      "source_bytes": 23,
+      "source_sha256": "ea69d05341da3f82480b1a46c194845037948d3d52d33a71c7bb09759d3ff2c8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            15,
+            19
+          ],
+          "start": [
+            5,
+            3
+          ],
+          "end": [
+            5,
+            7
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "alternating",
+      "source": "    one\n\n```\ntwo\n```\n\n    three\n\n~~~\nfour\n~~~",
+      "source_bytes": 45,
+      "source_sha256": "3e3f4101774dc8248ce5ff6694a3a9f078a73ff21191edc0f2ac7b7194d6e148",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            9,
+            12
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        },
+        {
+          "bytes": [
+            33,
+            36
+          ],
+          "start": [
+            9,
+            1
+          ],
+          "end": [
+            9,
+            4
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "paragraph-continuation",
+      "source": "text\n    more text\n",
+      "source_bytes": 19,
+      "source_sha256": "7b93459ac4b0c57c8e02583f225587e3a33147df382cd5fefbfec801ba8031e9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": []
+    },
+    {
+      "name": "list-paragraph",
+      "source": "- item\n\n    paragraph\n",
+      "source_bytes": 22,
+      "source_sha256": "49fd348a59614c83954cae89e2f0ecc58dd9942b7b3491ec505a4e89b397f7c3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": []
+    },
+    {
+      "name": "inline",
+      "source": "Text ``code`` and `more`",
+      "source_bytes": 24,
+      "source_sha256": "48bdc768525acfed0afb2b06348a0dabe74d141d233d5d6294d58068e3973b48",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped",
+      "source": "\\```\nx",
+      "source_bytes": 6,
+      "source_sha256": "ac729fffd73769909fc97538e1698a1e0380b17913d3285a66911fdfa345b6d5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": []
+    },
+    {
+      "name": "short-fence",
+      "source": "~~\nx\n~~",
+      "source_bytes": 7,
+      "source_sha256": "202fce8ee97b42a295a7338f88bbce1bf39a32a5c7aca22bebd2a37880e73eb2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": []
+    },
+    {
+      "name": "html",
+      "source": "<pre>\n    x\n```\ny\n```\n</pre>",
+      "source_bytes": 28,
+      "source_sha256": "ade1485aba0cbca49b422b92454c0d5f0b12d0bd59b47cfe3c0c44a2a9c59a98",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": []
+    },
+    {
+      "name": "comment",
+      "source": "<!--\n    x\n```\ny\n```\n-->",
+      "source_bytes": 24,
+      "source_sha256": "3eb8f093a21962b0ed0c9366a0d3c2fa83db5e62ad368a612d3b43988a136307",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": []
+    },
+    {
+      "name": "raw-exemplar",
+      "source": "a <script>\n\n    protected\n\n</script>\n\n~~~\nfirst\n~~~\n\n    last\n",
+      "source_bytes": 62,
+      "source_sha256": "a7b09cc8f450ef2ebdd45d7b98a40350764744a6198b7130aef8e72cd1f9c792",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            53,
+            57
+          ],
+          "start": [
+            11,
+            1
+          ],
+          "end": [
+            11,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "unicode-before",
+      "source": "é🙂\n\n    x\n",
+      "source_bytes": 14,
+      "source_sha256": "8126fe3fbb9c67eb800eaef99b6f5f48d5b640d6b9bba7bb893ef4c7b13ee422",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            12
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "frontmatter",
+      "source": "---\nx: value\n---\n    x\n",
+      "source_bytes": 23,
+      "source_sha256": "523496f565dd85e05d1e4f41c249dba6ca8cd64c2f72b5ea3ea78d32d00d7c9f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced",
+        "frontmatter": "yaml"
+      },
+      "findings": [
+        {
+          "bytes": [
+            17,
+            21
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "toml",
+      "source": "+++\nx = \"value\"\n+++\n~~~\n~~~",
+      "source_bytes": 27,
+      "source_sha256": "5e2cf8bcbdce222cd23dbee8f66cee12abab1511e687b6823c3dcc62f3787bb2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented",
+        "frontmatter": "toml"
+      },
+      "findings": [
+        {
+          "bytes": [
+            20,
+            23
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "default-enabled",
+      "source": "    x\n\n~~~\n~~~",
+      "source_bytes": 14,
+      "source_sha256": "650c8b9e41be63a1fee33ce9cb7dc44ba73b4c7a41e8d13514909df59dde3bf6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled_omitted": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            7,
+            10
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "empty-options-enabled",
+      "source": "    x\n\n~~~\n~~~",
+      "source_bytes": 14,
+      "source_sha256": "650c8b9e41be63a1fee33ce9cb7dc44ba73b4c7a41e8d13514909df59dde3bf6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled_omitted": true,
+        "empty_options": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            7,
+            10
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "disabled",
+      "source": "    x\n\n~~~\n~~~",
+      "source_bytes": 14,
+      "source_sha256": "650c8b9e41be63a1fee33ce9cb7dc44ba73b4c7a41e8d13514909df59dde3bf6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    },
+    {
+      "name": "nul-payload",
+      "source": "    \u0000x\n",
+      "source_bytes": 7,
+      "source_sha256": "7b74b08b723fccf86e63322ece85d8b9825a1167f6c3221a013ad732b1064f13",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "invalid-backtick-info",
+      "source": "```a`b\ntext",
+      "source_bytes": 11,
+      "source_sha256": "043bef791fa1504b8172585546c7ba842b7f7e344599086ba60ae504ac54ec64",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": []
+    },
+    {
+      "name": "ordinary-html-then-code",
+      "source": "<div>\nhtml\n\n    code\n",
+      "source_bytes": 21,
+      "source_sha256": "5deb0cdf5b33d9a3d8eb725c7703ea7b0b74d4e2c6222b50eaed2f2bf4164bf8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            16
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "page-bad-crlf",
+      "source": "    example\r\n\r\n```text\r\nother\r\n```\r\n",
+      "source_bytes": 36,
+      "source_sha256": "6f197128219077f6c7f9c4df822719ae301fc2863fa3812bcba7d2bd28988e26",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            15,
+            18
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "page-bad-cr",
+      "source": "    example\r\r```text\rother\r```\r",
+      "source_bytes": 31,
+      "source_sha256": "4bb20c0d758b1efe3ddc89ed7634d90e897ed42d1b9aa2064499d417f132c214",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            13,
+            16
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "reverse-crlf",
+      "source": "~~~\r\nexample\r\n~~~\r\n\r\n    other\r\n",
+      "source_bytes": 32,
+      "source_sha256": "dbae2c08194d385b010da9c809ac75422da8ae05b6c0749b0dc04a7619dd2d41",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            21,
+            25
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "reverse-cr",
+      "source": "~~~\rexample\r~~~\r\r    other\r",
+      "source_bytes": 27,
+      "source_sha256": "82f310a6c0fcfdef2a79fd0ecb852ae6ebd2c07941d3957af88405dea511914e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            17,
+            21
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "quote-shared-tab-crlf",
+      "source": ">\t\tcode\r\n",
+      "source_bytes": 9,
+      "source_sha256": "0096a230fe412f9fec5f62f6c6074b4662bf27a5fba71279fc4b5b311e8685b6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            3
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "quote-shared-tab-cr",
+      "source": ">\t\tcode\r",
+      "source_bytes": 8,
+      "source_sha256": "1ab2cbcc54cc95e0daedf80357c12af398a035c490a3c89c2aa388a0f88147ea",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            3
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "nested-fenced-crlf",
+      "source": "> - ~~~~\r\n>   x\r\n>   ~~~~",
+      "source_bytes": 25,
+      "source_sha256": "c1a27cc38d5a3430ab602873792b700dca5a0d969f2662c6a7a5b7b53d3d40ee",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            8
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "nested-fenced-cr",
+      "source": "> - ~~~~\r>   x\r>   ~~~~",
+      "source_bytes": 23,
+      "source_sha256": "7938eeaf4a4da799dc9d48bb5c6b0d0c1be6505339be6a8f577f2f210dbb8716",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "indented"
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            8
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "indented",
+          "message": "Code block should use indented style."
+        }
+      ]
+    },
+    {
+      "name": "unicode-before-crlf",
+      "source": "é🙂\r\n\r\n    x\r\n",
+      "source_bytes": 17,
+      "source_sha256": "301bc687c7c4920c630c6332aa33571b183d2f1e5b427f0e6bb4edc2a480c38d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            10,
+            14
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    },
+    {
+      "name": "unicode-before-cr",
+      "source": "é🙂\r\r    x\r",
+      "source_bytes": 14,
+      "source_sha256": "4462a53297719eabc04233518390bacde03a238a37be0e8e54edea1741acccf9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "fenced"
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            12
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "expected": "fenced",
+          "message": "Code block should use fenced style."
+        }
+      ]
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "null",
+      "md046_value": null,
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "scalar",
+      "md046_value": true,
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "unknown",
+      "md046_value": {
+        "enabled": false,
+        "styles": "fenced"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-null",
+      "md046_value": {
+        "style": null
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-bool",
+      "md046_value": {
+        "style": true
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-number",
+      "md046_value": {
+        "style": 1
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-list",
+      "md046_value": {
+        "style": [
+          "fenced"
+        ]
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-map",
+      "md046_value": {
+        "style": {}
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-empty",
+      "md046_value": {
+        "style": ""
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-case",
+      "md046_value": {
+        "style": "Fenced"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-padding",
+      "md046_value": {
+        "style": " fenced "
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-unknown",
+      "md046_value": {
+        "style": "backtick"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "disabled-invalid",
+      "md046_value": {
+        "enabled": false,
+        "style": "auto"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "enabled-string",
+      "md046_value": {
+        "enabled": "true"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "enabled-null",
+      "md046_value": {
+        "enabled": null
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "directive-string",
+      "md046_value": {
+        "allow_directives": "false"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "directive-null",
+      "md046_value": {
+        "allow_directives": null
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    }
+  ]
+}

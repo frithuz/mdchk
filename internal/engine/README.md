@@ -704,3 +704,18 @@ The same operation accounts traversal, comparisons, mapping and geometric growth
 Producer, option-validating facade, comparator and outer callback each retain a
 final caller/origin gate; unknown necessary context withholds all facts. MD040 is
 default-disabled, available, and permanently NoFix; no correction is registered.
+
+## Code-block representation observations
+
+`RuleContext.CodeStyles` borrows completed original parser authority and the same
+operation allowance for MD046. It returns detached original marker observations,
+never mutable syntax or correction authority. Fixed style excludes known matches
+before raw ownership work. Consistent style resolves eligible original blocks in
+source order before choosing a global exemplar; suppression and inspection focus
+remain later presentation decisions. A complete homogeneous known-style inventory
+proves no mismatch under every possible exclusion subset, without demanding
+irrelevant raw or marker mappings. Unknown representation disables that proof.
+Necessary unknown context withholds the entire inventory. Caller and origin
+controls and distinct producer/facade/comparison/outer final gates remain active,
+including empty and homogeneous paths. MD046 retains PlannedFix metadata but
+supplies analysis only; it emits no conversion proposals.
