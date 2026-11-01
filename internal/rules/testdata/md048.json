@@ -1,0 +1,1915 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary text\n",
+      "source_bytes": 14,
+      "source_sha256": "1b559f24dc116d561fdbf07b8edd6a6db406931210659e90fffc428d2eef4db9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "single-backtick",
+      "source": "```go\nx\n```",
+      "source_bytes": 11,
+      "source_sha256": "fabfe1c51ff32905590f7f7123f9a8769a5f1728dad1df8d6731113b5739514e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "single-tilde",
+      "source": "~~~ruby\nx\n~~~",
+      "source_bytes": 13,
+      "source_sha256": "3f113c9e73a017da8c4768dcf3e5c08c57566b1dd6730b2398e15134c5656cad",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "page-bad",
+      "source": "```text\na\n```\n\n~~~text\nb\n~~~\n",
+      "source_bytes": 29,
+      "source_sha256": "4c7c969ecbe923f26fcf3107e29b16658bf8cbeadfbaa16ac3dce56d7eac00b8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            15,
+            18
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "page-good",
+      "source": "```text\na\n```\n\n```text\nb\n```\n",
+      "source_bytes": 29,
+      "source_sha256": "d4c783009d25a6acbbca0a40b9d559728f10fdabd2e5d6f7ad010b5eeda4903e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "reverse",
+      "source": "~~~\na\n~~~\n\n```\nb\n```\n",
+      "source_bytes": 21,
+      "source_sha256": "4650aab84005ee5a61934c01500da8d6089f6297d3dfdc38f54194d33b766d84",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            11,
+            14
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "fixed-backtick",
+      "source": "~~~\nx\n~~~\n\n~~~~ruby\ny\n~~~~",
+      "source_bytes": 26,
+      "source_sha256": "07c5164bd8f198e413178c04cf0904cc2d8d73e7885593b73105ac5ae6b231cc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        },
+        {
+          "bytes": [
+            11,
+            15
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            5
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "fixed-tilde",
+      "source": "```go\nx\n```\n\n````ruby\ny\n````",
+      "source_bytes": 28,
+      "source_sha256": "e51fca44286842418d875945538205d74bf0a01fc25c33a6e931056af51d8832",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "tilde"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        },
+        {
+          "bytes": [
+            13,
+            17
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            5
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "fixed-backtick-pass",
+      "source": "````go\nx\n`````",
+      "source_bytes": 14,
+      "source_sha256": "21a2188605fe64deb506b6156282e6d2d9192f8c10119d97ae4cc90a2384e9f4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": []
+    },
+    {
+      "name": "fixed-tilde-pass",
+      "source": "~~~go\nx\n~~~~",
+      "source_bytes": 12,
+      "source_sha256": "3d2022aa71ff3595f773adc656f731512e23b4e4bce87d6f2bd724fb421215c4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "tilde"
+      },
+      "findings": []
+    },
+    {
+      "name": "widths-same-style",
+      "source": "```\nx\n```\n\n`````go\ny\n`````",
+      "source_bytes": 26,
+      "source_sha256": "2e9a1d266f896f0402a17684ceab94cfeecba4d6b9517d5c62babaf0c133afba",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "widths-tilde",
+      "source": "~~~\nx\n~~~~\n\n~~~~~go\ny\n~~~~~~",
+      "source_bytes": 28,
+      "source_sha256": "e5a2efee3291e041cfb92521fce629557ef3057dff1eea44dd07a0ab61ef23bc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": []
+    },
+    {
+      "name": "empty-backtick",
+      "source": "```\n```",
+      "source_bytes": 7,
+      "source_sha256": "b90a4164732c9e71d5a3bc7d64d9f913bc06c799ce2fa8315804c58fba8c10f9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "tilde"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "empty-tilde",
+      "source": "~~~\n~~~",
+      "source_bytes": 7,
+      "source_sha256": "2ba1d9cd2e46a3be5a84ba9d80d03974b8eb12ec849758694667542adfa5194e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "opener-only",
+      "source": "`````",
+      "source_bytes": 5,
+      "source_sha256": "5ce5a795100868cbd2fdee1fdad94b34430e3c4d866dba5f6293018d292f033e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "tilde"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "unclosed",
+      "source": "~~~~ruby\nx",
+      "source_bytes": 10,
+      "source_sha256": "fff37768cf302d0846a07c781f96b8e11af77f86d06194ef0608a13bc1ce4ee7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "mismatched-closer",
+      "source": "```\nx\n~~~",
+      "source_bytes": 9,
+      "source_sha256": "e7a79ea3aea4939833c9be87c22bca3d209ab10c92fc111255d07e2695258385",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "tilde"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "short-closer",
+      "source": "````\nx\n```",
+      "source_bytes": 10,
+      "source_sha256": "b556cd27b86cb83c07d12ac3285445e175d45bffbb9f39f2dec05d13aeb9e215",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "tilde"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "padded",
+      "source": "   ~~~~go\nx\n~~~~",
+      "source_bytes": 16,
+      "source_sha256": "cb31ae068ed42d21c4d2da0d3f65e73af1cad7851cc2abaeb37f38ed4b684a09",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            7
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "info-tab",
+      "source": "~~~\tgo opts\nx\n~~~",
+      "source_bytes": 17,
+      "source_sha256": "52b7e740ac2cd1c9db407afc27af8b167aabda4ebdd0d2c89051df94198d015f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "info-brace",
+      "source": "~~~{.go}\nx\n~~~",
+      "source_bytes": 14,
+      "source_sha256": "3a08289eb7740b76ac4348104969d8a3a2cdb154c6ec73316fe0769466e416d1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "info-entity",
+      "source": "~~~g&#111;\nx\n~~~",
+      "source_bytes": 16,
+      "source_sha256": "de5cb6692e53e79b2641e1210acabd45b0e5187427b9fd1310ff7aeaa42feca3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "info-unicode",
+      "source": "~~~é🙂\nx\n~~~",
+      "source_bytes": 15,
+      "source_sha256": "eb05ff497ed4a1d080bbd88c1ca870ef15be01f9ba8d39c934f43b79ca8980e0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "info-backtick-tilde",
+      "source": "~~~a`b\nx\n~~~",
+      "source_bytes": 12,
+      "source_sha256": "ccc7849488ea3d643041403803fda1dec21d626c4fc7d15715466b0d7505e87f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "invalid-backtick-info",
+      "source": "```a`b\nx",
+      "source_bytes": 8,
+      "source_sha256": "5961cc315d2beca8f5d55ea76e788ea2cbb2a6259c3f06ad75682eb3bb51f54e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "tilde"
+      },
+      "findings": []
+    },
+    {
+      "name": "quote",
+      "source": "> ~~~go\n> x\n> ~~~",
+      "source_bytes": 17,
+      "source_sha256": "a62c5b480e4c47c36f222143ebc66ca68bb7cf30f445c3d45b5e7b4c94b913b0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "source": "- ```\n  x\n  ```",
+      "source_bytes": 15,
+      "source_sha256": "45efae72814aa1c41a53d85b3eb78ae59ba1d1b1914bff2cb586f25293b93062",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "tilde"
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "nested",
+      "source": "> - ~~~~\n>   x\n>   ~~~~",
+      "source_bytes": 23,
+      "source_sha256": "cb2bec275962df9fc6ef0a0fa37e1c1ad7c218d5f3c285655cef345374ef084e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            8
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "tab-prefix",
+      "source": ">\t~~~\n>\tx\n>\t~~~",
+      "source_bytes": 15,
+      "source_sha256": "aa1871a9bf4d655db6f0f256c0f7b0f0f0fcf9731757e4e7a43bad1cd88cf700",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "nested-exemplar",
+      "source": "> ~~~\n> x\n> ~~~\n\n```\ny\n```",
+      "source_bytes": 26,
+      "source_sha256": "065012ffe1bb81d36b54b51f36b76de76c14c41d63e487cbbc819c5f0fea03f7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            17,
+            20
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "global-exemplar",
+      "source": "```\nx\n```\n\n> ~~~\n> y\n> ~~~",
+      "source_bytes": 26,
+      "source_sha256": "9d79b65fad86e74cca5edd86500b1372d0d6f076ff22329338f99e1920031bc2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            13,
+            16
+          ],
+          "start": [
+            5,
+            3
+          ],
+          "end": [
+            5,
+            6
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "alternating",
+      "source": "~~~\na\n~~~\n\n```\nb\n```\n\n~~~~\nc\n~~~~\n\n````\nd\n````",
+      "source_bytes": 46,
+      "source_sha256": "414550da7de8f50fa99640180fde269583ede2fe98c3b67f9437ba981a80299d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            11,
+            14
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        },
+        {
+          "bytes": [
+            35,
+            39
+          ],
+          "start": [
+            13,
+            1
+          ],
+          "end": [
+            13,
+            5
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "indented-only",
+      "source": "    ```\n    x\n    ```",
+      "source_bytes": 21,
+      "source_sha256": "9ebb77620a28753b96874f00e0d82b590569eb5e9ce0ba555e76c64c5fca5641",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "tilde"
+      },
+      "findings": []
+    },
+    {
+      "name": "indented-not-exemplar",
+      "source": "    ~~~\n\n```\nx\n```\n\n~~~\ny\n~~~",
+      "source_bytes": 29,
+      "source_sha256": "7ecafbfcc3d19672d1028f267c2c9a2902518e1cf48eb9de37b238a1775e230e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            20,
+            23
+          ],
+          "start": [
+            7,
+            1
+          ],
+          "end": [
+            7,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "nested-indented",
+      "source": ">     ~~~\n>     x",
+      "source_bytes": 17,
+      "source_sha256": "a364b042be95446b316f27fcbeb7275f003f7f5f21aed14fd8094b64e87433b7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": []
+    },
+    {
+      "name": "payload",
+      "source": "````markdown\n~~~\nx\n~~~\n````",
+      "source_bytes": 27,
+      "source_sha256": "7b210c7311d220169ce3f85146ce9a45db126183df9da087df16040f3d498aa0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "tilde"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "payload-other",
+      "source": "~~~~\n```\nx\n```\n~~~~",
+      "source_bytes": 19,
+      "source_sha256": "bd5a6255a0ef67f782e802e03e78eac482a7144f408df66276689ae3bdcc394e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "inline",
+      "source": "Text ``code`` and `more`",
+      "source_bytes": 24,
+      "source_sha256": "48bdc768525acfed0afb2b06348a0dabe74d141d233d5d6294d58068e3973b48",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "tilde"
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped",
+      "source": "\\~~~\nx",
+      "source_bytes": 6,
+      "source_sha256": "b494c2360d5d8690390a0fddbd196af2c07ffedd807cf928121b673942e67363",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": []
+    },
+    {
+      "name": "short-fence",
+      "source": "~~\nx\n~~",
+      "source_bytes": 7,
+      "source_sha256": "202fce8ee97b42a295a7338f88bbce1bf39a32a5c7aca22bebd2a37880e73eb2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": []
+    },
+    {
+      "name": "html",
+      "source": "<pre>\n~~~\nx\n~~~\n</pre>",
+      "source_bytes": 22,
+      "source_sha256": "4928196c6ce525bfe902b3fd6444a1fab337c49a9b6b3b84325ce54ab6e04b78",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": []
+    },
+    {
+      "name": "comment",
+      "source": "<!--\n```\nx\n```\n-->",
+      "source_bytes": 18,
+      "source_sha256": "7971e12afc5ed8f38d6ebff84a6a17dd77335b14499c368f7ee42b0f90874840",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "tilde"
+      },
+      "findings": []
+    },
+    {
+      "name": "raw-exemplar",
+      "source": "a <script>\n\n~~~\nprotected\n~~~\n\n</script>\n\n```\nfirst\n```\n\n~~~\nlast\n~~~",
+      "source_bytes": 69,
+      "source_sha256": "40682f2b7073f810fcbccd35d357f6f190cb25d121040977f2cd572f1ba48b45",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            57,
+            60
+          ],
+          "start": [
+            13,
+            1
+          ],
+          "end": [
+            13,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "ordinary-html-then-code",
+      "source": "<div>\nhtml\n\n~~~\nx\n~~~",
+      "source_bytes": 21,
+      "source_sha256": "1dc0bc18c54a5bab7e126c2fa2c1b0da75be80d87d02dd8deab6cc5b80f4af60",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            15
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "image-raw-ignored",
+      "source": "![<script>](/x)\n~~~\nx\n~~~",
+      "source_bytes": 25,
+      "source_sha256": "83ebc92004c96ce45479b984eb26955e056cbccafe7f4d79fab17b45dc1d7cf7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            19
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "unicode-before",
+      "source": "é🙂\n\n~~~\nx\n~~~",
+      "source_bytes": 17,
+      "source_sha256": "a1ae11646c6a593798ac5d1966900e01537fd613507c5a36b8f7684b53d51ba4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            11
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "nul-payload",
+      "source": "~~~\n\u0000x\n~~~",
+      "source_bytes": 10,
+      "source_sha256": "b7c11dd8ac37583983899e634c9914b3811bee7682fee76aa46d03d8df57b53b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "frontmatter",
+      "source": "---\nx: value\n---\n~~~\nx\n~~~",
+      "source_bytes": 26,
+      "source_sha256": "4a6005ff0a8aed60d8d046cf992bde7b1fb6b7588fdee396ec28e64710980e80",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick",
+        "frontmatter": "yaml"
+      },
+      "findings": [
+        {
+          "bytes": [
+            17,
+            20
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "toml",
+      "source": "+++\nx = \"value\"\n+++\n```\nx\n```",
+      "source_bytes": 29,
+      "source_sha256": "de6eaf035e1a24dfae8602b10041a1fa37a6742de9c8cd0707742ccd3395549e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "tilde",
+        "frontmatter": "toml"
+      },
+      "findings": [
+        {
+          "bytes": [
+            20,
+            23
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "default-enabled",
+      "source": "~~~\n~~~\n\n```\n```",
+      "source_bytes": 16,
+      "source_sha256": "83ecdb52ccd57e0228d49fe112de0ffccddb2d785cd405b2a70b97c4b504c8bf",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled_omitted": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            9,
+            12
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "empty-options-enabled",
+      "source": "~~~\n~~~\n\n```\n```",
+      "source_bytes": 16,
+      "source_sha256": "83ecdb52ccd57e0228d49fe112de0ffccddb2d785cd405b2a70b97c4b504c8bf",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled_omitted": true,
+        "empty_options": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            9,
+            12
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            4
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "disabled",
+      "source": "~~~\n~~~\n\n```\n```",
+      "source_bytes": 16,
+      "source_sha256": "83ecdb52ccd57e0228d49fe112de0ffccddb2d785cd405b2a70b97c4b504c8bf",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    },
+    {
+      "name": "metadata-not-exemplar",
+      "source": "---\nexample: |\n  ~~~\n  ~~~\n---\n```\nfirst\n```\n\n~~~\nlast\n~~~",
+      "source_bytes": 58,
+      "source_sha256": "6c8d8d3c9f50a245944337ac42f6f768c1f8744cc15fa172e4033704f51b1474",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "frontmatter": "yaml"
+      },
+      "findings": [
+        {
+          "bytes": [
+            46,
+            49
+          ],
+          "start": [
+            10,
+            1
+          ],
+          "end": [
+            10,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "raw-looking-payload",
+      "source": "```\n<script>\n```\n\n~~~\nx\n~~~",
+      "source_bytes": 27,
+      "source_sha256": "560f1279d4e1f7d88fac2193a0e40f5fc0fe2c38e75214a00510547b62ad6836",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            18,
+            21
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "page-bad-crlf",
+      "source": "```text\r\na\r\n```\r\n\r\n~~~text\r\nb\r\n~~~\r\n",
+      "source_bytes": 36,
+      "source_sha256": "d8f88fbf1f62735192385d85aad97b10205944eeb7712096cd96fd6efa1bcdd2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            19,
+            22
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "page-bad-cr",
+      "source": "```text\ra\r```\r\r~~~text\rb\r~~~\r",
+      "source_bytes": 29,
+      "source_sha256": "8651820c4c6489ab9553d36f2aa702fab39e8feecf2e9ababa273cb867fe3a36",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            15,
+            18
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "reverse-crlf",
+      "source": "~~~\r\na\r\n~~~\r\n\r\n```\r\nb\r\n```\r\n",
+      "source_bytes": 28,
+      "source_sha256": "ad935fed8e2faa65fa19c481d323e9bbfd74df09d1559c0326e164ca019ded3b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            15,
+            18
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "reverse-cr",
+      "source": "~~~\ra\r~~~\r\r```\rb\r```\r",
+      "source_bytes": 21,
+      "source_sha256": "7096bec01162a7625c0cdfbe15490e4c53623438ceea79dc4ab6fd03be834aad",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {},
+      "findings": [
+        {
+          "bytes": [
+            11,
+            14
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "expected": "tilde",
+          "message": "Fenced code block should use tilde delimiters."
+        }
+      ]
+    },
+    {
+      "name": "nested-crlf",
+      "source": "> - ~~~~\r\n>   x\r\n>   ~~~~",
+      "source_bytes": 25,
+      "source_sha256": "c1a27cc38d5a3430ab602873792b700dca5a0d969f2662c6a7a5b7b53d3d40ee",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            8
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "nested-cr",
+      "source": "> - ~~~~\r>   x\r>   ~~~~",
+      "source_bytes": 23,
+      "source_sha256": "7938eeaf4a4da799dc9d48bb5c6b0d0c1be6505339be6a8f577f2f210dbb8716",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            8
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "tab-prefix-crlf",
+      "source": ">\t~~~\r\n>\tx\r\n>\t~~~",
+      "source_bytes": 17,
+      "source_sha256": "4525cc6b443bb53d21336d28edeced11994d6efe9dda5f715b08986a7e622018",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "tab-prefix-cr",
+      "source": ">\t~~~\r>\tx\r>\t~~~",
+      "source_bytes": 15,
+      "source_sha256": "bec419620f3e75c43b594fc3c4fba36484943b34aa47225090e384bb7b69b6b4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "unicode-before-crlf",
+      "source": "é🙂\r\n\r\n~~~\r\nx\r\n~~~",
+      "source_bytes": 21,
+      "source_sha256": "e19e7fdf76df4e8f98a5d9196ca79a011f396b792ea19005931e4ec2cb367538",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            10,
+            13
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    },
+    {
+      "name": "unicode-before-cr",
+      "source": "é🙂\r\r~~~\rx\r~~~",
+      "source_bytes": 17,
+      "source_sha256": "031b321807c8ba9ab7059f7797e831db64b46b0d7f90cf5bb54008922b3987fd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "style": "backtick"
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            11
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            4
+          ],
+          "expected": "backtick",
+          "message": "Fenced code block should use backtick delimiters."
+        }
+      ]
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "null",
+      "md048_value": null,
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "scalar",
+      "md048_value": true,
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "unknown",
+      "md048_value": {
+        "enabled": false,
+        "styles": "backtick"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-null",
+      "md048_value": {
+        "style": null
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-bool",
+      "md048_value": {
+        "style": true
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-number",
+      "md048_value": {
+        "style": 1
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-list",
+      "md048_value": {
+        "style": [
+          "backtick"
+        ]
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-map",
+      "md048_value": {
+        "style": {}
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-empty",
+      "md048_value": {
+        "style": ""
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-case",
+      "md048_value": {
+        "style": "Backtick"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-padding",
+      "md048_value": {
+        "style": " backtick "
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "style-unknown",
+      "md048_value": {
+        "style": "fenced"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "disabled-invalid",
+      "md048_value": {
+        "enabled": false,
+        "style": "auto"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "enabled-string",
+      "md048_value": {
+        "enabled": "true"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "enabled-null",
+      "md048_value": {
+        "enabled": null
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "directive-string",
+      "md048_value": {
+        "allow_directives": "false"
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    },
+    {
+      "name": "directive-null",
+      "md048_value": {
+        "allow_directives": null
+      },
+      "expected_rejected": true,
+      "operations": [
+        "lint",
+        "fix"
+      ]
+    }
+  ]
+}

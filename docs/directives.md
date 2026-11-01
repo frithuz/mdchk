@@ -199,3 +199,9 @@ instruction. Inherited directive denial preserves configured state. Findings
 cover only the four-byte original opener, so selecting later payload lines does
 not intersect the finding. Missing owned named-token context withholds the whole
 inventory with coverage. Existing directive comment recognition is unchanged.
+
+MD048 chooses its first eligible fenced delimiter from the full original document
+before suppression. A suppressed first opener still establishes the global
+consistent baseline. Hidden actual mismatches count as used suppressions for
+MD087. Necessary unknown fence context withholds observations and preserves
+uncertainty for the suppression audit instead of inventing an unused finding.

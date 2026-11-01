@@ -344,3 +344,17 @@ Exactly one original three-byte/one-code-point range per eligible scalar uses
 `Use ASCII quotes and dashes in prose.` Full context precedes shared START
 suppression and inspect intersection. Default OFF/style ascii/PlannedFix remain;
 this pass creates no MD088 edits, previews or corrected content. MD047 is sole fixer.
+
+## MD048 fence delimiter observations
+
+MD048 borrows completed original source/index/options/profile and operation
+through FenceStyles. Actual owner traversal, source-order checks, delimiter
+classification, necessary raw ownership, selected marker proof, physical-line
+lookups and detached records reserve finite work and nodes before use. Known
+indented owners need no fence metadata; homogeneous known delimiters prove a
+clean result under every exclusion subset. Unknown necessary context atomically
+withholds the inventory. Distinct producer, facade, comparator and outer final
+checks retain caller and origin cancellation, sticky limits and publication
+controls, including empty and homogeneous paths. Exact/one-short budget tests
+cover empty producer/facade paths; positive totals are statically derived and
+positive final-gate tests independently prove output discard.

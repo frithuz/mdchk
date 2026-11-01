@@ -256,3 +256,10 @@ opening; a hidden closer still clears state. Focus does not strip container
 prefixes or reset the Boolean. Unknown original protection context withholds the
 whole MD092 inventory, and MD087 reports uncertain suppression usefulness instead
 of treating the missing prefix as proof of absence. MD092 remains report-only.
+
+MD048 fence-delimiter analysis uses the full original document to establish its
+global consistent baseline before applying inspection focus. A mismatch spans
+only its opening marker: focusing the payload or closing fence alone does not
+select it. Inactive observations and directive-hidden findings retain the shared
+inspection behavior. Findings remain manual; no delimiter replacement preview is
+produced.

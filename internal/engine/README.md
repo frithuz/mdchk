@@ -719,3 +719,13 @@ Necessary unknown context withholds the entire inventory. Caller and origin
 controls and distinct producer/facade/comparison/outer final gates remain active,
 including empty and homogeneous paths. MD046 retains PlannedFix metadata but
 supplies analysis only; it emits no conversion proposals.
+
+`RuleContext.FenceStyles` supplies MD048 with detached original opening markers
+under the same completed private parse and operation allowance. Known indented
+owners are excluded before fence metadata is needed. Fixed matching delimiters
+and homogeneous consistent inventories avoid irrelevant mapping/raw demands;
+mixed candidates resolve actual raw eligibility before a global baseline. Only
+selected mismatches require full opening-marker evidence. Unknown necessary
+context withholds every observation. Producer, facade, comparator and outer
+publication gates retain caller and origin controls. No replacement authority,
+source clone, fresh allowance or payload scan is introduced.
