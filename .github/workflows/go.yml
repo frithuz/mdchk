@@ -72,7 +72,7 @@ jobs:
       matrix:
         os: [ubuntu-24.04, macos-15, windows-2025]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    timeout-minutes: 30
     env:
       GOTOOLCHAIN: local
       GOWORK: "off"
@@ -96,7 +96,9 @@ jobs:
         # pure integration policy tests are not part of this native filter.
         run: go test ./internal/resource ./internal/integration -run "^(TestFilesystem|TestNative)" -count=1 -v -timeout=5m
       - name: Verify compiled native paths, streams, real interrupts and capabilities
-        run: go test ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryUnsupportedApply|TestCompiledApplyNoCGOClearlyRefuses|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -v -timeout=15m
+        # The expanded native suite reached the fifteen-minute limit on Windows.
+        # Keep room for the complete inventory and later native integration gates.
+        run: go test ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryUnsupportedApply|TestCompiledApplyNoCGOClearlyRefuses|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -v -timeout=20m
       - name: Verify compiled GFM selection, consumers and native publication
         run: go test ./cmd/mdchk -run "^TestCompiledGFM" -count=1 -v -timeout=5m
       - name: Verify compiled editor and documented integration contracts
