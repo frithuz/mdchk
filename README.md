@@ -47,11 +47,11 @@ analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026
 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041
 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization
 analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090
-thematic-break-before-heading analysis, MD034 bare-URL analysis, MD039 link-label-whitespace analysis, MD042 links-without-destinations analysis and MD093 inline-formatting-in-headings analysis
+thematic-break-before-heading analysis, MD034 bare-URL analysis, MD039 link-label-whitespace analysis, MD042 links-without-destinations and MD045 image-alternative-text analysis and MD093 inline-formatting-in-headings analysis
 are also available. MD065 is enabled by default for CommonMark and GFM; its
 findings are manual and corrections are deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087, MD091 and MD093 are
-available but disabled by default. MD034, MD039 and MD042 are available and enabled by default for CommonMark and GFM, with manual
-findings. MD039 and MD042 are permanently report-only; URL corrections remain deferred. Other named rules remain unavailable. See the [parser
+available but disabled by default. MD034, MD039, MD042 and MD045 are available and enabled by default for CommonMark and GFM, with manual
+findings. MD039, MD042 and MD045 are permanently report-only; URL corrections remain deferred. Other named rules remain unavailable. See the [parser
 verification record](docs/engineering/gfm-verification.md).
 
 ## Check Markdown

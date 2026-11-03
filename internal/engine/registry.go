@@ -69,7 +69,11 @@ type Finding struct {
 // Reporting-funded records never establish audit use or completeness. An
 // audit-only demand does not authorize independent post-interruption reporting.
 type RuleOutcome struct {
-	Findings         []Finding
+	Findings []Finding
+	// ParsingProblems are reliable located explanations of unassessed syntax,
+	// not violations. The engine validates them and publishes notes plus affected
+	// parser-uncertain coverage. They never establish absence for suppression audit.
+	ParsingProblems  []Finding
 	IncompleteReason string
 	Err              error
 }

@@ -424,7 +424,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				}
 			}
 			outcome := check(ctx, rc)
-			targetComplete := outcome.Err == nil && outcome.IncompleteReason == ""
+			targetComplete := outcome.Err == nil && outcome.IncompleteReason == "" && len(outcome.ParsingProblems) == 0
 			// Independent presentation and MD087 evidence have distinct authority.
 			// The callback is shared, but a reporting-funded record is never proof.
 			present := active || observe
@@ -483,6 +483,23 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				projection.stop = err
 			}
 
+			// Located parser explanations are validated like findings, but do not
+			// participate in directives or create suppression-use evidence.
+			if present && !isInterruption(outcome.Err) {
+				for problemIndex, problem := range outcome.ParsingProblems {
+					if err := appendRuleParsingProblem(&out, in, findingProjection, snap, m, problem); err != nil {
+						if omittedProjection(err) {
+							count := len(outcome.ParsingProblems) - problemIndex
+							for _, section := range []string{"/notes", "/coverage"} {
+								out.Omissions = append(out.Omissions, result.Omission{Section: section, Reason: "output-limit", Path: in.path, Count: &count, Message: err.Error()})
+							}
+						} else {
+							outcome.Err = errors.Join(outcome.Err, err)
+						}
+						break
+					}
+				}
+			}
 			for findingIndex, finding := range findings {
 				if demanded || observational {
 					if err := findingProjection.charge(directiveLookupWork(len(directives.intervals[id]))+int64(len(r.ids))+32, 16); err != nil {

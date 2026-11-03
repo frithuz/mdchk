@@ -1,0 +1,3502 @@
+{
+  "issue": 97,
+  "cases": [
+    {
+      "name": "empty",
+      "source": "![](x)",
+      "source_bytes": 6,
+      "source_sha256": "0fcf95710f00cc0bba0164638bfae441b68190c6996c5ac31d22e3653a3f16d8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            2
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "empty-destination",
+      "source": "![]()",
+      "source_bytes": 5,
+      "source_sha256": "7261f87adb85d22e7178f2ff59f03680e4aa9cfcba29b3e658d0c12ebc11e2c3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            2
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "space",
+      "source": "![ \t ](x)",
+      "source_bytes": 9,
+      "source_sha256": "2e32eeaf8528db3fc3ffdd46caa914fce37f2f57cbdc8156a292231cfda8bb6f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "expected": " \t ",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "unicode-entity",
+      "source": "![&#x2003;&nbsp;](x)",
+      "source_bytes": 20,
+      "source_sha256": "939e162e2e449e8b42621734fc2f9e8c0acaf41512a53620ba226101a475193e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            16
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "expected": "&#x2003;&nbsp;",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "text",
+      "source": "![Deployment diagram](x)",
+      "source_bytes": 24,
+      "source_sha256": "d0a6515ec6d5fa2a219cbde24c57305d05248f7f6c7a570dca28fb7a491cc8d1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "code-literal",
+      "source": "![`&nbsp;`](x)",
+      "source_bytes": 14,
+      "source_sha256": "4cccaba08607e4c27fcbcf1ef00b1493efa1e6755bbea3be9d0993ba2401fc44",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "html-only",
+      "source": "![<i></i>](x)",
+      "source_bytes": 13,
+      "source_sha256": "637618b07267e395bcd4db6dc80b0cd24f67704d7def4bb046e36437baa3f15f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            9
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "expected": "<i></i>",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "html-text",
+      "source": "![<i>text</i>](x)",
+      "source_bytes": 17,
+      "source_sha256": "6e24c69469c17bdb7f3eb98c76642df2fa591ce17418f6d2d42ac7c0bedde7ac",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "escaped",
+      "source": "![\\*](x)",
+      "source_bytes": 8,
+      "source_sha256": "15d91f714ccf335efdbfc4d72cb278c0761e544e006a151f3d39995b2f75b923",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "once",
+      "source": "![&amp;nbsp;](x)",
+      "source_bytes": 16,
+      "source_sha256": "f50b39b4442543ff28cbd358fb847746bd0b86a87e16d24c59b595ab4641fa01",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "line-break",
+      "source": "![ \n ](x)",
+      "source_bytes": 9,
+      "source_sha256": "eebdd10f0630d91769fa1140b7659bb594b81930e65f7c0e74eb7fb9398cd53f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            2
+          ],
+          "expected": " \n ",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "hardbreak",
+      "source": "![  \n ](x)",
+      "source_bytes": 10,
+      "source_sha256": "eebd4f2cacbbb79fae2765986d858f392cbe8bbd219395a80609e1f6ba2c1592",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            6
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            2
+          ],
+          "expected": "  \n ",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "full-reference",
+      "source": "![][r]\n\n[r]: x",
+      "source_bytes": 14,
+      "source_sha256": "67495a3d407bfafa7a375eeeaf9a4581e1d4e8e7432bdbafb1394f02309b88e1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            2
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "collapsed-reference",
+      "source": "![ <i> ][]\n\n[ <i> ]: x",
+      "source_bytes": 22,
+      "source_sha256": "619c9829ceacefebdfebee37feb23383611a50711699db97122c8987a9d2f9fc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            7
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "expected": " <i> ",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "shortcut-reference",
+      "source": "![ <i> ]\n\n[ <i> ]: x",
+      "source_bytes": 20,
+      "source_sha256": "b87028b5929a16ecf344643c81e8a74e417779a3ba664928c4c5142afe6649ce",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            7
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "expected": " <i> ",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "reference-text",
+      "source": "![r][] ![r]\n\n[r]: x",
+      "source_bytes": 19,
+      "source_sha256": "75975c9511fd476adda5be3a2d1aa767f7f41c68aca382558d7a92bf8034a767",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "unicode-first-definition",
+      "source": "![ẞ][SS]\n\n[ss]: x\n[SS]: y",
+      "source_bytes": 27,
+      "source_sha256": "4887038d801a924aab7078d367112a7b881aabe265f7cbe99e2f28de2698d1ce",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "undefined",
+      "source": "![][unknown]",
+      "source_bytes": 12,
+      "source_sha256": "cbeb52a819bba47bd3b1f75a584aff1e6bf9b994f2ea8cd20695c9a1c5323dda",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "link-image",
+      "source": "[![](x)](url)",
+      "source_bytes": 13,
+      "source_sha256": "f348a161e9d1cf93cf9507f4671772d39e69e2f9860c6b2cb0d60208046c0bac",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "nested-image-text",
+      "source": "![outer ![inner](x)](y)",
+      "source_bytes": 23,
+      "source_sha256": "e1356ff703e807369b0850e49501779874d61f5dc23ebc5347825ec5da6eaf70",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "nested-image-empty",
+      "source": "![outer ![](x)](y)",
+      "source_bytes": 18,
+      "source_sha256": "57f8b16e8295fb84d11a67824cfb1cfa320f3aefd0e25f82dc21e2e8e6c55554",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "nested-link-text",
+      "source": "![[Guide](x)](y)",
+      "source_bytes": 16,
+      "source_sha256": "82a8b3b67776dd341792c355bedb05a5ac10a12393a586146a37784d5b375f11",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "alt-no-html-candidate",
+      "source": "![<img alt=\"\">](x)",
+      "source_bytes": 18,
+      "source_sha256": "252091acd29e842337a5bd1ed7c9ce46c19e989f09457e0a2bafe5108c73d2af",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            14
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "expected": "<img alt=\"\">",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "alt-no-raw-leak",
+      "source": "![<script>](x) ![](y)",
+      "source_bytes": 21,
+      "source_sha256": "e0b0badc8e775087e836af1f3a3327a425ad8c821a8597d7b6e6d63211b47152",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "<script>",
+          "message": "Image alternative text is missing or blank."
+        },
+        {
+          "bytes": [
+            17,
+            17
+          ],
+          "start": [
+            1,
+            18
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "code",
+      "source": "`![](x) <img>`\n\n```html\n<img>\n![](x)\n```\n",
+      "source_bytes": 41,
+      "source_sha256": "17ce2dbb9445add6f753188d1b658275fdd1e3957b021ac5eb923745860906f6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "escaped-image",
+      "source": "\\![](x)",
+      "source_bytes": 7,
+      "source_sha256": "ad86b1860fd028c1c5190175d03b7746f653b14fe3a7ac5689b8e0b3e95e1202",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "raw-protected",
+      "source": "A <script><img>![](x)</script> ![](y)",
+      "source_bytes": 37,
+      "source_sha256": "8e2132cf65ec563693c8728fbd88472cc9ace4650bf05ba7828df534042313c3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            33,
+            33
+          ],
+          "start": [
+            1,
+            34
+          ],
+          "end": [
+            1,
+            34
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "comment",
+      "source": "<!-- <img> ![](x) -->\n\n![](y)",
+      "source_bytes": 29,
+      "source_sha256": "fcf79c3bb94a82dca73af4ad8dda332c04feb638e5b218d8d3b716dade0ea1f7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            25,
+            25
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "opaque-tail",
+      "source": "<!-- <img> --> <img>",
+      "source_bytes": 20,
+      "source_sha256": "c23dfc7950c921b51a20d64257d838ee6abe006d4c127fb950ee36ced7689160",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            19,
+            19
+          ],
+          "start": [
+            1,
+            20
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "quoted-tag",
+      "source": "<div title=\"<img>\"><img></div>",
+      "source_bytes": 30,
+      "source_sha256": "786f495401529ca19d4b3ef6f00dbcc378668b3e591d4b4a2371d45de3e235d5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            23,
+            23
+          ],
+          "start": [
+            1,
+            24
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "html-missing",
+      "source": "<img src=\"x\">",
+      "source_bytes": 13,
+      "source_sha256": "c372051d851948266bfedb7f8e3f0999ffa0dc6ab049c75226e8c79af8619d3e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            4,
+            4
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "html-empty",
+      "source": "<img alt=\"\">",
+      "source_bytes": 12,
+      "source_sha256": "395307d7fce7ce1407dff6ea786d12e806c9ca62b9b0ef7b84f7d33280e045e6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "html-single",
+      "source": "<IMG ALT='' SRC=x>",
+      "source_bytes": 18,
+      "source_sha256": "d84045c61788d317ed4df39aa8b493b6b016ef844dc424b0a3c767123ecf874b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "html-boolean",
+      "source": "<img alt>",
+      "source_bytes": 9,
+      "source_sha256": "46edfe3a13b057c9616a73f545c9749c9e3a941f49d705521a4e96c9b43c0e28",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            8,
+            8
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "html-whitespace",
+      "source": "<img alt=\" &#x2003;&nbsp;\">",
+      "source_bytes": 27,
+      "source_sha256": "cd74e02b5adeb491ba9815a6942fff5a026a97e140056a83f08e036e422bf6f2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            25
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "expected": " &#x2003;&nbsp;",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "html-nonempty",
+      "source": "<img alt=\"&amp;nbsp;\">",
+      "source_bytes": 22,
+      "source_sha256": "40042f958489110c1fc2298704cfc19df0efd643f39f1053922188466305e8f2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "html-backslash",
+      "source": "<img alt=\"\\\">",
+      "source_bytes": 13,
+      "source_sha256": "f9a3988a7a9905f7bea80794a0771e1547ccfef303e8f7e410ae7b3a82612480",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "html-legacy-entity",
+      "source": "<img alt=\"&nbsp\">",
+      "source_bytes": 17,
+      "source_sha256": "56cf7f6b345cf9016220c4e62305b5624b9fbed5bca11fbe5856a412fcda4c70",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            15
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "expected": "&nbsp",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "html-ambiguous-entity",
+      "source": "<img alt=\"&nbspx\">",
+      "source_bytes": 18,
+      "source_sha256": "552b372b7af24e0d81a58d0ef4e8ff8470553f9bd2d3c50e1da00a41f0ed86dc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "html-numeric-no-semicolon",
+      "source": "<img alt=\"&#32\">",
+      "source_bytes": 16,
+      "source_sha256": "4501794fc260a80266b491d86c31bf5cf30f7d4d3387312ce265c2d8fa025477",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            14
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "expected": "&#32",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "duplicate-alt",
+      "source": "![](a) <img alt=\"\" ALT=\"text\"> <img> ![](b)",
+      "source_bytes": 43,
+      "source_sha256": "3843f6eb1f5f960b7bc41ab01df9dfd45dca8ed0e4da2f24b1e9b5db7162d78e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            2
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        },
+        {
+          "bytes": [
+            35,
+            35
+          ],
+          "start": [
+            1,
+            36
+          ],
+          "end": [
+            1,
+            36
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        },
+        {
+          "bytes": [
+            39,
+            39
+          ],
+          "start": [
+            1,
+            40
+          ],
+          "end": [
+            1,
+            40
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": [
+        {
+          "bytes": [
+            7,
+            30
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "expected": "<img alt=\"\" ALT=\"text\">",
+          "message": "Image alternative text or decorative attributes cannot be interpreted reliably."
+        }
+      ]
+    },
+    {
+      "name": "duplicate-alt-order",
+      "source": "<img alt=\"text\" alt=\"\">",
+      "source_bytes": 23,
+      "source_sha256": "c24ac762d0caa34ecc6f63f6260949ed29ac93ef3bf2ea01740b9e804b636ad3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": [
+        {
+          "bytes": [
+            0,
+            23
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "expected": "<img alt=\"text\" alt=\"\">",
+          "message": "Image alternative text or decorative attributes cannot be interpreted reliably."
+        }
+      ]
+    },
+    {
+      "name": "duplicate-irrelevant",
+      "source": "<img src=x src=y>",
+      "source_bytes": 17,
+      "source_sha256": "1ac70e0bb573a542af3557ddd96b541cf8e68875c5c73f56a8859e10a83ab5a1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            4,
+            4
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "duplicate-conflicts-good-alt",
+      "source": "<img alt=\"text\" role=img role=none>",
+      "source_bytes": 35,
+      "source_sha256": "b13a24736fd582f760d5312fc01f1f821c00261d980473213f6cfd8d019e2f34",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "multibyte-crlf",
+      "source": "é😀\r\n> - ![](x)\r\n",
+      "source_bytes": 20,
+      "source_sha256": "98e8a41f7a90258b99b90c249ec672ca1b0cf9494127ba71b8d9e9fa431e7d89",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            14,
+            14
+          ],
+          "start": [
+            2,
+            7
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "html-container-crlf",
+      "source": "> - <img\r\n>   alt=\"&#32;\">\r\n",
+      "source_bytes": 28,
+      "source_sha256": "ea416345357bab22563cc388cd6f3abffd4f6a3e67eb6b2e48fa495f3f1ee94d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            19,
+            24
+          ],
+          "start": [
+            2,
+            10
+          ],
+          "end": [
+            2,
+            15
+          ],
+          "expected": "&#32;",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "table",
+      "source": "| H |\n| - |\n| ![](x) <img alt=\" \"> |\n",
+      "source_bytes": 37,
+      "source_sha256": "a0e27454ffc4d306c758de122f43e6d544c2fbce8d2f689baca4b90a8da93784",
+      "flavors": [
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            16,
+            16
+          ],
+          "start": [
+            3,
+            5
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        },
+        {
+          "bytes": [
+            31,
+            32
+          ],
+          "start": [
+            3,
+            20
+          ],
+          "end": [
+            3,
+            21
+          ],
+          "expected": " ",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "frontmatter",
+      "source": "---\nx: <img> ![](x)\n---\n![](y)",
+      "source_bytes": 30,
+      "source_sha256": "2a1d3b6771b989708395d8dde15171d9f6b78c90db26deaf162af44fd84ff0dc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "yaml",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            26,
+            26
+          ],
+          "start": [
+            4,
+            3
+          ],
+          "end": [
+            4,
+            3
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "toml",
+      "source": "+++\nx=\"<img>\"\n+++\n![](y)",
+      "source_bytes": 24,
+      "source_sha256": "1a9d9a6430e72b72d82a5a97ba4c3514cad6e5f6291551fcdad7b46c6aa42c98",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "toml",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            20,
+            20
+          ],
+          "start": [
+            4,
+            3
+          ],
+          "end": [
+            4,
+            3
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "malformed-owned",
+      "source": "<div>\n<img alt=\"",
+      "source_bytes": 16,
+      "source_sha256": "3d10fa39c06eb58740ca6dc9f52afe654f8dec3b98b90c9d04ee5c34728b2172",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": [
+        {
+          "bytes": [
+            6,
+            16
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            11
+          ],
+          "expected": "<img alt=\"",
+          "message": "Image alternative text or decorative attributes cannot be interpreted reliably."
+        }
+      ]
+    },
+    {
+      "name": "malformed-later-protected",
+      "source": "![](before)\n\n<div>\n<img alt=\"\n\n![](later)",
+      "source_bytes": 41,
+      "source_sha256": "f202a5f582f9f7cb33941491a784fd588a7943c8173a6c652e2f865f6787afef",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            2
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": [
+        {
+          "bytes": [
+            19,
+            41
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            6,
+            11
+          ],
+          "expected": "<img alt=\"\n\n![](later)",
+          "message": "Image alternative text or decorative attributes cannot be interpreted reliably."
+        }
+      ]
+    },
+    {
+      "name": "decorative-markdown-empty",
+      "source": "![](x)",
+      "source_bytes": 6,
+      "source_sha256": "0fcf95710f00cc0bba0164638bfae441b68190c6996c5ac31d22e3653a3f16d8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            2,
+            2
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-html-empty",
+      "source": "<img alt=\"\">",
+      "source_bytes": 12,
+      "source_sha256": "395307d7fce7ce1407dff6ea786d12e806c9ca62b9b0ef7b84f7d33280e045e6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "decorative-html-boolean",
+      "source": "<img alt>",
+      "source_bytes": 9,
+      "source_sha256": "46edfe3a13b057c9616a73f545c9749c9e3a941f49d705521a4e96c9b43c0e28",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "decorative-html-missing",
+      "source": "<img role=none aria-hidden=true hidden>",
+      "source_bytes": 39,
+      "source_sha256": "0c011fc1a8f6e262cbf412dfda7e3fd43b323de144fa5aee82f7744504c2732e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            4,
+            4
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-html-whitespace",
+      "source": "<img alt=\"&#x2003;\">",
+      "source_bytes": 20,
+      "source_sha256": "0048fb81517ea474e545030ec3c28af3c4b51651d26e4a48d5db7466f5698087",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            18
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "expected": "&#x2003;",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-title-empty",
+      "source": "<img alt=\"\" title=\"&#x2003;\">",
+      "source_bytes": 29,
+      "source_sha256": "b4d1d5714e69fc8284fcbf9d2caa62cdca0ee66a63daf69d98093dbefa3118a8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "decorative-title-conflict",
+      "source": "<img alt=\"\" title=\"Chart\">",
+      "source_bytes": 26,
+      "source_sha256": "1c6745392aa663a3c815a13ff522d28fab70f7e60bd7853b49c2cfef7041731b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-role-none",
+      "source": "<img alt=\"\" role=none>",
+      "source_bytes": 22,
+      "source_sha256": "c9ae9eb599588ef85fdfd71f67da22372205481184ee98ecca38047e04bedb20",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "decorative-role-presentation",
+      "source": "<IMG ALT=\"\" ROLE=\" presentation \">",
+      "source_bytes": 34,
+      "source_sha256": "7a69a6fcd4673e51d26b87637558390178819123bb2044c4f9f01cf6e01ddf7c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "decorative-role-empty",
+      "source": "<img alt=\"\" role=\"\">",
+      "source_bytes": 20,
+      "source_sha256": "7ffeab52185e29bbf5f2f858a652381c6dc50096c10b9a95202fea8c3b90da98",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "decorative-role-multiple",
+      "source": "<img alt=\"\" role=\"none presentation\">",
+      "source_bytes": 37,
+      "source_sha256": "e203bf32850be0c9791c27364a26df4ceb028d45a693819d293012484872db54",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-role-conflict",
+      "source": "<img alt=\"\" role=img>",
+      "source_bytes": 21,
+      "source_sha256": "1407964d2535c817584c01c12d457feee93f51a5462b9235490605260ef0df49",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-aria-true",
+      "source": "<img alt=\"\" aria-hidden=true>",
+      "source_bytes": 29,
+      "source_sha256": "210b2bcbe8e4a16a08b0cf43a51b64ba7284ad7e5868fd350a952e5e97f7013a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "decorative-aria-false",
+      "source": "<img alt=\"\" aria-hidden=false>",
+      "source_bytes": 30,
+      "source_sha256": "89398415ae15b031f2f6a00f369928799653bfe4fa871461ea243f5364fb6cff",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-aria-label",
+      "source": "<img alt=\"\" aria-label=\"\">",
+      "source_bytes": 26,
+      "source_sha256": "f6343700a2dc12f1eb10a9ae869ce06d2e7c193e661db0727c333d9f0bc1e916",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-aria-labelledby",
+      "source": "<img alt=\"\" aria-labelledby=x>",
+      "source_bytes": 30,
+      "source_sha256": "d7d5ac3cf769f7509b8f888f11386fffac0e1916f10568068c58eda81396a734",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-aria-other",
+      "source": "<img alt=\"\" aria-live=off>",
+      "source_bytes": 26,
+      "source_sha256": "68e3e3aab53845985cf7905741030862dcbfdf0dfe5b6eb601f1e41eff98988d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-tabindex",
+      "source": "<img alt=\"\" tabindex=\"-1\">",
+      "source_bytes": 26,
+      "source_sha256": "68120fb46561f6481102344d42158e24e8907966796d34a519b2095d64c32483",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-usemap",
+      "source": "<img alt=\"\" usemap=\"\">",
+      "source_bytes": 22,
+      "source_sha256": "1b14e522cd9a4886eabecb95af3007dc41a64f396be693ff6c4b00bd706eddc4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-ismap",
+      "source": "<img alt=\"\" ismap=false>",
+      "source_bytes": 24,
+      "source_sha256": "e8996dcc128f426c931ebf91a36ea3c2ea16ab5a4485ce121a1411002b5621ef",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-hidden",
+      "source": "<img alt=\"\" hidden>",
+      "source_bytes": 19,
+      "source_sha256": "b14ace97c00dc884c33efd19db2c93d53f4543ab346da0461ba1d57a67eb4218",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "decorative-good-alt-conflicts",
+      "source": "<img alt=\"Chart\" title=Chart role=img aria-label=Chart tabindex=0>",
+      "source_bytes": 66,
+      "source_sha256": "12eb684b75f8c53fcc729d2342cd485faa3087b02703bc37ab2bc98488d3eba7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "decorative-duplicate-role",
+      "source": "<img alt=\"\" role=none role=img> <img>",
+      "source_bytes": 37,
+      "source_sha256": "8e85d1f31e1d8a2b46eb7d0e6f58b6cd0bb51f375579e646a4c88ff858180cae",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            36,
+            36
+          ],
+          "start": [
+            1,
+            37
+          ],
+          "end": [
+            1,
+            37
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": [
+        {
+          "bytes": [
+            0,
+            31
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            32
+          ],
+          "expected": "<img alt=\"\" role=none role=img>",
+          "message": "Image alternative text or decorative attributes cannot be interpreted reliably."
+        }
+      ]
+    },
+    {
+      "name": "decorative-duplicate-title",
+      "source": "<img alt=\"\" title=\"\" title=Chart>",
+      "source_bytes": 33,
+      "source_sha256": "059a2f645ba0d48e2b71b7b4fb8fb924bf227795c9c40fa77622a97428c2261c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": [
+        {
+          "bytes": [
+            0,
+            33
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            34
+          ],
+          "expected": "<img alt=\"\" title=\"\" title=Chart>",
+          "message": "Image alternative text or decorative attributes cannot be interpreted reliably."
+        }
+      ]
+    },
+    {
+      "name": "decorative-duplicate-alt",
+      "source": "<img alt=\"\" alt=\"\">",
+      "source_bytes": 19,
+      "source_sha256": "bd7b3446f36ba1ef579fcfc9a201ded17ca769d610ce23cb596dd0b6266c6393",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": [
+        {
+          "bytes": [
+            0,
+            19
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "expected": "<img alt=\"\" alt=\"\">",
+          "message": "Image alternative text or decorative attributes cannot be interpreted reliably."
+        }
+      ]
+    },
+    {
+      "name": "decorative-duplicate-fixed-conflict",
+      "source": "<img alt=\"\" tabindex=0 tabindex=-1>",
+      "source_bytes": 35,
+      "source_sha256": "052bdf988e7fc3688baa68c5c952f0e49130c425d07cea39388707abe504e2eb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-independent-conflict",
+      "source": "<img alt=\"\" role=none role=img usemap=map>",
+      "source_bytes": 42,
+      "source_sha256": "6e20d111379ddedb64e61a36dde5a8b7872030baf3a3c687da9f883292a4c9d7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "decorative-once",
+      "source": "<img alt=\"&amp;nbsp;\">",
+      "source_bytes": 22,
+      "source_sha256": "40042f958489110c1fc2298704cfc19df0efd643f39f1053922188466305e8f2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-ascii-padded-default",
+      "source": "<img alt=\"\" aria-hidden=\" true \">",
+      "source_bytes": 33,
+      "source_sha256": "e8a68ed1f1205b2d9503776bb572c0182aede553758036384715af2bed5bcf57",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-ascii-padded-enabled",
+      "source": "<img alt=\"\" aria-hidden=\" true \">",
+      "source_bytes": 33,
+      "source_sha256": "e8a68ed1f1205b2d9503776bb572c0182aede553758036384715af2bed5bcf57",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-ascii-padded-nonblank",
+      "source": "<img alt=\"Chart\" aria-hidden=\" true \">",
+      "source_bytes": 38,
+      "source_sha256": "33125e58ad84978ef7f424bada65d5543bc4eb186a7aa55943a5bc6c4b83136e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-ascii-tab-newline-default",
+      "source": "<img alt=\"\" aria-hidden=\"\ttrue\n\">",
+      "source_bytes": 33,
+      "source_sha256": "a2fe2cfed2719a2c24c37550423b882f36aef27f2b5a69ec14f147ef2b6a3aa6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-ascii-tab-newline-enabled",
+      "source": "<img alt=\"\" aria-hidden=\"\ttrue\n\">",
+      "source_bytes": 33,
+      "source_sha256": "a2fe2cfed2719a2c24c37550423b882f36aef27f2b5a69ec14f147ef2b6a3aa6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-ascii-tab-newline-nonblank",
+      "source": "<img alt=\"Chart\" aria-hidden=\"\ttrue\n\">",
+      "source_bytes": 38,
+      "source_sha256": "c89ae4e825f19b837b9ca52ee0f6ab79215cb5f5cb094b0a38590d56283a3530",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-ascii-entity-default",
+      "source": "<img alt=\"\" aria-hidden=\"&#32;true&#32;\">",
+      "source_bytes": 41,
+      "source_sha256": "360ad567fdeb3c51bc303b7ef98100d983090da349d3f4859815934a8de28ecb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-ascii-entity-enabled",
+      "source": "<img alt=\"\" aria-hidden=\"&#32;true&#32;\">",
+      "source_bytes": 41,
+      "source_sha256": "360ad567fdeb3c51bc303b7ef98100d983090da349d3f4859815934a8de28ecb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-ascii-entity-nonblank",
+      "source": "<img alt=\"Chart\" aria-hidden=\"&#32;true&#32;\">",
+      "source_bytes": 46,
+      "source_sha256": "19583ed006deb7c87b5aead477f6fe6ee315d75977d6eb9fae3b87160eb790ba",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-nbsp-entity-default",
+      "source": "<img alt=\"\" aria-hidden=\"true&#xA0;\">",
+      "source_bytes": 37,
+      "source_sha256": "c2772600d79d551137493eac5fe821752d178a1e0b1339210a3515362a6fc306",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-nbsp-entity-enabled",
+      "source": "<img alt=\"\" aria-hidden=\"true&#xA0;\">",
+      "source_bytes": 37,
+      "source_sha256": "c2772600d79d551137493eac5fe821752d178a1e0b1339210a3515362a6fc306",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-nbsp-entity-nonblank",
+      "source": "<img alt=\"Chart\" aria-hidden=\"true&#xA0;\">",
+      "source_bytes": 42,
+      "source_sha256": "b01415c54020cdb4cd97d096afa4db273d71e0fa722879679d88dddb7655c8a9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-emspace-entity-default",
+      "source": "<img alt=\"\" aria-hidden=\"&#x2003;true\">",
+      "source_bytes": 39,
+      "source_sha256": "b9ca76f32bca4c0c4e1f32aed364e200b54eb54a13b1e134ca9f0ee1de60b531",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-emspace-entity-enabled",
+      "source": "<img alt=\"\" aria-hidden=\"&#x2003;true\">",
+      "source_bytes": 39,
+      "source_sha256": "b9ca76f32bca4c0c4e1f32aed364e200b54eb54a13b1e134ca9f0ee1de60b531",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-emspace-entity-nonblank",
+      "source": "<img alt=\"Chart\" aria-hidden=\"&#x2003;true\">",
+      "source_bytes": 44,
+      "source_sha256": "e3a2aaa353519d96af3d667280545e046c87067c113f205a3c35f21097750ca2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-nbsp-direct-default",
+      "source": "<img alt=\"\" aria-hidden=\"true \">",
+      "source_bytes": 33,
+      "source_sha256": "6ecafd12d1f3994642c64ea1f17af93bc7b0ee695816322e7258fbbff2c92862",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-nbsp-direct-enabled",
+      "source": "<img alt=\"\" aria-hidden=\"true \">",
+      "source_bytes": 33,
+      "source_sha256": "6ecafd12d1f3994642c64ea1f17af93bc7b0ee695816322e7258fbbff2c92862",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-nbsp-direct-nonblank",
+      "source": "<img alt=\"Chart\" aria-hidden=\"true \">",
+      "source_bytes": 38,
+      "source_sha256": "e07e7d41eb91017a0731fff7e3de759b5cd6024a6e189f8ac15646d80e86b9a8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-emspace-direct-default",
+      "source": "<img alt=\"\" aria-hidden=\" true\">",
+      "source_bytes": 34,
+      "source_sha256": "e2003ae343f25448478652e758c408d769b1385f10106edefb8428887628a97a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-emspace-direct-enabled",
+      "source": "<img alt=\"\" aria-hidden=\" true\">",
+      "source_bytes": 34,
+      "source_sha256": "e2003ae343f25448478652e758c408d769b1385f10106edefb8428887628a97a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-emspace-direct-nonblank",
+      "source": "<img alt=\"Chart\" aria-hidden=\" true\">",
+      "source_bytes": 39,
+      "source_sha256": "c0212a6b614df7c3abce070dd094ba2e7a044ccecf207fb9d7a8aeda4a889277",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-case-control-default",
+      "source": "<img alt=\"\" aria-hidden=\"TrUe\">",
+      "source_bytes": 31,
+      "source_sha256": "c0c6f9f1a572ced0e263ee2959cca9a9dc15102200bf5a1accb69fef9cb616c5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-aria-case-control-enabled",
+      "source": "<img alt=\"\" aria-hidden=\"TrUe\">",
+      "source_bytes": 31,
+      "source_sha256": "c0c6f9f1a572ced0e263ee2959cca9a9dc15102200bf5a1accb69fef9cb616c5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-nbsp-entity-default",
+      "source": "<img alt=\"\" role=\"none&#xA0;\">",
+      "source_bytes": 30,
+      "source_sha256": "88001c4126f435d0274e1160da597d5394cdff038039cfc3324ff1fecc5b4dfc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-nbsp-entity-enabled",
+      "source": "<img alt=\"\" role=\"none&#xA0;\">",
+      "source_bytes": 30,
+      "source_sha256": "88001c4126f435d0274e1160da597d5394cdff038039cfc3324ff1fecc5b4dfc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-nbsp-entity-nonblank",
+      "source": "<img alt=\"Chart\" role=\"none&#xA0;\">",
+      "source_bytes": 35,
+      "source_sha256": "f8c8c0c16eb4b5f9f02f8ec5702ac4848a204e5ece75577dde9a507bbf56bff8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-emspace-entity-default",
+      "source": "<img alt=\"\" role=\"&#x2003;presentation\">",
+      "source_bytes": 40,
+      "source_sha256": "37f22852162eade5aa5d45b669428f9d6d1004ca0e100d5925ea498815101ba8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-emspace-entity-enabled",
+      "source": "<img alt=\"\" role=\"&#x2003;presentation\">",
+      "source_bytes": 40,
+      "source_sha256": "37f22852162eade5aa5d45b669428f9d6d1004ca0e100d5925ea498815101ba8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-emspace-entity-nonblank",
+      "source": "<img alt=\"Chart\" role=\"&#x2003;presentation\">",
+      "source_bytes": 45,
+      "source_sha256": "46b56e0234563b9278f69f027213a1785f76d11d0a921f706d0e78ecde25e9e0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-nbsp-only-entity-default",
+      "source": "<img alt=\"\" role=\"&#xA0;\">",
+      "source_bytes": 26,
+      "source_sha256": "c6139b0346b1943578b254d4c7f1240d3ff214d21f93998398eaef8bed8c1e3a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-nbsp-only-entity-enabled",
+      "source": "<img alt=\"\" role=\"&#xA0;\">",
+      "source_bytes": 26,
+      "source_sha256": "c6139b0346b1943578b254d4c7f1240d3ff214d21f93998398eaef8bed8c1e3a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-nbsp-only-entity-nonblank",
+      "source": "<img alt=\"Chart\" role=\"&#xA0;\">",
+      "source_bytes": 31,
+      "source_sha256": "053958489c7aba1df13b1b37e53a3aa62df2b1bc06e65a7ac615582f383d3cd9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-nbsp-direct-default",
+      "source": "<img alt=\"\" role=\"none \">",
+      "source_bytes": 26,
+      "source_sha256": "d76f3d46812a2bb893d2c143849e32c609ff1a24d9a29c95cc91359d8261d376",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-nbsp-direct-enabled",
+      "source": "<img alt=\"\" role=\"none \">",
+      "source_bytes": 26,
+      "source_sha256": "d76f3d46812a2bb893d2c143849e32c609ff1a24d9a29c95cc91359d8261d376",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-nbsp-direct-nonblank",
+      "source": "<img alt=\"Chart\" role=\"none \">",
+      "source_bytes": 31,
+      "source_sha256": "adacfd4f8d366fdeee2b3d8b4eea57d73ced47b519c314650b057cf4961426c5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-emspace-direct-default",
+      "source": "<img alt=\"\" role=\" presentation\">",
+      "source_bytes": 35,
+      "source_sha256": "861bc9a88ec71d05ed739ce7ba0ecf07d3aa5c63de8000d65d6e8f71875505b8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-emspace-direct-enabled",
+      "source": "<img alt=\"\" role=\" presentation\">",
+      "source_bytes": 35,
+      "source_sha256": "861bc9a88ec71d05ed739ce7ba0ecf07d3aa5c63de8000d65d6e8f71875505b8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-emspace-direct-nonblank",
+      "source": "<img alt=\"Chart\" role=\" presentation\">",
+      "source_bytes": 40,
+      "source_sha256": "910a9352066df6fd717e4c0ad188dfd83a4084f6d4d2719e2c49c433fd6653fa",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-nel-direct-default",
+      "source": "<img alt=\"\" role=\"none\">",
+      "source_bytes": 26,
+      "source_sha256": "a1b64de095c67933a9158b1d8665236f179b3a2782cdfe58e54fd8325f49d416",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-nel-direct-enabled",
+      "source": "<img alt=\"\" role=\"none\">",
+      "source_bytes": 26,
+      "source_sha256": "a1b64de095c67933a9158b1d8665236f179b3a2782cdfe58e54fd8325f49d416",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-nel-direct-nonblank",
+      "source": "<img alt=\"Chart\" role=\"none\">",
+      "source_bytes": 31,
+      "source_sha256": "7fc8ec2d2ca51294cb7025e3fcb150645c8f654375309e33d57558ae8b6225b7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-unicode-only-direct-default",
+      "source": "<img alt=\"\" role=\" \">",
+      "source_bytes": 23,
+      "source_sha256": "56d32782cc47462c53d33215de7549270c23c52c88152d43427bb489c936f890",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-unicode-only-direct-enabled",
+      "source": "<img alt=\"\" role=\" \">",
+      "source_bytes": 23,
+      "source_sha256": "56d32782cc47462c53d33215de7549270c23c52c88152d43427bb489c936f890",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-unicode-only-direct-nonblank",
+      "source": "<img alt=\"Chart\" role=\" \">",
+      "source_bytes": 28,
+      "source_sha256": "42dc84d9fb09783e5b043669a057399c5a8474c904e9890d746c33b90b4a7d99",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-ascii-all-control-default",
+      "source": "<img alt=\"\" role=\" \t\r\n\fpReSeNtAtIoN \t\r\n\f\">",
+      "source_bytes": 42,
+      "source_sha256": "d8fa95e8d65cb8bf9ab02f3c4ebc6e892f94ac47852a7aea533d5eccd09c3d3c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-ascii-all-control-enabled",
+      "source": "<img alt=\"\" role=\" \t\r\n\fpReSeNtAtIoN \t\r\n\f\">",
+      "source_bytes": 42,
+      "source_sha256": "d8fa95e8d65cb8bf9ab02f3c4ebc6e892f94ac47852a7aea533d5eccd09c3d3c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-ascii-only-control-default",
+      "source": "<img alt=\"\" role=\" \t\r\n\f\">",
+      "source_bytes": 25,
+      "source_sha256": "6a54a81781703f07a4a3d2d189184ffa91a0b2fff1ae23dc838b678756b21fb7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-ascii-only-control-enabled",
+      "source": "<img alt=\"\" role=\" \t\r\n\f\">",
+      "source_bytes": 25,
+      "source_sha256": "6a54a81781703f07a4a3d2d189184ffa91a0b2fff1ae23dc838b678756b21fb7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-ascii-entities-control-default",
+      "source": "<img alt=\"\" role=\"&#9;&#10;&#13;&#12;NoNe&#32;\">",
+      "source_bytes": 48,
+      "source_sha256": "12e5aadf23f5db584f26889adaeac97ae61b487021026819aaeaf029bb766341",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-ascii-entities-control-enabled",
+      "source": "<img alt=\"\" role=\"&#9;&#10;&#13;&#12;NoNe&#32;\">",
+      "source_bytes": 48,
+      "source_sha256": "12e5aadf23f5db584f26889adaeac97ae61b487021026819aaeaf029bb766341",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-multiple-control-default",
+      "source": "<img alt=\"\" role=\"none presentation\">",
+      "source_bytes": 37,
+      "source_sha256": "e203bf32850be0c9791c27364a26df4ceb028d45a693819d293012484872db54",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-multiple-control-enabled",
+      "source": "<img alt=\"\" role=\"none presentation\">",
+      "source_bytes": 37,
+      "source_sha256": "e203bf32850be0c9791c27364a26df4ceb028d45a693819d293012484872db54",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "",
+          "message": "Image alternative text is missing or blank."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lexical-role-multiple-control-nonblank",
+      "source": "<img alt=\"Chart\" role=\"none presentation\">",
+      "source_bytes": 42,
+      "source_sha256": "0970af5b2f47793173c437e68c0dce64fe0bc7be34a1abcb75b64ecad781bad0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "unrecognized-role-ascii-all-lf-cr-default",
+      "source": "<img alt=\"\" role=\" \t\n\r\fpReSeNtAtIoN \t\n\r\f\">",
+      "source_bytes": 42,
+      "source_sha256": "498ba5aa0cc24d81fef3886fe431dd842801b4b919ef354a4e0d85a0b7f47b93",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "unrecognized-role-ascii-all-lf-cr-enabled",
+      "source": "<img alt=\"\" role=\" \t\n\r\fpReSeNtAtIoN \t\n\r\f\">",
+      "source_bytes": 42,
+      "source_sha256": "498ba5aa0cc24d81fef3886fe431dd842801b4b919ef354a4e0d85a0b7f47b93",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "unrecognized-role-ascii-only-lf-cr-default",
+      "source": "<img alt=\"\" role=\" \t\n\r\f\">",
+      "source_bytes": 25,
+      "source_sha256": "ab4008a7175fdc42bf6052115050da88f324d61fb53d6463e7e78810d8f9ccc7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": false,
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "unrecognized-role-ascii-only-lf-cr-enabled",
+      "source": "<img alt=\"\" role=\" \t\n\r\f\">",
+      "source_bytes": 25,
+      "source_sha256": "ab4008a7175fdc42bf6052115050da88f324d61fb53d6463e7e78810d8f9ccc7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "allow_decorative": true,
+      "findings": [],
+      "problems": []
+    }
+  ]
+}

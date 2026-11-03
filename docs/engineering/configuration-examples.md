@@ -128,6 +128,10 @@ permanently report-only (`NoFix`).
 [MD042 links without destinations analysis](../rules/links-and-images/md042.md) is also available
 for both formats, enabled by default with no rule-specific options and permanent
 report-only (`NoFix`) findings.
+[MD045 image alternative text analysis](../rules/links-and-images/md045.md) is available
+for CommonMark and GFM, enabled by default with `allow_decorative: false`.
+Only explicit empty HTML alt can qualify for the opt-in decorative exemption;
+findings are permanently report-only.
 
 MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
 independently enabled header recognition. Some ordinary rules remain unavailable,
@@ -135,7 +139,7 @@ as recorded in the linked inventory. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
 as `rule-unavailable`, sets `status: incomplete` and `complete: false`, and exits
 15. The complete 87-rule catalog remains intact: MD001 is default-enabled and
-executes along with MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD027, MD028, MD064, MD011, MD034, MD039 and MD042, while unavailable default-enabled MD045 contributes
+executes along with MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD027, MD028, MD064, MD011, MD034, MD039, MD042 and MD045, while unavailable default-enabled MD051 contributes
 coverage. MD013 is available but default-disabled and does not incur a coverage penalty. Explicitly enabling
 an unavailable rule instead fails configuration admission with exit 12 before
 target processing. Text and JSON retain the same coverage and outcome.

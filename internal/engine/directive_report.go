@@ -121,3 +121,35 @@ func finalizeDirectiveRecords(out *result.Result) {
 		out.SuppressedDiagnostics[i], _ = json.Marshal(s.record)
 	}
 }
+
+// Publish a parser explanation and its affected coverage together after bounded
+// validation and reservation. This presentation never proves suppression use.
+func appendRuleParsingProblem(out *result.Result, in Input, projection *projector, snap result.Snapshot, m Metadata, problem Finding) error {
+	diagnostic, err := makeDiagnostic(in, projection, snap, m, problem)
+	if err != nil {
+		return err
+	}
+	work, err := auditSerializationWork(problem.Message, in.path, snap.SHA256)
+	if err != nil {
+		return err
+	}
+	if err = projection.charge(work+64, 4); err != nil {
+		return err
+	}
+	notes, err := reservePresentedSlice(projection, out.Notes)
+	if err != nil {
+		return err
+	}
+	coverage, err := reservePresentedSlice(projection, out.Coverage)
+	if err != nil {
+		return err
+	}
+	record := result.Note{ID: fmt.Sprintf("note-%d", len(notes)+1), Code: "rule-parser-uncertain", Message: problem.Message, Path: in.path, Rule: m.ID, Range: &diagnostic.Range, ByteRange: &diagnostic.ByteRange, Snapshot: &snap}
+	raw, err := json.Marshal(record)
+	if err != nil {
+		return err
+	}
+	out.Notes = append(notes, raw)
+	out.Coverage = append(coverage, result.Coverage{Path: in.path, Rule: m.ID, Reason: result.ParserUncertain, Message: problem.Message, Range: &diagnostic.Range, Snapshot: &snap})
+	return nil
+}

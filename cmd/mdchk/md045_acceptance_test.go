@@ -1,0 +1,256 @@
+package main
+
+import (
+	"crypto/sha256"
+	"encoding/json"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/frithuz/mdchk/internal/result"
+)
+
+type md045NativeLiteral struct {
+	Name, Source string
+	Bytes        int    `json:"source_bytes"`
+	SHA          string `json:"source_sha256"`
+	Flavors      []string
+	Frontmatter  string
+	Decorative   bool `json:"allow_decorative"`
+	Findings     []md045NativeExpected
+	Problems     []md045NativeExpected
+}
+type md045NativeExpected struct {
+	Bytes, Start, End [2]int
+	Expected, Message string
+}
+
+func md045NativeLiterals(t *testing.T) []md045NativeLiteral {
+	t.Helper()
+	b, e := os.ReadFile("../../internal/rules/testdata/md045.json")
+	if e != nil {
+		t.Fatal(e)
+	}
+	var v struct{ Cases []md045NativeLiteral }
+	if e = json.Unmarshal(b, &v); e != nil || len(v.Cases) == 0 {
+		t.Fatal(e)
+	}
+	return v.Cases
+}
+func md045NativeAssert(t *testing.T, out result.Result, tc md045NativeLiteral, view string) {
+	t.Helper()
+	if out.Complete != (len(tc.Problems) == 0) || len(out.Errors)+len(out.Changes)+len(out.DeferredFixes)+len(out.Documents)+len(out.SuppressedDiagnostics) != 0 || len(out.Coverage) != len(tc.Problems) || len(out.Notes) != len(tc.Problems) || len(out.Diagnostics) != len(tc.Findings) {
+		t.Fatal(out, tc.Findings)
+	}
+	for i, d := range out.Diagnostics {
+		w := tc.Findings[i]
+		if d.Rule != "MD045" || d.Message != w.Message || d.FixAvailable || d.ByteRange != (result.ByteRange{Start: w.Bytes[0], End: w.Bytes[1]}) || d.Range != (result.Range{Start: result.Position{Line: w.Start[0], Column: w.Start[1]}, End: result.Position{Line: w.End[0], Column: w.End[1]}}) || d.Snapshot != (result.Snapshot{View: view, SizeBytes: tc.Bytes, SHA256: tc.SHA}) {
+			t.Fatal(d, w)
+		}
+	}
+	for i, w := range tc.Problems {
+		var note result.Note
+		if e := json.Unmarshal(out.Notes[i], &note); e != nil {
+			t.Fatal(e)
+		}
+		want := result.Range{Start: result.Position{Line: w.Start[0], Column: w.Start[1]}, End: result.Position{Line: w.End[0], Column: w.End[1]}}
+		if note.Rule != "MD045" || note.Code != "rule-parser-uncertain" || note.Message != w.Message || note.ByteRange == nil || *note.ByteRange != (result.ByteRange{Start: w.Bytes[0], End: w.Bytes[1]}) || note.Range == nil || *note.Range != want || note.Snapshot == nil || *note.Snapshot != (result.Snapshot{View: view, SizeBytes: tc.Bytes, SHA256: tc.SHA}) {
+			t.Fatal(note, w)
+		}
+		coverage := out.Coverage[i]
+		if coverage.Rule != "MD045" || coverage.Reason != result.ParserUncertain || coverage.Range == nil || *coverage.Range != want || coverage.Snapshot == nil || *coverage.Snapshot != *note.Snapshot {
+			t.Fatal(coverage, w)
+		}
+	}
+}
+func TestCompiledPlatformMD045AnalysisFixtures(t *testing.T) {
+	binary := buildConfigurationExecutable(t, "")
+	for _, tc := range md045NativeLiterals(t) {
+		if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
+			t.Fatal("fixture source identity")
+		}
+		for _, flavor := range tc.Flavors {
+			t.Run(tc.Name+"/"+flavor, func(t *testing.T) {
+				root := configurationProject(t)
+				conf := strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1)
+				conf = strings.Replace(conf, "MD045: {enabled: false}", "MD045: {enabled: true}", 1)
+				if tc.Decorative {
+					conf = strings.Replace(conf, "MD045: {enabled: true}", "MD045: {enabled: true, allow_decorative: true}", 1)
+				}
+				if tc.Frontmatter != "" {
+					conf += "frontmatter: {enabled: true, formats: [" + tc.Frontmatter + "]}\n"
+				}
+				putConfigurationFile(t, root, ".mdchk.yaml", conf)
+				putConfigurationFile(t, root, "doc.md", tc.Source)
+				before := readinessState(t, root)
+				for _, command := range []string{"lint", "inspect", "fix", "apply"} {
+					operation := command
+					if command == "apply" {
+						operation = "fix"
+					}
+					args := []string{operation, "doc.md", "--format=json"}
+					view := "original"
+					if command == "apply" {
+						view = "saved"
+					}
+					if command == "fix" {
+						args = append(args, "--dry-run")
+						view = "candidate"
+					}
+					got := md014NativeRun(t, binary, root, args...)
+					want := 0
+					if command != "inspect" {
+						if len(tc.Findings) > 0 {
+							want = 10
+						}
+						if len(tc.Problems) > 0 {
+							want = 15
+						}
+					}
+					out := md014NativeJSON(t, []byte(got.Stdout), operation)
+					if command == "apply" && got.Status == 13 {
+						if !md038NativeRefusal(t, got, out) {
+							t.Fatal(got, out)
+						}
+						readinessAssertEqual(t, "unsupported manual apply", before, readinessState(t, root))
+						continue
+					}
+					if got.Status != want {
+						t.Fatal(got)
+					}
+					md045NativeAssert(t, out, tc, view)
+					readinessAssertEqual(t, "MD045 analysis/manual preview", before, readinessState(t, root))
+				}
+			})
+		}
+	}
+}
+func TestCompiledPlatformMD045DefaultOnAndInvalidAdmission(t *testing.T) {
+	binary := buildConfigurationExecutable(t, "")
+	for _, flavor := range []string{"commonmark", "gfm"} {
+		for _, value := range []string{"omitted", "{}", "{enabled: false}", "{enabled: false, unknown: true}", "{allow_directives: 1}", "{allow_decorative: 1}"} {
+			t.Run(flavor+"/"+value, func(t *testing.T) {
+				root := configurationProject(t)
+				conf := strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1)
+				if value == "omitted" {
+					conf = strings.Replace(conf, "  MD045: {enabled: false}\n", "", 1)
+				} else {
+					conf = strings.Replace(conf, "MD045: {enabled: false}", "MD045: "+value, 1)
+				}
+				putConfigurationFile(t, root, ".mdchk.yaml", conf)
+				putConfigurationFile(t, root, "doc.md", "![](x)")
+				before := readinessState(t, root)
+				got := md014NativeRun(t, binary, root, "lint", "doc.md", "--format=json")
+				out := md014NativeJSON(t, []byte(got.Stdout), "lint")
+				want, count := 10, 1
+				if value == "{enabled: false}" {
+					want, count = 0, 0
+				}
+				if strings.Contains(value, "unknown") || strings.Contains(value, "allow_directives") || strings.Contains(value, "allow_decorative") {
+					want, count = 12, 0
+				}
+				if got.Status != want || len(out.Diagnostics) != count || len(out.Changes)+len(out.Documents) != 0 {
+					t.Fatal(got, out)
+				}
+				if want == 12 && len(out.Files) != 0 {
+					t.Fatal("configuration failure acquired targets", out)
+				}
+				readinessAssertEqual(t, "MD045 default/settings", before, readinessState(t, root))
+			})
+		}
+	}
+}
+
+func md045Configuration(flavor string) string {
+	return strings.Replace(strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1), "MD045: {enabled: false}", "MD045: {}", 1)
+}
+
+func TestCompiledPlatformMD045FullSourceInspectionAndReset(t *testing.T) {
+	binary := buildConfigurationExecutable(t, "")
+	for _, tc := range []struct {
+		name, source, setting, line string
+		active, hidden              int
+	}{
+		{"suppressed", "<!-- mdchk:disable MD045 -->\n![](x)", "{}", "2", 0, 1},
+		{"enabled", "<!-- mdchk:enable MD045 -->\n![](x)", "{enabled: false}", "2", 1, 0},
+		{"denied", "<!-- mdchk:disable MD045 -->\n![](x)", "{allow_directives: false}", "2", 1, 0},
+		{"raw-context", "A <script>\n\n![](x)\n\n</script>\n\n![](y)", "{}", "3", 0, 0},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := configurationProject(t)
+			conf := strings.Replace(md045Configuration("gfm"), "directives: {enabled: false}", "directives: {enabled: true}", 1)
+			conf = strings.Replace(conf, "MD045: {}", "MD045: "+tc.setting, 1)
+			putConfigurationFile(t, root, ".mdchk.yaml", conf)
+			putConfigurationFile(t, root, "doc.md", tc.source)
+			before := readinessState(t, root)
+			got, p := runInspection(t, binary, root, root, "inspect", "doc.md", "--lines="+tc.line, "--format=json")
+			if got.Status != 0 || len(got.Result.Diagnostics) != tc.active || len(got.Result.SuppressedDiagnostics) != tc.hidden || p.File.SelectedLines.Start == 0 {
+				t.Fatal(got, p)
+			}
+			readinessAssertEqual(t, "full source before inspection", before, readinessState(t, root))
+		})
+	}
+	root := configurationProject(t)
+	conf := strings.Replace(md045Configuration("gfm"), "directives: {enabled: false}", "directives: {enabled: true}", 1)
+	putConfigurationFile(t, root, ".mdchk.yaml", conf)
+	putConfigurationFile(t, root, "first.md", "<!-- mdchk:disable MD045 -->\n![](x)")
+	putConfigurationFile(t, root, "second.md", "![](x)")
+	got := runConfigurationProcess(t, binary, root, "lint", "first.md", "second.md", "--format=json")
+	out := validateConfigurationJSON(t, []byte(got.Stdout))
+	if got.Status != 10 || len(out.Diagnostics) != 1 || out.Diagnostics[0].Path != "second.md" || len(out.SuppressedDiagnostics) != 1 {
+		t.Fatal(got)
+	}
+}
+
+func TestCompiledPlatformMD045HeadersAndInheritedPermissions(t *testing.T) {
+	binary := buildConfigurationExecutable(t, "")
+	for _, tc := range []struct {
+		name, source, extra string
+		want, status        int
+	}{
+		{"yaml", "\ufeff---\nbad: [\n---\n![](x)", "frontmatter: {enabled: true}\n", 1, 10},
+		{"toml", "+++\nbad = [\n+++\n![](x)", "frontmatter: {enabled: true}\n", 1, 10},
+		{"unselected", "---\n![](x)\n---\n![](y)", "frontmatter: {enabled: true, formats: [toml]}\n", 2, 10},
+		{"incomplete", "+++\n![](x)", "frontmatter: {enabled: true}\n", 0, 15},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := configurationProject(t)
+			putConfigurationFile(t, root, ".mdchk.yaml", md045Configuration("gfm")+tc.extra)
+			putConfigurationFile(t, root, "doc.md", tc.source)
+			before := readinessState(t, root)
+			got := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=json")
+			out := validateConfigurationJSON(t, []byte(got.Stdout))
+			if got.Status != tc.status || len(out.Diagnostics) != tc.want || out.Complete != (tc.status != 15) || len(out.Errors) != 0 {
+				t.Fatal(got)
+			}
+			readinessAssertEqual(t, "opaque source headers", before, readinessState(t, root))
+		})
+	}
+	for _, policy := range []string{"allowed", "global-denied", "rule-denied"} {
+		t.Run(policy, func(t *testing.T) {
+			root := configurationProject(t)
+			parent := strings.Replace(md045Configuration("commonmark"), "directives: {enabled: false}", "directives: {enabled: true}", 1)
+			if policy == "global-denied" {
+				parent = strings.Replace(parent, "directives: {enabled: true}", "directives: {enabled: false}", 1)
+			}
+			if policy == "rule-denied" {
+				parent = strings.Replace(parent, "MD045: {}", "MD045: {allow_directives: false}", 1)
+			}
+			child := strings.Replace(md045Configuration("commonmark"), "directives: {enabled: false}", "directives: {enabled: true}", 1)
+			child = strings.Replace(child, "MD045: {}", "MD045: {allow_directives: true}", 1)
+			putConfigurationFile(t, root, ".mdchk.yaml", parent)
+			putConfigurationFile(t, root, "nested/.mdchk.yaml", child)
+			putConfigurationFile(t, root, "nested/doc.md", "<!-- mdchk:disable MD045 -->\n![](x)")
+			got, p := runInspection(t, binary, filepath.Join(root, "nested"), root, "inspect", "doc.md", "--lines=2", "--format=json")
+			active, hidden := 1, 0
+			if policy == "allowed" {
+				active, hidden = 0, 1
+			}
+			if got.Status != 0 || len(got.Result.Diagnostics) != active || len(got.Result.SuppressedDiagnostics) != hidden || p.File.SelectedLines.Start != 2 {
+				t.Fatal(got, p)
+			}
+		})
+	}
+}

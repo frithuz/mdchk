@@ -304,7 +304,7 @@ def semantic_examples(ex, base):
     observed = ex.run(project, ["inspect", "docs/guide.md", "--format", "json"], 0, json_result=True)
     require(observed["status"] == "inspected" and not observed["complete"], "incomplete observation is not validation")
     for settings in ("rules: {single-trailing-newline: {enabled: true}}", "rules: {md047: {enabled: true}}",
-                     "rules: {MD045: {enabled: true}}", "frontmatter: {enabled: true, formats: [unsupported]}", "flavor: pandoc"):
+                     "rules: {MD051: {enabled: true}}", "frontmatter: {enabled: true, formats: [unsupported]}", "flavor: pandoc"):
         config.write_text("version: 1\n" + ("" if settings.startswith("flavor:") else "flavor: commonmark\n") + settings + "\n")
         error = ex.run(project, ["config", "validate", ".", "--format", "json"], 12, json_result=True)
         require(error["errors"][0].get("range") and error["errors"][0].get("path"), "located configuration error")

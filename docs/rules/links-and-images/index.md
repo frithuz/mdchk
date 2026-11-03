@@ -8,7 +8,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD034](md034.md) | URLs without link markup | Analysis implemented; manual findings |
 | [MD039](md039.md) | Whitespace surrounding link labels | Analysis/configuration implemented; report only |
 | [MD042](md042.md) | Links without destinations | Analysis/configuration implemented; report only |
-| [MD045](md045.md) | Images without alternative text | Planned |
+| [MD045](md045.md) | Images without alternative text | Analysis implemented |
 | [MD051](md051.md) | Unresolved fragment targets | Planned |
 | [MD052](md052.md) | References without definitions | Planned |
 | [MD053](md053.md) | Unneeded link and image definitions | Planned |

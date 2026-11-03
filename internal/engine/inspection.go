@@ -175,6 +175,10 @@ func (t *InspectionTrace) ran(id string, outcome RuleOutcome, observational bool
 	}
 	status := "complete"
 	e.Reasons = []string{}
+	if len(outcome.ParsingProblems) != 0 {
+		status = "partial"
+		e.Reasons = append(e.Reasons, "parser-uncertain")
+	}
 	if outcome.IncompleteReason != "" {
 		status = "partial"
 		e.Reasons = append(e.Reasons, "context-unavailable")

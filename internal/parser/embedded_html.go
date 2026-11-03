@@ -67,6 +67,9 @@ type embeddedHTMLCollector struct {
 	raw         string
 	tags        []EmbeddedHTMLTag
 	unavailable bool
+	uncertainty Span
+	// Optional internal consumer receives complete owned tokens without storing a second inventory.
+	tag func(emphasisContent, int, int, int, int) error
 }
 
 // Explicit capacities are reserved before allocation; logical records are
@@ -278,6 +281,13 @@ func (c *embeddedHTMLCollector) scan(n *Node) error {
 		if end == 0 {
 			if named && c.raw == "" {
 				c.unavailable = true
+				if c.tag != nil {
+					parts, err := mapping.slice(at, len(scanner.text))
+					if err != nil {
+						return err
+					}
+					c.uncertainty = contentEnvelope(parts)
+				}
 				return nil
 			}
 			// Unclosed actual opaque tokens protect the remaining owner. Ordinary
@@ -333,6 +343,9 @@ func embeddedASCIIEqual(a, b string) bool {
 }
 
 func (c *embeddedHTMLCollector) add(mapping emphasisContent, start, end, nameStart, nameEnd int) error {
+	if c.tag != nil {
+		return c.tag(mapping, start, end, nameStart, nameEnd)
+	}
 	meterWork(c.ctx, 32)
 	a, err := htmlIDPoint(mapping, start)
 	if err != nil {
