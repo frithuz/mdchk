@@ -1,0 +1,1523 @@
+{
+  "cases": [
+    {
+      "name": "page-bad",
+      "source": "[ Guide ](guide.md)",
+      "source_bytes": 19,
+      "source_sha256": "80484ab82f7bae3e8a8c00518e61a360c58e6eee9e88bc7935c4a0cb2620fb36",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            2
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ]
+        },
+        {
+          "bytes": [
+            7,
+            8
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "name": "page-good",
+      "source": "[Guide](guide.md)",
+      "source_bytes": 17,
+      "source_sha256": "813addce25763d2325f2bcf5897358cd491894d310bf8b90ca95ac1e45fab9e5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "leading-tabs",
+      "source": "[\t  Guide](x)",
+      "source_bytes": 13,
+      "source_sha256": "0e3ee825a1540f057678ac6fa2a78446c319ab2c6deacb94f7b645aa7907b17f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "expected": "\t  ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "name": "trailing-tabs",
+      "source": "[Guide \t](x)",
+      "source_bytes": 12,
+      "source_sha256": "38b502a81882e13cad3737898513c24ea3f7f387ba825419ebb05fed5825f284",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            6,
+            8
+          ],
+          "expected": " \t",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "name": "all-space",
+      "source": "[   ](x)",
+      "source_bytes": 8,
+      "source_sha256": "b9eb3eaeaf73e599985eead266ebb532b514aa6aefddb20608008ed980f46bc2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "expected": "   ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "name": "empty",
+      "source": "[](x)",
+      "source_bytes": 5,
+      "source_sha256": "7fe74bb382c84b39b6759d4d9c211df7242c1abae152bb2d727741c48bc7db5b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "unicode-coordinates",
+      "source": "é😀 [  Guide　](x)",
+      "source_bytes": 25,
+      "source_sha256": "dd66be2c6b9aa1a76fdcd5adf10b3d1fef4f4f1a51d809e302facaf990121e46",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            13
+          ],
+          "expected": "  ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            7
+          ]
+        },
+        {
+          "bytes": [
+            18,
+            21
+          ],
+          "expected": "　",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            13
+          ]
+        }
+      ]
+    },
+    {
+      "name": "not-unicode-space",
+      "source": "[\u000b  Guide\u000b  ](x)",
+      "source_bytes": 28,
+      "source_sha256": "74a6de826d0cafecaf4998feb1f1b30ca5b3c4ff06e79ce4842ac3eba70dfb8a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "ff",
+      "source": "[\fGuide\f](x)",
+      "source_bytes": 12,
+      "source_sha256": "792e5fce885b41ad91eb09afe525cd95b81fde8aabfd9c12b8e3a2e0f5fb5f0c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            2
+          ],
+          "expected": "\f",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ]
+        },
+        {
+          "bytes": [
+            7,
+            8
+          ],
+          "expected": "\f",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "name": "full-reference",
+      "source": "[ Guide ][ id ]\n\n[id]: x\n",
+      "source_bytes": 25,
+      "source_sha256": "b15ee5bbbaa772ad3c24b53c27a3a0ae4663867b01b6c517790200ca4af70041",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            2
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ]
+        },
+        {
+          "bytes": [
+            7,
+            8
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "name": "collapsed-reference",
+      "source": "[ Guide ][]\n\n[Guide]: x\n",
+      "source_bytes": 24,
+      "source_sha256": "a969067189a241417948528a0a9a7f62dba294faed0ea52cb15f2760c221e716",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            2
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ]
+        },
+        {
+          "bytes": [
+            7,
+            8
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "name": "shortcut-reference",
+      "source": "[ Guide ]\n\n[Guide]: x\n",
+      "source_bytes": 22,
+      "source_sha256": "d528851e1b5d14689d1481d73bbddd1fa5c292cc4f403fab9d50c8de7877f341",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            2
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ]
+        },
+        {
+          "bytes": [
+            7,
+            8
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "name": "definition-before",
+      "source": "[id]: x\n\n[ Guide ][id]\n",
+      "source_bytes": 23,
+      "source_sha256": "fb933f5e4811edfbedff39ac90c1d75f82259cd9c150cde225c71a325af8a6bb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            10,
+            11
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            3,
+            2
+          ],
+          "end": [
+            3,
+            3
+          ]
+        },
+        {
+          "bytes": [
+            16,
+            17
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            3,
+            8
+          ],
+          "end": [
+            3,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reference-key-only",
+      "source": "[Guide][ id ]\n\n[ id ]: x\n",
+      "source_bytes": 25,
+      "source_sha256": "5e3e04829be7aefad2364ae382f7c4583453847faaf8170ba32205b9699884e3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "unresolved",
+      "source": "[ Guide ][missing] [ Guide ][] [ Guide ]",
+      "source_bytes": 40,
+      "source_sha256": "b7fdcd3a81381c8392dcbec865c280a9351d462b797a034c3b1c358e4cea74cd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "malformed",
+      "source": "[ Guide ](missing [ Guide ",
+      "source_bytes": 26,
+      "source_sha256": "c1b1dfaa3e6e16a2b3dcff808d3c0ce65df1d61b24b56a988229116acf8702ab",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "escaped-brackets",
+      "source": "\\[ Guide ](x)",
+      "source_bytes": 13,
+      "source_sha256": "8684178bbbf05a7c56eac2806711a4925b2bb175a2fa19ed99abb52a23ca050f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "image",
+      "source": "![ Guide ](x) ![ Guide ][id]\n\n[id]: x\n",
+      "source_bytes": 38,
+      "source_sha256": "e190c9b919a7b971e0497ee9332248617074eb5a70849b52a9b5bdb56d1a28d6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "image-with-link",
+      "source": "![[ Guide ](x)](image)",
+      "source_bytes": 22,
+      "source_sha256": "e4e3069069ebd22413e8ba2386fdcbb124099528ebf96d60465b19cbef3b1eac",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "link-around-image",
+      "source": "[ ![ alt ](image) ](x)",
+      "source_bytes": 22,
+      "source_sha256": "cf52b675e415fc5604e6eb76f10e3a13b9d38cecb1a3f8dbfe49e38a7c98f74d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            2
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ]
+        },
+        {
+          "bytes": [
+            17,
+            18
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            18
+          ],
+          "end": [
+            1,
+            19
+          ]
+        }
+      ]
+    },
+    {
+      "name": "code-span",
+      "source": "[` x `](x)",
+      "source_bytes": 10,
+      "source_sha256": "a6ad22814c9579070f203bf5e6840f9496cffd38475890d134cea7b39524e230",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "outer-code-space",
+      "source": "[ ` x ` ](x)",
+      "source_bytes": 12,
+      "source_sha256": "32ba8ff19a3ef7581e97e121bff608cb17289cee24ad328af622a8d75d5bd8d0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            2
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ]
+        },
+        {
+          "bytes": [
+            7,
+            8
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "name": "entities",
+      "source": "[&nbsp;Guide&#32;](x) [&#x20;Guide](x)",
+      "source_bytes": 38,
+      "source_sha256": "bc1a3e312f62c665ee22a05ce1b5ab31e852b35353faf9c2ee2ab8decf0896de",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "inner-markup",
+      "source": "[* text*](x) [*text *](x) [** text **](x)",
+      "source_bytes": 41,
+      "source_sha256": "ad3725747ab79f39cedc051fea1b7d27d5c1572f402f14e220c9e054955b8788",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "outer-markup",
+      "source": "[ *text* ](x)",
+      "source_bytes": 13,
+      "source_sha256": "c22035c1eb5519638385f892fcfb8700ec8989dd52e385f4a1b058b18b657e8f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            2
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ]
+        },
+        {
+          "bytes": [
+            8,
+            9
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "heading",
+      "source": "# [ Guide ](x)\n",
+      "source_bytes": 15,
+      "source_sha256": "95ee09f183db0911ce355047bb4f9108e950ffc1cabc76afdbbdaba9afc5ee57",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            3,
+            4
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ]
+        },
+        {
+          "bytes": [
+            9,
+            10
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            11
+          ]
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "source": "- > [ Guide ](x)\n",
+      "source_bytes": 17,
+      "source_sha256": "0507158b247444274e54f9eaa50cb0317ace395baa7525420741a7c00a91cba6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            5,
+            6
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            7
+          ]
+        },
+        {
+          "bytes": [
+            11,
+            12
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            13
+          ]
+        }
+      ]
+    },
+    {
+      "name": "lf-label",
+      "source": "[ \n Guide \n ](x)\n",
+      "source_bytes": 17,
+      "source_sha256": "55c75314f8a12303561ef2b0d272521053a9d9cd3fff3656a47552483e7dd467",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            3
+          ],
+          "expected": " \n",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            2,
+            1
+          ]
+        },
+        {
+          "bytes": [
+            9,
+            11
+          ],
+          "expected": " \n",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            2,
+            7
+          ],
+          "end": [
+            3,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "crlf-label",
+      "source": "[ \r\n Guide \r\n ](x)\r\n",
+      "source_bytes": 20,
+      "source_sha256": "53051c1497fdba109577da0c0d0bfdeb6c3e0898aadf922aa8fe56312eef6bb0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "expected": " \r\n",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            2,
+            1
+          ]
+        },
+        {
+          "bytes": [
+            10,
+            13
+          ],
+          "expected": " \r\n",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            2,
+            7
+          ],
+          "end": [
+            3,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cr-label",
+      "source": "[ \r Guide \r ](x)\r",
+      "source_bytes": 17,
+      "source_sha256": "9e18971715b3c7a59dcb080d878267e7e36f96dd6e52ef5eee3352309d340fa9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            3
+          ],
+          "expected": " \r",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            2,
+            1
+          ]
+        },
+        {
+          "bytes": [
+            9,
+            11
+          ],
+          "expected": " \r",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            2,
+            7
+          ],
+          "end": [
+            3,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quoted-label",
+      "source": "> [ \n>  Guide \n>  ](x)\n",
+      "source_bytes": 25,
+      "source_sha256": "5e91c0edd2d2102250e146c126a87c355b5b9b065e68ae1cd8387c6eaced4e44",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            3,
+            5
+          ],
+          "expected": " \n",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            2,
+            1
+          ]
+        },
+        {
+          "bytes": [
+            7,
+            9
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            4
+          ]
+        },
+        {
+          "bytes": [
+            14,
+            16
+          ],
+          "expected": " \n",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            2,
+            9
+          ],
+          "end": [
+            3,
+            1
+          ]
+        },
+        {
+          "bytes": [
+            18,
+            20
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quoted-label-crlf",
+      "source": "> [ \r\n>  Guide \r\n>  ](x)\r\n",
+      "source_bytes": 28,
+      "source_sha256": "5cf04ffe5cf40f17c66ff80f5d82ceb195fc63d0c0b15d51eb59803c5d937fb0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            3,
+            6
+          ],
+          "expected": " \r\n",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            2,
+            1
+          ]
+        },
+        {
+          "bytes": [
+            8,
+            10
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            4
+          ]
+        },
+        {
+          "bytes": [
+            15,
+            18
+          ],
+          "expected": " \r\n",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            2,
+            9
+          ],
+          "end": [
+            3,
+            1
+          ]
+        },
+        {
+          "bytes": [
+            20,
+            22
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "name": "allwhite-quoted",
+      "source": "> [ \n>  ](x)\n",
+      "source_bytes": 14,
+      "source_sha256": "838cda5bcfe7962410b4835aa408ac0e762e6f1d6e60c6af8ede19e1768f69e4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            3,
+            5
+          ],
+          "expected": " \n",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            2,
+            1
+          ]
+        },
+        {
+          "bytes": [
+            7,
+            9
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "name": "fenced-code",
+      "source": "```md\n[ Guide ](x)\n```\n",
+      "source_bytes": 23,
+      "source_sha256": "2286229b936b450cf1c3e22a66a5316ab3383143102b1cc0ce639ceeda62a383",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "indented-code",
+      "source": "    [ Guide ](x)\n",
+      "source_bytes": 17,
+      "source_sha256": "42d0f4b3e1f83b04bc8c587b175492fa2e0a5c0bf4e54c27b83f28dcf43a3799",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "comment",
+      "source": "<!-- [ Guide ](x) -->\n",
+      "source_bytes": 22,
+      "source_sha256": "4c1357905698ab608c0e672cac3d84d92acd9531aebdd69513e8f01a6f51bb01",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "html-block",
+      "source": "<div>\n[ Guide ](x)\n</div>\n",
+      "source_bytes": 26,
+      "source_sha256": "5054fcde01f1c2a7d9c7cb898ccfe9b6c81c4f43087fdc85d1153511eb3108f3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "raw-inline",
+      "source": "A <script>[ Guide ](x)</script> [ After ](x)",
+      "source_bytes": 44,
+      "source_sha256": "6ca37436887178c3d28ffa2faa58457ea76376965e2e68ae18a36ce9623640d9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            33,
+            34
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            34
+          ],
+          "end": [
+            1,
+            35
+          ]
+        },
+        {
+          "bytes": [
+            39,
+            40
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            40
+          ],
+          "end": [
+            1,
+            41
+          ]
+        }
+      ]
+    },
+    {
+      "name": "raw-open-label",
+      "source": "[ <pre>Guide ](x) [ Later ](x)",
+      "source_bytes": 30,
+      "source_sha256": "71d01c0834e7105ad23e60d9f1781d2616b051be8337ac561c20791c5a2fc94c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            2
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "name": "raw-close-label",
+      "source": "A <pre>[ Guide</pre> ](x) [ Later ](x)",
+      "source_bytes": 38,
+      "source_sha256": "423ad4eabe07096926d76fd1a6f1a3253ac223f1f185f53c3ea2de8324eed59d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            20,
+            21
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            21
+          ],
+          "end": [
+            1,
+            22
+          ]
+        },
+        {
+          "bytes": [
+            27,
+            28
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            28
+          ],
+          "end": [
+            1,
+            29
+          ]
+        },
+        {
+          "bytes": [
+            33,
+            34
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            34
+          ],
+          "end": [
+            1,
+            35
+          ]
+        }
+      ]
+    },
+    {
+      "name": "raw-image-isolation",
+      "source": "![<pre>](image) [ Guide ](x)",
+      "source_bytes": 28,
+      "source_sha256": "7e13960729fe91a8dc133d30ebab4b8730028944830179d5516db14fff9535c7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            17,
+            18
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            18
+          ],
+          "end": [
+            1,
+            19
+          ]
+        },
+        {
+          "bytes": [
+            23,
+            24
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            24
+          ],
+          "end": [
+            1,
+            25
+          ]
+        }
+      ]
+    },
+    {
+      "name": "angle-and-bare",
+      "source": "<https://example.org> https://example.org ftp://example.org",
+      "source_bytes": 59,
+      "source_sha256": "b74c6fba630ab437d4ad1c3f0b731520fad74cf2d08620462712caaf25057ad2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "destination-title",
+      "source": "[Guide]( target \" title \" )",
+      "source_bytes": 27,
+      "source_sha256": "f4adf7591494a6632debc6312295200c0c6e0ae91b4b4cde7d35a139306756df",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "multiline-reference",
+      "source": "[ \n Guide \n ][id]\n\n[id]: x\n",
+      "source_bytes": 27,
+      "source_sha256": "b7f2ccb876ae06dba378c383dad5beefafeb45b4ac47be4868bba54c4837947b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            3
+          ],
+          "expected": " \n",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            2,
+            1
+          ]
+        },
+        {
+          "bytes": [
+            9,
+            11
+          ],
+          "expected": " \n",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            2,
+            7
+          ],
+          "end": [
+            3,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "trailing-escaped-pipe",
+      "source": "[Guide\\| ](x)",
+      "source_bytes": 13,
+      "source_sha256": "6ae64176d42c6cb1d5d8bbe398a22b6119f23b6ed258be6b2cc709e0bc80d9f8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            9
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "frontmatter-yaml",
+      "source": "---\nlabel: \"[ Guide ](x)\"\n---\n\n[ Guide ](x)\n",
+      "source_bytes": 44,
+      "source_sha256": "99c478942ac5a52f8b73870429bbe7ccbf95b3d080ae548b873d3e8b249458f0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            32,
+            33
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            5,
+            2
+          ],
+          "end": [
+            5,
+            3
+          ]
+        },
+        {
+          "bytes": [
+            38,
+            39
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            5,
+            8
+          ],
+          "end": [
+            5,
+            9
+          ]
+        }
+      ],
+      "frontmatter": "yaml"
+    },
+    {
+      "name": "frontmatter-toml",
+      "source": "+++\nlabel = \"[ Guide ](x)\"\n+++\n\n[ Guide ](x)\n",
+      "source_bytes": 45,
+      "source_sha256": "f3779f4e5b517681c3e1a34b56fd9ce99a1a93453d515983a6baf98e1237011b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            33,
+            34
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            5,
+            2
+          ],
+          "end": [
+            5,
+            3
+          ]
+        },
+        {
+          "bytes": [
+            39,
+            40
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            5,
+            8
+          ],
+          "end": [
+            5,
+            9
+          ]
+        }
+      ],
+      "frontmatter": "toml"
+    },
+    {
+      "name": "gfm-table",
+      "source": "| Label |\n| --- |\n| [ Guide ](x) |\n",
+      "source_bytes": 35,
+      "source_sha256": "489a9f3f5961968310206bd3dd5a953199422a989ec13d8eb893a78ce8647587",
+      "flavors": [
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            21,
+            22
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            5
+          ]
+        },
+        {
+          "bytes": [
+            27,
+            28
+          ],
+          "expected": " ",
+          "message": "Whitespace surrounding link label.",
+          "start": [
+            3,
+            10
+          ],
+          "end": [
+            3,
+            11
+          ]
+        }
+      ]
+    }
+  ]
+}

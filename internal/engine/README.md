@@ -746,3 +746,9 @@ binary lookup, avoiding a repeated full-node scan for each independent example.
 The table remains private to the original source and cumulative operation;
 missing required authority and malformed selected associations retain their
 distinct unavailable/error outcomes.
+
+MD039's `RuleContext.LinkLabelWhitespace` facade retains original parse/source/
+options and cumulative operation authority, including both caller and originating
+controls. It exposes detached raw visible-label edge ranges only; unavailable
+required context withholds the complete inventory. MD039 is default-enabled, has
+no rule-specific options and permanently retains NoFix metadata.

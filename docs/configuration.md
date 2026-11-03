@@ -25,7 +25,15 @@ previews are produced; MD047 remains the sole current fixer.
 
 Use `.mdchk.yaml` to define your project's Markdown expectations. Lint and fix use the same rules and exclusions from the terminal; the planned MCP modes share this contract. Without a configuration file, mdchk uses its defaults, including the supported GFM profile. Missing default rule implementations produce incomplete analysis (`15`).
 
-This is the approved configuration contract. Lint loads and validates configuration before target access, then acquires source snapshots and executes the shared parser and available registered checks. Lint, fix and config validate support text, schema-v1 JSON, VS Code and GitHub reports; inspect supports text/JSON. MD047 terminating-newline analysis, safe previews and apply on the verified Darwin arm64+cgo/local APFS adapter are implemented; MD001 heading-increment analysis and its opt-in `frontmatter_title` setting are also implemented for CommonMark/GFM. MD004 bullet-marker analysis is implemented for both flavors, enabled by default,
+This is the approved configuration contract. Lint loads and validates configuration before target access, then acquires source snapshots and executes the shared parser and available registered checks. Lint, fix and config validate support text, schema-v1 JSON, VS Code and GitHub reports; inspect supports text/JSON.
+
+The implemented-feature examples below are not exhaustive; see the
+[current rule inventory](rules/index.md) for availability and defaults.
+[MD039 link-label-whitespace analysis](rules/links-and-images/md039.md) is
+available for CommonMark and GFM, enabled by default with no rule-specific
+options and permanently report-only (`NoFix`).
+
+MD047 terminating-newline analysis, safe previews and apply on the verified Darwin arm64+cgo/local APFS adapter are implemented; MD001 heading-increment analysis and its opt-in `frontmatter_title` setting are also implemented for CommonMark/GFM. MD004 bullet-marker analysis is implemented for both flavors, enabled by default,
 with `marker: consistent` or explicit `asterisk`, `plus` and `dash` choices.
 MD005 sibling-list alignment analysis is implemented for both flavors, enabled by
 default with no rule-specific options. It retains each actual group's first direct
@@ -59,9 +67,9 @@ rule-specific options; MD025 and MD041 accept integer `level` from 1 through 6 (
 `siblings_only`, default false; MD022 accepts nonnegative integer `before` and `after`
 minima, each defaulting to 1. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009,
 MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043,
-MD063, MD080, MD082, MD090, MD081, MD088, MD033, MD086, MD087 and MD093 are report-only. Other ordinary rule
-implementations remain pending. Missing enabled defaults produce coverage deficits
-rather than clean results; valid UTF-8 with all ordinary rules disabled can return clean
+MD063, MD080, MD082, MD090, MD081, MD088, MD033, MD086, MD087 and MD093 are report-only.
+Rules marked unavailable in the linked inventory remain pending. Missing enabled
+defaults produce coverage deficits rather than clean results; valid UTF-8 with all ordinary rules disabled can return clean
 `0`. See [initial capability handling](#initial-capability-handling) for how development
 builds must report unavailable behavior.
 

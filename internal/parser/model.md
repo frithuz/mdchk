@@ -2117,3 +2117,17 @@ images, code, metadata, definitions and raw HTML remain protected. Necessary
 unknown mapping/raw state reports unavailable inventory rather than a clean or
 partial result. The complete lexical boundaries and manual-finding policy are
 defined by [MD034](../../docs/rules/links-and-images/md034.md).
+
+## Link-label edge whitespace observation
+
+`Document.LinkLabelWhitespace` supplies MD039 detached original ranges under the
+completed production parse, identical source/index/options and original shared
+budget. Only visible first-bracket `Link.Label` contributions of inline/full/
+collapsed/shortcut origins participate. Raw delimiter-adjacent Zs/TAB/LF/FF/CR
+runs are observed before decoding; source gaps split runs, CRLF remains atomic,
+and an all-whitespace label is not reported twice. Reference identifiers and
+definitions never enter the projection. Images and their descendants are opaque.
+Actual raw HTML transitions inside explicit labels remain authoritative for
+leading versus trailing eligibility. Unknown required provenance withholds the
+complete inventory; cancellation or budget failure discards accumulated spans.
+The observation grants no parse or correction authority.

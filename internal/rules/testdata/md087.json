@@ -533,8 +533,8 @@
     },
     {
       "name": "known-unavailable-mixed",
-      "source": "# A\n<!-- mdchk:disable MD047 MD001 MD047 MD039 -->\n### B\n",
-      "settings": "Default-enabled unavailable MD039 retained; do not explicitly enable it in config. Explicitly enable MD087, MD001, MD047.",
+      "source": "# A\n<!-- mdchk:disable MD047 MD001 MD047 MD042 -->\n### B\n",
+      "settings": "Default-enabled unavailable MD042 retained; do not explicitly enable it in config. Explicitly enable MD087, MD001, MD047.",
       "findings": [
         {
           "target": "MD047",
@@ -563,7 +563,7 @@
         },
         {
           "owner": 0,
-          "target": "MD039",
+          "target": "MD042",
           "status": "uncertain"
         }
       ],
