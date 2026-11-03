@@ -85,7 +85,7 @@ func TestMD013AnalysisFixtures(t *testing.T) {
 }
 func TestMD013CatalogAndStrictOptions(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD013") || r.Available("MD042") || len(r.Metadata()) != 87 {
+	if !r.Available("MD013") || r.Available("MD045") || len(r.Metadata()) != 87 {
 		t.Fatal("catalog")
 	}
 	on := 0

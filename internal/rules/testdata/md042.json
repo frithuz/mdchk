@@ -1,0 +1,1328 @@
+{
+  "cases": [
+    {
+      "name": "page-bad",
+      "source": "[Guide]()",
+      "source_bytes": 9,
+      "source_sha256": "abd494940559602051bd808ff849535888ca99a82cc4b0df12367b2dbfb16937",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            8
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "name": "page-good",
+      "source": "[Guide](guide.md)",
+      "source_bytes": 17,
+      "source_sha256": "813addce25763d2325f2bcf5897358cd491894d310bf8b90ca95ac1e45fab9e5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "hash",
+      "source": "[Guide](#)",
+      "source_bytes": 10,
+      "source_sha256": "38f6d5c348c8ce6a43e98f8cfb6f84faec6977d09b131857362fdb4b06d22347",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            9
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "angle-empty",
+      "source": "[Guide](<>)",
+      "source_bytes": 11,
+      "source_sha256": "7aacc165b1b3c48ca511071f1f427a2978640d1c66b2b7ee15ef41f01b0a8f0d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "angle-hash",
+      "source": "[Guide](<#>)",
+      "source_bytes": 12,
+      "source_sha256": "9a58265f72eb1be5f22d2e8a2ec6f108445cc32071b1a9b90d90c144b1a3fdc9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            9,
+            10
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            11
+          ]
+        }
+      ]
+    },
+    {
+      "name": "escape-hash",
+      "source": "[Guide](\\#)",
+      "source_bytes": 11,
+      "source_sha256": "f46f9ab8bed5ffca10d380a4d3903b7f1a469a8f9d3dd251f22c9b6a134b70cf",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            10
+          ],
+          "expected": "\\#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            11
+          ]
+        }
+      ]
+    },
+    {
+      "name": "decimal-hash",
+      "source": "[Guide](&#35;)",
+      "source_bytes": 14,
+      "source_sha256": "e31d40279387a0b973705769ace8d013d47fdd41074dd2bb59a21c971123fd7b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            13
+          ],
+          "expected": "&#35;",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hex-hash",
+      "source": "[Guide](&#x23;)",
+      "source_bytes": 15,
+      "source_sha256": "613848260ff2911e72a824285108d79c05b1b430c9e64b39f51e5e07e3edd311",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            14
+          ],
+          "expected": "&#x23;",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            15
+          ]
+        }
+      ]
+    },
+    {
+      "name": "named-hash",
+      "source": "[Guide](&num;)",
+      "source_bytes": 14,
+      "source_sha256": "04858c563280fb467f5379568c2ff26be0a8b02af0c11b5b7eb6cea2f1f2eb58",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            13
+          ],
+          "expected": "&num;",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "name": "decode-once",
+      "source": "[Guide](&amp;num;) [Guide](&amp;#35;)",
+      "source_bytes": 37,
+      "source_sha256": "97ad7cedfb0cb975ac19c7387d835eb41f95e9bd3fc8ade8920bfc2e95bb07c3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "percent",
+      "source": "[Guide](%23)",
+      "source_bytes": 12,
+      "source_sha256": "232c2cd56cd1b60226c6d378c53d21c45f53edb88b8d3d7fdfebc1e567e65779",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "not-lone-hash",
+      "source": "[Guide](##) [Guide](#id) [Guide](file#) [Guide](?x#)",
+      "source_bytes": 52,
+      "source_sha256": "412b15f8fa534d2181031f8d3d66ba5bd32ea5a617d60532d65fccba3d38f86a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "not-trimmed",
+      "source": "[Guide](< >) [Guide](< # >)",
+      "source_bytes": 27,
+      "source_sha256": "c22fe1e3f169c9a7a6542fc5f086620bb51c8fd1ca7f755563189f6f01e743c7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "empty-label",
+      "source": "[]() [](#)",
+      "source_bytes": 10,
+      "source_sha256": "caf93802e11e93e003ebd9e9935b7f91e73f1d9a57e3441ecc30cee997f95eb5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            3,
+            3
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            4
+          ]
+        },
+        {
+          "bytes": [
+            8,
+            9
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "title",
+      "source": "[Guide](<> \"title\") [Guide](<#> '') [Guide](<> (title))",
+      "source_bytes": 55,
+      "source_sha256": "1c1f5bc9b11433235dd02222138fe9a0df32eb8acd843ccd56598695042a759d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            10
+          ]
+        },
+        {
+          "bytes": [
+            29,
+            30
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            30
+          ],
+          "end": [
+            1,
+            31
+          ]
+        },
+        {
+          "bytes": [
+            45,
+            45
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            46
+          ],
+          "end": [
+            1,
+            46
+          ]
+        }
+      ]
+    },
+    {
+      "name": "title-ambiguity",
+      "source": "[Guide](\"title\") [Guide]( \"title\")",
+      "source_bytes": 34,
+      "source_sha256": "f791b9cea29a2ab93be42abbb667a11ea63ef63c167a800ef3f5fa55fa24fbee",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "whitespace",
+      "source": "[Guide](   ) [Guide]( \t# \t)",
+      "source_bytes": 27,
+      "source_sha256": "caef24c5013f13d6d957d8cb836c0b78506b4f94e15e466323aa912e0dd32476",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            11,
+            11
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            12
+          ]
+        },
+        {
+          "bytes": [
+            23,
+            24
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            24
+          ],
+          "end": [
+            1,
+            25
+          ]
+        }
+      ]
+    },
+    {
+      "name": "multiline",
+      "source": "[Guide](\n) [Guide](#\n)",
+      "source_bytes": 22,
+      "source_sha256": "6d42b58030b44bac656dd917b6fa9d4b0f77565c508a085566c59408fcaa3328",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ]
+        },
+        {
+          "bytes": [
+            19,
+            20
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            2,
+            11
+          ],
+          "end": [
+            2,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "name": "crlf",
+      "source": "[Guide](\r\n)\r\n[Guide](#\r\n)",
+      "source_bytes": 25,
+      "source_sha256": "335c7942ef1cd16b4818f6f519a32a5d454e6941979a2a9536d0765b7afdced1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ]
+        },
+        {
+          "bytes": [
+            21,
+            22
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            3,
+            9
+          ],
+          "end": [
+            3,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cr",
+      "source": "[Guide](\r)\r[Guide](#)",
+      "source_bytes": 21,
+      "source_sha256": "4812904f3333404b275f4d07db9b525e4119b7edeefc7cfdc8d33b7c937a8a16",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ]
+        },
+        {
+          "bytes": [
+            19,
+            20
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            3,
+            9
+          ],
+          "end": [
+            3,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "name": "unicode",
+      "source": "é😀é [Guide](#) [Guide]()",
+      "source_bytes": 30,
+      "source_sha256": "6291e497eb0037f1627c513913b2007932689d7f70375bcfac0b40c6e9dcfccd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            18,
+            19
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            15
+          ]
+        },
+        {
+          "bytes": [
+            29,
+            29
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            25
+          ],
+          "end": [
+            1,
+            25
+          ]
+        }
+      ]
+    },
+    {
+      "name": "heading",
+      "source": "# [Guide](#)\n",
+      "source_bytes": 13,
+      "source_sha256": "4d23e0419934895cccbcb52878cc3720d203660a88927ea8570ffc685f6cc00f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            10,
+            11
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nested",
+      "source": "- > [Guide]()\n",
+      "source_bytes": 14,
+      "source_sha256": "a15227b41dd135703600daf5a23460d2685c0bfe6ed24c0a6a97b713b2a8a11b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            12,
+            12
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            13
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quoted-multiline",
+      "source": "> [Guide](\n> #)\n",
+      "source_bytes": 16,
+      "source_sha256": "608ca5fe21bd9dbc31e7c555dc0dbc2e602db2bd6aa8c5f133110d48bea7d056",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            13,
+            14
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quoted-multiline-crlf",
+      "source": "> [Guide](\r\n> #)\r\n",
+      "source_bytes": 18,
+      "source_sha256": "4e038f8c4f1f8e3d84bdc4df69d2d4deec71dde93f6193c8d6425d53e0273184",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            14,
+            15
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quoted-missing",
+      "source": "> [Guide](\n> )\n",
+      "source_bytes": 15,
+      "source_sha256": "54ff7c925d24b013b0ccf43c6135eef530187cca66c6d2c97e57d6f37a91f867",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            13,
+            13
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "name": "emphasis",
+      "source": "*[Guide]()* **[Guide](#)**",
+      "source_bytes": 26,
+      "source_sha256": "4eb6ae847faccf6049899b62c4fc04e6746ca29eec643488984b9e65c0b716b0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            10
+          ]
+        },
+        {
+          "bytes": [
+            22,
+            23
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            23
+          ],
+          "end": [
+            1,
+            24
+          ]
+        }
+      ]
+    },
+    {
+      "name": "label-markup",
+      "source": "[*Guide*](#) [`Guide`]()",
+      "source_bytes": 24,
+      "source_sha256": "76fca304be92a751c8899e604927a57fdcecc2b13b54a1521e7ae56a30fbfd67",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            10,
+            11
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            12
+          ]
+        },
+        {
+          "bytes": [
+            23,
+            23
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            24
+          ],
+          "end": [
+            1,
+            24
+          ]
+        }
+      ]
+    },
+    {
+      "name": "references",
+      "source": "[Guide][id] [id][] [id]\n\n[id]: <>\n",
+      "source_bytes": 34,
+      "source_sha256": "e39ed8df76b3ce63f1d60401eabaa10ab7de636025728f1d9218301ee7dcea94",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "hash-reference",
+      "source": "[Guide][id]\n\n[id]: #\n",
+      "source_bytes": 21,
+      "source_sha256": "500bc9a08f59640eb4b0c22c86eab85d3e3decef6f4d011586225546de606cf7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "definition",
+      "source": "[id]: <>\n",
+      "source_bytes": 9,
+      "source_sha256": "f9d70ad49486e470de8d17b41592afdaaff5344d7560abf96067b53afbf0dec3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "unresolved",
+      "source": "[Guide][missing] [Guide][] [Guide]",
+      "source_bytes": 34,
+      "source_sha256": "596c46b755e51571628b938ff0854e4af6a9b9bfbc3e081fe4c4a4f42db0de68",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "image",
+      "source": "![Guide]() ![Guide](#) ![Guide](<>)",
+      "source_bytes": 35,
+      "source_sha256": "230b1ced16edef0690b5de21bcb54eaabc18c2834b2f570b5fa6d81fb7a52878",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "image-with-link",
+      "source": "![[Guide](#)](image)",
+      "source_bytes": 20,
+      "source_sha256": "5da33238b1b76d0a646dc0fb4207834fd4f241da55c74883b0b66782c562200d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "image-in-link",
+      "source": "[![alt](image)](#)",
+      "source_bytes": 18,
+      "source_sha256": "90dd40e306335fbbf1e0447b22c7aaa18dfcb609021f9cf91843f9a99f740535",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            16,
+            17
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "name": "escaped-bracket",
+      "source": "\\[Guide]()",
+      "source_bytes": 10,
+      "source_sha256": "a87ee76ea2418ca51fa29e0fdcb0b5b77fc6bfcddfedf243f9ee1a084796ff20",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "malformed",
+      "source": "[Guide]( [Guide](missing [Guide](",
+      "source_bytes": 33,
+      "source_sha256": "980e7754634f7454d07ffd447816db187e60bf63916a141224c82bb9c8e66867",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "block-interruption",
+      "source": "[Guide](\n#\n)",
+      "source_bytes": 12,
+      "source_sha256": "0cbff18ca929b4473b705653cf97b94b03b1ff15f3bd7a874323690f431b38c1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "code-span",
+      "source": "`[Guide]()`",
+      "source_bytes": 11,
+      "source_sha256": "ca4c465c3bba2f08af63c6c193880f6da07cf06785b073e31e087832f8f186e8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "fenced",
+      "source": "```md\n[Guide](#)\n```\n",
+      "source_bytes": 21,
+      "source_sha256": "bee8ecfca78a09b6144c4bd37b93ce150c5079dab700a2293d442f2ed5b5e24c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "indented",
+      "source": "    [Guide]()\n",
+      "source_bytes": 14,
+      "source_sha256": "1e2d558cb087ddf57a5cc45fd19b76097c4bdd77df3e2bf9e995763103725ce5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "comment",
+      "source": "<!-- [Guide]() -->\n",
+      "source_bytes": 19,
+      "source_sha256": "57d0ec134fb1939c3712160a22a0deff466a059f144dcfc74037c469aab8009b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "html-attribute",
+      "source": "A <span title=\"[Guide](#)\">text</span>",
+      "source_bytes": 38,
+      "source_sha256": "d0a9ea938e07897fa9754d29f41bf07c520c414248e011225d2d6096d0e62038",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "html-block",
+      "source": "<div>\n[Guide]()\n</div>\n",
+      "source_bytes": 23,
+      "source_sha256": "3482ecd34a1d124d134a3199b3be8cdcc21cc1feae75619f5a40f8753cbbe09a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "raw-inline",
+      "source": "A <script>[Guide](#)</script> [Guide]()",
+      "source_bytes": 39,
+      "source_sha256": "2bf9e62b2924e1737f5022ccad6a33f084415306a1407703bb42ce2a38d01e5d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            38,
+            38
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            39
+          ],
+          "end": [
+            1,
+            39
+          ]
+        }
+      ]
+    },
+    {
+      "name": "raw-open-label",
+      "source": "[<script>](#) [later]()",
+      "source_bytes": 23,
+      "source_sha256": "bc1c0ab2a0c52714ac246ce2dd9b09c3da3390fae6ac540a8a57947988f7d9ff",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "raw-close-label",
+      "source": "A <script>[Guide</script>](#) [later]()",
+      "source_bytes": 39,
+      "source_sha256": "d21290ec96350afd58c3df6fb47cf83ab59d8e230e5f10f15468674d471b2570",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            27,
+            28
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            28
+          ],
+          "end": [
+            1,
+            29
+          ]
+        },
+        {
+          "bytes": [
+            38,
+            38
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            39
+          ],
+          "end": [
+            1,
+            39
+          ]
+        }
+      ]
+    },
+    {
+      "name": "raw-image-isolation",
+      "source": "![<script>](image) [Guide](#)",
+      "source_bytes": 29,
+      "source_sha256": "26316da183aa657c1739ae7fcc8df9bbdec0e7b50ade0b866b906947b883f856",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            27,
+            28
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            28
+          ],
+          "end": [
+            1,
+            29
+          ]
+        }
+      ]
+    },
+    {
+      "name": "raw-reference-open",
+      "source": "[<script>][id] [Guide]()\n\n[id]: target\n",
+      "source_bytes": 39,
+      "source_sha256": "4495c1756c3e17bbe385ae2cab39eb7ce74c254f14c593f559813ce0745b0178",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "angle-bare",
+      "source": "<https://example.org> https://example.org ftp://example.org",
+      "source_bytes": 59,
+      "source_sha256": "b74c6fba630ab437d4ad1c3f0b731520fad74cf2d08620462712caaf25057ad2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "two",
+      "source": "[A]() [B](#)",
+      "source_bytes": 12,
+      "source_sha256": "04ac34b330d4072e217c1953989cf569e56f4f14f8c5a834657d5e108cb91da9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            4
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            5
+          ]
+        },
+        {
+          "bytes": [
+            10,
+            11
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            1,
+            11
+          ],
+          "end": [
+            1,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nul",
+      "source": "[Guide](\u0000)",
+      "source_bytes": 10,
+      "source_sha256": "94e8b4823ffd962e314ba24656aacc20b78136513914d2c8cddb26adde427004",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "name": "frontmatter-yaml",
+      "source": "---\nlabel: \"[Guide]()\"\n---\n\n[Guide]()",
+      "source_bytes": 37,
+      "source_sha256": "8069566bfb99c12940bd9832b4d20ea60bc1b2ce7b81cc3f92979f8c34e3820b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            36,
+            36
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            5,
+            9
+          ],
+          "end": [
+            5,
+            9
+          ]
+        }
+      ],
+      "frontmatter": "yaml"
+    },
+    {
+      "name": "frontmatter-toml",
+      "source": "+++\nlabel = \"[Guide](#)\"\n+++\n\n[Guide]()",
+      "source_bytes": 39,
+      "source_sha256": "9f5d8ff329895193af11de94c6a5c90d8f5ba27a99ea21d200912e40e8bb7cf8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            38,
+            38
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            5,
+            9
+          ],
+          "end": [
+            5,
+            9
+          ]
+        }
+      ],
+      "frontmatter": "toml"
+    },
+    {
+      "name": "gfm-table",
+      "source": "| Name |\n| --- |\n| [Guide](#) [Guide]() |\n",
+      "source_bytes": 42,
+      "source_sha256": "5394e17da30c08834dd044ef3de15ddb74cb5c8fb13ca72e29e044a565c9d1c2",
+      "flavors": [
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            27,
+            28
+          ],
+          "expected": "#",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            3,
+            11
+          ],
+          "end": [
+            3,
+            12
+          ]
+        },
+        {
+          "bytes": [
+            38,
+            38
+          ],
+          "expected": "",
+          "message": "Link destination is empty or only a fragment marker.",
+          "start": [
+            3,
+            22
+          ],
+          "end": [
+            3,
+            22
+          ]
+        }
+      ]
+    }
+  ]
+}

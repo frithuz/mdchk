@@ -752,3 +752,14 @@ options and cumulative operation authority, including both caller and originatin
 controls. It exposes detached raw visible-label edge ranges only; unavailable
 required context withholds the complete inventory. MD039 is default-enabled, has
 no rule-specific options and permanently retains NoFix metadata.
+
+
+MD042's `RuleContext.EmptyLinkDestinations` facade preserves the same original
+parse/source/options and cumulative operation authority, with both caller and
+originating controls through publication. Only actual inline Link destinations
+are compared to semantic empty string or `#`, decoded once by the parser. Empty
+components retain exact insertion points; lone fragment markers retain their full
+original spelling. Reference origins, Images and their descendants are excluded.
+Raw state at the destination, after visible label children, governs eligibility.
+Unknown required context withholds the entire inventory. MD042 is default-enabled,
+accepts no rule-specific options and permanently retains NoFix metadata.

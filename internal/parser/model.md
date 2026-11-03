@@ -2131,3 +2131,20 @@ Actual raw HTML transitions inside explicit labels remain authoritative for
 leading versus trailing eligibility. Unknown required provenance withholds the
 complete inventory; cancellation or budget failure discards accumulated spans.
 The observation grants no parse or correction authority.
+
+
+## Empty inline-link destination observation
+
+`Document.EmptyLinkDestinations` supplies MD042 detached original destination
+ranges under the completed production parse, identical source/index/options and
+original cumulative budget. Only `Origin == "inline"` Links participate. Compare
+already-decoded `Destination.Semantic` exactly to empty string or `#`; no trimming,
+additional entity decoding or percent decoding occurs. Empty destinations retain
+the original zero-width component point; a lone fragment retains its complete
+original destination spelling, including an atomic escape/entity contribution.
+Images and their entire label subtrees are opaque, while a surrounding Link still
+participates. Resolved reference destinations are excluded. Actual raw HTML state
+after traversing the visible label governs destination eligibility. Unknown
+required provenance withholds the complete inventory; cancellation and cumulative
+limit failures discard every accumulated range. No new parse, source, resource or
+correction authority is granted.

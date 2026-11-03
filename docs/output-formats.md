@@ -100,7 +100,7 @@ the coordinates, and build-wide records leave the path field empty rather than
 inventing a source position. For example:
 
 ```text
-coverage  MD042 rule-unavailable: No executable implementation is registered.
+coverage  MD045 rule-unavailable: No executable implementation is registered.
 coverage docs/guide.md:2:4 MD057 context-unavailable: Required context is unavailable.
 ```
 
