@@ -32,6 +32,10 @@ PlannedFix retains future correction scope. No MD088 edits or previews are emitt
 
 ## Current implementation
 
+[MD034 bare URL analysis](rules/links-and-images/md034.md) is available for
+CommonMark and GFM, enabled by default. It reports HTTP, HTTPS and FTP prose URLs
+without explicit markup, including bare GFM autolinks, with manual findings.
+
 The executable currently provides general and command-specific help, version
 output, lint argument parsing, configuration preparation, bounded source acquisition,
 mandatory UTF-8 validation, parsing, inherited directive suppression and

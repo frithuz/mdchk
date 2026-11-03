@@ -1,0 +1,1429 @@
+{
+  "cases": [
+    {
+      "name": "page-bad",
+      "source": "Visit https://example.org",
+      "source_bytes": 25,
+      "source_sha256": "31d3666da313ed458b6e0b6b4c09736d228343524ee95386619c5bc4de39b581",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            6,
+            25
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "page-good",
+      "source": "Visit <https://example.org>",
+      "source_bytes": 27,
+      "source_sha256": "b79ff946d894dede21504b19c20033f29a69d93a18d9251ae4558b77f07cd205",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "schemes",
+      "source": "http://example.org https://example.org ftp://example.org/pub",
+      "source_bytes": 60,
+      "source_sha256": "8f844661e57b45fd6621ccfbaefb9fedb3c3d5ddf51bb817d24b3e7f037ac0ea",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            0,
+            18
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "expected": "http://example.org",
+          "message": "URL lacks explicit link markup."
+        },
+        {
+          "bytes": [
+            19,
+            38
+          ],
+          "start": [
+            1,
+            20
+          ],
+          "end": [
+            1,
+            39
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        },
+        {
+          "bytes": [
+            39,
+            60
+          ],
+          "start": [
+            1,
+            40
+          ],
+          "end": [
+            1,
+            61
+          ],
+          "expected": "ftp://example.org/pub",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "scheme-case",
+      "source": "HTTP://example.org HtTpS://example.org/a FTP://example.org/pub",
+      "source_bytes": 62,
+      "source_sha256": "56536546d84770e18062f0a580e83e5219b44e9a6e8c4a07eaed3807894a170b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            0,
+            18
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "expected": "HTTP://example.org",
+          "message": "URL lacks explicit link markup."
+        },
+        {
+          "bytes": [
+            19,
+            40
+          ],
+          "start": [
+            1,
+            20
+          ],
+          "end": [
+            1,
+            41
+          ],
+          "expected": "HtTpS://example.org/a",
+          "message": "URL lacks explicit link markup."
+        },
+        {
+          "bytes": [
+            41,
+            62
+          ],
+          "start": [
+            1,
+            42
+          ],
+          "end": [
+            1,
+            63
+          ],
+          "expected": "FTP://example.org/pub",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "localhost",
+      "source": "http://localhost:8080/a ftp://localhost/pub",
+      "source_bytes": 43,
+      "source_sha256": "865ab82e5fd4dc58f8609f45a279e382544d44b327913b9c082f39c7c1dc8489",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            0,
+            23
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "expected": "http://localhost:8080/a",
+          "message": "URL lacks explicit link markup."
+        },
+        {
+          "bytes": [
+            24,
+            43
+          ],
+          "start": [
+            1,
+            25
+          ],
+          "end": [
+            1,
+            44
+          ],
+          "expected": "ftp://localhost/pub",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "non-scope",
+      "source": "www.example.org user@example.org mailto:user@example.org xmpp:user@example.org",
+      "source_bytes": 78,
+      "source_sha256": "f21443a3e7a24bc583195a4b0651ce4aac4ada44bf5f421ea178bc9dcf459b1f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "punctuation",
+      "source": "See https://example.org/path.",
+      "source_bytes": 29,
+      "source_sha256": "624e00bcd3694ce03c5e357dfba736735dcfc6d94ad877e8b0b4d66a2110cbc9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            4,
+            28
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "expected": "https://example.org/path",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "parentheses",
+      "source": "(https://example.org/path) https://example.org/a(b)",
+      "source_bytes": 51,
+      "source_sha256": "d5eae244b8f3ccfa4daee20dc880ed52f218da749e1e27832f5eb70a82cd4b1e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            1,
+            25
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "expected": "https://example.org/path",
+          "message": "URL lacks explicit link markup."
+        },
+        {
+          "bytes": [
+            27,
+            51
+          ],
+          "start": [
+            1,
+            28
+          ],
+          "end": [
+            1,
+            52
+          ],
+          "expected": "https://example.org/a(b)",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "repeated-suffix",
+      "source": "(https://example.org/a(b))).?!",
+      "source_bytes": 30,
+      "source_sha256": "b72caaee90bd776a68b34f3538a14cceb4d4ae6f58d65fb80d8a1260e7549ac0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            1,
+            25
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "expected": "https://example.org/a(b)",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "entity-tail",
+      "source": "https://example.org/&amp;",
+      "source_bytes": 25,
+      "source_sha256": "9027a5b717897e2d208f37f24bc818955a478cd2ef07cfa92d591c71292497c8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            0,
+            20
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "expected": "https://example.org/",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "entity-interior",
+      "source": "https://example.org/?a=1&amp;b=2",
+      "source_bytes": 32,
+      "source_sha256": "5eed597b72da4039e6944885747efc11b493b21a24f3738791acf7ff4fdc669b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            0,
+            32
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            33
+          ],
+          "expected": "https://example.org/?a=1&amp;b=2",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "entity-scheme",
+      "source": "https&#58;//example.org &#104;ttps://example.org",
+      "source_bytes": 48,
+      "source_sha256": "6bfc8397d13e2b37093d610f6999e473dbdc212a55fcccc740ec741c2dd336ea",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "escaped-scheme",
+      "source": "https\\://example.org http\\://example.org ftp\\://example.org",
+      "source_bytes": 59,
+      "source_sha256": "91548a2f59442cf1d89bcd1008c525093e11d6d51edfcb5c0107278cf8127646",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "escaped-payload",
+      "source": "https://example.org/a\\_b",
+      "source_bytes": 24,
+      "source_sha256": "1f63e60497f1946a920aa81cf97c4879f1a212d4322cd8da761be2d6f0503fe3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            0,
+            24
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            25
+          ],
+          "expected": "https://example.org/a\\_b",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "inline-label",
+      "source": "[https://label.example.org](https://dest.example.org \"https://title.example.org\")",
+      "source_bytes": 81,
+      "source_sha256": "1f912809c594049ab88c6ec1234bb49e7b8ceee9bf387b4115be8b2f25b86ed7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "reference-full",
+      "source": "[https://label.example.org][ref]\n\n[ref]: https://dest.example.org \"https://title.example.org\"",
+      "source_bytes": 93,
+      "source_sha256": "7b38327d27fc9da94de4c0d40788324a0b6e06f92edde44a582e842ae73006c9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "reference-collapsed",
+      "source": "[https://label.example.org][]\n\n[https://label.example.org]: /target",
+      "source_bytes": 67,
+      "source_sha256": "422f83d6ccf9a944d37e2175df9c54abcdc480d1fa9b024ee428bdb546dedcdb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "reference-shortcut",
+      "source": "[https://label.example.org]\n\n[https://label.example.org]: /target",
+      "source_bytes": 65,
+      "source_sha256": "afd33436170651f93c14cfaeff0b81457fe8dd5daeef5201408f53a1571f6584",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "unused-definition",
+      "source": "[ref]: https://example.org \"http://title.example.org\"",
+      "source_bytes": 53,
+      "source_sha256": "a7e58795b130b42b4c2b7d339cafbfe0ad105af6f6c58bc86712a079662cc5f7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "angle-schemes",
+      "source": "<http://example.org> <https://example.org> <ftp://example.org/pub>",
+      "source_bytes": 66,
+      "source_sha256": "e6a90a1e1bfc40b6bfad4799a45b096ae31fc89119bf23d0976b563f4eba9204",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "image",
+      "source": "![https://example.org](https://dest.example.org) https://outside.example.org",
+      "source_bytes": 76,
+      "source_sha256": "df50894478d0a53e0f7dc26822053bb47bd0a44ddc3ff83ad862aff959a36c09",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            49,
+            76
+          ],
+          "start": [
+            1,
+            50
+          ],
+          "end": [
+            1,
+            77
+          ],
+          "expected": "https://outside.example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "inline-code",
+      "source": "`https://example.org` https://outside.example.org",
+      "source_bytes": 49,
+      "source_sha256": "47649652cdeddcc4b7bff8be1030a2221e1d7620b748e89ab905940db2d57e19",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            22,
+            49
+          ],
+          "start": [
+            1,
+            23
+          ],
+          "end": [
+            1,
+            50
+          ],
+          "expected": "https://outside.example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "fenced-code",
+      "source": "```md\nhttps://example.org\n```\n\nhttps://outside.example.org",
+      "source_bytes": 58,
+      "source_sha256": "8934c6ef7a7c34a166e09f83ca5144562cbbc866e0fec0f15f08880b10e88394",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            31,
+            58
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            28
+          ],
+          "expected": "https://outside.example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "indented-code",
+      "source": "    https://example.org\n\nhttps://outside.example.org",
+      "source_bytes": 52,
+      "source_sha256": "616a7d961d62849d34f4dea9d34f4dcdc78a2f00c624ea5e243a9765f87d071d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            25,
+            52
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            28
+          ],
+          "expected": "https://outside.example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "html-attribute",
+      "source": "A <span title=\"https://example.org\">word</span> https://outside.example.org",
+      "source_bytes": 75,
+      "source_sha256": "0eed8299ab8cd9dc18b3276d0482c51ea3bb375175d58fb4541b66cded29d608",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            48,
+            75
+          ],
+          "start": [
+            1,
+            49
+          ],
+          "end": [
+            1,
+            76
+          ],
+          "expected": "https://outside.example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "html-comment",
+      "source": "A <!-- https://example.org --> https://outside.example.org",
+      "source_bytes": 58,
+      "source_sha256": "87cf9206f7934d1116450f3f6a1fe69a74a0a8122ea98473294f0865e9d58a3e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            31,
+            58
+          ],
+          "start": [
+            1,
+            32
+          ],
+          "end": [
+            1,
+            59
+          ],
+          "expected": "https://outside.example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "raw-script",
+      "source": "A <script>https://example.org\n\nhttps://inside.example.org\n</script> https://outside.example.org",
+      "source_bytes": 95,
+      "source_sha256": "cf430ffcb1c6451f9696ac9ad4567af311f33145d50fa2ae7cf8364e3ae2906b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            68,
+            95
+          ],
+          "start": [
+            4,
+            11
+          ],
+          "end": [
+            4,
+            38
+          ],
+          "expected": "https://outside.example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "html-block",
+      "source": "<div title=\"https://example.org\">\nhttps://inside.example.org\n</div>\n\nhttps://outside.example.org",
+      "source_bytes": 96,
+      "source_sha256": "b53a02957621ca42afe13fe889a7b5fb5e99e5c6c2392589d2457330fdd6e084",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            69,
+            96
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            28
+          ],
+          "expected": "https://outside.example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "heading",
+      "source": "# Visit https://example.org\n",
+      "source_bytes": 28,
+      "source_sha256": "5482734119f617cca7f44f4315a97296b2b7ec5a0c008ee6db870bd2f5b7acb1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            8,
+            27
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            28
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "setext",
+      "source": "Visit https://example.org\n---\n",
+      "source_bytes": 30,
+      "source_sha256": "352cef6f4756c055e4f13caad970a4904cf4a7677c76fc11983920a2d36fc6ea",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            6,
+            25
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "blockquote",
+      "source": "> Visit https://example.org\n",
+      "source_bytes": 28,
+      "source_sha256": "9e135fb873b93644213a5b2ae044248f115b3e6d5af818f3aa064215d7e9ef26",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            8,
+            27
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            28
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "source": "- Visit https://example.org\n  - ftp://example.org/pub\n",
+      "source_bytes": 54,
+      "source_sha256": "595d22e6c18da84426f7e82c8358470500e0ded87639ad457611c1c8e37dd874",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            8,
+            27
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            28
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        },
+        {
+          "bytes": [
+            32,
+            53
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            26
+          ],
+          "expected": "ftp://example.org/pub",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "emphasis",
+      "source": "*https://example.org* and **ftp://example.org/pub**",
+      "source_bytes": 51,
+      "source_sha256": "0766ac3aacc211294f5be0ed576ac0bd890e6e325444f8e20d927e0ac8e72f87",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            1,
+            20
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        },
+        {
+          "bytes": [
+            28,
+            49
+          ],
+          "start": [
+            1,
+            29
+          ],
+          "end": [
+            1,
+            50
+          ],
+          "expected": "ftp://example.org/pub",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "strike",
+      "source": "~~https://example.org~~",
+      "source_bytes": 23,
+      "source_sha256": "bd9e90decab5b6cfbe70f79f3d682cc9f23733c6ef7793818d07bf53e2701180",
+      "flavors": [
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            2,
+            21
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "table",
+      "source": "| Site | Other |\n| --- | --- |\n| https://example.org | <https://ok.example.org> |\n",
+      "source_bytes": 82,
+      "source_sha256": "1f5bf7ecc176f8d4d4cf1017fcd884e32f1e2d4bc44350e7f34b2bedfc1f8f0e",
+      "flavors": [
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            33,
+            52
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            22
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "unicode",
+      "source": "é 中 😀 https://例子.org/路径",
+      "source_bytes": 37,
+      "source_sha256": "e90a38eaa6d91b619ff2932c40aff77585c1d134dc539bd60e3468afa7aa9538",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            12,
+            37
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "expected": "https://例子.org/路径",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "lf",
+      "source": "Before\n\nhttps://example.org\n",
+      "source_bytes": 28,
+      "source_sha256": "8f76c3f4d77e259a164120e11d6b65eb5ea990100225874dbe3992cc135a120d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            8,
+            27
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            20
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "crlf",
+      "source": "Before\r\n\r\nhttps://example.org\r\n",
+      "source_bytes": 31,
+      "source_sha256": "2ed346dbc8e07b9cac9b977f06687e85e31cae85d24e23e2bf21977abd594c99",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            10,
+            29
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            20
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "cr",
+      "source": "Before\r\rhttps://example.org\r",
+      "source_bytes": 28,
+      "source_sha256": "07b462bb1f8c2792d90b1f88800352e36d24317fb13a950d40762be2fa9ee669",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            8,
+            27
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            20
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "tabs",
+      "source": "Text\thttps://example.org",
+      "source_bytes": 24,
+      "source_sha256": "5973fb7b166fb2c506a71e42ed36a95222b373d9bf56bbfcf2e1570debe5edac",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            5,
+            24
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            25
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "clean",
+      "source": "Nothing to link here.",
+      "source_bytes": 21,
+      "source_sha256": "1802d24446326e2796acc96455b200e6867d25dbd938b4bc3051c48211316f77",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "missing-authority",
+      "source": "http:// https:// ftp://",
+      "source_bytes": 23,
+      "source_sha256": "acaacba9da95f3840c9a9d09de6e3ac6584cd17e1396f53f55baee64d1fc9347",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "embedded-word",
+      "source": "abchttps://example.org",
+      "source_bytes": 22,
+      "source_sha256": "70adc732eb0053c6b2e1ffec1e9da18d2b36b868e959d5380e3b402c68f0d144",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "frontmatter-yaml",
+      "source": "---\nurl: https://metadata.example.org\n---\n\nhttps://example.org",
+      "source_bytes": 62,
+      "source_sha256": "ab8742e89ccec247fba62aee28a1df778c3dbe62905dfad7fc09b98204752429",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "yaml",
+      "findings": [
+        {
+          "bytes": [
+            43,
+            62
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            20
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "frontmatter-toml",
+      "source": "+++\nurl = \"https://metadata.example.org\"\n+++\n\nhttps://example.org",
+      "source_bytes": 65,
+      "source_sha256": "1a64cadb7438a7eb818de92db9ea1ed6c9a2189ce4487cd526b4e9eed16369af",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "toml",
+      "findings": [
+        {
+          "bytes": [
+            46,
+            65
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            20
+          ],
+          "expected": "https://example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "ftp-userinfo",
+      "source": "ftp://user@example.org/pub",
+      "source_bytes": 26,
+      "source_sha256": "dfb94b42d13e779d12ede9c21cafcfa48bbb5bab6c75bf33fbfa279f15768ce6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            0,
+            26
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            27
+          ],
+          "expected": "ftp://user@example.org/pub",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "uppercase-http-userinfo",
+      "source": "HTTP://user@example.org/path",
+      "source_bytes": 28,
+      "source_sha256": "065ee451204690fc6eacfcae99e9fa5e5cf3e5bdc7924dfb8c21c57710c5df42",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            0,
+            28
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "expected": "HTTP://user@example.org/path",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "link-label-raw-close",
+      "source": "A <script>[</script>](x) https://outside.example.org",
+      "source_bytes": 52,
+      "source_sha256": "7b0b1114c312284c82402bd6c87609464c15f1399dcc836ee046fcf8b3873376",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            25,
+            52
+          ],
+          "start": [
+            1,
+            26
+          ],
+          "end": [
+            1,
+            53
+          ],
+          "expected": "https://outside.example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "link-label-raw-open",
+      "source": "[<script>](x) https://inside.example.org </script> https://outside.example.org",
+      "source_bytes": 78,
+      "source_sha256": "32759d3f276f4892fa140c42825412e4f871469f269f34c1202097bfb2cb2525",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            51,
+            78
+          ],
+          "start": [
+            1,
+            52
+          ],
+          "end": [
+            1,
+            79
+          ],
+          "expected": "https://outside.example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "reference-label-raw-close",
+      "source": "A <script>[</script>][ref] https://outside.example.org\n\n[ref]: x\n",
+      "source_bytes": 65,
+      "source_sha256": "9cd84bca933d727f618798964c40011de5c7a95275c3eab7807807cbc3c3e753",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            27,
+            54
+          ],
+          "start": [
+            1,
+            28
+          ],
+          "end": [
+            1,
+            55
+          ],
+          "expected": "https://outside.example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "reference-label-raw-open",
+      "source": "[<script>][ref] https://inside.example.org </script> https://outside.example.org\n\n[ref]: x\n",
+      "source_bytes": 91,
+      "source_sha256": "585992562e0cb8bdad4f4861b41a537d06229c302ba437ba940d051b8d515a43",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            53,
+            80
+          ],
+          "start": [
+            1,
+            54
+          ],
+          "end": [
+            1,
+            81
+          ],
+          "expected": "https://outside.example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    },
+    {
+      "name": "image-label-raw-isolation",
+      "source": "![<script>](x) https://outside.example.org",
+      "source_bytes": 42,
+      "source_sha256": "25b46c6111c7dff4e32634de490b80bd6065a739eb4887f38c43fd3b843c713d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            15,
+            42
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            43
+          ],
+          "expected": "https://outside.example.org",
+          "message": "URL lacks explicit link markup."
+        }
+      ]
+    }
+  ]
+}

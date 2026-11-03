@@ -304,7 +304,7 @@ def semantic_examples(ex, base):
     observed = ex.run(project, ["inspect", "docs/guide.md", "--format", "json"], 0, json_result=True)
     require(observed["status"] == "inspected" and not observed["complete"], "incomplete observation is not validation")
     for settings in ("rules: {single-trailing-newline: {enabled: true}}", "rules: {md047: {enabled: true}}",
-                     "rules: {MD001: {enabled: true}}", "frontmatter: {enabled: true}", "flavor: pandoc"):
+                     "rules: {MD039: {enabled: true}}", "frontmatter: {enabled: true, formats: [unsupported]}", "flavor: pandoc"):
         config.write_text("version: 1\n" + ("" if settings.startswith("flavor:") else "flavor: commonmark\n") + settings + "\n")
         error = ex.run(project, ["config", "validate", ".", "--format", "json"], 12, json_result=True)
         require(error["errors"][0].get("range") and error["errors"][0].get("path"), "located configuration error")
@@ -330,7 +330,10 @@ def discovery_examples(ex, base):
     lint = ex.run(root, ["lint", "docs/guide.md", "--format", "json"], 10, json_result=True)
     require(lint["diagnostics"][0]["rule"] == "MD047", "lint must use CWD definition")
     inspect = ex.run(root, ["inspect", "docs/guide.md", "--format", "json"], 0, json_result=True)
-    require(not inspect["diagnostics"] and not inspect["complete"], "inspect must use target definition with missing defaults")
+    require(all(d["rule"] != "MD047" for d in inspect["diagnostics"])
+            and not inspect["complete"]
+            and any(c["reason"] == "rule-unavailable" for c in inspect["coverage"]),
+            "inspect must use target MD047 disablement while retaining missing defaults")
     scan = ex.run(root, ["config", "validate", ".", "--format", "json"], 12, json_result=True)
     require(scan["config_validation"]["invalid_definitions"] == 1
             and any(e.get("path", "").endswith("docs/bad/.mdchk.yaml") for e in scan["errors"]),

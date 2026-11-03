@@ -168,7 +168,7 @@ func TestMD010CallbackQuotaAndCopyBoundaries(t *testing.T) {
 
 func TestMD010CatalogOptionsDefaultAndDirectives(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD010") || r.Available("MD034") || len(r.Metadata()) != 87 {
+	if !r.Available("MD010") || r.Available("MD039") || len(r.Metadata()) != 87 {
 		t.Fatal("availability")
 	}
 	on, off := 0, 0

@@ -2097,3 +2097,23 @@ scans. Producer, optionless facade, comparison and distinct outer callback final
 checks retain caller AND origin controls and withhold every provisional prefix
 on failure. No new parse, Source, LineIndex, public tree, model/options clone,
 allowance, resource authority or correction capability is introduced.
+
+
+### Original prose URL inventory
+
+`Document.BareURLs` returns detached original HTTP/HTTPS/FTP prose spans for
+MD034. It requires the completed original production parse, its identical source
+index, parse options and operation budget. A constructed public model or private
+conformance profile cannot grant authority. Caller controls and the originating
+operation budget remain binding through final publication; failures discard the
+complete inventory. `RuleContext.BareURLs` also retains the originating engine
+context and validates its original syntax witness.
+
+Exact original text alone establishes schemes. Entity/escape contributions in
+payloads stay atomic, without reinterpreting their decoded value as new syntax.
+GFM `bare-gfm` HTTP(S) owners expose their original visible envelopes; generated
+HTTP destinations for `www.` links do not expand MD034 scope. Explicit links,
+images, code, metadata, definitions and raw HTML remain protected. Necessary
+unknown mapping/raw state reports unavailable inventory rather than a clean or
+partial result. The complete lexical boundaries and manual-finding policy are
+defined by [MD034](../../docs/rules/links-and-images/md034.md).

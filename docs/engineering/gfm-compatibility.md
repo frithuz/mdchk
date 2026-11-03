@@ -299,11 +299,12 @@ checks coherent supplied contributions rather than inferring the winner from
 www spelling alone. Changed surrounding Text preserves the shared scan's
 source-owned empty normalization before SoftBreak while reconstructing ordinary
 escapes/entities once and retaining 615's raw priority. Bare FTP remains
-ordinary prose under section 6.9; future MD034 must also inspect eligible FTP
+ordinary prose under section 6.9; MD034 analysis also inspects eligible FTP
 prose and source context rather than treating every Link as exempt. Angle FTP
 retains its ordinary core origin. MD054 still has exactly five styles and maps
-both recognized origins to its existing autolink style. These source facts do not implement the named rules; public partial profiles
-remain unsupported.
+both recognized origins to its existing autolink style. Parser provenance alone
+does not implement a named rule; MD034 analysis is available separately, while
+MD054 remains planned. Public partial profiles remain unsupported.
 
 ### Disallowed-HTML interpretation
 
