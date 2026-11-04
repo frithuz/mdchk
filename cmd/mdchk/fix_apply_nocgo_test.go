@@ -8,6 +8,8 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 // A CGO_ENABLED=0 build applies corrections through the same portable adapter
@@ -21,7 +23,7 @@ func TestCompiledApplyNoCGOApplies(t *testing.T) {
 	binary := filepath.Join(t.TempDir(), name)
 	//nolint:gosec // Fixed Go tool builds this package into a synthetic destination.
 	command := exec.Command("go", "build", "-o", binary, ".")
-	command.Env = append(os.Environ(), "CGO_ENABLED=0")
+	command.Env = append(testenv.Environ(), "CGO_ENABLED=0")
 	if output, e := command.CombinedOutput(); e != nil {
 		t.Fatalf("build: %v %s", e, output)
 	}

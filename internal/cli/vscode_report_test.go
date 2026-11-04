@@ -20,6 +20,7 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/result"
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 func documentedMatcher(t *testing.T) *regexp.Regexp {
@@ -331,6 +332,7 @@ func TestVSCodeActualProductionLintFixAndConfiguration(t *testing.T) {
 	if err == nil {
 		t.Fatal("missing configuration error")
 	}
+	testenv.Clear(t)
 	t.Setenv("GIT_CONFIG_NOSYSTEM", "1")
 	t.Setenv("GIT_CONFIG_GLOBAL", filepath.Join(root, "absent-gitconfig"))
 	configuration := validationResult(configscan.Validate(context.Background(), configscan.Options{Root: root}, registry, providers, caps))

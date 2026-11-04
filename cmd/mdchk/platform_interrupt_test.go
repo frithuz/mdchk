@@ -10,6 +10,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 // Only startup synchronization is overlaid. The production signal registration,
@@ -57,7 +59,7 @@ func TestCompiledPlatformInterrupt(t *testing.T) {
 	//nolint:gosec // Execute only the just-built synchronization overlay.
 	cmd := exec.Command(binary, "lint", "--format=json", "doc.md")
 	cmd.Dir = root
-	cmd.Env = append(os.Environ(), "MDCHK_TEST_READY="+ready)
+	cmd.Env = append(testenv.Environ(), "MDCHK_TEST_READY="+ready)
 	configureInterruptProcess(cmd)
 	var out, errOut bytes.Buffer
 	cmd.Stdout = &out

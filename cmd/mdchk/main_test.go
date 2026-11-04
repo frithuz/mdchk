@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 func TestExecutableStatuses(t *testing.T) {
@@ -27,6 +29,7 @@ func TestExecutableStatuses(t *testing.T) {
 	}{{[]string{"--help"}, 0}, {[]string{"--version"}, 0}, {[]string{"lint", "--help"}, 0}, {[]string{"lint"}, 11}, {[]string{"lint", ".mdchk.yaml"}, 15}, {[]string{"unknown"}, 11}, {[]string{"lint", "--format", "--help"}, 11}, {[]string{"lint", "--", "--help"}, 13}} {
 		//nolint:gosec // Execute only the binary just built in this test with fixed test arguments.
 		command := exec.Command(binary, tc.args...)
+		command.Env = testenv.Environ()
 		command.Dir = project
 		var stdout, stderr bytes.Buffer
 		command.Stdout = &stdout
@@ -62,6 +65,7 @@ func TestExecutableStatuses(t *testing.T) {
 	}()
 	//nolint:gosec // Execute only the binary just built in this test.
 	command := exec.Command(binary, "--help")
+	command.Env = testenv.Environ()
 	command.Stdout = readOnly
 	err = command.Run()
 	var exit *exec.ExitError

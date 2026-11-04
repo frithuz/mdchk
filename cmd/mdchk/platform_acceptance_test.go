@@ -14,6 +14,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 // The host's actual filesystem and compiled command are the oracle. Logical
@@ -92,6 +94,7 @@ func platformProcess(t *testing.T, binary, root string, args ...string) (int, st
 	defer cancel()
 	//nolint:gosec // Execute the test-owned compiled binary and fixture arguments.
 	cmd := exec.CommandContext(ctx, binary, args...)
+	cmd.Env = testenv.Environ()
 	cmd.Dir = root
 	var out, errOut bytes.Buffer
 	cmd.Stdout = &out
@@ -248,6 +251,7 @@ func TestCompiledPlatformOutputDescriptors(t *testing.T) {
 			defer cancel()
 			//nolint:gosec // Execute the test-owned binary and fixed fixture arguments.
 			cmd := exec.CommandContext(ctx, binary, tc.args...)
+			cmd.Env = testenv.Environ()
 			cmd.Dir = root
 			var other bytes.Buffer
 			if tc.stderr {

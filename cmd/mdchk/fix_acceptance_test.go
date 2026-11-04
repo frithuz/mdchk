@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 func buildFixFixture(t *testing.T) string {
@@ -280,6 +281,7 @@ func TestCompiledFixInternalPrecedenceAndClosedOutput(t *testing.T) {
 	}
 	//nolint:gosec // Execute only the compiled fixture with test-owned paths.
 	command := exec.Command(binary, "fix", "--dry-run", "doc.md", "--format=json")
+	command.Env = testenv.Environ()
 	command.Dir = root
 	command.Stdout = write
 	err = command.Run()

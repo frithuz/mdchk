@@ -140,10 +140,25 @@ def state(project):
             for p in project.rglob("*")}
 
 
+GIT_OVERRIDES = {"GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_CONFIG",
+                 "GIT_CONFIG_COUNT", "GIT_CONFIG_PARAMETERS"}
+
+
+def hermetic_git_environment(environ):
+    """Copy environ without the Git variables mdchk refuses to run under.
+
+    A sandbox or CI system may inject these, for example GIT_CONFIG_COUNT with
+    GIT_CONFIG_KEY_<n> and GIT_CONFIG_VALUE_<n>; callers pin their own values.
+    """
+    return {key: value for key, value in environ.items()
+            if key.upper() not in GIT_OVERRIDES
+            and not key.upper().startswith(("GIT_CONFIG_KEY_", "GIT_CONFIG_VALUE_"))}
+
+
 def process_env(project):
     # A controlled Git-source fixture, independent of the operator's system or
     # global ignore policy. No user configuration is read or changed.
-    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env = hermetic_git_environment(os.environ)
     env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=str(project / "absent-gitconfig"))
     return env
 

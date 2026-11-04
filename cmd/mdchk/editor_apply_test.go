@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 func TestCompiledEditorPartialNativePublication(t *testing.T) {
@@ -24,6 +26,7 @@ func TestCompiledEditorPartialNativePublication(t *testing.T) {
 				putConfigurationFile(t, root, name, "same")
 			}
 			command := exec.Command(binary, "fix", "a.md", "b.md", "c.md", "--format="+format, "--limit=reporting-time="+deadline) //nolint:gosec // Test-owned compiled binary and fixtures.
+			command.Env = testenv.Environ()
 			command.Dir = root
 			var stdout, stderr bytes.Buffer
 			command.Stdout, command.Stderr = &stdout, &stderr

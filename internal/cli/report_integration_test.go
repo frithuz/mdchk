@@ -17,6 +17,7 @@ import (
 	"github.com/frithuz/mdchk/internal/config"
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/result"
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 func validateEmitted(t *testing.T, root string, data []byte) result.Result {
@@ -174,6 +175,7 @@ func TestCompiledReportStreamsAndExits(t *testing.T) {
 		{[]string{"lint", "--format=json", "--bad"}, 11, true},
 	} {
 		cmd := exec.Command(binary, tc.args...) //nolint:gosec // Test-owned compiled executable and fixed fixture arguments.
+		cmd.Env = testenv.Environ()
 		cmd.Dir = root
 		var stdout, stderr bytes.Buffer
 		cmd.Stdout = &stdout
@@ -200,6 +202,7 @@ func TestCompiledReportStreamsAndExits(t *testing.T) {
 	put(t, filepath.Join(root, config.Filename), availableConfig)
 	for _, format := range []string{"text", "json"} {
 		cmd := exec.Command(binary, "lint", "--format="+format, "good.md") //nolint:gosec // Controlled compiled fixture.
+		cmd.Env = testenv.Environ()
 		cmd.Dir = root
 		var stdout, stderr bytes.Buffer
 		cmd.Stdout, cmd.Stderr = &stdout, &stderr
@@ -236,6 +239,7 @@ func TestCompiledReportStreamsAndExits(t *testing.T) {
 		}
 	}()
 	cmd := exec.Command(binary, "lint", "--format=json", "good.md") //nolint:gosec // Controlled compiled fixture.
+	cmd.Env = testenv.Environ()
 	cmd.Dir = root
 	cmd.Stdout = f
 	var processExit *exec.ExitError

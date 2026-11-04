@@ -9,6 +9,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 func TestExecutableClosedOutputPipe(t *testing.T) {
@@ -42,6 +44,7 @@ func TestExecutableClosedOutputPipe(t *testing.T) {
 			// tests the inherited real stdout descriptor, not an injected io.Writer.
 			//nolint:gosec // Execute only the test-owned binary with fixed arguments.
 			cmd := exec.Command(binary, args...)
+			cmd.Env = testenv.Environ()
 			var stderr bytes.Buffer
 			if tc.stderr {
 				cmd.Stderr = writer

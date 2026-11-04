@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"testing"
@@ -21,6 +22,7 @@ import (
 	inspection "github.com/frithuz/mdchk/internal/inspect"
 	"github.com/frithuz/mdchk/internal/result"
 	"github.com/frithuz/mdchk/internal/rules"
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 type md014NativeLiteral struct {
@@ -360,13 +362,11 @@ func TestCompiledPlatformMD014NoCGOAnalysisAndApply(t *testing.T) {
 			// children use these fixture-owned Git inputs; preserve HOME and all
 			// non-Git environment entries, never host Git files or security policy.
 			gitGlobal := filepath.Join(root, "absent-gitconfig")
-			var childEnv []string
-			for _, entry := range os.Environ() {
+			childEnv := testenv.Environ()
+			childEnv = slices.DeleteFunc(childEnv, func(entry string) bool {
 				key, _, _ := strings.Cut(entry, "=")
-				if key != "GIT_CONFIG_NOSYSTEM" && key != "GIT_CONFIG_GLOBAL" {
-					childEnv = append(childEnv, entry)
-				}
-			}
+				return key == "GIT_CONFIG_NOSYSTEM" || key == "GIT_CONFIG_GLOBAL"
+			})
 			childEnv = append(childEnv, "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL="+gitGlobal)
 			if _, err := os.Lstat(gitGlobal); !os.IsNotExist(err) {
 				t.Fatal("fixture global Git input must be absent", err)
@@ -520,13 +520,11 @@ func md014NativeEnvironment(t *testing.T, cwd string) []string {
 	if _, err := os.Lstat(absent); !os.IsNotExist(err) {
 		t.Fatal("fixture Git input must be absent", err)
 	}
-	var env []string
-	for _, entry := range os.Environ() {
+	env := testenv.Environ()
+	env = slices.DeleteFunc(env, func(entry string) bool {
 		key, _, _ := strings.Cut(entry, "=")
-		if key != "GIT_CONFIG_NOSYSTEM" && key != "GIT_CONFIG_GLOBAL" {
-			env = append(env, entry)
-		}
-	}
+		return key == "GIT_CONFIG_NOSYSTEM" || key == "GIT_CONFIG_GLOBAL"
+	})
 	return append(env, "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL="+absent)
 }
 

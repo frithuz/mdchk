@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/frithuz/mdchk/internal/result"
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 type editorExecution struct {
@@ -57,6 +58,7 @@ func editorExecutable(t *testing.T) string {
 func editorExecute(t *testing.T, binary, root string, args ...string) editorExecution {
 	t.Helper()
 	command := exec.Command(binary, args...) //nolint:gosec // Test-owned compiled binary and fixture arguments.
+	command.Env = testenv.Environ()
 	physicalRoot, err := filepath.EvalSymlinks(root)
 	if err != nil {
 		t.Fatal(err)
@@ -322,6 +324,7 @@ func TestCompiledEditorPathAuthorityAndDelivery(t *testing.T) {
 		}
 	}()
 	command := exec.Command(binary, "lint", "nested/doc.md", "--config=nested/.mdchk.yaml", "--format=github") //nolint:gosec // Test-owned executable and fixed arguments.
+	command.Env = testenv.Environ()
 	command.Dir = root
 	command.Stdout = readonly
 	command.Stderr = io.Discard
@@ -332,7 +335,7 @@ func TestCompiledEditorPathAuthorityAndDelivery(t *testing.T) {
 }
 
 func TestEditorCommandArgumentsAndIndependentLifetime(t *testing.T) {
-	root := project(t)
+	root := validationProject(t)
 	put(t, filepath.Join(root, ".mdchk.yaml"), fixConfiguration())
 	put(t, filepath.Join(root, "doc.md"), "x")
 	for _, command := range [][]string{{"lint"}, {"fix", "--dry-run"}, {"config", "validate"}, {"unknown"}, {"config", "unknown"}} {

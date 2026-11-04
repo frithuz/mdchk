@@ -12,6 +12,8 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 type examplePattern struct {
@@ -235,6 +237,7 @@ func TestDocumentedIntegrationExamples(t *testing.T) {
 				t.Fatal(err)
 			}
 			command := exec.Command(binary, args...) //nolint:gosec // Test-owned binary and strictly parsed published argv.
+			command.Env = testenv.Environ()
 			command.Dir = root
 			command.Stdout = readonly
 			command.Stderr = io.Discard

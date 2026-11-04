@@ -21,6 +21,7 @@ import (
 	"github.com/frithuz/mdchk/internal/files"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/result"
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 // Independent grammar fixture following actions/runner ActionCommand.cs at
@@ -312,6 +313,7 @@ func TestGitHubActualProductionLintFixAndConfiguration(t *testing.T) {
 	if err == nil {
 		t.Fatal("missing configuration error")
 	}
+	testenv.Clear(t)
 	t.Setenv("GIT_CONFIG_NOSYSTEM", "1")
 	t.Setenv("GIT_CONFIG_GLOBAL", filepath.Join(root, "absent-gitconfig"))
 	configuration := validationResult(configscan.Validate(context.Background(), configscan.Options{Root: root}, registry, providers, caps))

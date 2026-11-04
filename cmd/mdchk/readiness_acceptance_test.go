@@ -17,12 +17,14 @@ import (
 
 	inspection "github.com/frithuz/mdchk/internal/inspect"
 	"github.com/frithuz/mdchk/internal/result"
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 // Follow one ordinary binary and physical project through every delivered
 // operation. Expected bytes and scalar positions are fixture literals, not
 // values obtained from the correction provider or another command's output.
 func TestCompiledCLIReadinessJourney(t *testing.T) {
+	testenv.Clear(t)
 	t.Setenv("GIT_CONFIG_NOSYSTEM", "1")
 	gitHome, err := filepath.EvalSymlinks(t.TempDir())
 	if err != nil {

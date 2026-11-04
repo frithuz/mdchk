@@ -17,6 +17,7 @@ import (
 	"github.com/frithuz/mdchk/internal/configscan"
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/result"
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 func runValidate(t *testing.T, root string, want int, extra ...string) result.Result {
@@ -197,6 +198,7 @@ func (validationShortWriter) Write(p []byte) (int, error) { return len(p) - 1, n
 func validationProject(t *testing.T) string {
 	t.Helper()
 	root := project(t)
+	testenv.Clear(t)
 	t.Setenv("GIT_CONFIG_NOSYSTEM", "1")
 	t.Setenv("GIT_CONFIG_GLOBAL", filepath.Join(root, "absent-gitconfig"))
 	return root
