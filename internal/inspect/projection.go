@@ -256,7 +256,12 @@ type RawCandidate struct {
 	ContextOnly bool             `json:"context_only,omitempty"`
 }
 
-type AnalyzeOptions struct{ ObserveInactive bool }
+type AnalyzeOptions struct {
+	ObserveInactive bool
+	// Fragments optionally supplies the original-view resource context for
+	// cross-document fragment checks. Nil leaves such checks without context.
+	Fragments engine.FragmentResources
+}
 
 // Analysis owns its returned projection and envelope. Mutating these data values
 // cannot alter the acquired snapshot, execution authority or subsequent analyses.
@@ -538,7 +543,7 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 			(*p.Directives.Data)[d.Owner].Effects[d.Effect].Reason = d.Reason
 		}
 	}
-	active, trace, err := s.plan.Inspect(ctx, input, engine.RunOptions{Mode: "cli", Budget: s.budget}, engine.InspectionOptions{ObserveInactive: options.ObserveInactive, Prepare: prepare, PublishSuppression: publishSuppression})
+	active, trace, err := s.plan.Inspect(ctx, input, engine.RunOptions{Mode: "cli", Budget: s.budget, Fragments: options.Fragments}, engine.InspectionOptions{ObserveInactive: options.ObserveInactive, Prepare: prepare, PublishSuppression: publishSuppression})
 	if err != nil {
 		return Analysis{}, err
 	}

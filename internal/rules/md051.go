@@ -37,7 +37,7 @@ func unresolvedFragmentTargets(ctx context.Context, c engine.RuleContext) (out e
 		resolved *resource.FragmentResolution
 	}
 	var checks []check
-	crossFile, needAnchors := false, false
+	crossFile, oversized, needAnchors := false, false, false
 	previous := 0
 	for _, l := range items.Links {
 		if out.Err = c.SectionCheckpoint(ctx, 18+int64(len(l.Destination)), 0); out.Err != nil {
@@ -58,6 +58,10 @@ func unresolvedFragmentTargets(ctx context.Context, c engine.RuleContext) (out e
 			resolved, err := c.ResolveFragment(ctx, l.Destination, l.Span)
 			if err != nil {
 				return engine.RuleOutcome{Err: err}
+			}
+			if resolved.Oversized {
+				oversized = oversized || c.CrossFile()
+				continue
 			}
 			if !resolved.Available {
 				crossFile = crossFile || c.CrossFile()
@@ -140,6 +144,9 @@ func unresolvedFragmentTargets(ctx context.Context, c engine.RuleContext) (out e
 				out.Findings = append(out.Findings, engine.Finding{Span: k.link.Span, Message: message})
 			}
 		}
+	}
+	if oversized {
+		reasons = append(reasons, "A fragment link destination exceeds the path bounds and cannot be resolved.")
 	}
 	if crossFile {
 		reasons = append(reasons, "Cross-file fragment targets cannot be checked without resource context.")

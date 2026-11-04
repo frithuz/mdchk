@@ -17,6 +17,7 @@ import (
 	"github.com/frithuz/mdchk/internal/files"
 	inspection "github.com/frithuz/mdchk/internal/inspect"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -159,7 +160,17 @@ func executeInspect(ctx context.Context, opts inspectOptions, version, cwd strin
 			return manifest, &projected
 		}
 	}
-	full, analysisErr := inspection.Analyze(ctx, snapshot, inspection.AnalyzeOptions{})
+	analyze := inspection.AnalyzeOptions{}
+	if plan := snapshot.ExecutionPlan(); plan != nil {
+		if rule := plan.Rules()["MD051"]; rule.Enabled && rule.Available {
+			file := snapshot.File()
+			session := newFragmentResources(ctx, budget, plan.CandidatePlan().Context(), resource.RootInspect, cwd, snapshot.SelectedConfigPath(), file.Path)
+			session.targets = []fragmentTarget{{id: file.Path, path: file.Path, source: snapshot.Source()}}
+			analyze.Fragments = session
+			defer func() { _ = session.Close() }()
+		}
+	}
+	full, analysisErr := inspection.Analyze(ctx, snapshot, analyze)
 	if full.Result.SchemaVersion == 0 {
 		out := newInspectResult()
 		out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "inspection-failed", Scope: "operation", Message: analysisErr.Error()})

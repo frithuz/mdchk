@@ -137,7 +137,7 @@ findings are permanently report-only.
 for CommonMark and GFM, enabled by default with `cross_file: false`. Same-document
 fragments resolve against generated heading IDs (per `resources.anchor_style`) and
 HTML IDs; findings are manual and permanently report-only. With
-`cross_file: true`, `lint` also resolves other documents through the shared
+`cross_file: true`, `lint`, `inspect` and `fix` also resolve other documents through the shared
 read-only resource service (directory links use `resources.index_file` once);
 known-missing documents stay with MD057, and unknown or blocked context reports
 located reduced coverage.
@@ -362,7 +362,7 @@ rules:
 | --- | --- |
 | Omitted `resources`, or `resources: {}` | `index_file: index.md`, `anchor_style: github` |
 | `resources: {anchor_style: explicit}` | Available for same-document MD051 and MD080; MD073 and referenced Markdown consumption (cross-file MD051) remain separate deliveries |
-| `resources: {index_file: README.md}` | Current CLI rejects unavailable index handling; the future directory-lookup contract tries that one filename once |
+| `resources: {index_file: README.md}` | Accepted by the CLI when the native adapter can name it; directory links try that one filename once (MD051) |
 | `resources: null`, a sequence, or an unknown resource field | Configuration error |
 | `resources: {index_file: docs/index.md}` | Configuration error: filename only |
 | Empty index filename, `.`/`..`, a glob, URL, query/fragment, drive prefix, backslash, or control character | Configuration error |

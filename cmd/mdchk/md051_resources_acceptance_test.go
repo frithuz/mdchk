@@ -245,3 +245,155 @@ func TestCompiledPlatformMD051ResourceFragmentsMultipleLinks(t *testing.T) {
 		t.Fatal("coverage ranges are not distinct", have)
 	}
 }
+
+// resources.index_file flows from configuration through the plan into the shared
+// resolver, which tries exactly that filename for directory links.
+func TestCompiledPlatformMD051ResourceIndexFile(t *testing.T) {
+	binary := buildConfigurationExecutable(t, "")
+	for _, tc := range []struct {
+		name, index, target, source string
+		findings, coverage          int
+	}{
+		{name: "non-default-found", index: "README.md", target: "docs/self.md", source: "# Self\n\n[a](readme-dir/#top)\n"},
+		{name: "non-default-absent", index: "README.md", target: "docs/self.md", source: "# Self\n\n[a](readme-dir/#nope)\n", findings: 1},
+		{name: "default-name-is-not-tried", index: "README.md", target: "docs/self.md", source: "# Self\n\n[a](idx-dir/#top)\n"},
+		{name: "default-index-unchanged", index: "index.md", target: "docs/self.md", source: "# Self\n\n[a](idx-dir/#top) [b](idx-dir/#nope)\n", findings: 1},
+		{name: "self-is-configured-index", index: "README.md", target: "docs/README.md", source: "# Self\n\n[a](./#self) [b](./#nope)\n", findings: 1},
+		{name: "self-is-not-the-configured-index", index: "README.md", target: "docs/index.md", source: "# Self\n\n[a](./#nope)\n"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := configurationProject(t)
+			conf := strings.Replace(cleanConfiguration(), "MD051: {enabled: false}", "MD051: {cross_file: true}", 1)
+			putConfigurationFile(t, root, ".mdchk.yaml", conf+"resources: {index_file: "+tc.index+"}\n")
+			putConfigurationFile(t, root, tc.target, tc.source)
+			putConfigurationFile(t, root, "docs/readme-dir/README.md", "# Top\n")
+			putConfigurationFile(t, root, "docs/idx-dir/index.md", "# Top\n")
+			got := md014NativeRun(t, binary, root, "lint", tc.target, "--format=json")
+			out := md014NativeJSON(t, []byte(got.Stdout), "lint")
+			have := md051Collect(t, out)
+			findings, coverage := 0, 0
+			for _, h := range have {
+				if h.coverageNotDiagnostic {
+					coverage++
+				} else {
+					findings++
+				}
+			}
+			if findings != tc.findings || coverage != tc.coverage || len(out.Errors) != 0 {
+				t.Fatal(have, out.Errors, got.Stdout)
+			}
+			// inspect and fix --dry-run resolve the configured index identically.
+			seen, _ := runInspection(t, binary, root, root, "inspect", tc.target, "--format=json")
+			dry := md014NativeJSON(t, []byte(md014NativeRun(t, binary, root, "fix", "--dry-run", tc.target, "--format=json").Stdout), "fix")
+			for name, other := range map[string][]md051Located{"inspect": md051Collect(t, seen.Result), "fix": md051Collect(t, dry)} {
+				if len(other) != len(have) {
+					t.Fatal(name, other, have)
+				}
+			}
+		})
+	}
+	for _, name := range []string{"a/b", ".", "..", ".git", "a?b", "a#b", "", strings.Repeat("a", 256)} {
+		t.Run("invalid/"+name, func(t *testing.T) {
+			root := configurationProject(t)
+			putConfigurationFile(t, root, ".mdchk.yaml", cleanConfiguration()+"resources: {index_file: '"+name+"'}\n")
+			putConfigurationFile(t, root, "doc.md", "# Doc\n")
+			got := md014NativeRun(t, binary, root, "lint", "doc.md", "--format=json")
+			out := md014NativeJSON(t, []byte(got.Stdout), "lint")
+			if got.Status != 12 || len(out.Errors) == 0 || len(out.CheckedFiles) != 0 {
+				t.Fatal(got.Status, got.Stdout)
+			}
+			// inspect and fix reject the same configuration before any analysis.
+			seen, _ := runInspection(t, binary, root, root, "inspect", "doc.md", "--format=json")
+			if len(seen.Result.Errors) == 0 || len(seen.Result.Diagnostics) != 0 {
+				t.Fatal("inspect accepted", seen.Result.Errors)
+			}
+			fixed := md014NativeRun(t, binary, root, "fix", "--dry-run", "doc.md", "--format=json")
+			if fixed.Status != 12 {
+				t.Fatal("fix accepted", fixed.Status, fixed.Stdout)
+			}
+		})
+	}
+}
+
+// The inspect configuration view reports the explicit index file with its origin.
+func TestCompiledPlatformMD051InspectShowsIndexFileProvenance(t *testing.T) {
+	binary := buildConfigurationExecutable(t, "")
+	root := configurationProject(t)
+	putConfigurationFile(t, root, ".mdchk.yaml", cleanConfiguration()+"resources: {index_file: README.md}\n")
+	putConfigurationFile(t, root, "doc.md", "# Doc\n")
+	_, p := runInspection(t, binary, root, root, "inspect", "doc.md", "--format=json")
+	data := p.Configuration.Data
+	if data == nil {
+		t.Fatal("configuration unavailable", p.Configuration)
+	}
+	resources, _ := data.Effective["resources"].(map[string]any)
+	available, _ := data.Effective["availability"].(map[string]any)
+	if resources["index_file"] != "README.md" || available["/resources/index_file"] != true {
+		t.Fatal(data.Effective)
+	}
+	found := false
+	for _, entry := range data.Provenance {
+		if entry.Pointer == "/resources/index_file" {
+			found = true
+			if entry.SourceKind != "selected-config" || entry.Path != ".mdchk.yaml" || entry.Range == nil || entry.Inherited {
+				t.Fatalf("%+v", entry)
+			}
+		}
+	}
+	if !found {
+		t.Fatal("no provenance for resources.index_file")
+	}
+}
+
+// Candidate analysis of each fix target sees selected neighbors at their original
+// content: a changed neighbor (final newline added) does not alter the result.
+func TestCompiledPlatformMD051ResourceFragmentsMultiTargetFixDryRun(t *testing.T) {
+	binary := buildConfigurationExecutable(t, "")
+	root := configurationProject(t)
+	conf := strings.Replace(cleanConfiguration(), "MD051: {enabled: false}", "MD051: {cross_file: true}", 1)
+	conf = strings.Replace(conf, "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
+	putConfigurationFile(t, root, ".mdchk.yaml", conf)
+	putConfigurationFile(t, root, "docs/a.md", "# A\n\n[x](b.md#intro) [y](b.md#nope)")
+	putConfigurationFile(t, root, "docs/b.md", "# Intro\n\n[z](a.md#a) [w](a.md#nope)")
+	before := readinessState(t, root)
+	got := md014NativeRun(t, binary, root, "fix", "--dry-run", "docs/a.md", "docs/b.md", "--format=json")
+	out := md014NativeJSON(t, []byte(got.Stdout), "fix")
+	findings := map[string]int{}
+	for _, d := range out.Diagnostics {
+		if d.Rule == "MD051" {
+			findings[d.Path]++
+			if d.Snapshot.View != "candidate" {
+				t.Fatal(d)
+			}
+		}
+	}
+	if findings["docs/a.md"] != 1 || findings["docs/b.md"] != 1 || len(out.Changes) != 2 || len(out.Errors) != 0 {
+		t.Fatal(findings, out.Changes, got.Stdout)
+	}
+	readinessAssertEqual(t, "multi-target dry-run is read-only", before, readinessState(t, root))
+}
+
+// An over-long destination names no resource: the provider exists, so the
+// reduced-coverage message must not claim the resource context is missing.
+func TestCompiledPlatformMD051OverlongDestinationCoverage(t *testing.T) {
+	binary := buildConfigurationExecutable(t, "")
+	root := md051Project(t, "true")
+	putConfigurationFile(t, root, "docs/self.md", "# Self\n\n[a](other.md#nope) [b]("+strings.Repeat("a", 5000)+".md#x)\n")
+	got := md014NativeRun(t, binary, root, "lint", "docs/self.md", "--format=json")
+	out := md014NativeJSON(t, []byte(got.Stdout), "lint")
+	var messages []string
+	findings := 0
+	for _, c := range out.Coverage {
+		if c.Rule == "MD051" {
+			messages = append(messages, c.Message)
+		}
+	}
+	for _, d := range out.Diagnostics {
+		if d.Rule == "MD051" {
+			findings++
+		}
+	}
+	if findings != 1 || len(messages) != 1 || !strings.Contains(messages[0], "exceeds the path bounds") || strings.Contains(messages[0], "without resource context") || len(out.Errors)+len(out.Interruptions) != 0 {
+		t.Fatal(messages, findings, got.Stdout)
+	}
+}

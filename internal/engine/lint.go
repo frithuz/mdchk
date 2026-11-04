@@ -275,9 +275,10 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			continue
 		}
 		rc := RuleContext{input: in, index: index, document: parsed.Document, budget: budget, operation: ctx, parsed: parsed, directives: directives, syntaxReliable: syntaxReliable}
-		if !options.candidate && !options.saved {
-			rc.fragments = options.Fragments
-		}
+		// The provider is bound to this run's exact view (original, candidate or
+		// saved); the caller must construct its Replacement sources from the same
+		// Source values it gives the inputs.
+		rc.fragments = options.Fragments
 		audit, auditErr := planSuppressionAudit(ctx, r, rc, &projection, snap, &out, options.inspection)
 		if auditErr != nil {
 			if isInterruption(auditErr) {

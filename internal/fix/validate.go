@@ -115,6 +115,10 @@ type Target struct {
 	Dependencies         []string
 	UnavailableResources []string
 	ResourceDependencies []string
+	// Fragments optionally supplies the candidate-view resource context for this
+	// target's analysis of the exact candidate source. It confers no write or
+	// dependency authority; analysis receives only the resolver's read results.
+	Fragments func(path string, candidate parser.Source) engine.FragmentResources
 }
 
 // RoundContext exposes only declared source dependencies in one coordinated
@@ -380,7 +384,11 @@ func analyze(ctx context.Context, t Target, source parser.Source, m meter) (vali
 	if err != nil {
 		return validationState{}, err
 	}
-	out, trace, err := t.Plan.InspectCandidate(ctx, in, engine.RunOptions{Budget: m.budget})
+	run := engine.RunOptions{Budget: m.budget}
+	if t.Fragments != nil {
+		run.Fragments = t.Fragments(t.Path, source)
+	}
+	out, trace, err := t.Plan.InspectCandidate(ctx, in, run)
 	if err != nil {
 		return validationState{}, err
 	}
@@ -408,11 +416,15 @@ func analyze(ctx context.Context, t Target, source parser.Source, m meter) (vali
 	if failures := trace.Failures(); len(failures) > 0 {
 		return state, errors.Join(failures...)
 	}
-	if len(out.Errors) > 0 {
+	// An I/O error attributed to another path is a read-only resource lookup
+	// failure (an unreadable neighbor). It is reported with the retained analysis
+	// but does not make this target's own analysis unsafe for independent edits.
+	fatal := slices.IndexFunc(out.Errors, func(e result.Error) bool { return !ResourceLookupError(e, t.Path) })
+	if fatal >= 0 {
 		if f := trace.Parsed().Failure; f != nil {
 			return state, f
 		}
-		first := out.Errors[0]
+		first := out.Errors[fatal]
 		return state, &AnalysisFailure{Path: first.Path, Code: first.Code, Category: first.Category}
 	}
 	if trace.Parsed().Limit != nil {
@@ -1300,4 +1312,12 @@ func (v Validated) ChangedDependency(ctx context.Context, path string) (bool, er
 		}
 	}
 	return false, nil
+}
+
+// ResourceLookupError reports an I/O error attributed to a path other than the
+// analyzed target: a read-only resource lookup failure (for example an unreadable
+// neighbor). It stays on the retained analysis without making the target's own
+// analysis, or its independent edits, unsafe.
+func ResourceLookupError(e result.Error, target string) bool {
+	return e.Category == result.IO && e.Path != "" && e.Path != target
 }

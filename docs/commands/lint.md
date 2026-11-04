@@ -40,8 +40,8 @@ Invalid or unreadable configuration returns `12`. Help and version need no
 project access.
 
 This build supports CommonMark, the full GFM profile and directive processing.
-Omitted flavor, including no configuration, selects GFM. Optional contexts and
-resource handling remain unavailable. Both supported flavors complete preparation.
+Omitted flavor, including no configuration, selects GFM. Optional contexts remain unavailable;
+`resources.index_file` and MD051 cross-file resource reads are supported. Both supported flavors complete preparation.
 Explicitly enabled unavailable rules fail preparation; unmentioned default rules
 remain in the complete catalog for coverage reporting. Preparation retains an
 immutable admitted execution plan for the shared engine.

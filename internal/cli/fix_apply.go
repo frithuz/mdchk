@@ -11,6 +11,7 @@ import (
 	"github.com/frithuz/mdchk/internal/files"
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -222,6 +223,16 @@ func publishFixUsing(ctx context.Context, inv *lintInvocation, budget *parser.Op
 		states[path] = state
 	}
 	// Construct the complete observed overlay before starting saved analysis.
+	// Targets without a confirmed saved snapshot are explicitly unavailable.
+	var savedReplacements []resource.Replacement
+	for _, doc := range acquired.Documents {
+		path := inv.logicalPath(doc.Path)
+		if state := states[path]; state.observed {
+			savedReplacements = append(savedReplacements, resource.Replacement{TargetID: path, Source: state.saved})
+		} else {
+			savedReplacements = append(savedReplacements, resource.Replacement{TargetID: path, Unavailable: true})
+		}
+	}
 	for _, doc := range acquired.Documents {
 		path := inv.logicalPath(doc.Path)
 		state := states[path]
@@ -230,7 +241,11 @@ func publishFixUsing(ctx context.Context, inv *lintInvocation, budget *parser.Op
 			plan := inv.plan.CandidatePlan()
 			input, e := plan.NewSourceInput(path, state.saved)
 			if e == nil {
-				state.analysis, _, e = plan.InspectSaved(ctx, input, engine.RunOptions{Budget: budget})
+				run := engine.RunOptions{Budget: budget}
+				if inv.fragments != nil {
+					run.Fragments = inv.fragments.Saved(savedReplacements)
+				}
+				state.analysis, _, e = plan.InspectSaved(ctx, input, run)
 				state.analysisStarted = len(state.analysis.CheckedFiles) > 0
 			}
 			if e != nil {

@@ -22,6 +22,8 @@ type lintInvocation struct {
 	targetSelection                 *files.Selection
 	acquisition                     *files.Acquisition
 	result                          *result.Result
+	// fragments is the fix operation's shared read-only resource session, if any.
+	fragments *fragmentResources
 }
 
 func prepareLint(options lintOptions) (*lintInvocation, error) {

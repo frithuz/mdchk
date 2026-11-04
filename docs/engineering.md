@@ -176,7 +176,7 @@ thematic-break-before-heading analysis, MD034 bare-URL analysis, MD039 link-labe
 are also available. MD065 is enabled by default for CommonMark and GFM; its
 findings are manual and corrections are deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 are
 available but disabled by default. MD034, MD039, MD042, MD045 and MD051 are available and enabled by default for CommonMark and GFM, with manual
-findings. MD039, MD042, MD045 and MD051 are permanently report-only (MD051 reads other documents only with `cross_file: true`, through the bounded read-only resource service in `lint`); URL corrections remain deferred. Other named rules remain unavailable. See the [parser
+findings. MD039, MD042, MD045 and MD051 are permanently report-only (MD051 reads other documents only with `cross_file: true`, through the bounded read-only resource service in `lint`, `inspect` and `fix`); URL corrections remain deferred. Other named rules remain unavailable. See the [parser
 verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery
@@ -584,7 +584,7 @@ charges borrowed base bytes before hashing/equality and reserves actual output
 records; immutable string bytes are not charged again as constructed nodes. Every
 later present-base duplicate, including empty bases, uses the original full Label.
 Local AnchorStyle defaults github, validates github/explicit and persists through
-plans/candidates. This does not enable index_file or cross-file consumers. Finite
+plans/candidates. Anchor policy alone enables no resource reads; MD051 cross_file and index_file are delivered separately (see the MD051 rule page). Finite
 application accounting is not a hard RSS or OS-preemption guarantee.
 
 

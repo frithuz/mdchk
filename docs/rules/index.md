@@ -3,9 +3,9 @@
 [MD051 unresolved fragment analysis](links-and-images/md051.md) is available
 for CommonMark and GFM, enabled by default with `cross_file: false`. Same-document
 fragments are checked against generated heading IDs and HTML IDs; distinct-document
-fragments resolve through the shared resource service in `lint` when `cross_file`
-is true (and for normalized references back to the current source regardless);
-other operations report reduced coverage. Findings remain manual.
+fragments resolve through the shared resource service in `lint`, `inspect` and
+`fix` when `cross_file` is true (and for normalized references back to the current
+source regardless). Findings remain manual.
 
 [MD045 image alternative text analysis](links-and-images/md045.md) is available
 for CommonMark and GFM, enabled by default with `allow_decorative: false`.

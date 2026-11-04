@@ -6,9 +6,9 @@ the strict supplied-input boundary and shared destination normalization. Issue
 adds immutable partial/complete supplied-inventory lookup. Issue #253 adds the
 operation-owned first-observation service and parsed-source cache seam. Issue
 #254 adds the immutable CommonMark/GFM heading and verified HTML ID index.
-CLI `lint` is the first production consumer: MD051 reaches these APIs lazily through
-`engine.RunOptions.Fragments` (internal/cli). Coordinated fixes, MCP and inspect
-remain downstream.
+CLI `lint`, `inspect` and `fix` consume them for MD051 lazily through
+`engine.RunOptions.Fragments` (internal/cli), using Original, per-target Candidate
+and observed Saved views of one operation. MCP remains downstream.
 
 A caller supplies an opaque root identity, immutable parser/index/anchor policy,
 a shared operation context and budget, and explicit selected target snapshots.
@@ -575,8 +575,8 @@ MD080 compares every present Base, including empty, independently of allocated I
 or Usable; only absent bases skip. It reports each later collision on the original
 label, after full hidden/container context and with per-document state. It does
 not treat nonheading IDs as heading bases. Local style is immutable through input,
-plan and candidate analysis. The CLI advertises local github/explicit selection;
-index_file and cross-file resource capabilities remain unavailable.
+plan and candidate analysis. The CLI advertises local github/explicit selection and
+the native `resources.index_file` capability; MD051 consumes both (see below).
 
 ## Fragment query completion
 

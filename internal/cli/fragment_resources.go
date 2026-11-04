@@ -30,32 +30,106 @@ type fragmentResources struct {
 	context engine.DocumentContext
 	cwd     string
 	config  string
-	targets []fragmentTarget
+	mode    resource.RootMode
+	// canonical is the already acquired canonical target of an inspection.
+	canonical string
+	targets   []fragmentTarget
+
+	mu        sync.Mutex
+	started   bool
+	err       error
+	root      *resource.FilesystemRoot
+	service   *resource.Service
+	operation *resource.Operation
+	original  *fragmentView
+}
+
+// fragmentView supplies the resolver for one exact view of the shared operation:
+// Original, a Candidate that replaces selected targets, or a Saved overlay. It
+// implements engine.FragmentResources. Views share the operation's service, so
+// resource bytes are acquired once and never re-read for a different view.
+type fragmentView struct {
+	session      *fragmentResources
+	phase        resource.Phase
+	replacements []resource.Replacement
 
 	mu       sync.Mutex
 	started  bool
 	err      error
-	root     *resource.FilesystemRoot
-	service  *resource.Service
 	resolver *resource.FragmentResolver
 	view     resource.View
 }
 
+// Candidate returns the provider for analysis of path's candidate content. Other
+// selected targets keep their original acquisition; the contract's single final
+// overlay is not computed per round.
+func (f *fragmentResources) Candidate(path string, source parser.Source) engine.FragmentResources {
+	return &fragmentView{session: f, phase: resource.Candidate, replacements: []resource.Replacement{{TargetID: path, Source: source}}}
+}
+
+// Saved returns the provider for the observed saved overlay: replacements carry
+// each target's confirmed saved bytes, or Unavailable when none was established.
+func (f *fragmentResources) Saved(replacements []resource.Replacement) engine.FragmentResources {
+	return &fragmentView{session: f, phase: resource.Saved, replacements: replacements}
+}
+
+// newFragmentResources prepares (but does not open) the shared session. The
+// plan's document context fixes the parse options, anchor style and index file.
+func newFragmentResources(ctx context.Context, budget *parser.OperationBudget, dc engine.DocumentContext, mode resource.RootMode, cwd, configPath, canonical string) *fragmentResources {
+	f := &fragmentResources{ctx: ctx, budget: budget, context: dc, mode: mode, cwd: cwd, config: configPath, canonical: canonical}
+	f.original = &fragmentView{session: f, phase: resource.Original}
+	return f
+}
+
 func (f *fragmentResources) Fragments(ctx context.Context) (*resource.FragmentResolver, resource.View, error) {
+	return f.original.Fragments(ctx)
+}
+
+func (f *fragmentResources) ensure() error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if !f.started {
 		f.started = true
 		f.err = f.open()
 	}
-	if f.err != nil {
-		return nil, resource.View{}, f.err
+	return f.err
+}
+
+func (v *fragmentView) Fragments(context.Context) (*resource.FragmentResolver, resource.View, error) {
+	v.mu.Lock()
+	defer v.mu.Unlock()
+	if !v.started {
+		v.started = true
+		v.err = v.build()
 	}
-	return f.resolver, f.view, nil
+	if v.err != nil {
+		return nil, resource.View{}, v.err
+	}
+	return v.resolver, v.view, nil
+}
+
+func (v *fragmentView) build() error {
+	if err := v.session.ensure(); err != nil {
+		return err
+	}
+	view, err := v.session.operation.NewView(v.phase, v.replacements)
+	if err != nil {
+		return err
+	}
+	normalizer, err := resource.NewNormalizer(view, resource.DefaultPathLimits(), resource.NativeNamePolicy)
+	if err != nil {
+		return err
+	}
+	resolver, err := resource.NewFragmentResolver(v.session.service, normalizer)
+	if err != nil {
+		return err
+	}
+	v.view, v.resolver = view, resolver
+	return nil
 }
 
 func (f *fragmentResources) open() error {
-	path, err := resource.SelectFilesystemRoot(f.ctx, f.budget, resource.RootSelectionOptions{Mode: resource.RootCLI, WorkingDirectory: f.cwd, SelectedConfig: f.config})
+	path, err := resource.SelectFilesystemRoot(f.ctx, f.budget, resource.RootSelectionOptions{Mode: f.mode, WorkingDirectory: f.cwd, CanonicalTarget: f.canonical, SelectedConfig: f.config})
 	if err != nil {
 		return err
 	}
@@ -86,19 +160,8 @@ func (f *fragmentResources) open() error {
 	if err != nil {
 		return err
 	}
+	f.operation = operation
 	f.service, err = resource.NewFilesystemService(reader, resource.DefaultServiceLimits())
-	if err != nil {
-		return err
-	}
-	f.view, err = operation.NewView(resource.Original, nil)
-	if err != nil {
-		return err
-	}
-	normalizer, err := resource.NewNormalizer(f.view, resource.DefaultPathLimits(), resource.NativeNamePolicy)
-	if err != nil {
-		return err
-	}
-	f.resolver, err = resource.NewFragmentResolver(f.service, normalizer)
 	return err
 }
 

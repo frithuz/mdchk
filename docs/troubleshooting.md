@@ -107,9 +107,9 @@ Check exact path case, the resource root, symlink components, and URL decoding. 
 
 ## An anchor or index option is rejected
 
-The schema policy below is enforced, but production anchor/resource consumers
-remain unavailable. Schema-valid explicit unavailable capabilities
-still return `12`.
+The schema policy below is enforced. MD051 consumes anchor and index settings in
+the CLI; other resource consumers remain unavailable, and schema-valid explicit
+unavailable capabilities still return `12`.
 
 Set `resources.anchor_style` and `resources.index_file` at configuration top level. The former rule-local options are rejected even on disabled rules. All anchor consumers share the selected style.
 

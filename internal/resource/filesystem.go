@@ -1133,3 +1133,23 @@ func (f *FilesystemRoot) readContent(ctx context.Context, file *os.File, key str
 	}
 	return data, nil
 }
+
+// ErrIndexFileNotRepresentable reports a configured directory index filename the
+// active native adapter cannot name (for example a reserved or platform-invalid
+// spelling, or Git metadata). It is a pure predicate result, never an I/O fact.
+var ErrIndexFileNotRepresentable = errors.New("index file name is not representable by the native filesystem adapter")
+
+// maxIndexFileBytes is the common single path component limit (NAME_MAX), so a
+// name no filesystem can hold is rejected here instead of silently never matching.
+const maxIndexFileBytes = 255
+
+// RepresentNativeIndexFile is the pure active-project representability check for
+// resources.index_file. It performs no filesystem access and shares the exact
+// component policy used before any native lookup.
+func RepresentNativeIndexFile(name string) error {
+	key, err := NewKey(name)
+	if err != nil || len(name) > maxIndexFileBytes || !NativeNamePolicy(key) {
+		return ErrIndexFileNotRepresentable
+	}
+	return nil
+}

@@ -54,7 +54,7 @@ func TestLintConfigurationStopsBeforeTargets(t *testing.T) {
 		{"disabled hostname provider", availableConfig + "rules: {MD095: {enabled: false, allowed_hosts: [example.com]}}\n", "", "allowed_hosts"},
 		{"unsupported frontmatter", availableConfig + "frontmatter: {enabled: true, formats: [json]}\n", "", "frontmatter"},
 		{"invalid slides", availableConfig + "documents: {slides: ['talk/**', '[']}\n", "", "slides"},
-		{"explicit resource default", availableConfig + "resources: {index_file: index.md}\n", "", "index_file"},
+		{"unrepresentable resource index", availableConfig + "resources: {index_file: .git}\n", "", "index_file"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			root := project(t)

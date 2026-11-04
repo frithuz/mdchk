@@ -431,7 +431,7 @@ charges borrowed base bytes before hashing/equality and reserves actual output
 records; immutable string bytes are not charged again as constructed nodes. Every
 later present-base duplicate, including empty bases, uses the original full Label.
 Local AnchorStyle defaults github, validates github/explicit and persists through
-plans/candidates. This does not enable index_file or cross-file consumers. Finite
+plans/candidates. Anchor policy alone enables no resource reads; MD051 cross_file and index_file are delivered separately (see the MD051 rule page). Finite
 application accounting is not a hard RSS or OS-preemption guarantee.
 
 

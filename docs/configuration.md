@@ -44,7 +44,7 @@ findings are permanently report-only.
 for CommonMark and GFM, enabled by default with `cross_file: false`. Same-document
 fragments resolve against generated heading IDs (per `resources.anchor_style`) and
 HTML IDs; findings are manual and permanently report-only. With
-`cross_file: true`, `lint` also resolves other documents through the shared
+`cross_file: true`, `lint`, `inspect` and `fix` also resolve other documents through the shared
 read-only resource service (directory links use `resources.index_file` once);
 known-missing documents stay with MD057, and unknown or blocked context reports
 located reduced coverage.
@@ -169,15 +169,17 @@ Standalone MCP configuration is a JSON object with the same semantic schema and 
 
 ## Shared resource settings
 
-Current local support: `resources.anchor_style` selects the same-document MD080
-anchor policy for lint, fix dry runs and inspection. Explicit `index_file`, cross-file
-resource consumers and MCP resource integration remain unavailable. The broader
-approved configuration examples below describe those separate deliveries; selecting
-an anchor style alone grants no resource reads.
+Current local support: `resources.anchor_style` selects the anchor policy for MD051
+and MD080 in lint, fix and inspection, and `resources.index_file` names the directory
+index MD051 tries once for directory links. MD051 `cross_file` reads other documents
+through the bounded read-only resource service in the CLI; MCP resource integration
+and MD057/MD073 consumers remain separate deliveries. Selecting an anchor style or
+index file alone grants no resource reads.
 
-Availability: resource consumers, cross-file checks and MCP remain
-planned. The following describes their accepted policy, not current CLI resource
-execution. Explicitly requesting unavailable capabilities returns `12`.
+Availability: MD051 same-document and cross-file checks and `resources.index_file`
+are delivered in the CLI (`lint`, `inspect`, `fix`); MD057, MD073 and MCP resource
+consumers remain planned and follow the same accepted policy. Explicitly requesting
+unavailable capabilities returns `12`.
 
 Set resource policy once for the operation:
 
@@ -192,7 +194,7 @@ rules:
     cross_file: true
 ```
 
-`resources.index_file` defaults to `index.md`. It is a single nonempty filename, not a path, glob, URL, `.` or `..`; separators, query/fragment delimiters, drive prefixes, and control characters are invalid. The active adapter must be able to represent it. The current CLI does not enable resource index handling, so setting `resources.index_file` there is rejected and directory links always use `index.md`. Directory references try exactly that filename once, without fallback or recursive index lookup.
+`resources.index_file` defaults to `index.md`. It is a single nonempty filename, not a path, glob, URL, `.` or `..`; separators, query/fragment delimiters, drive prefixes, and control characters are invalid. The active adapter must be able to represent it. The CLI accepts any such name the native filesystem adapter can represent (for example `README.md`); reserved or platform-invalid spellings and Git metadata (`.git`) are rejected with a located configuration error. Directory references try exactly that filename once, without fallback or recursive index lookup.
 
 `resources.anchor_style` is `github` (default) or `explicit`. MD051, MD073, and MD080 share this policy, including anchors in referenced documents. `MD051.cross_file` remains false by default; same-document references are checked independently of that switch.
 

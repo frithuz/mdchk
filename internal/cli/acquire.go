@@ -14,6 +14,7 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/files"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -74,10 +75,7 @@ func acquireLintContext(ctx context.Context, inv *lintInvocation, _ io.Writer) i
 			inputs = append(inputs, in)
 			if md051.Enabled && md051.Available {
 				if fragments == nil {
-					fragments = &fragmentResources{ctx: ctx, budget: budget, context: inv.plan.CandidatePlan().Context(), cwd: inv.workingDirectory}
-					if inv.selection != nil {
-						fragments.config = inv.selection.SelectedPath
-					}
+					fragments = newFragmentResources(ctx, budget, inv.plan.CandidatePlan().Context(), resource.RootCLI, inv.workingDirectory, inv.selectedConfig(), "")
 				}
 				fragments.targets = append(fragments.targets, fragmentTarget{id: in.Path(), path: document.Path, source: in.Source()})
 			}
@@ -223,4 +221,12 @@ func lintExit(out result.Result) int {
 		}
 	}
 	return status
+}
+
+// selectedConfig is the already resolved configuration filename, or empty.
+func (inv *lintInvocation) selectedConfig() string {
+	if inv.selection == nil {
+		return ""
+	}
+	return inv.selection.SelectedPath
 }

@@ -134,7 +134,7 @@ func TestCompiledPlatformMD082ProductionAnalysis(t *testing.T) {
 				})
 			}
 			for _, suffix := range []string{
-				"resources: {anchor_style: other}\n", "resources: {anchor_style: null}\n", "resources: {anchor_style: 1}\n", "resources: null\n", "resources: {index_file: index.md}\n",
+				"resources: {anchor_style: other}\n", "resources: {anchor_style: null}\n", "resources: {anchor_style: 1}\n", "resources: null\n", "resources: {index_file: .git}\n", "resources: {index_file: a/b}\n",
 			} {
 				conf := strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1) + suffix
 				putConfigurationFile(t, root, ".mdchk.yaml", conf)

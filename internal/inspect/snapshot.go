@@ -238,6 +238,15 @@ func displaySize(n int64) string {
 // Capability errors do not erase the separate validated Configuration view.
 func (s *Snapshot) ExecutionPlan() *config.ExecutionPlan { return s.plan }
 
+// SelectedConfigPath is the already resolved configuration filename, or empty
+// for built-in defaults. It is a root-selection fact, not a read capability.
+func (s *Snapshot) SelectedConfigPath() string {
+	if s.selection == nil {
+		return ""
+	}
+	return s.selection.SelectedPath
+}
+
 // Boundary returns the canonical configuration discovery scope when resolved.
 func (s *Snapshot) Boundary() (config.Boundary, bool) {
 	if s.selection == nil {

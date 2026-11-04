@@ -19,6 +19,7 @@ import (
 	"github.com/frithuz/mdchk/internal/files"
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -201,8 +202,26 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	acquired.Interruptions = append(acquired.Interruptions, acquisition.Interruptions...)
 	targets := make([]fix.Target, 0, len(acquired.Documents))
 	if len(acquired.PreflightErrors) == 0 {
+		var fragments func(string, parser.Source) engine.FragmentResources
+		if rule := inv.plan.Rules()["MD051"]; rule.Enabled && rule.Available && len(acquired.Documents) > 0 {
+			// Read-only resource lookups share the fix budget. Selected targets are
+			// bound with their original acquisition; candidate and saved views
+			// replace them, so lookups never create a write target.
+			session := newFragmentResources(ctx, budget, inv.plan.CandidatePlan().Context(), resource.RootCLI, cwd, inv.selectedConfig(), "")
+			for _, doc := range acquired.Documents {
+				session.targets = append(session.targets, fragmentTarget{id: inv.logicalPath(doc.Path), path: doc.Path, source: doc.Source})
+			}
+			inv.fragments = session
+			defer func() {
+				// Shutdown failure of the read-only root is reported like the write set's.
+				if closeErr := session.Close(); closeErr != nil {
+					out.Errors = append(out.Errors, result.Error{Category: result.IO, Code: "resource-shutdown", Scope: "operation", Message: closeErr.Error()})
+				}
+			}()
+			fragments = session.Candidate
+		}
 		for _, doc := range acquired.Documents {
-			targets = append(targets, fix.Target{Path: inv.logicalPath(doc.Path), Source: doc.Source, Plan: inv.plan.CandidatePlan(), Produce: produce})
+			targets = append(targets, fix.Target{Path: inv.logicalPath(doc.Path), Source: doc.Source, Plan: inv.plan.CandidatePlan(), Produce: produce, Fragments: fragments})
 		}
 	}
 	var validated fix.Validated
@@ -263,7 +282,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 				out.Coverage = append(out.Coverage, result.Coverage{Path: path, Reason: reason, Message: "Correction computation withheld this component; retained content is reported."})
 			}
 			for _, obs := range view.Observations {
-				if obs.Source == view.Candidate && len(obs.Analysis.Errors) == 0 && len(obs.Analysis.Interruptions) == 0 {
+				if obs.Source == view.Candidate && !slices.ContainsFunc(obs.Analysis.Errors, func(e result.Error) bool { return !fix.ResourceLookupError(e, path) }) && len(obs.Analysis.Interruptions) == 0 {
 					continue
 				}
 				// Rejected provisional observations retain their actual source identity;

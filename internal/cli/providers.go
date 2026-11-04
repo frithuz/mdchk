@@ -3,6 +3,7 @@ package cli
 import (
 	"github.com/frithuz/mdchk/internal/config"
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/rules"
 )
 
@@ -12,5 +13,5 @@ import (
 // production has no runtime provider switches or placeholder callbacks.
 func configuredProviders() (*engine.Registry, engine.ValidationProviders, config.Capabilities, error) {
 	registry, err := engine.NewCatalogRegistry(rules.Registrations())
-	return registry, engine.ValidationProviders{}, config.Capabilities{CommonMark: true, GFM: true, SlideAnnotation: true, DirectiveProcessing: true, FrontmatterYAML: true, FrontmatterTOML: true, MetadataInterpretation: true, GitHubAnchors: true, ExplicitAnchors: true}, err
+	return registry, engine.ValidationProviders{}, config.Capabilities{CommonMark: true, GFM: true, SlideAnnotation: true, DirectiveProcessing: true, FrontmatterYAML: true, FrontmatterTOML: true, MetadataInterpretation: true, GitHubAnchors: true, ExplicitAnchors: true, ResourceIndex: true, RepresentIndexFile: resource.RepresentNativeIndexFile}, err
 }

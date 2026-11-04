@@ -23,6 +23,9 @@ type FragmentResources interface {
 type FragmentResolution struct {
 	Resolution resource.FragmentResolution
 	Available  bool
+	// Oversized marks a destination beyond the shared path bounds: the context
+	// exists, but this one link cannot be named, so no query was admitted.
+	Oversized bool
 }
 
 // ResolveFragment resolves one parser-semantic destination at its original span
@@ -53,7 +56,7 @@ func (c RuleContext) ResolveFragment(ctx context.Context, destination string, sp
 		// reduced coverage. Budget, deadline and cancellation stops still return.
 		var limit *parser.LimitExceeded
 		if errors.As(err, &limit) && (limit.Name == "path-bytes" || limit.Name == "path-depth") {
-			return FragmentResolution{}, nil
+			return FragmentResolution{Oversized: true}, nil
 		}
 		return FragmentResolution{}, err
 	}

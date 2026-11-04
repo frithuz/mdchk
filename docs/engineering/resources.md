@@ -349,6 +349,12 @@ Fix phases:
    content is saved. Earlier successful writes remain reported. Errors dominate
    a clean candidate's status, as required by #148.
 
+Current CLI implementation note (MD051, report-only): per-target round analysis
+resolves cross-document fragments against that target's candidate content and
+every other selected target's original acquisition, since no final overlay exists
+while rounds run; the apply re-check uses the observed saved overlay (confirmed
+saved bytes, or explicitly unavailable). Neither view creates a write target.
+
 Do not merge target snapshots by inode alone: hard links may share initial bytes
 but a sibling-file replacement changes only one directory entry. Keep logical
 target identities and write outcomes distinct. Do not claim protection from
