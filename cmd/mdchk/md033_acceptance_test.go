@@ -252,7 +252,7 @@ func TestCompiledPlatformMD033MD047Composition(t *testing.T) {
 		})
 	}
 }
-func TestCompiledPlatformMD033NoCGORefusal(t *testing.T) {
+func TestCompiledPlatformMD033NoCGOApply(t *testing.T) {
 	t.Setenv("CGO_ENABLED", "0")
 	binary := buildConfigurationExecutable(t, "")
 	root := configurationProject(t)
@@ -262,13 +262,7 @@ func TestCompiledPlatformMD033NoCGORefusal(t *testing.T) {
 	before := readinessState(t, root)
 	got := runConfigurationProcess(t, binary, root, "fix", "doc.md", "--format=json")
 	out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "fix")
-	if !md038NativeRefusal(t, got, out) {
-		t.Fatal(got)
-	}
-	if !out.Complete || len(out.Errors) != 1 || len(out.Diagnostics)+len(out.CheckedFiles)+len(out.Changes)+len(out.Documents)+len(out.DeferredFixes) != 0 {
-		t.Fatal(out)
-	}
-	readinessAssertEqual(t, "actual cgo0 early refusal", before, readinessState(t, root))
+	assertCGO0Apply(t, got, out, before, readinessState(t, root))
 }
 
 func md033NativeTags(name string) []string {

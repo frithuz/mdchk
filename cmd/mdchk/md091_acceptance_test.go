@@ -255,7 +255,7 @@ func TestCompiledPlatformMD091ProtectedEOFFix(t *testing.T) {
 	}
 }
 
-func TestCompiledPlatformMD091NoCGOAnalysisAndRefusal(t *testing.T) {
+func TestCompiledPlatformMD091NoCGOAnalysisAndApply(t *testing.T) {
 	t.Setenv("CGO_ENABLED", "0")
 	binary := buildConfigurationExecutable(t, "")
 	tc := md091NativeLiterals(t)["basic-strong"]
@@ -304,10 +304,7 @@ func TestCompiledPlatformMD091NoCGOAnalysisAndRefusal(t *testing.T) {
 			}
 			write := runConfigurationProcessEnv(t, binary, root, childEnv, "fix", "doc.md", "--format=json")
 			refused := validateConfigurationOperationJSON(t, []byte(write.Stdout), "fix")
-			if !md038NativeRefusal(t, write, refused) || !refused.Complete || len(refused.Errors) != 1 || len(refused.Diagnostics)+len(refused.CheckedFiles)+len(refused.Changes)+len(refused.Documents)+len(refused.DeferredFixes) != 0 {
-				t.Fatal(write, refused)
-			}
-			readinessAssertEqual(t, "actual CGO0", before, readinessState(t, root))
+			assertCGO0Apply(t, write, refused, before, readinessState(t, root))
 			if _, err := os.Lstat(gitGlobal); !os.IsNotExist(err) {
 				t.Fatal("fixture global Git input must remain absent", err)
 			}

@@ -1,5 +1,3 @@
-//go:build darwin && arm64 && cgo
-
 package main
 
 import (
@@ -26,7 +24,7 @@ func TestCompiledApplyStaleNativeBoundary(t *testing.T) {
 				before := map[string]os.FileInfo{}
 				for _, p := range []string{"a.md", "b.md", "c.md"} {
 					putConfigurationFile(t, root, p, p)
-					info, err := os.Stat(filepath.Join(root, p))
+					info, err := stableStat(filepath.Join(root, p))
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -48,7 +46,7 @@ func TestCompiledApplyStaleNativeBoundary(t *testing.T) {
 						}
 					}
 					assertSavedApplyFile(t, root, p, want, status, got, format)
-					after, err := os.Stat(filepath.Join(root, p))
+					after, err := stableStat(filepath.Join(root, p))
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -115,7 +113,7 @@ func TestCompiledApplyOriginCancellation(t *testing.T) {
 				before := map[string]os.FileInfo{}
 				for _, p := range []string{"a.md", "b.md", "c.md"} {
 					putConfigurationFile(t, root, p, p)
-					info, e := os.Stat(filepath.Join(root, p))
+					info, e := stableStat(filepath.Join(root, p))
 					if e != nil {
 						t.Fatal(e)
 					}
@@ -141,7 +139,7 @@ func TestCompiledApplyOriginCancellation(t *testing.T) {
 					if e != nil || string(data) != want {
 						t.Fatal(p, string(data), e)
 					}
-					after, e := os.Stat(filepath.Join(root, p))
+					after, e := stableStat(filepath.Join(root, p))
 					if e != nil {
 						t.Fatal(e)
 					}
@@ -199,7 +197,7 @@ func TestCompiledApplyChangedNativePermissions(t *testing.T) {
 		putConfigurationFile(t, root, p, p)
 	}
 	target := filepath.Join(root, "b.md")
-	before, e := os.Stat(target)
+	before, e := stableStat(target)
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -218,7 +216,7 @@ func TestCompiledApplyChangedNativePermissions(t *testing.T) {
 		assertSavedApplyFile(t, root, p, want, status, got, "json")
 		inventory[filepath.Join(root, p)] = sha256.Sum256([]byte(want))
 	}
-	after, e := os.Stat(target)
+	after, e := stableStat(target)
 	if e != nil || !os.SameFile(before, after) || after.Mode().Perm() != 0444 || !before.ModTime().Equal(after.ModTime()) {
 		t.Fatal("native refusal replaced target or forced permissions", e)
 	}
@@ -238,7 +236,7 @@ func TestCompiledApplySymlinkSubstitutionRefused(t *testing.T) {
 	}
 	putConfigurationFile(t, root, "b.md.external", "external")
 	external := filepath.Join(root, "b.md.external")
-	before, e := os.Stat(external)
+	before, e := stableStat(external)
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -255,7 +253,7 @@ func TestCompiledApplySymlinkSubstitutionRefused(t *testing.T) {
 	if !reflect.DeepEqual(inventory, configurationBytes(t, root)) {
 		t.Fatal("native substitution followed external link or left artifacts")
 	}
-	after, e := os.Stat(external)
+	after, e := stableStat(external)
 	if e != nil || !os.SameFile(before, after) || before.Mode() != after.Mode() || !before.ModTime().Equal(after.ModTime()) {
 		t.Fatal("native substitution changed external metadata", e)
 	}

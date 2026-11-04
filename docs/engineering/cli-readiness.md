@@ -58,14 +58,14 @@ location expectations. Inspection's binary version equals this executable's
 checked-in validator's dependencies, every journey JSON result also passes the
 [result schema and semantic checks](../contracts/results/validate.py).
 
-Application probes the actual native capability, rather than inferring it from
-an operating-system name. On verified Darwin arm64 with cgo and local APFS it
-must write the independently expected candidate bytes, publish an observed saved
-identity, leave protected/suppressed and unrelated inputs unchanged, and perform
-a second application without changes or inode replacement. Other adapters must
-explicitly refuse as unsupported with exit 13 and no effects. An arbitrary I/O
-failure is not accepted as adapter evidence. The existing three-OS `cli-platform`
-CI job runs this journey on macOS, Linux and Windows.
+Application is one portable implementation. On Linux, macOS and Windows,
+including a build with `CGO_ENABLED=0`, it must write the independently expected
+candidate bytes, publish an observed saved identity, leave protected/suppressed
+and unrelated inputs unchanged, and perform a second application without changes
+or inode replacement. An operating system outside those three must explicitly
+refuse as unsupported with exit 13 and no effects. An arbitrary I/O failure is not
+accepted as adapter evidence. The three-OS `cli-platform` CI job runs this journey
+on macOS, Linux and Windows.
 
 Other boundary proofs remain separate, named acceptance tests:
 
@@ -76,11 +76,11 @@ Other boundary proofs remain separate, named acceptance tests:
   exercise native paths, streams, output failures, actual process interrupts and
   platform capabilities. Windows permission-bit non-enforcement is explicit;
   cross-vet alone is not evidence of runtime behavior.
-- [`fix_apply_darwin_test.go`](../../cmd/mdchk/fix_apply_darwin_test.go) and
-  [`fix_boundary_acceptance_darwin_test.go`](../../cmd/mdchk/fix_boundary_acceptance_darwin_test.go)
+- [`fix_apply_test.go`](../../cmd/mdchk/fix_apply_test.go) and
+  [`fix_boundary_acceptance_test.go`](../../cmd/mdchk/fix_boundary_acceptance_test.go)
   retain actual native partial publication, stale/configuration/cancellation
-  boundaries. The [VS Code](../../internal/cli/vscode_saved_darwin_test.go) and
-  [GitHub](../../internal/cli/github_saved_darwin_test.go) saved-result tests
+  boundaries. The [VS Code](../../internal/cli/vscode_saved_test.go) and
+  [GitHub](../../internal/cli/github_saved_test.go) saved-result tests
   distinguish observed saved coordinates from original and clean candidate views,
   including written/refused/unknown outcomes.
 - [`integration_examples_test.go`](../../internal/cli/integration_examples_test.go)
@@ -146,5 +146,5 @@ complete=false/exit policy; actual operational errors remain separate.
 A separately authorized MD047 correction recomputes MD087 on candidate and
 actual saved snapshots. The audit itself supplies no edit, preview or corrected
 content. A second successful write run is stable; a dry run repeats its proposal
-from the unchanged original. Native write-acquisition refusal without CGO
-retains the existing early refusal contract.
+from the unchanged original. Native write-acquisition refusal on an unsupported
+operating system retains the early refusal contract; a build without CGO applies.

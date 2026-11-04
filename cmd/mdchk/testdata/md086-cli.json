@@ -1024,17 +1024,14 @@
     },
     "mode": "fix-apply",
     "MD047_enabled": true,
-    "exit": 13,
-    "status": "error",
+    "exit": 10,
+    "status": "violations",
     "complete": true,
-    "empty_analysis_effects": true,
-    "unchanged_source_config_fs": true,
-    "error": {
-      "category": "io",
-      "code": "write-acquisition",
-      "scope": "operation",
-      "message": "native replacement requires verified Darwin arm64 APFS and cgo; this adapter is unsupported"
-    }
+    "write_status": "written",
+    "saved_source": "> <!-- note\n\nend\n",
+    "changes": 1,
+    "diagnostics": 1,
+    "errors": 0
   },
   "total_actual_calls": 25,
   "requirements": [

@@ -343,6 +343,11 @@ func TestAuthorityLimitsAndCancellation(t *testing.T) {
 	limits := parser.DefaultLimits()
 	limits.OperationTime = time.Nanosecond
 	b, _ := parser.NewOperationBudget(limits)
+	// Windows' monotonic clock advances in ticks of up to several
+	// milliseconds, so wait until the deadline has passed.
+	for start := time.Now(); time.Since(start) <= limits.OperationTime; {
+		time.Sleep(time.Millisecond)
+	}
 	_, err = fix.Plan(context.Background(), f.parsed, f.state, f.registry, nil, b)
 	var limit *parser.LimitExceeded
 	if !errors.As(err, &limit) {

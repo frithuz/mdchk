@@ -29,6 +29,17 @@ jobs:
         run: node tools/resource_schema.mjs
       - name: Test
         run: go test ./...
+      - name: Build without cgo
+        # Apply is portable Go: no build may require a C toolchain.
+        run: CGO_ENABLED=0 go build ./...
+      - name: Compile every apply target and the unsupported-host fallback
+        # go vet type-checks tests as well. freebsd is outside linux, darwin and
+        # windows and must compile to the explicit unsupported-platform refusal.
+        run: |
+          for target in linux/amd64 linux/arm64 darwin/arm64 darwin/amd64 windows/amd64 windows/arm64 freebsd/amd64; do
+            echo "== $target"
+            GOOS=${target%/*} GOARCH=${target#*/} CGO_ENABLED=0 go vet ./...
+          done
       - name: Test actual GFM AST adapter and scope controls
         run: go test -tags mdchk_conformance ./internal/conformance/... -count=1 -v
       - name: Test closed GFM scopes preserve production admission
@@ -65,8 +76,9 @@ jobs:
         run: python3 -B -m unittest discover -s tools -p 'test_commonmark_conformance.py' -v
 
   cli-platform:
-    # These execute actual host binaries. Cross-vet is a separate compile check;
-    # no additional native publication adapter is enabled by this matrix.
+    # These execute actual host binaries. Cross-vet is a separate compile check.
+    # Apply is one portable implementation, so the same suite runs on every OS
+    # with CGO_ENABLED=0.
     strategy:
       fail-fast: false
       matrix:
@@ -98,7 +110,17 @@ jobs:
       - name: Verify compiled native paths, streams, real interrupts and capabilities
         # The expanded native suite reached the fifteen-minute limit on Windows.
         # Keep room for the complete inventory and later native integration gates.
-        run: go test ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryUnsupportedApply|TestCompiledApplyNoCGOClearlyRefuses|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -v -timeout=20m
+        run: go test ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryApply|TestCompiledApplyNoCGOApplies|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -v -timeout=20m
+      - name: Verify portable apply adapter without cgo
+        env:
+          CGO_ENABLED: "0"
+        run: |
+          go test ./internal/fsroot ./internal/files ./internal/fix -count=1 -timeout=10m
+          go test ./internal/cli -run "^(TestApply.*|TestFrontmatterApplyPreservesHeaderAndConverges|TestFrontmatterOperationParityNativeApply|TestGitHubActualPartialSavedPublication|TestVSCodeActualPartialSavedPublication)$" -count=1 -timeout=10m
+      - name: Verify compiled apply without cgo
+        env:
+          CGO_ENABLED: "0"
+        run: go test ./cmd/mdchk -run "^(TestCompiledProductionMD047ApplySavedWorkflow|TestCompiledApply.*|TestCompiledEditorPartialNativePublication|TestCompiledProductionMD051ResourceFragmentsApplySavedView|TestCompiledGFMNativeSavedBytes)$" -count=1 -timeout=15m
       - name: Verify compiled GFM selection, consumers and native publication
         run: go test ./cmd/mdchk -run "^TestCompiledGFM" -count=1 -v -timeout=5m
       - name: Verify compiled editor and documented integration contracts
@@ -152,6 +174,28 @@ jobs:
         run: go test -race -tags mdchk_conformance ./internal/conformance/... -count=1
       - name: Test closed GFM production admission with race detector
         run: go test -race -tags mdchk_conformance ./internal/cli -run '^TestGFMPrivateScopesPreserveProductionAdmission$' -count=1
+
+  race-apply-macos:
+    # Linux is covered by the full race job above. The race detector needs cgo
+    # and a C compiler, so this is the only other host where it can run here;
+    # Windows runs the same suite without it.
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      GOTOOLCHAIN: local
+      GOWORK: "off"
+      GOFLAGS: -mod=readonly
+      CGO_ENABLED: "1"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Test portable apply adapter with race detector
+        run: go test -race -timeout=20m ./internal/fsroot ./internal/files ./internal/fix
 
   fuzz:
     runs-on: ubuntu-24.04

@@ -30,8 +30,8 @@ filesystem discovery, ancestor permissions, and compiled lint integration are
 implemented. Use the complete known rule catalog in every case, independently
 of the executable implementations. Read-only project configuration validation
 and all four reporters are implemented. Inspect supports text/JSON; fix supports
-previews and verified Darwin arm64+cgo/local APFS application of MD047, with
-protected EOF deferrals and unsupported-adapter refusal. MCP remains planned.
+previews and Linux, macOS and Windows application of MD047, with
+protected EOF deferrals and refusal on other operating systems. MCP remains planned.
 Cases below involving unavailable rules, dialects, contexts or MCP specify the
 accepted future contract.
 

@@ -80,7 +80,7 @@ reporting interruption returns incomplete/15. See its [command guide](commands/i
 `fix --dry-run` uses the same selection/configuration and reports validated
 candidate outcomes in all four formats without writing files; only text/JSON
 include preview diffs. MD047 supplies the first production correction, with minimal terminal-newline
-changes and conservative protected-content deferrals. Apply uses verified native replacement on Darwin arm64+cgo/local APFS and reports actual saved content; unsupported adapters refuse writes. MCP remains planned and is rejected by this build.
+changes and conservative protected-content deferrals. Apply uses portable native replacement on Linux, macOS and Windows, without cgo, and reports actual saved content; other operating systems refuse writes. MCP remains planned and is rejected by this build.
 
 ## Get started with this build
 
@@ -99,8 +99,8 @@ mdchk fix docs/guide.md
 
 The example has no terminal newline: lint returns `10` with MD047 at line 1,
 scalar column 5. Preview returns `0` with a proposed newline and leaves the file
-unchanged. Apply saves that newline on the verified Darwin arm64+cgo/local APFS
-adapter; unsupported adapters refuse with `13` and leave the file unchanged.
+unchanged. Apply saves that newline on Linux, macOS and Windows;
+other operating systems refuse with `13` and leave the file unchanged.
 After a successful apply, lint returns `0`.
 
 Without configuration, the supported default GFM profile analyzes the document,

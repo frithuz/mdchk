@@ -93,7 +93,7 @@ func TestCompiledPlatformMD051ResourceFragments(t *testing.T) {
 				readinessAssertEqual(t, "resource lookups are read-only", before, readinessState(t, root))
 			}
 			if tc.symlink {
-				if data, err := os.ReadFile(filepath.Join(root, "docs", "other.md")); err != nil || string(data) != "# Intro\n\n# Café\n" {
+				if data, err := os.ReadFile(filepath.Join(root, "docs", "other.md")); err != nil || string(data) != "# Intro\n\n# Café\n" { //nolint:gosec // Test-owned synthetic fixture path.
 					t.Fatal(err)
 				}
 			}

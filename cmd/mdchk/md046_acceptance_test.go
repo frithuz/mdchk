@@ -270,10 +270,7 @@ func TestCompiledPlatformMD046NoCGO(t *testing.T) {
 	md046NativeAssert(t, out, tc, "original")
 	got = md014NativeRun(t, binary, root, "fix", "doc.md", "--format=json")
 	out = md014NativeJSON(t, []byte(got.Stdout), "fix")
-	if !md038NativeRefusal(t, got, out) || len(out.Changes)+len(out.Documents)+len(out.Diagnostics) != 0 {
-		t.Fatal(got, out)
-	}
-	readinessAssertEqual(t, "MD046 CGO0", before, readinessState(t, root))
+	assertCGO0Apply(t, got, out, before, readinessState(t, root))
 }
 
 func TestCompiledPlatformMD046DirectiveAndUnknownCoverage(t *testing.T) {

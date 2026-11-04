@@ -50,9 +50,12 @@ linters:
         native-resource-adapter:
           files:
             - '!${base-path}/internal/resource/native_*.go'
+            # The write path is portable os.Root code; only the extended
+            # attribute copy needs a pure-Go x/sys call (see native-writes.md).
+            - '!${base-path}/internal/files/xattr_*.go'
           deny:
             - pkg: golang.org/x/sys
-              desc: keep native operating-system calls behind internal/resource native backends
+              desc: keep native operating-system calls behind the reviewed native backends
         configuration-adapter:
           files:
             - '!${base-path}/internal/config/**'

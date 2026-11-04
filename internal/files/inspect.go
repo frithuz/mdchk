@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io/fs"
-	"os"
 	"path/filepath"
 )
 
@@ -39,7 +38,7 @@ func acquireExplicit(ctx context.Context, path string, options AcquireOptions, s
 	if err != nil {
 		return nil, err
 	}
-	info, err := os.Lstat(canonical)
+	info, err := pinnedLstat(canonical)
 	if err != nil {
 		return nil, err
 	}

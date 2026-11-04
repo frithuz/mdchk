@@ -143,6 +143,11 @@ package resource
 import unix "golang.org/x/sys/unix"
 func Native() { unix.Helper() }
 ''')
+        write(root, "internal/files/xattr_probe.go", '''// Package files owns the extended attribute copy.
+package files
+import unix "golang.org/x/sys/unix"
+func Xattr() { unix.Helper() }
+''')
         write(root, "internal/parser/probe_test.go", '''package parser_test
 import (
  "testing"

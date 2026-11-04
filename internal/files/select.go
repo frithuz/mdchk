@@ -74,8 +74,23 @@ type selectionFS interface {
 }
 type hostFS struct{}
 
-func (hostFS) lstat(p string) (fs.FileInfo, error)     { return os.Lstat(p) }
+func (hostFS) lstat(p string) (fs.FileInfo, error)     { return pinnedLstat(p) }
 func (hostFS) readDir(p string) ([]fs.DirEntry, error) { return os.ReadDir(p) }
+
+// pinnedLstat records the entry's file identity before returning. A Windows
+// path-based Lstat loads its file ID on the first SameFile call, so a later
+// comparison would identify whatever the path names at that time and accept a
+// swapped file. The self-comparison loads the ID now; elsewhere it is free.
+func pinnedLstat(p string) (fs.FileInfo, error) {
+	info, err := os.Lstat(p)
+	if err != nil {
+		return nil, err
+	}
+	if !os.SameFile(info, info) {
+		return nil, &fs.PathError{Op: "lstat", Path: p, Err: errors.New("file identity unavailable")}
+	}
+	return info, nil
+}
 
 // Select discovers eligible regular files. Every explicit path component is
 // checked before cleaning can erase it, and every discovered entry is Lstat'ed;

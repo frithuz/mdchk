@@ -10,7 +10,10 @@ import (
 	"testing"
 )
 
-func TestCompiledApplyNoCGOClearlyRefuses(t *testing.T) {
+// A CGO_ENABLED=0 build applies corrections through the same portable adapter
+// as every other build, and still finishes terminal discovery without asking
+// for native write authority.
+func TestCompiledApplyNoCGOApplies(t *testing.T) {
 	name := "mdchk"
 	if runtime.GOOS == "windows" {
 		name += ".exe"
@@ -25,14 +28,18 @@ func TestCompiledApplyNoCGOClearlyRefuses(t *testing.T) {
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
 	putConfigurationFile(t, root, "doc.md", "hello")
-	before := configurationBytes(t, root)
 	got := runConfigurationProcess(t, binary, root, "fix", "doc.md", "--format=json")
 	parsed := validateConfigurationOperationJSON(t, []byte(got.Stdout), "fix")
-	if got.Status != 13 || !strings.Contains(got.Stdout, "unsupported") || len(parsed.Changes) > 0 || !reflect.DeepEqual(before, configurationBytes(t, root)) {
+	if got.Status != 0 || !parsed.Complete || len(parsed.Changes) != 1 || parsed.Changes[0].Disposition != "written" || strings.Contains(got.Stdout, "unsupported") {
 		t.Fatal(got)
 	}
-	// The same unsupported build must finish terminal discovery without asking
-	// for native write authority. Exercise actual serialized command results.
+	//nolint:gosec // Test-owned synthetic fixture path.
+	if written, err := os.ReadFile(filepath.Join(root, "doc.md")); err != nil || string(written) != "hello\n" {
+		t.Fatalf("saved bytes %q %v", written, err)
+	}
+	putConfigurationFile(t, root, "doc.md", "hello")
+	// The same build must finish terminal discovery without asking for native
+	// write authority. Exercise actual serialized command results.
 	for _, tc := range []struct {
 		name, config, path string
 		status             int
@@ -53,7 +60,7 @@ func TestCompiledApplyNoCGOClearlyRefuses(t *testing.T) {
 			before := configurationBytes(t, root)
 			prior := map[string]os.FileInfo{}
 			for path := range before {
-				info, err := os.Stat(path)
+				info, err := stableStat(path)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -85,7 +92,7 @@ func TestCompiledApplyNoCGOClearlyRefuses(t *testing.T) {
 						}
 					}
 					for path, info := range prior {
-						after, err := os.Stat(path)
+						after, err := stableStat(path)
 						if err != nil {
 							t.Fatal(err)
 						}

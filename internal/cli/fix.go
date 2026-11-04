@@ -36,7 +36,7 @@ Options may appear before or after paths. Use -- for dash-prefixed paths.
   --version           Print version
 
 Exit 0/10 describes saved content (candidate content for --dry-run).
-Incomplete analysis returns 15; apply requires Darwin arm64+cgo on local APFS.
+Incomplete analysis returns 15; apply works on Linux, macOS and Windows.
 Usage returns 11, configuration 12, I/O 13 and internal failures 14.
 MD047 corrects safe final-newline changes; ambiguous contexts remain manual.
 Text/JSON include preview diffs; editor formats report remaining findings only.

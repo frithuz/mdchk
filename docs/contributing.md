@@ -70,8 +70,8 @@ context with the engine. The executable propagates interrupts through
 stdout, including ordinary usage/configuration failures. Reporting bounds actual
 encoded bytes and uses an independent cleanup deadline; stderr carries execution
 logs. Lint, fix and config validate support all four reporters; inspect supports
-text/JSON. MD047 previews and verified Darwin arm64+cgo/local APFS apply are
-delivered, with protected EOF deferrals and unsupported-adapter refusal. MCP
+text/JSON. MD047 previews and Linux, macOS and Windows apply are
+delivered, with protected EOF deferrals and refusal on other operating systems. MCP
 remains planned;
 see [current implementation](index.md#current-implementation).
 The conformance adapter below remains a separate test command.
@@ -182,6 +182,12 @@ standard library; production packages cannot import the conformance renderer;
 YAML imports stay behind `internal/config` and MCP SDK imports behind
 `internal/mcp`. The approved external import families are the selected
 `github.com/goccy/go-yaml` and `github.com/modelcontextprotocol/go-sdk` modules.
+`golang.org/x/sys` is also approved, but only for pure-Go native calls: the
+extended attribute copy in `internal/files/xattr_*.go` and the read-only resource
+backends in `internal/resource/native_*.go`. mdchk contains no cgo and no
+platform-specific code unless it is required; each platform-specific file is
+justified in [native writes](engineering/native-writes.md#platform-specific-code).
+Apply is one implementation built on `os.Root` in `internal/fsroot`.
 YAML v1.19.2 is pinned in `go.mod`; the MCP SDK's accepted v1.8.0 pin is for its
 future implementation. Depguard checks import paths, not module versions;
 review changes to module pins against the accepted contracts. Suggested future

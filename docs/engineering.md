@@ -363,7 +363,7 @@ validation, parsing and available registered checks. MD047 checks original physi
 endings and assesses context-specific correction eligibility without generating
 edits. Its production dry-run provider supplies independently checked minimal
 terminal corrections through the common fix pipeline; filesystem application
-is available on the verified Darwin arm64+cgo/local APFS adapter. Other missing enabled defaults produce genuine coverage deficits and return
+is available on Linux, macOS and Windows. Other missing enabled defaults produce genuine coverage deficits and return
 15. Valid UTF-8 with ordinary rules disabled can return clean 0; available checks
 can produce violations and retained partial findings. Lint emits text by default
 or one schema-v1 JSON object on stdout, with execution logs on stderr. Ordinary
@@ -463,10 +463,11 @@ writers test the distinct short-write boundary. Delivery failures return 13 unle
 an internal failure requires 14. The other stream is still attempted, and ordinary
 text/JSON reports are not copied to stderr as a fallback.
 
-Safe publication remains limited to the verified Darwin arm64+cgo/local APFS
-adapter. Other builds refuse apply with 13 and unchanged files, while dry-run
-works. A macOS runner's name alone does not prove those adapter prerequisites;
-architecture, cgo and filesystem capabilities must be verified independently.
+Safe publication is one portable implementation for Linux, macOS and Windows,
+verified on each by the `cli-platform` jobs with `CGO_ENABLED=0`. Other operating
+systems refuse apply with 13 and unchanged files, while dry-run works. Network,
+cloud and virtual filesystems are not verified. See
+[native writes](engineering/native-writes.md) for the accepted limits.
 
 MD024 adds a raw Label span to HeadingFact without changing existing fields.
 First/last original Content source bounds preserve NUL mappings and multiline

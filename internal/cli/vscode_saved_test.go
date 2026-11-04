@@ -1,5 +1,3 @@
-//go:build darwin && arm64 && cgo
-
 package cli
 
 import (
@@ -17,7 +15,7 @@ import (
 	"github.com/frithuz/mdchk/internal/result"
 )
 
-func TestGitHubActualPartialSavedPublication(t *testing.T) {
+func TestVSCodeActualPartialSavedPublication(t *testing.T) {
 	ctx := context.Background()
 	f := setupApplyFixture(t, ctx, nil)
 	out := result.NewFix(false)
@@ -53,20 +51,15 @@ func TestGitHubActualPartialSavedPublication(t *testing.T) {
 		t.Fatal(out)
 	}
 	frozen := cloneReport(out)
-	cwd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	authority := withGitHubPaths(ctx, githubPaths{Root: cwd, CWD: cwd, Flavor: "unix"})
 	var stdout, stderr bytes.Buffer
-	if status := reportResultStreamsContext(authority, out, "github", &stdout, &stderr, nil); status != 13 {
+	if status := reportResultStreams(out, "vscode", &stdout, &stderr, nil); status != 13 {
 		t.Fatal(status, stdout.String(), stderr.String())
 	}
-	if c := parseWorkflow(strings.Split(stdout.String(), "\n")[0]); c == nil || c.properties["file"] != "a.md" || c.properties["line"] != "3" || c.properties["title"] != "MD047" {
+	if !strings.HasPrefix(stdout.String(), "a.md:3:8: error: MD047: ") || strings.Count(stdout.String(), "\n") != 1 {
 		t.Fatal(stdout.String())
 	}
 	for _, evidence := range []string{"publication-failed", "saved-view-unavailable", "outcome a.md refused", "outcome b.md written", "outcome c.md unknown", ".owned-recovery", "incomplete"} {
-		if !strings.Contains(stdout.String()+stderr.String(), evidence) {
+		if !strings.Contains(stderr.String(), evidence) {
 			t.Fatal("missing", evidence, stderr.String())
 		}
 	}
@@ -76,15 +69,14 @@ func TestGitHubActualPartialSavedPublication(t *testing.T) {
 	// The emergency branch must keep actual mixed outcomes and recovery names.
 	stdout.Reset()
 	stderr.Reset()
-	if status := reportResultStreamsContext(authority, out, "github", &stdout, &stderr, map[string]int64{"reporting-time": 1}); status != 13 {
+	if status := reportResultStreams(out, "vscode", &stdout, &stderr, map[string]int64{"reporting-time": 1}); status != 13 {
 		t.Fatal(status)
 	}
-	if !strings.Contains(stderr.String(), "outcome b.md written") || !strings.Contains(stderr.String(), ".owned-recovery") {
+	if (stdout.Len() > 0 && !strings.HasPrefix(stdout.String(), "a.md:3:8: error: MD047: ")) || !strings.Contains(stderr.String(), "outcome b.md written") || !strings.Contains(stderr.String(), ".owned-recovery") {
 		t.Fatal(stdout.String(), stderr.String())
 	}
-
-	reserve, err := reservedEditorReport(authority, out, nil, encodeGitHub)
-	if err != nil || len(reserve.data) == 0 || lintExit(reserve.out) != 13 || !bytes.Contains(reserve.stderr, []byte(".owned-recovery")) || !bytes.Contains(reserve.stderr, []byte("outcome b.md written")) {
+	reserve, err := emergencyVSCodeReport(out, nil)
+	if err != nil || len(reserve.data) != 0 || lintExit(reserve.out) != 13 || !bytes.Contains(reserve.stderr, []byte(".owned-recovery")) || !bytes.Contains(reserve.stderr, []byte("outcome b.md written")) {
 		t.Fatal(err, string(reserve.data), string(reserve.stderr))
 	}
 }

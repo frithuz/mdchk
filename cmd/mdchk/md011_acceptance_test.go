@@ -499,10 +499,7 @@ func TestCompiledPlatformMD011NoCGO(t *testing.T) {
 			md011NativeAssert(t, previewResult, tc, "candidate")
 			got := md014NativeRun(t, binary, root, "fix", "doc.md", "--format=json")
 			out := md014NativeJSON(t, []byte(got.Stdout), "fix")
-			if !md038NativeRefusal(t, got, out) || len(out.Changes)+len(out.Documents)+len(out.Diagnostics) != 0 {
-				t.Fatal(got, out)
-			}
-			readinessAssertEqual(t, "CGO0 analysis and write refusal", before, readinessState(t, root))
+			assertCGO0Apply(t, got, out, before, readinessState(t, root))
 		})
 	}
 }

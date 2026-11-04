@@ -1,5 +1,3 @@
-//go:build darwin && arm64 && cgo
-
 package main
 
 import (
@@ -24,7 +22,7 @@ func TestCompiledApplySelectionAndInheritedPolicy(t *testing.T) {
 	inventory := configurationBytes(t, root)
 	protected := map[string]os.FileInfo{}
 	for _, p := range []string{".mdchk.yaml", "nested/.mdchk.yaml", "nested/excluded.md", "nested/manual.md"} {
-		info, e := os.Stat(filepath.Join(root, p))
+		info, e := stableStat(filepath.Join(root, p))
 		if e != nil {
 			t.Fatal(e)
 		}
@@ -59,7 +57,7 @@ func TestCompiledApplySelectionAndInheritedPolicy(t *testing.T) {
 		t.Fatal("policy/exclusion changed unrelated bytes")
 	}
 	for p, info := range protected {
-		after, e := os.Stat(filepath.Join(root, p))
+		after, e := stableStat(filepath.Join(root, p))
 		if e != nil || !os.SameFile(info, after) || info.Mode() != after.Mode() || !info.ModTime().Equal(after.ModTime()) {
 			t.Fatal("changed protected/config/excluded metadata", p, e)
 		}

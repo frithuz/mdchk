@@ -10,8 +10,7 @@ enforces bounded configuration/Git-source acquisition, directory/path limits,
 structured and alias depth, and shared node/work/time budgets; it rejects
 inapplicable overrides. Fix shares candidate, reparse, preservation, diff and
 saved-content accounting, and admits the mandatory write-outcome manifest before
-native publication. Native writes require the verified Darwin arm64+cgo/local
-APFS adapter. Remaining traversal, resource and MCP adapter/application limits
+native publication. Native writes run on Linux, macOS and Windows. Remaining traversal, resource and MCP adapter/application limits
 and their end-to-end verification remain pending. Issue #251 adds internal raw
 native acquisition counters for path/depth, directory entries, actual content
 bytes and bounded retries using the existing operation budget. It does not enable

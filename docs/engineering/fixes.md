@@ -123,12 +123,13 @@ alone.
 
 ### Coordination
 
-Serialize overlapping write operations among cooperating mdchk invocations and within project MCP,
-using an OS-backed coordination mechanism with stable logical target/parent identity and
-deterministic acquisition order. Hold coordination across final validation and commit. An advisory
-lock only on the original file inode is insufficient across replacement. Lock failure or bounded
-waiting/cancellation prevents the affected commit, without an unlocked fallback. Finalize the native
-coordination mechanism and its scope under #146; do not imply unrelated editors honor it.
+Amended by #261: there is no cross-process lock. The original design serialized cooperating
+invocations with Darwin `flock`; that required platform-specific code and is removed in favor of
+one portable implementation. Stale protection still detects concurrent changes to the source,
+its dependencies and the parent immediately before the rename, but it does not serialize writers,
+and a noncooperating writer can change a file between the last check and the rename. With MD047
+as the only fixer, two concurrent runs compute identical output, so nothing is lost today.
+Revisit before a second fixer ships. Do not imply that any editor or process honors a lock.
 
 ### Preconditions
 
@@ -161,10 +162,12 @@ required for successful normal writes.
 
 ### Metadata
 
-Preserve owner/group or equivalent ownership, access permissions and ACLs, security labels, extended
-attributes and named streams where present and supported. If the adapter cannot inspect or preserve
-relevant metadata safely, refuse that file rather than silently discarding it or relaxing access. Do
-not clear read-only/immutable restrictions to force a write. Content modification times and
+Preserve owner/group, access permissions, and (on Linux and macOS) every extended attribute,
+which carries POSIX ACLs, security labels, quarantine and provenance. If the adapter cannot copy
+that metadata, refuse the file rather than silently discarding it or relaxing access. Do not
+clear read-only/immutable restrictions to force a write. Amended by #261: macOS ACL entries are
+not inspected or preserved, and Windows alternate data streams, including Mark-of-the-Web, are
+dropped on replace; both are accepted, documented limits. Content modification times and
 replacement identity may change; this is not a promise to retain inode identity or every historical
 timestamp. Exact per-platform metadata support and preservation ordering must be documented and
 tested before enabling that adapter.
@@ -179,11 +182,10 @@ replacement.
 
 ### Platform support
 
-Keep Linux, macOS and Windows as target platforms, but enable apply only for native
-adapters/filesystems whose actual replacement, no-follow, metadata and failure behavior has been
-implemented and verified. Generic os.Rename is not sufficient evidence of atomic Windows
-replacement. Unsupported or unverified environments get a clear write refusal and can use dry-run;
-no silent weaker fallback. Record the supported local-filesystem matrix; do not assume
+Apply is enabled on Linux, macOS and Windows through one portable implementation (amended by
+#261). On Windows, `os.Rename` is a same-volume `MoveFileEx` replace and is documented as nothing
+stronger. Operating systems outside those three get a clear write refusal and can use dry-run; no
+silent weaker fallback. There is no filesystem-type check: do not assume
 network/cloud/virtual filesystems share local guarantees.
 
 ### Durability and failure
@@ -207,9 +209,9 @@ saved content, not a promise that external writers cannot change it later.
 
 ### Design status
 
-This decision sets product guarantees and accepted limitations. The #146/#147 Darwin APFS native adapter and its precise metadata/coordination
-support are implemented and tested; see [native write support](native-writes.md).
-CLI apply is implemented on that verified adapter. Broader native-platform proof remains required for other platforms.
+This decision sets product guarantees and accepted limitations. The #146/#147 native adapter was
+replaced by the portable #261 implementation for Linux, macOS and Windows; see
+[native write support](native-writes.md) for the accepted limits. CLI apply is implemented on it.
 
 
 ## CLI dry-run adapter
@@ -307,8 +309,9 @@ MD033 embedded-HTML analysis is available for CommonMark and GFM, disabled by
 default and permanently NoFix. Full original tag ranges remain manual, including
 candidate and saved analysis after an independent MD047 newline correction.
 MD033 produces no edits, eligibility, previews or corrected contents. MD047 is
-the sole current fixer. Unsupported native apply, including CGO0, retains its
-early complete I/O refusal 13 with empty analysis/effects and unchanged files.
+the sole current fixer. Apply on an unsupported operating system returns an early
+complete I/O refusal 13 with empty analysis/effects and unchanged files; a build
+without cgo applies normally.
 
 ## MD086 manual findings
 

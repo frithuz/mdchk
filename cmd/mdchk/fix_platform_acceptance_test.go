@@ -2,12 +2,12 @@ package main
 
 import (
 	"crypto/sha256"
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"reflect"
-	"runtime"
 	"strings"
 	"testing"
 )
@@ -42,6 +42,27 @@ func unchangedFixFixture(t *testing.T, root string) func() {
 	}
 }
 
+// stableStat takes identity from an open handle. On Windows a path-based os.Stat
+// result loads its file ID lazily, when SameFile first asks, so comparing it
+// with a later stat of the same path would compare the current file with itself.
+func stableStat(path string) (os.FileInfo, error) {
+	f, err := os.Open(path) //nolint:gosec // Test-owned synthetic fixture path.
+	if err != nil {
+		return nil, err
+	}
+	info, err := f.Stat()
+	return info, errors.Join(err, f.Close())
+}
+
+func readFixture(t *testing.T, path string) string {
+	t.Helper()
+	raw, err := os.ReadFile(path) //nolint:gosec // Test-owned synthetic fixture path.
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(raw)
+}
+
 // Include directories and symbolic links in the artifact inventory without
 // following them into external trees.
 func fixFixtureEntries(t *testing.T, root string) map[string]string {
@@ -68,10 +89,10 @@ func fixFixtureEntries(t *testing.T, root string) map[string]string {
 	return entries
 }
 
-func TestCompiledOrdinaryUnsupportedApply(t *testing.T) {
-	if runtime.GOOS == "darwin" && runtime.GOARCH == "arm64" {
-		t.Skip("ordinary Darwin arm64 publication has its own native suite; no-cgo fallback is separately exercised")
-	}
+// Ordinary apply preserves each line-ending convention and replaces exactly the
+// selected file, on every supported host and from a CGO-free build.
+func TestCompiledOrdinaryApply(t *testing.T) {
+	t.Setenv("CGO_ENABLED", "0")
 	binary := buildConfigurationExecutable(t, "")
 	for _, ending := range []string{"\n", "\r\n", "\r"} {
 		t.Run(strings.ReplaceAll(strings.ReplaceAll(ending, "\r", "CR"), "\n", "LF"), func(t *testing.T) {
@@ -79,38 +100,25 @@ func TestCompiledOrdinaryUnsupportedApply(t *testing.T) {
 			putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
 			name := filepath.Join("space ünicode", "δ document.md")
 			putConfigurationFile(t, root, name, "first"+ending+"last")
-			verify := unchangedFixFixture(t, root)
-			for _, format := range []string{"json", "text"} {
-				got := runConfigurationProcess(t, binary, root, "fix", filepath.Join(".", name), "--format="+format)
-				if got.Status != 13 || !strings.Contains(got.Stdout, "unsupported") {
-					t.Fatal(got)
-				}
-				if format == "json" {
-					r := validateConfigurationOperationJSON(t, []byte(got.Stdout), "fix")
-					if len(r.Changes) != 0 || len(r.Errors) == 0 {
-						t.Fatal(r)
-					}
-					for _, f := range r.Files {
-						if f.WriteStatus == "written" {
-							t.Fatal(f)
-						}
-					}
-				}
-				preview := runFixConfiguration(t, binary, root, "fix", "--dry-run", name, "--format="+format)
-				if preview.Status != 0 {
-					t.Fatal(preview)
-				}
-				if format == "json" {
-					if len(preview.Result.Changes) != 1 {
-						t.Fatal(preview)
-					}
-					// Independently predicted ending, without depending on the diff renderer.
-					want := "first" + ending + "last" + ending
-					if preview.Result.Changes[0].Candidate.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(want))) {
-						t.Fatal(preview)
-					}
-				}
-				verify()
+			want := "first" + ending + "last" + ending
+			preview := runFixConfiguration(t, binary, root, "fix", "--dry-run", name, "--format=json")
+			if preview.Status != 0 || len(preview.Result.Changes) != 1 {
+				t.Fatal(preview)
+			}
+			// Independently predicted ending, without depending on the diff renderer.
+			if preview.Result.Changes[0].Candidate.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(want))) {
+				t.Fatal(preview)
+			}
+			if got := readFixture(t, filepath.Join(root, name)); got != "first"+ending+"last" {
+				t.Fatalf("dry run changed the file: %q", got)
+			}
+			got := runConfigurationProcess(t, binary, root, "fix", filepath.Join(".", name), "--format=json")
+			r := validateConfigurationOperationJSON(t, []byte(got.Stdout), "fix")
+			if got.Status != 0 || len(r.Errors) != 0 || len(r.Changes) != 1 || readinessFile(t, r, filepath.ToSlash(name)).WriteStatus != "written" {
+				t.Fatal(got)
+			}
+			if saved := readFixture(t, filepath.Join(root, name)); saved != want {
+				t.Fatalf("saved %q want %q", saved, want)
 			}
 		})
 	}

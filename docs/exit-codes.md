@@ -15,8 +15,8 @@ Use the exit code to decide whether a check passed, Markdown problems remain, or
 Lint, fix and config validate support text, schema-v1 JSON, VS Code and GitHub
 for these outcomes, including usage and configuration failures when a valid
 format is selected. Inspect supports text/JSON. Editor reporters use their
-documented diagnostic and operational streams. Apply uses the verified Darwin
-arm64+cgo/local APFS adapter; unsupported adapters return I/O/13. MD047 previews
+documented diagnostic and operational streams. Apply uses one portable
+native replacement on Linux, macOS and Windows; hosts outside those return I/O/13. MD047 previews
 safe final-newline corrections and defers unsafe EOF contexts. MCP remains planned.
 An output-delivery error, including a short write, returns `13` unless a
 previously established internal failure requires `14`; it may prevent a complete

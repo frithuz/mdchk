@@ -49,7 +49,7 @@ read-only resource service (directory links use `resources.index_file` once);
 known-missing documents stay with MD057, and unknown or blocked context reports
 located reduced coverage.
 
-MD047 terminating-newline analysis, safe previews and apply on the verified Darwin arm64+cgo/local APFS adapter are implemented; MD001 heading-increment analysis and its opt-in `frontmatter_title` setting are also implemented for CommonMark/GFM. MD004 bullet-marker analysis is implemented for both flavors, enabled by default,
+MD047 terminating-newline analysis, safe previews and apply on Linux, macOS and Windows are implemented; MD001 heading-increment analysis and its opt-in `frontmatter_title` setting are also implemented for CommonMark/GFM. MD004 bullet-marker analysis is implemented for both flavors, enabled by default,
 with `marker: consistent` or explicit `asterisk`, `plus` and `dash` choices.
 MD005 sibling-list alignment analysis is implemented for both flavors, enabled by
 default with no rule-specific options. It retains each actual group's first direct

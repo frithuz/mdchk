@@ -95,15 +95,11 @@ func TestAcquireExplicitRawSymlinkDotDot(t *testing.T) {
 		t.Fatal(err)
 	}
 	// An OS-working-directory-relative request also exercises the direct API,
-	// independently of inspect.Options.WorkingDirectory.
-	cwd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	relative, err := filepath.Rel(cwd, root)
-	if err != nil {
-		t.Fatal(err)
-	}
+	// independently of inspect.Options.WorkingDirectory. Working from the
+	// root's parent keeps the relative path on one volume; on Windows the
+	// temporary directory and the module can be on different drives.
+	t.Chdir(filepath.Dir(root))
+	relative := filepath.Base(root)
 	for _, path := range []string{root + "/link/../target.md", relative + "/link/../target.md"} {
 		out, err := AcquireExplicit(context.Background(), path, AcquireOptions{})
 		if err != nil {

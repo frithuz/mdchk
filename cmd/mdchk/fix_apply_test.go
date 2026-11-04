@@ -1,5 +1,3 @@
-//go:build darwin && arm64 && cgo
-
 package main
 
 import (
@@ -38,7 +36,7 @@ func TestCompiledProductionMD047ApplySavedWorkflow(t *testing.T) {
 				if err := os.Chmod(path, 0640); err != nil {
 					t.Fatal(err)
 				}
-				before, _ := os.Stat(path)
+				before, _ := stableStat(path)
 				inventory := configurationBytes(t, root)
 				preview := runFixConfiguration(t, binary, root, "fix", "--dry-run", "doc.md", "--format=json")
 				got := runAppliedFix(t, binary, root, "fix", "doc.md", "--format="+format)
@@ -50,7 +48,7 @@ func TestCompiledProductionMD047ApplySavedWorkflow(t *testing.T) {
 				if err != nil || string(saved) != tc.Candidate {
 					t.Fatalf("saved %q want %q: %v %s", saved, tc.Candidate, err, got.Stdout)
 				}
-				after, _ := os.Stat(path)
+				after, _ := stableStat(path)
 				changed := tc.Source != tc.Candidate
 				if os.SameFile(before, after) == changed || before.Mode() != after.Mode() {
 					t.Fatal("publication identity/mode", before, after)
@@ -76,7 +74,7 @@ func TestCompiledProductionMD047ApplySavedWorkflow(t *testing.T) {
 					t.Fatal(got.Stdout)
 				}
 				second := runAppliedFix(t, binary, root, "fix", "doc.md", "--format=json")
-				twice, _ := os.Stat(path)
+				twice, _ := stableStat(path)
 				if second.Status != tc.Status || len(second.Result.Changes) != 0 || !os.SameFile(after, twice) {
 					t.Fatal("non-idempotent", second)
 				}
@@ -251,15 +249,15 @@ func TestCompiledApplyHardLinkConsequences(t *testing.T) {
 	if e := os.Link(target, alias); e != nil {
 		t.Fatal(e)
 	}
-	original, _ := os.Stat(alias)
+	original, _ := stableStat(alias)
 	got := runAppliedFix(t, binary, root, "fix", "doc.md", "--format=json")
 	//nolint:gosec // Read only the unselected alias of the synthetic target.
 	old, e := os.ReadFile(alias)
 	if e != nil {
 		t.Fatal(e)
 	}
-	current, _ := os.Stat(target)
-	retained, _ := os.Stat(alias)
+	current, _ := stableStat(target)
+	retained, _ := stableStat(alias)
 	if got.Status != 0 || string(old) != "hello" || !os.SameFile(original, retained) || os.SameFile(current, retained) {
 		t.Fatal(got, string(old))
 	}
@@ -284,13 +282,13 @@ func TestCompiledApplyTextManifestAdmissionBeforeWrites(t *testing.T) {
 	putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
 	putConfigurationFile(t, root, "doc.md", "hello")
 	path := filepath.Join(root, "doc.md")
-	before, e := os.Stat(path)
+	before, e := stableStat(path)
 	if e != nil {
 		t.Fatal(e)
 	}
 	inventory := configurationBytes(t, root)
 	got := runAppliedFix(t, binary, root, "fix", "doc.md", "--format=text", "--limit=response-bytes=1024")
-	after, e := os.Stat(path)
+	after, e := stableStat(path)
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -318,7 +316,7 @@ func TestCompiledApplyContinuesAfterReadOnlyAcquisition(t *testing.T) {
 				if err := os.Chmod(path, mode); err != nil {
 					t.Fatal(err)
 				}
-				info, err := os.Stat(path)
+				info, err := stableStat(path)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -340,7 +338,7 @@ func TestCompiledApplyContinuesAfterReadOnlyAcquisition(t *testing.T) {
 				if err != nil || string(data) != want {
 					t.Fatal(name, string(data), err, got)
 				}
-				after, err := os.Stat(path)
+				after, err := stableStat(path)
 				if err != nil {
 					t.Fatal(err)
 				}

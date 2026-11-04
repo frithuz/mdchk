@@ -99,7 +99,7 @@ We target the implemented rule list from `rumdl` because it covers markdownlint'
 The mdchk ruleset contains 87 rules: MD001 through MD095, excluding MD002, MD006, MD008, MD015, MD016, MD017, MD078, and MD079. Preserve these reserved gaps; do not implement checks under those IDs.
 
 MD047 analysis, configuration, safe previews and native application are implemented for
-CommonMark. Apply is limited to Darwin arm64+cgo/local APFS; other native adapters
+CommonMark. Apply works on Linux, macOS and Windows; other operating systems
 refuse writes with `13`, and protected EOF contexts remain manual. MD001
 heading-increment analysis and configuration are implemented for CommonMark and GFM,
 including opt-in YAML/TOML title baselines. MD003 heading-style analysis and

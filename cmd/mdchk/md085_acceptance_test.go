@@ -319,7 +319,7 @@ func TestCompiledPlatformMD085ManualApplyAndInvalidUTF8(t *testing.T) {
 					t.Fatal("not an explicit no-effect adapter refusal", got)
 				}
 				failure := out.Errors[0]
-				if failure.Category != result.IO || failure.Code != "write-acquisition" || failure.Scope != "operation" || failure.Message != "native replacement requires verified Darwin arm64 APFS and cgo; this adapter is unsupported" {
+				if failure.Category != result.IO || failure.Code != "write-acquisition" || failure.Scope != "operation" || !strings.HasPrefix(failure.Message, "native replacement is unsupported on ") {
 					t.Fatal(failure)
 				}
 				t.Log("actual native adapter unsupported; exact refusal and no effects verified")
@@ -432,7 +432,7 @@ func TestCompiledPlatformMD085CompositionApply(t *testing.T) {
 			got := runConfigurationProcess(t, binary, root, "fix", "doc.md", "--format=json")
 			out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "fix")
 			if got.Status == 13 {
-				if len(out.Errors) != 1 || out.Errors[0].Code != "write-acquisition" || out.Errors[0].Message != "native replacement requires verified Darwin arm64 APFS and cgo; this adapter is unsupported" {
+				if len(out.Errors) != 1 || out.Errors[0].Code != "write-acquisition" || !strings.HasPrefix(out.Errors[0].Message, "native replacement is unsupported on ") {
 					t.Fatal(got)
 				}
 				readinessAssertEqual(t, "unsupported composition", before, readinessState(t, root))

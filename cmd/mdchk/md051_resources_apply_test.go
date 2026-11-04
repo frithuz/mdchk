@@ -1,5 +1,3 @@
-//go:build darwin && arm64 && cgo
-
 package main
 
 import (
@@ -23,7 +21,7 @@ func TestCompiledProductionMD051ResourceFragmentsApplySavedView(t *testing.T) {
 			root := md051ViewsProject(t, row.crossFile)
 			neighbors := map[string]string{}
 			for _, name := range []string{"docs/other.md", "docs/broken.md"} {
-				data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(name)))
+				data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(name))) //nolint:gosec // Test-owned synthetic fixture path.
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -46,12 +44,12 @@ func TestCompiledProductionMD051ResourceFragmentsApplySavedView(t *testing.T) {
 				}
 			}
 			for name, want := range neighbors {
-				after, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(name)))
+				after, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(name))) //nolint:gosec // Test-owned synthetic fixture path.
 				if err != nil || string(after) != want {
 					t.Fatal("resource neighbor changed", name, err)
 				}
 			}
-			written, err := os.ReadFile(filepath.Join(root, "docs", "self.md"))
+			written, err := os.ReadFile(filepath.Join(root, "docs", "self.md")) //nolint:gosec // Test-owned synthetic fixture path.
 			if err != nil || !strings.HasSuffix(string(written), "#x)\n") {
 				t.Fatal(string(written), err)
 			}

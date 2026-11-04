@@ -88,7 +88,7 @@ mdchk fix docs/ --dry-run
 
 The report shows which files changed, what was corrected, and which problems remain. `--dry-run` shows a proposed diff without writing files. After applying corrections, mdchk checks the resulting files again so reported locations match the saved content.
 
-Safe corrections are small and specific. For example, mdchk can add a missing final newline. It preserves intentional Markdown hard breaks and leaves code examples, front matter, and ambiguous edits alone. Protected EOF contexts remain manual. Heading-level and code-language checks remain planned; their policies forbid guessing the intended structure or language. Apply currently requires Darwin arm64+cgo/local APFS; other native adapters refuse writes with `13`.
+Safe corrections are small and specific. For example, mdchk can add a missing final newline. It preserves intentional Markdown hard breaks and leaves code examples, front matter, and ambiguous edits alone. Protected EOF contexts remain manual. Heading-level and code-language checks remain planned; their policies forbid guessing the intended structure or language. Apply works on Linux, macOS and Windows from a build without cgo; other operating systems refuse writes with `13`. Concurrent writers are detected but not locked out; see [native writes](docs/engineering/native-writes.md).
 
 ## Inspect processing details
 

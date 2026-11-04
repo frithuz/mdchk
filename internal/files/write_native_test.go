@@ -1,4 +1,4 @@
-//go:build darwin && arm64 && cgo
+//go:build linux || darwin || windows
 
 package files
 
@@ -10,15 +10,25 @@ import (
 	"io"
 	"io/fs"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"testing"
-	"time"
 
+	"github.com/frithuz/mdchk/internal/fsroot"
 	"github.com/frithuz/mdchk/internal/parser"
 )
+
+// stableStat takes identity from an open handle. On Windows a path-based os.Stat
+// result loads its file ID lazily, when SameFile first asks, so comparing it
+// with a later stat of the same path would compare the current file with itself.
+func stableStat(path string) (fs.FileInfo, error) {
+	f, err := os.Open(path) //nolint:gosec // The path names an independently created synthetic test fixture.
+	if err != nil {
+		return nil, err
+	}
+	info, err := f.Stat()
+	return info, errors.Join(err, f.Close())
+}
 
 func nativeFixture(t *testing.T) (string, string) {
 	t.Helper()
@@ -70,43 +80,62 @@ func assertNoStage(t *testing.T, root string) {
 		}
 	}
 }
+
+// symlinkOrSkip skips only when the OS denies creating symlinks, which Windows
+// does without developer mode or elevation.
+func symlinkOrSkip(t *testing.T, target, link string) {
+	t.Helper()
+	if err := os.Symlink(target, link); err != nil {
+		t.Skipf("host denies os.Symlink: %v", err)
+	}
+}
+
+// outsideSentinel creates a file beside the fixture root that no apply may touch.
+func outsideSentinel(t *testing.T, root string) string {
+	t.Helper()
+	outside := filepath.Join(filepath.Dir(root), filepath.Base(root)+"-sentinel")
+	if err := os.WriteFile(outside, []byte("outside"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = os.Remove(outside) })
+	return outside
+}
+
 func TestNativePublicationExactBytesMetadataAndHardlinks(t *testing.T) {
 	root, path := nativeFixture(t)
 	alias := filepath.Join(root, "alias.md")
 	if err := os.Link(path, alias); err != nil {
-		t.Fatal(err)
+		t.Skipf("host denies hard links: %v", err)
 	}
-	before, _ := os.Stat(path)
+	before, _ := stableStat(path)
 	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
 	candidate := parser.NewSource([]byte("old\r\nbody\r\n"))
 	out := set.Publish(context.Background(), path, a.Documents[0].Source, candidate, nil)
-	if out.Err != nil || !out.Published || out.Uncertain || out.Saved != candidate || out.HardLinks != 2 {
+	if out.Err != nil || !out.Published || out.Uncertain || out.Saved != candidate {
 		t.Fatalf("publication %+v", out)
 	}
-	after, _ := os.Stat(path)
+	if out.HardLinks != 2 {
+		t.Fatalf("hard link count %d", out.HardLinks)
+	}
+	after, _ := stableStat(path)
 	if os.SameFile(before, after) || after.Mode() != before.Mode() {
 		t.Fatalf("identity/mode before=%v after=%v", before, after)
 	}
-	x := before.Sys().(*syscall.Stat_t)
-	y := after.Sys().(*syscall.Stat_t)
-	if x.Uid != y.Uid || x.Gid != y.Gid {
+	if !sameOwner(before, after) {
 		t.Fatal("ownership changed")
 	}
 	assertNativeBytes(t, path, candidate.Bytes())
 	assertNativeBytes(t, alias, []byte("old\r\nbody\r"))
 	assertNoStage(t, root)
 }
+
 func TestNativeStalePreconditions(t *testing.T) {
-	for _, kind := range []string{"content-restored-mtime", "identical-inode-replacement", "missing", "mode", "symlink", "fifo", "parent", "xattr", "immutable"} {
+	for _, kind := range []string{"content-restored-mtime", "identical-inode-replacement", "missing", "mode", "symlink", "directory", "parent"} {
 		t.Run(kind, func(t *testing.T) {
 			root, path := nativeFixture(t)
 			set, a := nativeAcquire(t, []string{path}, WriteOptions{})
-			before, _ := os.Stat(path)
-			outside := filepath.Join(filepath.Dir(root), filepath.Base(root)+"-sentinel")
-			if err := os.WriteFile(outside, []byte("outside"), 0600); err != nil {
-				t.Fatal(err)
-			}
-			defer func() { _ = os.Remove(outside) }()
+			before, _ := stableStat(path)
+			outside := outsideSentinel(t, root)
 			switch kind {
 			case "content-restored-mtime":
 				if err := os.WriteFile(path, []byte("NEW\r\nBODY\r"), 0640); err != nil { //nolint:gosec // Synthetic fixture deliberately exercises preservation of group-readable mode.
@@ -124,43 +153,32 @@ func TestNativeStalePreconditions(t *testing.T) {
 				if err := os.Chtimes(path, before.ModTime(), before.ModTime()); err != nil {
 					t.Fatal(err)
 				}
-				replacement, err := os.Stat(path)
+				replacement, err := stableStat(path)
 				if err != nil || os.SameFile(before, replacement) {
 					t.Fatalf("replacement did not create independent inode: %v", err)
 				}
 			case "missing":
 				_ = os.Remove(path)
 			case "mode":
-				_ = os.Chmod(path, 0600)
+				// 0444 changes the mode on every host: Windows maps only the
+				// read-only attribute, so 0600 would be indistinguishable there.
+				_ = os.Chmod(path, 0444) //nolint:gosec // Exercise stale detection of a deliberately read-only synthetic input.
 			case "symlink":
 				_ = os.Remove(path)
-				if err := os.Symlink(outside, path); err != nil {
-					t.Fatal(err)
-				}
-			case "fifo":
+				symlinkOrSkip(t, outside, path)
+			case "directory":
 				_ = os.Remove(path)
-				if err := syscall.Mkfifo(path, 0600); err != nil {
+				if err := os.Mkdir(path, 0700); err != nil {
 					t.Fatal(err)
 				}
 			case "parent":
 				moved := root + ".moved"
 				if err := os.Rename(root, moved); err != nil {
-					t.Fatal(err)
+					t.Skipf("host refuses to rename a held directory: %v", err)
 				}
 				defer func() { _ = os.RemoveAll(moved) }()
-				if err := os.Symlink(moved, root); err != nil {
-					t.Fatal(err)
-				}
+				symlinkOrSkip(t, moved, root)
 				defer func() { _ = os.Remove(root) }()
-			case "xattr":
-				if raw, err := exec.Command("/usr/bin/xattr", "-w", "user.mdchk-test", "value", path).CombinedOutput(); err != nil { //nolint:gosec // Fixed native utility or current test executable; arguments name synthetic fixtures only.
-					t.Fatalf("xattr %v %s", err, raw)
-				}
-			case "immutable":
-				if err := syscall.Chflags(path, 0x00000002); err != nil {
-					t.Fatal(err)
-				}
-				defer func() { _ = syscall.Chflags(path, 0) }()
 			}
 			out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("candidate\n")), nil)
 			if out.Err == nil || out.Published {
@@ -173,6 +191,50 @@ func TestNativeStalePreconditions(t *testing.T) {
 		})
 	}
 }
+
+// A component swapped to a symlink at each boundary must never let the write
+// escape the selected target, whether the race is lost or won.
+func TestNativeSymlinkSwapRacesNeverWriteOutside(t *testing.T) {
+	for _, swap := range []string{"file", "parent"} {
+		for _, stage := range []string{"start", "before-final-check", "after-final-check"} {
+			t.Run(swap+"-"+stage, func(t *testing.T) {
+				root, path := nativeFixture(t)
+				outside := outsideSentinel(t, root)
+				set, a := nativeAcquire(t, []string{path}, WriteOptions{})
+				moved := root + ".moved"
+				swapped := false
+				set.native.hook = func(at, _ string) error {
+					if at != stage || swapped {
+						return nil
+					}
+					swapped = true
+					switch swap {
+					case "file":
+						if err := os.Remove(path); err != nil {
+							return err
+						}
+						return os.Symlink(outside, path)
+					default:
+						if err := os.Rename(root, moved); err != nil {
+							return err
+						}
+						return os.Symlink(moved, root)
+					}
+				}
+				t.Cleanup(func() { _ = os.Remove(root); _ = os.RemoveAll(moved) })
+				out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("candidate\n")), nil)
+				if !swapped {
+					t.Fatal("hook never ran")
+				}
+				assertNativeBytes(t, outside, []byte("outside"))
+				if stage != "after-final-check" && (out.Err == nil || out.Published) {
+					t.Fatalf("missed detectable swap %+v", out)
+				}
+			})
+		}
+	}
+}
+
 func TestNativeAuthorityAndReadOnlyResources(t *testing.T) {
 	root, path := nativeFixture(t)
 	resource := filepath.Join(root, "config.md")
@@ -208,8 +270,9 @@ func TestNativeAuthorityAndReadOnlyResources(t *testing.T) {
 	assertNativeBytes(t, path, original.Bytes())
 	assertNoStage(t, root)
 }
+
 func TestNativePublicationFailureBoundaries(t *testing.T) {
-	for _, stage := range []string{"locked", "create", "write", "short-write", "metadata", "flush", "close", "before-final-check", "rename", "directory-flush", "cleanup"} {
+	for _, stage := range []string{"start", "create", "write", "short-write", "metadata", "flush", "close", "before-final-check", "rename", "directory-flush", "cleanup"} {
 		t.Run(stage, func(t *testing.T) {
 			root, path := nativeFixture(t)
 			set, a := nativeAcquire(t, []string{path}, WriteOptions{})
@@ -249,8 +312,9 @@ func TestNativePublicationFailureBoundaries(t *testing.T) {
 		})
 	}
 }
+
 func TestNativeDeterministicRacesAndAcceptedExternalGap(t *testing.T) {
-	for _, stage := range []string{"locked", "before-final-check", "after-final-check"} {
+	for _, stage := range []string{"start", "before-final-check", "after-final-check"} {
 		t.Run(stage, func(t *testing.T) {
 			root, path := nativeFixture(t)
 			set, a := nativeAcquire(t, []string{path}, WriteOptions{})
@@ -277,6 +341,7 @@ func TestNativeDeterministicRacesAndAcceptedExternalGap(t *testing.T) {
 		})
 	}
 }
+
 func TestNativeCancellationAndExhaustedBudget(t *testing.T) {
 	root, path := nativeFixture(t)
 	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
@@ -292,175 +357,69 @@ func TestNativeCancellationAndExhaustedBudget(t *testing.T) {
 	}
 	assertNoStage(t, root)
 }
-func TestNativeLockSubprocess(t *testing.T) {
-	if path := os.Getenv("MDCHK_NATIVE_LOCK_CHILD"); path != "" {
-		set, a := nativeAcquire(t, []string{path}, WriteOptions{})
-		out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("child\n")), nil)
-		if !errors.Is(out.Err, context.DeadlineExceeded) && out.Err == nil {
-			t.Fatal("child bypassed parent lock")
-		}
-		return
-	}
-	root, path := nativeFixture(t)
-	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
-	set.native.hook = func(stage, _ string) error {
-		if stage != "locked" {
-			return nil
-		}
-		cmd := exec.Command(os.Args[0], "-test.run=^TestNativeLockSubprocess$") //nolint:gosec // Fixed native utility or current test executable; arguments name synthetic fixtures only.
-		cmd.Env = append(os.Environ(), "MDCHK_NATIVE_LOCK_CHILD="+path)
-		start := time.Now()
-		raw, err := cmd.CombinedOutput()
-		if err != nil {
-			return errors.New(string(raw))
-		}
-		if time.Since(start) < 1500*time.Millisecond {
-			return errors.New("child did not wait on stable parent lock")
-		}
-		return nil
-	}
-	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("parent\n")), nil)
-	if out.Err != nil || !out.Published {
-		t.Fatalf("parent %+v", out)
-	}
-	assertNativeBytes(t, path, []byte("parent\n"))
-	assertNoStage(t, root)
-}
-func TestNativeReadOnlyAndSymlinkAcquisitionRefused(t *testing.T) {
-	root, path := nativeFixture(t)
-	_ = os.Chmod(path, 0444) //nolint:gosec // Exercise refusal of deliberately read-only synthetic input.
-	selection, _ := Select(Options{Paths: []string{path}})
-	b, _ := parser.NewOperationBudget(parser.DefaultLimits())
-	set, a, _, err := AcquireWrite(context.Background(), selection, WriteOptions{AcquireOptions: AcquireOptions{Budget: b}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() { _ = set.Close() }()
-	if len(a.Errors) != 1 {
-		t.Fatalf("read-only acquired %+v", a)
-	}
-	_ = os.Chmod(path, 0600)
-	link := filepath.Join(root, "link.md")
-	_ = os.Symlink(path, link)
-	target := Target{Path: link, inspection: true}
-	set2, a2, _, err := AcquireWrite(context.Background(), &Selection{Targets: []Target{target}}, WriteOptions{AcquireOptions: AcquireOptions{Budget: b}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() { _ = set2.Close() }()
-	if len(a2.Errors) != 1 || !errors.Is(a2.Errors[0], fs.ErrPermission) && !strings.Contains(a2.Errors[0].Error(), "read-only") {
-		t.Fatalf("inspection became writable %+v", a2)
-	}
-}
 
-func TestNativeACLRefusal(t *testing.T) {
-	_, path := nativeFixture(t)
-	raw, err := exec.Command("/bin/chmod", "+a", os.Getenv("USER")+" allow read", path).CombinedOutput() //nolint:gosec // Fixed native utility or current test executable; arguments name synthetic fixtures only.
-	if err != nil {
-		t.Fatalf("ACL setup %v %s", err, raw)
-	}
-	selected, _ := Select(Options{Paths: []string{path}})
-	b, _ := parser.NewOperationBudget(parser.DefaultLimits())
-	set, a, _, err := AcquireWrite(context.Background(), selected, WriteOptions{AcquireOptions: AcquireOptions{Budget: b}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() { _ = set.Close() }()
-	if len(a.Errors) != 1 {
-		t.Fatalf("ACL silently accepted %+v", a)
-	}
-}
-
-func TestNativeLockSurvivesReplacement(t *testing.T) {
-	if path := os.Getenv("MDCHK_NATIVE_REPLACEMENT_CHILD"); path != "" {
-		set, a := nativeAcquire(t, []string{path}, WriteOptions{})
-		if err := os.WriteFile(os.Getenv("MDCHK_NATIVE_READY"), []byte("ready"), 0600); err != nil { //nolint:gosec // Private subprocess protocol receives a parent-owned synthetic ready-file path.
-			t.Fatal(err)
-		}
-		out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("child\n")), nil)
-		if out.Err == nil || out.Published {
-			t.Fatalf("waiting stale child published %+v", out)
-		}
-		return
-	}
-	root, path := nativeFixture(t)
-	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
-	ready := filepath.Join(root, "ready")
-	var child *exec.Cmd
-	set.native.hook = func(stage, _ string) error {
-		if stage != "after-final-check" {
-			return nil
-		}
-		child = exec.Command(os.Args[0], "-test.run=^TestNativeLockSurvivesReplacement$") //nolint:gosec // Fixed native utility or current test executable; arguments name synthetic fixtures only.
-		child.Env = append(os.Environ(), "MDCHK_NATIVE_REPLACEMENT_CHILD="+path, "MDCHK_NATIVE_READY="+ready)
-		if err := child.Start(); err != nil {
-			return err
-		}
-		deadline := time.Now().Add(time.Second)
-		for time.Now().Before(deadline) {
-			if _, err := os.Stat(ready); err == nil {
-				return nil
+func TestNativeUnsupportedTargetsRefusedAtAcquisition(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		mode fs.FileMode
+	}{
+		{"read-only", 0444},
+		{"owner-unwritable", 0500},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root, path := nativeFixture(t)
+			if err := os.Chmod(path, tc.mode); err != nil {
+				t.Fatal(err)
 			}
-			time.Sleep(time.Millisecond)
-		}
-		return errors.New("child did not acquire original before replacement")
+			selection, _ := Select(Options{Paths: []string{path}})
+			b, _ := parser.NewOperationBudget(parser.DefaultLimits())
+			set, a, _, err := AcquireWrite(context.Background(), selection, WriteOptions{AcquireOptions: AcquireOptions{Budget: b}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer func() { _ = set.Close() }()
+			if len(a.Errors) != 1 || !errors.Is(a.Errors[0], errUnsupportedTarget) || len(a.Documents) != 0 {
+				t.Fatalf("unsupported target acquired %+v", a)
+			}
+			assertNativeBytes(t, path, []byte("old\r\nbody\r"))
+			assertNoStage(t, root)
+		})
 	}
-	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("parent\n")), nil)
-	if out.Err != nil || !out.Published {
-		t.Fatalf("parent %+v", out)
-	}
-	if child == nil {
-		t.Fatal("no child")
-	}
-	if err := child.Wait(); err != nil {
-		t.Fatal(err)
-	}
-	assertNativeBytes(t, path, []byte("parent\n"))
-	assertNoStage(t, root)
 }
-func TestNativeReverseOverlapLockOrderingCancellationAndRelease(t *testing.T) {
+
+func TestNativeInspectionAcquisitionIsReadOnly(t *testing.T) {
 	root, path := nativeFixture(t)
-	otherDir := filepath.Join(root, "other")
-	if err := os.Mkdir(otherDir, 0700); err != nil {
+	link := filepath.Join(root, "link.md")
+	symlinkOrSkip(t, path, link)
+	b, _ := parser.NewOperationBudget(parser.DefaultLimits())
+	set, a, _, err := AcquireWrite(context.Background(), &Selection{Targets: []Target{{Path: link, inspection: true}}}, WriteOptions{AcquireOptions: AcquireOptions{Budget: b}})
+	if err != nil {
 		t.Fatal(err)
 	}
-	other := filepath.Join(otherDir, "b.md")
+	defer func() { _ = set.Close() }()
+	if len(a.Errors) != 1 || !strings.Contains(a.Errors[0].Error(), "read-only") {
+		t.Fatalf("inspection became writable %+v", a)
+	}
+}
+
+func TestNativeSavedDependencyRemainsValidForLaterPublication(t *testing.T) {
+	root, path := nativeFixture(t)
+	other := filepath.Join(root, "b.md")
 	if err := os.WriteFile(other, []byte("other"), 0600); err != nil {
 		t.Fatal(err)
 	}
-	a, aa := nativeAcquire(t, []string{path, other}, WriteOptions{})
-	b, bb := nativeAcquire(t, []string{other, path}, WriteOptions{})
-	held := make(chan struct{})
-	release := make(chan struct{})
-	done := make(chan Publication, 1)
-	a.native.hook = func(stage, _ string) error {
-		if stage == "locked" {
-			close(held)
-			<-release
-		}
-		return nil
+	set, a := nativeAcquire(t, []string{path, other}, WriteOptions{})
+	first := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("first\n")), []string{other})
+	if first.Err != nil || !first.Published {
+		t.Fatalf("first %+v", first)
 	}
-	go func() {
-		done <- a.Publish(context.Background(), path, aa.Documents[0].Source, parser.NewSource([]byte("parent\n")), []string{other})
-	}()
-	<-held
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Millisecond)
-	out := b.Publish(ctx, other, bb.Documents[1].Source, parser.NewSource([]byte("new other")), []string{path})
-	cancel()
-	if !errors.Is(out.Err, context.DeadlineExceeded) || out.Published {
-		t.Fatalf("lock cancellation %+v", out)
+	second := set.Publish(context.Background(), other, a.Documents[1].Source, parser.NewSource([]byte("second\n")), []string{path})
+	if second.Err != nil || !second.Published {
+		t.Fatalf("a dependency saved by this operation became stale: %+v", second)
 	}
-	close(release)
-	if out = <-done; out.Err != nil || !out.Published {
-		t.Fatalf("first writer %+v", out)
-	}
-	// A new operation acquires both directories in reverse caller order after the
-	// first completes; no inode-dependent or cancellation-held lock survives.
-	c, cc := nativeAcquire(t, []string{other, path}, WriteOptions{})
-	out = c.Publish(context.Background(), other, cc.Documents[1].Source, parser.NewSource([]byte("new other")), []string{path})
-	if out.Err != nil || !out.Published {
-		t.Fatalf("released locks %+v", out)
-	}
+	assertNativeBytes(t, path, []byte("first\n"))
+	assertNativeBytes(t, other, []byte("second\n"))
+	assertNoStage(t, root)
 }
 
 func TestNativePostPublicationUncertaintyNeverRollsBack(t *testing.T) {
@@ -499,65 +458,7 @@ func TestNativeCancelBeforeAndAfterPublication(t *testing.T) {
 		})
 	}
 }
-func TestNativeCrashReleasesDirectoryLock(t *testing.T) {
-	if path := os.Getenv("MDCHK_NATIVE_CRASH_CHILD"); path != "" {
-		set, _ := nativeAcquire(t, []string{path}, WriteOptions{})
-		o := set.native.entries[path]
-		if err := syscall.Flock(int(o.parent.Fd()), syscall.LOCK_EX); err != nil {
-			t.Fatal(err)
-		}
-		//nolint:gosec // Parent-owned synthetic ready-file path in the private test subprocess protocol.
-		if err := os.WriteFile(os.Getenv("MDCHK_NATIVE_CRASH_READY"), []byte("ready"), 0600); err != nil {
-			t.Fatal(err)
-		}
-		time.Sleep(30 * time.Second)
-		return
-	}
-	root, path := nativeFixture(t)
-	ready := filepath.Join(root, "ready")
-	//nolint:gosec // Only the current test executable and synthetic fixture arguments are launched.
-	child := exec.Command(os.Args[0], "-test.run=^TestNativeCrashReleasesDirectoryLock$")
-	child.Env = append(os.Environ(), "MDCHK_NATIVE_CRASH_CHILD="+path, "MDCHK_NATIVE_CRASH_READY="+ready)
-	if err := child.Start(); err != nil {
-		t.Fatal(err)
-	}
-	defer func() { _ = child.Process.Kill(); _ = child.Wait() }()
-	deadline := time.Now().Add(2 * time.Second)
-	for {
-		if _, err := os.Stat(ready); err == nil {
-			break
-		}
-		if time.Now().After(deadline) {
-			t.Fatal("child did not lock")
-		}
-		time.Sleep(time.Millisecond)
-	}
-	if err := child.Process.Kill(); err != nil {
-		t.Fatal(err)
-	}
-	_ = child.Wait()
-	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
-	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("after crash\n")), nil)
-	if out.Err != nil || !out.Published {
-		t.Fatalf("crash retained lock %+v", out)
-	}
-}
 
-func TestNativeParentACLChangeRefused(t *testing.T) {
-	root, path := nativeFixture(t)
-	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
-	//nolint:gosec // Fixed native utility changes only the synthetic parent-directory ACL.
-	raw, err := exec.Command("/bin/chmod", "+a", os.Getenv("USER")+" allow read", root).CombinedOutput()
-	if err != nil {
-		t.Fatalf("ACL setup %v %s", err, raw)
-	}
-	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("new\n")), nil)
-	if out.Err == nil || out.Published {
-		t.Fatalf("parent ACL mutation accepted %+v", out)
-	}
-	assertNativeBytes(t, path, a.Documents[0].Source.Bytes())
-	assertNoStage(t, root)
-}
 func TestNativeRealShortWriteLeavesOriginal(t *testing.T) {
 	root, path := nativeFixture(t)
 	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
@@ -569,6 +470,7 @@ func TestNativeRealShortWriteLeavesOriginal(t *testing.T) {
 	assertNativeBytes(t, path, a.Documents[0].Source.Bytes())
 	assertNoStage(t, root)
 }
+
 func TestNativeForeignStageIsNotPublishedOrRemoved(t *testing.T) {
 	root, path := nativeFixture(t)
 	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
@@ -584,10 +486,13 @@ func TestNativeForeignStageIsNotPublishedOrRemoved(t *testing.T) {
 		for _, entry := range entries {
 			if strings.HasPrefix(entry.Name(), ".mdchk-stage-") {
 				foreign = filepath.Join(root, entry.Name())
-				if err = os.Remove(foreign); err != nil {
+				// Create the replacement before the stage is freed so the two can
+				// never share an inode number, which filesystems readily reuse.
+				substitute := filepath.Join(root, "substitute")
+				if err = os.WriteFile(substitute, []byte("foreign"), 0600); err != nil {
 					return err
 				}
-				return os.WriteFile(foreign, []byte("foreign"), 0600)
+				return os.Rename(substitute, foreign)
 			}
 		}
 		return errors.New("no stage")
@@ -621,26 +526,27 @@ func TestNativeCanceledAcquisitionContextCannotBeRevived(t *testing.T) {
 }
 
 func TestNativeRenameErrorReconcilesActualPublication(t *testing.T) {
+	injected := errors.New("injected rename failure")
 	for _, kind := range []string{"before", "after", "unknown"} {
 		t.Run(kind, func(t *testing.T) {
 			root, path := nativeFixture(t)
 			set, a := nativeAcquire(t, []string{path}, WriteOptions{})
 			candidate := parser.NewSource([]byte("candidate\n"))
-			set.native.rename = func(parent *os.File, stage, name string) error {
+			set.native.rename = func(parent *fsroot.Dir, stage, name string) error {
 				if kind != "before" {
-					if err := nativeRename(parent, stage, name); err != nil {
+					if err := parent.Rename(stage, name); err != nil {
 						return err
 					}
 					if kind == "unknown" {
-						if err := nativeRemove(parent, name); err != nil {
+						if err := parent.Remove(name); err != nil {
 							return err
 						}
 					}
 				}
-				return syscall.EIO
+				return injected
 			}
 			out := set.Publish(context.Background(), path, a.Documents[0].Source, candidate, nil)
-			if !errors.Is(out.Err, syscall.EIO) {
+			if !errors.Is(out.Err, injected) {
 				t.Fatalf("rename error lost %+v", out)
 			}
 			switch kind {
@@ -679,7 +585,7 @@ func originNativeFixture(t *testing.T) (string, string, *WriteSet, *Acquisition,
 	return root, path, set, a, cancel
 }
 func TestOriginCancellationThroughoutPublication(t *testing.T) {
-	for _, stage := range []string{"locked", "before-final-check", "after-final-check", "published"} {
+	for _, stage := range []string{"start", "before-final-check", "after-final-check", "published"} {
 		t.Run(stage, func(t *testing.T) {
 			root, path, set, a, cancel := originNativeFixture(t)
 			candidate := parser.NewSource([]byte("candidate\n"))
@@ -705,87 +611,7 @@ func TestOriginCancellationThroughoutPublication(t *testing.T) {
 		})
 	}
 }
-func TestOriginCancellationDuringRealLockWait(t *testing.T) {
-	root, path, waiting, a, cancel := originNativeFixture(t)
-	holding, heldAcquisition := nativeAcquire(t, []string{path}, WriteOptions{})
-	locked := make(chan struct{})
-	release := make(chan struct{})
-	done := make(chan Publication, 1)
-	holding.native.hook = func(stage, _ string) error {
-		if stage == "locked" {
-			close(locked)
-			<-release
-		}
-		return nil
-	}
-	go func() {
-		done <- holding.Publish(context.Background(), path, heldAcquisition.Documents[0].Source, parser.NewSource([]byte("holder\n")), nil)
-	}()
-	<-locked
-	waiting.native.hook = func(stage, _ string) error {
-		if stage == "lock-wait" {
-			cancel()
-		}
-		return nil
-	}
-	start := time.Now()
-	out := waiting.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("waiter\n")), nil)
-	if !errors.Is(out.Err, context.Canceled) || out.Published || time.Since(start) > time.Second {
-		t.Errorf("origin lock wait cancellation %+v", out)
-	}
-	assertNativeBytes(t, path, a.Documents[0].Source.Bytes())
-	close(release)
-	if out = <-done; out.Err != nil || !out.Published {
-		t.Fatalf("holder failed %+v", out)
-	}
-	assertNoStage(t, root)
-}
-func TestFinalStageSecurityMetadata(t *testing.T) {
-	for _, kind := range []string{"xattr", "acl"} {
-		t.Run(kind, func(t *testing.T) {
-			root, path := nativeFixture(t)
-			set, a := nativeAcquire(t, []string{path}, WriteOptions{})
-			set.native.hook = func(stage, _ string) error {
-				if stage != "before-final-check" {
-					return nil
-				}
-				entries, err := os.ReadDir(root)
-				if err != nil {
-					return err
-				}
-				for _, entry := range entries {
-					if !strings.HasPrefix(entry.Name(), ".mdchk-stage-") {
-						continue
-					}
-					stagePath := filepath.Join(root, entry.Name())
-					switch kind {
-					case "xattr":
-						//nolint:gosec // Fixed native utility changes only the owned synthetic staging fixture.
-						raw, err := exec.Command("/usr/bin/xattr", "-w", "user.mdchk-stage", "changed", stagePath).CombinedOutput()
-						if err != nil {
-							return fmt.Errorf("xattr: %w %s", err, raw)
-						}
-					case "acl":
-						//nolint:gosec // Fixed native utility changes only the owned synthetic staging fixture ACL.
-						raw, err := exec.Command("/bin/chmod", "+a", os.Getenv("USER")+" allow read", stagePath).CombinedOutput()
-						if err != nil {
-							return fmt.Errorf("ACL: %w %s", err, raw)
-						}
 
-					}
-					return nil
-				}
-				return errors.New("stage missing")
-			}
-			out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("candidate\n")), nil)
-			if out.Err == nil || out.Published {
-				t.Fatalf("changed stage %s published %+v", kind, out)
-			}
-			assertNativeBytes(t, path, a.Documents[0].Source.Bytes())
-			assertNoStage(t, root)
-		})
-	}
-}
 func TestNativeNoChangeNeverConfirmsSaved(t *testing.T) {
 	for _, text := range []string{"", "clean\n"} {
 		t.Run(fmt.Sprintf("bytes%d", len(text)), func(t *testing.T) {
@@ -795,12 +621,12 @@ func TestNativeNoChangeNeverConfirmsSaved(t *testing.T) {
 			}
 			set, a := nativeAcquire(t, []string{path}, WriteOptions{})
 			source := a.Documents[0].Source
-			before, _ := os.Stat(path)
+			before, _ := stableStat(path)
 			out := set.Publish(context.Background(), path, source, parser.NewSource(source.Bytes()), nil)
-			if out.Err != nil || !out.NoChange || out.Published || out.Saved != (parser.Source{}) {
+			if out.Err != nil || !out.NoChange || out.Published || out.Started || out.Saved != (parser.Source{}) {
 				t.Fatalf("no-change confirmation %+v", out)
 			}
-			after, _ := os.Stat(path)
+			after, _ := stableStat(path)
 			if !os.SameFile(before, after) {
 				t.Fatal("no-change replaced inode")
 			}
@@ -815,43 +641,5 @@ func TestNativeNoChangeNeverConfirmsSaved(t *testing.T) {
 			assertNativeBytes(t, path, []byte("external"))
 			assertNoStage(t, root)
 		})
-	}
-}
-
-func TestNativeExactProvenanceComparison(t *testing.T) {
-	_, path := nativeFixture(t)
-	//nolint:gosec // Operation-owned synthetic fixture, never a user document.
-	f, err := os.Open(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() { _ = f.Close() }()
-	observed, err := nativeSecurity(f)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := verifyNativeSecurity(f, observed); err != nil {
-		t.Fatal(err)
-	}
-	different := []byte(observed)
-	if len(different) == 0 {
-		different = []byte("different")
-	} else {
-		different[0] ^= 1
-	}
-	if err := verifyNativeSecurity(f, string(different)); err == nil {
-		t.Fatal("mismatched allowed provenance accepted")
-	}
-	if err := preserveNativeSecurity(f, string(different)); err != nil {
-		t.Logf("kernel refuses provenance mutation: %v", err)
-	}
-	actual, err := nativeSecurity(f)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if actual == observed {
-		t.Log("kernel retained original provenance despite native set request; exact mismatch comparison exercised independently")
-	} else if err := verifyNativeSecurity(f, observed); err == nil {
-		t.Fatal("native changed provenance accepted")
 	}
 }

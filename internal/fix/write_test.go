@@ -1,11 +1,11 @@
-//go:build darwin && arm64 && cgo
-
 package fix_test
 
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
@@ -16,6 +16,18 @@ import (
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/rules"
 )
+
+// stableStat takes identity from an open handle. On Windows a path-based os.Stat
+// result loads its file ID lazily, when SameFile first asks, so comparing it
+// with a later stat of the same path would compare the current file with itself.
+func stableStat(path string) (fs.FileInfo, error) {
+	f, err := os.Open(path) //nolint:gosec // The path names an independently created synthetic test fixture.
+	if err != nil {
+		return nil, err
+	}
+	info, err := f.Stat()
+	return info, errors.Join(err, f.Close())
+}
 
 func TestRetainedProductionApprovalNativePublication(t *testing.T) {
 	root, err := filepath.EvalSymlinks(t.TempDir())
@@ -35,7 +47,7 @@ func TestRetainedProductionApprovalNativePublication(t *testing.T) {
 		}
 	}
 	for _, p := range paths {
-		info, e := os.Stat(p)
+		info, e := stableStat(p)
 		if e != nil {
 			t.Fatal(e)
 		}
@@ -113,7 +125,7 @@ func TestRetainedProductionApprovalNativePublication(t *testing.T) {
 		if e != nil || string(raw) != expected[i] {
 			t.Fatalf("retained bytes %q %v want %q", raw, e, expected[i])
 		}
-		info, e := os.Stat(p)
+		info, e := stableStat(p)
 		if e != nil || info.Mode() != before[p].Mode() || os.SameFile(before[p], info) {
 			t.Fatalf("matrix metadata/inode %d: %v", i, e)
 		}
@@ -212,7 +224,7 @@ func TestUnchangedProductionResultNeverClaimsSaved(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				before, err := os.Stat(path)
+				before, err := stableStat(path)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -224,7 +236,7 @@ func TestUnchangedProductionResultNeverClaimsSaved(t *testing.T) {
 				if err != nil || !bytes.Equal(beforeBytes, afterBytes) {
 					t.Fatal("no-change modified bytes", err)
 				}
-				after, err := os.Stat(path)
+				after, err := stableStat(path)
 				if err != nil || !os.SameFile(before, after) {
 					t.Fatal("no-change replaced inode", err)
 				}

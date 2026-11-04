@@ -222,7 +222,7 @@ func TestCompiledPlatformMD087MD047Composition(t *testing.T) {
 		}
 	}
 }
-func TestCompiledPlatformMD087NoCGORefusal(t *testing.T) {
+func TestCompiledPlatformMD087NoCGOApply(t *testing.T) {
 	t.Setenv("CGO_ENABLED", "0")
 	binary := buildConfigurationExecutable(t, "")
 	root := configurationProject(t)
@@ -234,10 +234,7 @@ func TestCompiledPlatformMD087NoCGORefusal(t *testing.T) {
 	got := runConfigurationProcess(t, binary, root, "fix", "doc.md", "--format=json")
 	after := readinessState(t, root)
 	out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "fix")
-	if !md038NativeRefusal(t, got, out) || !out.Complete || len(out.Errors) != 1 || len(out.Diagnostics)+len(out.CheckedFiles)+len(out.Changes)+len(out.Documents)+len(out.DeferredFixes) != 0 {
-		t.Fatal(got, out)
-	}
-	readinessAssertEqual(t, "actual native early refusal", before, after)
+	assertCGO0Apply(t, got, out, before, after)
 }
 func TestCompiledPlatformMD087DefaultsAndAdmission(t *testing.T) {
 	binary := buildConfigurationExecutable(t, "")

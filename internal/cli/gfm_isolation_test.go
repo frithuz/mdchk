@@ -21,9 +21,16 @@ func TestGFMPrivateScopesPreserveProductionAdmission(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(baseline, config.Capabilities{CommonMark: true, GFM: true, SlideAnnotation: true, DirectiveProcessing: true, FrontmatterYAML: true, FrontmatterTOML: true, MetadataInterpretation: true, GitHubAnchors: true, ExplicitAnchors: true}) {
+	// Func values never compare equal, so compare the flags and the index provider's presence apart.
+	flags := func(c config.Capabilities) (config.Capabilities, bool) {
+		present := c.RepresentIndexFile != nil
+		c.RepresentIndexFile = nil
+		return c, present
+	}
+	if got, present := flags(baseline); !present || !reflect.DeepEqual(got, config.Capabilities{CommonMark: true, GFM: true, SlideAnnotation: true, DirectiveProcessing: true, FrontmatterYAML: true, FrontmatterTOML: true, MetadataInterpretation: true, GitHubAnchors: true, ExplicitAnchors: true, ResourceIndex: true}) {
 		t.Fatal("production capabilities changed", baseline)
 	}
+	baselineFlags, _ := flags(baseline)
 	check := func() {
 		t.Helper()
 		for _, c := range []struct {
@@ -45,7 +52,8 @@ func TestGFMPrivateScopesPreserveProductionAdmission(t *testing.T) {
 			}
 		}
 		_, _, after, err := configuredProviders()
-		if err != nil || !reflect.DeepEqual(after, baseline) {
+		afterFlags, present := flags(after)
+		if err != nil || !present || !reflect.DeepEqual(afterFlags, baselineFlags) {
 			t.Fatal("private scope mutated capabilities", err)
 		}
 	}

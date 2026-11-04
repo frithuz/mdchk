@@ -1,4 +1,4 @@
-//go:build darwin && arm64 && cgo
+//go:build linux || darwin || windows
 
 package files
 
@@ -9,26 +9,26 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"syscall"
 	"testing"
 
+	"github.com/frithuz/mdchk/internal/fsroot"
 	"github.com/frithuz/mdchk/internal/parser"
 )
 
 func TestNativeCheckedDescriptorLifecycle(t *testing.T) {
-	for _, boundary := range []string{"created", "revalidation", "stage", "verification", "saved-parent", "saved", "cleanup", "shutdown"} {
+	for _, boundary := range []string{"created", "revalidation", "stage", "verification", "saved-parent", "saved", "shutdown"} {
 		t.Run(boundary, func(t *testing.T) {
 			root, path := nativeFixture(t)
 			set, a := nativeAcquire(t, []string{path}, WriteOptions{})
-			before, err := os.Stat(path)
+			before, err := stableStat(path)
 			if err != nil {
 				t.Fatal(err)
 			}
 			sentinel := errors.New("descriptor close failed")
 			primary := errors.New("stage identity failed")
 			seen := false
-			set.native.closeFile = func(stage string, f *os.File) error {
-				err := f.Close()
+			set.native.closeFile = func(stage string, c io.Closer) error {
+				err := c.Close()
 				if stage == boundary {
 					seen = true
 					return errors.Join(err, sentinel)
@@ -42,9 +42,6 @@ func TestNativeCheckedDescriptorLifecycle(t *testing.T) {
 					}
 					return f.Stat()
 				}
-			}
-			if boundary == "cleanup" {
-				set.native.write = func(f *os.File, b []byte) (int, error) { return f.Write(b[:1]) }
 			}
 			if boundary == "shutdown" {
 				if err := set.Close(); !errors.Is(err, sentinel) {
@@ -74,7 +71,7 @@ func TestNativeCheckedDescriptorLifecycle(t *testing.T) {
 				assertNativeBytes(t, path, []byte("new\n"))
 			} else {
 				assertNativeBytes(t, path, a.Documents[0].Source.Bytes())
-				after, err := os.Stat(path)
+				after, err := stableStat(path)
 				if err != nil || !os.SameFile(before, after) {
 					t.Fatal("prepublication changed original inode", err)
 				}
@@ -82,15 +79,12 @@ func TestNativeCheckedDescriptorLifecycle(t *testing.T) {
 					t.Fatal("invented saved snapshot")
 				}
 			}
-			if boundary == "created" || boundary == "cleanup" {
+			if boundary == "created" {
 				if len(out.Leftovers) != 1 {
 					t.Fatalf("missing owned leftover: %+v", out)
 				}
-				if boundary == "created" && !errors.Is(out.Err, primary) {
+				if !errors.Is(out.Err, primary) {
 					t.Fatal("lost primary stat failure")
-				}
-				if boundary == "cleanup" && !errors.Is(out.Err, io.ErrShortWrite) {
-					t.Fatal("lost primary short write")
 				}
 				if _, err := os.Stat(filepath.Join(root, out.Leftovers[0])); err != nil {
 					t.Fatal("reported leftover absent", err)
@@ -109,20 +103,20 @@ func TestNativePartialWriteAndCleanupFailureRetainOwnedLeftover(t *testing.T) {
 		t.Fatal(err)
 	}
 	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
-	before, err := os.Stat(path)
+	before, err := stableStat(path)
 	if err != nil {
 		t.Fatal(err)
 	}
 	cleanupErr := errors.New("native unlink refused")
 	set.native.write = func(f *os.File, b []byte) (int, error) { return f.Write(b[:2]) }
-	set.native.removeStage = func(parent *os.File, name string) error { return cleanupErr }
+	set.native.removeStage = func(*fsroot.Dir, string) error { return cleanupErr }
 	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("replacement\r\n")), nil)
 	if !errors.Is(out.Err, io.ErrShortWrite) || !errors.Is(out.Err, cleanupErr) || out.Published || out.Uncertain || out.Saved != (parser.Source{}) || len(out.Leftovers) != 1 {
 		t.Fatalf("lost failure evidence: %+v", out)
 	}
 	assertNativeBytes(t, path, a.Documents[0].Source.Bytes())
 	assertNativeBytes(t, foreign, []byte("foreign"))
-	after, err := os.Stat(path)
+	after, err := stableStat(path)
 	if err != nil || !os.SameFile(before, after) || after.Mode() != before.Mode() {
 		t.Fatal("original changed", err)
 	}
@@ -137,12 +131,12 @@ func TestNativeExclusiveCreateCollisionNeverCleansForeignEntry(t *testing.T) {
 	root, path := nativeFixture(t)
 	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
 	var collision string
-	set.native.openStage = func(parent *os.File, name string) (*os.File, error) {
+	set.native.openStage = func(parent *fsroot.Dir, name string) (*os.File, error) {
 		collision = filepath.Join(root, name)
 		if err := os.WriteFile(collision, []byte("external"), 0600); err != nil {
 			t.Fatal(err)
 		}
-		return nativeOpen(parent, name, syscall.O_WRONLY|syscall.O_CREAT|syscall.O_EXCL, 0600)
+		return parent.CreateExclusive(name, 0600)
 	}
 	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("replacement")), nil)
 	if !errors.Is(out.Err, fs.ErrExist) || out.Published || out.Uncertain || len(out.Leftovers) != 0 {
@@ -156,41 +150,15 @@ func TestNativeExclusiveCreateCollisionNeverCleansForeignEntry(t *testing.T) {
 	}
 }
 
-func TestNativePostPublicationSyncAndUnlockFailures(t *testing.T) {
-	for _, boundary := range []string{"directory", "unlock"} {
-		t.Run(boundary, func(t *testing.T) {
-			root, path := nativeFixture(t)
-			set, a := nativeAcquire(t, []string{path}, WriteOptions{})
-			injected := errors.New("native lifecycle failed")
-			if boundary == "directory" {
-				set.native.syncFile = func(stage string, f *os.File) error {
-					if stage == "directory" {
-						return errors.Join(f.Sync(), injected)
-					}
-					return f.Sync()
-				}
-			}
-			if boundary == "unlock" {
-				set.native.unlock = func(*os.File) error { return injected }
-			}
-			out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("replacement\r\n")), nil)
-			if !errors.Is(out.Err, injected) || !out.Published || out.Uncertain || string(out.Saved.Bytes()) != "replacement\r\n" {
-				t.Fatalf("publication lost after lifecycle failure: %+v", out)
-			}
-			assertNativeBytes(t, path, []byte("replacement\r\n"))
-			assertNoStage(t, root)
-			if boundary == "unlock" {
-				retry := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("forged")), nil)
-				if retry.Err == nil || retry.Published {
-					t.Fatalf("failed unlock acquisition reused: %+v", retry)
-				}
-				// A fresh acquisition can obtain the actual kernel lock after disposal.
-				fresh, aa := nativeAcquire(t, []string{path}, WriteOptions{})
-				next := fresh.Publish(context.Background(), path, aa.Documents[0].Source, parser.NewSource([]byte("next\n")), nil)
-				if next.Err != nil || !next.Published {
-					t.Fatalf("kernel lock leaked: %+v", next)
-				}
-			}
-		})
+func TestNativePostPublicationDirectorySyncFailure(t *testing.T) {
+	root, path := nativeFixture(t)
+	set, a := nativeAcquire(t, []string{path}, WriteOptions{})
+	injected := errors.New("native lifecycle failed")
+	set.native.syncDir = func(d *fsroot.Dir) error { return errors.Join(d.Sync(), injected) }
+	out := set.Publish(context.Background(), path, a.Documents[0].Source, parser.NewSource([]byte("replacement\r\n")), nil)
+	if !errors.Is(out.Err, injected) || !out.Published || out.Uncertain || string(out.Saved.Bytes()) != "replacement\r\n" {
+		t.Fatalf("publication lost after lifecycle failure: %+v", out)
 	}
+	assertNativeBytes(t, path, []byte("replacement\r\n"))
+	assertNoStage(t, root)
 }

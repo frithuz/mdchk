@@ -13,7 +13,7 @@ import (
 // WriteOptions observes dependencies during the same bounded acquisition as the
 // analyzed targets. Resources are read-only, Absences must not exist, and Required
 // declares additional configuration/permission observations used by each target.
-// All declared observations are checked again while holding cooperating locks.
+// All declared observations are checked again immediately before publication.
 type WriteOptions struct {
 	AcquireOptions
 	Resources *Selection
@@ -32,7 +32,7 @@ type WriteBaseline struct {
 }
 
 // WriteSet owns native acquisition authority. Descriptive Documents and Sources
-// alone cannot manufacture it. Close releases pinned descriptors; no acquisition
+// alone cannot manufacture it. Close releases pinned directories; no acquisition
 // creates filesystem artifacts. CLI apply uses this retained authority.
 type WriteSet struct {
 	mu     sync.Mutex
@@ -61,7 +61,8 @@ type Publication struct {
 }
 
 // AcquireWrite retains native identity and security metadata from the actual
-// bounded read producing each Source. Unsupported adapters refuse explicitly.
+// bounded read producing each Source. Hosts outside linux, darwin and windows
+// refuse explicitly.
 func AcquireWrite(ctx context.Context, selected *Selection, options WriteOptions) (*WriteSet, *Acquisition, *Acquisition, error) {
 	if ctx == nil || selected == nil || options.Budget == nil {
 		return nil, nil, nil, errors.New("write acquisition requires context, selection and residual budget")

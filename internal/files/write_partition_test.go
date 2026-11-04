@@ -1,4 +1,4 @@
-//go:build darwin && arm64 && cgo
+//go:build linux || darwin || windows
 
 package files
 
@@ -27,7 +27,7 @@ func TestNativeFailedTargetsRetainIndependentRequiredAuthority(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
-			before, err := os.Stat(b)
+			before, err := stableStat(b)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -111,7 +111,7 @@ func TestNativeFailedTargetsRetainIndependentRequiredAuthority(t *testing.T) {
 					assertNativeBytes(t, doc.Path, doc.Source.Bytes())
 				}
 			}
-			after, err := os.Stat(b)
+			after, err := stableStat(b)
 			if err != nil {
 				t.Fatal(err)
 			}

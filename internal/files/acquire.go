@@ -11,6 +11,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/frithuz/mdchk/internal/fsroot"
 	"github.com/frithuz/mdchk/internal/parser"
 )
 
@@ -316,7 +317,7 @@ func openTarget(target Target) (readHandle, error) {
 	if err := rejectGitAlias(root, name, info); err != nil && !target.inspection {
 		return nil, err
 	}
-	file, err := root.OpenFile(name, os.O_RDONLY|acquireOpenFlags, 0)
+	file, err := root.OpenFile(name, os.O_RDONLY|fsroot.ReadFlags, 0)
 	if err != nil {
 		return nil, err
 	}

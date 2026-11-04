@@ -2,53 +2,61 @@
 
 Issues #146 and #147 implement acquisition-bound stale protection and production
 per-file replacement in `internal/files`, with a retained semantic-result adapter
-in `internal/fix`. CLI apply uses this retained authority and reports observed
-saved snapshots, partial publication outcomes and remaining saved-content findings. Dry-run does not call this path, create stages or acquire
-filesystem locks.
+in `internal/fix`. Issue #261 replaced the original Darwin-only, cgo-based adapter
+with one portable implementation built on Go's standard library (`os.Root`) and,
+only where unavoidable, pure-Go `golang.org/x/sys`. CLI apply uses this retained
+authority and reports observed saved snapshots, partial publication outcomes and
+remaining saved-content findings. Dry-run does not call this path or create stages.
 
-## Verified matrix
+## Platform matrix
 
-The native adapter is exercised natively on Darwin arm64 with cgo and local APFS.
-Other operating systems and architectures, Darwin without cgo, and other
-filesystem types refuse;
-cross-builds do not establish native guarantees. Linux and Windows remain target
-platforms with no enabled native publication adapter. Network, cloud and virtual
-filesystems have no inferred support.
+Apply is implemented once for Linux, macOS and Windows and builds with
+`CGO_ENABLED=0`. No build needs a C toolchain.
 
-The compiled-command acceptance suite distinguishes these behaviors:
-
-| Host | Apply behavior under test | Evidence required |
+| Host | Apply behavior | Evidence |
 | --- | --- | --- |
-| Darwin arm64, cgo, local APFS | Native replacement and exact saved snapshots | Native filesystem tests and production compiled apply fixtures |
-| Linux | Explicit unsupported refusal, exit 13, no mutation; dry-run remains usable | Ordinary Linux binary in the Ubuntu test job |
-| Windows | Explicit unsupported refusal, exit 13, no mutation; dry-run remains usable | Ordinary Windows binary in the focused Windows acceptance job |
-| Darwin without cgo | Explicit unsupported refusal, exit 13 | Compiled no-cgo acceptance |
+| Linux, macOS, Windows | Native replacement and exact saved snapshots through one implementation | `cli-platform` CI job on all three, with `CGO_ENABLED=0`; the full race job on Linux and the adapter packages on macOS |
+| Any other `GOOS` | Explicit refusal, exit 13, nothing written: `native replacement is unsupported on <GOOS>; apply supports linux, darwin and windows`. Dry-run remains usable | Compile check for `freebsd` in the `test` job and a unit test of the refusal |
 
-The unsupported-host controls use native path separators, spaces and non-ASCII
-names, predict LF/CRLF/lone-CR corrections, and verify unchanged bytes, entry
-identity, mode, mtime and artifact inventory. A cross-platform vet/build pass
-establishes compatibility only; a completed native job establishes refusal on
-that host, never publication support. Native replacement tests also retain the
-accepted noncooperating-writer interval described below.
+The refusal on other hosts is a deliberate, testable decision, not a missing
+adapter. Network, cloud and virtual filesystems are not verified and no support is
+claimed for them; there is no filesystem-type check.
 
-A supported target is a regular file with writable owner permissions, ordinary
-owner/group/mode, no ACL entries, no file flags, no set-ID/sticky bits, and no
-extended attributes except the bounded `com.apple.provenance` attribute. That
-attribute is inspected, compared and copied exactly. This includes refusing
-resource forks, other named streams, security labels and unknown xattrs, rather
-than discarding them. Read-only and immutable files are refused. Chown/chmod or
-metadata inspection/copy failures refuse publication; restrictions are never
-cleared. Newly inherited staging ACLs are refused before content is written.
+## Supported targets
+
+A supported target is a regular file, reached without any symlink, junction or
+reparse-point component, inside the selected root, with an owner-writable mode and
+no set-ID or sticky bits. Anything else is refused as an unsupported target with
+exit 13 and nothing written. This includes read-only files, directories, FIFOs,
+devices and files whose parent chain contains a link.
 
 ## Authority and confinement
 
 `AcquireWrite` uses the existing bounded read and immutable Source construction.
-It retains the same read's native entry and full parent-chain identities and
-security metadata. Bounded native ACL snapshots also bind every parent directory's
-permissions. Every path component opens with `openat`, `O_NOFOLLOW` and
-nonblocking directory/regular-file checks. Final publication uses `renameat` on
-the pinned parent. Absolute canonical paths must already name the intended
-non-symlink scope; inspection's explicit symlink exception grants no write access.
+It retains the same read's pinned parent directory, the full parent-chain
+identities, and the file's identity, mode, owner and extended attributes.
+
+`internal/fsroot` provides the pin-and-verify traversal on `os.Root`. `os.Root`
+guarantees that no lookup escapes the root it was opened on, but it follows
+symlinks that stay inside the root. The contract that every component is a plain
+directory or regular file is therefore enforced on top of it:
+
+- Each component is examined with `Root.Lstat`; anything that is not a plain
+  directory (or, for the final entry, a regular file) is refused. `ModeSymlink`
+  and `ModeIrregular` cover Windows junctions, mount points and other reparse
+  points.
+- The component is opened through the held parent, the opened handle is compared
+  with the `Lstat` result using `os.SameFile`, and the entry is examined again
+  after the open.
+- Each directory is pinned with `Root.OpenRoot` after that verification, so every
+  later create, rename and remove is relative to a verified held handle and never
+  re-resolves a path.
+
+A component swapped to a contained symlink between check and open is detected by
+the post-open identity comparison and can never escape the root; a swap to an
+escaping symlink is refused by `os.Root` itself. Absolute canonical paths must
+already name the intended non-symlink scope; inspection's explicit symlink
+exception grants no write access.
 
 `WriteSet` owns the observations and residual budget. Fresh equal-byte Sources,
 mutable acquisition descriptions and detached `fix.FileView` values cannot
@@ -56,68 +64,159 @@ manufacture approval. `fix.Validated.Publish` uses its privately retained
 original/candidate sources and dependency graph, requiring the same original
 budget. Cancellation of the acquisition context remains binding even if a caller
 passes a fresh context. Both contexts remain binding throughout dependency
-traversal, lock waiting and the last pre-rename checkpoint. `WriteSet.Publish` is the lower-level native primitive and does
-not itself claim semantic correction approval.
+traversal and the last pre-rename checkpoint. `WriteSet.Publish` is the
+lower-level native primitive and does not itself claim semantic correction
+approval.
 
 Resource-only acquisitions cannot become publication targets. Content and
 absence observations remain distinct. Required configuration/permission resources
 are declared at acquisition; selected-target and resource dependencies retained
-by the validator are also checked. Exact bytes, entry identity, type, owner,
-group, mode, link count, flags, provenance and parent identity/permissions are
-revalidated under coordination immediately before publication. Changes with
-restored mtime and identical-byte inode replacement are stale. No rebasing occurs.
-After this operation observes one of its own replacements, later dependency
-checks use that saved identity/content while retaining the original acquisition
-binding. CLI saved-view reconciliation uses these observations.
+by the validator are also checked. Exact bytes, size, modification time, entry
+identity, type, mode, owner, extended attributes and parent identity, mode and
+owner are revalidated immediately before publication. Changes with restored mtime
+and identical-byte inode replacement are stale. No rebasing occurs. After this
+operation observes one of its own replacements, later dependency checks use that
+saved identity/content while retaining the original acquisition binding. CLI
+saved-view reconciliation uses these observations.
 
-## Coordination and publication
+## Replacement
 
-Darwin `flock` locks the pinned parent directory, ordered by native device/inode.
-It serializes even different logical targets within one parent, a deliberate
-concurrency cost. Parent replacement is stale, and replacing a target inode does
-not replace the lock domain. No lock files are created or removed. Waits are
-nonblocking polls bounded by two seconds, context cancellation and the same
-residual budget. Locks span final validation and publication; process exit
-releases them. There is no unlocked fallback.
+For each file, apply:
 
-The production boundary creates an unpredictable exclusive sibling with mode 0600,
-writes complete candidate bytes, preserves supported metadata, checks staged
-content/identity, syncs and closes it, revalidates original inputs, and publishes
-with parent-relative native rename. It then observes the saved entry and syncs
-the directory. It never truncates or deletes the target first. Cleanup removes
-only the owned stage and refuses detected stage substitution. Failure reports
-owned leftover names. Hard-link aliases remain separate logical targets: other
-aliases retain the original inode/content, and `HardLinks` records the observed
-original link count.
+1. Verifies every path component and pins the parent directory.
+2. Writes the full candidate to an exclusive 0600 sibling stage with an
+   unpredictable name, then copies mode and, on Unix, owner/group and all extended
+   attributes. Any copy failure refuses.
+3. Revalidates identity, size, mtime, mode and content hash of the target, its
+   dependencies and its parent. Any change is stale and nothing is published.
+4. Replaces the target with one rename through the pinned parent, then re-reads
+   the saved entry and, on Unix, syncs the parent directory.
 
-Equal retained candidates return `NoChange=true` with no Saved snapshot. This
-explicitly means no native confirmation was performed; callers must not use it
-as an observed saved view. It creates no stage or replacement, including empty
-files, and does not claim writable acquisition authority.
+The target is never truncated or deleted first, and nothing is written outside the
+selected targets. Cleanup removes only the owned stage and refuses detected stage
+substitution. Equal retained candidates return `NoChange=true` with no Saved
+snapshot, no stage and no write. This explicitly means no native confirmation was
+performed; callers must not use it as an observed saved view. It does not claim
+writable acquisition authority.
 
-Prepublication failures leave the original untouched. Native rename errors are
-reconciled against the staged and target identities: observed publication is
-retained, an intact original/stage pair establishes refusal, and ambiguous entry
-state is explicitly uncertain. `Publication.Published`
-retains successful rename evidence even if later sync/cancellation fails;
+On Windows, `os.Rename` is `MoveFileEx` with `MOVEFILE_REPLACE_EXISTING`: a
+same-volume replace, not a stronger claim. A target held open without
+share-delete fails and is reported as a normal I/O refusal with the stage removed
+and the original untouched.
+
+Hard-link aliases remain separate logical targets: other aliases retain the
+original inode/content, and `HardLinks` records the original link count observed
+at acquisition: from the stat result on Unix and from
+`GetFileInformationByHandle` on Windows.
+
+## Metadata
+
+| Item | Behavior |
+| --- | --- |
+| Mode, set-ID, sticky | Portable via `os.FileMode`. Unsupported bits and owner-unwritable modes refuse. Mode is copied with `Chmod`. |
+| Read-only | Refused through the mode bits; the Windows read-only attribute is reflected in the mode. |
+| Owner/group | Unix: the stage is `Chown`ed to the target's uid/gid when it differs; failure refuses. Windows: not applicable, the stage inherits the directory's access control. |
+| Hard-link count | Not part of the stale comparison, because identity and content cover it. Reported where the platform supplies it. |
+| Extended attributes (Linux, macOS) | All attributes are listed, read and copied exactly through `Flistxattr`/`Fgetxattr`/`Fsetxattr`; attributes the new file acquired that the target lacks are removed. Failure refuses. This preserves Linux POSIX ACLs and SELinux labels and `com.apple.provenance`, quarantine and resource forks on macOS. Files carrying them are fixable rather than refused. Bounded to 256 attributes and 1 MiB. |
+| macOS ACLs | Not inspected or preserved (see accepted limits). |
+| BSD file flags, Linux immutable | No pre-check. An immutable target fails at rename or open with `EPERM`, which refuses with no mutation. |
+| Windows alternate data streams | Dropped on replace (see accepted limits); a test pins the behavior. |
+| Directory sync | Parent `Sync` on Unix; skipped on Windows. |
+
+## Outcomes
+
+Failures before the rename leave the original untouched and remove the stage. A
+stage that cannot be proven owned is left in place and reported by name. A file
+that cannot be replaced (immutable, held open without share-delete on Windows,
+permission denied) is an I/O refusal with no mutation. Independent files continue
+after another file fails. Prepublication failures leave the original untouched.
+Native rename errors are reconciled against the staged and target identities:
+observed publication is retained, an intact original/stage pair establishes
+refusal, and ambiguous entry state is explicitly uncertain. `Publication.Published`
+retains successful rename evidence even if later sync or cancellation fails;
 `Uncertain` and an absent Saved snapshot describe failed saved-state observation.
 An uncertain state cannot authorize later dependent writes without a new
 operation. Published content is never blindly rolled back over newer content.
-This boundary does not promise whole-operation transactions or power-loss
-survival. CLI apply implements final outcomes, independent-file continuation
-and saved-view reanalysis.
 
-## Accepted concurrent-writer limitation
+## Accepted limits
 
-Directory advisory locks coordinate participating writers only. A noncooperating
-writer can modify an input, dependency, parent or private staging entry after the
-last check and before the native rename/unlink. Detected changes refuse; that
-remaining interval is not compare-and-swap. A deterministic native test actually
-changes the target after the final check and demonstrates its newer bytes being
-overwritten. Full no-lost-update protection requires exclusive/coordinated access.
-No protection against privileged mount manipulation is claimed. Post-write
-snapshots describe observed bytes, which external writers can change again.
+- **No cross-process lock.** Stale protection detects concurrent changes but does
+  not serialize writers, and a noncooperating writer can still change a file
+  between the last check and the rename. A deterministic native test changes the
+  target after the final check and demonstrates the newer bytes being
+  overwritten. With MD047 as the only fixer, two concurrent runs compute identical
+  output, so nothing is lost today. Revisit before a second fixer ships. Full
+  no-lost-update protection requires exclusive or coordinated access. No
+  protection against privileged mount manipulation is claimed.
+- **macOS ACL entries** are not inspected or preserved. Detecting them requires
+  libc and therefore cgo.
+- **Windows alternate data streams**, including Mark-of-the-Web, are dropped on
+  replace. This is best effort with no workaround.
+- **No filesystem-type check.** Network, cloud and virtual filesystems are not
+  verified and no support is claimed.
+- **No power-loss durability, multi-file transactions or rollback.** The stage and,
+  on Unix, the parent directory are synced; nothing stronger is promised.
+- **Stage inode identity.** `os.SameFile` cannot distinguish an inode number a
+  filesystem has reused, so stage-substitution detection is best effort within the
+  same noncooperating-writer interval.
+- Post-write snapshots describe observed bytes, which external writers can change
+  again.
 
+## Platform-specific code
+
+mdchk contains no platform-specific code unless it is required. Each file and the
+Go API tried first:
+
+| File | Why it is required |
+| --- | --- |
+| `internal/fsroot/flags_unix.go` | `os.Root.OpenFile` accepts raw flags but the standard library exports no portable `O_NONBLOCK`/`O_NOFOLLOW`; the `syscall` constants are used (no cgo, no `x/sys`). A raced FIFO would otherwise hang a read. Also holds the Unix directory `fsync`, which `os.File.Sync` provides on a directory opened with `Root.Open(".")`. |
+| `internal/fsroot/flags_other.go` | The Windows counterpart: no extra open flags are needed, and a directory handle cannot be synced. |
+| `internal/files/owner_unix.go` | `os.FileInfo` exposes no owner or link count; `Sys()` yields `*syscall.Stat_t` (stdlib). `os.File.Chown` applies it. |
+| `internal/files/owner_windows.go` | `os.FileInfo` carries no link count on Windows; the stdlib `syscall.GetFileInformationByHandle` reads it from the open handle. |
+| `internal/files/owner_other.go` | Windows: ownership is governed by inherited access control that `os.FileInfo` does not expose. |
+| `internal/files/xattr_unix.go` | The standard library has no extended attribute API. Pure-Go `golang.org/x/sys/unix` (`Flistxattr`, `Fgetxattr`, `Fsetxattr`, `Fremovexattr`) is the only dependency, enforced by `depguard`. |
+| `internal/files/xattr_other.go` | Windows has no extended attributes to copy. |
+| `internal/files/write_unsupported.go` | The explicit refusal compiled only for hosts outside Linux, macOS and Windows. |
+
+### `internal/resource`
+
+The read-only resource reader keeps its platform files. The consolidation
+onto `internal/fsroot` was evaluated against the existing read tests and
+rejected, because each primitive the reader needs is missing from `os.Root`
+or from the standard library's `syscall` package. The checks below are
+against the Go 1.27 sources.
+
+| File | Go API tried | Why it is insufficient |
+| --- | --- | --- |
+| `native_unix.go` | `os.Root.OpenFile` and `os.Root.OpenRoot` with `O_NOFOLLOW`; stdlib `syscall.Openat` | `os.Root` resolves contained symlinks, including after an `ELOOP` from `O_NOFOLLOW`, so a contained link opens instead of being refused. The reader keeps `*os.File` parent handles, and `os.Root` cannot be built from one. `syscall.Openat` exists on Linux only, not on macOS. |
+| `native_metadata_linux.go`, `native_metadata_darwin.go` | `os.Root.Lstat` followed by `os.Root.OpenFile` | An open between `Lstat` and the identity check can reach a FIFO or device swapped in meanwhile, and opening a device can have side effects. `O_PATH` on Linux and `O_EVTONLY` on macOS keep a handle without opening contents. The standard library exposes no metadata-only open through `os.Root`. |
+| `native_stat_unix.go` | `os.Root.Lstat`; stdlib `syscall.Fstatat` | `os.Root.Lstat` needs an `os.Root`, not the reader's `*os.File` parent. `syscall.Fstatat` is not defined on macOS, where `O_EVTONLY` can still need read permission, so the no-follow `fstatat` fallback comes from `x/sys/unix`. |
+| `native_windows.go` | `os.Root` on Windows (`internal/syscall/windows.Openat`); `os.SameFile`; stdlib `syscall` | `os.Root` always requests `FILE_GENERIC_READ`, so it cannot observe an entry whose ACL denies read data, which the reader reports as existing. It opens with `OBJ_CASE_INSENSITIVE` and exposes no flag to clear it, so a wrong-case name would open the real entry instead of being treated as a different name. `os.SameFile` compares the 64-bit file index, while ReFS needs the 128-bit `FileIdInfo` identity. The stdlib `syscall` package has no `GetFileInformationByHandleEx` (for full identity and directory case sensitivity), `GetDriveType` (to refuse mapped network drives) or `NtCreateFile` (for `OBJ_DONT_REPARSE` on every component). |
+| `native_stat_windows.go` | — | A three-line wrapper over `native_windows.go`. |
+| `native_other.go` | — | The refusal stub for hosts outside Linux, macOS and Windows. |
+
+The write path does not need these guarantees. It opens only selected regular
+targets that it must read and write anyway, and it compares every opened
+entry with the identity recorded at selection, so a case-insensitive or
+followed lookup either reaches the recorded file or refuses. The two adapters
+therefore stay separate.
+
+## Checked lifecycle
+
+Creation, writes, metadata, flush, close, rename, cleanup and directory sync have
+checked outcomes. Primary failures and later close or cleanup failures are joined
+with inspectable error identities. Cleanup validates ownership before unlinking;
+failed validation or removal reports the owned staging name without removing a
+foreign entry. If the initial stage identity cannot be inspected, its name is
+reported and retained rather than guessed safe to remove.
+
+Source and final-stage verification close failures refuse before publication.
+Once the saved bytes and identity have been observed, a later observation-close
+or directory-sync failure retains Published and Saved and reports the error; that
+failure alone does not make observed content unknown. Close consumes each owned
+handle once, even when it returns an error. Cleanup is bounded by the already
+admitted stages and held directories and still runs after cancellation or
+residual exhaustion. No rollback is attempted.
 
 The validator builds an immutable target index and dependency/source manifest
 once, admitting their maps and copied edges before construction. Publication
@@ -126,30 +225,6 @@ rather than overwriting one observation. Publication meters only reachable stack
 it does not repeatedly reserve the entire project's unrelated source inventory.
 Native 128/256/512 independent-publication controls consume approximately 218
 nodes per file, alongside cyclic dependency and sticky-exhaustion controls.
-Final stage and observed saved metadata both recheck ACL/xattr support and exact
-provenance. This host silently retains protected provenance after a set request;
-exact mismatch rejection is therefore also independently tested against a native
-observation with a different expected value, without claiming a successful
-native provenance mutation.
-
-## Checked lifecycle
-
-Creation, writes, metadata, flush, close, rename, cleanup and lock release have
-checked outcomes. Primary failures and later close/cleanup failures are joined
-with inspectable error identities. Cleanup validates ownership before unlinking;
-failed validation or removal reports the owned staging name without removing a
-foreign entry. If the initial stage identity cannot be inspected, its name is
-reported and retained rather than guessed safe to remove.
-
-Source and final-stage verification close failures refuse before publication.
-Once the saved bytes and identity have been observed, a later observation-close,
-directory-sync or lock-release failure retains Published and Saved and reports
-the error; that failure alone does not make observed content unknown. A failed
-unlock disposes all retained parent descriptors and invalidates the acquisition,
-preventing reuse of a lock whose release was not confirmed. Close consumes each
-owned descriptor once, even when it returns an error. Cleanup and lock disposal
-are bounded by the already admitted stages and held descriptors and still run
-after cancellation or residual exhaustion. No rollback is attempted.
 
 ## CLI apply and observed results
 

@@ -1,8 +1,8 @@
 # mdchk fix
 
-Current implementation: `fix` applies validated MD047 corrections on Darwin
-arm64 with cgo and local APFS. Other native adapters refuse writes with I/O
-status 13. `fix --dry-run` supports all four formats and writes nothing. Text/JSON
+Current implementation: `fix` applies validated MD047 corrections on Linux,
+macOS and Windows, from a build without cgo. Other operating systems refuse writes
+with I/O status 13. `fix --dry-run` supports all four formats and writes nothing. Text/JSON
 include proposed diffs; editor formats report only remaining candidate findings.
 MD047 supplies the first production correction: minimal terminal-newline changes
 with independently checked preservation and shared directive permissions. Unsafe
@@ -87,15 +87,16 @@ An invalid original UTF-8 target retains one encoding I/O error and receives no
 content correction. Independent valid targets continue analysis and eligible
 MD047 correction; proof-dependent components remain unchanged and explicitly
 unavailable. Preview reports only independently approved proposals; supported
-apply reports actual saved snapshots. Unsupported adapters retain their explicit
-write refusal. Encoding-local incompleteness does not waive runtime or proof checks.
+apply reports actual saved snapshots. Operating systems outside Linux, macOS and
+Windows retain an explicit write refusal. Encoding-local incompleteness does not waive runtime or proof checks.
 
 MD033 embedded-HTML analysis is available for CommonMark and GFM, disabled by
 default and permanently NoFix. Full original tag ranges remain manual, including
 candidate and saved analysis after an independent MD047 newline correction.
 MD033 produces no edits, eligibility, previews or corrected contents. MD047 is
-the sole current fixer. Unsupported native apply, including CGO0, retains its
-early complete I/O refusal 13 with empty analysis/effects and unchanged files.
+the sole current fixer. Apply on an unsupported operating system returns an early
+complete I/O refusal 13 with empty analysis/effects and unchanged files; a build
+without cgo applies normally.
 
 ## MD086 manual findings
 

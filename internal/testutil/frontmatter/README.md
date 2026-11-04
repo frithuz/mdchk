@@ -33,8 +33,8 @@ lint reports violations, and fix can eliminate eligible body violations.
 
 Current consumers are the in-memory shared-engine/production-fix test and the CLI
 lint/inspect/preview test. Native apply runs both header formats under both flavors
-on the verified Darwin arm64+cgo adapter; saved inspection and a second fix pass
-prove convergence. Other hosts retain the existing unsupported-write policy.
+on Linux, macOS and Windows; saved inspection and a second fix pass
+prove convergence. Other operating systems retain the unsupported-write refusal.
 Production-binary smoke covers all four CommonMark/GFM and YAML/TOML pairs.
 
 Future project and standalone MCP tests can consume the same `source`, settings,
