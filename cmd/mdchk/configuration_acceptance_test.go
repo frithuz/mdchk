@@ -313,7 +313,7 @@ func testConfigurationStrict(t *testing.T, binary string) {
 	})
 	t.Run("capability preflight", func(t *testing.T) {
 		for _, tc := range []configurationNegative{
-			{"explicit enabled default", availableConfiguration + "rules: {MD051: {}}\n", "rules.MD051", "explicitly enabled rule is unavailable", 4, 16},
+			{"explicit enabled default", availableConfiguration + "rules: {MD052: {}}\n", "rules.MD052", "explicitly enabled rule is unavailable", 4, 16},
 			{"explicit enabled unavailable", availableConfiguration + "rules: {MD054: {enabled: true}}\n", "rules.MD054", "explicitly enabled rule is unavailable", 4, 16},
 			{"removed flavor", "version: 1\nflavor: pandoc\ndirectives: {enabled: false}\n", "flavor", "expected commonmark or gfm", 2, 9},
 			{"resources unavailable", availableConfiguration + "resources: {index_file: index.md}\n", "resources.index_file", "resource index handling is unavailable", 4, 25},
@@ -367,7 +367,7 @@ func testConfigurationStrict(t *testing.T, binary string) {
 		}
 		md005 := false
 		for _, c := range run.Result.Coverage {
-			if c.Rule == "MD051" {
+			if c.Rule == "MD052" {
 				md005 = true
 			}
 			if c.Rule == "MD013" {
@@ -375,7 +375,7 @@ func testConfigurationStrict(t *testing.T, binary string) {
 			}
 		}
 		if !md005 {
-			t.Fatal("implicit enabled MD051 disappeared")
+			t.Fatal("implicit enabled MD052 disappeared")
 		}
 	}
 	root := configurationProject(t)

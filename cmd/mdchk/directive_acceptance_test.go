@@ -165,8 +165,8 @@ func TestProductionDirectiveCapabilityAndTruthfulCoverage(t *testing.T) {
 	}{
 		{"plain", 0, 0, 0},
 		{"<!-- mdchk:wat MD999 -->", 10, 1, 0},
-		{"<!-- mdchk:enable MD051 -->", 15, 0, 1},
-		{"<!-- mdchk:disable MD051 -->", 0, 0, 0},
+		{"<!-- mdchk:enable MD052 -->", 15, 0, 1},
+		{"<!-- mdchk:disable MD052 -->", 0, 0, 0},
 		{"<!-- mdchk:disable MD074 MD094 -->", 0, 0, 0},
 	} {
 		t.Run(fmt.Sprint(tc.status, tc.source), func(t *testing.T) {
@@ -175,7 +175,7 @@ func TestProductionDirectiveCapabilityAndTruthfulCoverage(t *testing.T) {
 			if got.Status != tc.status || len(got.Result.Diagnostics) != tc.violations || len(got.Result.Coverage) != tc.coverage {
 				t.Fatal(got.Status, got.Result)
 			}
-			if tc.coverage > 0 && (got.Result.Coverage[0].Rule != "MD051" || got.Result.Coverage[0].Reason != "rule-unavailable") {
+			if tc.coverage > 0 && (got.Result.Coverage[0].Rule != "MD052" || got.Result.Coverage[0].Reason != "rule-unavailable") {
 				t.Fatal(got.Result.Coverage)
 			}
 		})

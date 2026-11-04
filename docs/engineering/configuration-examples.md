@@ -133,13 +133,19 @@ for CommonMark and GFM, enabled by default with `allow_decorative: false`.
 Only explicit empty HTML alt can qualify for the opt-in decorative exemption;
 findings are permanently report-only.
 
+[MD051 unresolved fragment analysis](../rules/links-and-images/md051.md) is available
+for CommonMark and GFM, enabled by default with `cross_file: false`. Same-document
+fragments resolve against generated heading IDs (per `resources.anchor_style`) and
+HTML IDs; findings are manual and permanently report-only. Cross-file checks
+report reduced coverage until resource context is wired into the engine.
+
 MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
 independently enabled header recognition. Some ordinary rules remain unavailable,
 as recorded in the linked inventory. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
 as `rule-unavailable`, sets `status: incomplete` and `complete: false`, and exits
 15. The complete 87-rule catalog remains intact: MD001 is default-enabled and
-executes along with MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD027, MD028, MD064, MD011, MD034, MD039, MD042 and MD045, while unavailable default-enabled MD051 contributes
+executes along with MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD027, MD028, MD064, MD011, MD034, MD039, MD042, MD045 and MD051, while unavailable default-enabled MD052 contributes
 coverage. MD013 is available but default-disabled and does not incur a coverage penalty. Explicitly enabling
 an unavailable rule instead fails configuration admission with exit 12 before
 target processing. Text and JSON retain the same coverage and outcome.
@@ -352,7 +358,7 @@ rules:
 | Input or condition | Expected outcome |
 | --- | --- |
 | Omitted `resources`, or `resources: {}` | `index_file: index.md`, `anchor_style: github` |
-| `resources: {anchor_style: explicit}` | Available for same-document MD080; MD051/MD073 and referenced Markdown consumption remain separate deliveries |
+| `resources: {anchor_style: explicit}` | Available for same-document MD051 and MD080; MD073 and referenced Markdown consumption (cross-file MD051) remain separate deliveries |
 | `resources: {index_file: README.md}` | Current CLI rejects unavailable index handling; the future directory-lookup contract tries that one filename once |
 | `resources: null`, a sequence, or an unknown resource field | Configuration error |
 | `resources: {index_file: docs/index.md}` | Configuration error: filename only |

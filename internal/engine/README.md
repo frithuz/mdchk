@@ -763,3 +763,13 @@ original spelling. Reference origins, Images and their descendants are excluded.
 Raw state at the destination, after visible label children, governs eligibility.
 Unknown required context withholds the entire inventory. MD042 is default-enabled,
 accepts no rule-specific options and permanently retains NoFix metadata.
+
+MD051's `RuleContext.FragmentLinks` and `RuleContext.AnchorOccurrences` facades
+preserve the same original parse/source/options and cumulative operation authority,
+with both caller and originating controls. Prose Link destinations containing a
+fragment marker are classified by the rule; same-document fragments are compared
+exactly, after one percent decode, with the shared original-parse anchor
+occurrences (generated heading IDs plus verified HTML IDs). Distinct documents are
+skipped, or reported as `context-unavailable` when `cross_file` is true, because
+no resource service is available to rules. MD051 is default-enabled, accepts only
+`cross_file` and permanently retains NoFix metadata.

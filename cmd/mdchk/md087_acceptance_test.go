@@ -30,7 +30,7 @@ func md087Literals(t *testing.T) map[string]md087Literal {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if fmt.Sprintf("%x", sha256.Sum256(raw)) != "1efa25f4253774d067c7f73b65c465a7e061ce5fe5f971e7189b5761e63ad573" {
+	if fmt.Sprintf("%x", sha256.Sum256(raw)) != "997c80882f4a270b66a914f75e6349ffeedeaccf21e9de2f942a4e6e8680bca7" {
 		t.Fatal("root oracle identity")
 	}
 	var oracle struct{ Cases []md087Literal }
@@ -72,7 +72,7 @@ func TestCompiledPlatformMD087LiteralLint(t *testing.T) {
 					conf = strings.Replace(conf, "MD001: {enabled: true}", "MD001: {enabled: false}", 1)
 				}
 				if name == "known-unavailable-mixed" {
-					conf = strings.Replace(conf, "  MD051: {enabled: true}\n", "", 1)
+					conf = strings.Replace(conf, "  MD052: {enabled: true}\n", "", 1)
 				}
 				root := configurationProject(t)
 				putConfigurationFile(t, root, ".mdchk.yaml", conf)

@@ -51,3 +51,27 @@ func (c RuleContext) HeadingAnchorCheckpoint(ctx context.Context, work, nodes in
 	}
 	return c.document.HeadingAnchorCheckpoint(ruleOperation{ctx, c.operation}, c.budget, c.index, c.Context().ParseOptions(), work, nodes)
 }
+
+// AnchorOccurrences obtains the shared same-document named targets (generated
+// heading IDs and verified HTML IDs). Availability distinguishes a complete empty
+// result from unknown anchor syntax; this grants no resource read or cache.
+func (c RuleContext) AnchorOccurrences(ctx context.Context) (out []resource.AnchorOccurrence, availability resource.Availability, err error) {
+	if err := c.HeadingAnchorCheckpoint(ctx, 1, 0); err != nil {
+		if _, interrupted := resource.InterruptionProblem(err); interrupted {
+			return nil, resource.Interrupted, err
+		}
+		return nil, resource.Unavailable, err
+	}
+	defer func() {
+		err = errors.Join(err, c.HeadingAnchorCheckpoint(ctx, 0, 0))
+		if err != nil {
+			out = nil
+			if _, interrupted := resource.InterruptionProblem(err); interrupted {
+				availability = resource.Interrupted
+			} else if availability == resource.Available {
+				availability = resource.Failed
+			}
+		}
+	}()
+	return resource.OriginalAnchorOccurrences(ruleOperation{ctx, c.operation}, c.parsed, c.budget, c.index, c.Context().ParseOptions(), c.Context().AnchorStyle)
+}

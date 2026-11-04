@@ -49,3 +49,44 @@ func OriginalHeadingAnchors(ctx context.Context, parsed parser.ParseResult, budg
 	out, err = computed.Headings(ctx)
 	return out, availability, err
 }
+
+// OriginalAnchorOccurrences projects the complete named-target occurrences of an
+// actual completed original parse, using the same builder and allowance as
+// OriginalHeadingAnchors. Empty results with Available prove absence only for
+// this exact parse and anchor style; no service, cache or content authority leaks.
+func OriginalAnchorOccurrences(ctx context.Context, parsed parser.ParseResult, budget *parser.OperationBudget, index parser.LineIndex, options parser.ParseOptions, style string) (out []AnchorOccurrence, availability Availability, err error) {
+	availability = Unavailable
+	if parsed.Document == nil || parsed.Source != parsed.Document.Source() || (style != "github" && style != "explicit") {
+		return nil, availability, ErrContract
+	}
+	if err := parsed.Document.HeadingAnchorCheckpoint(ctx, budget, index, options, 1, 1); err != nil {
+		if _, interrupted := InterruptionProblem(err); interrupted {
+			availability = Interrupted
+		}
+		return nil, availability, err
+	}
+	defer func() {
+		err = errors.Join(err, parsed.Document.HeadingAnchorCheckpoint(ctx, budget, index, options, 0, 0))
+		if err != nil {
+			out = nil
+			if _, interrupted := InterruptionProblem(err); interrupted {
+				availability = Interrupted
+			} else if availability == Available {
+				availability = Failed
+			}
+		}
+	}()
+	operation := &Operation{ctx: ctx, budget: budget}
+	key := ParseCacheKey{source: parsed.Source, options: options, anchor: style}
+	anchors, err := buildAnchorIndex(ctx, operation, key, parsed)
+	availability = anchors.Availability()
+	if err != nil {
+		return nil, availability, err
+	}
+	computed, ok := anchors.Index()
+	if !ok {
+		return nil, availability, nil
+	}
+	out, err = computed.Occurrences(ctx)
+	return out, availability, err
+}

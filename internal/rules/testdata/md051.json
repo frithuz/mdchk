@@ -1,0 +1,523 @@
+{
+  "issue": 98,
+  "cases": [
+    {
+      "name": "violating",
+      "source": "# Install\n\n[Jump](#usage)\n",
+      "source_bytes": 26,
+      "source_sha256": "96f265799fb9783869f0e3981b58d1e3e3073f6a4420d06dc82a10fed0ff9eb3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            18,
+            24
+          ],
+          "start": [
+            3,
+            8
+          ],
+          "end": [
+            3,
+            14
+          ],
+          "expected": "#usage",
+          "message": "Fragment target is not defined in this document."
+        }
+      ]
+    },
+    {
+      "name": "accepted",
+      "source": "# Install\n\n[Jump](#install)\n",
+      "source_bytes": 28,
+      "source_sha256": "bc2947c69393d720ea00caf77c65bf551e0fbf704b902689ef9cb7caa2171ac4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "html-id",
+      "source": "<a id=\"x\"></a>\n\n[a](#x) [b](#y)\n",
+      "source_bytes": 32,
+      "source_sha256": "7bbf1f633988d06479b46a52e83dff9889973b7aad0a2fac89a2942617235eeb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            28,
+            30
+          ],
+          "start": [
+            3,
+            13
+          ],
+          "end": [
+            3,
+            15
+          ],
+          "expected": "#y",
+          "message": "Fragment target is not defined in this document."
+        }
+      ]
+    },
+    {
+      "name": "html-div-id",
+      "source": "<div id=\"x\">\n\ntext\n\n</div>\n\n[a](#x)\n",
+      "source_bytes": 36,
+      "source_sha256": "58a12905cecb57ac099f21595f91ee3d59507c2317a2d4d5e5667590d84c60ce",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "duplicate-suffix",
+      "source": "# A\n\n# A\n\n[x](#a) [y](#a-1) [z](#a-2)\n",
+      "source_bytes": 38,
+      "source_sha256": "51764b86c434e1d0b1893a5faf1861c0d341ebc3b506b4d9b95174bf00e8d743",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            32,
+            36
+          ],
+          "start": [
+            5,
+            23
+          ],
+          "end": [
+            5,
+            27
+          ],
+          "expected": "#a-2",
+          "message": "Fragment target is not defined in this document."
+        }
+      ]
+    },
+    {
+      "name": "case-sensitive",
+      "source": "# Title\n\n[x](#Title) [y](#title)\n",
+      "source_bytes": 33,
+      "source_sha256": "e35344afe8d84b35ef2f2388039534a9f17267d01b9c67ae8c43910bf49a917d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            13,
+            19
+          ],
+          "start": [
+            3,
+            5
+          ],
+          "end": [
+            3,
+            11
+          ],
+          "expected": "#Title",
+          "message": "Fragment target is not defined in this document."
+        }
+      ]
+    },
+    {
+      "name": "percent-decoded",
+      "source": "# Café\n\n[x](#caf%C3%A9) [y](#caf%c3%a9)\n",
+      "source_bytes": 41,
+      "source_sha256": "928fa9a5ade7e5d194c31359d1bdb5dd03ec874a1da22bd59b43a540056bfb46",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "percent-decoded-missing",
+      "source": "# A\n\n[x](#b%20c)\n",
+      "source_bytes": 17,
+      "source_sha256": "3048abe75115fa924af3b0df2f002c0b26918dc3a7a7561931824db01f55e9ed",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            9,
+            15
+          ],
+          "start": [
+            3,
+            5
+          ],
+          "end": [
+            3,
+            11
+          ],
+          "expected": "#b%20c",
+          "message": "Fragment target is not defined in this document."
+        }
+      ]
+    },
+    {
+      "name": "invalid-escape",
+      "source": "# A\n\n[x](#caf%E9) [y](#a%zz)\n",
+      "source_bytes": 29,
+      "source_sha256": "9a4414c13043c3b2fe1ac7aa44d2f021d4682e76e1bdab7236d6f89e5eb00892",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            9,
+            16
+          ],
+          "start": [
+            3,
+            5
+          ],
+          "end": [
+            3,
+            12
+          ],
+          "expected": "#caf%E9",
+          "message": "Fragment has invalid percent-encoding and cannot name a target."
+        },
+        {
+          "bytes": [
+            22,
+            27
+          ],
+          "start": [
+            3,
+            18
+          ],
+          "end": [
+            3,
+            23
+          ],
+          "expected": "#a%zz",
+          "message": "Fragment has invalid percent-encoding and cannot name a target."
+        }
+      ]
+    },
+    {
+      "name": "query-only",
+      "source": "# A\n\n[x](?q=1#a) [y](?q=1#b)\n",
+      "source_bytes": 29,
+      "source_sha256": "5c3d6fa301c2ad63c958902dde53949035c8f85c9a99308e2798103fec44a2f5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            21,
+            27
+          ],
+          "start": [
+            3,
+            17
+          ],
+          "end": [
+            3,
+            23
+          ],
+          "expected": "?q=1#b",
+          "message": "Fragment target is not defined in this document."
+        }
+      ]
+    },
+    {
+      "name": "empty-fragment",
+      "source": "# A\n\n[x](?q=1#)\n",
+      "source_bytes": 16,
+      "source_sha256": "78b843e786aecfaa733b347b49dc3b9b17c9491ade9a0ba3883f9a66fcd9f259",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "other-document-skipped",
+      "source": "# A\n\n[x](other.md#missing) [y](dir/#missing) [z](./#missing)\n",
+      "source_bytes": 61,
+      "source_sha256": "5b6149ab8c625a9b0cdb3a50fb219b52271268b481ca07e13f7ec34bcac62808",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "remote-ignored",
+      "source": "# A\n\n[x](https://example.test/#nope) [y](//example.test/#nope) [z](mailto:a@b.test#nope)\n",
+      "source_bytes": 89,
+      "source_sha256": "e61776e8fd9c10ccc573469ed32dcdfbd44ba2426220ba6fb3d61559740028c1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "autolinks-and-images",
+      "source": "# A\n\n<https://example.test/#nope> ![x](#nope)\n",
+      "source_bytes": 46,
+      "source_sha256": "d5dff46275986982184c63781b38d83a48b6a0f4d583354bdf8284192cd42d61",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "protected",
+      "source": "# A\n\n```md\n[x](#nope)\n```\n\n`[x](#nope)`\n\n    [x](#nope)\n",
+      "source_bytes": 56,
+      "source_sha256": "b2edb60bb362f37550cb9239824aeb07a621509864bedc6f82e2af04e6e9480e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": []
+    },
+    {
+      "name": "nested-containers",
+      "source": "> - [x](#nope)\n>\n> # Inside\n>\n> [y](#inside)\n",
+      "source_bytes": 45,
+      "source_sha256": "c1774c76646c7ba884c541703731c1d2a05daac227f78209fe800df909bd0051",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            8,
+            13
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "expected": "#nope",
+          "message": "Fragment target is not defined in this document."
+        }
+      ]
+    },
+    {
+      "name": "heading-link",
+      "source": "# [x](#nope)\n",
+      "source_bytes": 13,
+      "source_sha256": "e6ff14f18bcf4c2daf7d64feff6d3b4cfd0cd41f998a5145bf23c74c564d07c5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            6,
+            11
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "expected": "#nope",
+          "message": "Fragment target is not defined in this document."
+        }
+      ]
+    },
+    {
+      "name": "reference",
+      "source": "[x][r] [y][] [z]\n\n[r]: #nope\n[y]: #a\n[z]: #a\n\n# A\n",
+      "source_bytes": 50,
+      "source_sha256": "7f03d021f7e56ae061a519f54d8bb515edbba3b5276288938659aee815691e42",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "expected": "[x][r]",
+          "message": "Fragment target is not defined in this document."
+        }
+      ]
+    },
+    {
+      "name": "angle-and-escape",
+      "source": "# a_b\n\n[x](<#a_b>) [y](#a\\_b) [z](<#a b>)\n",
+      "source_bytes": 42,
+      "source_sha256": "1aa3736e8b302facbf68bf468350ff5088be47307a55bd182bf4527631f845ab",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            35,
+            39
+          ],
+          "start": [
+            3,
+            29
+          ],
+          "end": [
+            3,
+            33
+          ],
+          "expected": "#a b",
+          "message": "Fragment target is not defined in this document."
+        }
+      ]
+    },
+    {
+      "name": "heading-markup",
+      "source": "# `Code` *em*\n\n[x](#code-em) [y](#code)\n",
+      "source_bytes": 40,
+      "source_sha256": "424fe55d53a05d3f9bb7be69c726f8db40040201a5d60f0f5b49343f56451f3b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            33,
+            38
+          ],
+          "start": [
+            3,
+            19
+          ],
+          "end": [
+            3,
+            24
+          ],
+          "expected": "#code",
+          "message": "Fragment target is not defined in this document."
+        }
+      ]
+    },
+    {
+      "name": "crlf",
+      "source": "# A\r\n\r\n[x](#b)\r\n[y](#a)\r\n",
+      "source_bytes": 25,
+      "source_sha256": "7422f787831822a31e9f741f47d2a4c6b90f88308d8d41ec8f22ca94b263630f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            11,
+            13
+          ],
+          "start": [
+            3,
+            5
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "expected": "#b",
+          "message": "Fragment target is not defined in this document."
+        }
+      ]
+    },
+    {
+      "name": "unicode-columns",
+      "source": "é [x](#é)\n\n# A\n",
+      "source_bytes": 17,
+      "source_sha256": "d8085f03e5be1ee688b27f930fb77d59bc720db6f69d29cc4558c85d9da320c4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "findings": [
+        {
+          "bytes": [
+            7,
+            10
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "#é",
+          "message": "Fragment target is not defined in this document."
+        }
+      ]
+    }
+  ]
+}

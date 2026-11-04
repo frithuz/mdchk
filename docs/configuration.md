@@ -40,6 +40,12 @@ for CommonMark and GFM, enabled by default with `allow_decorative: false`.
 Only explicit empty HTML alt can qualify for the opt-in decorative exemption;
 findings are permanently report-only.
 
+[MD051 unresolved fragment analysis](rules/links-and-images/md051.md) is available
+for CommonMark and GFM, enabled by default with `cross_file: false`. Same-document
+fragments resolve against generated heading IDs (per `resources.anchor_style`) and
+HTML IDs; findings are manual and permanently report-only. Cross-file checks
+report reduced coverage until resource context is wired into the engine.
+
 MD047 terminating-newline analysis, safe previews and apply on the verified Darwin arm64+cgo/local APFS adapter are implemented; MD001 heading-increment analysis and its opt-in `frontmatter_title` setting are also implemented for CommonMark/GFM. MD004 bullet-marker analysis is implemented for both flavors, enabled by default,
 with `marker: consistent` or explicit `asterisk`, `plus` and `dash` choices.
 MD005 sibling-list alignment analysis is implemented for both flavors, enabled by

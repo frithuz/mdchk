@@ -2148,3 +2148,17 @@ after traversing the visible label governs destination eligibility. Unknown
 required provenance withholds the complete inventory; cancellation and cumulative
 limit failures discard every accumulated range. No new parse, source, resource or
 correction authority is granted.
+
+## Fragment link observation
+
+`Document.FragmentLinks` supplies MD051 detached prose Link destinations whose
+already-decoded `Destination.Semantic` contains `#`, under the completed
+production parse, identical source/index/options and original cumulative budget.
+Inline and resolved reference origins participate; autolinks, bare URLs, Images,
+definitions, code and actual raw HTML payload do not. Inline Links report the
+original destination range (including atomic escape/entity spellings); reference
+origins report the whole Link envelope because their destination lives in a
+definition. Raw HTML state after the visible label governs eligibility. Unknown
+required provenance withholds the complete inventory; cancellation and limit
+failures discard every accumulated link. No new parse, source, resource or
+correction authority is granted.
