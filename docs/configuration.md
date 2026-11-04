@@ -43,8 +43,11 @@ findings are permanently report-only.
 [MD051 unresolved fragment analysis](rules/links-and-images/md051.md) is available
 for CommonMark and GFM, enabled by default with `cross_file: false`. Same-document
 fragments resolve against generated heading IDs (per `resources.anchor_style`) and
-HTML IDs; findings are manual and permanently report-only. Cross-file checks
-report reduced coverage until resource context is wired into the engine.
+HTML IDs; findings are manual and permanently report-only. With
+`cross_file: true`, `lint` also resolves other documents through the shared
+read-only resource service (directory links use `resources.index_file` once);
+known-missing documents stay with MD057, and unknown or blocked context reports
+located reduced coverage.
 
 MD047 terminating-newline analysis, safe previews and apply on the verified Darwin arm64+cgo/local APFS adapter are implemented; MD001 heading-increment analysis and its opt-in `frontmatter_title` setting are also implemented for CommonMark/GFM. MD004 bullet-marker analysis is implemented for both flavors, enabled by default,
 with `marker: consistent` or explicit `asterisk`, `plus` and `dash` choices.
@@ -189,7 +192,7 @@ rules:
     cross_file: true
 ```
 
-`resources.index_file` defaults to `index.md`. It is a single nonempty filename, not a path, glob, URL, `.` or `..`; separators, query/fragment delimiters, drive prefixes, and control characters are invalid. The active adapter must be able to represent it. Directory references try exactly that filename once, without fallback or recursive index lookup.
+`resources.index_file` defaults to `index.md`. It is a single nonempty filename, not a path, glob, URL, `.` or `..`; separators, query/fragment delimiters, drive prefixes, and control characters are invalid. The active adapter must be able to represent it. The current CLI does not enable resource index handling, so setting `resources.index_file` there is rejected and directory links always use `index.md`. Directory references try exactly that filename once, without fallback or recursive index lookup.
 
 `resources.anchor_style` is `github` (default) or `explicit`. MD051, MD073, and MD080 share this policy, including anchors in referenced documents. `MD051.cross_file` remains false by default; same-document references are checked independently of that switch.
 

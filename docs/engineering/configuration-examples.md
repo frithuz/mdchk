@@ -136,8 +136,11 @@ findings are permanently report-only.
 [MD051 unresolved fragment analysis](../rules/links-and-images/md051.md) is available
 for CommonMark and GFM, enabled by default with `cross_file: false`. Same-document
 fragments resolve against generated heading IDs (per `resources.anchor_style`) and
-HTML IDs; findings are manual and permanently report-only. Cross-file checks
-report reduced coverage until resource context is wired into the engine.
+HTML IDs; findings are manual and permanently report-only. With
+`cross_file: true`, `lint` also resolves other documents through the shared
+read-only resource service (directory links use `resources.index_file` once);
+known-missing documents stay with MD057, and unknown or blocked context reports
+located reduced coverage.
 
 MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
 independently enabled header recognition. Some ordinary rules remain unavailable,

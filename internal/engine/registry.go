@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/resource"
 )
 
 type FixSupport string
@@ -75,7 +76,10 @@ type RuleOutcome struct {
 	// parser-uncertain coverage. They never establish absence for suppression audit.
 	ParsingProblems  []Finding
 	IncompleteReason string
-	Err              error
+	// Fragments are completed shared resolutions the engine projects with their
+	// source provenance and causes. Report-only; they carry no write authority.
+	Fragments []resource.FragmentResolution
+	Err       error
 }
 
 type registryIdentity struct{ _ byte }

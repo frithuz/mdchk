@@ -13,6 +13,7 @@ import (
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -373,6 +374,39 @@ func TestMD051RuleControls(t *testing.T) {
 					})
 				}
 			}
+		}
+	}
+}
+
+type md051UnavailableResources struct{ calls int }
+
+func (r *md051UnavailableResources) Fragments(context.Context) (*resource.FragmentResolver, resource.View, error) {
+	r.calls++
+	return nil, resource.View{}, errors.New("resource root unavailable")
+}
+
+func TestMD051UnavailableResourceContextReducesCoverage(t *testing.T) {
+	for _, row := range []struct {
+		crossFile bool
+		source    string
+		coverage  int
+		calls     int
+	}{
+		{true, "[x](other.md#a)\n", 1, 1},
+		{false, "[x](other.md#a)\n", 0, 1},
+		{true, "[x](other.md#)\n[y](#)\n[z](https://example.test/#a)\n", 0, 0},
+	} {
+		s := md051Settings()
+		on := true
+		s["MD051"] = engine.RuleSetting{Enabled: &on, Options: engine.Options{"cross_file": row.crossFile}}
+		in, e := engine.NewInput("literal.md", []byte(row.source), s, engine.DocumentContext{Flavor: "gfm"})
+		if e != nil {
+			t.Fatal(e)
+		}
+		provider := &md051UnavailableResources{}
+		out, e := registry(t, Registrations()).Lint(context.Background(), []engine.Input{in}, engine.RunOptions{Fragments: provider})
+		if e != nil || len(out.Coverage) != row.coverage || len(out.Diagnostics)+len(out.Errors) != 0 || provider.calls != row.calls {
+			t.Fatal(out, e, provider.calls)
 		}
 	}
 }

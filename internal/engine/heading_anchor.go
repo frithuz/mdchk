@@ -9,7 +9,12 @@ import (
 	"github.com/frithuz/mdchk/internal/resource"
 )
 
+// resolveAnchorStyle applies the shared resource defaults: anchor style and the
+// directory index filename.
 func (c *DocumentContext) resolveAnchorStyle() error {
+	if c.IndexFile == "" {
+		c.IndexFile = "index.md"
+	}
 	if c.AnchorStyle == "" {
 		c.AnchorStyle = "github"
 	}

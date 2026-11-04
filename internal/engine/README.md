@@ -769,7 +769,11 @@ preserve the same original parse/source/options and cumulative operation authori
 with both caller and originating controls. Prose Link destinations containing a
 fragment marker are classified by the rule; same-document fragments are compared
 exactly, after one percent decode, with the shared original-parse anchor
-occurrences (generated heading IDs plus verified HTML IDs). Distinct documents are
-skipped, or reported as `context-unavailable` when `cross_file` is true, because
-no resource service is available to rules. MD051 is default-enabled, accepts only
+occurrences (generated heading IDs plus verified HTML IDs). Other documents resolve through the
+optional `RunOptions.Fragments` provider (`FragmentResources`), consulted lazily by
+`RuleContext.ResolveFragment` with the rule's `cross_file` option; completed
+`resource.FragmentResolution`s travel on `RuleOutcome.Fragments` and the engine
+projects them through `resource.FragmentReport` (located coverage, attributed
+errors, incomplete targets). Without a provider (inspect/fix views) such links
+are skipped, or reported as `context-unavailable` when `cross_file` is true. MD051 is default-enabled, accepts only
 `cross_file` and permanently retains NoFix metadata.

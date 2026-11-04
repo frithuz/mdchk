@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -19,6 +20,9 @@ type RunOptions struct {
 	Mode       string
 	Budget     *parser.OperationBudget
 	Validation ValidationProviders
+	// Fragments optionally supplies the operation's read-only resource context
+	// for cross-file and normalized self-path fragment checks. Nil means none.
+	Fragments  FragmentResources
 	inspection *InspectionTrace
 	candidate  bool
 	saved      bool
@@ -271,6 +275,9 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			continue
 		}
 		rc := RuleContext{input: in, index: index, document: parsed.Document, budget: budget, operation: ctx, parsed: parsed, directives: directives, syntaxReliable: syntaxReliable}
+		if !options.candidate && !options.saved {
+			rc.fragments = options.Fragments
+		}
 		audit, auditErr := planSuppressionAudit(ctx, r, rc, &projection, snap, &out, options.inspection)
 		if auditErr != nil {
 			if isInterruption(auditErr) {
@@ -425,6 +432,19 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			}
 			outcome := check(ctx, rc)
 			targetComplete := outcome.Err == nil && outcome.IncompleteReason == "" && len(outcome.ParsingProblems) == 0
+			if len(outcome.Fragments) != 0 {
+				var reportErr error
+				out, reportErr = rc.reportFragments(ctx, out, outcome.Fragments)
+				outcome.Err = errors.Join(outcome.Err, reportErr)
+				for _, resolution := range outcome.Fragments {
+					if resolution.Outcome() == resource.FragmentContextUnavailable {
+						targetComplete = false
+					}
+				}
+				if reportErr != nil {
+					targetComplete = false
+				}
+			}
 			// Independent presentation and MD087 evidence have distinct authority.
 			// The callback is shared, but a reporting-funded record is never proof.
 			present := active || observe

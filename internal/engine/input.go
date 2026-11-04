@@ -16,7 +16,9 @@ type DocumentContext struct {
 	Project     string
 	Frontmatter parser.FrontmatterOptions
 	AnchorStyle string
-	Slides      SlideContext
+	// IndexFile is the shared resources.index_file used once for directory links.
+	IndexFile string
+	Slides    SlideContext
 }
 
 // ParseOptions preserves the exact immutable recognition selection for every
@@ -92,6 +94,7 @@ type RuleContext struct {
 	syntaxReliable   bool
 	frontmatterAware bool
 	observational    bool
+	fragments        FragmentResources
 }
 
 // Frontmatter exposes opaque source metadata only to a rule whose catalog

@@ -6,8 +6,9 @@ the strict supplied-input boundary and shared destination normalization. Issue
 adds immutable partial/complete supplied-inventory lookup. Issue #253 adds the
 operation-owned first-observation service and parsed-source cache seam. Issue
 #254 adds the immutable CommonMark/GFM heading and verified HTML ID index.
-Production consumers and coordinated fixes remain downstream. No CLI/MCP resource capability or engine rule
-callback is enabled by these internal APIs.
+CLI `lint` is the first production consumer: MD051 reaches these APIs lazily through
+`engine.RunOptions.Fragments` (internal/cli). Coordinated fixes, MCP and inspect
+remain downstream.
 
 A caller supplies an opaque root identity, immutable parser/index/anchor policy,
 a shared operation context and budget, and explicit selected target snapshots.
