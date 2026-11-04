@@ -7,7 +7,7 @@ Follow the [Go project's commit message conventions](https://go.dev/doc/contribu
 - Start with a short subject in the form `area: summary`, using the primary affected package or project area as the prefix.
 - Write the summary in the imperative, starting with a lowercase word and without a trailing period. For example: `docs: clarify lint configuration`.
 - Separate the subject from the body with a blank line. Explain what changed and why in complete sentences, using plain text wrapped at about 72 columns.
-- Include relevant issue references, such as `Fixes #123` or `Updates #123`, when applicable.
+- Include relevant issue references, such as `Fixes: #123` or `Updates: #123`, when applicable.
 
 ## No co-author trailers
 
