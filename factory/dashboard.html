@@ -295,7 +295,9 @@ const COLUMNS = [
 ]
 const STAGES = new Set(COLUMNS.flatMap((c) => c.stages))
 const LIVE = new Set(['intake', 'spec', 'build', 'gate', 'review', 'approve', 'merging'])
-const SHORT = { code: 'code', ux: 'ux', ui: 'ui', security: 'sec' }
+const SHORT = { code: 'code',
+  'qa-review': 'qa', 'change-impact': 'impact', 'security-review': 'sec', 'fix-review': 'fix',
+  'contract-review': 'contract', 'interface-review': 'iface', 'performance-review': 'perf' }
 
 const $ = (id) => document.getElementById(id)
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
@@ -475,12 +477,14 @@ async function listFiles(dir) {
 }
 
 const ORDER = ['issue.md', 'intake.md', 'spec.md', 'build.md', 'decision.md', 'rejection.md']
-const ROUND_ORDER = ['checks', 'review-code', 'review-security', 'review-ux', 'review-ui', 'merge-checks']
+const ROUND_ORDER = ['checks', 'review-code',
+  'review-qa-review', 'review-change-impact', 'review-security-review', 'review-fix-review',
+  'review-contract-review', 'review-interface-review', 'review-performance-review', 'merge-checks']
 
 function fileRank(path) {
   if (ORDER.includes(path)) return [0, ORDER.indexOf(path), path]
   const round = path.match(/^round-(\d+)\/(.+)\.md$/)
-  if (round) return [2, Number(round[1]) * 10 + ROUND_ORDER.indexOf(round[2]), path]
+  if (round) return [2, Number(round[1]) * 100 + ROUND_ORDER.indexOf(round[2]), path]
   return [1, 0, path] // intake-<k>.md, feedback-<k>.md
 }
 

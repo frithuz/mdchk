@@ -1,0 +1,1 @@
+../../.agents/agents/contract-review/agent.md

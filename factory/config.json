@@ -9,14 +9,21 @@
     "needs_human": "factory:needs-human"
   },
   "routing": {
-    "low":    { "code": "haiku" },
-    "medium": { "code": "sonnet" },
-    "high":   { "code": "sonnet" }
+    "low":    { "code": "haiku",  "qa-review": "haiku" },
+    "medium": { "code": "sonnet", "qa-review": "sonnet" },
+    "high":   { "code": "sonnet", "qa-review": "sonnet", "change-impact": "sonnet" }
   },
   "surface_reviewers": {
-    "ui": { "ux": "sonnet", "ui": "haiku" },
-    "security": { "security": "opus" }
+    "ui": { "interface-review": "sonnet" },
+    "security": { "security-review": "opus" },
+    "fix": { "fix-review": "sonnet" },
+    "contract": { "contract-review": "sonnet", "change-impact": "sonnet" },
+    "perf": { "performance-review": "sonnet" }
   },
+  "specialist_reviewers": [
+    "change-impact", "contract-review", "fix-review", "interface-review",
+    "performance-review", "qa-review", "security-review"
+  ],
   "protected_paths": [
     "factory/checks.sh",
     "factory/config.json"

@@ -82,9 +82,8 @@ Job: <id>. Job folder: <repo>/factory/jobs/<id>/. Main checkout: <repo>. Worktre
 `<header>` below means that line. Keep `Job folder: <path>/` exactly as shown:
 the job's cost is found by that string.
 
-Agents that open pages get ports. With `n` the job number (`004` → 4), the
-builder gets `5100 + 10n`, `reviewer-ux` `5101 + 10n` and `reviewer-ui`
-`5102 + 10n` (`ports` in `config.json`).
+The builder gets a port to open pages. With `n` the job number (`004` → 4), the
+builder gets `5100 + 10n` (`ports` in `config.json`).
 
 Name the builder `builder-<id>`. Resume it with `SendMessage` to that name
 when this session spawned it; otherwise spawn a new `builder` with that name.
@@ -127,9 +126,9 @@ gate's `round-<N-1>/checks.md`, the reviews in `round-<N-1>/`, or
   No reviewer runs on a failing build.
 
 **review.** Spawn every reviewer in `job.json` `agents.reviewers` **in one
-message**, so they run in parallel: `subagent_type` `reviewer-<r>`, model from
-the same map, prompt `<header> Review round <N>.` plus the port for `ux` and
-`ui`. **WAIT FOR ALL.** Each time one finishes, run
+message**, so they run in parallel: `subagent_type` `reviewer-<r>` (or `<r>` itself
+for a lens in `config.json` `specialist_reviewers`), model from
+the same map, prompt `<header> Review round <N>.` **WAIT FOR ALL.** Each time one finishes, run
 `factory/bin/job sync <id>` so the dashboard fills in. When every reviewer has
 finished:
 

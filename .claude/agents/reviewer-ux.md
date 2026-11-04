@@ -1,1 +1,0 @@
-../../.agents/agents/reviewer-ux/agent.md

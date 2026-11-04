@@ -51,15 +51,20 @@ For ACCEPT, rate:
   reporter formats (text, JSON and the others), exit codes or the user docs,
   `security` if it touches file system reads or writes (selection, the
   resource service, `fix` apply), path handling, symlinks, config or
-  frontmatter decoding, resource limits, or the HTTP/MCP transport. Both, or
-  `none`.
+  frontmatter decoding, resource limits, or the HTTP/MCP transport,
+  `fix` if it changes what an automatic correction writes or how corrections
+  compose, converge or are saved, `contract` if it changes a rule's
+  definition, the config schema, a public interface or an engineering
+  contract that other code or docs depend on, `perf` if it touches the parser,
+  rule execution or file I/O on a path that runs per document or per line.
+  Any combination, or `none`.
 
 ## Write intake.md
 
 ```markdown
 DECISION: ACCEPT | NEEDS-INFO | REJECT
 RISK: low | medium | high
-SURFACES: ui, security | ui | security | none
+SURFACES: comma-separated from ui, security, fix, contract, perf | none
 RESCOPED: yes | no
 
 ## Summary
