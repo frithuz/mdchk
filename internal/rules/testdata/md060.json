@@ -1,0 +1,2015 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary prose | with a pipe\n",
+      "source_bytes": 29,
+      "source_sha256": "349352b21b1f54af7034a63af69dc3608f7cae8e596b48993b79353994d30e0e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "spec-example",
+      "source": "| A| B |\n|---|---|\n|1|2|\n",
+      "source_bytes": 25,
+      "source_sha256": "aa13558e2124f83973836525abca28004be5ae76a105aac2ca9295bc7fad67f5",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            3
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            4,
+            7
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            10,
+            13
+          ],
+          "start": [
+            2,
+            2
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            14,
+            17
+          ],
+          "start": [
+            2,
+            6
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            20,
+            21
+          ],
+          "start": [
+            3,
+            2
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            22,
+            23
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        }
+      ]
+    },
+    {
+      "name": "spec-example-crlf",
+      "source": "| A| B |\r\n|---|---|\r\n|1|2|\r\n",
+      "source_bytes": 28,
+      "source_sha256": "57bb3bb2fd16dc76184071ffd3d7a999b02b018fdd10134d9e086ba040dcd9a5",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            3
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            4,
+            7
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            11,
+            14
+          ],
+          "start": [
+            2,
+            2
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            15,
+            18
+          ],
+          "start": [
+            2,
+            6
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            22,
+            23
+          ],
+          "start": [
+            3,
+            2
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            24,
+            25
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        }
+      ]
+    },
+    {
+      "name": "spec-example-aligned",
+      "source": "| A| B |\n|---|---|\n|1|2|\n",
+      "source_bytes": 25,
+      "source_sha256": "aa13558e2124f83973836525abca28004be5ae76a105aac2ca9295bc7fad67f5",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "aligned"
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            3
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            4,
+            7
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            10,
+            13
+          ],
+          "start": [
+            2,
+            2
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            14,
+            17
+          ],
+          "start": [
+            2,
+            6
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            20,
+            21
+          ],
+          "start": [
+            3,
+            2
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            22,
+            23
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        }
+      ]
+    },
+    {
+      "name": "spec-example-compact",
+      "source": "| A| B |\n|---|---|\n|1|2|\n",
+      "source_bytes": 25,
+      "source_sha256": "aa13558e2124f83973836525abca28004be5ae76a105aac2ca9295bc7fad67f5",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "compact"
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            3
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "message": "Cell padding does not match the compact style."
+        },
+        {
+          "bytes": [
+            10,
+            13
+          ],
+          "start": [
+            2,
+            2
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "message": "Cell padding does not match the compact style."
+        },
+        {
+          "bytes": [
+            14,
+            17
+          ],
+          "start": [
+            2,
+            6
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "message": "Cell padding does not match the compact style."
+        },
+        {
+          "bytes": [
+            20,
+            21
+          ],
+          "start": [
+            3,
+            2
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "message": "Cell padding does not match the compact style."
+        },
+        {
+          "bytes": [
+            22,
+            23
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "message": "Cell padding does not match the compact style."
+        }
+      ]
+    },
+    {
+      "name": "spec-example-tight",
+      "source": "| A| B |\n|---|---|\n|1|2|\n",
+      "source_bytes": 25,
+      "source_sha256": "aa13558e2124f83973836525abca28004be5ae76a105aac2ca9295bc7fad67f5",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "tight"
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            3
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "message": "Cell padding does not match the tight style."
+        },
+        {
+          "bytes": [
+            4,
+            7
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Cell padding does not match the tight style."
+        }
+      ]
+    },
+    {
+      "name": "spec-accepted",
+      "source": "| A   | B   |\n| --- | --- |\n| 1   | 2   |\n",
+      "source_bytes": 42,
+      "source_sha256": "02a0eb810c093843f9efa23083d861584c9e9715d2940a4be72aa6ccfbc1229c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "spec-accepted-compact",
+      "source": "| A   | B   |\n| --- | --- |\n| 1   | 2   |\n",
+      "source_bytes": 42,
+      "source_sha256": "02a0eb810c093843f9efa23083d861584c9e9715d2940a4be72aa6ccfbc1229c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "compact"
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            6
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "message": "Cell padding does not match the compact style."
+        },
+        {
+          "bytes": [
+            7,
+            12
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "message": "Cell padding does not match the compact style."
+        },
+        {
+          "bytes": [
+            29,
+            34
+          ],
+          "start": [
+            3,
+            2
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "message": "Cell padding does not match the compact style."
+        },
+        {
+          "bytes": [
+            35,
+            40
+          ],
+          "start": [
+            3,
+            8
+          ],
+          "end": [
+            3,
+            13
+          ],
+          "message": "Cell padding does not match the compact style."
+        }
+      ]
+    },
+    {
+      "name": "spec-accepted-tight",
+      "source": "| A   | B   |\n| --- | --- |\n| 1   | 2   |\n",
+      "source_bytes": 42,
+      "source_sha256": "02a0eb810c093843f9efa23083d861584c9e9715d2940a4be72aa6ccfbc1229c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "tight"
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            6
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "message": "Cell padding does not match the tight style."
+        },
+        {
+          "bytes": [
+            7,
+            12
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "message": "Cell padding does not match the tight style."
+        },
+        {
+          "bytes": [
+            15,
+            20
+          ],
+          "start": [
+            2,
+            2
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "message": "Cell padding does not match the tight style."
+        },
+        {
+          "bytes": [
+            21,
+            26
+          ],
+          "start": [
+            2,
+            8
+          ],
+          "end": [
+            2,
+            13
+          ],
+          "message": "Cell padding does not match the tight style."
+        },
+        {
+          "bytes": [
+            29,
+            34
+          ],
+          "start": [
+            3,
+            2
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "message": "Cell padding does not match the tight style."
+        },
+        {
+          "bytes": [
+            35,
+            40
+          ],
+          "start": [
+            3,
+            8
+          ],
+          "end": [
+            3,
+            13
+          ],
+          "message": "Cell padding does not match the tight style."
+        }
+      ]
+    },
+    {
+      "name": "compact-accepted",
+      "source": "| A | B |\n| --- | --- |\n| 1 | 2 |\n",
+      "source_bytes": 34,
+      "source_sha256": "2a1ca4dc2c54e5a9908168c29774bf9aa5c984828af3d969c1e763b4901fdf8f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "compact"
+      },
+      "findings": []
+    },
+    {
+      "name": "compact-extra-space",
+      "source": "| A  | B |\n| --- | --- |\n| 1 | 2 |\n",
+      "source_bytes": 35,
+      "source_sha256": "b6958d2f81f7ec9a8e8e8399455673a22b4b6719a0d079cd559cd87ec9a0ed2b",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "compact"
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            5
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Cell padding does not match the compact style."
+        }
+      ]
+    },
+    {
+      "name": "tight-accepted",
+      "source": "|A|B|\n|---|---|\n|1|2|\n",
+      "source_bytes": 22,
+      "source_sha256": "c5797d588b830f6cbc4d957b60a296516241d0d3d3b631be10eb1e1ac0b9d366",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "tight"
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-cells-aligned",
+      "source": "| A | B |\n| - | - |\n|   ||\n",
+      "source_bytes": 27,
+      "source_sha256": "a3702caa49e38f434db1514132e273332b71b5633a669a0bfc2c5eefc1868d85",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "aligned"
+      },
+      "findings": [
+        {
+          "bytes": [
+            25,
+            25
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 1."
+        }
+      ]
+    },
+    {
+      "name": "empty-cells-aligned-crlf",
+      "source": "| A | B |\r\n| - | - |\r\n|   ||\r\n",
+      "source_bytes": 30,
+      "source_sha256": "e135dfb244760bf97ec898f220f0c2bf6043d70068065e301737d69ab855d428",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "aligned"
+      },
+      "findings": [
+        {
+          "bytes": [
+            27,
+            27
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 1."
+        }
+      ]
+    },
+    {
+      "name": "empty-cells-compact",
+      "source": "| A | B |\n| - | - |\n| | |\n|| |\n|  | |\n",
+      "source_bytes": 38,
+      "source_sha256": "6d0a47ed2d09600dd52ba0862905f2ce474158c80671499a1697419e7a4de896",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "compact"
+      },
+      "findings": [
+        {
+          "bytes": [
+            27,
+            27
+          ],
+          "start": [
+            4,
+            2
+          ],
+          "end": [
+            4,
+            2
+          ],
+          "message": "Cell padding does not match the compact style."
+        },
+        {
+          "bytes": [
+            32,
+            34
+          ],
+          "start": [
+            5,
+            2
+          ],
+          "end": [
+            5,
+            4
+          ],
+          "message": "Cell padding does not match the compact style."
+        }
+      ]
+    },
+    {
+      "name": "empty-cells-tight",
+      "source": "|A|B|\n|-|-|\n|||\n| | |\n",
+      "source_bytes": 22,
+      "source_sha256": "f05854e2364caab999d008037075b42241256abe0bf281357b2bc9fa76d2b78c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "tight"
+      },
+      "findings": [
+        {
+          "bytes": [
+            17,
+            18
+          ],
+          "start": [
+            4,
+            2
+          ],
+          "end": [
+            4,
+            3
+          ],
+          "message": "Cell padding does not match the tight style."
+        },
+        {
+          "bytes": [
+            19,
+            20
+          ],
+          "start": [
+            4,
+            4
+          ],
+          "end": [
+            4,
+            5
+          ],
+          "message": "Cell padding does not match the tight style."
+        }
+      ]
+    },
+    {
+      "name": "no-outer-pipes",
+      "source": "A   | B\n--- | ---\n1   | 2\n",
+      "source_bytes": 26,
+      "source_sha256": "ee9dc2a118961175131412cbebaed9dd7029a9114d29235978b5bc4700a14338",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "no-outer-pipes-misaligned",
+      "source": "A | B\n--- | ---\n1 |  2\n",
+      "source_bytes": 23,
+      "source_sha256": "9b52402eb10cfa46cea8b23e5df5e16ff7f943babdc83f4877a164bfbee8509c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            2
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            16,
+            18
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            19,
+            22
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        }
+      ]
+    },
+    {
+      "name": "no-outer-pipes-misaligned-crlf",
+      "source": "A | B\r\n--- | ---\r\n1 |  2\r\n",
+      "source_bytes": 26,
+      "source_sha256": "32651f03d5205a79f45e5767dc47d9fabe112cce9566fab80a2f9ee099f45e5f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            2
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            18,
+            20
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            21,
+            24
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        }
+      ]
+    },
+    {
+      "name": "no-outer-pipes-tight",
+      "source": "A|B\n-|-\n1 |2\n",
+      "source_bytes": 13,
+      "source_sha256": "458ca42a118dc98616f6aba2acb0bc7e1046db4a67dbe8a0066ba50b91002daa",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "tight"
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            10
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "message": "Cell padding does not match the tight style."
+        }
+      ]
+    },
+    {
+      "name": "leading-only",
+      "source": "| A   | B\n| --- | ---\n| 1 |  2\n",
+      "source_bytes": 31,
+      "source_sha256": "c1c1e49e3f7025172c053559934f9ff7a41121c64f32c48751e12f79150a57d1",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            3,
+            2
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            27,
+            30
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            9
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        }
+      ]
+    },
+    {
+      "name": "trailing-only",
+      "source": "A   | B   |\n--- | --- |\n1   | 2 |\n",
+      "source_bytes": 34,
+      "source_sha256": "e839b2dd39f03e473b68816d2ac635b570f2f6d4ea1d27678ba0c1f7aed3093f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            29,
+            32
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            9
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        }
+      ]
+    },
+    {
+      "name": "trailing-only-compact",
+      "source": "A   | B   |\n--- | --- |\n1   | 2 |\n",
+      "source_bytes": 34,
+      "source_sha256": "e839b2dd39f03e473b68816d2ac635b570f2f6d4ea1d27678ba0c1f7aed3093f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "compact"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "message": "Cell padding does not match the compact style."
+        },
+        {
+          "bytes": [
+            5,
+            10
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "message": "Cell padding does not match the compact style."
+        },
+        {
+          "bytes": [
+            24,
+            28
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "message": "Cell padding does not match the compact style."
+        }
+      ]
+    },
+    {
+      "name": "escaped-pipe",
+      "source": "| A    | B      |\n| ---- | ------ |\n| a\\|b | `c\\|d` |\n",
+      "source_bytes": 54,
+      "source_sha256": "852e8dd7585305e8a950117c56aad75043f378f537aa3553721203ccdc15f4da",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped-pipe-width",
+      "source": "| A | B |\n| --- | --- |\n| a\\|b | `c\\|d` |\n",
+      "source_bytes": 42,
+      "source_sha256": "6b7b2e13459bea1136b44f4d32ac7d49909cf829facb81f9f9a9d08fc1419265",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 4."
+        },
+        {
+          "bytes": [
+            5,
+            8
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 6."
+        },
+        {
+          "bytes": [
+            11,
+            16
+          ],
+          "start": [
+            2,
+            2
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 4."
+        },
+        {
+          "bytes": [
+            17,
+            22
+          ],
+          "start": [
+            2,
+            8
+          ],
+          "end": [
+            2,
+            13
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 6."
+        }
+      ]
+    },
+    {
+      "name": "code-span-pipe",
+      "source": "| A | B |\n| --- | --- |\n| `a|b` | c |\n",
+      "source_bytes": 38,
+      "source_sha256": "2a3d17d245d5009bdd8c2ee139e7ea5d0c85539cd1b3f6244c465e982ab5973a",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            5,
+            8
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            25,
+            28
+          ],
+          "start": [
+            3,
+            2
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            29,
+            32
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            9
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        }
+      ]
+    },
+    {
+      "name": "multibyte",
+      "source": "| é   | B  |\n| --- | - |\n| abc | 中  |\n",
+      "source_bytes": 41,
+      "source_sha256": "4a027b735b7f309cf5844eb83ed0c30009d4e578efaaf3640edc9eaefb23bdfc",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            12
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 1."
+        },
+        {
+          "bytes": [
+            33,
+            39
+          ],
+          "start": [
+            3,
+            8
+          ],
+          "end": [
+            3,
+            12
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 1."
+        }
+      ]
+    },
+    {
+      "name": "multibyte-crlf",
+      "source": "| é   | B  |\r\n| --- | - |\r\n| abc | 中  |\r\n",
+      "source_bytes": 44,
+      "source_sha256": "3e8e11f73accd1e23868834f713b92c3ed37e26938f8671c7258495ea52cd215",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            12
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 1."
+        },
+        {
+          "bytes": [
+            35,
+            41
+          ],
+          "start": [
+            3,
+            8
+          ],
+          "end": [
+            3,
+            12
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 1."
+        }
+      ]
+    },
+    {
+      "name": "multibyte-accepted",
+      "source": "| é   | B |\n| --- | - |\n| abc | 中 |\n",
+      "source_bytes": 39,
+      "source_sha256": "4328dd525f21c68fa2f0e4893cadbcca5d1f63fab1014327c37b3c69ce485c02",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "unequal-body-widths",
+      "source": "| A | B |\n| - | - |\n| longer | x |\n| y | z |\n",
+      "source_bytes": 45,
+      "source_sha256": "d3c554040d21f9dd39a7f28e757b9c8c42fefcc8cbb43c4468b93066339fabb9",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 6."
+        },
+        {
+          "bytes": [
+            11,
+            14
+          ],
+          "start": [
+            2,
+            2
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 6."
+        },
+        {
+          "bytes": [
+            36,
+            39
+          ],
+          "start": [
+            4,
+            2
+          ],
+          "end": [
+            4,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 6."
+        }
+      ]
+    },
+    {
+      "name": "excess-and-missing-cells",
+      "source": "| A | B |\n| - | - |\n| 1 | 2 |  3 |\n| 4  |\n",
+      "source_bytes": 42,
+      "source_sha256": "148868a0f4507ba267040f3b8860e458034451cf3e4ac6b8d4617d1481918e8f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            29,
+            33
+          ],
+          "start": [
+            3,
+            10
+          ],
+          "end": [
+            3,
+            14
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 1."
+        },
+        {
+          "bytes": [
+            36,
+            40
+          ],
+          "start": [
+            4,
+            2
+          ],
+          "end": [
+            4,
+            6
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 1."
+        }
+      ]
+    },
+    {
+      "name": "short-row-accepted",
+      "source": "| A | B |\n| - | - |\n| 1 | 2 | 3 |\n| 4 |\n",
+      "source_bytes": 40,
+      "source_sha256": "65ae0c36b604d8b2ae6e118d2cbebca1cc0cdcc694ea96b91a547c032b0bd953",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "tab-padding",
+      "source": "| A\t| B |\n| - | - |\n",
+      "source_bytes": 20,
+      "source_sha256": "05530937c30f554410bee1608a8a4140660475ae4257a9ed2be095099bd8ba7e",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 1."
+        }
+      ]
+    },
+    {
+      "name": "tab-padding-compact",
+      "source": "|\tA | B |\n| - | - |\n",
+      "source_bytes": 20,
+      "source_sha256": "df16b9db0c1f8cfa933a6296ac3f821058806fd4f1534b678f1cc97149e6404d",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "compact"
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "message": "Cell padding does not match the compact style."
+        }
+      ]
+    },
+    {
+      "name": "right-and-center",
+      "source": "|   A |  B  |\n| --: | :-: |\n|   1 |  2  |\n",
+      "source_bytes": 42,
+      "source_sha256": "8378d7f4eb1af5330f2119101571ca705b3b31ce245f651c6c5abdb7fafb662f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "block-quote",
+      "source": "> | A| B |\n> |---|---|\n> |1|2|\n",
+      "source_bytes": 31,
+      "source_sha256": "ff0bff5787f34bcc1e814d1284bb94f63aac11a0e83cdb87618b1541699c4f1f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            5
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            6,
+            9
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            14,
+            17
+          ],
+          "start": [
+            2,
+            4
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            18,
+            21
+          ],
+          "start": [
+            2,
+            8
+          ],
+          "end": [
+            2,
+            11
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            26,
+            27
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            28,
+            29
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        }
+      ]
+    },
+    {
+      "name": "block-quote-crlf",
+      "source": "> | A| B |\r\n> |---|---|\r\n> |1|2|\r\n",
+      "source_bytes": 34,
+      "source_sha256": "376315742372dca791e9963b8e0a1c18ebef9978433ddb31256aa63fedc2a6fe",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            5
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            6,
+            9
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            15,
+            18
+          ],
+          "start": [
+            2,
+            4
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            19,
+            22
+          ],
+          "start": [
+            2,
+            8
+          ],
+          "end": [
+            2,
+            11
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            28,
+            29
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        },
+        {
+          "bytes": [
+            30,
+            31
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 3."
+        }
+      ]
+    },
+    {
+      "name": "list-item",
+      "source": "- | A | B |\n  | - | -- |\n",
+      "source_bytes": 25,
+      "source_sha256": "54a1597b300a079ac2e8288d8d48948295217acbea0020e57b2fe06f535cf613",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            7,
+            10
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 2."
+        }
+      ]
+    },
+    {
+      "name": "fenced-code",
+      "source": "```\n| A| B |\n|---|---|\n```\n",
+      "source_bytes": 27,
+      "source_sha256": "a5ba2a95f38f35fd1f37fe8c4d3b29e8b7b2031be5c78120c3bd008384b9fa93",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "indented-code",
+      "source": "    | A| B |\n    |---|---|\n",
+      "source_bytes": 27,
+      "source_sha256": "7007c4f6894e909e9bde4923c8e9b376857532ee7f4ffe22b3ae9ef169bcced9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "html-block",
+      "source": "<div>\n| A| B |\n|---|---|\n</div>\n",
+      "source_bytes": 32,
+      "source_sha256": "e3abcbdfe03640eab7331142a0b65c1c9b83c72968de3a8653faffad7bccf2c0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "no-delimiter-row",
+      "source": "| A| B |\n|1|2|\n",
+      "source_bytes": 15,
+      "source_sha256": "b006409c133c3b62012478fa7c43d3c9d3b1308a3a05ef18cb65c69fb55215ad",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "multiple-tables",
+      "source": "| A | B |\n| - | - |\n\n| Long | B |\n| - | - |\n",
+      "source_bytes": 44,
+      "source_sha256": "7c968a218ca39fa4aa4373a71b7a35b6dc57ff3add64b13232da62ce60fbc789",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            35,
+            38
+          ],
+          "start": [
+            5,
+            2
+          ],
+          "end": [
+            5,
+            5
+          ],
+          "message": "Cell padding does not match the aligned style; column width is 4."
+        }
+      ]
+    },
+    {
+      "name": "commonmark-table",
+      "source": "| A| B |\n|---|---|\n|1|2|\n",
+      "source_bytes": 25,
+      "source_sha256": "aa13558e2124f83973836525abca28004be5ae76a105aac2ca9295bc7fad67f5",
+      "flavors": [
+        "commonmark"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "disabled",
+      "source": "| A| B |\n|---|---|\n|1|2|\n",
+      "source_bytes": 25,
+      "source_sha256": "aa13558e2124f83973836525abca28004be5ae76a105aac2ca9295bc7fad67f5",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "unknown-style",
+      "yaml": "MD060: {style: wide}"
+    },
+    {
+      "name": "numeric-style",
+      "yaml": "MD060: {style: 1}"
+    },
+    {
+      "name": "unknown-option",
+      "yaml": "MD060: {styles: aligned}"
+    },
+    {
+      "name": "null-style",
+      "yaml": "MD060: {style: null}"
+    },
+    {
+      "name": "sequence-style",
+      "yaml": "MD060: {style: [aligned]}"
+    },
+    {
+      "name": "enabled-string",
+      "yaml": "MD060: {enabled: \"yes\"}"
+    },
+    {
+      "name": "allow-directives-string",
+      "yaml": "MD060: {allow_directives: \"false\"}"
+    },
+    {
+      "name": "scalar-rule",
+      "yaml": "MD060: true"
+    },
+    {
+      "name": "sequence-rule",
+      "yaml": "MD060: []"
+    },
+    {
+      "name": "duplicate-setting",
+      "yaml": "MD060: {style: tight, style: tight}"
+    }
+  ]
+}
