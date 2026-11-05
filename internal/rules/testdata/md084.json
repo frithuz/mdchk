@@ -1,0 +1,1175 @@
+{
+  "authority": "Hand-specified oracle for MD084; expected scalars marked by hand, positions in Unicode scalars.",
+  "cases": [
+    {
+      "id": "doc-violating",
+      "source": "word\u200bword",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            7
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "doc-accepted",
+      "source": "wordword",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "u200b",
+      "source": "a\u200bb",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "u202a",
+      "source": "a\u202ab",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "\u202a",
+          "message": "Hidden or discouraged Unicode character U+202A."
+        }
+      ]
+    },
+    {
+      "id": "u202b",
+      "source": "a\u202bb",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "\u202b",
+          "message": "Hidden or discouraged Unicode character U+202B."
+        }
+      ]
+    },
+    {
+      "id": "u202c",
+      "source": "a\u202cb",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "\u202c",
+          "message": "Hidden or discouraged Unicode character U+202C."
+        }
+      ]
+    },
+    {
+      "id": "u202d",
+      "source": "a\u202db",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "\u202d",
+          "message": "Hidden or discouraged Unicode character U+202D."
+        }
+      ]
+    },
+    {
+      "id": "u202e",
+      "source": "a\u202eb",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "\u202e",
+          "message": "Hidden or discouraged Unicode character U+202E."
+        }
+      ]
+    },
+    {
+      "id": "body-feff",
+      "source": "a\ufeffb",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "\ufeff",
+          "message": "Hidden or discouraged Unicode character U+FEFF."
+        }
+      ]
+    },
+    {
+      "id": "leading-feff",
+      "source": "\ufeffword",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "leading-feff-only",
+      "source": "\ufeff",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "leading-and-body-feff",
+      "source": "\ufeffa\ufeffb",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            7
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "text": "\ufeff",
+          "message": "Hidden or discouraged Unicode character U+FEFF."
+        }
+      ]
+    },
+    {
+      "id": "leading-feff-frontmatter",
+      "source": "\ufeff---\ntitle: x\n---\na\ufeffb",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": true,
+      "findings": [
+        {
+          "bytes": [
+            21,
+            24
+          ],
+          "start": [
+            4,
+            2
+          ],
+          "end": [
+            4,
+            3
+          ],
+          "text": "\ufeff",
+          "message": "Hidden or discouraged Unicode character U+FEFF."
+        }
+      ]
+    },
+    {
+      "id": "adjacent",
+      "source": "a\u200b\u202eb",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        },
+        {
+          "bytes": [
+            4,
+            7
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "text": "\u202e",
+          "message": "Hidden or discouraged Unicode character U+202E."
+        }
+      ]
+    },
+    {
+      "id": "only-hidden",
+      "source": "\u200b",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            2
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "joiners-and-word-joiner",
+      "source": "a\u200cb\u200dc\u2060d",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "allowed-lower",
+      "source": "a\u200bb",
+      "allowed_codepoints": [
+        "200b"
+      ],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "allowed-upper",
+      "source": "a\u200bb",
+      "allowed_codepoints": [
+        "200B"
+      ],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "allowed-leading-zeros",
+      "source": "a\ufeffb",
+      "allowed_codepoints": [
+        "00FEFF"
+      ],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "allowed-one-not-other",
+      "source": "a\u200bb\u202ec",
+      "allowed_codepoints": [
+        "200b"
+      ],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            5,
+            8
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "text": "\u202e",
+          "message": "Hidden or discouraged Unicode character U+202E."
+        }
+      ]
+    },
+    {
+      "id": "allowed-outside-set",
+      "source": "a\u200bb\u200dc",
+      "allowed_codepoints": [
+        "200d"
+      ],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "code-span",
+      "source": "`a\u200bb` c\u200bd",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            9,
+            12
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "fenced-code",
+      "source": "```\na\u200bb\n```",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "tilde-fenced-code",
+      "source": "~~~ x\u200by\na\u200bb\n~~~",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "indented-code",
+      "source": "    a\u200bb",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "html-block",
+      "source": "<div>\na\u200bb\n</div>",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "inline-html",
+      "source": "a <span title=\"x\u200by\">b\u200bc</span>",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            23,
+            26
+          ],
+          "start": [
+            1,
+            22
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "html-comment",
+      "source": "a <!-- x\u200by --> b",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "angle-autolink",
+      "source": "<https://example.com/a\u200bb> c\u200bd",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            29,
+            32
+          ],
+          "start": [
+            1,
+            28
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "bare-gfm-link",
+      "source": "see https://example.com/a\u200bb now",
+      "allowed_codepoints": [],
+      "flavors": [
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "link-destination-and-title",
+      "source": "[a\u200bb](https://x\u200by \"t\u200bu\")",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "reference-definition",
+      "source": "[a]\n\n[a]: https://x\u200by \"t\u200bu\"",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "frontmatter",
+      "source": "---\ntitle: a\u200bb\n---\nc\u200bd",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": true,
+      "findings": [
+        {
+          "bytes": [
+            22,
+            25
+          ],
+          "start": [
+            4,
+            2
+          ],
+          "end": [
+            4,
+            3
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "heading-atx",
+      "source": "# a\u200bb",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            3,
+            6
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "heading-setext",
+      "source": "a\u202eb\n===",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "\u202e",
+          "message": "Hidden or discouraged Unicode character U+202E."
+        }
+      ]
+    },
+    {
+      "id": "table-cell",
+      "source": "| a\u200bb | c |\n| --- | --- |\n| d | e\u202ef |",
+      "allowed_codepoints": [],
+      "flavors": [
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            3,
+            6
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        },
+        {
+          "bytes": [
+            35,
+            38
+          ],
+          "start": [
+            3,
+            8
+          ],
+          "end": [
+            3,
+            9
+          ],
+          "text": "\u202e",
+          "message": "Hidden or discouraged Unicode character U+202E."
+        }
+      ]
+    },
+    {
+      "id": "link-label",
+      "source": "[a\u200bb](x)",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            5
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "image-alternative",
+      "source": "![a\u200bb](x.png)",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            3,
+            6
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "list-item",
+      "source": "- item\u200b",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            6,
+            9
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "block-quote",
+      "source": "> quote\u202e",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            7,
+            10
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "text": "\u202e",
+          "message": "Hidden or discouraged Unicode character U+202E."
+        }
+      ]
+    },
+    {
+      "id": "nested-quote-list",
+      "source": "> - a\u200bb",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            5,
+            8
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "multi-line-lf",
+      "source": "a\nb\u200bc",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            3,
+            6
+          ],
+          "start": [
+            2,
+            2
+          ],
+          "end": [
+            2,
+            3
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "multi-line-crlf",
+      "source": "a\r\nb\u200bc",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            7
+          ],
+          "start": [
+            2,
+            2
+          ],
+          "end": [
+            2,
+            3
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "multi-line-cr",
+      "source": "a\rb\u200bc",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            3,
+            6
+          ],
+          "start": [
+            2,
+            2
+          ],
+          "end": [
+            2,
+            3
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "entity-hex",
+      "source": "a&#x200B;b",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "entity-decimal",
+      "source": "a&#8203;b",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "entity-beside-literal",
+      "source": "a&#x200B;\u200bb",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            9,
+            12
+          ],
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "non-bmp-neighbor",
+      "source": "\ud83d\ude00\u200b\ud83d\ude00",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            7
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "directives",
+      "source": "a\u200bb\n\n<!-- mdchk:disable MD084 -->\nc\u200bd\n\n<!-- mdchk:enable MD084 -->\ne\u200bf",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "allow_directives": true,
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        },
+        {
+          "bytes": [
+            72,
+            75
+          ],
+          "start": [
+            7,
+            2
+          ],
+          "end": [
+            7,
+            3
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    },
+    {
+      "id": "directives-denied",
+      "source": "a\u200bb\n\n<!-- mdchk:disable MD084 -->\nc\u200bd\n\n<!-- mdchk:enable MD084 -->\ne\u200bf",
+      "allowed_codepoints": [],
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "allow_directives": false,
+      "findings": [
+        {
+          "bytes": [
+            1,
+            4
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            3
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        },
+        {
+          "bytes": [
+            37,
+            40
+          ],
+          "start": [
+            4,
+            2
+          ],
+          "end": [
+            4,
+            3
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        },
+        {
+          "bytes": [
+            72,
+            75
+          ],
+          "start": [
+            7,
+            2
+          ],
+          "end": [
+            7,
+            3
+          ],
+          "text": "\u200b",
+          "message": "Hidden or discouraged Unicode character U+200B."
+        }
+      ]
+    }
+  ]
+}
