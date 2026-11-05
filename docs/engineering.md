@@ -343,7 +343,8 @@ GFM, disabled by default and permanently report-only, with no edits or previews.
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001, MD025 and MD041 opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
-MD072 remains independently unavailable. MD001, MD025 and MD041 are report-only;
+MD072 consumes ordering policy through the engine, report-only, with header findings
+permitted by `UsesFrontmatter` and no correction authority. MD001, MD025 and MD041 are report-only;
 their title access grants no header findings or corrections. Broader metadata
 inspection, consumer and correction integration remain separate deliveries.
 Omitted flavor configuration selects built-in GFM through the same whole-profile

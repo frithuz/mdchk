@@ -81,9 +81,10 @@ policy and has no rule-specific options; MD018 through MD021 and MD023 have no
 rule-specific options; MD025 and MD041 accept integer `level` from 1 through 6 (default
 1) and boolean `frontmatter_title` (default false); MD024 accepts boolean
 `siblings_only`, default false; MD022 accepts nonnegative integer `before` and `after`
-minima, each defaulting to 1. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009,
+minima, each defaulting to 1; MD072 accepts boolean `recursive` (default false) and
+`case_sensitive` (default true). MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009,
 MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043,
-MD063, MD080, MD082, MD090, MD081, MD088, MD033, MD086, MD087 and MD093 are report-only.
+MD063, MD072, MD080, MD082, MD090, MD081, MD088, MD033, MD086, MD087 and MD093 are report-only.
 Rules marked unavailable in the linked inventory remain pending. Missing enabled
 defaults produce coverage deficits rather than clean results; valid UTF-8 with all ordinary rules disabled can return clean
 `0`. See [initial capability handling](#initial-capability-handling) for how development
@@ -209,7 +210,8 @@ Availability: independently enabled YAML/TOML frontmatter recognition is impleme
 in shared lint, inspection and fix processing. Headers remain protected from
 ordinary Markdown checks and directives. MD001, MD025 and MD041 support semantic YAML/TOML title
 consumption when their `frontmatter_title` options is enabled; recognition must be
-enabled independently. Broader metadata-rule and structured inspection integration
+enabled independently. MD072 consumes YAML/TOML key ordering and reports inside the
+recognized header; without recognition it has nothing to check. Broader metadata-rule and structured inspection integration
 remain pending. Explicit slide annotation is implemented in lint, fix candidate
 analysis and inspection; MD090 consumes it without enabling itself. MkDocs rule
 consumers remain pending; explicitly enabling unavailable context returns `12`.
