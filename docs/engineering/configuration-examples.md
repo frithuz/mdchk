@@ -148,7 +148,7 @@ as recorded in the linked inventory. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
 as `rule-unavailable`, sets `status: incomplete` and `complete: false`, and exits
 15. The complete 87-rule catalog remains intact: MD001 is default-enabled and
-executes along with MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD027, MD028, MD064, MD011, MD034, MD039, MD042, MD045, MD051, MD052 and MD062, while unavailable default-enabled MD053 contributes
+executes along with MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD027, MD028, MD064, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053 and MD062, while unavailable default-enabled MD071 contributes
 coverage. MD013 is available but default-disabled and does not incur a coverage penalty. Explicitly enabling
 an unavailable rule instead fails configuration admission with exit 12 before
 target processing. Text and JSON retain the same coverage and outcome.
