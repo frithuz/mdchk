@@ -340,6 +340,11 @@ assembly uses the complete catalog with real MD001, MD003, MD004, MD005, MD007, 
 [MD081 paragraph-emphasis analysis](rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.
 
+[MD073 table of contents analysis](rules/content-and-navigation/md073.md) is available
+for CommonMark and GFM, disabled by default and report-only, with no edits or previews.
+It consumes the shared heading anchors through the engine; TOC fixes remain a separate
+delivery.
+
 It admits CommonMark, GFM, shared directive processing and optional YAML/TOML
 header recognition. Metadata interpretation supports MD001, MD025 and MD041 opt-in
 `frontmatter_title` consumer under the original engine-owned document and budget;
