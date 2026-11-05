@@ -100,12 +100,12 @@ the coordinates, and build-wide records leave the path field empty rather than
 inventing a source position. For example:
 
 ```text
-coverage  MD071 rule-unavailable: No executable implementation is registered.
+coverage  MD066 rule-unavailable: No executable implementation is registered.
 coverage docs/guide.md:2:4 MD057 context-unavailable: Required context is unavailable.
 ```
 
-The initial lint CLI returns `15` with zero findings when default-enabled
-implementations are missing. Available findings and coverage remain in both
+Lint returns `15` with zero findings when an enabled rule's implementation is
+missing. Available findings and coverage remain in both
 text and JSON when file I/O (`13`) or internal execution (`14`) errors override
 that outcome. Results remain on stdout; a nonzero exit, including `15`, must
 fail a CI check.
@@ -127,10 +127,9 @@ checkout/workspace root. Copy the [example configuration](examples/editor-ci/.md
 to `.mdchk.yaml` there. It selects CommonMark and MD047, explicitly disables
 other ordinary checks, and retains mandatory UTF-8 validation. This reduced
 selection verifies integration with the current build; it is not full catalog
-conformance. Without it, supported default GFM and CommonMark both analyze
-with unavailable default checks, so lint and fix exit `15`. Inspect retains its
-independent completed-observation exit `0` while exposing missing coverage.
-Explicit unavailable rules or contexts fail configuration with `12`.
+conformance. Without it, supported default GFM and CommonMark both run every
+default check, so lint and fix complete with `0` or `10`. Explicit unavailable
+rules or contexts fail configuration with `12`.
 
 For the exact violating example, copy the [example document](examples/editor-ci/guide.md)
 to `docs/guide.md`. It contains `雪`, a tab, `😀x`, and no terminal newline: MD047 is

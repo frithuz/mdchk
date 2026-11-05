@@ -144,12 +144,15 @@ located reduced coverage.
 
 MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
 independently enabled header recognition. Some ordinary rules remain unavailable,
-as recorded in the linked inventory. Lint parses
-selected valid UTF-8 sources, reports applicable missing default-enabled checks
-as `rule-unavailable`, sets `status: incomplete` and `complete: false`, and exits
-15. The complete 87-rule catalog remains intact: MD001 is default-enabled and
-executes along with MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD027, MD028, MD064, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD057 and MD062, while unavailable default-enabled MD071 contributes
-coverage. MD013 is available but default-disabled and does not incur a coverage penalty. Explicitly enabling
+as recorded in the linked inventory, but none of them is enabled by default for
+CommonMark or GFM. Lint parses selected valid UTF-8 sources and runs every
+default-enabled check, so default analysis is complete and exits 0 or 10. An
+applicable missing default-enabled check would instead be reported as
+`rule-unavailable` with `status: incomplete`, `complete: false` and exit 15.
+The complete 87-rule catalog remains intact: MD001 is default-enabled and
+executes along with MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD027, MD028, MD064, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD057, MD062 and MD071;
+MD071 is inapplicable unless frontmatter recognition is enabled.
+MD013 is available but default-disabled and does not incur a coverage penalty. Explicitly enabling
 an unavailable rule instead fails configuration admission with exit 12 before
 target processing. Text and JSON retain the same coverage and outcome.
 
@@ -254,7 +257,7 @@ processor rows describe capability-bound adapter fixtures.
 
 | Definition or condition | Capability setup | Expected outcome |
 | --- | --- | --- |
-| `version: 1`, flavor omitted | Production GFM available | Real GFM analysis; missing default rules yield incomplete/15 |
+| `version: 1`, flavor omitted | Production GFM available | Real GFM analysis; every default rule runs, so analysis is complete |
 | `version: 1`, flavor omitted | Build without GFM | Configuration error; no CommonMark fallback |
 | Global directives effectively true | Processor unavailable | Configuration error |
 | Child directives true beneath valid ancestor false | Processor unavailable | Effective false; no processor capability error |
