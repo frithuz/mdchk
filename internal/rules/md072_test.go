@@ -140,24 +140,3 @@ func TestMD072BodyDirectiveCannotReachHeader(t *testing.T) {
 		}
 	}
 }
-
-func TestMD072TOMLSynthesizedParent(t *testing.T) {
-	source := "+++\n[z.x]\nk = 1\n[a]\nk = 2\n+++\n"
-	payloadStart, payloadEnd := len("+++\n"), len(source)-len("+++\n")
-	for _, flavor := range []string{"commonmark", "gfm"} {
-		for _, recursive := range []bool{false, true} {
-			out := analyzeHeadings(t, registry(t, Registrations()), source, md072Settings(recursive, true), md072Context(t, flavor, true, nil), engine.RunOptions{})
-			if len(out.Errors) != 0 || len(out.Interruptions) != 0 {
-				t.Fatal(out)
-			}
-			for _, d := range out.Diagnostics {
-				if d.ByteRange.Start < payloadStart || d.ByteRange.End > payloadEnd || d.ByteRange.End <= d.ByteRange.Start {
-					t.Fatal("finding outside the authored header", d)
-				}
-			}
-			if len(out.Diagnostics) == 0 && (out.Complete || len(md072Coverage(out)) != 1) {
-				t.Fatal("unlocated violation did not reduce coverage", out)
-			}
-		}
-	}
-}

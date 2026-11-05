@@ -249,5 +249,30 @@
     "Name": "alias default",
     "Source": "---\nd: &m {y: 1, x: 2}\ne: *m\n---\n",
     "Expected": []
+  },
+  {
+    "Name": "toml synthesized parent",
+    "Source": "+++\n[z.x]\nk = 1\n[a]\nk = 2\n+++\n",
+    "Expected": [],
+    "Incomplete": true
+  },
+  {
+    "Name": "toml synthesized parent recursive",
+    "Source": "+++\n[z.x]\nk = 1\n[a]\nk = 2\n+++\n",
+    "Expected": [],
+    "Recursive": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "toml nested synthesized parent default",
+    "Source": "+++\n[a.c.x]\nk = 1\n[a.b.x]\nk = 2\n+++\n",
+    "Expected": []
+  },
+  {
+    "Name": "toml nested synthesized parent recursive",
+    "Source": "+++\n[a.c.x]\nk = 1\n[a.b.x]\nk = 2\n+++\n",
+    "Expected": [],
+    "Recursive": true,
+    "Incomplete": true
   }
 ]
