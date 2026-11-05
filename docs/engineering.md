@@ -172,11 +172,11 @@ analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026
 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041
 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization
 analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090
-thematic-break-before-heading analysis, MD034 bare-URL analysis, MD039 link-label-whitespace analysis, MD042 links-without-destinations, MD045 image-alternative-text and MD051 unresolved-fragment analysis and MD052 references-without-definitions analysis and MD053 unneeded-definition analysis and MD062 whitespace-in-destination analysis and MD054 link-and-image-representation-style analysis and MD059 uninformative-link-label analysis and MD093 inline-formatting-in-headings analysis
+thematic-break-before-heading analysis, MD034 bare-URL analysis, MD039 link-label-whitespace analysis, MD042 links-without-destinations, MD045 image-alternative-text and MD051 unresolved-fragment analysis and MD052 references-without-definitions analysis and MD053 unneeded-definition analysis and MD062 whitespace-in-destination analysis and MD054 link-and-image-representation-style analysis and MD059 uninformative-link-label analysis and MD055 GFM outer-table-pipe analysis and MD093 inline-formatting-in-headings analysis
 are also available. MD065 is enabled by default for CommonMark and GFM; its
 findings are manual and corrections are deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD054, MD087 and MD093 are
 available but disabled by default. MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD062 and MD059 are available and enabled by default for CommonMark and GFM, with manual
-findings. MD039, MD042, MD045, MD051, MD052, MD062 and MD059 are permanently report-only, and MD053 and MD054 are report-only until their planned corrections land (MD051 reads other documents only with `cross_file: true`, through the bounded read-only resource service in `lint`, `inspect` and `fix`); URL corrections remain deferred. Other named rules remain unavailable. See the [parser
+findings; MD055 is available and enabled by default for GFM only, with manual findings. MD039, MD042, MD045, MD051, MD052, MD062 and MD059 are permanently report-only, and MD053, MD054 and MD055 are report-only until their planned corrections land (MD051 reads other documents only with `cross_file: true`, through the bounded read-only resource service in `lint`, `inspect` and `fix`); URL corrections remain deferred. Other named rules remain unavailable. See the [parser
 verification record](engineering/gfm-verification.md).
 
 ### Reproduce the core delivery

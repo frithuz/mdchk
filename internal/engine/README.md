@@ -787,3 +787,12 @@ other option shape with `parser.ErrModel`. The inventory carries separate
 availabilities for shadowed and unused definitions, so an unknown reference-use
 set withholds only the unused findings. MD053 is default-enabled and keeps its
 PlannedFix metadata; no correction is registered.
+
+MD055's `RuleContext.TableOuterPipes` facade preserves the same original
+parse/source/options and cumulative operation authority, with both caller and
+originating controls. It requires exactly one admitted `style` option whose
+value is `consistent`, `leading_and_trailing` or `none`, rejects any other
+option shape with `parser.ErrModel`, and delegates to `Document.TableOuterPipes`,
+which returns detached parser-owned outer-pipe facts for every GFM table row.
+The catalog proves MD055 inapplicable to CommonMark. MD055 is default-enabled
+and keeps its PlannedFix metadata; no correction is registered.
