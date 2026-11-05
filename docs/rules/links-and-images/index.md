@@ -13,7 +13,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD052](md052.md) | References without definitions | Analysis/configuration implemented; report only |
 | [MD053](md053.md) | Unneeded link and image definitions | Analysis/configuration implemented; report only |
 | [MD054](md054.md) | Link and image representation style | Analysis/configuration implemented; report only |
-| [MD057](md057.md) | Missing local link targets | Planned |
+| [MD057](md057.md) | Missing local link targets | Analysis/configuration implemented; report only |
 | [MD059](md059.md) | Uninformative link labels | Analysis/configuration implemented; report only |
 | [MD062](md062.md) | Whitespace in destination URLs | Analysis/configuration implemented; report only |
 | [MD095](md095.md) | Lookalike Unicode characters in destinations | Planned |
