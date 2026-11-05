@@ -13,10 +13,11 @@ func prohibitedVocabulary(ctx context.Context, c engine.RuleContext) engine.Rule
 	if err != nil {
 		return engine.RuleOutcome{Err: err}
 	}
-	return reportProhibitedTerms(ctx, c, items)
+	return reportSpans(ctx, c, items, "Configured prohibited term.")
 }
 
-func reportProhibitedTerms(ctx context.Context, c engine.RuleContext, items []parser.Span) (out engine.RuleOutcome) {
+// reportSpans turns each span into one manual finding with a fixed message.
+func reportSpans(ctx context.Context, c engine.RuleContext, items []parser.Span, message string) (out engine.RuleOutcome) {
 	defer func() {
 		out.Err = errors.Join(out.Err, c.SectionCheckpoint(ctx, 0, 0))
 		if out.Err != nil {
@@ -42,7 +43,7 @@ func reportProhibitedTerms(ctx context.Context, c engine.RuleContext, items []pa
 			out.Err = err
 			return out
 		}
-		out.Findings = append(out.Findings, engine.Finding{Span: item, Message: "Configured prohibited term."})
+		out.Findings = append(out.Findings, engine.Finding{Span: item, Message: message})
 	}
 	return out
 }

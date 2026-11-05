@@ -75,7 +75,7 @@ func documentedOptions() map[string]engine.OptionSchema {
 		"MD076": {"style": choice("consistent", "tight", "loose")},
 		"MD081": {"maximum_ratio": {Kind: engine.Number, Default: 0.5, Minimum: &min, Maximum: &max}, "minimum_characters": n(20, 1)},
 		"MD082": {"allow_final_section": b(false)},
-		"MD083": {"sequences": list("Ã", "Â", "â€")},
+		"MD083": {"sequences": {Kind: engine.Strings, Default: []string{"Ã", "Â", "â€"}, Domain: engine.ConfiguredNameUTF8}},
 		"MD084": {"allowed_codepoints": domain(engine.UnicodeScalarHex)},
 		"MD088": {"style": choice("ascii")},
 		"MD090": {"allow_slides": b(true)},
