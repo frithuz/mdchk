@@ -72,8 +72,8 @@ func TestExistenceResolverOutcomes(t *testing.T) {
 		{"sub", ExistenceFound, 2},
 		{"bare/", ExistenceIndexMissing, 2},
 		{"sub2/", ExistenceIndexIsDirectory, 2},
-		{"./", ExistenceFound, 0},
-		{".", ExistenceFound, 0},
+		{"./", ExistenceIndexMissing, 1},
+		{".", ExistenceIndexMissing, 1},
 		{"source.md", ExistenceFound, 0},
 		{"./source.md?v=1", ExistenceFound, 0},
 		{"https://example.test/a.md", ExistenceSkipped, 0},
@@ -245,20 +245,31 @@ func TestExistenceResolverSharesSourceProjection(t *testing.T) {
 	}
 }
 
-// The resource root is exempt from the index check under every spelling, while
-// other directories keep the single index attempt.
-func TestExistenceResolverRootIsExempt(t *testing.T) {
+// The resource root takes the same single index attempt as every other
+// directory, as MD051 cross_file does: its known directory fact needs no
+// lookup, and the configured index decides the outcome.
+func TestExistenceResolverRootUsesIndex(t *testing.T) {
 	destinations := []string{"../", "..", "../.", "./../", "./", "../docs/"}
-	f := fragmentNativeFixture(t, "docs/source.md", "index.md", destinations)
-	resolver := existenceNativeResolver(t, filesystemTestService(t, f), f.view)
-	for _, destination := range destinations[:4] {
-		if got := existenceResolve(t, resolver, f.source, destination); got.Outcome() != ExistenceFound || len(got.Observations()) != 0 || got.state.query.hasIndex {
-			t.Fatal(destination, got.Outcome(), got.Observations())
+	for _, withIndex := range []bool{false, true} {
+		f := fragmentNativeFixture(t, "docs/source.md", "index.md", destinations)
+		f.write(t, "README.md", []byte("# Project\n"))
+		root := ExistenceIndexMissing
+		if withIndex {
+			f.write(t, "index.md", []byte("# Project\n"))
+			root = ExistenceFound
 		}
-	}
-	for _, destination := range destinations[4:] {
-		if got := existenceResolve(t, resolver, f.source, destination); got.Outcome() != ExistenceIndexMissing || len(got.Observations()) != 2 {
-			t.Fatal(destination, got.Outcome(), got.Observations())
+		resolver := existenceNativeResolver(t, filesystemTestService(t, f), f.view)
+		for _, destination := range destinations[:4] {
+			got := existenceResolve(t, resolver, f.source, destination)
+			observations := got.Observations()
+			if got.Outcome() != root || len(observations) != 1 || observations[0].Request().Key().String() != "index.md" || observations[0].Request().RequiredType() != RegularFile {
+				t.Fatal(withIndex, destination, got.Outcome(), observations)
+			}
+		}
+		for _, destination := range destinations[4:] {
+			if got := existenceResolve(t, resolver, f.source, destination); got.Outcome() != ExistenceIndexMissing || len(got.Observations()) != 2 {
+				t.Fatal(destination, got.Outcome(), got.Observations())
+			}
 		}
 	}
 }

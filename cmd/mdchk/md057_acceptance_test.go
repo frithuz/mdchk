@@ -90,9 +90,20 @@ func TestCompiledPlatformMD057MissingLocalTargets(t *testing.T) {
 			{"docs/self.md", 1, 41, 1, 46, 40, 45, false, md057IndexDir},
 		}},
 		{name: "index-file", rule: "{}", extra: "resources: {index_file: README.md}\n", source: "[b](bare/) [a](sub/)\n", status: 10, want: []md057Located{{"docs/self.md", 1, 16, 1, 20, 15, 19, false, md057NoIndex}}},
-		// The project root is exempt from the index check; other directories are not.
-		{name: "project-root-exempt", rule: "{}", source: "[a](../) [b](..) [c](./)\n", status: 10, want: []md057Located{{"docs/self.md", 1, 22, 1, 24, 21, 23, false, md057NoIndex}}},
-		{name: "project-root-from-root", rule: "{}", source: "[a](.) [b](./) [c](docs/)\n", target: "top.md", status: 10, want: []md057Located{{"top.md", 1, 20, 1, 25, 19, 24, false, md057NoIndex}}},
+		// The project root takes the single index attempt like any directory.
+		{name: "project-root", rule: "{}", source: "[a](../) [b](..) [c](./)\n", status: 10, want: []md057Located{
+			{"docs/self.md", 1, 5, 1, 8, 4, 7, false, md057NoIndex},
+			{"docs/self.md", 1, 14, 1, 16, 13, 15, false, md057NoIndex},
+			{"docs/self.md", 1, 22, 1, 24, 21, 23, false, md057NoIndex},
+		}},
+		{name: "project-root-from-root", rule: "{}", source: "[a](.) [b](./) [c](docs/)\n", target: "top.md", status: 10, want: []md057Located{
+			{"top.md", 1, 5, 1, 6, 4, 5, false, md057NoIndex},
+			{"top.md", 1, 12, 1, 14, 11, 13, false, md057NoIndex},
+			{"top.md", 1, 20, 1, 25, 19, 24, false, md057NoIndex},
+		}},
+		{name: "project-root-with-index", rule: "{}", source: "[a](../) [b](..)\n", prepare: func(t *testing.T, root string) {
+			putConfigurationFile(t, root, "index.md", "# Project\n")
+		}},
 		{name: "reference-crlf", rule: "{}", source: "# Self\r\n\r\n[x][r]\r\n\r\n[r]: missing.md\r\n", status: 10, want: []md057Located{{"docs/self.md", 3, 1, 3, 7, 10, 16, false, md057Missing}}},
 		{name: "containers", rule: "{}", source: "- [a](missing.md)\n\n> > [b](missing.md)\n", status: 10, want: []md057Located{
 			{"docs/self.md", 1, 7, 1, 17, 6, 16, false, md057Missing},

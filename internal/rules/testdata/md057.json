@@ -860,7 +860,7 @@
       "coverage": []
     },
     {
-      "name": "project-root-exempt",
+      "name": "project-root",
       "source": "[a](../) [b](..) [c](../.) [d](./) [e](../docs/)\n",
       "source_bytes": 49,
       "source_sha256": "0ba3f6d34d53a2c907a2d49c7480a7190c27c6ea99cb75a99fc31397872c48ef",
@@ -876,6 +876,111 @@
       "layout": [
         {
           "path": "README.md",
+          "kind": "file",
+          "content": "# Project\n"
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            7
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "expected": "../",
+          "message": "Directory has no configured index file."
+        },
+        {
+          "bytes": [
+            13,
+            15
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "expected": "..",
+          "message": "Directory has no configured index file."
+        },
+        {
+          "bytes": [
+            21,
+            25
+          ],
+          "start": [
+            1,
+            22
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "expected": "../.",
+          "message": "Directory has no configured index file."
+        },
+        {
+          "bytes": [
+            31,
+            33
+          ],
+          "start": [
+            1,
+            32
+          ],
+          "end": [
+            1,
+            34
+          ],
+          "expected": "./",
+          "message": "Directory has no configured index file."
+        },
+        {
+          "bytes": [
+            39,
+            47
+          ],
+          "start": [
+            1,
+            40
+          ],
+          "end": [
+            1,
+            48
+          ],
+          "expected": "../docs/",
+          "message": "Directory has no configured index file."
+        }
+      ],
+      "coverage": []
+    },
+    {
+      "name": "project-root-index",
+      "source": "[a](../) [b](..) [c](../.) [d](./) [e](../docs/)\n",
+      "source_bytes": 49,
+      "source_sha256": "0ba3f6d34d53a2c907a2d49c7480a7190c27c6ea99cb75a99fc31397872c48ef",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [
+        {
+          "path": "index.md",
           "kind": "file",
           "content": "# Project\n"
         }

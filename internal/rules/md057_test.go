@@ -434,11 +434,11 @@ func TestMD057Directives(t *testing.T) {
 	}
 }
 
-// A link to the resource root passes MD057 without an index lookup, for native
-// and supplied (virtual) roots alike. MD051 cross_file keeps its own directory
-// semantics: a root fragment resolves the configured index for its anchors, and
-// a root without that index is inapplicable to MD051, never a finding.
-func TestMD057RootExemptionAcrossRootsAndMD051(t *testing.T) {
+// A link to the resource root takes the single configured index attempt, like
+// any other directory and like MD051 cross_file, for native and supplied
+// (virtual) roots alike. A root without that index is the MD057 mismatch, which
+// MD051 then treats as inapplicable; with the index, MD051 checks its anchors.
+func TestMD057RootFollowsMD051AcrossRoots(t *testing.T) {
 	const source = "# Self\n\n[a](../) [b](..) [c](../#top) [d](../#nope) [e](sub/)\n"
 	settings := func() engine.Settings {
 		s := md057Settings(true)
@@ -454,12 +454,13 @@ func TestMD057RootExemptionAcrossRootsAndMD051(t *testing.T) {
 		return got
 	}
 	subIndexMissing := "MD057 sub/"
+	rootIndexMissing := []string{"MD057 ../", "MD057 ..", "MD057 ../#top", "MD057 ../#nope", subIndexMissing}
 	for _, row := range []struct {
 		name   string
 		layout []md057Entry
 		want   []string
 	}{
-		{"native-root-without-index", []md057Entry{{Path: "README.md", Kind: "file", Content: "# Top\n"}, {Path: "docs/sub/README.md", Kind: "file", Content: "# Sub\n"}}, []string{subIndexMissing}},
+		{"native-root-without-index", []md057Entry{{Path: "README.md", Kind: "file", Content: "# Top\n"}, {Path: "docs/sub/README.md", Kind: "file", Content: "# Sub\n"}}, rootIndexMissing},
 		{"native-root-with-index", []md057Entry{{Path: "index.md", Kind: "file", Content: "# Top\n"}, {Path: "docs/sub/README.md", Kind: "file", Content: "# Sub\n"}}, []string{"MD051 ../#nope", subIndexMissing}},
 	} {
 		t.Run(row.name, func(t *testing.T) {
@@ -475,7 +476,7 @@ func TestMD057RootExemptionAcrossRootsAndMD051(t *testing.T) {
 		name, raw string
 		want      []string
 	}{
-		{"supplied-root-without-index", `{"complete":true,"entries":[{"path":"docs/sub","kind":"directory"}]}`, []string{subIndexMissing}},
+		{"supplied-root-without-index", `{"complete":true,"entries":[{"path":"docs/sub","kind":"directory"}]}`, rootIndexMissing},
 		{"supplied-root-with-index", `{"complete":true,"entries":[{"path":"index.md","kind":"file","content":"# Top\n"},{"path":"docs/sub","kind":"directory"}]}`, []string{"MD051 ../#nope", subIndexMissing}},
 	} {
 		t.Run(row.name, func(t *testing.T) {
@@ -484,6 +485,23 @@ func TestMD057RootExemptionAcrossRootsAndMD051(t *testing.T) {
 				t.Fatal(got, out)
 			}
 		})
+	}
+}
+
+// A partial supplied map that does not list the root index leaves it unknown:
+// root links are located coverage, not findings.
+func TestMD057SuppliedPartialRootIndexIsUnknown(t *testing.T) {
+	const source = "[a](../) [b](..)\n"
+	out, _ := md057Lint(t, source, md057Settings(true), engine.DocumentContext{Flavor: "gfm"}, func(s parser.Source) *md057Resources {
+		return md057Supplied(t, `{"complete":false,"entries":[]}`, s)
+	})
+	if out.Complete || len(out.Diagnostics)+len(out.Errors) != 0 || len(out.Coverage) != 2 {
+		t.Fatal(out)
+	}
+	for _, c := range out.Coverage {
+		if c.Rule != "MD057" || c.Range == nil || c.Reason != result.ContextUnavailable {
+			t.Fatal(c)
+		}
 	}
 }
 

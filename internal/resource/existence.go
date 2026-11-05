@@ -140,8 +140,7 @@ func (r *ExistenceResolver) Prepare(link Link) (ExistenceQuery, error) {
 		return ExistenceQuery{}, err
 	}
 	q := &existenceQueryState{resolver: r, normalized: n, location: result.Range{Start: start, End: end}, snapshot: p.snapshot}
-	// The resource root is exempt from the index check, so it plans no index.
-	if n.class == Local && n.location.root.identity != nil && n.same == (parser.Source{}) && !n.location.IsRootDirectory() {
+	if n.class == Local && n.location.root.identity != nil && n.same == (parser.Source{}) {
 		q.index, err = n.DirectoryIndex()
 		if err != nil {
 			var limit *parser.LimitExceeded
@@ -209,9 +208,9 @@ func (e ExistenceResolution) Err() error {
 }
 
 // Resolve consumes a prepared query with at most two existence-only reads: the
-// locator, then exactly one configured index when the locator is a directory
-// other than the resource root, which is exempt from the index check. There is
-// no fallback name, recursion or directory scan.
+// locator, then exactly one configured index when the locator is a directory,
+// including the resource root, as for MD051 cross_file. There is no fallback
+// name, recursion or directory scan.
 func (r *ExistenceResolver) Resolve(ctx context.Context, query ExistenceQuery) (ExistenceResolution, error) {
 	if r == nil || ctx == nil || query.state == nil || query.state.resolver != r || !query.state.consumed.CompareAndSwap(false, true) {
 		return ExistenceResolution{}, ErrContract
@@ -269,11 +268,6 @@ func (r *ExistenceResolver) Resolve(ctx context.Context, query ExistenceQuery) (
 		var err error
 		existence, err = r.service.RootDirectory(ctx, n.location)
 		retain(key, err)
-		// The resource root itself is exempt from the configured index check.
-		if existence == Directory {
-			e.outcome = ExistenceFound
-			return finish()
-		}
 	} else {
 		observation, err := read(q.requests[0])
 		if err != nil {
