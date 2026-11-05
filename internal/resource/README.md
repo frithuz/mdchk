@@ -558,8 +558,10 @@ not grant ordinary HTML raw-text ownership from a local name such as title.
 Already acquired content and its witness survive such deficits and actual
 operational causes retain their existing report ownership. A completed index
 also survives a later stop without content rehashing. MD080 consumes the shared
-builder through the local projection below. MD051/MD073 callbacks, TOC fixes,
-rendering, sanitization and transport integration remain separate deliveries. The
+builder through the local projection below. MD073 consumes the same shared
+heading anchors, report-only, to compare marked table of contents lists. MD051
+callbacks, TOC fixes, rendering, sanitization and transport integration remain
+separate deliveries. The
 fragment query seam below composes the service index independently.
 
 ## Original-document heading anchors

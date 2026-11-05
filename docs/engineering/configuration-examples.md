@@ -364,7 +364,7 @@ rules:
 | Input or condition | Expected outcome |
 | --- | --- |
 | Omitted `resources`, or `resources: {}` | `index_file: index.md`, `anchor_style: github` |
-| `resources: {anchor_style: explicit}` | Available for same-document MD051 and MD080; MD073 and referenced Markdown consumption (cross-file MD051) remain separate deliveries |
+| `resources: {anchor_style: explicit}` | Available for same-document MD051, MD073 and MD080; referenced Markdown consumption (cross-file MD051) remains a separate delivery |
 | `resources: {index_file: README.md}` | Accepted by the CLI when the native adapter can name it; directory links try that one filename once (MD051 and MD057) |
 | `resources: null`, a sequence, or an unknown resource field | Configuration error |
 | `resources: {index_file: docs/index.md}` | Configuration error: filename only |
