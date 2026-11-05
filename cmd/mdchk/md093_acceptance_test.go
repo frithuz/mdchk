@@ -16,7 +16,8 @@ func md093Configuration(flavor string) string {
 	return strings.Replace(strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1), "MD093: {enabled: false}", "MD093: {enabled: true}", 1)
 }
 func TestCompiledPlatformMD093ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	data, err := os.ReadFile("../../internal/rules/testdata/md093.json")
 	if err != nil {
 		t.Fatal(err)
@@ -98,7 +99,8 @@ func TestCompiledPlatformMD093ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD093ConfigurationAndComposition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, option := range []string{"null", "code", "true", "{}", "[code, wrong]", "[emphasis, 1]", "[Code]"} {
 			t.Run(flavor+"/invalid_"+option, func(t *testing.T) {

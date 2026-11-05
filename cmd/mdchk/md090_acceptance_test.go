@@ -32,7 +32,8 @@ func md090Configuration(flavor string) string {
 	return strings.Replace(strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1), "MD090: {enabled: false}", "MD090: {enabled: true}", 1)
 }
 func TestCompiledPlatformMD090ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	data, err := os.ReadFile("../../internal/rules/testdata/md090.json")
 	if err != nil {
 		t.Fatal(err)
@@ -128,7 +129,8 @@ func TestCompiledPlatformMD090ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD090SlideContext(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
 			for _, tc := range []struct {
@@ -243,7 +245,8 @@ func TestCompiledPlatformMD090SlideContext(t *testing.T) {
 }
 
 func TestCompiledPlatformMD090ExplicitBaseAndComposition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, matched := range []bool{false, true} {
 			for _, allow := range []bool{false, true} {
@@ -321,7 +324,8 @@ func TestCompiledPlatformMD090ExplicitBaseAndComposition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD090Routing(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor+"/mixed_selection", func(t *testing.T) {
 			root := configurationProject(t)

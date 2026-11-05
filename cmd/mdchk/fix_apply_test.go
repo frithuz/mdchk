@@ -13,7 +13,8 @@ import (
 
 // Ordinary production binaries exercise the real APFS replacement boundary.
 func TestCompiledProductionMD047ApplySavedWorkflow(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	data, err := os.ReadFile("testdata/md047_corrections.json")
 	if err != nil {
 		t.Fatal(err)
@@ -84,7 +85,8 @@ func TestCompiledProductionMD047ApplySavedWorkflow(t *testing.T) {
 }
 
 func TestCompiledApplyAdmissionAndReporting(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, limit := range []string{"reporting-time=1ns", "reporting-time=1us", "response-bytes=1024", "work-units=1", "document-bytes=1"} {
 		t.Run(limit, func(t *testing.T) {
 			root := configurationProject(t)
@@ -197,6 +199,7 @@ func buildApplyBoundaryOriginFixture(t *testing.T, body string, cancellation boo
 }
 
 func TestCompiledApplyPartialFailuresAndDeadline(t *testing.T) {
+	// Not parallel: the two-second reporting deadline must not race other tests.
 	for _, mode := range []string{"refused", "published-error"} {
 		t.Run(mode, func(t *testing.T) {
 			body := `if path=="b.md" { return files.Publication{Path:path,Err:errors.New("injected native publication failure")} }; return validated.PublishMapped(ctx,native,path,names)`
@@ -241,7 +244,8 @@ func TestCompiledApplyPartialFailuresAndDeadline(t *testing.T) {
 }
 
 func TestCompiledApplyHardLinkConsequences(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
 	putConfigurationFile(t, root, "doc.md", "hello")
@@ -277,7 +281,8 @@ func TestCompiledApplyHardLinkConsequences(t *testing.T) {
 }
 
 func TestCompiledApplyTextManifestAdmissionBeforeWrites(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
 	putConfigurationFile(t, root, "doc.md", "hello")
@@ -300,7 +305,8 @@ func TestCompiledApplyTextManifestAdmissionBeforeWrites(t *testing.T) {
 // A real acquisition refusal must not turn independent native writes into a
 // whole-operation transaction, including when all files depend on configuration.
 func TestCompiledApplyContinuesAfterReadOnlyAcquisition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, format := range []string{"json", "text"} {
 		t.Run(format, func(t *testing.T) {
 			root := configurationProject(t)

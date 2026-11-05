@@ -18,6 +18,7 @@ import (
 // context, command, reporter and process exit are unchanged. The marker proves
 // NotifyContext returned before the parent sends the actual OS event.
 func TestCompiledPlatformInterrupt(t *testing.T) {
+	// Not parallel: interrupt delivery is timing sensitive under load.
 	source, err := os.ReadFile("main.go")
 	if err != nil {
 		t.Fatal(err)
@@ -139,7 +140,8 @@ func TestCompiledPlatformInterrupt(t *testing.T) {
 }
 
 func TestCompiledPlatformRuntimeBounds(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
 	putConfigurationFile(t, root, "doc.md", strings.Repeat("real source\n", 1000))

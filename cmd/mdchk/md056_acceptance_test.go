@@ -51,7 +51,8 @@ func md056NativeAssert(t *testing.T, out result.Result, tc md056NativeLiteral, v
 }
 
 func TestCompiledPlatformMD056AnalysisFixtures(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range md056NativeLiterals(t) {
 		if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 			t.Fatal("fixture source identity")
@@ -106,7 +107,8 @@ func TestCompiledPlatformMD056AnalysisFixtures(t *testing.T) {
 }
 
 func TestCompiledPlatformMD056SpecExamplesWithDefaults(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	threeCells := result.Diagnostic{Message: "Row has 3 cells; table has 2 columns.", ByteRange: result.ByteRange{Start: 16, End: 25}, Range: result.Range{Start: result.Position{Line: 3, Column: 1}, End: result.Position{Line: 3, Column: 10}}}
 	for _, tc := range []struct {
 		flavor, source string
@@ -168,7 +170,8 @@ func TestCompiledPlatformMD056SpecExamplesWithDefaults(t *testing.T) {
 }
 
 func TestCompiledPlatformMD056SettingsAndInvalidAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, value := range []string{"omitted", "{}", "{enabled: true}", "{enabled: false}", "{enabled: true, allow_directives: false}", "{style: x}", "{unknown: 1}", "{enabled: \"yes\"}", "{allow_directives: \"false\"}"} {
 		t.Run(value, func(t *testing.T) {
 			root := configurationProject(t)
@@ -213,7 +216,8 @@ func TestCompiledPlatformMD056SettingsAndInvalidAdmission(t *testing.T) {
 }
 
 func TestCompiledPlatformMD056DirectiveSuppression(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, allow := range []bool{false, true} {
 		t.Run(fmt.Sprintf("allow-%v", allow), func(t *testing.T) {
 			root := configurationProject(t)

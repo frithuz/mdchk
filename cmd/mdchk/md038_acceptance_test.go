@@ -16,7 +16,8 @@ func md038Configuration(flavor string) string {
 }
 
 func TestCompiledPlatformMD038ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, source, flavor string
 		want                 int
@@ -58,7 +59,8 @@ func TestCompiledPlatformMD038ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD038ConfigurationAndReporters(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, setting := range []string{"OMITTED", "{}", "{enabled: false}", "{enabled: false, unknown: true}", "{enabled: false, allow_directives: null}", "null", "{enabled: nope}"} {
 		t.Run(setting, func(t *testing.T) {
 			root := configurationProject(t)
@@ -115,7 +117,8 @@ func TestCompiledPlatformMD038ConfigurationAndReporters(t *testing.T) {
 }
 
 func TestCompiledPlatformMD038FullSourceInspectionAndReset(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, source, setting, line string
 		active, hidden              int
@@ -152,7 +155,8 @@ func TestCompiledPlatformMD038FullSourceInspectionAndReset(t *testing.T) {
 }
 
 func TestCompiledPlatformMD038EncodingAndMD047Composition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	conf := strings.Replace(md038Configuration("gfm"), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
 	putConfigurationFile(t, root, ".mdchk.yaml", conf)
@@ -229,7 +233,8 @@ func TestCompiledPlatformMD038EncodingAndMD047Composition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD038HeadersAndInheritedPermissions(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, source, extra string
 		want, status        int
@@ -280,12 +285,13 @@ func TestCompiledPlatformMD038HeadersAndInheritedPermissions(t *testing.T) {
 }
 
 func TestCompiledPlatformMD038MixedEncodingIndependentCorrection(t *testing.T) {
-	md038MixedEncodingIndependentCorrection(t, buildConfigurationExecutable(t, ""))
+	t.Parallel()
+	md038MixedEncodingIndependentCorrection(t, sharedExecutable(t))
 }
 
 func TestCompiledPlatformMD038MixedEncodingIndependentCorrectionNoCGO(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	md038MixedEncodingIndependentCorrection(t, buildConfigurationExecutable(t, ""))
+	t.Parallel()
+	md038MixedEncodingIndependentCorrection(t, sharedNoCGOExecutable(t))
 }
 
 func md038MixedEncodingIndependentCorrection(t *testing.T, binary string) {
@@ -409,7 +415,8 @@ func assertCGO0Apply(t *testing.T, got configurationRun, out result.Result, befo
 }
 
 func TestCompiledPlatformMD038ProtectedEOFCompositionManual(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	conf := strings.Replace(md038Configuration("gfm"), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
 	putConfigurationFile(t, root, ".mdchk.yaml", conf)

@@ -17,7 +17,8 @@ func md086Configuration(flavor string) string {
 }
 
 func TestCompiledPlatformMD086ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	data, err := os.ReadFile("testdata/md086-cli.json")
 	if err != nil {
 		t.Fatal(err)
@@ -99,7 +100,8 @@ func TestCompiledPlatformMD086ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD086TypedOptionsAndDefaults(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		setting          string
 		status, findings int
@@ -141,7 +143,8 @@ func TestCompiledPlatformMD086TypedOptionsAndDefaults(t *testing.T) {
 }
 
 func TestCompiledPlatformMD086DirectiveInheritanceAndSelection(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, denial := range []string{"allowed", "global", "rule"} {
 		t.Run(denial, func(t *testing.T) {
 			root := configurationProject(t)
@@ -175,7 +178,8 @@ func TestCompiledPlatformMD086DirectiveInheritanceAndSelection(t *testing.T) {
 }
 
 func TestCompiledPlatformMD086FourReporters(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md086Configuration("gfm"))
 	putConfigurationFile(t, root, "doc.md", "<!-- note")
@@ -211,7 +215,8 @@ func TestCompiledPlatformMD086FourReporters(t *testing.T) {
 }
 
 func TestCompiledPlatformMD086MD047Composition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, source := range []string{"> <!-- note\n\nend", "<!-- note"} {
 		t.Run(source, func(t *testing.T) {
 			root := configurationProject(t)
@@ -287,8 +292,8 @@ func TestCompiledPlatformMD086MD047Composition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD086NoCGOApply(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	root := configurationProject(t)
 	conf := strings.Replace(md086Configuration("gfm"), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
 	putConfigurationFile(t, root, ".mdchk.yaml", conf)

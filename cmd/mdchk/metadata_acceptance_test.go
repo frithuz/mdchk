@@ -18,6 +18,7 @@ import (
 )
 
 func TestVersionFromBuildInfo(t *testing.T) {
+	t.Parallel()
 	settings := []debug.BuildSetting{{Key: "vcs.revision", Value: "abc"}, {Key: "vcs.modified", Value: "true"}}
 	for _, tc := range []struct {
 		name, version, want string
@@ -41,7 +42,8 @@ func TestVersionFromBuildInfo(t *testing.T) {
 }
 
 func TestCompiledMetadataPolicy(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := metadataProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", "invalid: [")
 	before := configurationBytes(t, root)
@@ -105,8 +107,9 @@ func TestCompiledMetadataPolicy(t *testing.T) {
 }
 
 func TestCompiledArgumentOrderingAndLiteralMetadataPaths(t *testing.T) {
+	// Not parallel: t.Setenv changes the whole test process environment.
 	testenv.Clear(t)
-	binary := buildConfigurationExecutable(t, "")
+	binary := sharedExecutable(t)
 	root := metadataProject(t) // No fake Git metadata: validation must complete normally.
 	putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
 	putConfigurationFile(t, root, "doc.md", "text")
@@ -157,10 +160,11 @@ func TestCompiledArgumentOrderingAndLiteralMetadataPaths(t *testing.T) {
 }
 
 func TestCompiledBuildVersionPropagation(t *testing.T) {
+	t.Parallel()
 	root := metadataProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", cleanConfiguration())
 	putConfigurationFile(t, root, "doc.md", "text\n")
-	normal := buildConfigurationExecutable(t, "")
+	normal := sharedExecutable(t)
 	development := filepath.Join(t.TempDir(), filepath.Base(normal))
 	//nolint:gosec // Fixed Go tool and a test-owned binary destination.
 	command := exec.Command("go", "build", "-buildvcs=false", "-o", development, ".")

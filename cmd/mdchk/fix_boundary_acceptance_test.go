@@ -11,6 +11,7 @@ import (
 )
 
 func TestCompiledApplyStaleNativeBoundary(t *testing.T) {
+	t.Parallel()
 	for _, mode := range []string{"same-size-restored-mtime", "identical-inode-replacement"} {
 		t.Run(mode, func(t *testing.T) {
 			mutation := `if path=="b.md" { name:=names[path]; info,e:=os.Stat(name); if e!=nil { panic(e) }; if e=os.WriteFile(name,[]byte("new!"),info.Mode().Perm()); e!=nil { panic(e) }; if e=os.Chtimes(name,info.ModTime(),info.ModTime()); e!=nil { panic(e) } }; `
@@ -97,6 +98,7 @@ func assertSavedApplyFile(t *testing.T, root, path, want, status string, got con
 }
 
 func TestCompiledApplyOriginCancellation(t *testing.T) {
+	t.Parallel()
 	for _, mode := range []string{"before-first", "after-first", "after-first-with-io"} {
 		t.Run(mode, func(t *testing.T) {
 			body := `cancel:=ctx.Value(struct{issue149 bool}{true}).(context.CancelFunc); cancel(); return validated.PublishMapped(context.Background(),native,path,names)`
@@ -190,6 +192,7 @@ func TestCompiledApplyOriginCancellation(t *testing.T) {
 }
 
 func TestCompiledApplyChangedNativePermissions(t *testing.T) {
+	t.Parallel()
 	binary := buildApplyBoundaryFixture(t, `if path=="b.md" { if e:=os.Chmod(names[path],0444);e!=nil {panic(e)} }; return validated.PublishMapped(ctx,native,path,names)`)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
@@ -226,6 +229,7 @@ func TestCompiledApplyChangedNativePermissions(t *testing.T) {
 }
 
 func TestCompiledApplySymlinkSubstitutionRefused(t *testing.T) {
+	t.Parallel()
 	// The replacement is made after acquisition, so selection cannot merely skip
 	// the link. The real native publisher must reject the changed authority.
 	binary := buildApplyBoundaryFixture(t, `if path=="b.md" { if e:=os.Remove(names[path]);e!=nil {panic(e)}; if e:=os.Symlink(names[path]+".external",names[path]);e!=nil {panic(e)} }; return validated.PublishMapped(ctx,native,path,names)`)

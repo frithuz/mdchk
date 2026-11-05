@@ -11,7 +11,8 @@ import (
 )
 
 func TestCompiledGFMTaskEOFManualCorrection(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"omitted", "gfm", "commonmark"} {
 		for _, ending := range []string{"\n", "\r\n", "\r"} {
 			for _, tail := range []string{"- [x]", "- [ ]", "> - [X]", "- outer\n  - [x]", "- [\n  ]", "> - [\n]", "- [x] ", "ordinary"} {

@@ -63,7 +63,8 @@ func md054NativeSetting(tc md054NativeLiteral) string {
 }
 
 func TestCompiledPlatformMD054AnalysisFixtures(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range md054NativeLiterals(t) {
 		if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 			t.Fatal("fixture source identity")
@@ -118,7 +119,8 @@ func TestCompiledPlatformMD054AnalysisFixtures(t *testing.T) {
 }
 
 func TestCompiledPlatformMD054SpecExampleAndInvalidAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, value := range []string{"omitted", "{}", "{enabled: true}", "{enabled: true, allowed_styles: [full_reference]}", "{enabled: true, allowed_styles: [inline]}", "{enabled: false, allowed_styles: [full_reference]}", "{allowed_styles: []}", "{enabled: true, allowed_styles: []}", "{allowed_styles: [reference]}", "{allowed_styles: inline}", "{style: inline}", "{enabled: \"yes\"}"} {
 			t.Run(flavor+"/"+value, func(t *testing.T) {

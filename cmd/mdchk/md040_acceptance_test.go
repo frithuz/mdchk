@@ -87,7 +87,8 @@ func md040NativeAssert(t *testing.T, out result.Result, tc md040NativeLiteral, v
 	}
 }
 func TestCompiledPlatformMD040LiteralLint(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	cases := md040NativeLiterals(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, name := range []string{"page-bad", "page-good", "both", "nested", "unicode", "allow-miss-crlf", "decoded-label-miss", "brace-class", "header", "default-disabled", "empty-options-disabled", "explicit-disabled", "entity-leading-space-miss", "escape-miss", "page-bad-cr", "padding"} {
@@ -116,7 +117,8 @@ func TestCompiledPlatformMD040LiteralLint(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD040InspectionFocus(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	base := md040NativeLiterals(t)["both"]
 	for _, focus := range []string{"", "1", "2", "4"} {
 		t.Run("line-"+focus, func(t *testing.T) {
@@ -148,7 +150,8 @@ func TestCompiledPlatformMD040InspectionFocus(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD040ManualAndMD047Preview(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	base := md040NativeLiterals(t)["both"]
 	for _, composition := range []bool{false, true} {
 		t.Run(fmt.Sprintf("composition-%v", composition), func(t *testing.T) {
@@ -252,7 +255,8 @@ func md040NativeInvalid(t *testing.T) []md040InvalidLiteral {
 }
 
 func TestCompiledPlatformMD040InvalidAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md040NativeLiterals(t)["page-bad"]
 	for _, command := range []string{"lint", "fix"} {
 		for _, row := range md040NativeInvalid(t) {
@@ -278,8 +282,8 @@ func TestCompiledPlatformMD040InvalidAdmission(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD040NoCGO(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	info, err := buildinfo.ReadFile(binary)
 	if err != nil {
 		t.Fatal("read actual compiled binary metadata", err)
@@ -314,7 +318,8 @@ func TestCompiledPlatformMD040NoCGO(t *testing.T) {
 }
 
 func TestCompiledPlatformMD040DirectiveAndUnknownCoverage(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, source              string
 		denied, incomplete        bool
@@ -363,7 +368,8 @@ func TestCompiledPlatformMD040DirectiveAndUnknownCoverage(t *testing.T) {
 }
 
 func TestCompiledPlatformMD040InheritedDirectiveDenial(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, global := range []bool{false, true} {
 		t.Run(fmt.Sprintf("global-%v", global), func(t *testing.T) {
 			root := configurationProject(t)

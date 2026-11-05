@@ -53,7 +53,8 @@ func md053NativeAssert(t *testing.T, out result.Result, tc md053NativeLiteral, v
 }
 
 func TestCompiledPlatformMD053AnalysisFixtures(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range md053NativeLiterals(t) {
 		if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 			t.Fatal("fixture source identity")
@@ -117,7 +118,8 @@ func TestCompiledPlatformMD053AnalysisFixtures(t *testing.T) {
 }
 
 func TestCompiledPlatformMD053DefaultOnAndInvalidAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, value := range []string{"omitted", "{}", "{enabled: false}", "{allow_directives: false}", "{ignored_labels: []}", "{ignored_labels: [other]}", "{unknown: 1}", "{enabled: \"yes\"}", "{enabled: false, unknown: true}", "{ignored_labels: foo}", "{ignored_labels: [1]}"} {
 			t.Run(flavor+"/"+value, func(t *testing.T) {

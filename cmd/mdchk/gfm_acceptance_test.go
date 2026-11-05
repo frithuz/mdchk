@@ -46,7 +46,8 @@ func assertCompiledGFM(t *testing.T, p inspect.Projection, flavor string) {
 }
 
 func TestCompiledGFMSelectionAndConsumers(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"omitted", "gfm", "commonmark"} {
 		t.Run(flavor, func(t *testing.T) {
 			root := configurationProject(t)

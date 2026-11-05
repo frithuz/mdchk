@@ -54,7 +54,8 @@ func md087Configuration(flavor, source string) string {
 	return conf
 }
 func TestCompiledPlatformMD087LiteralLint(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	cases := md087Literals(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, name := range []string{
@@ -106,7 +107,8 @@ func TestCompiledPlatformMD087LiteralLint(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD087InspectionOwnersAndPermissions(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	cases := md087Literals(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, tc := range []struct{ name, focus string }{
@@ -163,7 +165,8 @@ func TestCompiledPlatformMD087InspectionOwnersAndPermissions(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD087MD047Composition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	const source = "<!-- mdchk:disable MD001 -->\ntext"
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, dry := range []bool{true, false} {
@@ -223,8 +226,8 @@ func TestCompiledPlatformMD087MD047Composition(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD087NoCGOApply(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	root := configurationProject(t)
 	source := "<!-- mdchk:disable MD001 -->\ntext"
 	conf := strings.Replace(md087Configuration("gfm", source), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
@@ -237,7 +240,8 @@ func TestCompiledPlatformMD087NoCGOApply(t *testing.T) {
 	assertCGO0Apply(t, got, out, before, after)
 }
 func TestCompiledPlatformMD087DefaultsAndAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	source := "<!-- mdchk:disable MD001 -->\n# A\n"
 	for _, setting := range []string{"OMITTED", "{}", "{enabled: true}", "{enabled: false}"} {
 		t.Run(setting, func(t *testing.T) {
@@ -279,7 +283,8 @@ func TestCompiledPlatformMD087DefaultsAndAdmission(t *testing.T) {
 }
 
 func TestCompiledPlatformMD087FourReporters(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	const source = "<!-- mdchk:disable MD001 -->\n# A\n"
 	putConfigurationFile(t, root, ".mdchk.yaml", md087Configuration("gfm", source))

@@ -7,8 +7,8 @@ import (
 )
 
 func TestCompiledGFMNoCGOApply(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", strings.ReplaceAll(md047Configuration(true, true), "flavor: commonmark\n", ""))
 	putConfigurationFile(t, root, "doc.md", gfmConsumerSource)

@@ -12,6 +12,7 @@ import (
 // correction provider. No sleeps, metadata tolerances or capture retries hide a
 // change. The same selection executes these controls on every CI host.
 func TestCLIReadinessStateOracle(t *testing.T) {
+	t.Parallel()
 	type mutation struct {
 		name, path, field string
 		change            func(*testing.T, string, map[string]readinessEntry)

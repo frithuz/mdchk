@@ -16,7 +16,8 @@ func md010Configuration(flavor string) string {
 	return strings.Replace(strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1), "MD010: {enabled: false}", "MD010: {enabled: true}", 1)
 }
 func TestCompiledPlatformMD010ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	data, err := os.ReadFile("../../internal/rules/testdata/md010.json")
 	if err != nil {
 		t.Fatal(err)
@@ -103,7 +104,8 @@ func TestCompiledPlatformMD010ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD010DefaultsAndConfiguration(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, setting := range []string{"OMITTED", "{}", "{enabled: true}", "{spaces_per_tab: 4, code_blocks: true}", "{spaces_per_tab: 9223372036854775807}"} {
 			t.Run(flavor+"/"+setting, func(t *testing.T) {
@@ -143,7 +145,8 @@ func TestCompiledPlatformMD010DefaultsAndConfiguration(t *testing.T) {
 }
 
 func TestCompiledPlatformMD010DirectivesAndValidation(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	source := "<!-- mdchk:disable MD010 -->\na\t\nb <!-- mdchk:enable MD010 -->\t\nz"
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, tc := range []struct {
@@ -184,7 +187,8 @@ func TestCompiledPlatformMD010DirectivesAndValidation(t *testing.T) {
 }
 
 func TestCompiledPlatformMD010InheritedDirectivePermissions(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, tc := range []struct {
 			name         string
@@ -214,7 +218,8 @@ func TestCompiledPlatformMD010InheritedDirectivePermissions(t *testing.T) {
 }
 
 func TestCompiledPlatformMD010InspectionRetainsHiddenParent(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
 			root := configurationProject(t)
@@ -239,7 +244,8 @@ func TestCompiledPlatformMD010InspectionRetainsHiddenParent(t *testing.T) {
 }
 
 func TestCompiledPlatformMD010Composition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, mode := range []string{"ordinary", "code", "structural"} {
 			for _, ending := range []struct{ name, text string }{{"LF", "\n"}, {"CRLF", "\r\n"}, {"CR", "\r"}} {
@@ -298,7 +304,8 @@ func TestCompiledPlatformMD010Composition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD010ActiveMetadataDirectiveControls(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, header := range []struct{ name, source string }{{"yaml", "---\nx: y\n<!-- mdchk:disable MD010 -->\n---\na\t\n"}, {"toml", "+++\nx = 1\n<!-- mdchk:disable MD010 -->\n+++\na\t\n"}} {
 			for _, recognize := range []bool{false, true} {
@@ -344,7 +351,8 @@ func TestCompiledPlatformMD010ActiveMetadataDirectiveControls(t *testing.T) {
 }
 
 func TestCompiledPlatformMD010ActiveLiteralAndStartControls(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, tc := range []struct {
 			name, source                                   string

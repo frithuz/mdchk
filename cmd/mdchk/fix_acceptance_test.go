@@ -45,6 +45,7 @@ func fixFixtureConfiguration() string {
 	return b.String()
 }
 func TestCompiledFixDryRunCandidatesAndFailures(t *testing.T) {
+	t.Parallel()
 	binary := buildFixFixture(t)
 	for _, tc := range []struct {
 		name, source string
@@ -120,6 +121,7 @@ func TestCompiledFixDryRunCandidatesAndFailures(t *testing.T) {
 	}
 }
 func TestCompiledFixCandidateSuppressionAndIndependentIO(t *testing.T) {
+	t.Parallel()
 	binary := buildFixFixture(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", fixFixtureConfiguration())
@@ -198,7 +200,8 @@ func runFixConfiguration(t *testing.T, binary, root string, args ...string) conf
 }
 
 func TestCompiledProductionFixBoundaryAndNoWrites(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	config := strings.ReplaceAll(fixFixtureConfiguration(), "MD001: {enabled: true}", "MD001: {enabled: false}")
 	config = strings.ReplaceAll(config, "MD047: {enabled: false}", "MD047: {enabled: true}")
@@ -255,6 +258,7 @@ func TestCompiledProductionFixBoundaryAndNoWrites(t *testing.T) {
 }
 
 func TestCompiledFixInternalPrecedenceAndClosedOutput(t *testing.T) {
+	t.Parallel()
 	binary := buildFixFixture(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", fixFixtureConfiguration())
@@ -296,6 +300,7 @@ func TestCompiledFixInternalPrecedenceAndClosedOutput(t *testing.T) {
 }
 
 func TestCompiledFixRollbackAttributionAndIndependentRetention(t *testing.T) {
+	t.Parallel()
 	binary := buildFixFixture(t)
 	for _, tc := range []struct {
 		name, source string
@@ -359,7 +364,8 @@ func TestCompiledFixRollbackAttributionAndIndependentRetention(t *testing.T) {
 	}
 }
 func TestCompiledFixUnstartedTargetsHaveNoCandidate(t *testing.T) {
-	production := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	production := sharedExecutable(t)
 	synthetic := buildFixFixture(t)
 	for _, tc := range []struct {
 		name, first string
@@ -402,6 +408,7 @@ func TestCompiledFixUnstartedTargetsHaveNoCandidate(t *testing.T) {
 }
 
 func TestCompiledFixIndependentDeferralsKeepTheirActualCauses(t *testing.T) {
+	t.Parallel()
 	binary := buildFixFixture(t)
 	for _, tc := range []struct {
 		name, source, reason, category string

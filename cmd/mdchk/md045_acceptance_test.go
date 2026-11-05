@@ -66,7 +66,8 @@ func md045NativeAssert(t *testing.T, out result.Result, tc md045NativeLiteral, v
 	}
 }
 func TestCompiledPlatformMD045AnalysisFixtures(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range md045NativeLiterals(t) {
 		if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 			t.Fatal("fixture source identity")
@@ -128,7 +129,8 @@ func TestCompiledPlatformMD045AnalysisFixtures(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD045DefaultOnAndInvalidAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, value := range []string{"omitted", "{}", "{enabled: false}", "{enabled: false, unknown: true}", "{allow_directives: 1}", "{allow_decorative: 1}"} {
 			t.Run(flavor+"/"+value, func(t *testing.T) {
@@ -168,7 +170,8 @@ func md045Configuration(flavor string) string {
 }
 
 func TestCompiledPlatformMD045FullSourceInspectionAndReset(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, source, setting, line string
 		active, hidden              int
@@ -205,7 +208,8 @@ func TestCompiledPlatformMD045FullSourceInspectionAndReset(t *testing.T) {
 }
 
 func TestCompiledPlatformMD045HeadersAndInheritedPermissions(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, source, extra string
 		want, status        int

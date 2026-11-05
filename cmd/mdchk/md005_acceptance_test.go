@@ -16,7 +16,8 @@ func md005Configuration(flavor string) string {
 	return strings.Replace(strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1), "MD005: {enabled: false}", "MD005: {enabled: true}", 1)
 }
 func TestCompiledPlatformMD005ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	data, err := os.ReadFile("../../internal/rules/testdata/md005.json")
 	if err != nil {
 		t.Fatal(err)
@@ -95,7 +96,8 @@ func TestCompiledPlatformMD005ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD005ConfigurationAndComposition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, option := range []string{"null", "{enabled: false, unknown: true}", "{enabled: null}", "{enabled: false, allow_directives: 1}", "{enabled: false, allow_directives: null}"} {
 			t.Run(flavor+"/invalid_"+option, func(t *testing.T) {
@@ -177,7 +179,8 @@ func TestCompiledPlatformMD005ConfigurationAndComposition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD005DirectivesAndValidation(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	source := "<!-- mdchk:disable MD005 -->\n - one\n- two\n  <!-- mdchk:enable MD005 -->\n- three"
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, tc := range []struct {

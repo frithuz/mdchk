@@ -64,7 +64,8 @@ func md060NativeSetting(tc md060NativeLiteral) string {
 }
 
 func TestCompiledPlatformMD060AnalysisFixtures(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range md060NativeLiterals(t) {
 		if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 			t.Fatal("fixture source identity")
@@ -123,7 +124,8 @@ func md060NativeRange(b0, b1, line, c0, c1 int) result.Diagnostic {
 }
 
 func TestCompiledPlatformMD060SpecExamples(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	const violating = "| A| B |\n|---|---|\n|1|2|\n"
 	compact := md060NativeRange(1, 5, 1, 2, 6)
 	compact.Message = "Cell padding does not match the compact style."
@@ -188,7 +190,8 @@ func TestCompiledPlatformMD060SpecExamples(t *testing.T) {
 }
 
 func TestCompiledPlatformMD060SettingsAndInvalidAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, value := range []string{"omitted", "{}", "{enabled: true}", "{enabled: false}", "{enabled: true, style: aligned}", "{enabled: true, style: compact}", "{enabled: true, style: tight}", "{enabled: true, style: tight, allow_directives: false}", "{style: compact}", "{style: wide}", "{style: 1}", "{styles: tight}", "{enabled: \"yes\"}", "{allow_directives: \"false\"}"} {
 		t.Run(value, func(t *testing.T) {
 			root := configurationProject(t)
@@ -237,7 +240,8 @@ func TestCompiledPlatformMD060SettingsAndInvalidAdmission(t *testing.T) {
 }
 
 func TestCompiledPlatformMD060DirectiveSuppression(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, allow := range []bool{false, true} {
 		t.Run(fmt.Sprintf("allow-%v", allow), func(t *testing.T) {
 			root := configurationProject(t)

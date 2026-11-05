@@ -14,7 +14,8 @@ func md044Configuration(flavor string) string {
 }
 
 func TestCompiledPlatformMD044ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		id, source, flavor string
 		ranges             [][2]int
@@ -59,7 +60,8 @@ func TestCompiledPlatformMD044ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD044OptionsAndInheritance(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, setting := range []string{"{enabled: false, names: null}", "{enabled: false, names: [GitHub, 1]}", "{enabled: false, code_blocks: 1}", "{enabled: false, unknown: true}", "{enabled: false, allow_directives: null}"} {
 		t.Run(setting, func(t *testing.T) {
 			root := configurationProject(t)
@@ -100,8 +102,8 @@ func TestCompiledPlatformMD044OptionsAndInheritance(t *testing.T) {
 }
 
 func TestCompiledPlatformMD044NoCGOApply(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md044Configuration("gfm"))
 	putConfigurationFile(t, root, "doc.md", "github")
@@ -112,7 +114,8 @@ func TestCompiledPlatformMD044NoCGOApply(t *testing.T) {
 }
 
 func TestCompiledPlatformMD044MD047Composition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, source := range []string{"`github`", "`github` tail"} {
 		t.Run(source, func(t *testing.T) {
 			root := configurationProject(t)

@@ -13,7 +13,8 @@ import (
 // These rows run the compiled CLI over native fixtures: the shared resource
 // service, strict no-follow reader and fragment resolver decide each outcome.
 func TestCompiledPlatformMD051ResourceFragments(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, crossFile, link string
 		findings, coverage    int
@@ -140,7 +141,8 @@ func md051Project(t *testing.T, crossFile string) string {
 // Reports keep the invocation-relative path while resolution uses the bound
 // root-relative key, so the same document yields identical facts from any cwd.
 func TestCompiledPlatformMD051ResourceFragmentsFromSubdirectory(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	const source = "# Self\n\n[a](other.md#nope) [b](../top.md#nope) [c](../top.md#top) [d](../gone.md#x) [e](broken.md#x)\n"
 	for _, tc := range []struct {
 		name, cwd, target, path string
@@ -178,7 +180,8 @@ func TestCompiledPlatformMD051ResourceFragmentsFromSubdirectory(t *testing.T) {
 }
 
 func TestCompiledPlatformMD051ResourceFragmentsCRLFRanges(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := md051Project(t, "true")
 	putConfigurationFile(t, root, "docs/self.md", "# Self\r\n\r\n[x](other.md#nope) [y](broken.md#a)\r\n")
 	got := md014NativeRun(t, binary, root, "lint", "docs/self.md", "--format=json")
@@ -194,7 +197,8 @@ func TestCompiledPlatformMD051ResourceFragmentsCRLFRanges(t *testing.T) {
 }
 
 func TestCompiledPlatformMD051ResourceFragmentsContainersReferencesAndQueries(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := md051Project(t, "true")
 	putConfigurationFile(t, root, "docs/self.md", "# Self\n\n> [x](other.md#nope)\n\n- [y](other.md#nope)\n\n[z][r] [w]\n\n[r]: other.md#nope\n[w]: other.md#intro\n\n[q](self.md?v=1#nope) [s](self.md?v=1#self) [t](?v=1#nope)\n")
 	got := md014NativeRun(t, binary, root, "lint", "docs/self.md", "--format=json")
@@ -218,7 +222,8 @@ func TestCompiledPlatformMD051ResourceFragmentsContainersReferencesAndQueries(t 
 }
 
 func TestCompiledPlatformMD051ResourceFragmentsMultipleLinks(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := md051Project(t, "true")
 	putConfigurationFile(t, root, "docs/self.md", "# Self\n\n[a](sub/#x) [b](sub/#y) [c](broken.md#x) [d](broken.md#y) [e](other.md#intro)\n")
 	got := md014NativeRun(t, binary, root, "lint", "docs/self.md", "--format=json")
@@ -249,7 +254,8 @@ func TestCompiledPlatformMD051ResourceFragmentsMultipleLinks(t *testing.T) {
 // resources.index_file flows from configuration through the plan into the shared
 // resolver, which tries exactly that filename for directory links.
 func TestCompiledPlatformMD051ResourceIndexFile(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, index, target, source string
 		findings, coverage          int
@@ -317,7 +323,8 @@ func TestCompiledPlatformMD051ResourceIndexFile(t *testing.T) {
 
 // The inspect configuration view reports the explicit index file with its origin.
 func TestCompiledPlatformMD051InspectShowsIndexFileProvenance(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", cleanConfiguration()+"resources: {index_file: README.md}\n")
 	putConfigurationFile(t, root, "doc.md", "# Doc\n")
@@ -348,7 +355,8 @@ func TestCompiledPlatformMD051InspectShowsIndexFileProvenance(t *testing.T) {
 // Candidate analysis of each fix target sees selected neighbors at their original
 // content: a changed neighbor (final newline added) does not alter the result.
 func TestCompiledPlatformMD051ResourceFragmentsMultiTargetFixDryRun(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	conf := strings.Replace(cleanConfiguration(), "MD051: {enabled: false}", "MD051: {cross_file: true}", 1)
 	conf = strings.Replace(conf, "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
@@ -376,7 +384,8 @@ func TestCompiledPlatformMD051ResourceFragmentsMultiTargetFixDryRun(t *testing.T
 // An over-long destination names no resource: the provider exists, so the
 // reduced-coverage message must not claim the resource context is missing.
 func TestCompiledPlatformMD051OverlongDestinationCoverage(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := md051Project(t, "true")
 	putConfigurationFile(t, root, "docs/self.md", "# Self\n\n[a](other.md#nope) [b]("+strings.Repeat("a", 5000)+".md#x)\n")
 	got := md014NativeRun(t, binary, root, "lint", "docs/self.md", "--format=json")

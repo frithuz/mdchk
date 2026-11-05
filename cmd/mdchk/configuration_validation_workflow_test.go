@@ -16,7 +16,8 @@ import (
 // These assertions run the production executable, not the dispatcher or a
 // test-only validator. Git is used only to construct a tracked-file fixture.
 func TestConfigurationValidationWorkflow(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	env := validationEnvironment(t)
 	run := func(t *testing.T, root, snapshotRoot string, args ...string) configurationRun {
 		t.Helper()

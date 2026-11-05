@@ -15,7 +15,8 @@ import (
 // This workflow compiles the ordinary production command with no provider
 // overlay. The retained byte fixtures are shared acceptance inputs for #183.
 func TestCompiledProductionMD047FixWorkflow(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	data, err := os.ReadFile("testdata/md047_corrections.json")
 	if err != nil {
 		t.Fatal(err)
@@ -123,7 +124,8 @@ func TestCompiledProductionMD047FixWorkflow(t *testing.T) {
 }
 
 func TestCompiledProductionMD047FixBoundsAndRemainingCoverage(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\nflavor: commonmark\n")
 	putConfigurationFile(t, root, "doc.md", "hello")
@@ -156,7 +158,8 @@ func TestCompiledProductionMD047FixBoundsAndRemainingCoverage(t *testing.T) {
 }
 
 func TestCompiledProductionMD047InheritedDirectivePermission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, kind := range []string{"per-rule", "global", "ancestor"} {
 		t.Run(kind, func(t *testing.T) {
 			root := configurationProject(t)

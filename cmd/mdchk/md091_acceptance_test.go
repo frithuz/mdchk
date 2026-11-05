@@ -73,7 +73,8 @@ func md091NativeDiagnostics(t *testing.T, out result.Result, tc md091NativeLiter
 }
 
 func TestCompiledPlatformMD091LiteralLint(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	cases := md091NativeLiterals(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, name := range []string{"basic-strong", "actual-html-markup", "inline-html-exempt", "quote-prefix-mapping", "astral-prefix-scalar-columns", "multiple-flat-candidates", "form1-any-four-case-insensitive-closer", "form1-closer-inside-attribute-keeps-attribute-protected", "failed-named-context-atomic-withholding", "md087-real-hidden-finding-used", "md087-real-complete-absence-unused", "md087-atomic-withheld-prefix-uncertain", "default-disabled", "permitted-enable-of-configured-off"} {
@@ -103,7 +104,8 @@ func TestCompiledPlatformMD091LiteralLint(t *testing.T) {
 }
 
 func TestCompiledPlatformMD091InspectionContextAndPermissions(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	cases := md091NativeLiterals(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, row := range []struct {
@@ -169,7 +171,8 @@ func TestCompiledPlatformMD091InspectionContextAndPermissions(t *testing.T) {
 }
 
 func TestCompiledPlatformMD091MD047Composition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md091NativeLiterals(t)["basic-strong"]
 	tc.Source = "<div>\n**x**\n</div>\n\nend"
 	for _, flavor := range []string{"commonmark", "gfm"} {
@@ -227,7 +230,8 @@ func TestCompiledPlatformMD091MD047Composition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD091ProtectedEOFFix(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md091NativeLiterals(t)["missing-final-newline"]
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
@@ -258,8 +262,8 @@ func TestCompiledPlatformMD091ProtectedEOFFix(t *testing.T) {
 }
 
 func TestCompiledPlatformMD091NoCGOAnalysisAndApply(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	tc := md091NativeLiterals(t)["basic-strong"]
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
@@ -313,7 +317,8 @@ func TestCompiledPlatformMD091NoCGOAnalysisAndApply(t *testing.T) {
 }
 
 func TestCompiledPlatformMD091DefaultsAndAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md091NativeLiterals(t)["basic-strong"]
 	for _, setting := range []string{"OMITTED", "{}", "{enabled: true}", "{enabled: false}"} {
 		t.Run(setting, func(t *testing.T) {
@@ -356,7 +361,8 @@ func TestCompiledPlatformMD091DefaultsAndAdmission(t *testing.T) {
 }
 
 func TestCompiledPlatformMD091FourReporters(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md091NativeLiterals(t)["basic-strong"]
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md091NativeConfig("gfm", tc, false))
