@@ -303,8 +303,8 @@ ordinary prose under section 6.9; MD034 analysis also inspects eligible FTP
 prose and source context rather than treating every Link as exempt. Angle FTP
 retains its ordinary core origin. MD054 still has exactly five styles and maps
 both recognized origins to its existing autolink style. Parser provenance alone
-does not implement a named rule; MD034 analysis is available separately, while
-MD054 remains planned. Public partial profiles remain unsupported.
+does not implement a named rule; MD034 and MD054 analysis are available
+separately. Public partial profiles remain unsupported.
 
 ### Disallowed-HTML interpretation
 

@@ -12,7 +12,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD051](md051.md) | Unresolved fragment targets | Analysis implemented |
 | [MD052](md052.md) | References without definitions | Analysis/configuration implemented; report only |
 | [MD053](md053.md) | Unneeded link and image definitions | Planned |
-| [MD054](md054.md) | Link and image representation style | Planned |
+| [MD054](md054.md) | Link and image representation style | Analysis/configuration implemented; report only |
 | [MD057](md057.md) | Missing local link targets | Planned |
 | [MD059](md059.md) | Uninformative link labels | Planned |
 | [MD062](md062.md) | Whitespace in destination URLs | Planned |
