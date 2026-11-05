@@ -90,7 +90,7 @@ func TestMD028CatalogStrictSettingsAndDefaults(t *testing.T) {
 			t.Fatal(m)
 		}
 	}
-	if len(r.Metadata()) != 87 || enabled != 59 || !r.Available("MD028") || r.Available("MD053") {
+	if len(r.Metadata()) != 87 || enabled != 59 || !r.Available("MD028") || r.Available("MD071") {
 		t.Fatal("catalog metadata")
 	}
 	for _, mapping := range []map[string]any{{}, {"enabled": true}, {"enabled": false}, {"allow_directives": true}, {"allow_directives": false}} {
