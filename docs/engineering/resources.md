@@ -215,7 +215,7 @@ content failure must not erase a successful existence check.
 | Outcome | Rule/result treatment |
 | --- | --- |
 | Found regular file | MD057 can complete; load content only when a consumer needs it |
-| Found directory | Resolve exactly one configured index filename; no README/index.html/extension guessing. MD057 exempts the resource root itself (see below) |
+| Found directory | Resolve exactly one configured index filename; no README/index.html/extension guessing. The resource root is no exception (see below) |
 | Authoritative absence | MD057/eligible navigation consumer reports a finding |
 | Unknown omitted entry in partial map | Resource-unavailable coverage; not a missing-target finding |
 | Explicit unavailable subtree, root escape, denied symlink, Git metadata, unsupported path/type | Coverage deficit; do not assert absence |
@@ -284,20 +284,17 @@ required index file. These are established target-type mismatches for MD057,
 not permission failures. Resolve only one index level; never recurse through
 `index.md/index.md` or scan alternate names.
 
-Root exemption (MD057 only, approved for issue #102): a destination that
-normalizes to the resource root itself, such as `.` or `./` from a root document
-or `../` from a direct subdirectory, is a found target for MD057 with no index
-lookup, whether or not the root has `index_file`. It applies identically to the
-native project root and to the virtual root of a supplied inventory
-(standalone/MCP): the root is a known directory in both, so no index request is
-planned or made and partial-map completeness does not matter. Every other
-directory, including a document's own non-root directory, keeps the single index
-attempt. MD051 `cross_file` does not take the exemption: a fragment needs a
-document whose anchors can be looked up, and a directory has none of its own, so
-a root fragment still resolves the configured index once. A root without that
-index is the established mismatch MD057 owns, so MD051 treats it as inapplicable
-(no finding, no coverage) and MD057, being exempt, reports nothing either.
-Whether MD051 should follow the exemption is an open product decision.
+The resource root follows the same rule as every other directory, for MD057
+and MD051 `cross_file` alike (decided for issue #102). A destination that
+normalizes to the root, such as `.` or `./` from a root document or `../` from
+a direct subdirectory, is a known directory without a lookup and then tries
+`index_file` once. A root without that index is the MD057 mismatch
+`Directory has no configured index file.`, and MD051 treats a root fragment such
+as `../#top` as inapplicable after that established absence; with the index, MD057
+passes and MD051 checks the fragment against the index's anchors. The virtual
+root of a supplied inventory (standalone/MCP) behaves identically: its index is
+looked up in the map, so an unlisted index in a partial map is unknown coverage,
+not absence.
 
 The shared settings replace MD057's `index_file` and MD051/MD080's
 `anchor_style` options. The old per-rule spellings are unknown options, including
