@@ -37,7 +37,7 @@ jobs:
       - name: Check resource schema with ECMAScript regex engine
         run: node tools/resource_schema.mjs
       - name: Test
-        run: go test ./...
+        run: go run ./tools/testrun ./...
       - name: Build without cgo
         # Apply is portable Go: no build may require a C toolchain.
         run: CGO_ENABLED=0 go build ./...
@@ -50,9 +50,9 @@ jobs:
             GOOS=${target%/*} GOARCH=${target#*/} CGO_ENABLED=0 go vet ./...
           done
       - name: Test actual GFM AST adapter and scope controls
-        run: go test -tags mdchk_conformance ./internal/conformance/... -count=1 -v
+        run: go run ./tools/testrun -tags mdchk_conformance ./internal/conformance/... -count=1
       - name: Test closed GFM scopes preserve production admission
-        run: go test -tags mdchk_conformance ./internal/cli -run '^TestGFMPrivateScopesPreserveProductionAdmission$' -count=1
+        run: go run ./tools/testrun -tags mdchk_conformance ./internal/cli -run '^TestGFMPrivateScopesPreserveProductionAdmission$' -count=1
       - name: Vet
         run: go vet ./...
       - name: Lint
@@ -64,13 +64,13 @@ jobs:
       - name: Check pinned published GFM corpus
         run: python3 -B tools/gfm_corpus.py --check
       - name: Test published GFM corpus ingestion
-        run: python3 -B -m unittest discover -s tools -p 'test_gfm_corpus.py' -v
+        run: sh tools/unittest.sh discover -s tools -p 'test_gfm_corpus.py'
       - name: Check approved GFM profile fixture contract
         run: python3 -B tools/gfm_profile.py --check
       - name: Test GFM profile source contracts and refusal controls
-        run: python3 -B -m unittest discover -s tools -p 'test_gfm_profile.py' -v
+        run: sh tools/unittest.sh discover -s tools -p 'test_gfm_profile.py'
       - name: Test actual GFM runner and strict comparator regressions
-        run: python3 -B -m unittest discover -s tools -p 'test_gfm_conformance.py' -v
+        run: sh tools/unittest.sh discover -s tools -p 'test_gfm_conformance.py'
       - name: Require complete approved GFM parser profile
         run: python3 -B tools/gfm_profile.py --run --require-approved-profile
       - name: Check pinned Unicode folding table
@@ -80,11 +80,11 @@ jobs:
       - name: Check pinned HTML entity table
         run: python3 -B tools/html_entities.py --check
       - name: Test CommonMark corpus tooling
-        run: python3 -B -m unittest discover -s tools -p 'test_commonmark_corpus.py' -v
+        run: sh tools/unittest.sh discover -s tools -p 'test_commonmark_corpus.py'
       - name: Require complete CommonMark conformance
         run: python3 -B tools/commonmark_conformance.py --require-complete
       - name: Test CommonMark transport, ratchet, and full upstream conformance
-        run: python3 -B -m unittest discover -s tools -p 'test_commonmark_conformance.py' -v
+        run: sh tools/unittest.sh discover -s tools -p 'test_commonmark_conformance.py'
       # Vulnerability scans run even when an earlier gate fails, so scheduled
       # scans still report.
       - name: Scan complete Go module for applicable vulnerabilities
@@ -125,25 +125,25 @@ jobs:
       - name: Verify native confined resource reads and root selection
         # Resource-backed integration providers must execute on the real host;
         # pure integration policy tests are not part of this native filter.
-        run: go test ./internal/resource ./internal/integration -run "^(TestFilesystem|TestNative)" -count=1 -v -timeout=5m
+        run: go run ./tools/testrun ./internal/resource ./internal/integration -run "^(TestFilesystem|TestNative)" -count=1 -timeout=5m
       - name: Verify compiled native paths, streams, real interrupts and capabilities
         # The expanded native suite reached the fifteen-minute limit on Windows.
         # Keep room for the complete inventory and later native integration gates.
-        run: go test ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryApply|TestCompiledApplyNoCGOApplies|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -v -timeout=20m
+        run: go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryApply|TestCompiledApplyNoCGOApplies|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -timeout=20m
       - name: Verify portable apply adapter without cgo
         env:
           CGO_ENABLED: "0"
         run: |
-          go test ./internal/fsroot ./internal/files ./internal/fix -count=1 -timeout=10m
-          go test ./internal/cli -run "^(TestApply.*|TestFrontmatterApplyPreservesHeaderAndConverges|TestFrontmatterOperationParityNativeApply|TestGitHubActualPartialSavedPublication|TestVSCodeActualPartialSavedPublication)$" -count=1 -timeout=10m
+          go run ./tools/testrun ./internal/fsroot ./internal/files ./internal/fix -count=1 -timeout=10m
+          go run ./tools/testrun ./internal/cli -run "^(TestApply.*|TestFrontmatterApplyPreservesHeaderAndConverges|TestFrontmatterOperationParityNativeApply|TestGitHubActualPartialSavedPublication|TestVSCodeActualPartialSavedPublication)$" -count=1 -timeout=10m
       - name: Verify compiled apply without cgo
         env:
           CGO_ENABLED: "0"
-        run: go test ./cmd/mdchk -run "^(TestCompiledProductionMD047ApplySavedWorkflow|TestCompiledApply.*|TestCompiledEditorPartialNativePublication|TestCompiledProductionMD051ResourceFragmentsApplySavedView|TestCompiledGFMNativeSavedBytes)$" -count=1 -timeout=15m
+        run: go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledProductionMD047ApplySavedWorkflow|TestCompiledApply.*|TestCompiledEditorPartialNativePublication|TestCompiledProductionMD051ResourceFragmentsApplySavedView|TestCompiledGFMNativeSavedBytes)$" -count=1 -timeout=15m
       - name: Verify compiled GFM selection, consumers and native publication
-        run: go test ./cmd/mdchk -run "^TestCompiledGFM" -count=1 -v -timeout=5m
+        run: go run ./tools/testrun ./cmd/mdchk -run "^TestCompiledGFM" -count=1 -timeout=5m
       - name: Verify compiled editor and documented integration contracts
-        run: go test ./internal/cli -run "^(TestCompiledEditor.*|TestDocumented.*|TestEditorRealCommandWriterFailuresAndBounds|TestEditorCommandArgumentsAndIndependentLifetime|TestValidateActualTinyReportingDeadline|TestValidateCompletedReportingAssertions|TestValidateExpiredReportingContextPreservesActualCounts)$" -count=1 -v -timeout=15m
+        run: go run ./tools/testrun ./internal/cli -run "^(TestCompiledEditor.*|TestDocumented.*|TestEditorRealCommandWriterFailuresAndBounds|TestEditorCommandArgumentsAndIndependentLifetime|TestValidateActualTinyReportingDeadline|TestValidateCompletedReportingAssertions|TestValidateExpiredReportingContextPreservesActualCounts)$" -count=1 -timeout=15m
 
   race:
     # Go's race detector requires a supported OS/architecture, a C compiler and
@@ -173,11 +173,11 @@ jobs:
       - name: Test with race detector
         # The full native acceptance suite exceeds Go's default ten-minute
         # package timeout under race instrumentation.
-        run: go test -race -timeout=20m ./...
+        run: go run ./tools/testrun -race -timeout=20m ./...
       - name: Test actual GFM AST adapter with race detector
-        run: go test -race -tags mdchk_conformance ./internal/conformance/... -count=1
+        run: go run ./tools/testrun -race -tags mdchk_conformance ./internal/conformance/... -count=1
       - name: Test closed GFM production admission with race detector
-        run: go test -race -tags mdchk_conformance ./internal/cli -run '^TestGFMPrivateScopesPreserveProductionAdmission$' -count=1
+        run: go run ./tools/testrun -race -tags mdchk_conformance ./internal/cli -run '^TestGFMPrivateScopesPreserveProductionAdmission$' -count=1
 
   fuzz:
     # Pushes and pull requests smoke every parser fuzz target in one job. The
