@@ -27,6 +27,10 @@ and the CommonMark and GFM corpus, profile and table checks in `tools/`. CI
 also runs a vulnerability scan at the end of that job, plus race, fuzz and
 native macOS and Windows jobs.
 
+CI runs Go tests through `go run ./tools/testrun`, which prints one summary
+line on a pass and only failing output otherwise; set `DEBUG=1` for the full
+`go test -v` stream.
+
 ## Software factory
 
 `/factory run` builds every open GitHub issue labeled `factory` through

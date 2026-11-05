@@ -18,6 +18,25 @@ go test ./...
 go vet ./...
 ```
 
+For quiet output, run the suites through the repository test runners, which CI
+uses:
+
+```sh
+go run ./tools/testrun ./...
+sh tools/unittest.sh discover -s tools -p '<file>'
+```
+
+`tools/testrun` passes its arguments to `go test` and exits with its status. A
+passing run prints one summary line; a failing run prints only the failing
+tests' output, build errors, panics and timeouts. `tools/unittest.sh` prints
+only the `unittest` totals and buffers test output. Set `DEBUG` to a non-empty
+value other than `0`, for example `DEBUG=1`, for the full `go test -v` stream
+and unbuffered, per-test Python output. CI maps `DEBUG` from the runner's debug
+logging, so re-running a job with debug logging enabled makes it verbose.
+
+Test code must not write to the terminal on a passing run unless `DEBUG` is
+set: use `t.Log` in Go and a `DEBUG`-gated `print` in Python.
+
 On platforms that support Go's race detector, also run:
 
 ```sh
@@ -108,7 +127,7 @@ to build and exercise the current production executable. The repository includes
 compiled-process acceptance tests with exact operating-system exit statuses:
 
 ```sh
-go test ./cmd/mdchk -run 'Test(Configuration|Lint)' -count=1 -v
+go run ./tools/testrun ./cmd/mdchk -run 'Test(Configuration|Lint)' -count=1
 ```
 
 `configuration_acceptance_test.go` supplies the bounded build/process helpers,
