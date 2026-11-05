@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-func registry(t *testing.T, registrations []engine.Registration) *engine.Registry {
+func registry(t testing.TB, registrations []engine.Registration) *engine.Registry {
 	t.Helper()
 	r, err := engine.NewCatalogRegistry(registrations)
 	if err != nil {

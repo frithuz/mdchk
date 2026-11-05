@@ -6,6 +6,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 	"testing"
@@ -213,5 +214,32 @@ func TestExistenceReportProjection(t *testing.T) {
 	}
 	if err := report.Append(f.view, resolutions); err == nil {
 		t.Fatal("finished report accepted a batch")
+	}
+}
+
+func TestExistenceResolverSharesSourceProjection(t *testing.T) {
+	f := fragmentNativeFixture(t, "source.md", "index.md", []string{"a.md", "b.md", "c.md#x"})
+	fragments := fragmentNativeResolver(t, filesystemTestService(t, f), f.view)
+	resolver, err := fragments.Existence()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if again, err := fragments.Existence(); err != nil || again != resolver {
+		t.Fatal("existence resolver rebuilt per call", err)
+	}
+	var ranges []result.Range
+	for _, destination := range []string{"a.md", "b.md", "c.md#x"} {
+		got := existenceResolve(t, resolver, f.source, destination)
+		ranges = append(ranges, got.state.query.location)
+		if got.state.query.snapshot.SizeBytes != f.source.Len() || got.state.query.snapshot.View != "original" {
+			t.Fatal(got.state.query.snapshot)
+		}
+	}
+	if len(resolver.projections) != 1 {
+		t.Fatal("source projection built per link", len(resolver.projections))
+	}
+	want := []result.Range{{Start: result.Position{Line: 2, Column: 9}, End: result.Position{Line: 2, Column: 13}}, {Start: result.Position{Line: 3, Column: 9}, End: result.Position{Line: 3, Column: 13}}, {Start: result.Position{Line: 4, Column: 9}, End: result.Position{Line: 4, Column: 15}}}
+	if !reflect.DeepEqual(ranges, want) {
+		t.Fatal(ranges)
 	}
 }
