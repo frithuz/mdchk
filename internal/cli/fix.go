@@ -203,7 +203,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	targets := make([]fix.Target, 0, len(acquired.Documents))
 	if len(acquired.PreflightErrors) == 0 {
 		var fragments func(string, parser.Source) engine.FragmentResources
-		if rule := inv.plan.Rules()["MD051"]; rule.Enabled && rule.Available && len(acquired.Documents) > 0 {
+		if resourceRules(inv.plan.Rules()) && len(acquired.Documents) > 0 {
 			// Read-only resource lookups share the fix budget. Selected targets are
 			// bound with their original acquisition; candidate and saved views
 			// replace them, so lookups never create a write target.
