@@ -9,10 +9,10 @@ Start with the [documentation index](docs/index.md) for global options, commands
 mdchk is under active development. This build provides:
 
 - **Markdown formats.** [CommonMark 0.31.2](docs/markdown-formats.md) passes all 652 specification examples. GFM uses CommonMark plus all five pinned extensions and passes 2,117 approved comparison units, including every published case; see the [parser verification record](docs/engineering/gfm-verification.md). GFM is the default. Optional YAML and TOML frontmatter is supported in both formats.
-- **Rules.** 82 of the [87 rules](docs/rules/index.md) are implemented for both formats; the table rules MD055, MD056, MD058, MD060 and MD075 apply to GFM only.
+- **Rules.** 83 of the [87 rules](docs/rules/index.md) are implemented for both formats; the table rules MD055, MD056, MD058, MD060 and MD075 apply to GFM only.
 
-  - Disabled by default: MD013, MD026, MD033, MD036, MD040, MD043, MD044, MD054, MD060, MD061, MD063, MD070, MD072, MD073, MD074, MD080, MD081, MD082, MD083, MD085, MD087, MD088, MD089, MD090, MD091 and MD093.
-  - Not yet implemented: MD066, MD067, MD068, MD084 and MD095.
+  - Disabled by default: MD013, MD026, MD033, MD036, MD040, MD043, MD044, MD054, MD060, MD061, MD063, MD070, MD072, MD073, MD074, MD080, MD081, MD082, MD083, MD084, MD085, MD087, MD088, MD089, MD090, MD091 and MD093.
+  - Not yet implemented: MD066, MD067, MD068 and MD095.
 - **Corrections.** MD047, a missing final newline, is the only automatic correction so far. Every other rule reports findings for a person or agent to resolve.
 - **Commands.** `lint`, `fix`, `inspect` and `config validate` are available. The [MCP server](#use-with-ai-agents) is planned.
 

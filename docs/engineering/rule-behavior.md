@@ -117,6 +117,16 @@ UTF-8 bytes without folding or normalization. Every leftmost-longest winner
 reports with `Text may be corrupted by an encoding mismatch.` See
 [MD083](../rules/encoding/md083.md) for the full policy. Findings are report-only.
 
+### Md084
+
+MD084 shares the same prose walker as MD061, with code blocks always off, and
+inspects each scalar of Exact Text parts. It reports every literal U+200B,
+U+202A through U+202E and U+FEFF not at byte offset 0, unless the code point is
+listed in `allowed_codepoints`. Entities and escapes are barriers, so `&#x200B;`
+is never reported. Each finding covers the scalar's three original bytes with
+`Hidden or discouraged Unicode character U+XXXX.`. See
+[MD084](../rules/encoding/md084.md) for the full policy. Findings are report-only.
+
 ### Md049
 
 MD049 consumes only actual Valid Emphasis facts of width one from the shared
