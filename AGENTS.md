@@ -24,7 +24,8 @@ A fresh checkout needs Go (the version in `go.mod`), Node and Python 3. Run
 `.github/workflows/go.yml`: `go test ./...`, the no-cgo build, cross-target
 `go vet`, the conformance-tagged tests, `sh tools/lint.sh` and its self-test,
 and the CommonMark and GFM corpus, profile and table checks in `tools/`. CI
-also runs race, fuzz, native cross-OS and vulnerability jobs.
+also runs a vulnerability scan at the end of that job, plus race, fuzz and
+native macOS and Windows jobs.
 
 ## Software factory
 

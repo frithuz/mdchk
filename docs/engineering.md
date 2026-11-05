@@ -431,8 +431,9 @@ current capability limits.
 
 ## Platform and process acceptance
 
-The `cli-platform` CI jobs execute actual compiled commands on pinned macOS,
-Linux and Windows runner images. They print GOOS, GOARCH and CGO_ENABLED and
+The `cli-platform` CI jobs execute actual compiled commands on pinned macOS
+and Windows runner images; on Linux the `test` and `race` jobs run the same
+tests. They print GOOS, GOARCH and CGO_ENABLED and
 exercise native separators, spaces, Unicode, dash-prefixed paths, alias and
 ordering stability, raw CRLF bytes, public report paths, real output descriptors,
 filesystem errors and read-only previews. Editor and documented integration
@@ -464,7 +465,9 @@ an internal failure requires 14. The other stream is still attempted, and ordina
 text/JSON reports are not copied to stderr as a fallback.
 
 Safe publication is one portable implementation for Linux, macOS and Windows,
-verified on each by the `cli-platform` jobs with `CGO_ENABLED=0`. Other operating
+verified on macOS and Windows by the `cli-platform` jobs with `CGO_ENABLED=0`
+and on Linux by the `test` job. The module has no cgo code, so the cgo setting
+does not change what Linux tests. Other operating
 systems refuse apply with 13 and unchanged files, while dry-run works. Network,
 cloud and virtual filesystems are not verified. See
 [native writes](engineering/native-writes.md) for the accepted limits.

@@ -15,7 +15,7 @@ Apply is implemented once for Linux, macOS and Windows and builds with
 
 | Host | Apply behavior | Evidence |
 | --- | --- | --- |
-| Linux, macOS, Windows | Native replacement and exact saved snapshots through one implementation | `cli-platform` CI job on all three, with `CGO_ENABLED=0`; the full race job on Linux and the adapter packages on macOS |
+| Linux, macOS, Windows | Native replacement and exact saved snapshots through one implementation | `cli-platform` CI job on macOS and Windows, with `CGO_ENABLED=0`; the `test` and full race jobs on Linux |
 | Any other `GOOS` | Explicit refusal, exit 13, nothing written: `native replacement is unsupported on <GOOS>; apply supports linux, darwin and windows`. Dry-run remains usable | Compile check for `freebsd` in the `test` job and a unit test of the refusal |
 
 The refusal on other hosts is a deliberate, testable decision, not a missing

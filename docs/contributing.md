@@ -255,9 +255,9 @@ command that masks that status. JSON, SARIF and OpenVEX formats do not provide
 the same finding exit behavior and must not replace this gate without explicit
 status handling.
 
-The independent, 15-minute `vulnerabilities` job in the existing Go workflow
-runs on pushes, pull requests, manual dispatch and the existing Monday 04:23 UTC
-schedule. It uses the minimum Go version in `go.mod` on Ubuntu amd64. Local
+The vulnerability scan runs at the end of the `test` job in the existing Go
+workflow, even when an earlier step fails, on pushes to `main`, pull requests,
+manual dispatch and the existing Monday 04:23 UTC schedule. It uses the minimum Go version in `go.mod` on Ubuntu amd64. Local
 scans cover the current `GOOS`/`GOARCH`, build tags and installed toolchain; CI
 covers its Linux amd64 build. Neither is an all-platform proof. Before shipping
 other platforms or custom tags, repeat source scans with the corresponding Go

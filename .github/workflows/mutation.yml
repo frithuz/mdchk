@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   critical-behavior:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     # Three 15-minute area deadlines, installation, replays and artifact margin.
     timeout-minutes: 65
     env:

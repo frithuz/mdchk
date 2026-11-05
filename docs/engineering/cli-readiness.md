@@ -64,8 +64,8 @@ candidate bytes, publish an observed saved identity, leave protected/suppressed
 and unrelated inputs unchanged, and perform a second application without changes
 or inode replacement. An operating system outside those three must explicitly
 refuse as unsupported with exit 13 and no effects. An arbitrary I/O failure is not
-accepted as adapter evidence. The three-OS `cli-platform` CI job runs this journey
-on macOS, Linux and Windows.
+accepted as adapter evidence. The `cli-platform` CI job runs this journey on
+macOS and Windows, and the `test` job runs it on Linux.
 
 Other boundary proofs remain separate, named acceptance tests:
 

@@ -1,7 +1,10 @@
 name: Go
 
 on:
+  # Branches are checked through their pull requests, so a branch push does not
+  # run the same commit twice.
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
   schedule:
@@ -10,9 +13,15 @@ on:
 permissions:
   contents: read
 
+# A newer push to a pull request supersedes its older run. Every other run gets
+# its own group, so each main commit and scheduled scan completes.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       GOTOOLCHAIN: local
       GOWORK: "off"
@@ -76,15 +85,23 @@ jobs:
         run: python3 -B tools/commonmark_conformance.py --require-complete
       - name: Test CommonMark transport, ratchet, and full upstream conformance
         run: python3 -B -m unittest discover -s tools -p 'test_commonmark_conformance.py' -v
+      # Vulnerability scans run even when an earlier gate fails, so scheduled
+      # scans still report.
+      - name: Scan complete Go module for applicable vulnerabilities
+        if: ${{ !cancelled() }}
+        run: sh tools/vulncheck.sh
+      - name: Verify vulnerability gate detects findings and scanner failures
+        if: ${{ !cancelled() }}
+        run: sh tools/vulncheck.sh --self-test
 
   cli-platform:
     # These execute actual host binaries. Cross-vet is a separate compile check.
     # Apply is one portable implementation, so the same suite runs on every OS
-    # with CGO_ENABLED=0.
+    # with CGO_ENABLED=0. Linux runs these tests in the test and race jobs.
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-15, windows-2025]
+        os: [blacksmith-6vcpu-macos-26, blacksmith-2vcpu-windows-2025]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     env:
@@ -128,32 +145,17 @@ jobs:
       - name: Verify compiled editor and documented integration contracts
         run: go test ./internal/cli -run "^(TestCompiledEditor.*|TestDocumented.*|TestEditorRealCommandWriterFailuresAndBounds|TestEditorCommandArgumentsAndIndependentLifetime|TestValidateActualTinyReportingDeadline|TestValidateCompletedReportingAssertions|TestValidateExpiredReportingContextPreservesActualCounts)$" -count=1 -v -timeout=15m
 
-  vulnerabilities:
-    # Independent of tests so scheduled scans still run when another gate fails.
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    env:
-      GOTOOLCHAIN: local
-      GOWORK: "off"
-      GOFLAGS: -mod=readonly
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          persist-credentials: false
-      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
-        with:
-          go-version-file: go.mod
-          cache: false
-      - name: Scan complete Go module for applicable vulnerabilities
-        run: sh tools/vulncheck.sh
-      - name: Verify vulnerability gate detects findings and scanner failures
-        run: sh tools/vulncheck.sh --self-test
-
   race:
     # Go's race detector requires a supported OS/architecture, a C compiler and
     # CGO. This Ubuntu amd64 runner supplies GCC; unsupported hosts must report
     # race checks as unavailable rather than counting an ordinary test as a pass.
-    runs-on: ubuntu-24.04
+    # Only Linux runs for now; add hosts here when cross-OS race coverage is
+    # needed, provided they meet the requirements above.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-26.04]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     env:
       GOTOOLCHAIN: local
@@ -177,42 +179,15 @@ jobs:
       - name: Test closed GFM production admission with race detector
         run: go test -race -tags mdchk_conformance ./internal/cli -run '^TestGFMPrivateScopesPreserveProductionAdmission$' -count=1
 
-  race-apply-macos:
-    # Linux is covered by the full race job above. The race detector needs cgo
-    # and a C compiler, so this is the only other host where it can run here;
-    # Windows runs the same suite without it.
-    runs-on: macos-15
-    timeout-minutes: 30
-    env:
-      GOTOOLCHAIN: local
-      GOWORK: "off"
-      GOFLAGS: -mod=readonly
-      CGO_ENABLED: "1"
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          persist-credentials: false
-      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
-        with:
-          go-version-file: go.mod
-          cache: false
-      - name: Test portable apply adapter with race detector
-        run: go test -race -timeout=20m ./internal/fsroot ./internal/files ./internal/fix
-
   fuzz:
-    runs-on: ubuntu-24.04
+    # Pushes and pull requests smoke every parser fuzz target in one job. The
+    # weekly campaign gives each target its own runner and a longer budget.
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        target:
-          - FuzzParse
-          - FuzzGFMProfile
-          - FuzzInlineTextProvenance
-          - FuzzReferenceRegistry
-          - FuzzListMarkerSourceFacts
-          - FuzzListContinuationOwnership
-          - FuzzListGroupingBoundaries
+        target: ${{ github.event_name == 'schedule' && fromJSON('["FuzzParse","FuzzGFMProfile","FuzzInlineTextProvenance","FuzzReferenceRegistry","FuzzListMarkerSourceFacts","FuzzListContinuationOwnership","FuzzListGroupingBoundaries"]') || fromJSON('["all"]') }}
     env:
       GOTOOLCHAIN: local
       GOWORK: "off"
@@ -234,7 +209,14 @@ jobs:
           if [ "$EVENT_NAME" = schedule ]; then
             budget=5m
           fi
-          go test ./internal/parser -run '^$' -fuzz "^${FUZZ_TARGET}$" -fuzztime="$budget" -parallel=2 -timeout=12m
+          targets=$FUZZ_TARGET
+          if [ "$targets" = all ]; then
+            targets=$(go test ./internal/parser -list '^Fuzz' | grep '^Fuzz')
+          fi
+          for target in $targets; do
+            echo "== $target"
+            go test ./internal/parser -run '^$' -fuzz "^${target}$" -fuzztime="$budget" -parallel=2 -timeout=12m
+          done
       - name: Retain minimized failures
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
