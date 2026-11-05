@@ -2788,6 +2788,98 @@
               }
             }
           ]
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "availability": {
+              "enum": [
+                "available",
+                "partial",
+                "unavailable",
+                "not-requested"
+              ]
+            },
+            "reasons": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              }
+            },
+            "data": {
+              "$ref": "#/$defs/InspectionMetadata"
+            },
+            "cause_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "availability",
+            "reasons"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "availability": {
+                    "enum": [
+                      "available",
+                      "partial"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "data"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "availability": {
+                    "enum": [
+                      "unavailable",
+                      "not-requested"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "availability": {
+                    "enum": [
+                      "partial",
+                      "unavailable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "reasons": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
         }
       },
       "required": [
@@ -3146,6 +3238,211 @@
         "content",
         "body_offset",
         "context_only"
+      ],
+      "additionalProperties": false
+    },
+    "InspectionMetadata": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "disabled",
+            "absent",
+            "unterminated",
+            "complete",
+            "incomplete"
+          ]
+        },
+        "format": {
+          "enum": [
+            "yaml",
+            "toml"
+          ]
+        },
+        "range": {
+          "$ref": "#/$defs/Range"
+        },
+        "byte_range": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "context_only": {
+          "type": "boolean"
+        },
+        "extends_region": {
+          "type": "boolean"
+        },
+        "problems": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MetadataProblem"
+          }
+        },
+        "title": {
+          "$ref": "#/$defs/MetadataTitle"
+        },
+        "ordering": {
+          "$ref": "#/$defs/MetadataOrdering"
+        }
+      },
+      "required": [
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "MetadataProblem": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "enum": [
+            "malformed",
+            "unsupported",
+            "duplicate-key"
+          ]
+        },
+        "range": {
+          "$ref": "#/$defs/Range"
+        },
+        "byte_range": {
+          "$ref": "#/$defs/ByteRange"
+        }
+      },
+      "required": [
+        "code",
+        "range",
+        "byte_range"
+      ],
+      "additionalProperties": false
+    },
+    "MetadataTitle": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": [
+            "found",
+            "missing",
+            "unknown"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "range": {
+          "$ref": "#/$defs/Range"
+        },
+        "byte_range": {
+          "$ref": "#/$defs/ByteRange"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "status": {
+            "const": "found"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "text",
+          "range",
+          "byte_range"
+        ]
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "text"
+              ]
+            },
+            {
+              "required": [
+                "range"
+              ]
+            },
+            {
+              "required": [
+                "byte_range"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "MetadataOrdering": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "observation"
+          ]
+        },
+        "recursive": {
+          "type": "boolean"
+        },
+        "case_sensitive": {
+          "type": "boolean"
+        },
+        "mappings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MetadataMapping"
+          }
+        }
+      },
+      "required": [
+        "kind",
+        "recursive",
+        "case_sensitive",
+        "mappings"
+      ],
+      "additionalProperties": false
+    },
+    "MetadataMapping": {
+      "type": "object",
+      "properties": {
+        "range": {
+          "$ref": "#/$defs/Range"
+        },
+        "byte_range": {
+          "$ref": "#/$defs/ByteRange"
+        },
+        "violation": {
+          "type": "boolean"
+        },
+        "offending_keys": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MetadataKey"
+          }
+        }
+      },
+      "required": [
+        "violation",
+        "offending_keys"
+      ],
+      "additionalProperties": false
+    },
+    "MetadataKey": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/$defs/Range"
+        },
+        "byte_range": {
+          "$ref": "#/$defs/ByteRange"
+        }
+      },
+      "required": [
+        "key"
       ],
       "additionalProperties": false
     }

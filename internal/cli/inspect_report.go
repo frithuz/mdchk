@@ -147,6 +147,10 @@ func omitInspectionDetails(out *result.Result, p *inspection.Projection, emergen
 			omit("/inspection/parsing_notes", len(*p.ParsingNotes.Data))
 			p.ParsingNotes = omittedSection[[]result.Note]()
 		}
+		if p.Metadata.Data != nil {
+			omit("/inspection/metadata", 1)
+			p.Metadata = omittedSection[inspection.MetadataRecord]()
+		}
 	}
 	omit("/diagnostics", len(out.Diagnostics))
 	out.Diagnostics = []result.Diagnostic{}
@@ -213,6 +217,7 @@ func clearInspectionCauses(p *inspection.Projection) {
 	p.RawCandidates.CauseIDs = nil
 	p.Resources.CauseIDs = nil
 	p.ParsingNotes.CauseIDs = nil
+	p.Metadata.CauseIDs = nil
 }
 func retainInspectionCauses(p *inspection.Projection, out result.Result) {
 	ids := map[string]bool{}
@@ -241,6 +246,7 @@ func retainInspectionCauses(p *inspection.Projection, out result.Result) {
 	p.RawCandidates.CauseIDs = keep(p.RawCandidates.CauseIDs)
 	p.Resources.CauseIDs = keep(p.Resources.CauseIDs)
 	p.ParsingNotes.CauseIDs = keep(p.ParsingNotes.CauseIDs)
+	p.Metadata.CauseIDs = keep(p.Metadata.CauseIDs)
 }
 
 // inspectionJSON overrides the embedded RawMessage with the already-owned typed
@@ -383,7 +389,7 @@ func renderInspectionText(ctx context.Context, w io.Writer, p *inspection.Projec
 	for _, item := range []struct {
 		label string
 		data  any
-	}{{"Configuration and provenance", p.Configuration}, {"Markdown flavor", p.Flavor}, {"Document context", p.DocumentContext}, {"Rule counts", p.RuleCounts}, {"Directives", p.Directives}, {"Raw directive candidates", p.RawCandidates}, {"Resources", p.Resources}, {"Parsing notes", p.ParsingNotes}} {
+	}{{"Configuration and provenance", p.Configuration}, {"Markdown flavor", p.Flavor}, {"Document context", p.DocumentContext}, {"Rule counts", p.RuleCounts}, {"Directives", p.Directives}, {"Raw directive candidates", p.RawCandidates}, {"Resources", p.Resources}, {"Parsing notes", p.ParsingNotes}, {"Metadata", p.Metadata}} {
 		if err := section(item.label, item.data); err != nil {
 			return err
 		}

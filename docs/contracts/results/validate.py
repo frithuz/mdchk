@@ -1,6 +1,7 @@
 import copy
 import hashlib
 import json
+import re
 from pathlib import Path
 from jsonschema import Draft202012Validator
 
@@ -9,6 +10,9 @@ schema=json.loads((ROOT/'result.schema.json').read_text())
 Draft202012Validator.check_schema(schema)
 validator=Draft202012Validator(schema)
 fixtures=json.loads((ROOT/'fixtures.json').read_text())
+
+# The Unicode White_Space set the title policy trims, not Python's wider str.isspace.
+METADATA_BLANK=re.compile('[\\t-\\r \\x85\\xa0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000]*')
 
 def require(ok,message):
     if not ok:raise ValueError(message)
@@ -197,6 +201,43 @@ def inspection_semantic(x):
         require(header['context_only']==expected_context,'frontmatter selection context mismatch')
         expected_extends=bool(selected_region and (header['byte_range']['start']<selected_region['byte_range']['start'] or header['byte_range']['end']>selected_region['byte_range']['end']))
         require(header.get('extends_region',False)==expected_extends,'frontmatter selected extent mismatch')
+    record=section('metadata')
+    if record:
+        state=record['state'];fields=set(record)-{'extends_region'}
+        located={'state','format','range','byte_range','context_only'}
+        if state in ('disabled','absent'):require(set(record)=={'state'},'metadata state carries header data')
+        elif state=='unterminated':require(fields==located,'unterminated metadata fields mismatch')
+        else:require(fields==located|{'problems','title','ordering'},'decoded metadata fields mismatch')
+        frontmatter=ast.get('frontmatter') if ast else None
+        if state in ('disabled','absent'):require(frontmatter is None,'metadata state contradicts opaque header')
+        elif ast:
+            require(frontmatter is not None,'metadata state contradicts opaque header')
+            require(frontmatter['format']==record['format'] and frontmatter['byte_range']==record['byte_range'],'metadata header differs from opaque record')
+            require(('closer' not in frontmatter)==(state=='unterminated'),'metadata termination differs from opaque record')
+        context=section('document_context')
+        if context:require(context['frontmatter']==(record['format'] if state in ('complete','incomplete') else state),'metadata state differs from document context')
+        if 'byte_range' in record:
+            envelope=record['byte_range'];bounded(envelope)
+            def location(v):return (v['line'],v['column'])
+            def inside(item):
+                require(('range' in item)==('byte_range' in item),'metadata location lacks a coordinate form')
+                if 'byte_range' not in item:return
+                span=item['byte_range'];at=item['range']
+                require(envelope['start']<=span['start']<=span['end']<=envelope['end'],'metadata byte range outside header')
+                require(location(record['range']['start'])<=location(at['start'])<=location(at['end'])<=location(record['range']['end']),'metadata range outside header')
+            require(record['context_only']==bool(selected_region and not intersects(envelope)),'metadata selection context mismatch')
+            require(record.get('extends_region',False)==bool(selected_region and (envelope['start']<selected_region['byte_range']['start'] or envelope['end']>selected_region['byte_range']['end'])),'metadata selected extent mismatch')
+        if state in ('complete','incomplete'):
+            order=[(v['byte_range']['start'],v['byte_range']['end'],v['code']) for v in record['problems']]
+            require(order==sorted(set(order)),'metadata problems not sorted and unique')
+            for problem in record['problems']:inside(problem)
+            title=record['title'];inside(title)
+            if title['status']=='found':require(not METADATA_BLANK.fullmatch(title['text']),'found metadata title is blank')
+            if state=='complete':require(not record['problems'] and title['status']!='unknown','complete metadata claims unknowns')
+            for mapping in record['ordering']['mappings']:
+                inside(mapping)
+                require(mapping['violation'] or not mapping['offending_keys'],'offending metadata keys without violation')
+                for key in mapping['offending_keys']:inside(key)
     rules=section('rules') or []
     require(len({r['rule'] for r in rules})==len(rules),'duplicate inspected rule')
     for r in rules:
@@ -288,5 +329,12 @@ b=json.loads((ROOT/'inspection-invalid-utf8.json').read_text());b['inspection'][
 b=json.loads((ROOT/'invalid-utf8-enabled.json').read_text());b['errors'][0]['range']['start']['column']=0;reject('zero-public-column',b)
 b=json.loads((ROOT/'violations-lint.json').read_text());b['suppressed_diagnostics']=[{'diagnostic':copy.deepcopy(b['diagnostics'][0]),'suppressed_by':{'kind':'directive'}}];reject('duplicate-suppressed-id',b)
 b['suppressed_diagnostics'][0]['diagnostic']['id']='hidden-1';b['suppressed_diagnostics'][0]['diagnostic']['byte_range']={'start':0,'end':100000000};reject('suppressed-source-range',b)
+c=json.loads((ROOT/'metadata-inspection.json').read_text())
+b=copy.deepcopy(c);b['inspection']['metadata']['data']['problems'][0]['byte_range']['end']=b['inspection']['metadata']['data']['byte_range']['end']+1;reject('metadata-problem-outside-header',b)
+b=copy.deepcopy(c);b['inspection']['metadata']['data']={'state':'disabled','title':{'status':'missing'}};reject('metadata-disabled-with-title',b)
+b=copy.deepcopy(c);b['inspection']['metadata']['data']['ordering']['kind']='finding';reject('metadata-ordering-not-observation',b)
+b=copy.deepcopy(c);b['inspection']['metadata']['data']['ordering']['mappings'][0]['violation']=False;reject('metadata-offending-without-violation',b)
+b=copy.deepcopy(c);b['inspection']['metadata']['data']['state']='complete';reject('metadata-complete-with-problems',b)
+b=copy.deepcopy(c);b['inspection']['metadata']['data']['title']['text']=' \u00a0';reject('metadata-blank-found-title',b)
 result={'schema_valid':True,'positive_fixtures':len(fixtures),'negative_fixtures_rejected':len(negative),'negative_cases':negative,'validator':'jsonschema 4.25.1, JSON Schema 2020-12','scope':'Validates accepted serialization, representative cross-record invariants and expected fixture exits; does not test an mdchk implementation.'}
 print(json.dumps(result,indent=2))
