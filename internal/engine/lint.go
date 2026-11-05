@@ -21,7 +21,8 @@ type RunOptions struct {
 	Budget     *parser.OperationBudget
 	Validation ValidationProviders
 	// Fragments optionally supplies the operation's read-only resource context
-	// for cross-file and normalized self-path fragment checks. Nil means none.
+	// for cross-file and normalized self-path fragment checks and local target
+	// existence checks. Nil means none.
 	Fragments  FragmentResources
 	inspection *InspectionTrace
 	candidate  bool
@@ -439,6 +440,19 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				outcome.Err = errors.Join(outcome.Err, reportErr)
 				for _, resolution := range outcome.Fragments {
 					if resolution.Outcome() == resource.FragmentContextUnavailable {
+						targetComplete = false
+					}
+				}
+				if reportErr != nil {
+					targetComplete = false
+				}
+			}
+			if len(outcome.Existence) != 0 {
+				var reportErr error
+				out, reportErr = rc.reportExistence(ctx, out, outcome.Existence)
+				outcome.Err = errors.Join(outcome.Err, reportErr)
+				for _, resolution := range outcome.Existence {
+					if resolution.Outcome() == resource.ExistenceContextUnavailable {
 						targetComplete = false
 					}
 				}
