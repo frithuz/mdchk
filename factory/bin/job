@@ -364,6 +364,20 @@ def next_round(job):
     job["reviews"] = {}
 
 
+def update_base():
+    """Fast-forward the local base branch to origin after a merge. Never
+    fatal: a diverged branch or a dirty checkout only earns a warning."""
+    res = run(["git", "fetch", "origin", BASE], check=False)
+    if res.returncode == 0:
+        current = run(["git", "branch", "--show-current"]).stdout.strip()
+        if current == BASE:
+            res = run(["git", "merge", "--ff-only", f"origin/{BASE}"], check=False)
+        else:
+            res = run(["git", "fetch", "origin", f"{BASE}:{BASE}"], check=False)
+    if res.returncode != 0:
+        print(f"job: couldn't update local {BASE}: {(res.stderr or res.stdout).strip()}", file=sys.stderr)
+
+
 def advance(job, stage):
     old = job["stage"]
     require(stage in TRANSITIONS.get(old, set()) or (stage == "merged" and old not in TERMINAL),
@@ -500,6 +514,9 @@ def advance(job, stage):
     if stage in TERMINAL and Path(job["worktree"]).exists():
         run(["git", "worktree", "remove", "--force", job["worktree"]])
         run(["git", "branch", "-D", job["branch"]], check=False)
+
+    if stage == "merged":
+        update_base()
 
     job["stage"] = stage
     job["ended"] = now() if stage in TERMINAL | WAITING else None

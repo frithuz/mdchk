@@ -146,6 +146,10 @@ finished:
 - `ESCALATE`: `factory/bin/job advance <id> needs-human`. It marks the PR ready,
   posts the decision on it and labels the issue `factory:needs-human`.
 
+Every move to `merged` also fast-forwards the local base branch in `<repo>`
+to `origin/<base>`. If that can't fast-forward, it warns and the job still
+ends in `merged`.
+
 A job is finished for this run when it reaches `merged`, `rejected`,
 `needs-info` or `needs-human`.
 
