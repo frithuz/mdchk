@@ -956,6 +956,20 @@ prefixes, and after trailing content before the whole physical ending. Full raw
 and body context precedes START suppression and inspection selection. This rule
 is analysis-only and grants no insertion/correction authority.
 
+### Table body spacing
+
+MD058 is implemented for GFM only, enabled by default and report-only. It runs
+MD065's body walk with actual unprotected GFM Table nodes as the targets, so
+owning bodies, retained definitions, prefix removal, ASCII SPACE/TAB blankness
+and outward edge exemptions are MD065's. Pipe text the parser does not make a
+Table is never a target; MD075 owns those rows. Each missing side is one zero-width
+point on the table's own lines: before the first row's own indentation after
+actual prefixes, and after the last row's trailing content before the whole
+physical ending. Messages are `Table requires a blank body line before it.` and
+`Table requires a blank body line after it.` Any error withholds the whole
+inventory, and no MD058 correction is produced. See the
+[MD058 contract](../rules/tables/md058.md).
+
 
 ## Paragraph emphasis population (MD081)
 
