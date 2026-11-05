@@ -1,0 +1,509 @@
+[
+  {
+    "Name": "documented violating",
+    "Source": "<!-- toc -->\n- [Usage](#usage)\n<!-- /toc -->\n\n## Install\n",
+    "Expected": [
+      {
+        "Start": 13,
+        "End": 30,
+        "Line": 2,
+        "Column": 1,
+        "EndColumn": 18,
+        "Message": "Table of contents entry does not match heading \"Install\" (#install)."
+      }
+    ]
+  },
+  {
+    "Name": "documented accepted",
+    "Source": "<!-- toc -->\n- [Install](#install)\n<!-- /toc -->\n\n## Install\n",
+    "Expected": []
+  },
+  {
+    "Name": "crlf violating",
+    "Source": "<!-- toc -->\r\n- [Usage](#usage)\r\n<!-- /toc -->\r\n\r\n## Install\r\n",
+    "Expected": [
+      {
+        "Start": 14,
+        "End": 31,
+        "Line": 2,
+        "Column": 1,
+        "EndColumn": 18,
+        "Message": "Table of contents entry does not match heading \"Install\" (#install)."
+      }
+    ]
+  },
+  {
+    "Name": "crlf accepted",
+    "Source": "<!-- toc -->\r\n- [Install](#install)\r\n<!-- /toc -->\r\n\r\n## Install\r\n",
+    "Expected": []
+  },
+  {
+    "Name": "custom markers",
+    "Source": "<!-- contents -->\n- [Usage](#usage)\n<!-- /contents -->\n\n## Install\n",
+    "Options": {
+      "start_marker": "<!-- contents -->",
+      "end_marker": "<!-- /contents -->"
+    },
+    "Expected": [
+      {
+        "Start": 18,
+        "End": 35,
+        "Line": 2,
+        "Column": 1,
+        "EndColumn": 18,
+        "Message": "Table of contents entry does not match heading \"Install\" (#install)."
+      }
+    ]
+  },
+  {
+    "Name": "default markers ignored with custom markers",
+    "Source": "<!-- toc -->\n- [Usage](#usage)\n<!-- /toc -->\n\n## Install\n",
+    "Options": {
+      "start_marker": "<!-- contents -->",
+      "end_marker": "<!-- /contents -->"
+    },
+    "Expected": []
+  },
+  {
+    "Name": "case mismatched marker",
+    "Source": "<!-- TOC -->\n- [Usage](#usage)\n<!-- /TOC -->\n\n## Install\n",
+    "Expected": []
+  },
+  {
+    "Name": "min level",
+    "Source": "<!-- toc -->\n- [Install](#install)\n<!-- /toc -->\n\n# Title\n\n## Install\n",
+    "Options": {
+      "min_level": 2
+    },
+    "Expected": []
+  },
+  {
+    "Name": "max level",
+    "Source": "<!-- toc -->\n- [Install](#install)\n<!-- /toc -->\n\n## Install\n\n### Detail\n",
+    "Options": {
+      "max_level": 2
+    },
+    "Expected": []
+  },
+  {
+    "Name": "min equals max",
+    "Source": "<!-- toc -->\n- [Install](#install)\n- [Usage](#usage)\n<!-- /toc -->\n\n# Title\n\n## Install\n\n### Detail\n\n## Usage\n",
+    "Options": {
+      "min_level": 2,
+      "max_level": 2
+    },
+    "Expected": []
+  },
+  {
+    "Name": "min equals max missing",
+    "Source": "<!-- toc -->\n- [Install](#install)\n<!-- /toc -->\n\n# Title\n\n## Install\n\n### Detail\n\n## Usage\n",
+    "Options": {
+      "min_level": 2,
+      "max_level": 2
+    },
+    "Expected": [
+      {
+        "Start": 35,
+        "End": 48,
+        "Line": 3,
+        "Column": 1,
+        "EndColumn": 14,
+        "Message": "Table of contents is missing an entry for heading \"Usage\" (#usage)."
+      }
+    ]
+  },
+  {
+    "Name": "explicit anchor style",
+    "Source": "<!-- toc -->\n- [Install](#install)\n<!-- /toc -->\n\n## Install\n",
+    "AnchorStyle": "explicit",
+    "Expected": [
+      {
+        "Start": 13,
+        "End": 34,
+        "Line": 2,
+        "Column": 1,
+        "EndColumn": 22,
+        "Message": "Table of contents entry has no matching heading."
+      }
+    ]
+  },
+  {
+    "Name": "explicit anchor style empty",
+    "Source": "<!-- toc -->\n<!-- /toc -->\n\n## Install\n",
+    "AnchorStyle": "explicit",
+    "Expected": []
+  },
+  {
+    "Name": "duplicate headings",
+    "Source": "<!-- toc -->\n- [Setup](#setup)\n- [Setup](#setup-1)\n<!-- /toc -->\n\n## Setup\n\n## Setup\n",
+    "Expected": []
+  },
+  {
+    "Name": "duplicate headings wrong suffix",
+    "Source": "<!-- toc -->\n- [Setup](#setup)\n- [Setup](#setup)\n<!-- /toc -->\n\n## Setup\n\n## Setup\n",
+    "Expected": [
+      {
+        "Start": 31,
+        "End": 48,
+        "Line": 3,
+        "Column": 1,
+        "EndColumn": 18,
+        "Message": "Table of contents entry does not match heading \"Setup\" (#setup-1)."
+      }
+    ]
+  },
+  {
+    "Name": "heading jump",
+    "Source": "<!-- toc -->\n- [Guide](#guide)\n  - [Detail](#detail)\n<!-- /toc -->\n\n# Guide\n\n### Detail\n",
+    "Expected": []
+  },
+  {
+    "Name": "toc title",
+    "Source": "<!-- toc -->\n## Contents\n\n- [Install](#install)\n<!-- /toc -->\n\n## Install\n",
+    "Expected": []
+  },
+  {
+    "Name": "empty region missing entry",
+    "Source": "<!-- toc -->\n<!-- /toc -->\n\n## Install\n",
+    "Expected": [
+      {
+        "Start": 13,
+        "End": 26,
+        "Line": 2,
+        "Column": 1,
+        "EndColumn": 14,
+        "Message": "Table of contents is missing an entry for heading \"Install\" (#install)."
+      }
+    ]
+  },
+  {
+    "Name": "empty selection with entries",
+    "Source": "<!-- toc -->\n- [Install](#install)\n<!-- /toc -->\n\nText only.\n",
+    "Expected": [
+      {
+        "Start": 13,
+        "End": 34,
+        "Line": 2,
+        "Column": 1,
+        "EndColumn": 22,
+        "Message": "Table of contents entry has no matching heading."
+      }
+    ]
+  },
+  {
+    "Name": "empty selection empty region",
+    "Source": "<!-- toc -->\n<!-- /toc -->\n\nText only.\n",
+    "Expected": []
+  },
+  {
+    "Name": "presentation accepted",
+    "Source": "<!-- toc -->\n* [**Install**](#install)\n   + [Use `it`](#use-it)\n<!-- /toc -->\n\n# Install\n\n## Use `it`\n",
+    "Expected": []
+  },
+  {
+    "Name": "bold label accepted",
+    "Source": "<!-- toc -->\n* [**Install**](#install)\n<!-- /toc -->\n\n## Install\n",
+    "Expected": []
+  },
+  {
+    "Name": "ordered list accepted",
+    "Source": "<!-- toc -->\n1. [Install](#install)\n2. [Usage](#usage)\n<!-- /toc -->\n\n## Install\n\n## Usage\n",
+    "Expected": []
+  },
+  {
+    "Name": "reference link accepted",
+    "Source": "<!-- toc -->\n- [Install][i]\n- [Usage]\n<!-- /toc -->\n\n## Install\n\n## Usage\n\n[i]: #install\n[Usage]: #usage\n",
+    "Expected": []
+  },
+  {
+    "Name": "percent encoded destination accepted",
+    "Source": "<!-- toc -->\n- [Café](#caf%C3%A9)\n<!-- /toc -->\n\n## Café\n",
+    "Expected": []
+  },
+  {
+    "Name": "wrong destination",
+    "Source": "<!-- toc -->\n- [Install](#setup)\n<!-- /toc -->\n\n## Install\n",
+    "Expected": [
+      {
+        "Start": 13,
+        "End": 32,
+        "Line": 2,
+        "Column": 1,
+        "EndColumn": 20,
+        "Message": "Table of contents entry does not match heading \"Install\" (#install)."
+      }
+    ]
+  },
+  {
+    "Name": "other document destination",
+    "Source": "<!-- toc -->\n- [Install](other.md#install)\n<!-- /toc -->\n\n## Install\n",
+    "Expected": [
+      {
+        "Start": 13,
+        "End": 42,
+        "Line": 2,
+        "Column": 1,
+        "EndColumn": 30,
+        "Message": "Table of contents entry does not match heading \"Install\" (#install)."
+      }
+    ]
+  },
+  {
+    "Name": "wrong label",
+    "Source": "<!-- toc -->\n- [Setup](#install)\n<!-- /toc -->\n\n## Install\n",
+    "Expected": [
+      {
+        "Start": 13,
+        "End": 32,
+        "Line": 2,
+        "Column": 1,
+        "EndColumn": 20,
+        "Message": "Table of contents entry does not match heading \"Install\" (#install)."
+      }
+    ]
+  },
+  {
+    "Name": "wrong nesting",
+    "Source": "<!-- toc -->\n- [Guide](#guide)\n- [Detail](#detail)\n<!-- /toc -->\n\n# Guide\n\n## Detail\n",
+    "Expected": [
+      {
+        "Start": 31,
+        "End": 50,
+        "Line": 3,
+        "Column": 1,
+        "EndColumn": 20,
+        "Message": "Table of contents entry does not match heading \"Detail\" (#detail)."
+      }
+    ]
+  },
+  {
+    "Name": "malformed item",
+    "Source": "<!-- toc -->\n- [Install](#install) steps\n<!-- /toc -->\n\n## Install\n",
+    "Expected": [
+      {
+        "Start": 13,
+        "End": 40,
+        "Line": 2,
+        "Column": 1,
+        "EndColumn": 28,
+        "Message": "Table of contents entry does not match heading \"Install\" (#install)."
+      }
+    ]
+  },
+  {
+    "Name": "extra entry",
+    "Source": "<!-- toc -->\n- [Install](#install)\n- [Usage](#usage)\n<!-- /toc -->\n\n## Install\n",
+    "Expected": [
+      {
+        "Start": 35,
+        "End": 52,
+        "Line": 3,
+        "Column": 1,
+        "EndColumn": 18,
+        "Message": "Table of contents entry has no matching heading."
+      }
+    ]
+  },
+  {
+    "Name": "two sequential regions",
+    "Source": "<!-- toc -->\n- [Install](#install)\n<!-- /toc -->\n\n<!-- toc -->\n- [Usage](#usage)\n<!-- /toc -->\n\n## Install\n",
+    "Expected": [
+      {
+        "Start": 63,
+        "End": 80,
+        "Line": 6,
+        "Column": 1,
+        "EndColumn": 18,
+        "Message": "Table of contents entry does not match heading \"Install\" (#install)."
+      }
+    ]
+  },
+  {
+    "Name": "unmatched start",
+    "Source": "<!-- toc -->\n\n## Install\n",
+    "Incomplete": true,
+    "Expected": [
+      {
+        "Start": 0,
+        "End": 12,
+        "Line": 1,
+        "Column": 1,
+        "EndColumn": 13,
+        "Message": "Table of contents start marker has no matching end marker."
+      }
+    ]
+  },
+  {
+    "Name": "unmatched start without headings",
+    "Source": "Text.\n\n<!-- toc -->\n",
+    "Expected": [
+      {
+        "Start": 7,
+        "End": 19,
+        "Line": 3,
+        "Column": 1,
+        "EndColumn": 13,
+        "Message": "Table of contents start marker has no matching end marker."
+      }
+    ]
+  },
+  {
+    "Name": "unmatched end",
+    "Source": "<!-- toc -->\n- [Install](#install)\n<!-- /toc -->\n\n## Install\n\n<!-- /toc -->\n",
+    "Incomplete": true,
+    "Expected": [
+      {
+        "Start": 62,
+        "End": 75,
+        "Line": 7,
+        "Column": 1,
+        "EndColumn": 14,
+        "Message": "Table of contents end marker has no matching start marker."
+      }
+    ]
+  },
+  {
+    "Name": "unmatched end before region",
+    "Source": "<!-- /toc -->\n<!-- toc -->\n- [Usage](#usage)\n<!-- /toc -->\n\n## Install\n",
+    "Expected": [
+      {
+        "Start": 0,
+        "End": 13,
+        "Line": 1,
+        "Column": 1,
+        "EndColumn": 14,
+        "Message": "Table of contents end marker has no matching start marker."
+      },
+      {
+        "Start": 27,
+        "End": 44,
+        "Line": 3,
+        "Column": 1,
+        "EndColumn": 18,
+        "Message": "Table of contents entry does not match heading \"Install\" (#install)."
+      }
+    ]
+  },
+  {
+    "Name": "nested start",
+    "Source": "<!-- toc -->\n- [Install](#install)\n<!-- toc -->\n<!-- /toc -->\n\n## Install\n",
+    "Incomplete": true,
+    "Expected": [
+      {
+        "Start": 35,
+        "End": 47,
+        "Line": 3,
+        "Column": 1,
+        "EndColumn": 13,
+        "Message": "Table of contents start marker is nested inside another table of contents region."
+      }
+    ]
+  },
+  {
+    "Name": "cross container",
+    "Source": "<!-- toc -->\n- [Install](#install)\n\n> <!-- /toc -->\n\n## Install\n",
+    "Incomplete": true,
+    "Expected": [
+      {
+        "Start": 38,
+        "End": 51,
+        "Line": 4,
+        "Column": 3,
+        "EndColumn": 16,
+        "Message": "Table of contents end marker must be in the same container as its start marker."
+      }
+    ]
+  },
+  {
+    "Name": "uncertain heading after unmatched start",
+    "Source": "<!-- toc -->\n- [Install](#install)\n<!-- /toc -->\n\n<!-- toc -->\n\n## Install\n",
+    "Incomplete": true,
+    "Expected": [
+      {
+        "Start": 50,
+        "End": 62,
+        "Line": 5,
+        "Column": 1,
+        "EndColumn": 13,
+        "Message": "Table of contents start marker has no matching end marker."
+      }
+    ]
+  },
+  {
+    "Name": "fenced code markers ignored",
+    "Source": "```\n<!-- toc -->\n- [Usage](#usage)\n<!-- /toc -->\n```\n\n## Install\n",
+    "Expected": []
+  },
+  {
+    "Name": "indented code markers ignored",
+    "Source": "    <!-- toc -->\n    - [Usage](#usage)\n    <!-- /toc -->\n\n## Install\n",
+    "Expected": []
+  },
+  {
+    "Name": "code span markers ignored",
+    "Source": "`<!-- toc -->`\n\n- [Usage](#usage)\n\n`<!-- /toc -->`\n\n## Install\n",
+    "Expected": []
+  },
+  {
+    "Name": "frontmatter markers ignored",
+    "Source": "---\na: <!-- toc -->\nb: <!-- /toc -->\n---\n\n## Install\n",
+    "Frontmatter": true,
+    "Expected": []
+  },
+  {
+    "Name": "marker sharing a line",
+    "Source": "Contents <!-- toc -->\n\n- [Usage](#usage)\n\n<!-- /toc --> end\n\n## Install\n",
+    "Expected": []
+  },
+  {
+    "Name": "blockquote region",
+    "Source": "> <!-- toc -->\n> - [A](#a)\n> <!-- /toc -->\n\n# A\n",
+    "Expected": []
+  },
+  {
+    "Name": "blockquote region violating",
+    "Source": "> <!-- toc -->\n> - [B](#b)\n> <!-- /toc -->\n\n# A\n",
+    "Expected": [
+      {
+        "Start": 17,
+        "End": 26,
+        "Line": 2,
+        "Column": 3,
+        "EndColumn": 12,
+        "Message": "Table of contents entry does not match heading \"A\" (#a)."
+      }
+    ]
+  },
+  {
+    "Name": "blockquote heading excluded",
+    "Source": "<!-- toc -->\n- [Install](#install)\n<!-- /toc -->\n\n## Install\n\n> ## Quoted\n",
+    "Expected": []
+  },
+  {
+    "Name": "list item heading excluded",
+    "Source": "<!-- toc -->\n- [Install](#install)\n<!-- /toc -->\n\n## Install\n\n- ## Listed\n",
+    "Expected": []
+  },
+  {
+    "Name": "prose and list",
+    "Source": "<!-- toc -->\nJump to a section.\n\n- [Install](#install)\n<!-- /toc -->\n\n## Install\n",
+    "Expected": []
+  },
+  {
+    "Name": "prose without list",
+    "Source": "<!-- toc -->\nJump to a section.\n<!-- /toc -->\n\n## Install\n",
+    "Incomplete": true,
+    "Expected": []
+  },
+  {
+    "Name": "two lists",
+    "Source": "<!-- toc -->\n- [Install](#install)\n\n1. [Usage](#usage)\n<!-- /toc -->\n\n## Install\n",
+    "Incomplete": true,
+    "Expected": []
+  },
+  {
+    "Name": "no markers",
+    "Source": "# Title\n\n- [Usage](#usage)\n",
+    "Expected": []
+  }
+]
