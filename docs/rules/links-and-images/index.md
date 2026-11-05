@@ -10,7 +10,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD042](md042.md) | Links without destinations | Analysis/configuration implemented; report only |
 | [MD045](md045.md) | Images without alternative text | Analysis implemented |
 | [MD051](md051.md) | Unresolved fragment targets | Analysis implemented |
-| [MD052](md052.md) | References without definitions | Planned |
+| [MD052](md052.md) | References without definitions | Analysis/configuration implemented; report only |
 | [MD053](md053.md) | Unneeded link and image definitions | Planned |
 | [MD054](md054.md) | Link and image representation style | Planned |
 | [MD057](md057.md) | Missing local link targets | Planned |
