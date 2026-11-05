@@ -80,6 +80,16 @@ manual/no-edit/source-immutable results. JSON floating decoding does not replace
 separate trusted API and actual YAML/JSON numeric-type admission checks. Expected
 results must never be regenerated from production output.
 
+`md062.json` is the independent issue-104 MD062 oracle (SHA-256
+`bca8967f53ceb7739dddc48e6387506a860c5aff3d83999e86a96218fde66b61`): 76
+records with original source size/SHA, selected flavors and settings, and
+authored candidate byte/scalar ranges with the constant
+`Whitespace in link destination.` message. They cover the page examples, image
+and tab candidates, every grammar exclusion, protected code, raw HTML and
+frontmatter, containers, emphasis, GFM table cells, multibyte columns and
+LF/CRLF endings. Its `invalid_configurations` rows are read by the config test.
+Expected results must never be regenerated from production output.
+
 MD092 has three separate immutable root-authored literal fixture sets:
 
 | Fixture | Cases | SHA256 |

@@ -22,6 +22,8 @@ type swappedLinkUnit struct {
 	value      string
 	syntax     byte
 	nonblank   bool
+	// exact marks one original Exact rune rather than decoded payload.
+	exact bool
 }
 
 type swappedLinkScanner struct {
@@ -340,7 +342,7 @@ func (s *swappedLinkScanner) text(n *Node) (bool, error) {
 						return false, err
 					}
 				} else {
-					u := swappedLinkUnit{start: part.Source.start + offset, end: part.Source.start + offset + width, value: part.Semantic.Value[offset : offset+width], nonblank: meaningful}
+					u := swappedLinkUnit{start: part.Source.start + offset, end: part.Source.start + offset + width, value: part.Semantic.Value[offset : offset+width], nonblank: meaningful, exact: true}
 					if r == '(' || r == ')' || r == '[' || r == ']' || r == '!' {
 						u.syntax = byte(r)
 					}
