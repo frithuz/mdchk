@@ -161,6 +161,19 @@ authoritative definition collection. Bare [text] is not guessed to be an unresol
 shortcuts remain eligible only when positively identified as references by the parser. Exclude
 escaped/malformed bracket pairs and candidates overlapping another valid parsed construct.
 
+MD052 analysis is implemented for CommonMark and GFM with no rule-specific
+options and default enablement. It reports the complete original full or
+collapsed candidate span, including a leading `!`, with
+`Reference has no matching definition.` Only exact unescaped bracket bytes
+establish syntax. The raw label must satisfy the shared inline label grammar and
+is folded and looked up in the completed definition collection; only a miss
+reports. Whole Link/Image/CodeSpan owners are opaque, and candidates stay inside
+one contiguous Text island on one line without crossing code, raw HTML
+lifetimes/tails, metadata or control boundaries. Chains and candidates adjacent
+to a parsed link or image are excluded. Unavailable definitions or unknown
+necessary provenance atomically withhold all findings. No MD052 correction is
+produced. See the [MD052 contract](../rules/links-and-images/md052.md).
+
 ### Md062
 
 Recognize flat, fully closed inline link/image candidates with whitespace inside a bare destination,
