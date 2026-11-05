@@ -1,0 +1,1410 @@
+{
+  "authority": "Hand-specified oracle for MD061; byte ranges located by substring search, positions in Unicode scalars.",
+  "cases": [
+    {
+      "id": "doc-violating",
+      "source": "Use blacklist.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            13
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "doc-accepted",
+      "source": "Use denylist.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "empty-terms",
+      "source": "Use blacklist.",
+      "terms": [],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "empty-term",
+      "source": "Use blacklist.",
+      "terms": [
+        ""
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "empty-and-real",
+      "source": "Use blacklist.",
+      "terms": [
+        "",
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            13
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "insensitive",
+      "source": "Use BlackList.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            13
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "BlackList",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "insensitive-upper",
+      "source": "Use BLACKLIST.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            13
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "BLACKLIST",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "sensitive-miss",
+      "source": "Use BlackList.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": true,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "sensitive-hit",
+      "source": "Use blacklist.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": true,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            13
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "sensitive-term-case",
+      "source": "Use blacklist and BlackList.",
+      "terms": [
+        "BlackList"
+      ],
+      "case_sensitive": true,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            18,
+            27
+          ],
+          "start": [
+            1,
+            19
+          ],
+          "end": [
+            1,
+            28
+          ],
+          "text": "BlackList",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "suffix-word",
+      "source": "Use blacklisted.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "prefix-word",
+      "source": "Use myblacklist.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "underscore-prefix",
+      "source": "Use _blacklist.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "underscore-suffix",
+      "source": "Use blacklist_x.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "non-ascii-prefix",
+      "source": "Use éblacklist.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "non-ascii-neighbor",
+      "source": "π blacklist!",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            3,
+            12
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "punctuation-neighbors",
+      "source": "(blacklist), blacklist-x",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            10
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        },
+        {
+          "bytes": [
+            13,
+            22
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "multiword",
+      "source": "Add to the Black List now.",
+      "terms": [
+        "black list"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            11,
+            21
+          ],
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "text": "Black List",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "multiword-line-split",
+      "source": "Add to the black\nlist now.",
+      "terms": [
+        "black list"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "overlap",
+      "source": "Use blacklist.",
+      "terms": [
+        "black",
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            13
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "overlap-reverse",
+      "source": "Use blacklist.",
+      "terms": [
+        "blacklist",
+        "black"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            13
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "overlap-multiword",
+      "source": "black list items",
+      "terms": [
+        "black",
+        "black list"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "black list",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "duplicates",
+      "source": "Use blacklist.",
+      "terms": [
+        "blacklist",
+        "Blacklist",
+        "BLACKLIST"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            13
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "several",
+      "source": "blacklist, Blacklist and BLACKLIST.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        },
+        {
+          "bytes": [
+            11,
+            20
+          ],
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "text": "Blacklist",
+          "message": "Configured prohibited term."
+        },
+        {
+          "bytes": [
+            25,
+            34
+          ],
+          "start": [
+            1,
+            26
+          ],
+          "end": [
+            1,
+            35
+          ],
+          "text": "BLACKLIST",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "heading",
+      "source": "# Use blacklist",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            6,
+            15
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "setext-heading",
+      "source": "Use blacklist\n===",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            13
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "table-cell",
+      "source": "| a | b |\n| --- | --- |\n| blacklist | x |",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            26,
+            35
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            12
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "table-commonmark",
+      "source": "| a | b |\n| --- | --- |\n| blacklist | x |",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            26,
+            35
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            12
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "link-label",
+      "source": "[blacklist](https://example.com)",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            1,
+            10
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "image-alt",
+      "source": "![blacklist](x.png)",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            11
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "emphasis",
+      "source": "Use **blacklist**.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            6,
+            15
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "code-span",
+      "source": "Use `blacklist`.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "fenced-code",
+      "source": "~~~\nblacklist\n~~~",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "indented-code",
+      "source": "    blacklist",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "html-block",
+      "source": "<div>\nblacklist\n</div>",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "inline-html",
+      "source": "Use <span title=\"blacklist\">x</span>.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "raw-tag",
+      "source": "<script>\nblacklist\n</script>\n\nblacklist",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            30,
+            39
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            10
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "autolink",
+      "source": "<https://blacklist.example>",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "bare-url-gfm",
+      "source": "See https://blacklist.example now.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "bare-url-commonmark",
+      "source": "See https://blacklist.example now.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            12,
+            21
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "link-destination",
+      "source": "[x](https://blacklist.example \"blacklist\")",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "reference-definition",
+      "source": "[x]\n\n[x]: https://blacklist.example",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "frontmatter",
+      "source": "---\ntitle: blacklist\n---\nblacklist",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": true,
+      "findings": [
+        {
+          "bytes": [
+            25,
+            34
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            10
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "entity-barrier",
+      "source": "&#98;lacklist",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "escape-nonword-neighbor",
+      "source": "\\*blacklist\\*",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            2,
+            11
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "entity-inside",
+      "source": "black&#108;ist",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "escape-word-neighbor",
+      "source": "blacklist\\_x",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": []
+    },
+    {
+      "id": "block-quote",
+      "source": "> Use blacklist.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            6,
+            15
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "list-item",
+      "source": "- Use blacklist.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            6,
+            15
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "quoted-list",
+      "source": "> - item\n>   blacklist",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            13,
+            22
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            14
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "lf",
+      "source": "First line.\nUse blacklist.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            16,
+            25
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            14
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "crlf",
+      "source": "First line.\r\nUse blacklist.",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            17,
+            26
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            14
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "multiline-lf",
+      "source": "Line one has words\nand blacklist here.\n",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            23,
+            32
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            14
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "multiline-crlf",
+      "source": "Line one has words\r\nand blacklist here.\r\n",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "findings": [
+        {
+          "bytes": [
+            24,
+            33
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            14
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "directives",
+      "source": "blacklist\n\n<!-- mdchk:disable MD061 -->\nblacklist\n\n<!-- mdchk:enable MD061 -->\nblacklist",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "allow_directives": true,
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        },
+        {
+          "bytes": [
+            79,
+            88
+          ],
+          "start": [
+            7,
+            1
+          ],
+          "end": [
+            7,
+            10
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    },
+    {
+      "id": "directives-denied",
+      "source": "blacklist\n\n<!-- mdchk:disable MD061 -->\nblacklist\n\n<!-- mdchk:enable MD061 -->\nblacklist",
+      "terms": [
+        "blacklist"
+      ],
+      "case_sensitive": false,
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "allow_directives": false,
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        },
+        {
+          "bytes": [
+            40,
+            49
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            10
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        },
+        {
+          "bytes": [
+            79,
+            88
+          ],
+          "start": [
+            7,
+            1
+          ],
+          "end": [
+            7,
+            10
+          ],
+          "text": "blacklist",
+          "message": "Configured prohibited term."
+        }
+      ]
+    }
+  ]
+}
