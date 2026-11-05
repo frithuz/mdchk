@@ -1,0 +1,253 @@
+[
+  {
+    "Name": "violating",
+    "Source": "---\nz: 1\na: 2\n---\n",
+    "Expected": [
+      {
+        "Start": 9,
+        "End": 10,
+        "Line": 3,
+        "Column": 1,
+        "EndColumn": 2,
+        "Message": "Metadata key \"a\" should come before \"z\"."
+      }
+    ]
+  },
+  {
+    "Name": "accepted",
+    "Source": "---\na: 2\nz: 1\n---\n",
+    "Expected": []
+  },
+  {
+    "Name": "crlf",
+    "Source": "---\r\nz: 1\r\na: 2\r\n---\r\n",
+    "Expected": [
+      {
+        "Start": 11,
+        "End": 12,
+        "Line": 3,
+        "Column": 1,
+        "EndColumn": 2,
+        "Message": "Metadata key \"a\" should come before \"z\"."
+      }
+    ]
+  },
+  {
+    "Name": "toml",
+    "Source": "+++\nz = 1\na = 2\n+++\n",
+    "Expected": [
+      {
+        "Start": 10,
+        "End": 11,
+        "Line": 3,
+        "Column": 1,
+        "EndColumn": 2,
+        "Message": "Metadata key \"a\" should come before \"z\"."
+      }
+    ]
+  },
+  {
+    "Name": "toml not selected",
+    "Source": "+++\nz = 1\na = 2\n+++\n",
+    "Expected": [],
+    "Formats": [
+      "yaml"
+    ]
+  },
+  {
+    "Name": "recognition disabled",
+    "Source": "---\nz: 1\na: 2\n---\n",
+    "Expected": [],
+    "Disabled": true
+  },
+  {
+    "Name": "no header",
+    "Source": "# Title\n",
+    "Expected": []
+  },
+  {
+    "Name": "multi key",
+    "Source": "---\nb: 1\nc: 2\na: 3\n---\n",
+    "Expected": [
+      {
+        "Start": 14,
+        "End": 15,
+        "Line": 4,
+        "Column": 1,
+        "EndColumn": 2,
+        "Message": "Metadata key \"a\" should come before \"c\"."
+      }
+    ]
+  },
+  {
+    "Name": "case sensitive upper first",
+    "Source": "---\nB: 1\na: 2\n---\n",
+    "Expected": []
+  },
+  {
+    "Name": "case sensitive lower first",
+    "Source": "---\na: 1\nA: 2\n---\n",
+    "Expected": [
+      {
+        "Start": 9,
+        "End": 10,
+        "Line": 3,
+        "Column": 1,
+        "EndColumn": 2,
+        "Message": "Metadata key \"A\" should come before \"a\"."
+      }
+    ]
+  },
+  {
+    "Name": "case insensitive upper first",
+    "Source": "---\nB: 1\na: 2\n---\n",
+    "Expected": [
+      {
+        "Start": 9,
+        "End": 10,
+        "Line": 3,
+        "Column": 1,
+        "EndColumn": 2,
+        "Message": "Metadata key \"a\" should come before \"B\"."
+      }
+    ],
+    "Insensitive": true
+  },
+  {
+    "Name": "case insensitive tie",
+    "Source": "---\na: 1\nA: 2\n---\n",
+    "Expected": [],
+    "Insensitive": true
+  },
+  {
+    "Name": "nested default",
+    "Source": "---\na:\n  z: 1\n  b: 2\nb:\n  - z: 1\n    b: 2\nc: [z, b]\n---\n",
+    "Expected": []
+  },
+  {
+    "Name": "nested recursive",
+    "Source": "---\na:\n  z: 1\n  b: 2\nb:\n  - z: 1\n    b: 2\nc: [z, b]\n---\n",
+    "Expected": [
+      {
+        "Start": 16,
+        "End": 17,
+        "Line": 4,
+        "Column": 3,
+        "EndColumn": 4,
+        "Message": "Metadata key \"b\" should come before \"z\"."
+      },
+      {
+        "Start": 37,
+        "End": 38,
+        "Line": 7,
+        "Column": 5,
+        "EndColumn": 6,
+        "Message": "Metadata key \"b\" should come before \"z\"."
+      }
+    ],
+    "Recursive": true
+  },
+  {
+    "Name": "nested recursive insensitive",
+    "Source": "---\na:\n  Z: 1\n  b: 2\nb:\n  - Z: 1\n    b: 2\nc: [Z, b]\n---\n",
+    "Expected": [
+      {
+        "Start": 16,
+        "End": 17,
+        "Line": 4,
+        "Column": 3,
+        "EndColumn": 4,
+        "Message": "Metadata key \"b\" should come before \"Z\"."
+      },
+      {
+        "Start": 37,
+        "End": 38,
+        "Line": 7,
+        "Column": 5,
+        "EndColumn": 6,
+        "Message": "Metadata key \"b\" should come before \"Z\"."
+      }
+    ],
+    "Recursive": true,
+    "Insensitive": true
+  },
+  {
+    "Name": "nested recursive sensitive upper",
+    "Source": "---\na:\n  Z: 1\n  b: 2\nb:\n  - Z: 1\n    b: 2\nc: [Z, b]\n---\n",
+    "Expected": [],
+    "Recursive": true
+  },
+  {
+    "Name": "malformed",
+    "Source": "---\na: [\n---\n",
+    "Expected": [],
+    "Incomplete": true
+  },
+  {
+    "Name": "non-mapping root",
+    "Source": "---\n- a\n---\n",
+    "Expected": [],
+    "Incomplete": true
+  },
+  {
+    "Name": "unterminated",
+    "Source": "---\nz: 1\na: 2\n",
+    "Expected": [],
+    "Incomplete": true,
+    "Unparsed": true
+  },
+  {
+    "Name": "merge key",
+    "Source": "---\nbase: &b {y: 1, x: 2}\nz: 1\nm:\n  <<: *b\na: 2\n---\n",
+    "Expected": [],
+    "Incomplete": true
+  },
+  {
+    "Name": "merge key recursive",
+    "Source": "---\nbase: &b {y: 1, x: 2}\nz: 1\nm:\n  <<: *b\na: 2\n---\n",
+    "Expected": [
+      {
+        "Start": 20,
+        "End": 21,
+        "Line": 2,
+        "Column": 17,
+        "EndColumn": 18,
+        "Message": "Metadata key \"x\" should come before \"y\"."
+      }
+    ],
+    "Recursive": true,
+    "Incomplete": true
+  },
+  {
+    "Name": "duplicate key",
+    "Source": "---\nz: 1\nz: 2\na: 3\n---\n",
+    "Expected": [],
+    "Incomplete": true
+  },
+  {
+    "Name": "custom tag",
+    "Source": "---\nz: !foo 1\na: 2\n---\n",
+    "Expected": [],
+    "Incomplete": true
+  },
+  {
+    "Name": "alias",
+    "Source": "---\nd: &m {y: 1, x: 2}\ne: *m\n---\n",
+    "Expected": [
+      {
+        "Start": 17,
+        "End": 18,
+        "Line": 2,
+        "Column": 14,
+        "EndColumn": 15,
+        "Message": "Metadata key \"x\" should come before \"y\"."
+      }
+    ],
+    "Recursive": true
+  },
+  {
+    "Name": "alias default",
+    "Source": "---\nd: &m {y: 1, x: 2}\ne: *m\n---\n",
+    "Expected": []
+  }
+]
