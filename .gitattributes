@@ -7,3 +7,5 @@ tools/gfm_corpus.py text eol=lf
 # Profile data and its pinned validator retain reviewed bytes across hosts.
 internal/parser/testdata/gfm/profile/*.json -text
 tools/gfm_profile.py text eol=lf
+# Unicode IDNA sources and test vectors keep their pinned bytes on every host.
+internal/idna/testdata/unicode/17.0.0/*.txt -text -whitespace
