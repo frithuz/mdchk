@@ -14,6 +14,7 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/files"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -141,9 +142,26 @@ func (c RoundContext) TerminalEditEligible(ctx context.Context, id string, span 
 }
 
 // TerminalTaskSourcesPreserved compares both actual round parses on the same
-// residual operation. Callers must separately prove their exact suffix edit.
+// residual operation, through the round's edit mapping. Callers must separately
+// prove their exact suffix edit.
 func (c CheckContext) TerminalTaskSourcesPreserved(ctx context.Context) (bool, error) {
-	return engine.TerminalTaskSourcesPreserved(ctx, c.Before.Parsed(), c.After.Parsed(), c.Before.meter.budget)
+	return engine.TerminalTaskSourcesPreservedMapped(ctx, c.Before.Parsed(), c.After.Parsed(), c.Before.meter.budget, c.MapFact)
+}
+
+// Headings projects this round's parser-confirmed heading facts, charged to the
+// shared residual operation. Producers and checkers call it at most once a round.
+func (c RoundContext) Headings(ctx context.Context) ([]parser.HeadingFact, error) {
+	return c.Parsed().Document.Headings(ctx, c.meter.budget)
+}
+
+// HeadingAnchors projects this round's heading anchors under the shared anchor
+// policy of the target's admitted document context.
+func (c RoundContext) HeadingAnchors(ctx context.Context) ([]resource.HeadingAnchor, resource.Availability, error) {
+	dc, known := c.trace.DocumentContext()
+	if !known {
+		return nil, resource.Unavailable, errors.New("unknown document context")
+	}
+	return resource.OriginalHeadingAnchors(ctx, c.Parsed(), c.meter.budget, c.Lines(), dc.ParseOptions(), dc.AnchorStyle)
 }
 func (c RoundContext) Parsed() parser.ParseResult         { return c.trace.Parsed() }
 func (c RoundContext) Directives() engine.DirectiveResult { return c.trace.Directives() }
@@ -191,6 +209,12 @@ type CheckContext struct {
 	Before, After RoundContext
 	group         Group
 	edits         []SharedEdit
+	once          map[string]onceValue
+}
+
+type onceValue struct {
+	value any
+	err   error
 }
 
 func (c CheckContext) Group() Group        { return cloneGroup(c.group) }
@@ -224,6 +248,80 @@ func (c CheckContext) BoundedViews(ctx context.Context) (Group, []SharedEdit, er
 		}
 	}
 	return c.Group(), c.Edits(), c.Before.Checkpoint(ctx, 0)
+}
+
+// Once computes a whole-round fact at most once per file and round, however many
+// groups the round holds, and hands the same value to every later checker with
+// the same key. Checkers of a large round put whole-document proof here, including
+// any BoundedViews or Edits call: those reserve the complete round edit set.
+func (c CheckContext) Once(key string, compute func() (any, error)) (any, error) {
+	if v, ok := c.once[key]; ok {
+		return v.value, v.err
+	}
+	value, err := compute()
+	c.once[key] = onceValue{value, err}
+	return value, err
+}
+
+// OnlyEditsChanged proves that After is Before with exactly the round's edits
+// applied: every byte outside them is unchanged. Cost is linear in the document.
+func (c CheckContext) OnlyEditsChanged(ctx context.Context) (bool, error) {
+	before, after := c.Before.current, c.After.current
+	if err := c.Before.Checkpoint(ctx, int64(before.Len()+after.Len()+len(c.edits))+1); err != nil {
+		return false, err
+	}
+	all, _ := before.Span(0, before.Len())
+	old, _ := before.Text(all)
+	all, _ = after.Span(0, after.Len())
+	current, _ := after.Text(all)
+	read, write := 0, 0
+	same := func(text string) bool {
+		if len(current)-write < len(text) || current[write:write+len(text)] != text {
+			return false
+		}
+		write += len(text)
+		return true
+	}
+	for _, e := range c.edits {
+		if !same(old[read:e.Edit.Span.Start()]) || !same(string(e.Edit.Replacement)) {
+			return false, nil
+		}
+		read = e.Edit.Span.End()
+	}
+	return same(old[read:]) && write == len(current), c.Before.Checkpoint(ctx, 0)
+}
+
+// MapEndpoints maps the ends of an envelope around the round's edits. Unlike
+// MapUnchanged it accepts a fact containing a replacement, and reports false only
+// when an endpoint falls inside one. An envelope ending where an insertion lands
+// grows over it: a block owns its line ending once the document has one.
+func (c CheckContext) MapEndpoints(span parser.Span) (parser.Span, bool, error) {
+	mapping := editMapping{c.Before.current, c.After.current, c.edits, c.Before.meter}
+	start, ok, err := mapping.offset(span.Start(), true)
+	if err != nil || !ok {
+		return parser.Span{}, false, err
+	}
+	end, ok, err := mapping.offset(span.End(), true)
+	if err != nil || !ok || end < start {
+		return parser.Span{}, false, err
+	}
+	mapped, err := c.After.current.Span(start, end)
+	return mapped, err == nil, nil
+}
+
+// MapFact is MapUnchanged for facts that may be points. A point stays on the
+// original side of an insertion at its offset, because it cannot belong to the
+// inserted bytes; MapUnchanged would split it across them.
+func (c CheckContext) MapFact(span parser.Span) (parser.Span, bool, error) {
+	if span.Start() != span.End() {
+		return c.MapUnchanged(span)
+	}
+	at, ok, err := (editMapping{c.Before.current, c.After.current, c.edits, c.Before.meter}).offset(span.Start(), false)
+	if err != nil || !ok {
+		return parser.Span{}, false, err
+	}
+	point, err := c.After.current.Span(at, at)
+	return point, err == nil, nil
 }
 
 // MapUnchanged maps an original source-owned fact into the combined candidate.
@@ -1063,6 +1161,7 @@ func (v *Validator) component(ctx context.Context, states []validationState, mem
 				unsafe = true
 				failureCodes[j] = "candidate-preservation-failed"
 			}
+			once := map[string]onceValue{}
 			for _, d := range p.decisions {
 				if !d.Accepted {
 					continue
@@ -1089,7 +1188,7 @@ func (v *Validator) component(ctx context.Context, states []validationState, mem
 				if err := m.reserve(copyWork, copyNodes); err != nil {
 					return "", err
 				}
-				checkContext := CheckContext{states[j].context(m, before), next[j].context(m, after), cloneGroup(d.Group), p.edits}
+				checkContext := CheckContext{states[j].context(m, before), next[j].context(m, after), cloneGroup(d.Group), p.edits, once}
 				proof, err := checker(ctx, checkContext)
 				if err != nil {
 					return "", err

@@ -13,6 +13,14 @@ import (
 // must retain their original coordinates and spelling. This is a narrow source
 // proof, not a substitute for the caller's exact suffix/body/protection proof.
 func TerminalTaskSourcesPreserved(ctx context.Context, before, after parser.ParseResult, budget *parser.OperationBudget) (bool, error) {
+	return TerminalTaskSourcesPreservedMapped(ctx, before, after, budget, func(span parser.Span) (parser.Span, bool, error) { return span, true, nil })
+}
+
+// TerminalTaskSourcesPreservedMapped makes the same comparison when other edits
+// share the round: each original fact is carried into the candidate by mapped,
+// which reports false for a fact it cannot carry unchanged. Spans are compared in
+// candidate coordinates, so an earlier edit does not look like a task change.
+func TerminalTaskSourcesPreservedMapped(ctx context.Context, before, after parser.ParseResult, budget *parser.OperationBudget, mapped func(parser.Span) (parser.Span, bool, error)) (bool, error) {
 	if ctx == nil || budget == nil {
 		return false, errors.New("nil terminal task context or budget")
 	}
@@ -37,11 +45,18 @@ func TerminalTaskSourcesPreserved(ctx context.Context, before, after parser.Pars
 		if err := ctx.Err(); err != nil {
 			return false, err
 		}
-		if x.Present() != y.Present() || x.Start() != y.Start() || x.End() != y.End() {
+		if x.Present() != y.Present() {
 			return false, nil
 		}
 		if !x.Present() {
 			return true, nil
+		}
+		carried, ok, e := mapped(x)
+		if e != nil || !ok {
+			return false, e
+		}
+		if carried.Start() != y.Start() || carried.End() != y.End() {
+			return false, nil
 		}
 		if err := budget.ChargeWork(int64(x.End()-x.Start()) + int64(y.End()-y.Start()) + 1); err != nil {
 			return false, err
@@ -59,7 +74,15 @@ func TerminalTaskSourcesPreserved(ctx context.Context, before, after parser.Pars
 		if err := budget.ChargeWork(int64(len(x.Content)+len(y.Content)+len(p.Segments)+len(q.Segments)) + 16); err != nil {
 			return false, err
 		}
-		if p.Paragraph.Start() != q.Paragraph.Start() || p.Checked != q.Checked || p.CheckSpelling != q.CheckSpelling || len(p.Segments) != len(q.Segments) || len(x.Content) != len(y.Content) {
+		paragraph, e := before.Source.Span(p.Paragraph.Start(), p.Paragraph.Start())
+		if e != nil {
+			return false, nil
+		}
+		start, ok, e := mapped(paragraph)
+		if e != nil || !ok {
+			return false, e
+		}
+		if start.Start() != q.Paragraph.Start() || p.Checked != q.Checked || p.CheckSpelling != q.CheckSpelling || len(p.Segments) != len(q.Segments) || len(x.Content) != len(y.Content) {
 			return false, nil
 		}
 		for j, s := range []parser.Span{p.Marker, p.Opening, p.Check, p.Closing, p.Separator} {

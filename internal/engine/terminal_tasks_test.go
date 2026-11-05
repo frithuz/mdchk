@@ -46,3 +46,29 @@ func TestGFMTerminalTaskProofAuthorityAndInterruptions(t *testing.T) {
 		}
 	}
 }
+
+func TestTerminalTaskSourcesPreservedThroughEditMapping(t *testing.T) {
+	ctx := context.Background()
+	budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
+	before := parser.ParseGFMWithBudget(ctx, parser.NewSource([]byte("##  T\n\n- [x] t\n")), budget)
+	after := parser.ParseGFMWithBudget(ctx, parser.NewSource([]byte("## T\n\n- [x] t\n")), budget)
+	if got, err := TerminalTaskSourcesPreserved(ctx, before, after, budget); err != nil || got {
+		t.Fatal("absolute offsets accepted a shifted task", got, err)
+	}
+	shift := func(delta int) func(parser.Span) (parser.Span, bool, error) {
+		return func(s parser.Span) (parser.Span, bool, error) {
+			mapped, err := after.Source.Span(s.Start()+delta, s.End()+delta)
+			return mapped, err == nil, nil
+		}
+	}
+	if got, err := TerminalTaskSourcesPreservedMapped(ctx, before, after, budget, shift(-1)); err != nil || !got {
+		t.Fatal("mapped task sources rejected", got, err)
+	}
+	if got, err := TerminalTaskSourcesPreservedMapped(ctx, before, after, budget, shift(-2)); err != nil || got {
+		t.Fatal("wrong mapping accepted", got, err)
+	}
+	unmappable := func(parser.Span) (parser.Span, bool, error) { return parser.Span{}, false, nil }
+	if got, err := TerminalTaskSourcesPreservedMapped(ctx, before, after, budget, unmappable); err != nil || got {
+		t.Fatal("unmappable task fact accepted", got, err)
+	}
+}

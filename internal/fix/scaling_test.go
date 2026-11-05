@@ -128,3 +128,33 @@ func BenchmarkCandidateIndependentGroups(b *testing.B) {
 		})
 	}
 }
+
+func TestCheckContextRoundProofRunsOnce(t *testing.T) {
+	computed, checked := 0, 0
+	validator, targets := independentFixture(t, 64, func(ctx context.Context, c fix.CheckContext) (fix.Proof, error) {
+		checked++
+		value, err := c.Once("round", func() (any, error) {
+			computed++
+			return c.OnlyEditsChanged(ctx)
+		})
+		if err != nil {
+			return fix.Unknown, err
+		}
+		if unchanged, ok := value.(bool); !ok || !unchanged {
+			return fix.Unsafe, nil
+		}
+		return fix.Preserved, nil
+	})
+	budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
+	out, err := validator.Validate(context.Background(), targets, fix.ValidationOptions{Budget: budget})
+	if err != nil {
+		t.Fatal(err)
+	}
+	view, ok := out.File(targets[0].Path)
+	if !ok || !out.Complete() || view.ChangingRounds != 1 {
+		t.Fatal(ok, out.Complete(), view.ChangingRounds, view.Attempts)
+	}
+	if checked != 64 || computed != 1 {
+		t.Fatalf("checked %d groups, computed %d proofs", checked, computed)
+	}
+}
