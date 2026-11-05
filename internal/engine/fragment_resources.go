@@ -14,6 +14,7 @@ import (
 // so documents without such links never open a root or bind a target. A non-nil
 // error other than a stop means the context is unavailable; callers must report
 // reduced coverage rather than guess. Implementations own resource lifetime.
+// MD057 derives its existence resolver from the same resolver and view.
 type FragmentResources interface {
 	Fragments(ctx context.Context) (*resource.FragmentResolver, resource.View, error)
 }

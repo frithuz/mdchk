@@ -79,6 +79,8 @@ type RuleOutcome struct {
 	// Fragments are completed shared resolutions the engine projects with their
 	// source provenance and causes. Report-only; they carry no write authority.
 	Fragments []resource.FragmentResolution
+	// Existence are completed shared existence resolutions, projected the same way.
+	Existence []resource.ExistenceResolution
 	Err       error
 }
 
