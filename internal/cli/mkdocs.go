@@ -54,28 +54,40 @@ func (inv *lintInvocation) checkMkDocs(ctx context.Context, budget *parser.Opera
 		outcome, ruleErr := rules.MkDocsNavigation(ctx, scope, mkdocs)
 		return outcome, mkdocs.ConfigSource(), errors.Join(acquireErr, ruleErr)
 	}()
+	// One projector for the operation: a stopped budget, deadline or
+	// cancellation is an interruption, and the shared reserve bounds the
+	// records still reported after it.
+	projector := engine.NewSpanProjector(ctx, budget, source)
 	project := func(record rules.MkDocsRecord) (*result.Range, result.ByteRange, *result.Snapshot, error) {
 		if !record.Located {
 			return nil, result.ByteRange{}, nil, nil
 		}
-		span, bytes, snap, projectErr := engine.ProjectSpan(ctx, budget, source, record.Span)
+		span, bytes, snap, projectErr := projector.Project(record.Span)
 		return &span, bytes, &snap, projectErr
 	}
+	var projectErr error
 	for _, finding := range outcome.Findings {
-		span, bytes, snap, projectErr := project(finding)
-		if projectErr != nil {
-			err = errors.Join(err, projectErr)
+		var span *result.Range
+		var bytes result.ByteRange
+		var snap *result.Snapshot
+		if span, bytes, snap, projectErr = project(finding); projectErr != nil {
 			break
 		}
 		out.Diagnostics = append(out.Diagnostics, result.Diagnostic{Path: path, Rule: "MD074", Severity: "error", Message: finding.Message, Range: *span, ByteRange: bytes, Snapshot: *snap})
 	}
 	for _, coverage := range outcome.Coverage {
-		span, _, snap, projectErr := project(coverage)
 		if projectErr != nil {
-			err = errors.Join(err, projectErr)
+			break
+		}
+		var span *result.Range
+		var snap *result.Snapshot
+		if span, _, snap, projectErr = project(coverage); projectErr != nil {
 			break
 		}
 		out.Coverage = append(out.Coverage, result.Coverage{Path: path, Rule: "MD074", Reason: result.ContextUnavailable, Range: span, Snapshot: snap, Message: coverage.Message})
+	}
+	if len(outcome.Findings)+len(outcome.Coverage) > 0 {
+		err = errors.Join(err, projectErr, projector.Stop())
 	}
 	if err == nil {
 		return

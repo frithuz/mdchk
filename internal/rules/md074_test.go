@@ -119,12 +119,13 @@ func md074Run(t *testing.T, dir string, want md074Expected) (diagnostics, covera
 	if err != nil {
 		t.Fatal(err)
 	}
+	projector := engine.NewSpanProjector(ctx, budget, mkdocs.ConfigSource())
 	project := func(record MkDocsRecord, reason string) md074Record {
 		got := md074Record{Message: record.Message, Reason: reason}
 		if !record.Located {
 			return got
 		}
-		span, bytes, snap, err := engine.ProjectSpan(ctx, budget, mkdocs.ConfigSource(), record.Span)
+		span, bytes, snap, err := projector.Project(record.Span)
 		if err != nil {
 			t.Fatal(err)
 		}
