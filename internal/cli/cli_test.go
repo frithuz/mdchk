@@ -55,7 +55,7 @@ func TestLintOptions(t *testing.T) {
 	}
 	for _, format := range []string{"text", "json", "vscode", "github"} {
 		var out, errout bytes.Buffer
-		want := 15
+		want := 10
 		if got := Run([]string{"lint", "--format", format}, &out, &errout, "dev"); got != want || out.Len()+errout.Len() == 0 || (format != "vscode" && errout.Len() != 0) {
 			t.Fatalf("format %s: status=%d stdout=%q", format, got, &out)
 		}

@@ -1,0 +1,578 @@
+[
+  {
+    "Name": "violating",
+    "Source": "---\ntitle: Guide\n---\n# Guide\n",
+    "SHA256": "9d6b3b83cfc04bdb3b147133976182d342b67fc8ff1ea6700ce3f04825daa045",
+    "SizeBytes": 29,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "accepted",
+    "Source": "---\ntitle: Guide\n---\n\n# Guide\n",
+    "SHA256": "6d031eb8dfbb5c1dd5459d1066a00795fefe848d63f3e7f7b9c3f3367117defa",
+    "SizeBytes": 30,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "yaml-dots-closer",
+    "Source": "---\ntitle: Guide\n...\n# Guide\n",
+    "SHA256": "c870767b23726e8ecc19a87d867bdc2d320014f3d62ab1d6873ad0072eeeb4db",
+    "SizeBytes": 29,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "toml",
+    "Source": "+++\ntitle = \"Guide\"\n+++\n# Guide\n",
+    "SHA256": "d1e735d090e9d7c8122cb392c95e0f34c17ed6b14419417db4d2af072e89b852",
+    "SizeBytes": 32,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          24,
+          24,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "toml-accepted",
+    "Source": "+++\ntitle = \"Guide\"\n+++\n\n# Guide\n",
+    "SHA256": "8b587fdf5563bd1e468fba9d212f6cdbd853d2d9cf27a26ed7534bd35689d1db",
+    "SizeBytes": 33,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty-header",
+    "Source": "---\n---\nText\n",
+    "SHA256": "393ae7ca1e0133dafe1cd3bb3ba5946947985fc7ab52fe385cb64935492ca0c0",
+    "SizeBytes": 13,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          8,
+          8,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "header-only-newline",
+    "Source": "---\ntitle: Guide\n---\n",
+    "SHA256": "c6d5d3f9003b8776fb25b24ba5a9e4188cefe3acc9bbd80904faf70051d1243e",
+    "SizeBytes": 21,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "header-only-eof",
+    "Source": "---\ntitle: Guide\n---",
+    "SHA256": "caeeb8e201a1978622eeeab46a570ee5f5ab6f73638e7d4d3b771effe856d8c8",
+    "SizeBytes": 20,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "header-only-blank-lines",
+    "Source": "---\ntitle: Guide\n---\n\n\n",
+    "SHA256": "3c86a250d7fa36bc65287a7c73f07ba11bbf15967a99a7bff2cefd632c3b49ba",
+    "SizeBytes": 23,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "whitespace-line",
+    "Source": "---\ntitle: Guide\n---\n \t\n# Guide\n",
+    "SHA256": "7ad9849349cc73f9d0fb853218a509a8b77413a3cbbac1c7bde877f41ce63673",
+    "SizeBytes": 32,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "whitespace-line-eof",
+    "Source": "---\ntitle: Guide\n---\n\t ",
+    "SHA256": "b773bbfa157f7040d6328de3e1042b7c62d8c4e08b38303032618d09bcf7c63c",
+    "SizeBytes": 23,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "body-paragraph",
+    "Source": "---\ntitle: Guide\n---\nText\n",
+    "SHA256": "50ce01250d1b00ff89f37d208f7e9444400c15e56b6e7d6885c6900cbf538ecd",
+    "SizeBytes": 26,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "body-list",
+    "Source": "---\ntitle: Guide\n---\n- item\n",
+    "SHA256": "facfff140f08b7d7f09dff614467199af9ca948c462d2d15f8122f684998e119",
+    "SizeBytes": 28,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "body-blockquote",
+    "Source": "---\ntitle: Guide\n---\n> quote\n",
+    "SHA256": "768a33cdbe8b26068e4a398ad11d2aae97c1495b6cd7dfa0f778dc35c94f1c99",
+    "SizeBytes": 29,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "body-nested-container",
+    "Source": "---\ntitle: Guide\n---\n> - item\n",
+    "SHA256": "5f9959b8b27c773668d27c78915582f931ff30e6e5487b42dc21336dd736433b",
+    "SizeBytes": 30,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "body-fenced-code",
+    "Source": "---\ntitle: Guide\n---\n```\ncode\n```\n",
+    "SHA256": "d0354eba73563088f36ad37d5be3bee39d4206435a2667371d22e0408a49580e",
+    "SizeBytes": 34,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "body-html-block",
+    "Source": "---\ntitle: Guide\n---\n<div>\ntext\n</div>\n",
+    "SHA256": "4dd5eee37d5fae0e3116c43a18e82d40382a725cba6a64c3432443e4ecc5e347",
+    "SizeBytes": 39,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "body-link-reference-definition",
+    "Source": "---\ntitle: Guide\n---\n[a]: https://example.com\n",
+    "SHA256": "e83de2bfe11fc604768e56474abb9cd753fd56ab61431f8570aeed1dd6db1f25",
+    "SizeBytes": 46,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "body-indented-line",
+    "Source": "---\ntitle: Guide\n---\n    code\n",
+    "SHA256": "a0e5db5291eef27e2e1083272b6b7f5e3f5da51f337f122fc1a66a6d4b4ea309",
+    "SizeBytes": 30,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "body-without-final-ending",
+    "Source": "---\ntitle: Guide\n---\nText",
+    "SHA256": "47d0e49eb69338ba86fb65f44373a3b0f64ebd8329c1b8a769c3a4cf68f1dc35",
+    "SizeBytes": 25,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "crlf",
+    "Source": "---\r\ntitle: Guide\r\n---\r\n# Guide\r\n",
+    "SHA256": "ab15a8c1d135431c903c459851e975007069311b026ee474cf13dc8be978db81",
+    "SizeBytes": 33,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          24,
+          24,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "crlf-accepted",
+    "Source": "---\r\ntitle: Guide\r\n---\r\n\r\n# Guide\r\n",
+    "SHA256": "f53295e310e0ca919f9532c4e07223fa368695919ba070eb16b43077a6345b7e",
+    "SizeBytes": 35,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "cr",
+    "Source": "---\rtitle: Guide\r---\r# Guide\r",
+    "SHA256": "15509f6e644dc10ff71efaf60db3ba01c3f1650d8c0652fcb833ce3705745083",
+    "SizeBytes": 29,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          21,
+          21,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "cr-accepted",
+    "Source": "---\rtitle: Guide\r---\r\r# Guide\r",
+    "SHA256": "74d33c97ed7c2f102dec51a930057b4509f89ce549a9b35b17410743824317d8",
+    "SizeBytes": 30,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "mixed",
+    "Source": "---\r\ntitle: Guide\n---\r# Guide\n",
+    "SHA256": "3e2da169879877f347d7b88ac44af4e6fef595c591152eb157880dfee54df301",
+    "SizeBytes": 30,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          22,
+          22,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "bom",
+    "Source": "﻿---\ntitle: Guide\n---\n# Guide\n",
+    "SHA256": "b8a5a4caa8c5856caa3cdbc443241240062a2c5bba224c5953698a0980431976",
+    "SizeBytes": 32,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          24,
+          24,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "bom-accepted",
+    "Source": "﻿---\ntitle: Guide\n---\n\n# Guide\n",
+    "SHA256": "e3a53c2df33806aec6aaad7ad5d6321e81f9ace4d080163622473562318bada1",
+    "SizeBytes": 33,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "closer-trailing-whitespace",
+    "Source": "---\ntitle: Guide\n--- \t\n# Guide\n",
+    "SHA256": "7218080c3f90eb7e70dba9cc2b8ad7100775d2108b2626b23b97956dbdde1ed1",
+    "SizeBytes": 31,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          23,
+          23,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Frontmatter requires a blank line before the document body."
+      }
+    ]
+  },
+  {
+    "Name": "closer-trailing-whitespace-accepted",
+    "Source": "---\ntitle: Guide\n---\t \n\n# Guide\n",
+    "SHA256": "53f39969021b345659c8584aa91940d74636a4f987cc051ce584b78e39b153c7",
+    "SizeBytes": 32,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "recognition-disabled",
+    "Source": "---\ntitle: Guide\n---\n# Guide\n",
+    "SHA256": "9d6b3b83cfc04bdb3b147133976182d342b67fc8ff1ea6700ce3f04825daa045",
+    "SizeBytes": 29,
+    "Recognize": false,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "unselected-format",
+    "Source": "+++\ntitle = \"Guide\"\n+++\n# Guide\n",
+    "SHA256": "d1e735d090e9d7c8122cb392c95e0f34c17ed6b14419417db4d2af072e89b852",
+    "SizeBytes": 32,
+    "Recognize": true,
+    "Formats": [
+      "yaml"
+    ],
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "invalid-opener",
+    "Source": "--- x\ntitle: Guide\n---\n# Guide\n",
+    "SHA256": "d8e3bcbf388ae75a8808952e78157ef44b9e04fe8d24706ac083c5b2f6cd93c3",
+    "SizeBytes": 31,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "json-header",
+    "Source": "{\n\"title\": \"Guide\"\n}\n# Guide\n",
+    "SHA256": "0dfa2931405985fc00de3429271917fe51e3464818e8faca7468dff6c1d32d31",
+    "SizeBytes": 29,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "unterminated",
+    "Source": "---\ntitle: Guide\n# Guide\n",
+    "SHA256": "b99806839042ed2561bd9713d6be92934d94659782b2eb00ce309f3e385b7376",
+    "SizeBytes": 25,
+    "Recognize": true,
+    "Formats": null,
+    "Incomplete": true,
+    "Expected": []
+  }
+]

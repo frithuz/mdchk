@@ -28,7 +28,7 @@ func TestActualLintAcquisition(t *testing.T) {
 		status int
 		count  int
 	}{
-		{nil, 15, 1}, {[]string{"nested"}, 15, 1}, {[]string{"custom.txt"}, 15, 1}, {[]string{"--", "--draft"}, 15, 1},
+		{nil, 10, 1}, {[]string{"nested"}, 10, 1}, {[]string{"custom.txt"}, 10, 1}, {[]string{"--", "--draft"}, 10, 1},
 		{[]string{"missing.md"}, 13, 0}, {[]string{"ignored/file.md"}, 11, 0}, {[]string{"nested", "missing.md"}, 13, 1},
 	} {
 		t.Run(strings.Join(tc.paths, ","), func(t *testing.T) {

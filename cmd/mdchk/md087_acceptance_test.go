@@ -30,7 +30,7 @@ func md087Literals(t *testing.T) map[string]md087Literal {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if fmt.Sprintf("%x", sha256.Sum256(raw)) != "512bde0c95a3868acd8c8c7f498cda34eebc85daac513dce00997ccc2aa13af4" {
+	if fmt.Sprintf("%x", sha256.Sum256(raw)) != "76110b9b7ea25d0317b89e354aab3f0be6ed5688585108b5d07051799b910464" {
 		t.Fatal("root oracle identity")
 	}
 	var oracle struct{ Cases []md087Literal }
@@ -58,10 +58,12 @@ func TestCompiledPlatformMD087LiteralLint(t *testing.T) {
 	binary := sharedExecutable(t)
 	cases := md087Literals(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
+		// known-unavailable-mixed needs a default-enabled rule without an
+		// implementation; production has none, so only the engine tests cover it.
 		for _, name := range []string{
 			"single-clean-heading", "one-hidden-jump", "repeated-disable-owns-new-interval", "mixed-order-and-duplicate",
 			"eof-terminal-finding-owned", "terminal-clean-lf", "eof-no-heading-finding", "astral-crlf", "blockquote-original-source",
-			"self-turns-off-only-after-close", "configured-off-target-incapable", "production-md086-clean", "known-unavailable-mixed",
+			"self-turns-off-only-after-close", "configured-off-target-incapable", "production-md086-clean",
 		} {
 			t.Run(flavor+"/"+name, func(t *testing.T) {
 				tc, ok := cases[name]
@@ -71,9 +73,6 @@ func TestCompiledPlatformMD087LiteralLint(t *testing.T) {
 				conf := md087Configuration(flavor, tc.Source)
 				if name == "configured-off-target-incapable" {
 					conf = strings.Replace(conf, "MD001: {enabled: true}", "MD001: {enabled: false}", 1)
-				}
-				if name == "known-unavailable-mixed" {
-					conf = strings.Replace(conf, "  MD071: {enabled: true}\n", "", 1)
 				}
 				root := configurationProject(t)
 				putConfigurationFile(t, root, ".mdchk.yaml", conf)

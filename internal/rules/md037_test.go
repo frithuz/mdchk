@@ -153,7 +153,7 @@ func TestMD037DefaultsSettingsAndAvailability(t *testing.T) {
 		}
 	}
 	in, _ := engine.NewInput("implicit.md", []byte("A * x *"), nil, engine.DocumentContext{})
-	out, err := r.Lint(context.Background(), []engine.Input{in}, engine.RunOptions{})
+	out, err := registry(t, registrationsWithout("MD071")).Lint(context.Background(), []engine.Input{in}, engine.RunOptions{})
 	if err != nil || out.Complete {
 		t.Fatal(out, err)
 	}

@@ -37,9 +37,9 @@ func TestGFMPrivateScopesPreserveProductionAdmission(t *testing.T) {
 			body string
 			want int
 		}{
-			{"version: 1\n", 15}, {"version: 1\nflavor: gfm\n", 15},
-			{availableConfig, 15}, {availableConfig + "frontmatter: {enabled: false}\n", 15},
-			{availableConfig + "frontmatter: {enabled: true}\n", 15},
+			{"version: 1\n", 10}, {"version: 1\nflavor: gfm\n", 10},
+			{availableConfig, 10}, {availableConfig + "frontmatter: {enabled: false}\n", 10},
+			{availableConfig + "frontmatter: {enabled: true}\n", 10},
 			{availableConfig + "extensions: {tables: true}\n", 12},
 			{"version: 1\nflavor: tables-only\n", 12},
 		} {
@@ -47,7 +47,7 @@ func TestGFMPrivateScopesPreserveProductionAdmission(t *testing.T) {
 			var out, stderr bytes.Buffer
 			got := Run([]string{"lint", "doc.md", "--format=json"}, &out, &stderr, "dev")
 			actual := validateEmitted(t, t.TempDir(), out.Bytes())
-			if got != c.want || (got == 15 && (len(actual.CheckedFiles) != 1 || len(actual.Coverage) == 0 || len(actual.Errors) != 0)) || (got == 12 && len(actual.CheckedFiles) != 0) {
+			if got != c.want || (got == 10 && (len(actual.CheckedFiles) != 1 || !actual.Complete || len(actual.Coverage) != 0 || len(actual.Errors) != 0)) || (got == 12 && len(actual.CheckedFiles) != 0) {
 				t.Fatalf("admission after scope: body=%q status=%d checked=%v", c.body, got, actual.CheckedFiles)
 			}
 		}

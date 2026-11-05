@@ -165,17 +165,9 @@ func testConfigurationDiscovery(t *testing.T, binary string) {
 
 func requireDiscoveryChecked(t *testing.T, got configurationRun, paths ...string) {
 	t.Helper()
-	if got.Status != 15 || got.Result.Complete || got.Result.Status != "incomplete" || !reflect.DeepEqual(got.Result.CheckedFiles, paths) || len(got.Result.Errors) != 0 || len(got.Result.Diagnostics) != 0 {
-		t.Fatalf("expected production missing-rule coverage for %v: %+v", paths, got)
-	}
-	found := false
-	for _, c := range got.Result.Coverage {
-		if c.Rule == "MD071" && c.Reason == "rule-unavailable" {
-			found = true
-		}
-	}
-	if !found {
-		t.Fatal("implicit default-enabled MD071 missing from coverage")
+	// Every default-enabled CommonMark rule is available, so defaults are complete.
+	if got.Status != 0 || !got.Result.Complete || got.Result.Status != "clean" || !reflect.DeepEqual(got.Result.CheckedFiles, paths) || len(got.Result.Errors) != 0 || len(got.Result.Diagnostics) != 0 || len(got.Result.Coverage) != 0 {
+		t.Fatalf("expected complete production defaults for %v: %+v", paths, got)
 	}
 }
 

@@ -222,11 +222,13 @@ func TestDocumentedIntegrationExamples(t *testing.T) {
 			if !found || !strings.Contains(partial.stdout+partial.stderr, "large.md") {
 				t.Fatal("lost partial evidence", partial)
 			}
-			put(t, filepath.Join(root, "large.md"), "clean\n")
-			put(t, filepath.Join(root, ".mdchk.yaml"), "version: 1\nflavor: commonmark\n")
+			// Every default-enabled rule is available, so incompleteness comes
+			// from a real unterminated header rather than missing rules.
+			put(t, filepath.Join(root, "large.md"), "---\nclean\n")
+			put(t, filepath.Join(root, ".mdchk.yaml"), "version: 1\nflavor: commonmark\nfrontmatter: {enabled: true}\n")
 			incomplete := editorExecute(t, binary, root, args...)
 			integrationRecords(t, task, format, incomplete)
-			if incomplete.status != 15 || !strings.Contains(incomplete.stdout+incomplete.stderr, "rule-unavailable") {
+			if incomplete.status != 15 || !strings.Contains(incomplete.stdout+incomplete.stderr, "parser-uncertain") || strings.Contains(incomplete.stdout+incomplete.stderr, "rule-unavailable") {
 				t.Fatal("incomplete example", incomplete)
 			}
 			// Real OS output-delivery failure through the extracted integration argv.

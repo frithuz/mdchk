@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 	"testing"
 	"testing/synctest"
@@ -89,7 +90,12 @@ func TestMD087UncertainBlockedExcludedAndNotRequested(t *testing.T) {
 		{"not-requested", "<!-- mdchk:disable MD001 -->\n", md087Definition(false, "MD001"), "suppression-not-requested", true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			s, _ := projectionFixture(t, tc.source, tc.definition, rules.Registrations())
+			regs := rules.Registrations()
+			if tc.name == "unavailable" {
+				// Keep a default-enabled target without an implementation.
+				regs = slices.DeleteFunc(regs, func(g engine.Registration) bool { return g.ID == "MD071" })
+			}
+			s, _ := projectionFixture(t, tc.source, tc.definition, regs)
 			a := analyze(t, s, false)
 			if a.Result.Complete != tc.complete || len(a.Result.Diagnostics) != 0 {
 				t.Fatal(a.Result)
