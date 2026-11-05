@@ -60,3 +60,22 @@ func TestProjectionReserveIsNotResetAcrossProjectors(t *testing.T) {
 		t.Fatalf("reserve reset between targets: %v", err)
 	}
 }
+
+func TestIncompleteCoverageLocatesOnlyAValidSpan(t *testing.T) {
+	source := parser.NewSource([]byte("one\ntwo\n"))
+	span, _ := source.Span(4, 7)
+	foreign, _ := parser.NewSource([]byte("one\ntwo\n")).Span(4, 7)
+	budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
+	projection := projector{ctx: context.Background(), budget: budget, source: source, index: parser.NewLineIndex(source)}
+	snap := snapshot(source)
+	in := Input{path: "a", source: source}
+	located := incompleteCoverage(in, &projection, snap, "MD072", RuleOutcome{IncompleteReason: "why", IncompleteSpan: span})
+	if located.Message != "why" || located.Range == nil || located.Range.Start.Line != 2 || located.Range.End.Column != 4 || located.Snapshot == nil || *located.Snapshot != snap {
+		t.Fatalf("%+v", located)
+	}
+	for _, outcome := range []RuleOutcome{{IncompleteReason: "why"}, {IncompleteReason: "why", IncompleteSpan: foreign}} {
+		if plain := incompleteCoverage(in, &projection, snap, "MD072", outcome); plain.Message != "why" || plain.Range != nil || plain.Snapshot != nil {
+			t.Fatalf("%+v", plain)
+		}
+	}
+}

@@ -140,3 +140,58 @@ func TestMD072BodyDirectiveCannotReachHeader(t *testing.T) {
 		}
 	}
 }
+
+func TestMD072MetadataCoverageExplainsTheFirstProblem(t *testing.T) {
+	merge := "---\nbase: &b {y: 1, x: 2}\nz: 1\nm:\n  <<: *b\na: 2\n---\n"
+	type location struct{ line, column, endLine, endColumn int }
+	for _, tc := range []struct {
+		name, source, message string
+		recursive             bool
+		at                    *location
+	}{
+		{"malformed", "---\na: [\n---\n", "Metadata is malformed; the affected key ordering checks were withheld.", false, &location{2, 1, 3, 1}},
+		{"merge key", merge, "Metadata uses an unsupported structure such as a merge key, custom tag or cycle; the affected key ordering checks were withheld.", false, &location{5, 3, 5, 5}},
+		{"custom tag", "---\nz: !foo 1\na: 2\n---\n", "Metadata uses an unsupported structure such as a merge key, custom tag or cycle; the affected key ordering checks were withheld.", false, &location{2, 4, 2, 8}},
+		{"duplicate key", "---\nz: 1\nz: 2\na: 3\n---\n", "Metadata contains a duplicate key; the affected key ordering checks were withheld.", false, &location{3, 1, 3, 2}},
+		{"first of several", "---\nb: !foo 1\na: 1\na: 2\n---\n", "Metadata uses an unsupported structure such as a merge key, custom tag or cycle; the affected key ordering checks were withheld.", false, &location{2, 4, 2, 8}},
+		{"no authored key", "+++\n[z.x]\nk = 1\n[a]\nk = 2\n+++\n", "A metadata key has no authored source location; its key ordering check was withheld.", true, nil},
+	} {
+		for _, flavor := range []string{"commonmark", "gfm"} {
+			t.Run(tc.name+"/"+flavor, func(t *testing.T) {
+				out := analyzeHeadings(t, registry(t, Registrations()), tc.source, md072Settings(tc.recursive, true), md072Context(t, flavor, true, nil), engine.RunOptions{})
+				coverage := md072Coverage(out)
+				if len(coverage) != 1 || coverage[0].Message != tc.message || coverage[0].Reason != result.ContextUnavailable || out.Complete {
+					t.Fatalf("%+v", coverage)
+				}
+				if tc.at == nil {
+					if coverage[0].Range != nil || coverage[0].Snapshot != nil {
+						t.Fatalf("%+v", coverage[0])
+					}
+					return
+				}
+				r := coverage[0].Range
+				if r == nil || coverage[0].Snapshot == nil || *coverage[0].Snapshot != *out.Files[0].InputSnapshot {
+					t.Fatalf("%+v", coverage[0])
+				}
+				if (location{r.Start.Line, r.Start.Column, r.End.Line, r.End.Column}) != *tc.at {
+					t.Fatalf("%+v", r)
+				}
+			})
+		}
+	}
+}
+
+func TestMD072ReliableFindingsStandBesideExplainedCoverage(t *testing.T) {
+	out := analyzeHeadings(t, registry(t, Registrations()), "---\nb:\n  z: 1\n  a: 2\nc: !foo 1\n---\n", md072Settings(true, true), md072Context(t, "commonmark", true, nil), engine.RunOptions{})
+	if len(out.Diagnostics) != 1 || out.Diagnostics[0].ByteRange != (result.ByteRange{Start: 16, End: 17}) || len(md072Coverage(out)) != 1 || md072Coverage(out)[0].Range == nil {
+		t.Fatalf("%+v %+v", out.Diagnostics, out.Coverage)
+	}
+}
+
+func TestMD072CoverageLocatesAProblemInsideAScalar(t *testing.T) {
+	out := analyzeHeadings(t, registry(t, Registrations()), "+++\n中A = [\n+++\n", md072Settings(false, true), md072Context(t, "commonmark", true, nil), engine.RunOptions{})
+	coverage := md072Coverage(out)
+	if len(coverage) != 1 || coverage[0].Message != "Metadata is malformed; the affected key ordering checks were withheld." || coverage[0].Range == nil || coverage[0].Range.Start.Line != 2 {
+		t.Fatalf("%+v", coverage)
+	}
+}

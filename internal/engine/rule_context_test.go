@@ -58,37 +58,37 @@ func TestRuleContextHeadingAndTitleOriginalAuthority(t *testing.T) {
 
 func TestRuleContextMetadataOrderingAuthority(t *testing.T) {
 	c := headingContext(t, "---\nz: 1\na: 2\n---\n# Root\n", parser.DefaultLimits(), context.Background())
-	if _, _, err := c.MetadataOrdering(context.Background()); err == nil {
+	if _, _, _, err := c.MetadataOrdering(context.Background()); err == nil {
 		t.Fatal("ordering without frontmatter awareness")
 	}
 	c.frontmatterAware = true
-	if _, _, err := c.MetadataOrdering(context.Background()); err == nil {
+	if _, _, _, err := c.MetadataOrdering(context.Background()); err == nil {
 		t.Fatal("ordering without resolved options")
 	}
 	c.options = Options{"recursive": false, "case_sensitive": "true"}
-	if _, _, err := c.MetadataOrdering(context.Background()); err == nil {
+	if _, _, _, err := c.MetadataOrdering(context.Background()); err == nil {
 		t.Fatal("ordering with mistyped options")
 	}
 	c.options = Options{"recursive": false, "case_sensitive": true}
-	orders, complete, err := c.MetadataOrdering(context.Background())
+	orders, complete, _, err := c.MetadataOrdering(context.Background())
 	if err != nil || !complete || len(orders) != 1 || !orders[0].Violation() || orders[0].Count() != 2 {
 		t.Fatal(orders, complete, err)
 	}
 	if first, _ := orders[0].KnownIndex(0); first != 1 {
 		t.Fatal("unexpected permutation", first)
 	}
-	if _, _, err := c.MetadataOrdering(nil); err == nil { //nolint:staticcheck // Exercise the rejected nil-context contract.
+	if _, _, _, err := c.MetadataOrdering(nil); err == nil { //nolint:staticcheck // Exercise the rejected nil-context contract.
 		t.Fatal("nil caller")
 	}
 	c.syntaxReliable = false
-	if _, _, err := c.MetadataOrdering(context.Background()); err == nil {
+	if _, _, _, err := c.MetadataOrdering(context.Background()); err == nil {
 		t.Fatal("unreliable syntax")
 	}
 
 	absent := headingContext(t, "# Root\n", parser.DefaultLimits(), context.Background())
 	absent.frontmatterAware = true
 	absent.options = Options{"recursive": true, "case_sensitive": false}
-	orders, complete, err = absent.MetadataOrdering(context.Background())
+	orders, complete, _, err = absent.MetadataOrdering(context.Background())
 	if err != nil || !complete || len(orders) != 0 {
 		t.Fatal(orders, complete, err)
 	}

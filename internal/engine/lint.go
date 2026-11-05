@@ -670,7 +670,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 					// A retention failure does not erase a provider's already
 					// published noninterrupt failure or incomplete context.
 					if outcome.IncompleteReason != "" {
-						out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: outcome.IncompleteReason})
+						out.Coverage = append(out.Coverage, incompleteCoverage(in, &projection, snap, id, outcome))
 					}
 					if outcome.Err != nil {
 						out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "rule-failure", Scope: "operation", Path: in.path, Rule: id, Message: outcome.Err.Error()})
@@ -697,7 +697,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 				stopped = recordInterruption(&out, in.path, "analysis", projection.stop)
 			}
 			if outcome.IncompleteReason != "" {
-				out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: outcome.IncompleteReason})
+				out.Coverage = append(out.Coverage, incompleteCoverage(in, &projection, snap, id, outcome))
 			}
 			if outcome.Err != nil {
 				if isInterruption(outcome.Err) {
@@ -727,6 +727,28 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 }
 func snapshot(source parser.Source) result.Snapshot {
 	return result.Snapshot{View: "original", SHA256: fmt.Sprintf("%x", sha256.Sum256(source.Bytes())), SizeBytes: source.Len()}
+}
+
+// incompleteCoverage publishes a rule's incomplete reason, located when the rule
+// names a span. A budget stop while resolving coordinates keeps the reason and
+// drops only the location; the rule loop's next checkpoint records that stop.
+func incompleteCoverage(in Input, projection *projector, snap result.Snapshot, id string, outcome RuleOutcome) result.Coverage {
+	coverage := result.Coverage{Path: in.path, Rule: id, Reason: result.ContextUnavailable, Message: outcome.IncompleteReason}
+	span := outcome.IncompleteSpan
+	if !span.Present() || projection.begin(Finding{Span: span, Message: outcome.IncompleteReason}) != nil {
+		return coverage
+	}
+	a, err := projection.position(span.Start())
+	if err != nil {
+		return coverage
+	}
+	b, err := projection.position(span.End())
+	if err != nil {
+		return coverage
+	}
+	coverage.Range = &result.Range{Start: a, End: b}
+	coverage.Snapshot = &snap
+	return coverage
 }
 func makeDiagnostic(in Input, projection *projector, snap result.Snapshot, m Metadata, f Finding) (result.Diagnostic, error) {
 	if err := projection.begin(f); err != nil {

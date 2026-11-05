@@ -65,31 +65,39 @@ func (c RuleContext) FrontmatterTitle(ctx context.Context) (metadata.Title, erro
 // evaluates the actual original header on demand, sharing its document and
 // operation controls. Reliable lexical absence means no orders with complete
 // coverage, without decoding. Complete reports whether the decoded result is
-// complete; incomplete mappings are withheld by the policy itself. This narrow
+// complete; incomplete mappings are withheld by the policy itself. First is the
+// earliest decoder problem, and has an empty Code when there is none. This narrow
 // semantic access exposes no decoded values beyond the returned orders and
 // grants no correction authority.
-func (c RuleContext) MetadataOrdering(ctx context.Context) (orders []metadata.Order, complete bool, err error) {
+func (c RuleContext) MetadataOrdering(ctx context.Context) (orders []metadata.Order, complete bool, first metadata.Problem, err error) {
 	recursive, okRecursive := c.options["recursive"].(bool)
 	sensitive, okSensitive := c.options["case_sensitive"].(bool)
 	if ctx == nil || c.operation == nil || c.document == nil || !c.syntaxReliable || c.document.Source().Token() != c.Source().Token() || !c.frontmatterAware || !okRecursive || !okSensitive {
-		return nil, false, metadata.ErrContract
+		return nil, false, metadata.Problem{}, metadata.ErrContract
 	}
 	binding, err := metadata.Bind(ctx, c.operation, c.budget, c.document)
 	if err != nil {
-		return nil, false, err
+		return nil, false, metadata.Problem{}, err
 	}
 	if binding.State() == metadata.Absent {
-		return nil, true, nil
+		return nil, true, metadata.Problem{}, nil
 	}
 	decoded, err := metadata.Decode(ctx, binding)
 	if err != nil {
-		return nil, false, err
+		return nil, false, metadata.Problem{}, err
 	}
 	orders, err = decoded.Ordering(ctx, binding, metadata.OrderOptions{Recursive: recursive, CaseInsensitive: !sensitive})
 	if err != nil {
-		return nil, false, err
+		return nil, false, metadata.Problem{}, err
 	}
-	return orders, decoded.Complete(), nil
+	problems, err := decoded.SortedProblems(ctx, binding)
+	if err != nil {
+		return nil, false, metadata.Problem{}, err
+	}
+	if len(problems) > 0 {
+		first = problems[0]
+	}
+	return orders, decoded.Complete(), first, nil
 }
 
 // OpeningHashCandidates projects parser-owned missing-separator points using
