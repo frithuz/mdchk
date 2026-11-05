@@ -208,8 +208,9 @@ func (e ExistenceResolution) Err() error {
 }
 
 // Resolve consumes a prepared query with at most two existence-only reads: the
-// locator, then exactly one configured index when the locator is a directory.
-// There is no fallback name, recursion or directory scan.
+// locator, then exactly one configured index when the locator is a directory
+// other than the resource root, which is exempt from the index check. There is
+// no fallback name, recursion or directory scan.
 func (r *ExistenceResolver) Resolve(ctx context.Context, query ExistenceQuery) (ExistenceResolution, error) {
 	if r == nil || ctx == nil || query.state == nil || query.state.resolver != r || !query.state.consumed.CompareAndSwap(false, true) {
 		return ExistenceResolution{}, ErrContract
@@ -267,6 +268,11 @@ func (r *ExistenceResolver) Resolve(ctx context.Context, query ExistenceQuery) (
 		var err error
 		existence, err = r.service.RootDirectory(ctx, n.location)
 		retain(key, err)
+		// The resource root itself is exempt from the configured index check.
+		if existence == Directory {
+			e.outcome = ExistenceFound
+			return finish()
+		}
 	} else {
 		observation, err := read(q.requests[0])
 		if err != nil {

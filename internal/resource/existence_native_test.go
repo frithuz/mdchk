@@ -72,7 +72,8 @@ func TestExistenceResolverOutcomes(t *testing.T) {
 		{"sub", ExistenceFound, 2},
 		{"bare/", ExistenceIndexMissing, 2},
 		{"sub2/", ExistenceIndexIsDirectory, 2},
-		{"./", ExistenceIndexMissing, 1},
+		{"./", ExistenceFound, 0},
+		{".", ExistenceFound, 0},
 		{"source.md", ExistenceFound, 0},
 		{"./source.md?v=1", ExistenceFound, 0},
 		{"https://example.test/a.md", ExistenceSkipped, 0},
@@ -106,7 +107,7 @@ func TestExistenceResolverOutcomes(t *testing.T) {
 				t.Fatal("content requested", row.destination, o.Request().Capability())
 			}
 		}
-		if row.want.Absent() != (len(observations) != 0 && observations[len(observations)-1].Treatment() == MissingTarget) && row.destination != "./" {
+		if row.want.Absent() != (len(observations) != 0 && observations[len(observations)-1].Treatment() == MissingTarget) {
 			t.Fatal("outcome disagrees with Treatment", row.destination, observations)
 		}
 		if len(observations) == 2 && observations[1].Request().RequiredType() != RegularFile {
@@ -241,5 +242,23 @@ func TestExistenceResolverSharesSourceProjection(t *testing.T) {
 	want := []result.Range{{Start: result.Position{Line: 2, Column: 9}, End: result.Position{Line: 2, Column: 13}}, {Start: result.Position{Line: 3, Column: 9}, End: result.Position{Line: 3, Column: 13}}, {Start: result.Position{Line: 4, Column: 9}, End: result.Position{Line: 4, Column: 15}}}
 	if !reflect.DeepEqual(ranges, want) {
 		t.Fatal(ranges)
+	}
+}
+
+// The resource root is exempt from the index check under every spelling, while
+// other directories keep the single index attempt.
+func TestExistenceResolverRootIsExempt(t *testing.T) {
+	destinations := []string{"../", "..", "../.", "./../", "./", "../docs/"}
+	f := fragmentNativeFixture(t, "docs/source.md", "index.md", destinations)
+	resolver := existenceNativeResolver(t, filesystemTestService(t, f), f.view)
+	for _, destination := range destinations[:4] {
+		if got := existenceResolve(t, resolver, f.source, destination); got.Outcome() != ExistenceFound || len(got.Observations()) != 0 {
+			t.Fatal(destination, got.Outcome(), got.Observations())
+		}
+	}
+	for _, destination := range destinations[4:] {
+		if got := existenceResolve(t, resolver, f.source, destination); got.Outcome() != ExistenceIndexMissing || len(got.Observations()) != 2 {
+			t.Fatal(destination, got.Outcome(), got.Observations())
+		}
 	}
 }

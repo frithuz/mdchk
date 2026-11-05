@@ -72,6 +72,7 @@ func TestCompiledPlatformMD057MissingLocalTargets(t *testing.T) {
 	binary := buildConfigurationExecutable(t, "")
 	for _, tc := range []struct {
 		name, rule, source, extra string
+		target                    string
 		status                    int
 		want                      []md057Located
 		prepare                   func(t *testing.T, root string)
@@ -89,6 +90,9 @@ func TestCompiledPlatformMD057MissingLocalTargets(t *testing.T) {
 			{"docs/self.md", 1, 41, 1, 46, 40, 45, false, md057IndexDir},
 		}},
 		{name: "index-file", rule: "{}", extra: "resources: {index_file: README.md}\n", source: "[b](bare/) [a](sub/)\n", status: 10, want: []md057Located{{"docs/self.md", 1, 16, 1, 20, 15, 19, false, md057NoIndex}}},
+		// The project root is exempt from the index check; other directories are not.
+		{name: "project-root-exempt", rule: "{}", source: "[a](../) [b](..) [c](./)\n", status: 10, want: []md057Located{{"docs/self.md", 1, 22, 1, 24, 21, 23, false, md057NoIndex}}},
+		{name: "project-root-from-root", rule: "{}", source: "[a](.) [b](./) [c](docs/)\n", target: "top.md", status: 10, want: []md057Located{{"top.md", 1, 20, 1, 25, 19, 24, false, md057NoIndex}}},
 		{name: "reference-crlf", rule: "{}", source: "# Self\r\n\r\n[x][r]\r\n\r\n[r]: missing.md\r\n", status: 10, want: []md057Located{{"docs/self.md", 3, 1, 3, 7, 10, 16, false, md057Missing}}},
 		{name: "containers", rule: "{}", source: "- [a](missing.md)\n\n> > [b](missing.md)\n", status: 10, want: []md057Located{
 			{"docs/self.md", 1, 7, 1, 17, 6, 16, false, md057Missing},
@@ -106,26 +110,30 @@ func TestCompiledPlatformMD057MissingLocalTargets(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			root := md057Project(t, md057Configuration(tc.rule)+tc.extra)
-			putConfigurationFile(t, root, "docs/self.md", tc.source)
+			target := tc.target
+			if target == "" {
+				target = "docs/self.md"
+			}
+			putConfigurationFile(t, root, target, tc.source)
 			if tc.prepare != nil {
 				tc.prepare(t, root)
 			}
 			before := configurationBytes(t, root)
-			got := md014NativeRun(t, binary, root, "lint", "docs/self.md", "--format=json")
+			got := md014NativeRun(t, binary, root, "lint", target, "--format=json")
 			out := md014NativeJSON(t, []byte(got.Stdout), "lint")
 			if have := md057Collect(t, out); got.Status != tc.status || !reflect.DeepEqual(have, tc.want) || len(out.Errors) != 0 {
 				t.Fatal(got.Status, have, got.Stdout)
 			}
-			seen, _ := runInspection(t, binary, root, root, "inspect", "docs/self.md", "--format=json")
+			seen, _ := runInspection(t, binary, root, root, "inspect", target, "--format=json")
 			if have := md057Collect(t, seen.Result); len(have) != len(tc.want) {
 				t.Fatal("inspect", have, tc.want)
 			}
-			dry := md014NativeRun(t, binary, root, "fix", "--dry-run", "docs/self.md", "--format=json")
+			dry := md014NativeRun(t, binary, root, "fix", "--dry-run", target, "--format=json")
 			fixed := md014NativeJSON(t, []byte(dry.Stdout), "fix")
 			if have := md057Collect(t, fixed); len(have) != len(tc.want) || len(fixed.Changes)+len(fixed.Documents) != 0 {
 				t.Fatal("fix --dry-run", have, dry.Stdout)
 			}
-			applied := md014NativeRun(t, binary, root, "fix", "docs/self.md", "--format=json")
+			applied := md014NativeRun(t, binary, root, "fix", target, "--format=json")
 			if out := md014NativeJSON(t, []byte(applied.Stdout), "fix"); len(out.Changes) != 0 {
 				t.Fatal("fix changed a file", applied.Stdout)
 			}
