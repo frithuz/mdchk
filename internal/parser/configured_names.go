@@ -10,7 +10,20 @@ import (
 // ConfiguredNames compares configured spellings only within exact, contiguous,
 // owner-local physical prose islands. Returned spans belong to the original
 // completed parse; this projection supplies neither edits nor parse authority.
-func (d *Document) ConfiguredNames(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, names []string, codeBlocks bool) (out []Span, err error) {
+func (d *Document) ConfiguredNames(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, names []string, codeBlocks bool) ([]Span, error) {
+	return d.proseMatches(ctx, budget, index, options, names, codeBlocks, false, false)
+}
+
+// ProhibitedTerms reports every leftmost-longest configured term occurrence in
+// the same prose islands as ConfiguredNames, never scanning code blocks. Terms
+// compare through full case folding unless caseSensitive selects exact bytes.
+func (d *Document) ProhibitedTerms(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, terms []string, caseSensitive bool) ([]Span, error) {
+	return d.proseMatches(ctx, budget, index, options, terms, false, true, caseSensitive)
+}
+
+// proseMatches is the shared walker. Prohibited mode publishes every winner;
+// otherwise winners spelled exactly as a fold-equal configured name are accepted.
+func (d *Document) proseMatches(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, names []string, codeBlocks, prohibited, caseSensitive bool) (out []Span, err error) {
 	if err = d.headingProjectionCheckpoint(ctx, budget, index, options, 1, 1); err != nil {
 		return nil, err
 	}
@@ -47,6 +60,9 @@ func (d *Document) ConfiguredNames(ctx context.Context, budget *OperationBudget,
 		folded, e := FoldCase(ctx, budget, value)
 		if e != nil {
 			return nil, e
+		}
+		if caseSensitive {
+			folded = value
 		}
 		if folded != "" {
 			configured = append(configured, name{value, folded})
@@ -153,7 +169,7 @@ func (d *Document) ConfiguredNames(ctx context.Context, budget *OperationBudget,
 				i++
 				continue
 			}
-			if !accepted {
+			if prohibited || !accepted {
 				if e := publish(island[i].start, island[best-1].end); e != nil {
 					return e
 				}
@@ -236,7 +252,7 @@ func (d *Document) ConfiguredNames(ctx context.Context, budget *OperationBudget,
 						leftWord = lastWord
 					}
 					folded, ok := fullCaseFold[r]
-					if !ok {
+					if !ok || caseSensitive {
 						folded = part.Semantic.Value[offset : offset+width]
 					}
 					capacity, e := grow(len(island), cap(island))
