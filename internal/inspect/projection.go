@@ -99,6 +99,7 @@ type Projection struct {
 	RawCandidates     Section[[]RawCandidate]           `json:"raw_candidates"`
 	Resources         Section[json.RawMessage]          `json:"resources"`
 	ParsingNotes      Section[[]result.Note]            `json:"parsing_notes"`
+	Metadata          Section[MetadataRecord]           `json:"metadata"`
 }
 type AST struct {
 	ProjectionVersion int             `json:"projection_version"`
@@ -284,7 +285,7 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 	}
 	f := s.file
 	snap := result.Snapshot{View: "original", SHA256: f.SHA256, SizeBytes: s.source.Len()}
-	p := Projection{ProjectionVersion: 1, File: InspectionFile{ResolvedPath: f.Path, BinaryVersion: f.Version, SizeBytes: f.SizeBytes, SizeDisplay: f.SizeDisplay, SHA1: f.SHA1, SHA256: f.SHA256, NormallyExcluded: s.exclusion.Excluded, NormallyExcludedKnown: s.exclusion.Known, PhysicalLineCount: s.lines.LineCount()}, Configuration: unavailable[result.ConfigurationData]("configuration-invalid"), Flavor: unavailable[string]("configuration-invalid"), DocumentContext: unavailable[json.RawMessage]("context-unavailable"), AST: unavailable[AST]("context-unavailable"), Rules: unavailable[[]Rule]("context-unavailable"), RuleCounts: notRequested[json.RawMessage](), Directives: unavailable[[]Directive]("context-unavailable"), RawCandidates: unavailable[[]RawCandidate]("context-unavailable"), Resources: notRequested[json.RawMessage](), ParsingNotes: unavailable[[]result.Note]("context-unavailable")}
+	p := Projection{ProjectionVersion: 1, File: InspectionFile{ResolvedPath: f.Path, BinaryVersion: f.Version, SizeBytes: f.SizeBytes, SizeDisplay: f.SizeDisplay, SHA1: f.SHA1, SHA256: f.SHA256, NormallyExcluded: s.exclusion.Excluded, NormallyExcludedKnown: s.exclusion.Known, PhysicalLineCount: s.lines.LineCount()}, Configuration: unavailable[result.ConfigurationData]("configuration-invalid"), Flavor: unavailable[string]("configuration-invalid"), DocumentContext: unavailable[json.RawMessage]("context-unavailable"), AST: unavailable[AST]("context-unavailable"), Rules: unavailable[[]Rule]("context-unavailable"), RuleCounts: notRequested[json.RawMessage](), Directives: unavailable[[]Directive]("context-unavailable"), RawCandidates: unavailable[[]RawCandidate]("context-unavailable"), Resources: notRequested[json.RawMessage](), ParsingNotes: unavailable[[]result.Note]("context-unavailable"), Metadata: unavailable[MetadataRecord]("context-unavailable")}
 	out := result.NewLint("cli")
 	out.Operation = "inspect"
 	out.CheckedFiles = []string{f.Path}
@@ -318,6 +319,7 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 		causes(&p.Directives, ids, reason)
 		causes(&p.RawCandidates, ids, reason)
 		causes(&p.ParsingNotes, ids, reason)
+		causes(&p.Metadata, ids, reason)
 		out.Operation = "inspect"
 		out.Status = "inspected"
 		if cause != nil {
@@ -423,6 +425,7 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 		p.Rules = unavailable[[]Rule]("decoding-failed")
 		p.Directives = unavailable[[]Directive]("decoding-failed")
 		p.ParsingNotes = unavailable[[]result.Note]("decoding-failed")
+		p.Metadata = unavailable[MetadataRecord]("decoding-failed")
 		return finish(nil)
 	}
 	configuration := s.Configuration()
@@ -449,6 +452,7 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 		p.Rules = unavailable[[]Rule](reason)
 		p.Directives = unavailable[[]Directive](reason)
 		p.ParsingNotes = unavailable[[]result.Note](reason)
+		p.Metadata = unavailable[MetadataRecord](reason)
 		return finish(nil)
 	}
 	input, err := s.plan.NewSourceInput(f.Path, s.source)
@@ -569,6 +573,7 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 		p.Rules = unavailable[[]Rule]("decoding-failed")
 		p.Directives = unavailable[[]Directive]("decoding-failed")
 		p.ParsingNotes = unavailable[[]result.Note]("decoding-failed")
+		p.Metadata = unavailable[MetadataRecord]("decoding-failed")
 		return finish(nil)
 	}
 	if len(out.Interruptions) > 0 && !prepared {
@@ -721,6 +726,14 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 	}
 	if err := build.charge(0); err != nil {
 		return stop(err)
+	}
+	// Decode last: a stop here loses only this record, not a completed section.
+	if parsed.Document != nil {
+		record, err := build.metadata(parsed.Document, configuration.Settings.FrontmatterEnabled, s.plan.Rules()["MD072"])
+		if err != nil {
+			return stop(err)
+		}
+		p.Metadata = available(record)
 	}
 	return finish(nil)
 }

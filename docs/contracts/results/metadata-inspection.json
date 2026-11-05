@@ -1,0 +1,721 @@
+{
+  "inspection": {
+    "projection_version": 1,
+    "file": {
+      "resolved_path": "/project/guide.md",
+      "binary_version": "0.0.0-fixture",
+      "size_bytes": 63,
+      "size_display": "63 bytes (63 bytes)",
+      "sha1": "0ae46a221d477f7774ffbe6f953eefb527b2b338",
+      "sha256": "b5a06e172c78ee07b05b5218aa8cb5447a0005bd45a69dbf77b315a1ff0ac2f9",
+      "normally_excluded": false,
+      "normally_excluded_known": true,
+      "physical_line_count": 9,
+      "selected_region": {
+        "byte_range": {
+          "start": 0,
+          "end": 63
+        },
+        "includes_eof": true
+      }
+    },
+    "configuration": {
+      "availability": "available",
+      "reasons": [],
+      "data": {
+        "effective": {
+          "allow_nested_excludes": true,
+          "availability": {
+            "/allow_nested_excludes": true,
+            "/directives/enabled": true,
+            "/documents/slides": true,
+            "/exclude": true,
+            "/flavor": true,
+            "/frontmatter/enabled": true,
+            "/frontmatter/formats": true,
+            "/resources/anchor_style": true,
+            "/resources/index_file": true,
+            "/rules/MD072": true,
+            "/rules/MD072/allow_directives": true,
+            "/rules/MD072/case_sensitive": true,
+            "/rules/MD072/enabled": true,
+            "/rules/MD072/recursive": true,
+            "/version": true
+          },
+          "directives": {
+            "enabled": true
+          },
+          "documents": {
+            "slides": []
+          },
+          "exclude": [],
+          "flavor": "gfm",
+          "frontmatter": {
+            "enabled": true,
+            "formats": [
+              "yaml",
+              "toml"
+            ]
+          },
+          "resources": {
+            "anchor_style": "github",
+            "index_file": "index.md"
+          },
+          "rules": {
+            "MD072": {
+              "allow_directives": true,
+              "available": true,
+              "case_sensitive": true,
+              "enabled": false,
+              "explicit": true,
+              "recursive": true
+            }
+          },
+          "selected_permissions": {
+            "/allow_nested_excludes": true,
+            "/directives/enabled": true,
+            "/rules/MD072/allow_directives": true
+          },
+          "version": 1
+        },
+        "sources": [
+          {
+            "kind": "default"
+          },
+          {
+            "kind": "selected-config",
+            "path": ".mdchk.yaml",
+            "sha256": "78a6016877618a43f1707dc2d0090d6651a137723bc26025575b0d383a61dff0"
+          }
+        ],
+        "provenance": [
+          {
+            "pointer": "/allow_nested_excludes",
+            "source_kind": "default",
+            "inherited": false
+          },
+          {
+            "pointer": "/directives/enabled",
+            "source_kind": "default",
+            "inherited": false
+          },
+          {
+            "pointer": "/documents/slides",
+            "source_kind": "default",
+            "inherited": false
+          },
+          {
+            "pointer": "/exclude",
+            "source_kind": "default",
+            "inherited": false
+          },
+          {
+            "pointer": "/flavor",
+            "source_kind": "default",
+            "inherited": false
+          },
+          {
+            "pointer": "/frontmatter/enabled",
+            "source_kind": "selected-config",
+            "path": ".mdchk.yaml",
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 24
+              },
+              "end": {
+                "line": 2,
+                "column": 24
+              }
+            },
+            "inherited": false
+          },
+          {
+            "pointer": "/frontmatter/formats",
+            "source_kind": "default",
+            "inherited": false
+          },
+          {
+            "pointer": "/resources/anchor_style",
+            "source_kind": "default",
+            "inherited": false
+          },
+          {
+            "pointer": "/resources/index_file",
+            "source_kind": "default",
+            "inherited": false
+          },
+          {
+            "pointer": "/rules/MD072",
+            "source_kind": "selected-config",
+            "path": ".mdchk.yaml",
+            "range": {
+              "start": {
+                "line": 4,
+                "column": 10
+              },
+              "end": {
+                "line": 4,
+                "column": 10
+              }
+            },
+            "inherited": false
+          },
+          {
+            "pointer": "/rules/MD072/allow_directives",
+            "source_kind": "default",
+            "inherited": false
+          },
+          {
+            "pointer": "/rules/MD072/case_sensitive",
+            "source_kind": "default",
+            "inherited": false
+          },
+          {
+            "pointer": "/rules/MD072/enabled",
+            "source_kind": "default",
+            "inherited": false
+          },
+          {
+            "pointer": "/rules/MD072/recursive",
+            "source_kind": "selected-config",
+            "path": ".mdchk.yaml",
+            "range": {
+              "start": {
+                "line": 4,
+                "column": 22
+              },
+              "end": {
+                "line": 4,
+                "column": 22
+              }
+            },
+            "inherited": false
+          },
+          {
+            "pointer": "/version",
+            "source_kind": "selected-config",
+            "path": ".mdchk.yaml",
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 10
+              },
+              "end": {
+                "line": 1,
+                "column": 10
+              }
+            },
+            "inherited": false
+          }
+        ]
+      }
+    },
+    "flavor": {
+      "availability": "available",
+      "reasons": [],
+      "data": "gfm"
+    },
+    "document_context": {
+      "availability": "available",
+      "reasons": [],
+      "data": {
+        "slides": false,
+        "matched_slide_patterns": [],
+        "frontmatter": "yaml"
+      }
+    },
+    "ast": {
+      "availability": "available",
+      "reasons": [],
+      "data": {
+        "projection_version": 1,
+        "profile": "gfm",
+        "snapshot": {
+          "view": "original",
+          "sha256": "b5a06e172c78ee07b05b5218aa8cb5447a0005bd45a69dbf77b315a1ff0ac2f9",
+          "size_bytes": 63
+        },
+        "root": {
+          "id": "node-1",
+          "kind": "document",
+          "range": {
+            "start": {
+              "line": 1,
+              "column": 1
+            },
+            "end": {
+              "line": 10,
+              "column": 1
+            }
+          },
+          "byte_range": {
+            "start": 0,
+            "end": 63
+          },
+          "context_only": false,
+          "properties": {
+            "content": [],
+            "markers": []
+          },
+          "raw_attributes": [],
+          "children": [
+            {
+              "id": "node-2",
+              "kind": "heading",
+              "range": {
+                "start": {
+                  "line": 9,
+                  "column": 1
+                },
+                "end": {
+                  "line": 10,
+                  "column": 1
+                }
+              },
+              "byte_range": {
+                "start": 56,
+                "end": 63
+              },
+              "context_only": false,
+              "properties": {
+                "content": [
+                  {
+                    "byte_range": {
+                      "start": 58,
+                      "end": 62
+                    },
+                    "transformation": "exact",
+                    "semantic": "Body"
+                  }
+                ],
+                "level": 1,
+                "markers": [
+                  {
+                    "role": "opening",
+                    "byte_range": {
+                      "start": 56,
+                      "end": 57
+                    }
+                  }
+                ],
+                "style": "atx"
+              },
+              "raw_attributes": [],
+              "children": [
+                {
+                  "id": "node-3",
+                  "kind": "text",
+                  "range": {
+                    "start": {
+                      "line": 9,
+                      "column": 3
+                    },
+                    "end": {
+                      "line": 9,
+                      "column": 7
+                    }
+                  },
+                  "byte_range": {
+                    "start": 58,
+                    "end": 62
+                  },
+                  "context_only": false,
+                  "properties": {
+                    "content": [
+                      {
+                        "byte_range": {
+                          "start": 58,
+                          "end": 62
+                        },
+                        "transformation": "exact",
+                        "semantic": "Body"
+                      }
+                    ],
+                    "literal": "Body",
+                    "markers": []
+                  },
+                  "raw_attributes": [],
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        "frontmatter": {
+          "format": "yaml",
+          "range": {
+            "start": {
+              "line": 1,
+              "column": 1
+            },
+            "end": {
+              "line": 8,
+              "column": 1
+            }
+          },
+          "byte_range": {
+            "start": 0,
+            "end": 55
+          },
+          "opener": {
+            "range": {
+              "start": {
+                "line": 1,
+                "column": 1
+              },
+              "end": {
+                "line": 1,
+                "column": 4
+              }
+            },
+            "byte_range": {
+              "start": 0,
+              "end": 3
+            }
+          },
+          "content": {
+            "range": {
+              "start": {
+                "line": 2,
+                "column": 1
+              },
+              "end": {
+                "line": 7,
+                "column": 1
+              }
+            },
+            "byte_range": {
+              "start": 4,
+              "end": 51
+            }
+          },
+          "closer": {
+            "range": {
+              "start": {
+                "line": 7,
+                "column": 1
+              },
+              "end": {
+                "line": 7,
+                "column": 4
+              }
+            },
+            "byte_range": {
+              "start": 51,
+              "end": 54
+            }
+          },
+          "body_offset": 55,
+          "context_only": false
+        }
+      }
+    },
+    "rules": {
+      "availability": "available",
+      "reasons": [],
+      "data": [
+        {
+          "rule": "MD072",
+          "selected_enabled": false,
+          "implementation": "available",
+          "configured_enabled": false,
+          "allow_directives": true,
+          "options": {
+            "case_sensitive": true,
+            "recursive": true
+          },
+          "effective_state": "inactive",
+          "intervals": [
+            {
+              "range": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 10,
+                  "column": 1
+                }
+              },
+              "byte_range": {
+                "start": 0,
+                "end": 63
+              },
+              "enabled": false,
+              "origin": "configuration"
+            }
+          ],
+          "active_evaluation": "skipped",
+          "observational_evaluation": "not-requested",
+          "reasons": [
+            "inactive"
+          ],
+          "source_coverage": {
+            "active": {
+              "availability": "not-requested",
+              "ranges": [],
+              "byte_ranges": []
+            },
+            "observational": {
+              "availability": "not-requested",
+              "ranges": [],
+              "byte_ranges": []
+            }
+          }
+        }
+      ]
+    },
+    "rule_counts": {
+      "availability": "available",
+      "reasons": [],
+      "data": {
+        "known": 1,
+        "active": 0,
+        "inactive": 1
+      }
+    },
+    "directives": {
+      "availability": "available",
+      "reasons": [],
+      "data": []
+    },
+    "raw_candidates": {
+      "availability": "available",
+      "reasons": [],
+      "data": []
+    },
+    "resources": {
+      "availability": "not-requested",
+      "reasons": []
+    },
+    "parsing_notes": {
+      "availability": "available",
+      "reasons": [],
+      "data": []
+    },
+    "metadata": {
+      "availability": "available",
+      "reasons": [],
+      "data": {
+        "state": "incomplete",
+        "format": "yaml",
+        "range": {
+          "start": {
+            "line": 1,
+            "column": 1
+          },
+          "end": {
+            "line": 8,
+            "column": 1
+          }
+        },
+        "byte_range": {
+          "start": 0,
+          "end": 55
+        },
+        "context_only": false,
+        "problems": [
+          {
+            "code": "unsupported",
+            "range": {
+              "start": {
+                "line": 6,
+                "column": 8
+              },
+              "end": {
+                "line": 6,
+                "column": 12
+              }
+            },
+            "byte_range": {
+              "start": 44,
+              "end": 48
+            }
+          }
+        ],
+        "title": {
+          "status": "found",
+          "text": "Guide",
+          "range": {
+            "start": {
+              "line": 2,
+              "column": 8
+            },
+            "end": {
+              "line": 2,
+              "column": 13
+            }
+          },
+          "byte_range": {
+            "start": 11,
+            "end": 16
+          }
+        },
+        "ordering": {
+          "kind": "observation",
+          "recursive": true,
+          "case_sensitive": true,
+          "mappings": [
+            {
+              "range": {
+                "start": {
+                  "line": 4,
+                  "column": 1
+                },
+                "end": {
+                  "line": 6,
+                  "column": 1
+                }
+              },
+              "byte_range": {
+                "start": 23,
+                "end": 37
+              },
+              "violation": true,
+              "offending_keys": [
+                {
+                  "key": "a",
+                  "range": {
+                    "start": {
+                      "line": 5,
+                      "column": 3
+                    },
+                    "end": {
+                      "line": 5,
+                      "column": 4
+                    }
+                  },
+                  "byte_range": {
+                    "start": 32,
+                    "end": 33
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "schema_version": 1,
+  "operation": "inspect",
+  "mode": "cli",
+  "status": "inspected",
+  "complete": true,
+  "checked_files": [
+    "guide.md"
+  ],
+  "skipped_files": [],
+  "files": [
+    {
+      "path": "guide.md",
+      "analysis": "complete",
+      "write_status": "not-requested",
+      "return_status": "not-requested",
+      "input_snapshot": {
+        "view": "original",
+        "sha256": "b5a06e172c78ee07b05b5218aa8cb5447a0005bd45a69dbf77b315a1ff0ac2f9",
+        "size_bytes": 63
+      },
+      "result_snapshot": {
+        "view": "original",
+        "sha256": "b5a06e172c78ee07b05b5218aa8cb5447a0005bd45a69dbf77b315a1ff0ac2f9",
+        "size_bytes": 63
+      },
+      "error_ids": [],
+      "coverage_ids": [],
+      "change_ids": []
+    }
+  ],
+  "diagnostics": [],
+  "coverage": [],
+  "errors": [],
+  "interruptions": [],
+  "effective_limits": [
+    {
+      "name": "config-bytes",
+      "value": 1048576,
+      "unit": "bytes",
+      "source": "default"
+    },
+    {
+      "name": "document-bytes",
+      "value": 1048576,
+      "unit": "bytes",
+      "source": "default"
+    },
+    {
+      "name": "document-nodes",
+      "value": 250000,
+      "unit": "nodes or source records",
+      "source": "default"
+    },
+    {
+      "name": "operation-time",
+      "value": 60000000000,
+      "unit": "nanoseconds",
+      "source": "default"
+    },
+    {
+      "name": "report-reserve-bytes",
+      "value": 65536,
+      "unit": "bytes",
+      "source": "default"
+    },
+    {
+      "name": "reporting-time",
+      "value": 2000000000,
+      "unit": "nanoseconds",
+      "source": "default"
+    },
+    {
+      "name": "response-bytes",
+      "value": 8388608,
+      "unit": "bytes",
+      "source": "default"
+    },
+    {
+      "name": "structured-input-depth",
+      "value": 64,
+      "unit": "nested constructs",
+      "source": "default"
+    },
+    {
+      "name": "syntax-depth",
+      "value": 256,
+      "unit": "nested constructs",
+      "source": "default"
+    },
+    {
+      "name": "total-config-bytes",
+      "value": 8388608,
+      "unit": "bytes",
+      "source": "default"
+    },
+    {
+      "name": "total-content-bytes",
+      "value": 8388608,
+      "unit": "bytes",
+      "source": "default"
+    },
+    {
+      "name": "total-nodes",
+      "value": 2000000,
+      "unit": "nodes or source records",
+      "source": "default"
+    },
+    {
+      "name": "work-units",
+      "value": 250000000,
+      "unit": "metered work units",
+      "source": "default"
+    }
+  ],
+  "changes": [],
+  "deferred_fixes": [],
+  "notes": [],
+  "omissions": [],
+  "documents": [],
+  "suppressed_diagnostics": []
+}

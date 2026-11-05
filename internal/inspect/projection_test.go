@@ -344,6 +344,33 @@ if ast and ast.get('frontmatter'):
   try:m.validator.validate(bad);m.semantic(bad)
   except Exception:pass
   else:raise AssertionError('invalid actual frontmatter '+mutation+' accepted')
+record=x['inspection'].get('metadata',{}).get('data')
+if record:
+ mutations=['carry-title'] if 'byte_range' not in record else ['outside','context','no-format','late-title' if 'title' not in record else 'kind']
+ if 'title' in record:mutations.append('drop-title')
+ if record.get('problems'):mutations+=['problem-outside','claims-complete']
+ mappings=record.get('ordering',{}).get('mappings',[])
+ offending=[i for i,o in enumerate(mappings) if o['offending_keys']]
+ if offending:mutations+=['key-outside','no-violation']
+ for mutation in mutations:
+  bad=copy.deepcopy(x);r=bad['inspection']['metadata']['data']
+  if mutation=='carry-title':r['title']={'status':'missing'}
+  elif mutation=='outside':r['byte_range']['end']=x['inspection']['file']['size_bytes']+1
+  elif mutation=='context':r['context_only']=not r['context_only']
+  elif mutation=='no-format':del r['format']
+  elif mutation=='late-title':r['title']={'status':'unknown'}
+  elif mutation=='kind':r['ordering']['kind']='finding'
+  elif mutation=='drop-title':del r['title']
+  elif mutation=='problem-outside':r['problems'][0]['byte_range']['end']=r['byte_range']['end']+1
+  elif mutation=='claims-complete':r['state']='complete'
+  elif mutation=='key-outside':
+   key=r['ordering']['mappings'][offending[0]]['offending_keys'][0]
+   if 'byte_range' in key:key['byte_range']['end']=r['byte_range']['end']+1
+   else:key['range']=copy.deepcopy(r['range'])
+  else:r['ordering']['mappings'][offending[0]]['violation']=False
+  try:m.validator.validate(bad);m.semantic(bad)
+  except Exception:pass
+  else:raise AssertionError('invalid actual metadata '+mutation+' accepted')
 directives=x['inspection']['directives'].get('data',[])
 for di,directive in enumerate(directives):
  for ei,effect in enumerate(directive['effects']):

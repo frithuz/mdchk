@@ -197,6 +197,12 @@ func Filter(ctx context.Context, s *Snapshot, full Analysis, lines string) (Anal
 			ref.ContextOnly = !region.intersects(ref.ByteRange)
 		}
 	}
+	// The record is whole-document context, available even without an AST section.
+	if record := p.Metadata.Data; selection != nil && record != nil && record.ByteRange != nil {
+		contextOnly := !region.intersects(*record.ByteRange)
+		record.ContextOnly = &contextOnly
+		record.ExtendsRegion = region.extends(*record.ByteRange)
+	}
 	diagnostics := make([]result.Diagnostic, 0, len(out.Result.Diagnostics))
 	for _, d := range out.Result.Diagnostics {
 		if err := b.charge(1); err != nil {

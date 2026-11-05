@@ -13,7 +13,7 @@ python3 -m venv /tmp/mdchk-contract-validation
 /tmp/mdchk-contract-validation/bin/python docs/contracts/results/validate.py
 ```
 
-Validation includes twelve deliberately invalid mutations. It checks serialization
+Validation includes eighteen deliberately invalid mutations. It checks serialization
 and representative semantic invariants; it does not execute mdchk or prove
 parser, fixer, transport, authentication, or platform conformance.
 
@@ -42,6 +42,16 @@ The opaque frontmatter projection fixture retains original YAML delimiter and
 payload ranges separately from body nodes. Actual inspection producer tests also
 reject mutated header regions outside the snapshot, inconsistent body offsets,
 and contradictory termination. This is source metadata, not structured decoding.
+
+The metadata inspection fixture holds a decoded `inspection.metadata` record: an
+unsupported problem, a found title and an ordering observation. The closed schema
+bounds its fields and enums. The semantic validator checks that fields match
+`state`, that every range lies inside the header envelope, that a complete record
+has no problems or unknown title, and that the record agrees with the selected
+region, `ast.frontmatter` and `document_context.frontmatter`. Actual producer tests
+reject mutated emitted records. Negative mutations reject an out-of-envelope
+problem, a disabled record with a title, a non-observation ordering kind, offending
+keys without a violation, a complete record with problems and a blank found title.
 
 
 The delivered document-context projection retains the existing `slides`,
