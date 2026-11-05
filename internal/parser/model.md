@@ -1627,7 +1627,8 @@ shared marker gap. Open ATX and Setext expose neither. This leaves all existing
 fields unchanged, including absent `OpeningSeparator` for raw-empty headings.
 The fixed extra gap work shares the actual completed original operation's work,
 node and elapsed controls; interrupted projection publishes no partial inventory.
-MD021 scans only these confirmed gaps and grants no correction authority. See its
+MD021 scans only these confirmed gaps, and its correction edits only their excess
+spaces under separately checked proof. See its
 [exact spacing policy](../../docs/rules/headings/md021.md).
 
 `Source.Token()` is a constant-size comparable opaque snapshot-owner identity.
