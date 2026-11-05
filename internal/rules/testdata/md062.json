@@ -1376,6 +1376,34 @@
       "findings": []
     },
     {
+      "name": "emphasis-destination",
+      "source": "[a](*b* c)\n",
+      "source_bytes": 11,
+      "source_sha256": "3de69eeb77c17312192cff1253a72f3397407e4555871a2b745b63cec7b73704",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "code-span-destination",
+      "source": "[a](`b` c)\n",
+      "source_bytes": 11,
+      "source_sha256": "50d6fa72a4ad2897cc00af0d90513e1810da6e40e0db9b9f609251c0a14a6e7a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
       "name": "table-cell",
       "source": "| h |\n| --- |\n| [a](b c) |\n",
       "source_bytes": 27,
