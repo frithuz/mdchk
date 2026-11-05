@@ -1,0 +1,841 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "Choose a | b here.\nNext line.\n",
+      "source_bytes": 30,
+      "source_sha256": "3a509f98c2308041226ff00745ed0fa42dd7941fc58028434647afaeca3da8cc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "spec-example",
+      "source": "A | B\n1 | 2\n",
+      "source_bytes": 12,
+      "source_sha256": "666627d449cad807b339e195fe7056ae500714ecdcb251ab59863ba53cb615b4",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "spec-example-crlf",
+      "source": "A | B\r\n1 | 2\r\n",
+      "source_bytes": 14,
+      "source_sha256": "12f80535ccb7a8c07f672ff0596e149a45fd0f1f45d68510f00068ce8015ca3c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            12
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "spec-mismatch",
+      "source": "| A | B |\n| --- |\n| 1 |\n",
+      "source_bytes": 24,
+      "source_sha256": "42164b9c8029c214bc1ce77ae263ad979e26e939005ec671be55c2cef8636b7a",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            23
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "spec-mismatch-crlf",
+      "source": "| A | B |\r\n| --- |\r\n| 1 |\r\n",
+      "source_bytes": 27,
+      "source_sha256": "f6f8d9535dbed466e1d93d09988b2d7358a077b98a2b48823d73a870e22e4af2",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            25
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "spec-accepted",
+      "source": "A | B\n--- | ---\n1 | 2\n",
+      "source_bytes": 22,
+      "source_sha256": "4ddb20d766aafffcfb0b9e9113ffc3b6dbe63f0e42cabfcebb391c1a977d8f55",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "same-cell-counts",
+      "source": "x | y | z\n1 | 2 | 3 |\n",
+      "source_bytes": 22,
+      "source_sha256": "fbc7cf14b5174b702c444757b39f1571f66838e843134eb55d87f13518aace84",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            21
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            12
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "outer-pipes",
+      "source": "| a |\n| b | c |\n",
+      "source_bytes": 16,
+      "source_sha256": "9ca39257dd70c9bc3d6de0894a27eb48805e81d6396e3f4a541d6dbbcce3b255",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            15
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            10
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "delimiter-row",
+      "source": "a | b | c\n:- | -:\n",
+      "source_bytes": 18,
+      "source_sha256": "6ebbc9d96afb9e3a1ea3b7d614d781d348ccf893ec6e512a413d207bdec25e43",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            17
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "no-structure",
+      "source": "a | b\n| c | d | e\n",
+      "source_bytes": 18,
+      "source_sha256": "9d66991b4e3ec110ee092088e71e815c4e2e061fd7f694050f57738ffa5562fe",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "single-cell-counts",
+      "source": "a |\nb |\n",
+      "source_bytes": 8,
+      "source_sha256": "08c6d462870ec47d1f849021f617454b604a0607dd08511350b52cb6683392b9",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "one-structural-line",
+      "source": "a | b\nc \\| d\n",
+      "source_bytes": 13,
+      "source_sha256": "c3afec3c9dc6284a02c8573163d8f98d90236d2195490f6382caa4e732fad93c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "interrupted-run",
+      "source": "a | b\nplain\nc | d\n",
+      "source_bytes": 18,
+      "source_sha256": "8d284125f732d99dc13095693f7dd9ac326401b0b580ca75aafb66931f6ce9f4",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped-pipe",
+      "source": "a \\| b\nc \\| d\n",
+      "source_bytes": 14,
+      "source_sha256": "a68c004803c796fef5733a4cf6818a4cbc51823e02dc58cb3aeaa046bbe75983",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "backslash-parity",
+      "source": "a \\\\| b\nc \\\\| d\n",
+      "source_bytes": 16,
+      "source_sha256": "87052aabb9ee1ff0c7e6e5c5f3d6e17d133673d88d33febd76626a72379dcfbd",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            15
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "code-span-pipe",
+      "source": "`a|b` c\n`d|e` f\n",
+      "source_bytes": 16,
+      "source_sha256": "ead5c876104017e9022fe087c63cbc506470b918aa615e5ef57af2b3002847c0",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            15
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "fenced-code",
+      "source": "```\na | b\nc | d\n```\n",
+      "source_bytes": 20,
+      "source_sha256": "4d338cdc88c71557faeb2b9b38b7f31d98c4f4918f6b96cbd0ecba4fb198f530",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "indented-code",
+      "source": "    a | b\n    c | d\n",
+      "source_bytes": 20,
+      "source_sha256": "8f394ce1266b4d6893e4ddbcef2c788668576a35ac744da5b9fb4e4c70ac71ce",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "html-block",
+      "source": "<div>\na | b\nc | d\n</div>\n",
+      "source_bytes": 25,
+      "source_sha256": "d4150d8794514a3397d06577deb781900f264ee171b3c9e4a9d1745146afcc83",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "front-matter",
+      "source": "---\na: x | y\nb: z | w\n---\n",
+      "source_bytes": 26,
+      "source_sha256": "8a3a4e3ee2f61c9d5ced449d427742e6c89ab66a948df3fe58a279c565915eec",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "frontmatter": "yaml"
+      },
+      "findings": []
+    },
+    {
+      "name": "setext-heading",
+      "source": "a | b\nc | d\n---\n",
+      "source_bytes": 16,
+      "source_sha256": "1887ee0ba5ec4c7bd3e3666fd4247288ff966e03b772f19bd44bb98b93b2d496",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "reference-definition",
+      "source": "[x]: /u 'a | b'\nc | d\n",
+      "source_bytes": 22,
+      "source_sha256": "5df5b9f8c9c665d89c13d26f47392775a344088a6c3359cca282e8941659fb4b",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "header-delimiter-mismatch",
+      "source": "| a | b | c |\n| - | - |\n| 1 | 2 |\n",
+      "source_bytes": 34,
+      "source_sha256": "25db4083e4eb6786b58c1df747f74aa7418c72333219df09e59ccc1a7c958c90",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            33
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            3,
+            10
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "valid-table-short-long",
+      "source": "| a | b |\n| - | - |\n| 1 |\n| 1 | 2 | 3 |\n",
+      "source_bytes": 40,
+      "source_sha256": "1cdeb6562ea4d6bcfda7bd2077ea50ce4bd2800543c3ec6b37955c81039a5374",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "paragraph-before-table",
+      "source": "x | y\n| h | i |\n| - | - |\n| 1 |\n",
+      "source_bytes": 32,
+      "source_sha256": "33f44f92a614c0d8ba2a2592e5d7a6124c6330efe32a4a96e455f3bb0e03893f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            31
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            4,
+            6
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "block-quote",
+      "source": "> A | B\n> 1 | 2\n",
+      "source_bytes": 16,
+      "source_sha256": "83f91def1a8ad88206b1866e8dc4294de6fed8b8f42f01e167efb82f9a2289a2",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            15
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "block-quote-crlf",
+      "source": "> A | B\r\n> 1 | 2\r\n",
+      "source_bytes": 18,
+      "source_sha256": "dfe378ab94567c1ca22e33c4b49a3a4c648e7361d39766e0364850206441c4cd",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            16
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "list-item",
+      "source": "- A | B\n  1 | 2\n",
+      "source_bytes": 16,
+      "source_sha256": "ff666f2261288d3efdb378d4d24a918c1263e590b367e9747a99091c458001ad",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            15
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "quote-in-list",
+      "source": "- > A | B\n  > 1 | 2\n",
+      "source_bytes": 20,
+      "source_sha256": "07b3a2feed50a204f291bb6a156db25eeb4a0c5a70e9b4bff602382e44d3d74f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            19
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            2,
+            10
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "separate-paragraphs",
+      "source": "a | b\n\nc | d\n",
+      "source_bytes": 13,
+      "source_sha256": "ec266405729b24f3ad78d99450f40d61e85382403604b134f08aa1f46488b1b5",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "indented-trailing-spaces",
+      "source": "  A | B  \n  1 | 2\t\n",
+      "source_bytes": 19,
+      "source_sha256": "c2a18f99d6b3b882ad56db884c75083915a08895e97e3fb8c75ceafe912c23ac",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            17
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "indented-trailing-spaces-crlf",
+      "source": "  A | B  \r\n  1 | 2\t\r\n",
+      "source_bytes": 21,
+      "source_sha256": "7a95c126b0064bc7a8939577adf13241a6c9b3a02caa7def5d77975a638cc273",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            18
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "non-ascii",
+      "source": "é | ü\nß | ø\n",
+      "source_bytes": 16,
+      "source_sha256": "c766d12db3053e9c5e54d998bdcc9fd7de2b8324861d8eb1c16c76511d413a9c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            15
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "multiple-runs",
+      "source": "a | b\nc | d\n\nprose\n\n| x |\n| y |\n",
+      "source_bytes": 32,
+      "source_sha256": "c5d452e5f14bc1737b369705ebe4635cb7020d8b3455454d61d0e4ae2742c74b",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "message": "Pipe rows are not part of a table."
+        },
+        {
+          "bytes": [
+            20,
+            31
+          ],
+          "start": [
+            6,
+            1
+          ],
+          "end": [
+            7,
+            6
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "commonmark",
+      "source": "A | B\n1 | 2\n",
+      "source_bytes": 12,
+      "source_sha256": "666627d449cad807b339e195fe7056ae500714ecdcb251ab59863ba53cb615b4",
+      "flavors": [
+        "commonmark"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "disabled",
+      "source": "A | B\n1 | 2\n",
+      "source_bytes": 12,
+      "source_sha256": "666627d449cad807b339e195fe7056ae500714ecdcb251ab59863ba53cb615b4",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "style-option",
+      "yaml": "MD075: {style: x}"
+    },
+    {
+      "name": "unknown-option",
+      "yaml": "MD075: {unknown: 1}"
+    },
+    {
+      "name": "enabled-string",
+      "yaml": "MD075: {enabled: \"yes\"}"
+    },
+    {
+      "name": "enabled-null",
+      "yaml": "MD075: {enabled: null}"
+    },
+    {
+      "name": "allow-directives-string",
+      "yaml": "MD075: {allow_directives: \"false\"}"
+    },
+    {
+      "name": "scalar-rule",
+      "yaml": "MD075: true"
+    },
+    {
+      "name": "sequence-rule",
+      "yaml": "MD075: []"
+    },
+    {
+      "name": "duplicate-setting",
+      "yaml": "MD075: {enabled: true, enabled: true}"
+    }
+  ]
+}

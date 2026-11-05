@@ -300,40 +300,102 @@ func (p *blockParser) extensionEnabled(extension parserProfile) bool {
 	return ok && c.profile.enabled(extension)
 }
 
-// splitTableRow works on original logical bytes before inline parsing. Backtick
-// and emphasis markers have no special separator authority. mdchk explicitly
-// chooses odd/even backslash-run grouping consistent with core punctuation
-// escapes; GFM 4.10 does not unambiguously specify longer-run precedence. See
-// docs/engineering/gfm-compatibility.md for this recorded interpretation.
-func (p *blockParser) splitTableRow(line blockLine, role string, width int) (*tableRowCandidate, []TableAlignment, bool, error) {
-	text := p.index.source.content
-	start, end := line.start, line.end
+// pipeRowShape is the separator classification of one row-candidate line.
+// Start and End exclude edge spaces and tabs. Separators counts structural
+// pipes, and Cells is the source cell count the table splitter produces.
+// Delimiter reports that every cell is a valid delimiter cell; it is only
+// computed when requested.
+type pipeRowShape struct {
+	start, end, separators, cells int
+	leading, trailing, delimiter  bool
+}
+
+// trimPipeRowEdges removes spaces and tabs at both edges of text[start:end].
+// tick is called once per removed byte with that edge's offset and stops the
+// trim when it returns false.
+func trimPipeRowEdges(text string, start, end int, tick func(int) bool) (int, int, bool) {
 	for start < end && (text[start] == ' ' || text[start] == '\t') {
-		meterWork(p.ctx, 1)
-		if start%256 == 0 && interruption(p.ctx) != "" {
-			return nil, nil, false, nil
+		if !tick(start) {
+			return 0, 0, false
 		}
 		start++
 	}
 	for end > start && (text[end-1] == ' ' || text[end-1] == '\t') {
-		meterWork(p.ctx, 1)
-		if end%256 == 0 && interruption(p.ctx) != "" {
-			return nil, nil, false, nil
+		if !tick(end) {
+			return 0, 0, false
 		}
 		end--
 	}
-	var separators, escapes []Span
-	slashes := 0
+	return start, end, true
+}
+
+// pipeDelimiterCell matches a trimmed cell text[start:end] against :?-+:? and
+// returns the dash run bounds and its colons.
+func pipeDelimiterCell(text string, start, end int, tick func(int) bool) (left, right int, hasLeft, hasRight, ok bool) {
+	left, right = start, end
+	hasLeft = left < right && text[left] == ':'
+	if hasLeft {
+		left++
+	}
+	if left < right && text[right-1] == ':' {
+		right--
+		hasRight = true
+	}
+	if left == right {
+		return 0, 0, false, false, false
+	}
+	for j := left; j < right; j++ {
+		if !tick(j - left) {
+			return 0, 0, false, false, false
+		}
+		if text[j] != '-' {
+			return 0, 0, false, false, false
+		}
+	}
+	return left, right, hasLeft, hasRight, true
+}
+
+// classifyPipeRow is the separator classification shared by the table splitter
+// and Document.PipeRowCandidates. It works on original bytes: a pipe is escaped
+// when the backslash run before it has odd length, and backticks and emphasis
+// markers have no separator authority. pipe, when not nil, receives each pipe
+// in order. tick meters each examined byte; a false result stops the scan.
+func classifyPipeRow(text string, start, end int, delimiter bool, tick func(int) bool, pipe func(at int, escaped bool)) (pipeRowShape, bool) {
+	start, end, ok := trimPipeRowEdges(text, start, end, tick)
+	if !ok {
+		return pipeRowShape{}, false
+	}
+	shape := pipeRowShape{start: start, end: end, delimiter: delimiter}
+	// A delimiter cell is checked as soon as its closing separator is known;
+	// the final field is checked after the scan unless a trailing pipe closes
+	// the row.
+	cell := func(a, b int) bool {
+		a, b, ok := trimPipeRowEdges(text, a, b, tick)
+		if !ok {
+			return false
+		}
+		if shape.delimiter {
+			_, _, _, _, shape.delimiter = pipeDelimiterCell(text, a, b, tick)
+		}
+		return true
+	}
+	slashes, field, last := 0, start, -1
 	for i := start; i < end; i++ {
-		meterWork(p.ctx, 1)
-		if (i-start)%256 == 0 && interruption(p.ctx) != "" {
-			return nil, nil, false, nil
+		if !tick(i - start) {
+			return pipeRowShape{}, false
 		}
 		if text[i] == '|' {
-			if slashes%2 != 0 {
-				escapes = meteredAppend(p.ctx, escapes, p.index.span(i-1, i+1))
-			} else {
-				separators = meteredAppend(p.ctx, separators, p.index.span(i, i+1))
+			if pipe != nil {
+				pipe(i, slashes%2 != 0)
+			}
+			if slashes%2 == 0 {
+				if shape.separators == 0 && i == start {
+					shape.leading = true
+				} else if delimiter && !cell(field, i) {
+					return pipeRowShape{}, false
+				}
+				shape.separators++
+				field, last = i+1, i
 			}
 		}
 		if text[i] == '\\' {
@@ -342,16 +404,54 @@ func (p *blockParser) splitTableRow(line blockLine, role string, width int) (*ta
 			slashes = 0
 		}
 	}
+	interior := shape.separators
+	if shape.leading {
+		interior--
+	}
+	shape.trailing = interior > 0 && last == end-1
+	if !shape.trailing && delimiter && !cell(field, end) {
+		return pipeRowShape{}, false
+	}
+	shape.cells = interior + 1
+	if shape.trailing {
+		shape.cells--
+	}
+	return shape, true
+}
+
+// splitTableRow works on original logical bytes before inline parsing, with
+// the separator classification of classifyPipeRow. mdchk explicitly chooses
+// odd/even backslash-run grouping consistent with core punctuation escapes;
+// GFM 4.10 does not unambiguously specify longer-run precedence. See
+// docs/engineering/gfm-compatibility.md for this recorded interpretation.
+func (p *blockParser) splitTableRow(line blockLine, role string, width int) (*tableRowCandidate, []TableAlignment, bool, error) {
+	text := p.index.source.content
+	tick := func(at int) bool {
+		meterWork(p.ctx, 1)
+		return at%256 != 0 || interruption(p.ctx) == ""
+	}
+	var separators, escapes []Span
+	shape, ok := classifyPipeRow(text, line.start, line.end, false, tick, func(i int, escaped bool) {
+		if escaped {
+			escapes = meteredAppend(p.ctx, escapes, p.index.span(i-1, i+1))
+		} else {
+			separators = meteredAppend(p.ctx, separators, p.index.span(i, i+1))
+		}
+	})
+	if !ok {
+		return nil, nil, false, nil
+	}
+	start, end := shape.start, shape.end
 	meterRecords(p.ctx, 1)
 	row := &TableRowProperties{Role: role, Separators: separators}
 	fieldStart, fieldEnd := line.start, line.end
 	first, last := 0, len(separators)
-	if first < last && separators[first].Start() == start {
+	if shape.leading {
 		row.LeadingPipe = separators[first]
 		fieldStart = start + 1
 		first++
 	}
-	if first < last && separators[last-1].Start() == end-1 {
+	if shape.trailing {
 		row.TrailingPipe = separators[last-1]
 		fieldEnd = end - 1
 		last--
@@ -373,20 +473,9 @@ func (p *blockParser) splitTableRow(line blockLine, role string, width int) (*ta
 			b = separators[i].Start()
 		}
 		a := fieldStart
-		trimA, trimB := a, b
-		for trimA < trimB && (text[trimA] == ' ' || text[trimA] == '\t') {
-			meterWork(p.ctx, 1)
-			if trimA%256 == 0 && interruption(p.ctx) != "" {
-				return nil, nil, false, nil
-			}
-			trimA++
-		}
-		for trimB > trimA && (text[trimB-1] == ' ' || text[trimB-1] == '\t') {
-			meterWork(p.ctx, 1)
-			if trimB%256 == 0 && interruption(p.ctx) != "" {
-				return nil, nil, false, nil
-			}
-			trimB--
+		trimA, trimB, ok := trimPipeRowEdges(text, a, b, tick)
+		if !ok {
+			return nil, nil, false, nil
 		}
 		meterRecords(p.ctx, 1)
 		cell := &TableCellProperties{}
@@ -400,27 +489,12 @@ func (p *blockParser) splitTableRow(line blockLine, role string, width int) (*ta
 		var markers []Marker
 		var content []Segment
 		if role == "delimiter" {
-			left, right := trimA, trimB
-			hasLeft, hasRight := left < right && text[left] == ':', false
-			if hasLeft {
-				markers = meteredAppend(p.ctx, markers, Marker{Role: "left-colon", Source: p.index.span(left, left+1)})
-				left++
-			}
-			if left < right && text[right-1] == ':' {
-				right--
-				hasRight = true
-			}
-			if left == right {
+			left, right, hasLeft, hasRight, ok := pipeDelimiterCell(text, trimA, trimB, tick)
+			if !ok {
 				return nil, nil, false, nil
 			}
-			for j := left; j < right; j++ {
-				meterWork(p.ctx, 1)
-				if (j-left)%256 == 0 && interruption(p.ctx) != "" {
-					return nil, nil, false, nil
-				}
-				if text[j] != '-' {
-					return nil, nil, false, nil
-				}
+			if hasLeft {
+				markers = meteredAppend(p.ctx, markers, Marker{Role: "left-colon", Source: p.index.span(trimA, trimA+1)})
 			}
 			markers = meteredAppend(p.ctx, markers, Marker{Role: "dash-run", Source: p.index.span(left, right)})
 			if hasRight {
