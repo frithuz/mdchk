@@ -1,0 +1,19 @@
+{
+  "options": {
+    "config_path": "mkdocs.yml",
+    "check_absolute": false,
+    "check_omitted": false
+  },
+  "diagnostics": [
+    {
+      "message": "MkDocs navigation target does not exist: bare/.",
+      "start_line": 3,
+      "start_column": 5,
+      "end_line": 3,
+      "end_column": 10,
+      "byte_start": 18,
+      "byte_end": 23
+    }
+  ],
+  "coverage": []
+}

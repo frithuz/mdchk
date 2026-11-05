@@ -1,0 +1,6 @@
+nav:
+  - Home: index.md
+  - Part:
+      - Sub:
+          - missing.md
+          - Deep: part/page.md

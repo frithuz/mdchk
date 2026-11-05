@@ -177,6 +177,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	// Discovery already owns the terminal outcome when there is no target.
 	// In particular, no native write authority is needed for empty work.
 	if selection.Empty() {
+		manifest.Coverage = append(manifest.Coverage, engine.LintOnlyCoverage(inv.plan.Rules())...)
 		return manifest
 	}
 	var native *files.WriteSet
@@ -364,6 +365,8 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	if len(targets) > 0 && !validated.Complete() && err == nil {
 		out.Coverage = append(out.Coverage, result.Coverage{Reason: "fix-incomplete", Message: "Correction validation did not complete."})
 	}
+	// Fix never acquires MkDocs context, so an enabled MD074 cannot pass here.
+	out.Coverage = append(out.Coverage, engine.LintOnlyCoverage(inv.plan.Rules())...)
 	inv.mergeAcquisition(&out, selection, acquired)
 	// Result reconciliation cannot silently outrun the same operation deadline.
 	// Already validated identities and observations remain reliable on expiry.

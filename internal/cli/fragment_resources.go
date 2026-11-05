@@ -35,9 +35,11 @@ type fragmentResources struct {
 	canonical string
 	targets   []fragmentTarget
 
-	mu        sync.Mutex
-	started   bool
-	err       error
+	mu      sync.Mutex
+	started bool
+	err     error
+	// rootPath is the selected native root that resource keys are relative to.
+	rootPath  string
 	root      *resource.FilesystemRoot
 	service   *resource.Service
 	operation *resource.Operation
@@ -137,7 +139,7 @@ func (f *fragmentResources) open() error {
 	if err != nil {
 		return err
 	}
-	f.root = root
+	f.root, f.rootPath = root, path
 	bound := make([]resource.FilesystemTarget, 0, len(f.targets))
 	targets := make([]resource.Target, 0, len(f.targets))
 	for _, target := range f.targets {

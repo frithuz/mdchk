@@ -1,0 +1,19 @@
+{
+  "options": {
+    "config_path": "mkdocs.yml",
+    "check_absolute": false,
+    "check_omitted": false
+  },
+  "diagnostics": [
+    {
+      "message": "MkDocs navigation target does not exist: missing.md?x=1#top.",
+      "start_line": 4,
+      "start_column": 5,
+      "end_line": 4,
+      "end_column": 23,
+      "byte_start": 51,
+      "byte_end": 69
+    }
+  ],
+  "coverage": []
+}

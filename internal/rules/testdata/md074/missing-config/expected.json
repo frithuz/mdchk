@@ -1,0 +1,14 @@
+{
+  "options": {
+    "config_path": "mkdocs.yml",
+    "check_absolute": false,
+    "check_omitted": false
+  },
+  "diagnostics": [],
+  "coverage": [
+    {
+      "message": "MkDocs configuration is missing, unreadable or not a regular file: mkdocs.yml.",
+      "reason": "context-unavailable"
+    }
+  ]
+}

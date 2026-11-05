@@ -71,7 +71,7 @@ func documentedOptions() map[string]engine.OptionSchema {
 		"MD064": {"maximum": n(1, 1)},
 		"MD072": {"recursive": b(false), "case_sensitive": b(true)},
 		"MD073": {"start_marker": marker("<!-- toc -->"), "end_marker": marker("<!-- /toc -->"), "min_level": level(1), "max_level": level(6)},
-		"MD074": {"config_path": str("mkdocs.yml"), "check_omitted": b(false), "check_absolute": b(false)},
+		"MD074": {"config_path": {Kind: engine.String, Default: "mkdocs.yml", Domain: engine.ResourceKey}, "check_omitted": b(false), "check_absolute": b(false)},
 		"MD076": {"style": choice("consistent", "tight", "loose")},
 		"MD081": {"maximum_ratio": {Kind: engine.Number, Default: 0.5, Minimum: &min, Maximum: &max}, "minimum_characters": n(20, 1)},
 		"MD082": {"allow_final_section": b(false)},
@@ -186,7 +186,7 @@ func TestCatalogExecutableSubsetsPreserveMetadata(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, m := range r.Metadata() {
-			if states[m.ID].Available != (m.ID == "MD094" || slices.Contains(ids, m.ID)) {
+			if states[m.ID].Available != (m.ID == "MD094" || m.ID == "MD074" || slices.Contains(ids, m.ID)) {
 				t.Errorf("subset %v wrong availability for %s", ids, m.ID)
 			}
 		}

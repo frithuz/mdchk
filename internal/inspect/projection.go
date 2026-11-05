@@ -290,8 +290,14 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 	out.CheckedFiles = []string{f.Path}
 	out.Files = []result.File{{Path: f.Path, Analysis: "not-started", WriteStatus: "not-requested", ReturnStatus: "not-requested", InputSnapshot: &snap, ErrorIDs: []string{}, CoverageIDs: []string{}, ChangeIDs: []string{}}}
 	build := builder{ctx: ctx, budget: s.budget, source: s.source, index: s.lines}
+	lintOnly := false
 	var finish func(error) (Analysis, error)
 	finish = func(cause error) (Analysis, error) {
+		// Inspection never acquires MkDocs context, so an enabled MD074 cannot pass.
+		if plan := s.ExecutionPlan(); plan != nil && !lintOnly {
+			lintOnly = true
+			out.Coverage = append(out.Coverage, engine.LintOnlyCoverage(plan.Rules())...)
+		}
 		engine.FinalizeLintResult(&out)
 		ids := []string{}
 		for _, e := range out.Errors {

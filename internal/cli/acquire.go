@@ -63,6 +63,7 @@ func acquireLintContext(ctx context.Context, inv *lintInvocation, _ io.Writer) i
 	var inputs []engine.Input
 	var fragments *fragmentResources
 	resources := resourceRules(inv.plan.Rules())
+	mkdocs, project := mkdocsRule(inv.plan.Rules())
 	// A known oversized input is a batch preflight rejection: no parser or rule
 	// callback starts. Independent runtime failures otherwise retain good work.
 	if len(acquired.PreflightErrors) == 0 {
@@ -73,13 +74,17 @@ func acquireLintContext(ctx context.Context, inv *lintInvocation, _ io.Writer) i
 				return inv.fail(err, "invalid-input", result.Internal)
 			}
 			inputs = append(inputs, in)
-			if resources {
+			if resources || project {
 				if fragments == nil {
 					fragments = newFragmentResources(ctx, budget, inv.plan.CandidatePlan().Context(), resource.RootCLI, inv.workingDirectory, inv.selectedConfig(), "")
 				}
 				fragments.targets = append(fragments.targets, fragmentTarget{id: in.Path(), path: document.Path, source: in.Source()})
 			}
 		}
+	}
+	// MD074 runs once per operation even when no target is selected or acquired.
+	if project && fragments == nil {
+		fragments = newFragmentResources(ctx, budget, inv.plan.CandidatePlan().Context(), resource.RootCLI, inv.workingDirectory, inv.selectedConfig(), "")
 	}
 	options := engine.RunOptions{Mode: "cli", Budget: budget}
 	// Assign only a non-nil pointer: a typed nil would make the interface non-nil
@@ -88,6 +93,9 @@ func acquireLintContext(ctx context.Context, inv *lintInvocation, _ io.Writer) i
 		options.Fragments = fragments
 	}
 	out, err := inv.plan.Lint(ctx, inputs, options)
+	if err == nil && project {
+		inv.checkMkDocs(ctx, budget, fragments, mkdocs, &out)
+	}
 	if fragments != nil {
 		// Join the service worker before the native root closes; a late close
 		// failure cannot alter findings already projected.
