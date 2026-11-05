@@ -170,14 +170,14 @@ indentation analysis, MD024 repeated heading analysis, MD025 multiple-title anal
 MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041
 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization
 analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090
-thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis
-and configuration are implemented for both flavors. MD055 outer-table-pipe analysis,
+thematic-break-before-heading analysis, MD093 inline-formatting-in-headings analysis and
+MD094 invalid-UTF-8 analysis and configuration are implemented for both flavors. MD055 outer-table-pipe analysis,
 MD056 mismatched-cell-count analysis, MD058 blank-lines-around-tables analysis, MD075 pipe-rows-without-header analysis and their configuration are implemented for GFM only, enabled by default. MD060 table-column-layout analysis and configuration are implemented for GFM only, disabled by default. MD001, MD003, MD004, MD005, MD007,
 MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD014, MD031, MD040, MD046, MD048, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD062, MD054, MD057, MD059, MD055, MD056, MD058, MD060, MD075, MD070, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD044, MD061, MD083, MD049, MD050, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026,
-MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 are report-only. MD013, MD026, MD036,
+MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD094 are report-only. MD013, MD026, MD036,
 MD040, MD043, MD044, MD061, MD083, MD063, MD070, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD054, MD060, MD087 and MD093 are available but disabled by default. Other
 ordinary rule callbacks remain planned. The mandatory UTF-8 gate is implemented
-independently; MD094 controls attribution, not an ordinary production callback. Each
+independently; MD094 is enabled by default and controls attribution, not an ordinary production callback. Each
 linked page defines its behavior, configuration, examples, correction policy, and
 validation requirements. These are internal mdchk specifications; individual status text
 identifies implemented support. Rule IDs are stable; additions and changes to defaults
