@@ -11,16 +11,14 @@ Actual eligible HTML owners and their tails are analyzed once; matching ends at
 the owner/container boundary. Each unmatched opener reports only its original
 four bytes. Code, metadata, whole Images, raw payload and opaque HTML tokens stay
 protected; ordinary unowned Text is excluded. Unavailable owned named-token
-context withholds the complete MD086 inventory with explicit coverage. MD047
-remains the sole current correction producer; MCP parity remains downstream.
+context withholds the complete MD086 inventory with explicit coverage. This analysis produces no edits; MCP parity remains downstream.
 
 [MD033 embedded-HTML analysis](rules/html-and-comments/md033.md) is available for CommonMark and GFM,
 disabled by default and permanently report-only. `allowed_tags: []` accepts a
 string list and matches whole names with ASCII case folding, without trimming.
 Each disallowed complete named tag has its own full original range. Opaque HTML
 tokens and actual raw payload stay protected; unavailable owned-tag context
-withholds the entire MD033 inventory with explicit coverage. No MD033 edits or
-previews are produced; MD047 remains the sole current fixer.
+withholds the entire MD033 inventory with explicit coverage. No MD033 edits or previews are produced.
 
 
 Use `.mdchk.yaml` to define your project's Markdown expectations. Lint and fix use the same rules and exclusions from the terminal; the planned MCP modes share this contract. Without a configuration file, mdchk uses its defaults, including the supported GFM profile. Every rule enabled by default is available, so default analysis can complete.
@@ -85,7 +83,7 @@ minima, each defaulting to 1; MD072 accepts boolean `recursive` (default false) 
 `case_sensitive` (default true); MD073 accepts HTML comment strings `start_marker`
 (default `<!-- toc -->`) and `end_marker` (default `<!-- /toc -->`) and heading levels
 `min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009,
-MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043,
+MD018, MD020, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043,
 MD061, MD063, MD072, MD073, MD080, MD083, MD084, MD082, MD090, MD081, MD088, MD033, MD086, MD087, MD093 and MD071 are report-only.
 Rules marked unavailable in the linked inventory remain pending. Every default-enabled
 rule is available for CommonMark and GFM; an enabled rule without an implementation
@@ -575,7 +573,7 @@ MD037 is available and enabled by default for CommonMark and GFM, with no
 rule-specific options. Shared `enabled` and `allow_directives` remain strict
 booleans, including when disabled. It analyzes full-source ordinary Text islands
 before directive or line filtering and reports each original inside-whitespace
-edge separately. Findings are manual; MD047 alone supplies corrections.
+edge separately. Findings are manual; this analysis produces no edits.
 
 MD038 is available and enabled by default for CommonMark and GFM, with no
 rule-specific options. Shared `enabled` and `allow_directives` settings apply;

@@ -222,7 +222,7 @@ MD037 is available and enabled by default for CommonMark and GFM, with no
 rule-specific options. Shared `enabled` and `allow_directives` remain strict
 booleans, including when disabled. It analyzes full-source ordinary Text islands
 before directive or line filtering and reports each original inside-whitespace
-edge separately. Findings are manual; MD047 alone supplies corrections.
+edge separately. Findings are manual; this analysis produces no edits.
 
 MD038 is available and enabled by default for CommonMark and GFM, with no
 rule-specific options. Shared `enabled` and `allow_directives` settings apply;

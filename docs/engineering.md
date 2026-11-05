@@ -15,7 +15,7 @@ Available empty differs from unavailable/error. Ordinary, suppression-audit and
 requested inactive inspection share the callback; full context precedes START
 suppression and focus. Findings own one original dollar byte and are manual.
 Existing PlannedFix metadata does not enable edits, previews or corrected source;
-MD047 remains the sole correction producer. See [MD014 policy](rules/code-blocks/md014.md).
+this analysis produces no edits. See [MD014 policy](rules/code-blocks/md014.md).
 
 [MD087 unused-suppression analysis](rules/html-and-comments/md087.md) is available for CommonMark and GFM,
 disabled by default, with no rule-specific options and permanent report-only support.
@@ -28,16 +28,14 @@ Actual eligible HTML owners and their tails are analyzed once; matching ends at
 the owner/container boundary. Each unmatched opener reports only its original
 four bytes. Code, metadata, whole Images, raw payload and opaque HTML tokens stay
 protected; ordinary unowned Text is excluded. Unavailable owned named-token
-context withholds the complete MD086 inventory with explicit coverage. MD047
-remains the sole current correction producer; MCP parity remains downstream.
+context withholds the complete MD086 inventory with explicit coverage. This analysis produces no edits; MCP parity remains downstream.
 
 [MD033 embedded-HTML analysis](rules/html-and-comments/md033.md) is available for CommonMark and GFM,
 disabled by default and permanently report-only. `allowed_tags: []` accepts a
 string list and matches whole names with ASCII case folding, without trimming.
 Each disallowed complete named tag has its own full original range. Opaque HTML
 tokens and actual raw payload stay protected; unavailable owned-tag context
-withholds the entire MD033 inventory with explicit coverage. No MD033 edits or
-previews are produced; MD047 remains the sole current fixer.
+withholds the entire MD033 inventory with explicit coverage. No MD033 edits or previews are produced.
 
 
 mdchk uses one Markdown analysis and correction engine for both its command-line interface and MCP server. Shared behavior is essential: the same files and configuration must produce the same findings and fixes through either interface.
@@ -620,7 +618,7 @@ An interrupted projection withholds its inventory atomically. Raw/comment state
 uses actual private nodes and owned content/tails, excluding container prefixes.
 This provider does not build an anchor index or consume AnchorStyle, metadata,
 resource availability, correction, write or MCP authority. MD082 remains default
-disabled and report-only; MD047 retains the sole production correction.
+disabled and report-only; this analysis produces no edits.
 
 
 ### Thematic breaks before headings and explicit slides
@@ -640,7 +638,7 @@ admitted options and explicit context before syntax; it cannot borrow partial sy
 Known slide exemptions are retained independently of unrelated parser/directive
 uncertainty. Inspection prepares context before callbacks and preserves truthful
 completed sections when a later operation stop occurs. MD090 stays default disabled
-and manual; MD047 remains the sole production correction.
+and manual; this analysis produces no edits.
 
 ## Heading inline construct projection
 
@@ -657,7 +655,7 @@ final publication checks withhold incomplete inventories. The immutable admitted
 allow list is read under the same controls into five fixed allowance bits; returned
 facts own their slice and cannot mutate syntax or options. Nested constructs stay
 independent and source geometry uses original envelopes, including container gaps.
-The rule remains default disabled, RequiresSyntax and NoFix; MD047 alone owns edits.
+The rule remains default disabled, RequiresSyntax and NoFix.
 
 ## Original list structure projection
 
@@ -674,7 +672,7 @@ construction. Caller and originating controls, sticky work/node/time stops and
 final publication checks withhold unfinished inventories. MD004 selects one
 per-document first-bullet baseline before directive filtering, or an admitted
 explicit marker, and emits marker-only manual findings. It remains enabled by
-default with PlannedFix metadata; MD047 alone supplies executable corrections.
+default with PlannedFix metadata; this analysis produces no edits.
 
 MD005 reuses the same detached list facts. It compares structural marker
 indentation (`ContentIndent - MarkerWidth - Padding`) against each actual group's
@@ -697,7 +695,7 @@ parents remain anchors. A bounded invocation-local map keys constant source-toke
 and item offsets, retaining ordered anchors before children; storage, work and
 finding growth reserve the original allowance even on clean inputs. Final caller
 and origin checks withhold interrupted findings. Findings own one bullet byte
-and remain manual despite PlannedFix metadata; MD047 alone produces edits.
+and remain manual despite PlannedFix metadata; this analysis produces no edits.
 
 MD029 reuses the original detached list facts and borrows its admitted `style`
 under the same original operation controls. Each actual ordered group keeps an
@@ -710,7 +708,7 @@ source-token and group offsets, with storage, work, capacity, copies and finding
 records reserved before construction, including clean inputs. Caller and origin
 checks atomically withhold interrupted findings. Diagnostics own the full digits
 and delimiter only. Default-enabled PlannedFix remains metadata; findings are
-manual and MD047 alone supplies executable edits.
+manual and this analysis produces no edits.
 
 MD030 derives a detached separator inventory from the actual ListItems exactly
 once. A precharged binary lookup in the original physical-line index establishes
@@ -755,7 +753,7 @@ production ownership and the original operation. CodeSpan remains protected;
 actual code Content/intrinsic indentation and trimmed semantic raw-body boundaries
 follow [MD010 policy](rules/whitespace/md010.md). Charged confirmed-prefix replay
 preserves physical phase and residual atomic TAB ownership without grammar or
-public model changes. MD047 remains the only correction producer.
+public model changes. This analysis produces no edits.
 
 MD012 projects manual first-excess body spans from global maximal original
 physical blank runs. It borrows completed production syntax, actual local prefix
@@ -767,7 +765,7 @@ See [MD012 policy](rules/whitespace/md012.md); no correction provider is added.
 
 MD013 maximum-line-width analysis is available but disabled by default. A narrow completed-original projection borrows immutable source/index/options/profile/reference facts and the originating operation, returning detached first eligible scalar spans. Four admitted options pass through the facade; precharged ownership/raw-prefix/URL work and final producer/facade/callback checkpoints retain caller and origin controls. Findings are manual, with no correction authority.
 
-MD085 analysis and configuration are implemented for CommonMark and GFM, disabled by default with no rule-specific options. The completed original parser projection excludes whole container owners, fixes the first actual Paragraph content baseline, and separates ordinary Text witnesses from protected multiline prefixes and actual HardBreak successors. Original SPACE/TAB visual four-column indentation yields detached surplus-only manual evidence; MD047 alone produces corrections. Producer, guarded facade and callback share the original finite allowance and caller/origin publication checks.
+MD085 analysis and configuration are implemented for CommonMark and GFM, disabled by default with no rule-specific options. The completed original parser projection excludes whole container owners, fixes the first actual Paragraph content baseline, and separates ordinary Text witnesses from protected multiline prefixes and actual HardBreak successors. Original SPACE/TAB visual four-column indentation yields detached surplus-only manual evidence; this analysis produces no edits. Producer, guarded facade and callback share the original finite allowance and caller/origin publication checks.
 
 MD065 analysis uses a narrow completed-original ThematicSpacing projection and an
 optionless RuleContext facade. A full tree/inline/tail walk preserves semantic raw
@@ -794,7 +792,7 @@ Unicode table shape is guarded before bounded scalar classifications. Producer,
 getter, facade, comparison and distinct whole-callback final checks bind caller
 and origin and atomically withhold all dependent output on error, including empty,
 clean, protected, minimum-skipped and post-output paths. MD081 remains disabled
-and manual; MD047 alone produces corrections.
+and manual; this analysis produces no edits.
 
 
 ## MD088 original ASCII punctuation analysis
@@ -820,4 +818,4 @@ is used. Finite application accounting is not a CPU/RSS or throughput guarantee.
 Exactly one original three-byte/one-code-point range per eligible scalar uses
 `Use ASCII quotes and dashes in prose.` Full context precedes shared START
 suppression and inspect intersection. Default OFF/style ascii/PlannedFix remain;
-this pass creates no MD088 edits, previews or corrected content. MD047 is sole fixer.
+this pass creates no MD088 edits, previews or corrected content.

@@ -382,8 +382,7 @@ MD013 findings use the constant message `Line exceeds maximum width.` and exactl
 
 MD027 reports manual original excess-SPACE ranges with constant message
 `Extra spaces after blockquote marker.` and `fix_available: false`. It produces
-no changes or returned content. MD047 remains the sole correction provider; its
-separately identified candidate snapshots receive recomputed manual MD027 findings.
+no changes or returned content. MD047's separately identified candidate snapshots receive recomputed manual MD027 findings.
 
 
 MD028 reports manual original remaining-body ranges with message `Blank line separates adjacent blockquotes.` and `fix_available: false`. Empty body ranges remain present points. It produces no changes, previews or returned content; MD047 candidates receive recomputed MD028 findings under their own snapshot identity.

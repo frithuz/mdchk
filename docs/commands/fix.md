@@ -59,8 +59,20 @@ mdchk fix docs/ --dry-run --format json
 ```
 
 Text and JSON previews include proposed diffs when a registered correction
-passes shared candidate validation. MD047 final-newline correction is implemented. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 remain report-only, with no edits or previews for their findings.
+passes shared candidate validation. MD047 final-newline correction and MD019 and MD021 heading-spacing corrections are implemented. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD020, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 remain report-only, with no edits or previews for their findings.
 Fix does not check MkDocs navigation: with [MD074](../rules/content-and-navigation/md074.md) enabled it records the lint-only coverage `MkDocs navigation is checked only by lint.` and returns `15` unless an error takes precedence.
+
+[MD019](../rules/headings/md019.md) and [MD021](../rules/headings/md021.md)
+corrections remove excess ASCII spaces from a heading delimiter gap: the second
+through last space are deleted and one stays, so `##  Title  ##` becomes
+`## Title ##`. A gap containing any tab stays a manual finding with
+`fix_available: false`. Each gap is judged alone, so `#  x<TAB>#` still gets its
+opening gap corrected. When both rules report the same opening excess, one edit is
+applied and the change credits both rules. Enablement and directives apply to each
+rule separately, so if one ID is disabled the other can still correct a shared gap.
+A document's eligible corrections, including MD047's, are proposed
+together. If MD047 cannot be applied, the heading corrections still are, and MD047
+stays manual.
 
 [MD081 paragraph-emphasis analysis](../rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.
@@ -94,8 +106,7 @@ Windows retain an explicit write refusal. Encoding-local incompleteness does not
 MD033 embedded-HTML analysis is available for CommonMark and GFM, disabled by
 default and permanently NoFix. Full original tag ranges remain manual, including
 candidate and saved analysis after an independent MD047 newline correction.
-MD033 produces no edits, eligibility, previews or corrected contents. MD047 is
-the sole current fixer. Apply on an unsupported operating system returns an early
+MD033 produces no edits, eligibility, previews or corrected contents. Apply on an unsupported operating system returns an early
 complete I/O refusal 13 with empty analysis/effects and unchanged files; a build
 without cgo applies normally.
 
@@ -103,8 +114,7 @@ without cgo applies normally.
 
 MD086 unmatched-comment analysis is enabled by default for CommonMark and GFM,
 with no rule-specific options and permanent NoFix. It emits no edits, eligibility,
-previews or corrected content. MD047 remains the sole current correction producer.
-An unmatched opener in an ended quote owner remains a manual MD086 finding when
+previews or corrected content. An unmatched opener in an ended quote owner remains a manual MD086 finding when
 MD047 adds an eligible final LF to later ordinary text. An unclosed comment at
 physical EOF protects that EOF, so MD047 remains deferred and MD086 remains manual.
 Candidate and saved diagnostics retain their exact source identities.

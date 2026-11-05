@@ -6,16 +6,14 @@ Actual eligible HTML owners and their tails are analyzed once; matching ends at
 the owner/container boundary. Each unmatched opener reports only its original
 four bytes. Code, metadata, whole Images, raw payload and opaque HTML tokens stay
 protected; ordinary unowned Text is excluded. Unavailable owned named-token
-context withholds the complete MD086 inventory with explicit coverage. MD047
-remains the sole current correction producer; MCP parity remains downstream.
+context withholds the complete MD086 inventory with explicit coverage. This analysis produces no edits; MCP parity remains downstream.
 
 [MD033 embedded-HTML analysis](../rules/html-and-comments/md033.md) is available for CommonMark and GFM,
 disabled by default and permanently report-only. `allowed_tags: []` accepts a
 string list and matches whole names with ASCII case folding, without trimming.
 Each disallowed complete named tag has its own full original range. Opaque HTML
 tokens and actual raw payload stay protected; unavailable owned-tag context
-withholds the entire MD033 inventory with explicit coverage. No MD033 edits or
-previews are produced; MD047 remains the sole current fixer.
+withholds the entire MD033 inventory with explicit coverage. No MD033 edits or previews are produced.
 
 
 Check Markdown files against the enabled rules and report problems without modifying files.

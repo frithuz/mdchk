@@ -255,7 +255,7 @@ probe, traversal frame, capacity, copied prefix and logical span/finding is rese
 before work, including empty/clean/protected input. Caller and original controls,
 sticky finite work/nodes/time and final producer/facade/callback checks atomically
 withhold failure. No reparse, renderer, source/tree clone, retained AST, new allowance
-or correction authority is added; MD047 remains the sole correction producer.
+or correction authority is added; this analysis produces no edits.
 
 
 MD085 borrows the completed original production source, index, options, profile
@@ -270,7 +270,7 @@ traversal frames, growth capacity, copied prefixes and logical spans/findings ar
 reserved before work. Empty/clean/protected input retains caller and originating
 controls, sticky finite work/nodes/elapsed and atomic producer/facade/callback
 publication. No reparse, source/index/tree clone, renderer, decoder, new allowance
-or correction authority is introduced. MD047 remains the sole correction producer.
+or correction authority is introduced. This analysis produces no edits.
 
 
 MD089 shares the original completed production source/index/options/profile and
@@ -294,7 +294,7 @@ prefixes and detached span/finding records reserve the original finite allowance
 before work. Empty, clean and protected inputs retain caller/origin controls and
 final atomic withholding at producer, facade and callback. No reparse, retained
 AST, source/index/options clone, decoder, new allowance or correction authority
-is added. MD035 is default enabled and manual; MD047 alone supplies corrections.
+is added. MD035 is default enabled and manual; this analysis produces no edits.
 
 MD037 borrows completed original source/index/options/profile and operation
 through DelimiterStyle. Actual recognized Emphasis/Strong facts remain distinct
@@ -315,8 +315,7 @@ and image-alternative isolation preserve protected contexts. Traversal, source
 associations, failed byte probes, capacity/copies and logical ranges/findings
 reserve original work/nodes before use. Caller/origin cancellation, sticky limits
 and final producer/facade/callback checks withhold failed dependent output, including
-empty/clean/protected cases. PlannedFix metadata grants no correction authority;
-MD047 alone supplies executable corrections.
+empty/clean/protected cases. PlannedFix metadata grants no correction authority.
 
 
 ## MD088 original ASCII punctuation analysis
@@ -342,7 +341,7 @@ is used. Finite application accounting is not a CPU/RSS or throughput guarantee.
 Exactly one original three-byte/one-code-point range per eligible scalar uses
 `Use ASCII quotes and dashes in prose.` Full context precedes shared START
 suppression and inspect intersection. Default OFF/style ascii/PlannedFix remain;
-this pass creates no MD088 edits, previews or corrected content. MD047 is sole fixer.
+this pass creates no MD088 edits, previews or corrected content.
 
 ## MD048 fence delimiter observations
 

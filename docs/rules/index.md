@@ -115,8 +115,7 @@ and unknown necessary context withholds the complete inventory.
 and GFM, enabled by default with the existing `languages` string-list option.
 Actual selected fenced payload is classified as a whole before suppression and
 inspection focus. Unknown necessary context withholds the complete inventory.
-Findings are manual; `PlannedFix` remains future metadata. MD047 alone supplies
-current corrections, and MCP parity remains downstream.
+Findings are manual; `PlannedFix` remains future metadata. This analysis produces no edits, and MCP parity remains downstream.
 
 [MD092 conflict-marker analysis](html-and-comments/md092.md) is available for
 CommonMark and GFM, enabled by default, with no rule-specific options and
@@ -124,8 +123,7 @@ permanent report-only support. Maximal original column-one ASCII runs use one
 document-wide Boolean state; full-source analysis precedes directive suppression
 and inspection focus. Actual marker-byte protection and original owned HTML raw
 lifetimes remain authoritative. Unknown required protection withholds the entire
-inventory with reduced coverage. MD047 remains the sole current correction
-producer; MD092 emits no edits or previews. MCP parity remains downstream.
+inventory with reduced coverage. MD092 emits no edits or previews. MCP parity remains downstream.
 
 [MD087 unused-suppression analysis](html-and-comments/md087.md) is available for CommonMark and GFM,
 disabled by default, with no rule-specific options and permanent report-only support.
@@ -138,16 +136,14 @@ Actual eligible HTML owners and their tails are analyzed once; matching ends at
 the owner/container boundary. Each unmatched opener reports only its original
 four bytes. Code, metadata, whole Images, raw payload and opaque HTML tokens stay
 protected; ordinary unowned Text is excluded. Unavailable owned named-token
-context withholds the complete MD086 inventory with explicit coverage. MD047
-remains the sole current correction producer; MCP parity remains downstream.
+context withholds the complete MD086 inventory with explicit coverage. This analysis produces no edits; MCP parity remains downstream.
 
 [MD033 embedded-HTML analysis](../rules/html-and-comments/md033.md) is available for CommonMark and GFM,
 disabled by default and permanently report-only. `allowed_tags: []` accepts a
 string list and matches whole names with ASCII case folding, without trimming.
 Each disallowed complete named tag has its own full original range. Opaque HTML
 tokens and actual raw payload stay protected; unavailable owned-tag context
-withholds the entire MD033 inventory with explicit coverage. No MD033 edits or
-previews are produced; MD047 remains the sole current fixer.
+withholds the entire MD033 inventory with explicit coverage. No MD033 edits or previews are produced.
 
 
 We target the implemented rule list from `rumdl` because it covers markdownlint's built-in rules and adds further checks. The individual rule specifications define mdchk's behavior internally. We may expand this ruleset with additional custom rules in the future.
@@ -173,7 +169,7 @@ analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis,
 thematic-break-before-heading analysis, MD093 inline-formatting-in-headings analysis and
 MD094 invalid-UTF-8 analysis and configuration are implemented for both flavors. MD055 outer-table-pipe analysis,
 MD056 mismatched-cell-count analysis, MD058 blank-lines-around-tables analysis, MD075 pipe-rows-without-header analysis and their configuration are implemented for GFM only, enabled by default. MD060 table-column-layout analysis and configuration are implemented for GFM only, disabled by default. MD001, MD003, MD004, MD005, MD007,
-MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD014, MD031, MD040, MD046, MD048, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD062, MD054, MD057, MD059, MD055, MD056, MD058, MD060, MD075, MD070, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD044, MD061, MD083, MD084, MD049, MD050, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026,
+MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD014, MD031, MD040, MD046, MD048, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD062, MD054, MD057, MD059, MD055, MD056, MD058, MD060, MD075, MD070, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD044, MD061, MD083, MD084, MD049, MD050, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD020, MD022, MD023, MD024, MD025, MD026,
 MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD094 are report-only. MD013, MD026, MD036,
 MD040, MD043, MD044, MD061, MD083, MD084, MD063, MD070, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD054, MD060, MD087 and MD093 are available but disabled by default. Other
 ordinary rule callbacks remain planned. The mandatory UTF-8 gate is implemented

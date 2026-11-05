@@ -1839,7 +1839,7 @@ An interrupted projection withholds its inventory atomically. Raw/comment state
 uses actual private nodes and owned content/tails, excluding container prefixes.
 This provider does not build an anchor index or consume AnchorStyle, metadata,
 resource availability, correction, write or MCP authority. MD082 remains default
-disabled and report-only; MD047 retains the sole production correction.
+disabled and report-only; this analysis produces no edits.
 
 
 ### Thematic breaks before headings and explicit slides
@@ -1859,7 +1859,7 @@ admitted options and explicit context before syntax; it cannot borrow partial sy
 Known slide exemptions are retained independently of unrelated parser/directive
 uncertainty. Inspection prepares context before callbacks and preserves truthful
 completed sections when a later operation stop occurs. MD090 stays default disabled
-and manual; MD047 remains the sole production correction.
+and manual; this analysis produces no edits.
 
 ## Heading inline construct projection
 
@@ -1876,7 +1876,7 @@ final publication checks withhold incomplete inventories. The immutable admitted
 allow list is read under the same controls into five fixed allowance bits; returned
 facts own their slice and cannot mutate syntax or options. Nested constructs stay
 independent and source geometry uses original envelopes, including container gaps.
-The rule remains default disabled, RequiresSyntax and NoFix; MD047 alone owns edits.
+The rule remains default disabled, RequiresSyntax and NoFix.
 
 ## Original list structure projection
 
@@ -1893,7 +1893,7 @@ construction. Caller and originating controls, sticky work/node/time stops and
 final publication checks withhold unfinished inventories. MD004 selects one
 per-document first-bullet baseline before directive filtering, or an admitted
 explicit marker, and emits marker-only manual findings. It remains enabled by
-default with PlannedFix metadata; MD047 alone supplies executable corrections.
+default with PlannedFix metadata; this analysis produces no edits.
 
 MD005 reuses the same detached list facts. It compares structural marker
 indentation (`ContentIndent - MarkerWidth - Padding`) against each actual group's
@@ -1978,7 +1978,7 @@ probe, traversal frame, capacity, copied prefix and logical span/finding is rese
 before work, including empty/clean/protected input. Caller and original controls,
 sticky finite work/nodes/time and final producer/facade/callback checks atomically
 withhold failure. No reparse, renderer, source/tree clone, retained AST, new allowance
-or correction authority is added; MD047 remains the sole correction producer.
+or correction authority is added; this analysis produces no edits.
 
 
 ConfiguredNames is an original-operation projection for MD044. One Text owner,
@@ -2016,7 +2016,7 @@ Unicode table shape is guarded before bounded scalar classifications. Producer,
 getter, facade, comparison and distinct whole-callback final checks bind caller
 and origin and atomically withhold all dependent output on error, including empty,
 clean, protected, minimum-skipped and post-output paths. MD081 remains disabled
-and manual; MD047 alone produces corrections.
+and manual; this analysis produces no edits.
 
 
 ## MD088 original ASCII punctuation analysis
@@ -2042,7 +2042,7 @@ is used. Finite application accounting is not a CPU/RSS or throughput guarantee.
 Exactly one original three-byte/one-code-point range per eligible scalar uses
 `Use ASCII quotes and dashes in prose.` Full context precedes shared START
 suppression and inspect intersection. Default OFF/style ascii/PlannedFix remain;
-this pass creates no MD088 edits, previews or corrected content. MD047 is sole fixer.
+this pass creates no MD088 edits, previews or corrected content.
 
 ## MD033 embedded HTML inventory
 
@@ -2066,8 +2066,7 @@ allowed and post-output paths observe caller AND origin controls and sticky
 work/nodes/elapsed limits through producer/getter/facade/comparison/distinct outer
 final publication. The detached allowlist getter preserves the permissive string
 list domain; equal-length whole-name ASCII comparison has no trim/Unicode fold.
-MD033 remains default OFF, RequiresSyntax, UsesFrontmatter=false and NoFix; MD047
-alone supplies corrections. Finite application accounting is not a hard CPU/RSS,
+MD033 remains default OFF, RequiresSyntax, UsesFrontmatter=false and NoFix. Finite application accounting is not a hard CPU/RSS,
 throughput or OS preemption guarantee.
 
 ## MD091 literal Markdown candidates

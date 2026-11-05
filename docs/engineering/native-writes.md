@@ -144,8 +144,11 @@ operation. Published content is never blindly rolled back over newer content.
   not serialize writers, and a noncooperating writer can still change a file
   between the last check and the rename. A deterministic native test changes the
   target after the final check and demonstrates the newer bytes being
-  overwritten. With MD047 as the only fixer, two concurrent runs compute identical
-  output, so nothing is lost today. Revisit before a second fixer ships. Full
+  overwritten. Reviewed when MD019 and MD021 corrections joined MD047: there is
+  no new lock, in line with #261. Two concurrent runs with the same configuration
+  compute identical output. Runs with different configurations
+  can compute different output, and the last writer can overwrite the other's
+  result. Full
   no-lost-update protection requires exclusive or coordinated access. No
   protection against privileged mount manipulation is claimed.
 - **macOS ACL entries** are not inspected or preserved. Detecting them requires

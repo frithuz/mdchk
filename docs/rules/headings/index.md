@@ -7,9 +7,9 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD001](md001.md) | Heading increments | Analysis implemented |
 | [MD003](md003.md) | Heading syntax style | Analysis implemented |
 | [MD018](md018.md) | Missing space after opening hashes | Analysis implemented |
-| [MD019](md019.md) | Extra spaces after opening hashes | Analysis implemented |
+| [MD019](md019.md) | Extra spaces after opening hashes | Analysis and correction implemented |
 | [MD020](md020.md) | Missing spaces within closed headings | Analysis implemented |
-| [MD021](md021.md) | Extra spaces within closed headings | Analysis implemented |
+| [MD021](md021.md) | Extra spaces within closed headings | Analysis and correction implemented |
 | [MD022](md022.md) | Blank lines around headings | Analysis implemented |
 | [MD023](md023.md) | Indented headings | Analysis implemented |
 | [MD024](md024.md) | Repeated heading text | Analysis implemented |

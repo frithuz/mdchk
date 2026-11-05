@@ -97,7 +97,7 @@ protected. Ordinary CommonMark bare URL-looking Text remains eligible. Code opt-
 admits literal actual CodeBlock Content only; CodeSpan stays protected. Names have
 a narrow valid-UTF8 list domain, including disabled validation; no other lists
 are narrowed. See [MD044](../rules/formatting/md044.md) for the full policy.
-Pass 1 produces manual analysis only; MD047 remains the sole correction producer.
+Pass 1 produces manual analysis only and no edits.
 
 ### Md061
 
@@ -527,7 +527,7 @@ escapes, normalized and partial-tab contributions create no source candidates.
 Emit one original three-byte/one-code-point range per eligible scalar with exactly
 `Use ASCII quotes and dashes in prose.` Em dash is one finding. Full context
 precedes shared START suppression and inspect intersection. This pass is analysis
-and configuration only: PlannedFix remains future metadata; MD047 is sole fixer;
+and configuration only: PlannedFix remains future metadata; this analysis produces no edits;
 MD088 creates no edits, previews or corrected content.
 
 ### Corrections
@@ -1044,7 +1044,7 @@ confirmed scalar prefix replay preserves residual TAB columns and physical phase
 empty first-item Prefix segments describe actual consumption beyond effective
 padding. Image-alt raw tags cannot affect outer state. Whole recognized headers
 remain opaque. See [MD010](../rules/whitespace/md010.md) for exact boundaries.
-All findings are manual; MD047 alone can produce corrections.
+All findings are manual; this analysis produces no edits.
 
 MD012 specializes blank body runs: ASCII space/TAB after each physical line's
 actual final prefix bytes, globally consecutive across container changes, one
@@ -1116,8 +1116,7 @@ Link-label HTML is eligible. Form 1 uses any literal parser raw closer; other
 owned tokens preserve source order/global lifetimes without entering quoted or
 opaque payload. Failed owned named context withholds the entire inventory with
 coverage. The existing permissive allowed_tags string list uses whole-name ASCII
-folding only, applied after inventory/raw context. Default OFF and NoFix remain;
-MD047 alone produces corrections.
+folding only, applied after inventory/raw context. Default OFF and NoFix remain.
 
 ## Unmatched HTML comments (MD086)
 
@@ -1151,7 +1150,7 @@ context uses `HTML Markdown candidate context is unavailable; the complete MD091
 Known unclosed opaque/raw remainders remain protected. Available empty inventory
 establishes absence; unavailable inventory or discarded prefix establishes none.
 Real MD087 shares the one actual callback, preserving its capability/would-be
-semantics and interruption rules. MD047 alone may independently correct safe
+semantics and interruption rules. MD047 may still independently correct safe
 ordinary EOF content under residual allowance; MD091 supplies no edit/preview.
 
 ## MD092 conflict-marker inventory
