@@ -1,0 +1,2104 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary prose\n",
+      "source_bytes": 15,
+      "source_sha256": "922c8578527e7cd2ae1f5047cf1c7d7644035cb6caf0899483ff2ca4e2742c0f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "spec-example",
+      "source": "[Click here](guide.md)\n",
+      "source_bytes": 23,
+      "source_sha256": "b3473b5accd32852aac7dbf7141fde2919a7106b74ba3189e37454882b5385f8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            11
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "spec-accepted",
+      "source": "[Installation guide](guide.md)\n",
+      "source_bytes": 31,
+      "source_sha256": "82a80b78ca1d4b362312f6541b925ee8e15ca4f6af7897fe6d8489f19ca99108",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "default-here",
+      "source": "[here](x)\n",
+      "source_bytes": 10,
+      "source_sha256": "92b46652e7bfbfaf33ca5daa4ffca3859db051dd4728f094cdf1149afbd9d336",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            5
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "default-more-upper",
+      "source": "[MORE](x)\n",
+      "source_bytes": 10,
+      "source_sha256": "df87e62ae78f7fc73a1729a86200a24852b9a9aaf1699b78a1798148bf6c3f86",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            5
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "default-read-more-spaces",
+      "source": "[ Read   More ](x)\n",
+      "source_bytes": 19,
+      "source_sha256": "fe5788a11651f4d89eaf36e2f5ebe2ad6b8950c6512d6c5b97070a427107c006",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            14
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "default-read-more-soft-break",
+      "source": "[read\nmore](x)\n",
+      "source_bytes": 15,
+      "source_sha256": "fdc4882678b198cc8f4624b58c4a19a45ed07f2f75b049aa23f2c615a9522ffa",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            10
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "default-click-here",
+      "source": "[click here](x)\n",
+      "source_bytes": 16,
+      "source_sha256": "b75334e8f6feb5b8afd36901e6f21c54b4de49b4d2c64761cf978b0e70c2b03e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            11
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "default-hard-break-backslash",
+      "source": "[read\\\nmore](x)\n",
+      "source_bytes": 16,
+      "source_sha256": "f53332b396d74294285d0491643864d1fd700166bba910c8f0d9770c91d8b4e0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            11
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "default-hard-break-spaces",
+      "source": "[read  \nmore](x)\n",
+      "source_bytes": 17,
+      "source_sha256": "3484d1512a3b393b4c32d6342ab5ca2f2122492be2a5d9d8cd0982c9f3e1cac2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            12
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "default-tab",
+      "source": "[read\tmore](x)\n",
+      "source_bytes": 15,
+      "source_sha256": "5398fe3d71999e7d8df9628a0ce142ea2e6ff215128c650bedfaaafb29eccf72",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            10
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "default-no-break-space",
+      "source": "[read more](x)\n",
+      "source_bytes": 16,
+      "source_sha256": "6dc833aebbbc76b022769a86e5138d76d828f33851bea70322e8ef5db167e9b0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            11
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "default-ideographic-space",
+      "source": "[　here　](x)\n",
+      "source_bytes": 16,
+      "source_sha256": "f66718d2846c0380440c8e556b1334add215062da2fa3694dd0e324b89a5929a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            11
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "non-match-punctuation",
+      "source": "[here.](x)\n",
+      "source_bytes": 11,
+      "source_sha256": "da5fdc9719263c483947753ccc2340f5b7533bfaeb262dbb02fddc44249d1cca",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "non-match-longer",
+      "source": "[click here now](x)\n",
+      "source_bytes": 20,
+      "source_sha256": "7ecaa08754ef3214e9293d8c106e0540264b5e5a841776801df4e9552e89afe9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "non-match-accent",
+      "source": "[hère](x)\n",
+      "source_bytes": 11,
+      "source_sha256": "de43601f4ad9d071d2b23ae750707b6465969e4693fd25baaa3977f9ae6e1bf2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "non-match-extra-letter",
+      "source": "[heree](x)\n",
+      "source_bytes": 11,
+      "source_sha256": "ff4ab140770b465a7a7f574761f5b025eac7bffc8d5088079c8ccf75b8242a87",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "non-match-empty-label",
+      "source": "[](x)\n",
+      "source_bytes": 6,
+      "source_sha256": "c75f9612f1660a82c4d3f1e98a1639b2b2baff0265611f60d0bac43bf79cd006",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "formatting",
+      "source": "[*click* **here**](x)\n",
+      "source_bytes": 22,
+      "source_sha256": "9b86525c4d4a70437d929fbf71f6588d2463edd688d72bd5a8b59f2eff2abd78",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            17
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "strikethrough-gfm",
+      "source": "[~~here~~](x)\n",
+      "source_bytes": 14,
+      "source_sha256": "352bead7daf8668752e622b5695dec39d63d6caf856d183172a4f8425e9267bf",
+      "flavors": [
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            9
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "code-span",
+      "source": "[`here`](x)\n",
+      "source_bytes": 12,
+      "source_sha256": "79e0df9d9b10cc3290c6de7ae9fa1b8f4837d34b49cd67f63f29487c2ee24310",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            7
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "entity",
+      "source": "[&#104;ere](x)\n",
+      "source_bytes": 15,
+      "source_sha256": "6397602405b2f07ab1a196c2b359a44799bca282ebc46e3457f284df3642fd4c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            10
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "named-entity-space",
+      "source": "[read&nbsp;more](x)\n",
+      "source_bytes": 20,
+      "source_sha256": "f34a274c96a2b1e3a6af8ff5bb2525cf7b40295d7beeab934ea2e4151718a8ef",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            15
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "escape-non-punctuation",
+      "source": "[he\\re](x)\n",
+      "source_bytes": 11,
+      "source_sha256": "ba208ea28253b5931d3f4d2a5a52ccfda113a9a311a808e70a19054d68a46387",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escape-punctuation",
+      "source": "[\\*here](x)\n",
+      "source_bytes": 12,
+      "source_sha256": "35075e6320ab6cb722cb950e1f6762f720717df08c6cc51d21c03748c3ed06d8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true,
+        "phrases": [
+          "*here"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            7
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "inline-html-omitted",
+      "source": "[<b>here</b>](x)\n",
+      "source_bytes": 17,
+      "source_sha256": "07cb809b1445d781ea4ef578571d15d0e78c27428e93d47c8a4a94afceed097b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            12
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "full-reference",
+      "source": "[here][id]\n\n[id]: /u\n",
+      "source_bytes": 21,
+      "source_sha256": "d2ea8e982230a578537d3224de45228dc381a06f8fb45cfb48f647c96f5fb284",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            5
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "collapsed-reference",
+      "source": "[here][]\n\n[here]: /u\n",
+      "source_bytes": 21,
+      "source_sha256": "98c9c497f952c8b945c13198a0dccab5681b8f3df8e52ff3452c6169419883ba",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            5
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "shortcut-reference",
+      "source": "[here]\n\n[here]: /u\n",
+      "source_bytes": 19,
+      "source_sha256": "bb6b8167e13c79a7e1cabce73f1e226f578607db184e944383a730471a9ff365",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            5
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "reference-label-ignored",
+      "source": "[Guide][here]\n\n[here]: /u\n",
+      "source_bytes": 26,
+      "source_sha256": "e392140c880d253eb36b81efa1493e3482fa5677234e6d82b1cb4fb5c2c15f2d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "unresolved-reference",
+      "source": "[here][missing]\n",
+      "source_bytes": 16,
+      "source_sha256": "20b33fd6c1e53745c71846f5e50ec7ae2674f6d1994ed8c7ff1e34b187c0b8f2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "bracket-text",
+      "source": "[here]\n",
+      "source_bytes": 7,
+      "source_sha256": "82ce1a394206ce3162287838ce2cd08b52d155e10bd72bd1b98068913e92f847",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "definition",
+      "source": "[here]: /u\n",
+      "source_bytes": 11,
+      "source_sha256": "a4e032f2c22eab9c2c9ccb93cd53c5189ecea0345b276951ffc406962d80cb0b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "image-only",
+      "source": "[![here](i.png)](x)\n",
+      "source_bytes": 20,
+      "source_sha256": "e0fa4704f1e1410d94288199acd4a231bcc981a5f18ce80c9f430ab6f5e420cf",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            15
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "image-only-whitespace",
+      "source": "[ ![Read more](i.png) ](x)\n",
+      "source_bytes": 27,
+      "source_sha256": "eb0be8c0473335b3f8227eea5f0b6ee693546f3f8b43e497a1f658cc3b72b1bb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            22
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "image-only-informative",
+      "source": "[![Logo](i.png)](x)\n",
+      "source_bytes": 20,
+      "source_sha256": "8a3166cee3b5339cc722aa34b5ee457d4529b7aad745ec49e6972f683b1ee102",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "image-and-text",
+      "source": "[![icon](i.png) here](x)\n",
+      "source_bytes": 25,
+      "source_sha256": "19f9645d9f35e7b25e6865c784568a0ec528e14fb936136b7b0e2f9a1775b402",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "bare-image",
+      "source": "![here](i.png)\n",
+      "source_bytes": 15,
+      "source_sha256": "8fba665e0d2ef03e940d096b8d01f293969b6d38fd2b3bd25eeea049fa8b1965",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "link-in-image",
+      "source": "![[here](x)](i.png)\n",
+      "source_bytes": 20,
+      "source_sha256": "39606d5eb06881ddd9887eb121bbbbf827ecbc3f0bb07afac0eeb55d442cc220",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "reference-image-in-link",
+      "source": "[![here][logo]](x)\n\n[logo]: i.png\n",
+      "source_bytes": 34,
+      "source_sha256": "138efb3cf14f6f1f846d5a15bb7281c2d50971ebe3f37e183795f12a96ddb22c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            14
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "angle-autolink",
+      "source": "<https://here.example>\n",
+      "source_bytes": 23,
+      "source_sha256": "b99c19ffc4f0860cf78d563680ed8a57978564816633600e239601412bb1ca63",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true,
+        "phrases": [
+          "https://here.example"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "bare-www-gfm",
+      "source": "www.here.example\n",
+      "source_bytes": 17,
+      "source_sha256": "3e632461043a49f779f9911f9fb7a9ca5f31bb76ee44e0a6b437f6f88c934f6d",
+      "flavors": [
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true,
+        "phrases": [
+          "www.here.example"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "raw-html-anchor",
+      "source": "<a href=\"x\">here</a>\n",
+      "source_bytes": 21,
+      "source_sha256": "b6da47e998114e7b9b792492e1cf3d7a866c6820ddfaf1d5b00b14ff4c2757c7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "code-span-link",
+      "source": "`[here](x)`\n",
+      "source_bytes": 12,
+      "source_sha256": "e53031d515e3946b24e40fbd9ac9e258417799c62b430d2887a9d6bedf652398",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "fenced",
+      "source": "```\n[here](x)\n```\n",
+      "source_bytes": 18,
+      "source_sha256": "8c69acc76b0156310d90a869bfabdaec2da28aebde2f687ae1f95de55f4dd348",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "indented",
+      "source": "    [here](x)\n",
+      "source_bytes": 14,
+      "source_sha256": "184b1de6ded52a26d3708545ea8f9eb0bedc66ef19a57a73a49621d08bca7c79",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "html-block",
+      "source": "<div>\n[here](x)\n</div>\n",
+      "source_bytes": 23,
+      "source_sha256": "abeec142680c677b455f0ae62637570eaae6743e06ba01b61d16941fd62aafbe",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "inline-raw-html",
+      "source": "x <pre>[here](x)</pre> [more](y)\n",
+      "source_bytes": 33,
+      "source_sha256": "c6cf56008b883fd29b3d4c3f197a559318d290e73dc70fc042a3e5556cf0abbe",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            24,
+            28
+          ],
+          "start": [
+            1,
+            25
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "frontmatter",
+      "source": "---\nnote: \"[here](x)\"\n---\n\ntext\n",
+      "source_bytes": 32,
+      "source_sha256": "428747836554036712162c0e44649a0abaab4712ab0def1e5848dc27cff808ef",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": true,
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "block-quote",
+      "source": "> [here](x)\n",
+      "source_bytes": 12,
+      "source_sha256": "abd7430d98414a0b64b20691222713cf7da6ed03bbb4580d6e3ac8ae695d8d62",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            7
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "list-item",
+      "source": "- [here](x)\n",
+      "source_bytes": 12,
+      "source_sha256": "777f2da14cba80534c5990331dbd6bce5496e95ddb89645e903286ccaf952233",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            7
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "ordered-quote-list",
+      "source": "1. > - [more](x)\n",
+      "source_bytes": 17,
+      "source_sha256": "aaa458527208588b0be6b599a4553a4ba935ce8cf8f21b15a716e84ce3cd7a6a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            12
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "table-cell",
+      "source": "| a |\n| - |\n| [here](x) |\n",
+      "source_bytes": 26,
+      "source_sha256": "370d1739f9b5daf7cb91f180b465960cbb31c1fd80cfed2d7dd4c874b585c0eb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            19
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            8
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "heading",
+      "source": "# [here](x)\n",
+      "source_bytes": 12,
+      "source_sha256": "30f5a6c82e72183bcfe750808436329d3f39dc328eb29171011a0b1ce15d88d3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            7
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "multiline-quoted",
+      "source": "> [read\n> more](x)\n",
+      "source_bytes": 19,
+      "source_sha256": "76ea8fb48bc740bc22ef7d20e4a2bb071086022c43596857d98bb20a40889c92",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            14
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "multibyte-prefix",
+      "source": "é [here](x)\n",
+      "source_bytes": 13,
+      "source_sha256": "b520c0fc25dcfcc8e9ec7d74fab9401e9efc2f3c543674b5af3e398ef20741c9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            8
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "multiple",
+      "source": "[here](a) and [Guide](b) and [more](c)\n",
+      "source_bytes": 39,
+      "source_sha256": "99383cbccdfcc704aaa31c49b06b15ef9d37b624d09cfe773e906276cbedafd9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            5
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Link label is uninformative."
+        },
+        {
+          "bytes": [
+            30,
+            34
+          ],
+          "start": [
+            1,
+            31
+          ],
+          "end": [
+            1,
+            35
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "custom-replaces-default",
+      "source": "[Link](x) [here](x)\n",
+      "source_bytes": 20,
+      "source_sha256": "c7e94381c7124f9ebcb1bd5f07cb555503c1090ddb5384c19e2cb0ab42a3bf52",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true,
+        "phrases": [
+          "link"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            5
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "custom-empty-list",
+      "source": "[here](x) [more](x)\n",
+      "source_bytes": 20,
+      "source_sha256": "bf823c6fb06ab3f33772037e2ba809cadb97d14483fc7f83589192478c3844dd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true,
+        "phrases": []
+      },
+      "findings": []
+    },
+    {
+      "name": "custom-normalized-phrase",
+      "source": "[click here](x)\n",
+      "source_bytes": 16,
+      "source_sha256": "b75334e8f6feb5b8afd36901e6f21c54b4de49b4d2c64761cf978b0e70c2b03e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true,
+        "phrases": [
+          "  Click   HERE "
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            11
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "custom-empty-phrase",
+      "source": "[](x) [ ](y)\n",
+      "source_bytes": 13,
+      "source_sha256": "f7a0078fe55cf870797cdf11adb78a24778eee7a4ce859c1265ef7f712c1ba49",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true,
+        "phrases": [
+          ""
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "custom-empty-and-real-phrase",
+      "source": "[](x) [here](y)\n",
+      "source_bytes": 16,
+      "source_sha256": "8c8d530baab140d8a647da97e22dd733a2bc52afca93da09fb8ea01c78323f4f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true,
+        "phrases": [
+          "",
+          "here"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            7,
+            11
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "custom-simple-case-folding",
+      "source": "[üNÏCODE](x)\n",
+      "source_bytes": 15,
+      "source_sha256": "aff4dc98aaaa7c296a089cedbd8962eedb2ab26e934fb8eb3ff014b02792ea64",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true,
+        "phrases": [
+          "Ünïcode"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            10
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "custom-no-full-case-folding",
+      "source": "[STRASSE](x)\n",
+      "source_bytes": 13,
+      "source_sha256": "6b8b06b51cc1c9bb493568a2007e6372b27472c9c03b02e000d74626b70c2505",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true,
+        "phrases": [
+          "straße"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "disabled",
+      "source": "[here](x)\n",
+      "source_bytes": 10,
+      "source_sha256": "92b46652e7bfbfaf33ca5daa4ffca3859db051dd4728f094cdf1149afbd9d336",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    },
+    {
+      "name": "default-here-crlf",
+      "source": "[here](x)\r\n",
+      "source_bytes": 11,
+      "source_sha256": "0c32e7e709da33b1c46a12948a1bb5fa27ecd75ca1fd14c2b712d72734b6df15",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            5
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "default-more-upper-crlf",
+      "source": "[MORE](x)\r\n",
+      "source_bytes": 11,
+      "source_sha256": "d003509672d8e3e742d1f93333cb60270bacbfb3269533fb27e4b755eace4567",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            5
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "default-read-more-spaces-crlf",
+      "source": "[ Read   More ](x)\r\n",
+      "source_bytes": 20,
+      "source_sha256": "88759f019816bbaa08806d7665ac8a6a90ec3bfaa87a4882ba1fd15bdbec1f25",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            14
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "default-read-more-soft-break-crlf",
+      "source": "[read\r\nmore](x)\r\n",
+      "source_bytes": 17,
+      "source_sha256": "5d1a4c8b850ed1e838f48fcb16c82c4a56ccacae4b59da4db2ee75fdcd39d426",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            11
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "default-click-here-crlf",
+      "source": "[click here](x)\r\n",
+      "source_bytes": 17,
+      "source_sha256": "e230f77a60ca6c3fc0f574e0fda0a2445c78344bc701df45de79b56cd09f5a99",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            11
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            12
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "full-reference-crlf",
+      "source": "[here][id]\r\n\r\n[id]: /u\r\n",
+      "source_bytes": 24,
+      "source_sha256": "f0f46facd95a63d9843d832f6d0f9bd8e2dec00e580678b522c9675266f6f0f8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            5
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "collapsed-reference-crlf",
+      "source": "[here][]\r\n\r\n[here]: /u\r\n",
+      "source_bytes": 24,
+      "source_sha256": "c91af9e49db5a29ac9cd31d351f116e6d2776c8dbb0fd6657ca1ba53c2c337ae",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            5
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "shortcut-reference-crlf",
+      "source": "[here]\r\n\r\n[here]: /u\r\n",
+      "source_bytes": 22,
+      "source_sha256": "d2cb884196d203d06ba5b99e91f2e037d06df42070943a78a7b89a55449d371d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            5
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "block-quote-crlf",
+      "source": "> [here](x)\r\n",
+      "source_bytes": 13,
+      "source_sha256": "28a70a883b20c122d6173dfd3dde94c1fe305e59ebf4cc3aa45e23182a5d47d4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            7
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "list-item-crlf",
+      "source": "- [here](x)\r\n",
+      "source_bytes": 13,
+      "source_sha256": "f0d13e050955ed45dea2b79d710a975ec2e209cb2879730e53bb1f35d4f616bb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            7
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "ordered-quote-list-crlf",
+      "source": "1. > - [more](x)\r\n",
+      "source_bytes": 18,
+      "source_sha256": "9b5af8ca384c81fe8e26885fb3a93abf3a04206d28613e022903ffe551bfabed",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            12
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "table-cell-crlf",
+      "source": "| a |\r\n| - |\r\n| [here](x) |\r\n",
+      "source_bytes": 29,
+      "source_sha256": "51c9a466b3fbac6d24b09b6398b1be1421bb2313fd98d05e0db6c350da81ccb8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            17,
+            21
+          ],
+          "start": [
+            3,
+            4
+          ],
+          "end": [
+            3,
+            8
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "heading-crlf",
+      "source": "# [here](x)\r\n",
+      "source_bytes": 13,
+      "source_sha256": "ef6b8920cf27be7dbed25c086b7c7a442d752fff4c7b26659ed5b7ad39466432",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            7
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    },
+    {
+      "name": "multiline-quoted-crlf",
+      "source": "> [read\r\n> more](x)\r\n",
+      "source_bytes": 21,
+      "source_sha256": "2f6a2557b409f1573f912d1a1800d225f01cbc1549dce82b84ae3478cd32832e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": false,
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            15
+          ],
+          "start": [
+            1,
+            4
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "message": "Link label is uninformative."
+        }
+      ]
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "unknown-option",
+      "yaml": "MD059: {phrase: [here]}"
+    },
+    {
+      "name": "scalar-phrases",
+      "yaml": "MD059: {phrases: here}"
+    },
+    {
+      "name": "non-string-item",
+      "yaml": "MD059: {phrases: [1]}"
+    },
+    {
+      "name": "mapping-item",
+      "yaml": "MD059: {phrases: [{a: b}]}"
+    },
+    {
+      "name": "null-phrases",
+      "yaml": "MD059: {phrases: null}"
+    },
+    {
+      "name": "enabled-string",
+      "yaml": "MD059: {enabled: \"yes\"}"
+    },
+    {
+      "name": "allow-directives-string",
+      "yaml": "MD059: {allow_directives: \"false\"}"
+    },
+    {
+      "name": "scalar-rule",
+      "yaml": "MD059: true"
+    },
+    {
+      "name": "sequence-rule",
+      "yaml": "MD059: []"
+    },
+    {
+      "name": "duplicate-setting",
+      "yaml": "MD059: {enabled: true, enabled: false}"
+    }
+  ]
+}
