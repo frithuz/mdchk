@@ -108,6 +108,15 @@ is true. Every leftmost-longest winner reports with `Configured prohibited term.
 there is no accepted spelling. See [MD061](../rules/content-and-navigation/md061.md)
 for the full policy. Findings are report-only.
 
+### Md083
+
+MD083 shares MD061's prose walker with code blocks always off: the same owners,
+islands, barriers and protected regions apply, but there are no word boundaries,
+so a sequence matches anywhere inside a word. Sequences compare by original
+UTF-8 bytes without folding or normalization. Every leftmost-longest winner
+reports with `Text may be corrupted by an encoding mismatch.` See
+[MD083](../rules/encoding/md083.md) for the full policy. Findings are report-only.
+
 ### Md049
 
 MD049 consumes only actual Valid Emphasis facts of width one from the shared
