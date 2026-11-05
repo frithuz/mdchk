@@ -214,7 +214,9 @@ in shared lint, inspection and fix processing. Headers remain protected from
 ordinary Markdown checks and directives. MD001, MD025 and MD041 support semantic YAML/TOML title
 consumption when their `frontmatter_title` options is enabled; recognition must be
 enabled independently. MD072 consumes YAML/TOML key ordering and reports inside the
-recognized header; without recognition it has nothing to check. Broader metadata-rule and structured inspection integration
+recognized header; without recognition it has nothing to check. `mdchk inspect` reports
+the decoded state, problems, title and key ordering in its
+[metadata record](engineering/inspection-projection-v1.md#metadata-record). Metadata corrections
 remain pending. Explicit slide annotation is implemented in lint, fix candidate
 analysis and inspection; MD090 consumes it without enabling itself. MD074 is the
 MkDocs context consumer: lint checks the navigation, while fix and inspect report

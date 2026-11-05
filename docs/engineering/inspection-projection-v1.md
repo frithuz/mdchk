@@ -20,8 +20,9 @@ is incomplete. Observation errors remain separate from active findings.
 
 Analyze supplies full-document data with counts `not-requested`. Filter adds
 contextual selection and counts as described below. The inspect CLI renders this
-projection in text/JSON and preserves its identities and causal links. It includes MD087 per-target suppression conclusions from the shared engine. Resource,
-semantic metadata and slide processing retain their own admission gates;
+projection in text/JSON and preserves its identities and causal links. It includes MD087 per-target suppression conclusions from the shared engine. Resource
+and slide processing retain their own admission gates, and the
+[metadata record](#metadata-record) decodes only a recognized header;
 no CommonMark substitute or guessed document context is supplied.
 
 ## AST catalog
@@ -112,8 +113,9 @@ unavailable AST data does not prove absence. An absent closer means a recognized
 unterminated header through EOF. Its AST section is partial, its reliable source
 record remains visible, and a located `unterminated-frontmatter` parsing note
 explains the incomplete result. This does not manufacture completed directive
-or ordinary rule context. Structured metadata values and title/order inspection
-remain unavailable in this projection. MD001, MD025 and MD041 consume title semantics separately
+or ordinary rule context. Decoded state, problems, title and key ordering are
+reported separately in the [metadata record](#metadata-record); a decoded value
+tree is not part of this projection. MD001, MD025 and MD041 consume title semantics separately
 through its engine-owned opt-in analysis path.
 
 Line selection retains the complete header as source context, marking it
@@ -262,6 +264,57 @@ valid. Actual filtered envelopes use the existing shared JSON Schema and semanti
 validator, including unchanged full-root, interval-owner and execution-coverage
 invariants and new selected-bound/count checks. The package API is implemented;
 inspection command reporting is implemented with compiled end-to-end acceptance.
+
+## Metadata record
+
+The optional additive `metadata` section is separate from `ast.frontmatter` and
+the body AST, so `projection_version` stays 1. `data.state` selects its fields:
+
+| State | Meaning | Other fields |
+| --- | --- | --- |
+| `disabled` | Recognition is off; nothing is bound or decoded | None |
+| `absent` | No recognized header; nothing is decoded | None |
+| `unterminated` | The located parsing note explains it; nothing is decoded | `format`, `range`, `byte_range`, `context_only`, optional `extends_region` |
+| `complete` | The decoder reports a complete result | Also `problems`, `title`, `ordering` |
+| `incomplete` | Some of the header could not be decoded | Also `problems`, `title`, `ordering` |
+
+`range` and `byte_range` are the whole header envelope, the same values as the
+opaque record. `problems` lists each decoder problem (`malformed`, `unsupported`
+or `duplicate-key`) at its original location, sorted by start, end and code,
+without exact duplicates. `title.status` is `found`, with the untrimmed decoded
+`text` and the value's location; `missing` when absence is known, including a
+blank or non-string title; or `unknown`. It is reported whether or not a
+`frontmatter_title` option is on.
+
+`ordering.kind` is always `observation`. `recursive` and `case_sensitive` are
+MD072's effective options, whether or not MD072 is enabled. `mappings` has one
+entry per compared mapping. `offending_keys` uses the derivation MD072's findings
+use, so an enabled rule's located keys are its finding ranges. A synthesized TOML
+parent has no mapping ranges, and a key with no authored location has no key
+ranges. An alias use lists no keys, so an alias mapping can show `violation: true`
+with empty `offending_keys`; the anchored definition is checked where it is written.
+Sequence elements are never reordered or reported.
+
+The record creates no findings. It changes no rule state, evaluation, rule count,
+`diagnostics` or `complete`, and an `incomplete` state alone leaves the envelope
+complete. It gives no correction authority and writes nothing.
+
+Decoding runs once per analysis, after rule execution and only when nothing has
+been interrupted, under the shared operation budget and context. Inspect decodes
+independently of MD072, so an enabled rule's header is charged twice. A limit,
+deadline or cancellation during decoding or record building makes this section
+`unavailable` with `cause_ids` and the interruption's reason, leaves completed
+sections as they are and publishes no partial record. The section follows the AST
+section's `configuration-invalid`, `capability-unavailable` or `decoding-failed`
+reason when analysis cannot reach the document. A parser failure, or a parse that
+yields no document, leaves it `unavailable` with `context-unavailable`. Parser
+uncertainty confined to the body does not block it.
+
+The record is computed from the whole document. Line selection never clips it and
+sets `context_only` and `extends_region` as it does for the opaque header. Report
+trimming leaves it through the AST-only first reduction, and detail omission
+removes the whole section with reason `output-limit` and an `/inspection/metadata`
+omission of count 1.
 
 ## MD087 per-target audit reasons
 

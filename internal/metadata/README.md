@@ -1,8 +1,9 @@
 # Metadata contracts
 
 This package defines the model and consumer policy for recognized metadata.
-`Decode` now produces source-mapped YAML and TOML values on demand. MD001, MD025 and MD041 consume title policy through the engine on opt-in. Broader production
-metadata rules, inspection projection and edits remain downstream work.
+`Decode` now produces source-mapped YAML and TOML values on demand. MD001, MD025 and MD041 consume title policy through the engine on opt-in. MD072 and the
+inspection metadata record share `Order.OffendingKeys` and `Result.SortedProblems`.
+Edits remain downstream work.
 
 `Bind` admits only the actual document-owned header under its original parser
 operation budget. A complete header is distinct from an absent or unterminated
@@ -72,7 +73,9 @@ independently decoded sibling facts, while unknown/duplicate keys deny negative
 authority. No decoder result alone enables a production capability or authorizes edits.
 The CLI admits metadata interpretation for the actual MD001, MD025 and MD041 title consumers;
 MD072 consumes ordering policy through the engine, report-only, with header findings
-permitted by `UsesFrontmatter` and no correction authority.
+permitted by `UsesFrontmatter` and no correction authority. Inspection decodes
+separately, after rule execution under the same budget, to report observations
+that are neither findings nor correction authority.
 
 YAML uses the pinned goccy AST through `internal/yamlsource`, shared with MkDocs.
 That neutral boundary owns normalization, tag/tab/escape reconciliation, guarded

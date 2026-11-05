@@ -26,7 +26,11 @@ Expose a versioned AST projection with node kind, source span, relevant attribut
 
 Recognized frontmatter is a separate source-backed record beside the body AST.
 Expose its format, envelope, delimiter/payload spans and original body offset
-without decoding metadata. Preserve the record and a located parsing note when
+without decoding metadata. A separate `metadata` section reports what the header
+decodes to: state, located problems, the title decision and key ordering
+observations, charged to the same budget after rule execution. See
+[inspection projection version 1](inspection-projection-v1.md#metadata-record).
+Preserve the opaque record and a located parsing note when
 an unterminated header makes the AST partial; do not turn unavailable directive
 or rule state into completed context. Selected views retain the whole header
 with explicit context/extent flags. Effective recognition settings and their
@@ -54,7 +58,7 @@ Include directives intersecting the interval and directives outside it that stil
 
 Invalid or unreadable configuration is inspection data: retain metadata, digests, raw directive candidates, and configuration errors. Mark effective flavor, AST, rule execution, counts, and findings as unavailable where they cannot be determined. Do not silently use default flavor or fabricate empty successful sections. Parser uncertainty similarly produces coverage notes and explicit skipped checks.
 
-Expose `--format text|json` only. Text uses labeled sections for all requested details. JSON uses operation `inspect` and a versioned `inspection` object within the shared envelope, including file identity, selected lines, configuration provenance, flavor, AST, rules, rule counts, directives, parsing notes, and per-section availability. Preserve shared `diagnostics`, `coverage`, categorized `errors`, and `complete` fields; add `suppressed_diagnostics` for observations removed by directives. Mirror file metadata in `checked_files` only after acquisition succeeds.
+Expose `--format text|json` only. Text uses labeled sections for all requested details. JSON uses operation `inspect` and a versioned `inspection` object within the shared envelope, including file identity, selected lines, configuration provenance, flavor, AST, rules, rule counts, directives, parsing notes, metadata, and per-section availability. Preserve shared `diagnostics`, `coverage`, categorized `errors`, and `complete` fields; add `suppressed_diagnostics` for observations removed by directives. Mirror file metadata in `checked_files` only after acquisition succeeds.
 
 A completed inspection uses status `inspected` and exits successfully even when `complete` is false or observed problems appear in `errors`. For this operation, completeness describes available processing data, not validation success. If argument validation, target acquisition, output delivery, or an internal failure prevents inspection, use the operational error status and codes from the command guide. Do not map observed Markdown findings or configuration problems to validation exit codes.
 
