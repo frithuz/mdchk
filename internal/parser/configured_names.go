@@ -3,6 +3,7 @@ package parser
 import (
 	"context"
 	"errors"
+	"slices"
 	"unicode"
 	"unicode/utf8"
 )
@@ -11,14 +12,14 @@ import (
 // owner-local physical prose islands. Returned spans belong to the original
 // completed parse; this projection supplies neither edits nor parse authority.
 func (d *Document) ConfiguredNames(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, names []string, codeBlocks bool) ([]Span, error) {
-	return d.proseMatches(ctx, budget, index, options, names, codeBlocks, false, false, true)
+	return d.proseMatches(ctx, budget, index, options, names, codeBlocks, false, false, true, false, nil)
 }
 
 // ProhibitedTerms reports every leftmost-longest configured term occurrence in
 // the same prose islands as ConfiguredNames, never scanning code blocks. Terms
 // compare through full case folding unless caseSensitive selects exact bytes.
 func (d *Document) ProhibitedTerms(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, terms []string, caseSensitive bool) ([]Span, error) {
-	return d.proseMatches(ctx, budget, index, options, terms, false, true, caseSensitive, true)
+	return d.proseMatches(ctx, budget, index, options, terms, false, true, caseSensitive, true, false, nil)
 }
 
 // SuspiciousSequences reports every leftmost-longest configured sequence
@@ -26,13 +27,21 @@ func (d *Document) ProhibitedTerms(ctx context.Context, budget *OperationBudget,
 // blocks. Sequences compare by exact original bytes and may start or end
 // anywhere inside a word.
 func (d *Document) SuspiciousSequences(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, sequences []string) ([]Span, error) {
-	return d.proseMatches(ctx, budget, index, options, sequences, false, true, true, false)
+	return d.proseMatches(ctx, budget, index, options, sequences, false, true, true, false, false, nil)
+}
+
+// HiddenCharacters reports every exact U+200B, U+202A to U+202E and U+FEFF
+// scalar in the same prose islands as ProhibitedTerms, except a U+FEFF at byte
+// zero and any code point listed in allowed.
+func (d *Document) HiddenCharacters(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, allowed []rune) ([]Span, error) {
+	return d.proseMatches(ctx, budget, index, options, nil, false, false, false, true, true, allowed)
 }
 
 // proseMatches is the shared walker. Prohibited mode publishes every winner;
 // otherwise winners spelled exactly as a fold-equal configured name are accepted.
 // Whole-word mode requires both outside neighbors to be non-word scalars.
-func (d *Document) proseMatches(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, names []string, codeBlocks, prohibited, caseSensitive, wholeWord bool) (out []Span, err error) {
+// Hidden mode ignores names and publishes each reported hidden scalar instead.
+func (d *Document) proseMatches(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, names []string, codeBlocks, prohibited, caseSensitive, wholeWord, hidden bool, allowed []rune) (out []Span, err error) {
 	if err = d.headingProjectionCheckpoint(ctx, budget, index, options, 1, 1); err != nil {
 		return nil, err
 	}
@@ -77,10 +86,10 @@ func (d *Document) proseMatches(ctx context.Context, budget *OperationBudget, in
 			configured = append(configured, name{value, folded})
 		}
 	}
-	if err = charge(1, 0); err != nil {
+	if err = charge(int64(len(allowed))+1, 0); err != nil {
 		return nil, err
 	}
-	if len(configured) == 0 {
+	if len(configured) == 0 && !hidden {
 		return nil, nil
 	}
 	type scalar struct {
@@ -255,6 +264,18 @@ func (d *Document) proseMatches(ctx context.Context, budget *OperationBudget, in
 				} else if r == '\n' || r == '\r' {
 					if e := boundary(); e != nil {
 						return e
+					}
+				} else if hidden {
+					at := part.Source.start + offset
+					if r == 0x200B || r >= 0x202A && r <= 0x202E || r == 0xFEFF && at != 0 {
+						if e := charge(int64(len(allowed))+1, 0); e != nil {
+							return e
+						}
+						if !slices.Contains(allowed, r) {
+							if e := publish(at, at+width); e != nil {
+								return e
+							}
+						}
 					}
 				} else {
 					if len(island) == 0 {
