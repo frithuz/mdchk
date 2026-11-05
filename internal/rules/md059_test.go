@@ -290,7 +290,9 @@ func TestMD059SuppressionInactiveAndUnused(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				out, trace, err := plan.Inspect(context.Background(), in, engine.RunOptions{}, engine.InspectionOptions{ObserveInactive: mode == "inactive"})
+				// Observing the inactive MD057 needs the link target to exist.
+				resources := md051Native(t, map[string]string{"docs/guide.md": ""}, flavor, "literal.md", in.Source())
+				out, trace, err := plan.Inspect(context.Background(), in, engine.RunOptions{Fragments: resources}, engine.InspectionOptions{ObserveInactive: mode == "inactive"})
 				if err != nil || !out.Complete || len(out.Errors)+len(out.Coverage)+len(out.Changes)+len(out.Documents)+len(out.DeferredFixes) != 0 {
 					t.Fatal(out, err)
 				}
