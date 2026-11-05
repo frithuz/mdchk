@@ -1,0 +1,1147 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary prose\n",
+      "source_bytes": 15,
+      "source_sha256": "922c8578527e7cd2ae1f5047cf1c7d7644035cb6caf0899483ff2ca4e2742c0f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "page-bad",
+      "source": "[Guide][manual]",
+      "source_bytes": 15,
+      "source_sha256": "613b2c0740265e5fbd7215924f4639713a22af69ed19d9591ad7c1126f76f36d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            15
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "page-good",
+      "source": "[Guide][manual]\n\n[manual]: guide.md",
+      "source_bytes": 35,
+      "source_sha256": "3223175adf90313982079c1ff386099d427e8181c4e8c90de9e3c1d5ee7da533",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "definition-before",
+      "source": "[manual]: guide.md\n\n[Guide][manual]\n",
+      "source_bytes": 36,
+      "source_sha256": "5af95ab563b04c3c0f37143d5995b1373e2d755616205d76e1996306c33d375f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "collapsed",
+      "source": "[Guide][]",
+      "source_bytes": 9,
+      "source_sha256": "a7ba917188d86a5cde6a83e7b45f0f33b805422ddd1094bb51e5834edb59278a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "collapsed-defined",
+      "source": "[Guide][]\n\n[guide]: u\n",
+      "source_bytes": 22,
+      "source_sha256": "50d2fa467301ae2af31d1e6cbaa276d1db3e251a9cfb2bd2d54e623035898291",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "image",
+      "source": "![Logo][logo]",
+      "source_bytes": 13,
+      "source_sha256": "cf7f1b3aca12c6fd4db2cf09c1d43c2314b5cb06d92dd90be45d55c980c631bd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            13
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "collapsed-image",
+      "source": "![Logo][]",
+      "source_bytes": 9,
+      "source_sha256": "03a69417f45e0b69cdccd457ad3f902c32257cbe18da01ac3339cf9045a832d3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "image-defined",
+      "source": "![Logo][logo]\n\n[logo]: logo.png\n",
+      "source_bytes": 32,
+      "source_sha256": "c98998a3be26526a5e4c0e0998829f5da034c0d9187b8dd02c84367db29e5121",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped-bang",
+      "source": "\\![Logo][logo]",
+      "source_bytes": 14,
+      "source_sha256": "135db1516143ea02bfc562f70ea460a80b6beb04e13f9448f2c7d7883e908180",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            14
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "case-and-whitespace",
+      "source": "[Guide][MANUAL  x]\n\n[manual x]: u\n",
+      "source_bytes": 34,
+      "source_sha256": "8d80ad77b55acbe024549cb8a0d1ea004eebc3ddd40a2ab3ded4c40580ccfcb3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "unicode-folding",
+      "source": "[a][ẞ]\n\n[ss]: u\n",
+      "source_bytes": 18,
+      "source_sha256": "9b342926be18e2bc21ab87572f51a071b4478d1cffc43d315b70107dfd30995e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "multibyte-prefix",
+      "source": "é [a][b]\n",
+      "source_bytes": 10,
+      "source_sha256": "84fbe346dbd237b8ba0379b707d6e73ec97a5c40816489808bd6939e9bc4747a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            9
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "two-candidates",
+      "source": "[a][b] and [c][]\n",
+      "source_bytes": 17,
+      "source_sha256": "98649d7db074fc18aaa32d34c8d93cf642640f486536db98716449997c9c0cb3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        },
+        {
+          "bytes": [
+            11,
+            16
+          ],
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "second-line",
+      "source": "first\n[a][b]\n",
+      "source_bytes": 13,
+      "source_sha256": "f7af3f0e5b3b71f385fe3c1f51fa46e5a9a22f001217622de58d52faa7561e8c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            6,
+            12
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "parenthesized-text",
+      "source": "[see (docs)][b]\n",
+      "source_bytes": 16,
+      "source_sha256": "6cf0af82fb91bd9847799c0d97c40919a49eb6e1634c81f80cd9d0f01ac7893e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            15
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "escaped-label-bytes",
+      "source": "[a][b\\*c]\n",
+      "source_bytes": 10,
+      "source_sha256": "f87cd6ac472cdd27f062d6daf6f3496336c1c11bd6fe2daa410a0aff4440cb86",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "bare-shortcut",
+      "source": "[text]\n",
+      "source_bytes": 7,
+      "source_sha256": "1aa5696cf33bb4cce07113a4e78b17209d40d763bb34f783ecc708bfd7eb2a81",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped-open",
+      "source": "\\[a][b]\n",
+      "source_bytes": 8,
+      "source_sha256": "efa4cf9b2645938fb40ebe2be9c911abc46b8584b89573f7bda26d63f2446a71",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped-text-close",
+      "source": "[a\\][b]\n",
+      "source_bytes": 8,
+      "source_sha256": "86d206ab519edcf8c7fe6af2a628338a11beaf393577dbbdd4981ba1ec6ef56c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped-label-close",
+      "source": "[a][b\\]\n",
+      "source_bytes": 8,
+      "source_sha256": "892c0865873efcccd96b213f08db8d37ba714bd55f85f4fd9826134c38adc599",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "nested",
+      "source": "[a [b]][c]\n",
+      "source_bytes": 11,
+      "source_sha256": "1445dda857503c721c3e75165c4d31f08215702a917196ad51b137fde6576319",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "unmatched",
+      "source": "[a][b\n",
+      "source_bytes": 6,
+      "source_sha256": "d69b63da9775e85c34567e25e35e856a03b8c89f433d28cd4c3d84b9ef989357",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "blank-collapsed",
+      "source": "[ ][]\n",
+      "source_bytes": 6,
+      "source_sha256": "c09dbb41575948e8ac373a39d601607cfa782a6f10feec44f1f53e68e95d044c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "blank-full",
+      "source": "[a][ ]\n",
+      "source_bytes": 7,
+      "source_sha256": "383c42bdec8fe6b61f725c34e5edd8dbc1c3dafa787cf87c58ca67f1a0b9a9f7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "long-label",
+      "source": "[a][xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]\n",
+      "source_bytes": 1006,
+      "source_sha256": "eed09d62c98171cc14fd1687b3229abdb52bd788c13c137f8d965450773984ff",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "chain",
+      "source": "[a][b][c]\n",
+      "source_bytes": 10,
+      "source_sha256": "b28b8a31068a3486942e4f1c71623e70cfd957f52a3441f927465ea1f68fe4e9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "chain-inline",
+      "source": "[a][b](c)\n",
+      "source_bytes": 10,
+      "source_sha256": "b35fe9bd83d774e379cac48b494ea660eb3f15732e1ce49f8d135e6def3527e3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "after-close",
+      "source": "x][a][b]\n",
+      "source_bytes": 9,
+      "source_sha256": "2b96c2a443ad6f56e55333ad80cfd4aa191095c9e22ef70d7f5aa165a0880b76",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "after-link",
+      "source": "[a](u)[b][c]\n",
+      "source_bytes": 13,
+      "source_sha256": "8b092775351ad5b28cdd5a233ac1ecea081778684649c1924a50e721f37e002c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "after-autolink",
+      "source": "<https://x.org>[b][c]\n",
+      "source_bytes": 22,
+      "source_sha256": "7c2ae58c7934afd2bdf427d392c9fd6ba05c77c0b8bb5ab998fccfed8dafcc97",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "after-link-space",
+      "source": "[a](u) [b][c]\n",
+      "source_bytes": 14,
+      "source_sha256": "ba3c61700e07f57513ba3805dcc7d0dc6de5dbf2e9ab0847ba25bafbd188332d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            7,
+            13
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "line-break",
+      "source": "[a][b\nc]\n",
+      "source_bytes": 9,
+      "source_sha256": "7ba304ce1eb59c53e71d94547e4edfc52384157a659ec54eb2e4cbbe69a558e3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "emphasis-text",
+      "source": "[*a*][b]\n",
+      "source_bytes": 9,
+      "source_sha256": "58ef3f79f0a7b4155e4fc607ccda955bf4e8c6130babc70fd0b68f0cfdcc13d6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "code-span",
+      "source": "`[a][b]`\n",
+      "source_bytes": 9,
+      "source_sha256": "1dc80982bca00314208abe15b45afd39e1bfe5d9c303ffb632172acb49eb5a52",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "fenced",
+      "source": "```\n[a][b]\n```\n",
+      "source_bytes": 15,
+      "source_sha256": "72666ed1ef6e64487af135603c8d4c07e1ea2a62ab7cefe8f91ecc57f1647ff4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "indented",
+      "source": "    [a][b]\n",
+      "source_bytes": 11,
+      "source_sha256": "c9eef3a2951830c5ac86086e8d1e0c159ac40afa28db71311c85a95f2ab4623b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "html-block",
+      "source": "<div>\n[a][b]\n</div>\n",
+      "source_bytes": 20,
+      "source_sha256": "3c7709a17318a99be08bd3c0282393822b062ed8ca2e66bec0a7cfe0bc2bbbe4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "inline-html",
+      "source": "x <span title=\"[a][b]\">y</span>\n",
+      "source_bytes": 32,
+      "source_sha256": "8897b63a017ec76232440e7cf69330d3bc30ef78d436590ca517a09d445b6033",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "link-text",
+      "source": "[x [a][b] y](u)\n",
+      "source_bytes": 16,
+      "source_sha256": "253567d11b1df6ca827f022c02493995bf4a7d007e47967dbca11349f4461973",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "image-alt",
+      "source": "![x [a][b] y](u)\n",
+      "source_bytes": 17,
+      "source_sha256": "2b9dc62f491e87e639f0d24805bcf8a1a5bedac4be0c4ac1523b99ff2807b065",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "frontmatter",
+      "source": "---\ntitle: \"[a][b]\"\n---\n",
+      "source_bytes": 24,
+      "source_sha256": "e8621e52309a96883ba303a0a080f4ef9cdfe2a38dd0bd4f74bd9f7e9c22dea0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "frontmatter": "yaml"
+      },
+      "findings": []
+    },
+    {
+      "name": "block-quote",
+      "source": "> [a][b]\n",
+      "source_bytes": 9,
+      "source_sha256": "1737a1939290d1627e4055feaac020859e7d8977ae9f372e79b6934c250a63a4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            8
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "block-quote-defined",
+      "source": "> [a][b]\n\n[b]: u\n",
+      "source_bytes": 17,
+      "source_sha256": "99543c8ebedbb06abbffc0a171eca3d84e1784536f6092607a2bb9db3df07894",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "list-item",
+      "source": "- [a][b]\n",
+      "source_bytes": 9,
+      "source_sha256": "95b9e3a3caaa537f5602c1259e250f67cf532c2329284ee303214c3e58192492",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            8
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "list-item-defined",
+      "source": "- [a][b]\n\n[b]: u\n",
+      "source_bytes": 17,
+      "source_sha256": "01bc72a3be5ca281d8fe9c71269d7a7e020173929e5251ab9d71a9a1deab6b39",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "quoted-list",
+      "source": "> - [a][b]\n",
+      "source_bytes": 11,
+      "source_sha256": "b6e52ed53a525fb18f847ca6cfd7cb8485e139e6c5c14c3d4b77ca3cb28467d6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            10
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "quoted-list-defined",
+      "source": "> - [a][b]\n>\n> [b]: u\n",
+      "source_bytes": 22,
+      "source_sha256": "df833e09c7542dd5df050844c9f562cefbadab3cfa39c48fc03e453c79831c73",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "heading",
+      "source": "# [a][b]\n",
+      "source_bytes": 9,
+      "source_sha256": "064f40f231dc9dbd3ff8854f7048d97204aa7dafcc95446200631587abdc35e2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            8
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "heading-defined",
+      "source": "# [a][b]\n\n[b]: u\n",
+      "source_bytes": 17,
+      "source_sha256": "1c296b8acc76af517f11cf0802a3740381cff5ccd3c147bef4132043ef935de1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "table-cell",
+      "source": "| h |\n| --- |\n| [a][b] |\n",
+      "source_bytes": 25,
+      "source_sha256": "51832ad71652d9350c271c6f8111eff8e30901ac646d24e80ce805cf7fc9ccf4",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            22
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            9
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "table-cell-defined",
+      "source": "| h |\n| --- |\n| [a][b] |\n\n[b]: u\n",
+      "source_bytes": 33,
+      "source_sha256": "08b51ff70522b1e289cbd288dc54fbb091eeb52ba2271f4d9ac8f54a65a995d7",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "lf",
+      "source": "x\n[a][b]\n",
+      "source_bytes": 9,
+      "source_sha256": "d48a1e7e0792ac68070d278a0e3dfa361ca388a59203117c63fc864b4bac03b2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            8
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "crlf",
+      "source": "x\r\n[a][b]\r\n",
+      "source_bytes": 11,
+      "source_sha256": "05854996885c26d59308450c1e42ce9cc20379f69b02a23284f0b571fc8bcdd7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            9
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "expected": "undefined",
+          "message": "Reference has no matching definition."
+        }
+      ]
+    },
+    {
+      "name": "disabled",
+      "source": "[Guide][manual]",
+      "source_bytes": 15,
+      "source_sha256": "613b2c0740265e5fbd7215924f4639713a22af69ed19d9591ad7c1126f76f36d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "unknown-option",
+      "yaml": "MD052: {unknown: 1}"
+    },
+    {
+      "name": "style-option",
+      "yaml": "MD052: {style: default}"
+    },
+    {
+      "name": "disabled-invalid",
+      "yaml": "MD052: {enabled: false, unknown: true}"
+    },
+    {
+      "name": "enabled-string",
+      "yaml": "MD052: {enabled: \"yes\"}"
+    },
+    {
+      "name": "enabled-null",
+      "yaml": "MD052: {enabled: null}"
+    },
+    {
+      "name": "directives-string",
+      "yaml": "MD052: {allow_directives: \"false\"}"
+    },
+    {
+      "name": "scalar-rule",
+      "yaml": "MD052: true"
+    },
+    {
+      "name": "sequence-rule",
+      "yaml": "MD052: []"
+    },
+    {
+      "name": "duplicate-setting",
+      "yaml": "MD052: {enabled: true, enabled: false}"
+    }
+  ]
+}
