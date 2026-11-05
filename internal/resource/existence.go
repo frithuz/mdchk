@@ -2,9 +2,12 @@ package resource
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"slices"
 	"strings"
+	"sync"
 	"sync/atomic"
 
 	"github.com/frithuz/mdchk/internal/parser"
@@ -32,27 +35,62 @@ func (o ExistenceOutcome) Absent() bool {
 }
 
 // ExistenceResolver composes the operation's existing normalizer and service for
-// existence-only lookups. It owns neither a worker nor a cache, never requests
-// content or anchors, and never registers targets or writes.
+// existence-only lookups. It owns no worker or resource cache, never requests
+// content or anchors, and never registers targets or writes. It retains one
+// line index and snapshot per selected source, so the whole-source work of
+// reporting provenance is done once per source, not once per link.
 type ExistenceResolver struct {
 	service    *Service
 	normalizer Normalizer
+
+	mu          sync.Mutex
+	projections map[parser.SourceToken]*sourceProjection
+}
+
+// sourceProjection is the reporting provenance shared by every link of one source.
+type sourceProjection struct {
+	index    parser.LineIndex
+	snapshot result.Snapshot
 }
 
 func NewExistenceResolver(service *Service, normalizer *Normalizer) (*ExistenceResolver, error) {
 	if service == nil || normalizer == nil || service.operation == nil || normalizer.view.operation != service.operation || normalizer.view.identity == nil {
 		return nil, ErrContract
 	}
-	return &ExistenceResolver{service, *normalizer}, nil
+	return &ExistenceResolver{service: service, normalizer: *normalizer, projections: map[parser.SourceToken]*sourceProjection{}}, nil
 }
 
-// Existence returns an existence resolver over this resolver's service and
-// view, so fragment and existence consumers share one operation's resources.
+// Existence returns this resolver's single existence resolver over the same
+// service and view, so fragment and existence consumers share one operation's
+// resources and every link of a source shares its projection.
 func (r *FragmentResolver) Existence() (*ExistenceResolver, error) {
 	if r == nil {
 		return nil, ErrContract
 	}
-	return NewExistenceResolver(r.service, &r.normalizer)
+	r.existenceOnce.Do(func() { r.existence, r.existenceErr = NewExistenceResolver(r.service, &r.normalizer) })
+	return r.existence, r.existenceErr
+}
+
+// projection charges and builds the source's line index and digest on first use.
+func (r *ExistenceResolver) projection(source parser.Source) (*sourceProjection, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if p := r.projections[source.Token()]; p != nil {
+		return p, nil
+	}
+	o := r.service.operation
+	if err := o.Checkpoint(int64(source.Len())*4 + 1); err != nil {
+		return nil, err
+	}
+	whole, _ := source.Span(0, source.Len())
+	text, _ := source.Text(whole)
+	if err := o.budget.ChargeNodes(int64(2*(strings.Count(text, "\r")+strings.Count(text, "\n")+1)) + 8); err != nil {
+		return nil, err
+	}
+	digest := sha256.Sum256(source.Bytes())
+	p := &sourceProjection{index: parser.NewLineIndex(source), snapshot: result.Snapshot{View: string(r.normalizer.view.phase), SHA256: hex.EncodeToString(digest[:]), SizeBytes: source.Len()}}
+	r.projections[source.Token()] = p
+	return p, nil
 }
 
 // ExistenceQuery reserves one resolution and its reporting provenance while the
@@ -82,19 +120,26 @@ func (r *ExistenceResolver) Prepare(link Link) (ExistenceQuery, error) {
 		return ExistenceQuery{}, err
 	}
 	o := r.service.operation
-	if err := o.Checkpoint(int64(link.source.Len())*4 + int64(len(link.destination)) + 1); err != nil {
+	if err := o.Checkpoint(int64(len(link.destination)) + 1); err != nil {
 		return ExistenceQuery{}, err
 	}
-	whole, _ := link.source.Span(0, link.source.Len())
-	text, _ := link.source.Text(whole)
-	if err := o.budget.ChargeNodes(int64(2*(strings.Count(text, "\r")+strings.Count(text, "\n")+1)) + 16); err != nil {
+	if err := o.budget.ChargeNodes(8); err != nil {
 		return ExistenceQuery{}, err
 	}
-	location, snapshot, err := projectLink(link, r.normalizer.view.phase)
+	p, err := r.projection(link.source)
 	if err != nil {
 		return ExistenceQuery{}, err
 	}
-	q := &existenceQueryState{resolver: r, normalized: n, location: location, snapshot: snapshot}
+	// Each endpoint is a bounded search plus a scan of its own line prefix.
+	start, err := p.index.PositionBounded(o.ctx, o.budget, link.span.Start())
+	if err != nil {
+		return ExistenceQuery{}, err
+	}
+	end, err := p.index.PositionBounded(o.ctx, o.budget, link.span.End())
+	if err != nil {
+		return ExistenceQuery{}, err
+	}
+	q := &existenceQueryState{resolver: r, normalized: n, location: result.Range{Start: start, End: end}, snapshot: p.snapshot}
 	if n.class == Local && n.location.root.identity != nil && n.same == (parser.Source{}) {
 		q.index, err = n.DirectoryIndex()
 		if err != nil {
@@ -108,7 +153,7 @@ func (r *ExistenceResolver) Prepare(link Link) (ExistenceQuery, error) {
 		}
 	}
 	makeRequest := func(key Key, required RequiredType) Request {
-		return Request{spec: RequestSpec{Key: key, Link: link, Class: Local, Capability: ExistenceOnly, Required: required}, view: r.normalizer.view, identity: &requestIdentity{}, location: location, snapshot: snapshot}
+		return Request{spec: RequestSpec{Key: key, Link: link, Class: Local, Capability: ExistenceOnly, Required: required}, view: r.normalizer.view, identity: &requestIdentity{}, location: q.location, snapshot: q.snapshot}
 	}
 	if key, ok := n.location.Key(); ok {
 		q.requests[0] = makeRequest(key, n.RequiredType())

@@ -83,7 +83,7 @@ func (r *md057Resources) Fragments(context.Context) (*resource.FragmentResolver,
 
 // md057Native lays out a temporary native root with the selected document at
 // docs/self.md. Directories, files and symbolic links come from the layout.
-func md057Native(t *testing.T, layout []md057Entry, flavor, index string, source parser.Source) *md057Resources {
+func md057Native(t testing.TB, layout []md057Entry, flavor, index string, source parser.Source) *md057Resources {
 	t.Helper()
 	dir, err := filepath.EvalSymlinks(t.TempDir())
 	if err != nil {
@@ -142,7 +142,7 @@ func md057Native(t *testing.T, layout []md057Entry, flavor, index string, source
 	return md057View(t, service, operation, nil)
 }
 
-func md057View(t *testing.T, service *resource.Service, operation *resource.Operation, represent resource.NamePolicy) *md057Resources {
+func md057View(t testing.TB, service *resource.Service, operation *resource.Operation, represent resource.NamePolicy) *md057Resources {
 	t.Helper()
 	view, err := operation.NewView(resource.Original, nil)
 	if err != nil {
@@ -430,6 +430,81 @@ func TestMD057Directives(t *testing.T) {
 		}
 		if !out.Complete || len(out.Diagnostics) != visible || len(out.SuppressedDiagnostics) != hidden || len(out.Coverage)+len(out.Errors) != 0 {
 			t.Fatal(allow, out)
+		}
+	}
+}
+
+// Reporting provenance is charged once per source, so many links in a large
+// document stay within the default budgets.
+func TestMD057ManyLinksWithinDefaultBudget(t *testing.T) {
+	var text strings.Builder
+	text.WriteString("```\n" + strings.Repeat("x", 200000) + "\n```\n\n")
+	for i := 0; i < 2000; i++ {
+		fmt.Fprintf(&text, "[a](guide.md?v=%d)\n", i)
+	}
+	// Each finding costs the engine work proportional to the source, so only
+	// a few targets are missing.
+	for i := 0; i < 10; i++ {
+		fmt.Fprintf(&text, "![b](x%d.png)\n", i)
+	}
+	layout := []md057Entry{{Path: "docs/guide.md", Kind: "file", Content: "# Guide\n"}}
+	out, _ := md057Lint(t, text.String(), md057Settings(true), engine.DocumentContext{Flavor: "gfm"}, func(source parser.Source) *md057Resources {
+		return md057Native(t, layout, "gfm", "", source)
+	})
+	if !out.Complete || len(out.Diagnostics) != 10 || len(out.Errors)+len(out.Interruptions)+len(out.Coverage) != 0 {
+		t.Fatal(len(out.Diagnostics), out.Errors, out.Interruptions, out.Coverage)
+	}
+}
+
+// BenchmarkMD057ManyLinks lints one large document with L local links. Per-link
+// cost must not grow with document size: reporting provenance is built once
+// per source, so ns/op grows linearly in L at a fixed body size. Missing
+// targets use a smaller body because the engine's own per-finding projection
+// work scales with the source.
+func BenchmarkMD057ManyLinks(b *testing.B) {
+	for _, links := range []int{100, 1000, 5000} {
+		for _, existing := range []bool{false, true} {
+			if !existing && links > 1000 {
+				// 5000 findings exhaust the engine's own default work budget.
+				continue
+			}
+			// A one-line fenced block pads the body within the default node budget.
+			padding := "```\n" + strings.Repeat("x", 20000) + "\n```\n\n"
+			if existing {
+				padding = "```\n" + strings.Repeat("x", 200000) + "\n```\n\n"
+			}
+			var text strings.Builder
+			text.WriteString(padding)
+			for i := 0; i < links; i++ {
+				if existing {
+					fmt.Fprintf(&text, "[a](guide.md?v=%d)\n", i)
+				} else {
+					fmt.Fprintf(&text, "[a](x%d.md)\n", i)
+				}
+			}
+			source := text.String()
+			b.Run(fmt.Sprintf("links-%d/existing-%v/bytes-%d", links, existing, len(source)), func(b *testing.B) {
+				r := registry(b, Registrations())
+				in, err := engine.NewInput("docs/self.md", []byte(source), md057Settings(true), engine.DocumentContext{Flavor: "gfm"})
+				if err != nil {
+					b.Fatal(err)
+				}
+				layout := []md057Entry{{Path: "docs/guide.md", Kind: "file", Content: "# Guide\n"}}
+				want := links
+				if existing {
+					want = 0
+				}
+				b.ResetTimer()
+				for i := 0; i < b.N; i++ {
+					b.StopTimer()
+					provider := md057Native(b, layout, "gfm", "", in.Source())
+					b.StartTimer()
+					out, err := r.Lint(context.Background(), []engine.Input{in}, engine.RunOptions{Fragments: provider})
+					if err != nil || len(out.Errors)+len(out.Interruptions)+len(out.Coverage) != 0 || len(out.Diagnostics) != want {
+						b.Fatal(err, out.Errors, out.Interruptions, out.Coverage)
+					}
+				}
+			})
 		}
 	}
 }

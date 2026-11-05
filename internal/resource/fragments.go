@@ -5,6 +5,7 @@ import (
 	"errors"
 	"slices"
 	"strings"
+	"sync"
 	"sync/atomic"
 
 	"github.com/frithuz/mdchk/internal/parser"
@@ -30,13 +31,17 @@ const (
 type FragmentResolver struct {
 	service    *Service
 	normalizer Normalizer
+
+	existenceOnce sync.Once
+	existence     *ExistenceResolver
+	existenceErr  error
 }
 
 func NewFragmentResolver(service *Service, normalizer *Normalizer) (*FragmentResolver, error) {
 	if service == nil || normalizer == nil || service.operation == nil || normalizer.view.operation != service.operation || normalizer.view.identity == nil {
 		return nil, ErrContract
 	}
-	return &FragmentResolver{service, *normalizer}, nil
+	return &FragmentResolver{service: service, normalizer: *normalizer}, nil
 }
 
 // FragmentQuery reserves one resolution and its reporting provenance while the
