@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	inspection "github.com/frithuz/mdchk/internal/inspect"
+	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 func TestVersionFromBuildInfo(t *testing.T) {
@@ -104,6 +105,7 @@ func TestCompiledMetadataPolicy(t *testing.T) {
 }
 
 func TestCompiledArgumentOrderingAndLiteralMetadataPaths(t *testing.T) {
+	testenv.Clear(t)
 	binary := buildConfigurationExecutable(t, "")
 	root := metadataProject(t) // No fake Git metadata: validation must complete normally.
 	putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
