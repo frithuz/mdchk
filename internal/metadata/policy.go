@@ -1,11 +1,15 @@
 package metadata
 
 import (
+	"cmp"
 	"context"
 	"errors"
+	"math/bits"
+	"slices"
 	"sort"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/frithuz/mdchk/internal/parser"
 )
@@ -67,6 +71,55 @@ func (r Result) Title(ctx context.Context, b Binding) (out Title, err error) {
 	return Title{Known: r.Complete()}, nil
 }
 
+// SortedProblems returns the decoder's problems by start, end and code, without
+// exact duplicates. Alias projection can repeat one problem, and the decoder's
+// structural collection order says nothing about source order. A TOML parser
+// position can land inside a scalar, which no public coordinate can express, so
+// each location widens to the scalars it touches.
+func (r Result) SortedProblems(ctx context.Context, b Binding) ([]Problem, error) {
+	if r.owner == nil || r.owner != b.state {
+		return nil, ErrContract
+	}
+	n := int64(len(r.problems))
+	if err := b.charge(ctx, n*int64(bits.Len64(uint64(n))+9)+1, n+1); err != nil {
+		return nil, err
+	}
+	out := make([]Problem, 0, n)
+	for _, problem := range r.problems {
+		location, err := scalarAligned(b.Source(), problem.Location)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, Problem{location, problem.Code})
+	}
+	slices.SortFunc(out, func(x, y Problem) int {
+		return cmp.Or(cmp.Compare(x.Location.Start(), y.Location.Start()), cmp.Compare(x.Location.End(), y.Location.End()), cmp.Compare(x.Code, y.Code))
+	})
+	return slices.Compact(out), nil
+}
+
+func scalarAligned(source parser.Source, span parser.Span) (parser.Span, error) {
+	inside := func(offset int) bool {
+		if offset <= 0 || offset >= source.Len() {
+			return false
+		}
+		next, err := source.Span(offset, offset+1)
+		if err != nil {
+			return false
+		}
+		text, err := source.Text(next)
+		return err == nil && !utf8.RuneStart(text[0])
+	}
+	start, end := span.Start(), span.End()
+	for inside(start) {
+		start--
+	}
+	for inside(end) {
+		end++
+	}
+	return source.Span(start, end)
+}
+
 // OrderOptions translates MD072 policy. Its zero value preserves the rule's
 // recursive=false and case_sensitive=true defaults. CaseInsensitive enables
 // Unicode17 full default folding without normalization or whitespace changes.
@@ -92,6 +145,38 @@ func (o Order) KnownIndex(i int) (int, bool) {
 }
 func (o Order) Violation() bool                  { return o.violation }
 func (o Order) MoveEligibility() MoveEligibility { return o.move }
+
+// OffendingKey is a key that sorts strictly before Previous, the entry just
+// before it. Its KeySpan is absent when the key has no authored location.
+type OffendingKey struct{ Entry, Previous Entry }
+
+// OffendingKeys derives the keys a violation flags, in source order. A projected
+// alias use has no authored key; the anchored definition is checked where it is
+// written, so an alias mapping can violate with no keys listed. It holds at most
+// Count records and starts no analysis, so callers charge for them beforehand.
+func (o Order) OffendingKeys() []OffendingKey {
+	if !o.violation {
+		return nil
+	}
+	pos := make([]int, len(o.indices))
+	for s, original := range o.indices {
+		pos[original] = s
+	}
+	var out []OffendingKey
+	for i := 1; i < len(pos); i++ {
+		if pos[i] >= pos[i-1] {
+			continue
+		}
+		previous, _ := o.mapping.KnownEntry(i - 1)
+		current, _ := o.mapping.KnownEntry(i)
+		if current.KeySpan().Present() && current.KeySpan() == o.mapping.Span() {
+			continue
+		}
+		out = append(out, OffendingKey{current, previous})
+	}
+	return out
+}
+
 func (r Result) Ordering(ctx context.Context, b Binding, options OrderOptions) ([]Order, error) {
 	if r.owner == nil || r.owner != b.state {
 		return nil, ErrContract

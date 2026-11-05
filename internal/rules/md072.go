@@ -6,15 +6,30 @@ import (
 	"sort"
 
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/metadata"
+	"github.com/frithuz/mdchk/internal/parser"
 )
 
-const metadataOrderingWithheld = "Metadata is unavailable or unsupported; the affected key ordering checks were withheld."
+// metadataOrderingWithheld explains incomplete coverage by the first decoder
+// problem, located where it was written. Without a problem the cause is a key
+// with no authored location, which has nothing to point at.
+func metadataOrderingWithheld(first metadata.Problem) (string, parser.Span) {
+	switch first.Code {
+	case metadata.Malformed:
+		return "Metadata is malformed; the affected key ordering checks were withheld.", first.Location
+	case metadata.Unsupported:
+		return "Metadata uses an unsupported structure such as a merge key, custom tag or cycle; the affected key ordering checks were withheld.", first.Location
+	case metadata.DuplicateKey:
+		return "Metadata contains a duplicate key; the affected key ordering checks were withheld.", first.Location
+	}
+	return "A metadata key has no authored source location; its key ordering check was withheld.", parser.Span{}
+}
 
 // metadataKeyOrdering reports each key that sorts strictly before the key just
 // before it. Withheld mappings and keys without an authored location reduce
 // coverage instead of producing a guessed finding.
 func metadataKeyOrdering(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
-	orders, complete, err := c.MetadataOrdering(ctx)
+	orders, complete, first, err := c.MetadataOrdering(ctx)
 	if err != nil {
 		return engine.RuleOutcome{Err: err}
 	}
@@ -26,28 +41,12 @@ func metadataKeyOrdering(ctx context.Context, c engine.RuleContext) engine.RuleO
 		if err := c.HeadingComparisonCheckpoint(ctx, int64(o.Count())+1, int64(o.Count())); err != nil {
 			return engine.RuleOutcome{Err: err}
 		}
-		pos := make([]int, o.Count())
-		for s := range pos {
-			original, _ := o.KnownIndex(s)
-			pos[original] = s
-		}
-		mapping := o.Mapping()
-		for i := 1; i < len(pos); i++ {
-			if pos[i] >= pos[i-1] {
-				continue
-			}
-			previous, _ := mapping.KnownEntry(i - 1)
-			current, _ := mapping.KnownEntry(i)
-			if !current.KeySpan().Present() {
+		for _, offending := range o.OffendingKeys() {
+			if !offending.Entry.KeySpan().Present() {
 				complete = false
 				continue
 			}
-			// A projected alias use has no authored key; the anchored definition
-			// is checked where it is written.
-			if current.KeySpan() == mapping.Span() {
-				continue
-			}
-			findings = append(findings, engine.Finding{Span: current.KeySpan(), Message: fmt.Sprintf("Metadata key %q should come before %q.", current.Key(), previous.Key())})
+			findings = append(findings, engine.Finding{Span: offending.Entry.KeySpan(), Message: fmt.Sprintf("Metadata key %q should come before %q.", offending.Entry.Key(), offending.Previous.Key())})
 		}
 	}
 	sort.SliceStable(findings, func(i, j int) bool { return findings[i].Span.Start() < findings[j].Span.Start() })
@@ -59,7 +58,7 @@ func metadataKeyOrdering(ctx context.Context, c engine.RuleContext) engine.RuleO
 	}
 	out := engine.RuleOutcome{Findings: unique}
 	if !complete {
-		out.IncompleteReason = metadataOrderingWithheld
+		out.IncompleteReason, out.IncompleteSpan = metadataOrderingWithheld(first)
 	}
 	return out
 }

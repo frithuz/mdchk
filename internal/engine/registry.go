@@ -76,6 +76,9 @@ type RuleOutcome struct {
 	// parser-uncertain coverage. They never establish absence for suppression audit.
 	ParsingProblems  []Finding
 	IncompleteReason string
+	// IncompleteSpan optionally locates the source construct behind
+	// IncompleteReason. The engine attaches it to the published coverage.
+	IncompleteSpan parser.Span
 	// Fragments are completed shared resolutions the engine projects with their
 	// source provenance and causes. Report-only; they carry no write authority.
 	Fragments []resource.FragmentResolution
