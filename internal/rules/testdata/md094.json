@@ -1,0 +1,32 @@
+{
+  "cases": [
+    {"name": "lead-ff-at-offset-0", "source_hex": "ff", "expected": {"byte_offset": 0, "line": 1, "column": 1}},
+    {"name": "lone-continuation", "source_hex": "6180", "expected": {"byte_offset": 1, "line": 1, "column": 2}},
+    {"name": "truncated-2-byte-at-eof", "source_hex": "61c3", "expected": {"byte_offset": 1, "line": 1, "column": 2}},
+    {"name": "truncated-3-byte-at-eof", "source_hex": "61e282", "expected": {"byte_offset": 1, "line": 1, "column": 2}},
+    {"name": "truncated-4-byte-at-eof", "source_hex": "61f09f98", "expected": {"byte_offset": 1, "line": 1, "column": 2}},
+    {"name": "malformed-continuation", "source_hex": "61e228a1", "expected": {"byte_offset": 1, "line": 1, "column": 2}},
+    {"name": "overlong-2-byte", "source_hex": "61c0af", "expected": {"byte_offset": 1, "line": 1, "column": 2}},
+    {"name": "overlong-3-byte", "source_hex": "61e080af", "expected": {"byte_offset": 1, "line": 1, "column": 2}},
+    {"name": "encoded-surrogate", "source_hex": "61eda080", "expected": {"byte_offset": 1, "line": 1, "column": 2}},
+    {"name": "above-max-scalar", "source_hex": "61f4908080", "expected": {"byte_offset": 1, "line": 1, "column": 2}},
+    {"name": "line-1", "source_hex": "6162ff630a", "expected": {"byte_offset": 2, "line": 1, "column": 3}},
+    {"name": "mid-line-after-multibyte", "source_hex": "e99baa2078ff", "expected": {"byte_offset": 5, "line": 1, "column": 4}},
+    {"name": "after-lf-line", "source_hex": "610a62ff0a", "expected": {"byte_offset": 3, "line": 2, "column": 2}},
+    {"name": "after-crlf-line", "source_hex": "610d0a62ff", "expected": {"byte_offset": 4, "line": 2, "column": 2}},
+    {"name": "after-lone-cr-line", "source_hex": "610d62ff", "expected": {"byte_offset": 3, "line": 2, "column": 2}},
+    {"name": "final-byte", "source_hex": "6162630aff", "expected": {"byte_offset": 4, "line": 2, "column": 1}},
+    {"name": "fenced-code-block", "source_hex": "6060600a78ff0a6060600a", "expected": {"byte_offset": 5, "line": 2, "column": 2}},
+    {"name": "block-quote", "source_hex": "3e2071ff0a", "expected": {"byte_offset": 3, "line": 1, "column": 4}},
+    {"name": "nested-list-in-block-quote", "source_hex": "3e202d20610a3e2020202d2062ff0a", "expected": {"byte_offset": 13, "line": 2, "column": 8}},
+    {"name": "yaml-front-matter", "source_hex": "2d2d2d0a743a20ff0a2d2d2d0a", "expected": {"byte_offset": 7, "line": 2, "column": 4}},
+    {"name": "html-comment", "source_hex": "3c212d2d2063ff202d2d3e0a", "expected": {"byte_offset": 6, "line": 1, "column": 7}},
+    {"name": "directive-before-bad-byte", "source_hex": "3c212d2d206d6463686b3a64697361626c65204d44303934202d2d3e0a78ff0a", "expected": {"byte_offset": 30, "line": 2, "column": 2}},
+    {"name": "documented-violating-example", "source_hex": "4120726177206279746520ff20696e2061205554462d3820646f63756d656e742e0a", "expected": {"byte_offset": 11, "line": 1, "column": 12}},
+    {"name": "empty-file", "source_hex": "", "expected": null},
+    {"name": "bom-and-text", "source_hex": "efbbbf546578740a", "expected": null},
+    {"name": "literal-replacement-character", "source_hex": "61efbfbd0a", "expected": null},
+    {"name": "mixed-line-endings", "source_hex": "610a620d630d0a64", "expected": null},
+    {"name": "documented-accepted-example", "source_hex": "5554462d3820656e636f64656420746578742e0a", "expected": null}
+  ]
+}
