@@ -62,6 +62,7 @@ the original source and validated options. MD047 terminating-newline, MD001 head
 and MD071 frontmatter blank-line analysis are implemented, among others; every
 default-enabled rule is available, and an enabled rule without an implementation
 would produce a coverage deficit and return `15`. Disabling all ordinary rules permits a clean `0` for valid UTF-8.
+When enabled, [MD074](../rules/content-and-navigation/md074.md) runs once per lint operation, even with no selected target, and reports at the MkDocs configuration's path without adding it to `files`.
 Available registered checks can return violations (`10`); interruptions retain
 partial findings and known targets, with runtime precedence `14 > 13 > 15 > 10 > 0`.
 Text reports are the default; `--format json` emits one undecorated schema-v1

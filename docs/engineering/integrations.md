@@ -10,7 +10,8 @@ cover source/view ownership, static navigation/omission prerequisites and explic
 slide annotation. Policy decisions do not establish acquired context. Bounded
 MkDocs acquisition/eligibility is implemented by the bound context provider.
 MD090 consumes explicit slides in production lint, fix candidate analysis and
-inspection. MkDocs rule consumers and MCP end-to-end verification remain separate work.
+inspection. MD074 consumes the MkDocs context in CLI lint only; fix and inspect
+report it as lint-only coverage. MCP end-to-end verification remains separate work.
 Interface availability alone does not
 advertise those runtime capabilities.
 

@@ -216,8 +216,9 @@ consumption when their `frontmatter_title` options is enabled; recognition must 
 enabled independently. MD072 consumes YAML/TOML key ordering and reports inside the
 recognized header; without recognition it has nothing to check. Broader metadata-rule and structured inspection integration
 remain pending. Explicit slide annotation is implemented in lint, fix candidate
-analysis and inspection; MD090 consumes it without enabling itself. MkDocs rule
-consumers remain pending; explicitly enabling unavailable context returns `12`.
+analysis and inspection; MD090 consumes it without enabling itself. MD074 is the
+MkDocs context consumer: lint checks the navigation, while fix and inspect report
+it as lint-only coverage.
 
 ```yaml
 version: 1
@@ -245,7 +246,10 @@ supplies these patterns; standalone uses its virtual root. MD090's default
 
 MD074 enablement itself opts into the [MkDocs context](engineering/integrations.md#mkdocs-navigation).
 There is no second integration flag. `config_path`, default `mkdocs.yml`, resolves
-from the operation resource root and must stay inside it.
+from the operation resource root and must stay inside it. It must be a canonical
+relative path: an empty string, an absolute or drive path, backslashes, `.` or `..`
+segments and URLs are located configuration errors (`12`) in lint and
+`config validate`.
 
 Shared [resource limits](engineering/limits.md) and [HTTP policy](engineering/http.md)
 are operator options, not project configuration fields.

@@ -85,7 +85,7 @@ See [configuration](../configuration.md) for settings and [result formats](../ou
 
 ## Understand the result
 
-A completed inspection returns `0`, regardless of Markdown findings, directive problems, configuration problems shown in the report, or parsing notes. It does not return validation codes `10`, `12`, or `15` for those observations. Use [lint](lint.md) or [config validate](config/validate.md) when you want a validation result.
+A completed inspection returns `0`, regardless of Markdown findings, directive problems, configuration problems shown in the report, or parsing notes. It does not return validation codes `10`, `12`, or `15` for those observations. Use [lint](lint.md) or [config validate](config/validate.md) when you want a validation result. The one exception is [MD074](../rules/content-and-navigation/md074.md): inspect does not check MkDocs navigation, so with MD074 enabled it records the lint-only coverage `MkDocs navigation is checked only by lint.` and returns `15` unless an error takes precedence.
 
 Errors that prevent inspection still use the operational codes: `11` for missing or extra arguments, a directory target, or invalid line bounds; `13` for an unreadable or missing target or output failure; and `14` for an internal execution failure. An unreadable configuration is shown as unresolved configuration within the inspection when the target itself is readable. See [exit codes](../exit-codes.md).
 

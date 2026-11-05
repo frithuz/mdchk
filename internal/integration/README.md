@@ -134,5 +134,8 @@ not-in-nav priority, and destination conflicts after inclusion. Patterns compile
 once with Unicode RE2 and GitIgnoreSpec match priority, without Git parent pruning.
 The reproducible compatibility baseline is Python pathspec 0.11.1 (MkDocs declares
 `pathspec>=0.11.1`, rather than pinning a transitive version). Runtime uses no Python.
-These typed producers do not advertise CLI/MCP capability or implement MD074's
-later rule callback, findings or correction behavior.
+These typed producers do not advertise MCP capability or implement correction
+behavior. MD074 in CLI lint is now the production consumer: `internal/cli` binds
+this producer to the lint session's resource root, operation and service, and
+`internal/rules` interprets the context as findings and coverage. Fix and inspect
+do not acquire it.
