@@ -293,7 +293,9 @@ func inspectionOutcome(out *result.Result) {
 }
 func inspectionExit(out result.Result) int {
 	status := 0
-	if len(out.Interruptions) > 0 || len(out.Omissions) > 0 {
+	// Lint-only project rules are unassessed, not an observation of the file.
+	lintOnly := slices.ContainsFunc(out.Coverage, func(c result.Coverage) bool { return c.Rule == "MD074" && c.Message == engine.LintOnlyMessage })
+	if len(out.Interruptions) > 0 || len(out.Omissions) > 0 || lintOnly {
 		status = exitIncomplete
 	}
 	for _, category := range []result.ErrorCategory{result.Usage, result.Configuration, result.IO, result.Internal} {

@@ -340,6 +340,14 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 					break
 				}
 			}
+			if ProjectRule(id) {
+				// Project rules never run per document. Inspection keeps the
+				// initial context-unavailable reason unless the rule is inactive.
+				if options.inspection != nil && !directives.EnabledSomewhere(id) {
+					options.inspection.skip(id, "inactive")
+				}
+				continue
+			}
 			state := settings[i][id]
 			m := r.metadata[id]
 			active := directives.EnabledSomewhere(id)

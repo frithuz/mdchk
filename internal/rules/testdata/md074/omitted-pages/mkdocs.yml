@@ -1,0 +1,5 @@
+nav: [a.md]
+not_in_nav: |
+  quiet.md
+exclude_docs: |
+  drafts/

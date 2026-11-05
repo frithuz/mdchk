@@ -1,0 +1,4 @@
+site_name: Example
+nav:
+  - Guide: guide.md
+  - Missing: missing.md

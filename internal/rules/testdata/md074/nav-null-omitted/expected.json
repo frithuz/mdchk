@@ -1,0 +1,9 @@
+{
+  "options": {
+    "config_path": "mkdocs.yml",
+    "check_absolute": false,
+    "check_omitted": true
+  },
+  "diagnostics": [],
+  "coverage": []
+}
