@@ -51,7 +51,7 @@ func TestLintConfigurationStopsBeforeTargets(t *testing.T) {
 		{"invalid disabled options", availableConfig + "rules: {MD013: {enabled: false, length: -1}}\n", "", "length"},
 		{"removed flavor", "version: 1\nflavor: pandoc\n", "", "flavor"},
 		{"invalid pattern", availableConfig + "exclude: ['bad/**x']\n", "", "exclude"},
-		{"disabled hostname provider", availableConfig + "rules: {MD095: {enabled: false, allowed_hosts: [example.com]}}\n", "", "allowed_hosts"},
+		{"disabled hostname provider", availableConfig + "rules: {MD095: {enabled: false, allowed_hosts: ['example.com:443']}}\n", "", "allowed_hosts"},
 		{"unsupported frontmatter", availableConfig + "frontmatter: {enabled: true, formats: [json]}\n", "", "frontmatter"},
 		{"invalid slides", availableConfig + "documents: {slides: ['talk/**', '[']}\n", "", "slides"},
 		{"unrepresentable resource index", availableConfig + "resources: {index_file: .git}\n", "", "index_file"},
@@ -75,6 +75,40 @@ func TestLintConfigurationStopsBeforeTargets(t *testing.T) {
 				t.Fatalf("config output failure=%d", got)
 			}
 		})
+	}
+}
+
+func TestLintAllowedHostsValidation(t *testing.T) {
+	valid := []string{"example.com", "\u0430pple.com", "xn--pple-43d.com", "Fa\u00df.de", "XN--FA-HIA.DE."}
+	root := project(t)
+	put(t, filepath.Join(root, config.Filename), availableConfig+"rules:\n  MD095:\n    enabled: false\n    allowed_hosts: [example.com, \"\u0430pple.com\", xn--pple-43d.com, \"Fa\u00df.de\", XN--FA-HIA.DE.]\n")
+	calls := 0
+	var out bytes.Buffer
+	status := run([]string{"lint", "a.md"}, &out, io.Discard, "dev", prepareLint, func(inv *lintInvocation, _, _ io.Writer) int {
+		calls++
+		if got := inv.selection.Resolution.Rules["MD095"].Options["allowed_hosts"]; !reflect.DeepEqual(got, valid) {
+			t.Errorf("allowed_hosts = %q; want the configured spelling %q", got, valid)
+		}
+		return 0
+	})
+	if status != 0 || calls != 1 || strings.Contains(out.String(), "config-definition") {
+		t.Fatalf("valid hosts: status=%d calls=%d out=%q", status, calls, &out)
+	}
+	for _, tc := range []struct{ hosts, want string }{
+		{"[example.com, 'example.com:443']", "rules.MD095.allowed_hosts[1]): MD095: option \"allowed_hosts\"[1]: label 1: ASCII character other than a-z, 0-9 or hyphen (U1)"},
+		{"['*.example.com']", "rules.MD095.allowed_hosts[0]): MD095: option \"allowed_hosts\"[0]: label 0: ASCII character other than a-z, 0-9 or hyphen (U1)"},
+		{"[example.com, xn--pple-43d.com, 'example.com..']", "rules.MD095.allowed_hosts[2]): MD095: option \"allowed_hosts\"[2]: label 2: empty label (A4_2)"},
+		{"[' example.com']", "rules.MD095.allowed_hosts[0]"},
+		{"['https://example.com']", "rules.MD095.allowed_hosts[0]"},
+		{"[-a.com]", "label 0: leading hyphen (V3)"},
+	} {
+		put(t, filepath.Join(root, config.Filename), availableConfig+"rules: {MD095: {enabled: false, allowed_hosts: "+tc.hosts+"}}\n")
+		calls = 0
+		out.Reset()
+		status := run([]string{"lint", "a.md"}, &out, io.Discard, "dev", prepareLint, func(*lintInvocation, io.Writer, io.Writer) int { calls++; return 0 })
+		if status != 12 || calls != 0 || !strings.Contains(out.String(), "config-definition") || !strings.Contains(out.String(), tc.want) {
+			t.Errorf("%s: status=%d calls=%d out=%q; want %q", tc.hosts, status, calls, &out, tc.want)
+		}
 	}
 }
 
