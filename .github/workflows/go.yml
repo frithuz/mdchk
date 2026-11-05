@@ -37,6 +37,8 @@ jobs:
       - name: Check resource schema with ECMAScript regex engine
         run: node tools/resource_schema.mjs
       - name: Test
+        env:
+          DEBUG: ${{ runner.debug }}
         run: go run ./tools/testrun ./...
       - name: Build without cgo
         # Apply is portable Go: no build may require a C toolchain.
@@ -50,8 +52,12 @@ jobs:
             GOOS=${target%/*} GOARCH=${target#*/} CGO_ENABLED=0 go vet ./...
           done
       - name: Test actual GFM AST adapter and scope controls
+        env:
+          DEBUG: ${{ runner.debug }}
         run: go run ./tools/testrun -tags mdchk_conformance ./internal/conformance/... -count=1
       - name: Test closed GFM scopes preserve production admission
+        env:
+          DEBUG: ${{ runner.debug }}
         run: go run ./tools/testrun -tags mdchk_conformance ./internal/cli -run '^TestGFMPrivateScopesPreserveProductionAdmission$' -count=1
       - name: Vet
         run: go vet ./...
@@ -64,12 +70,18 @@ jobs:
       - name: Check pinned published GFM corpus
         run: python3 -B tools/gfm_corpus.py --check
       - name: Test published GFM corpus ingestion
+        env:
+          DEBUG: ${{ runner.debug }}
         run: sh tools/unittest.sh discover -s tools -p 'test_gfm_corpus.py'
       - name: Check approved GFM profile fixture contract
         run: python3 -B tools/gfm_profile.py --check
       - name: Test GFM profile source contracts and refusal controls
+        env:
+          DEBUG: ${{ runner.debug }}
         run: sh tools/unittest.sh discover -s tools -p 'test_gfm_profile.py'
       - name: Test actual GFM runner and strict comparator regressions
+        env:
+          DEBUG: ${{ runner.debug }}
         run: sh tools/unittest.sh discover -s tools -p 'test_gfm_conformance.py'
       - name: Require complete approved GFM parser profile
         run: python3 -B tools/gfm_profile.py --run --require-approved-profile
@@ -80,10 +92,14 @@ jobs:
       - name: Check pinned HTML entity table
         run: python3 -B tools/html_entities.py --check
       - name: Test CommonMark corpus tooling
+        env:
+          DEBUG: ${{ runner.debug }}
         run: sh tools/unittest.sh discover -s tools -p 'test_commonmark_corpus.py'
       - name: Require complete CommonMark conformance
         run: python3 -B tools/commonmark_conformance.py --require-complete
       - name: Test CommonMark transport, ratchet, and full upstream conformance
+        env:
+          DEBUG: ${{ runner.debug }}
         run: sh tools/unittest.sh discover -s tools -p 'test_commonmark_conformance.py'
       # Vulnerability scans run even when an earlier gate fails, so scheduled
       # scans still report.
@@ -125,24 +141,34 @@ jobs:
       - name: Verify native confined resource reads and root selection
         # Resource-backed integration providers must execute on the real host;
         # pure integration policy tests are not part of this native filter.
+        env:
+          DEBUG: ${{ runner.debug }}
         run: go run ./tools/testrun ./internal/resource ./internal/integration -run "^(TestFilesystem|TestNative)" -count=1 -timeout=5m
       - name: Verify compiled native paths, streams, real interrupts and capabilities
         # The expanded native suite reached the fifteen-minute limit on Windows.
         # Keep room for the complete inventory and later native integration gates.
+        env:
+          DEBUG: ${{ runner.debug }}
         run: go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryApply|TestCompiledApplyNoCGOApplies|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -timeout=20m
       - name: Verify portable apply adapter without cgo
         env:
           CGO_ENABLED: "0"
+          DEBUG: ${{ runner.debug }}
         run: |
           go run ./tools/testrun ./internal/fsroot ./internal/files ./internal/fix -count=1 -timeout=10m
           go run ./tools/testrun ./internal/cli -run "^(TestApply.*|TestFrontmatterApplyPreservesHeaderAndConverges|TestFrontmatterOperationParityNativeApply|TestGitHubActualPartialSavedPublication|TestVSCodeActualPartialSavedPublication)$" -count=1 -timeout=10m
       - name: Verify compiled apply without cgo
         env:
           CGO_ENABLED: "0"
+          DEBUG: ${{ runner.debug }}
         run: go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledProductionMD047ApplySavedWorkflow|TestCompiledApply.*|TestCompiledEditorPartialNativePublication|TestCompiledProductionMD051ResourceFragmentsApplySavedView|TestCompiledGFMNativeSavedBytes)$" -count=1 -timeout=15m
       - name: Verify compiled GFM selection, consumers and native publication
+        env:
+          DEBUG: ${{ runner.debug }}
         run: go run ./tools/testrun ./cmd/mdchk -run "^TestCompiledGFM" -count=1 -timeout=5m
       - name: Verify compiled editor and documented integration contracts
+        env:
+          DEBUG: ${{ runner.debug }}
         run: go run ./tools/testrun ./internal/cli -run "^(TestCompiledEditor.*|TestDocumented.*|TestEditorRealCommandWriterFailuresAndBounds|TestEditorCommandArgumentsAndIndependentLifetime|TestValidateActualTinyReportingDeadline|TestValidateCompletedReportingAssertions|TestValidateExpiredReportingContextPreservesActualCounts)$" -count=1 -timeout=15m
 
   race:
@@ -173,10 +199,16 @@ jobs:
       - name: Test with race detector
         # The full native acceptance suite exceeds Go's default ten-minute
         # package timeout under race instrumentation.
+        env:
+          DEBUG: ${{ runner.debug }}
         run: go run ./tools/testrun -race -timeout=20m ./...
       - name: Test actual GFM AST adapter with race detector
+        env:
+          DEBUG: ${{ runner.debug }}
         run: go run ./tools/testrun -race -tags mdchk_conformance ./internal/conformance/... -count=1
       - name: Test closed GFM production admission with race detector
+        env:
+          DEBUG: ${{ runner.debug }}
         run: go run ./tools/testrun -race -tags mdchk_conformance ./internal/cli -run '^TestGFMPrivateScopesPreserveProductionAdmission$' -count=1
 
   fuzz:
