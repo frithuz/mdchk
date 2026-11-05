@@ -175,7 +175,7 @@ analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis,
 thematic-break-before-heading analysis, MD034 bare-URL analysis, MD039 link-label-whitespace analysis, MD042 links-without-destinations, MD045 image-alternative-text and MD051 unresolved-fragment analysis and MD052 references-without-definitions analysis and MD062 whitespace-in-destination analysis and MD054 link-and-image-representation-style analysis and MD093 inline-formatting-in-headings analysis
 are also available. MD065 is enabled by default for CommonMark and GFM; its
 findings are manual and corrections are deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD054, MD087 and MD093 are
-available but disabled by default. MD034, MD039, MD042, MD045, MD051 and MD052 are available and enabled by default for CommonMark and GFM, with manual
+available but disabled by default. MD034, MD039, MD042, MD045, MD051, MD052 and MD062 are available and enabled by default for CommonMark and GFM, with manual
 findings. MD039, MD042, MD045, MD051, MD052 and MD062 are permanently report-only, and MD054 is report-only until its planned corrections land (MD051 reads other documents only with `cross_file: true`, through the bounded read-only resource service in `lint`, `inspect` and `fix`); URL corrections remain deferred. Other named rules remain unavailable. See the [parser
 verification record](engineering/gfm-verification.md).
 
