@@ -174,6 +174,22 @@ to a parsed link or image are excluded. Unavailable definitions or unknown
 necessary provenance atomically withhold all findings. No MD052 correction is
 produced. See the [MD052 contract](../rules/links-and-images/md052.md).
 
+### Md054
+
+MD054 analysis is implemented for CommonMark and GFM, disabled by default, with
+the catalog `allowed_styles` option. A read-only parser fact visits every
+parsed Link and Image, including ones nested in link labels and image
+descriptions, and maps its origin to a style: `inline`, `full` to
+`full_reference`, `collapsed` to `collapsed_reference`, `shortcut` to
+`shortcut_reference`, and both angle `autolink` and `bare-gfm` to `autolink`.
+The parser origins stay distinct in the fact. The rule reports each item whose
+style is not allowed over the original node envelope with
+`Link representation style "<style>" is not allowed.` or the `Image` form.
+Code spans, code blocks, HTML blocks and raw HTML lifetimes are skipped, and
+image descriptions cannot open or close a raw region. Missing link properties
+or unknown raw state atomically withhold all findings. No MD054 correction is
+produced. See the [MD054 contract](../rules/links-and-images/md054.md).
+
 ### Md062
 
 Recognize flat, fully closed inline link/image candidates with whitespace inside a bare destination,
