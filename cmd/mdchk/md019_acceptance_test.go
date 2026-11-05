@@ -15,15 +15,16 @@ func TestCompiledPlatformMD019ProductionAnalysis(t *testing.T) {
 	for _, tc := range []struct {
 		name, source                                string
 		status, point, end, line, column, endColumn int
+		fixable                                     bool
 	}{
-		{"plain", "##  Install", 10, 3, 4, 1, 4, 5},
-		{"nested original unicode", "> - ##   雪\r\n", 10, 7, 9, 1, 8, 10},
-		{"mixed excess", "#  \t text", 10, 2, 5, 1, 3, 6},
-		{"separated spaces", "# \t Title", 10, 3, 4, 1, 4, 5},
-		{"two tabs", "#\t\tTitle", 0, 0, 0, 0, 0, 0},
-		{"valid", "## Install\n", 0, 0, 0, 0, 0, 0},
-		{"raw empty closed", "#   ###", 0, 0, 0, 0, 0, 0},
-		{"empty visible", "#  <!-- x -->", 10, 2, 3, 1, 3, 4},
+		{"plain", "##  Install", 10, 3, 4, 1, 4, 5, true},
+		{"nested original unicode", "> - ##   雪\r\n", 10, 7, 9, 1, 8, 10, true},
+		{"mixed excess", "#  \t text", 10, 2, 5, 1, 3, 6, false},
+		{"separated spaces", "# \t Title", 10, 3, 4, 1, 4, 5, false},
+		{"two tabs", "#\t\tTitle", 0, 0, 0, 0, 0, 0, false},
+		{"valid", "## Install\n", 0, 0, 0, 0, 0, 0, false},
+		{"raw empty closed", "#   ###", 0, 0, 0, 0, 0, 0, false},
+		{"empty visible", "#  <!-- x -->", 10, 2, 3, 1, 3, 4, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			configuration := strings.Replace(cleanConfiguration(), "MD019: {enabled: false}", "MD019: {enabled: true}", 1)
@@ -37,12 +38,19 @@ func TestCompiledPlatformMD019ProductionAnalysis(t *testing.T) {
 				if tc.status == 10 {
 					want = 1
 				}
+				// fix removes a correctable finding; its dry run reports the proposal.
+				if args[0] == "fix" && tc.fixable {
+					if got.Status != 0 || !out.Complete || len(out.Errors) != 0 || len(out.Coverage) != 0 || len(out.Diagnostics) != 0 || len(out.Changes) != 1 || len(out.Documents) != 0 {
+						t.Fatal(got)
+					}
+					continue
+				}
 				if got.Status != tc.status || !out.Complete || len(out.Errors) != 0 || len(out.Coverage) != 0 || len(out.Diagnostics) != want || len(out.Changes) != 0 || len(out.Documents) != 0 {
 					t.Fatal(got)
 				}
 				if want > 0 {
 					d := out.Diagnostics[0]
-					if d.Rule != "MD019" || d.FixAvailable || d.ByteRange != (result.ByteRange{Start: tc.point, End: tc.end}) || d.Range.Start != (result.Position{Line: tc.line, Column: tc.column}) || d.Range.End != (result.Position{Line: tc.line, Column: tc.endColumn}) {
+					if d.Rule != "MD019" || d.FixAvailable != tc.fixable || d.ByteRange != (result.ByteRange{Start: tc.point, End: tc.end}) || d.Range.Start != (result.Position{Line: tc.line, Column: tc.column}) || d.Range.End != (result.Position{Line: tc.line, Column: tc.endColumn}) {
 						t.Fatal(d)
 					}
 				}

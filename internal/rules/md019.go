@@ -12,6 +12,7 @@ func extraOpeningHashSpaces(ctx context.Context, c engine.RuleContext) engine.Ru
 		return engine.RuleOutcome{Err: err}
 	}
 	out := engine.RuleOutcome{}
+	edits := c.InteriorEdits()
 	for _, heading := range headings {
 		if err := c.Checkpoint(ctx, 1); err != nil {
 			out.Err = err
@@ -58,7 +59,16 @@ func extraOpeningHashSpaces(ctx context.Context, c engine.RuleContext) engine.Ru
 				out.Err = err
 				return out
 			}
-			out.Findings = append(out.Findings, engine.Finding{Span: span, Message: "Opening hashes must not be followed by more than one space."})
+			finding := engine.Finding{Span: span, Message: "Opening hashes must not be followed by more than one space."}
+			// A gap containing a tab stays manual however its spaces are arranged.
+			if count == len(text) {
+				finding.FixEligible, err = edits.Eligible(ctx, "MD019", span, span)
+				if err != nil {
+					out.Err = err
+					return out
+				}
+			}
+			out.Findings = append(out.Findings, finding)
 		}
 	}
 	return out
