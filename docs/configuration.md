@@ -84,7 +84,7 @@ rule-specific options; MD025 and MD041 accept integer `level` from 1 through 6 (
 minima, each defaulting to 1; MD072 accepts boolean `recursive` (default false) and
 `case_sensitive` (default true). MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009,
 MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043,
-MD063, MD072, MD080, MD082, MD090, MD081, MD088, MD033, MD086, MD087, MD093 and MD071 are report-only.
+MD061, MD063, MD072, MD080, MD082, MD090, MD081, MD088, MD033, MD086, MD087, MD093 and MD071 are report-only.
 Rules marked unavailable in the linked inventory remain pending. Every default-enabled
 rule is available for CommonMark and GFM; an enabled rule without an implementation
 would produce a coverage deficit rather than a clean result. Valid UTF-8 with all
@@ -585,3 +585,11 @@ other rules' lists. Shared enabled/allow_directives types and inherited denials
 remain strict. Code opt-in exposes actual block payload only, never inline code.
 All findings are manual under PlannedFix; see [MD044](rules/formatting/md044.md)
 for Unicode folding, whole-word, exact-island and accepted-variant matching.
+
+MD061 prohibited-vocabulary analysis is available but disabled by default for
+CommonMark and GFM. `terms` defaults to an empty string list; `case_sensitive`
+defaults to false. Terms share MD044's valid-UTF-8 domain and are checked even
+when the rule is disabled; empty terms are inert and duplicates are harmless.
+`case_sensitive=true` compares original UTF-8 bytes without folding. Code blocks
+are never scanned. All findings are report-only; see
+[MD061](rules/content-and-navigation/md061.md) for the matching policy.
