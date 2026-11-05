@@ -1,0 +1,1603 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary prose\n",
+      "source_bytes": 15,
+      "source_sha256": "922c8578527e7cd2ae1f5047cf1c7d7644035cb6caf0899483ff2ca4e2742c0f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "page-bad",
+      "source": "[Guide](my guide.md)\n",
+      "source_bytes": 21,
+      "source_sha256": "6ea7dced595a93f5a8637e65064f688120af7d744abe62de907bd2c0d30b9577",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            20
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "page-good",
+      "source": "[Guide](my%20guide.md)\n",
+      "source_bytes": 23,
+      "source_sha256": "dca83cc890753d6cd6cb2fbc109d7b6ca293c8e2f4675e971f6a6e8284d3871f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "page-good-angle",
+      "source": "[Guide](<my guide.md>)\n",
+      "source_bytes": 23,
+      "source_sha256": "cd517005faf66c77d2c5360899ab51acffae8b63765a0bfa56f227b1a1ece8e4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "image",
+      "source": "![Logo](my logo.png)\n",
+      "source_bytes": 21,
+      "source_sha256": "b28458a0d9f4bbcc389c53cc07e63615e4ae207fab5342f289850356825c6f35",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            20
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "tab",
+      "source": "[a](b\tc)\n",
+      "source_bytes": 9,
+      "source_sha256": "8ef10dd785338ea8205b231fbcd0bbce9e00f63a20dc93bf741680cae0b4d497",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "long-run",
+      "source": "[a](b   c)\n",
+      "source_bytes": 11,
+      "source_sha256": "5e9b5ae01e566db0275b3a85cec6c0923f879732883cdf016238f6a229d3063c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "padded",
+      "source": "[a]( b c )\n",
+      "source_bytes": 11,
+      "source_sha256": "da083bad09b79a140b7d6d715d094dc4f6e1bbb8e17dc6ecbfc692d1e9876c19",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "empty-label",
+      "source": "[](b c)\n",
+      "source_bytes": 8,
+      "source_sha256": "183010f9b911dd35aabcac089ec69300f3f5d2adc6087d10ff77565a2777efc4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            7
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "blank-label",
+      "source": "[ ](b c)\n",
+      "source_bytes": 9,
+      "source_sha256": "1261c3a07d18beeb8262b4b77c81630247c833dc01e4a2775bcbdb5f6d60c33c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "two-candidates",
+      "source": "[a](b c) and [d](e f)\n",
+      "source_bytes": 22,
+      "source_sha256": "a594a96ae86429eda67c12818c0017140b181c54da9d4808d26deaded8bc3276",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            8
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        },
+        {
+          "bytes": [
+            13,
+            21
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "second-line",
+      "source": "first\n[a](b c)\n",
+      "source_bytes": 15,
+      "source_sha256": "55cd92d3f0290f33166b1c9d0765efb6c1eb9546d805c98b1af4f4bb93a410d0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            6,
+            14
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "valid-title",
+      "source": "[a](b \"t\")\n",
+      "source_bytes": 11,
+      "source_sha256": "e9e06ea34d35483b6358e0f530a22be593b15a9beca919ee14f87b0a7457252e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "valid-padded",
+      "source": "[a]( b )\n",
+      "source_bytes": 9,
+      "source_sha256": "cf6d76c588f23ac272725086273b40e9b6b5d9e3ea587a91e25a33da2fa21810",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "valid-image-title",
+      "source": "![a](b 't')\n",
+      "source_bytes": 12,
+      "source_sha256": "7fff1ef547a2018ade8333489f6c052f475d5f074b795ac0a7b024abad419ec3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "defined-label",
+      "source": "[a](b c)\n\n[a]: u\n",
+      "source_bytes": 17,
+      "source_sha256": "ad14253ce5a2531fa7a7b6209793fb13ab2bb2da8e3a7f9481e8375919bf9de2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "angle-unclosed",
+      "source": "[a](<my file>)\n",
+      "source_bytes": 15,
+      "source_sha256": "899ba4b7f7aae2161a9efd52b8b86a97c4e2b912a85db023764f9903ca1d4fa1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "angle-trailing",
+      "source": "[a](<my file> x)\n",
+      "source_bytes": 17,
+      "source_sha256": "27d89e97c439b63d708fd89abe12dae126b461e7dd1f64ea84ed5244caf8601e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "broken-double-title",
+      "source": "[a](my \"broken)\n",
+      "source_bytes": 16,
+      "source_sha256": "b719f21d1c1c8bdafb0d7a1db86a0329b246544c8c20c63cedae39aa9b2b480a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "broken-single-title",
+      "source": "[a](my 'broken)\n",
+      "source_bytes": 16,
+      "source_sha256": "16c1fe12bfd11ac3bf4c1c4f68a2cc138ed07e442fb0cd1fa85b441fe3b6fae0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "backslash",
+      "source": "[a](my\\ file)\n",
+      "source_bytes": 14,
+      "source_sha256": "932f48bf18c9bb6e3ebe2f3484045c2641b42ece7b11b5325bd12ba547ff5c70",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "backslash-later-run",
+      "source": "[a](my\\ file x)\n",
+      "source_bytes": 16,
+      "source_sha256": "9b2c5877c9e987bf218e7372068a106e0140647109a10c27e472cb9122bc5d5b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            15
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "entity-space",
+      "source": "[a](my&#32;file)\n",
+      "source_bytes": 17,
+      "source_sha256": "562eecfc8c23351c2da61d4aea4b265b0bc002bcb06b4eb44a7c6c7951710a4e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "entity-tab",
+      "source": "[a](my&#9;file)\n",
+      "source_bytes": 16,
+      "source_sha256": "94bda2b4b1ce5f8f290749d6f112d59c8cc373b723dd55a376a4b03e245640f8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "percent",
+      "source": "[a](my%20file)\n",
+      "source_bytes": 15,
+      "source_sha256": "b41e2e44f01836d15032207ea8b61a65230f3480c3188046fa1c118f8ec18391",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "unicode-space",
+      "source": "[a](my file)\n",
+      "source_bytes": 14,
+      "source_sha256": "e4d1195beb4e81b32adc72ba33b68dcf7f8bbb5bea6f9ef83da04ef249ef6d70",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "nested",
+      "source": "[a]([b](c d))\n",
+      "source_bytes": 14,
+      "source_sha256": "5ebe057e46064e922417e253203fddde19ba4c626b4471f7521e9679f4947b77",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "nested-label",
+      "source": "[a [b]](c d)\n",
+      "source_bytes": 13,
+      "source_sha256": "3badd3116b57c23db18c3d98fd0bed75fb02c9c4a027e5515fc1165f7ad44b99",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "after-paren",
+      "source": "x)[a](b c)\n",
+      "source_bytes": 11,
+      "source_sha256": "4e00be99d22dee9501207515fad9854fcb36ceff4191ee549beeb0ad8a2b8710",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "after-close",
+      "source": "x][a](b c)\n",
+      "source_bytes": 11,
+      "source_sha256": "aa1108cd462b16d570e1e8641ef3a4dd70d453101fa49b18c76b4694e182b897",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "after-link",
+      "source": "[x](y)[a](b c)\n",
+      "source_bytes": 15,
+      "source_sha256": "7e5e8e9dc193bf254d4e96759f3f843f8bfc1c74281659800071335a8875fba8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "after-image",
+      "source": "![x](y)[a](b c)\n",
+      "source_bytes": 16,
+      "source_sha256": "d6711b443079a92e69e821530cb8b5d1583dfce44ddaeb91eb82a5fae60a24d6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "after-link-space",
+      "source": "[x](y) [a](b c)\n",
+      "source_bytes": 16,
+      "source_sha256": "8e7a52b337f2b8e6d0af734d7e7ef47668a069410586d7fb26b62bfc8291eba9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            7,
+            15
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "chain-paren",
+      "source": "[a](b c)(d)\n",
+      "source_bytes": 12,
+      "source_sha256": "ccd54726682320e97801bed4500bec2a2e0cd2b00fe7e65c5965b5b99df42374",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "chain-bracket",
+      "source": "[a](b c)[d]\n",
+      "source_bytes": 12,
+      "source_sha256": "98a51f6e5ed4c78d6bac1a12c922d41d20d134c1df399a48e13038ef64182aa3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "before-close-paren",
+      "source": "[a](b c))\n",
+      "source_bytes": 10,
+      "source_sha256": "e7145198e5e1e321578fc349808adecb3b242c2ecdd4135a4fd53b6f947cf6c3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "before-close-bracket",
+      "source": "[a](b c)]\n",
+      "source_bytes": 10,
+      "source_sha256": "bd574e7de01048e5bfe5c7e4a4fa7dde0d9d3ceebae441f0ac86b4273d08a163",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped-bang",
+      "source": "\\![a](b c)\n",
+      "source_bytes": 11,
+      "source_sha256": "bb0a21e7a3031cb3df9a9d40bd94165df3b5f60ed5f59dc94da22800a5691526",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "escaped-open",
+      "source": "\\[a](b c)\n",
+      "source_bytes": 10,
+      "source_sha256": "9298aab8c1624e8c86e9f858127cd5861c05aa85175f7b0031083f6bbcf21531",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped-close",
+      "source": "[a\\](b c)\n",
+      "source_bytes": 10,
+      "source_sha256": "32ba471594defd092f825e76112d21a81d40d00838c416ecb6d7c3b5f3d6afa4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped-paren",
+      "source": "[a]\\(b c)\n",
+      "source_bytes": 10,
+      "source_sha256": "3ec1ba658a042192a0d92b506a95f921f2d4bb57d581d9f548398c69ad8c1077",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped-final",
+      "source": "[a](b c\\)\n",
+      "source_bytes": 10,
+      "source_sha256": "e14be616f92426e42e919201156f3b2e7d47008df8cd9228e5c248b1e429e923",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "entity-bracket",
+      "source": "[a&#93;(b c)\n",
+      "source_bytes": 13,
+      "source_sha256": "4e1d7ffa2aa04b3489b2ef39cdddcc225ae5dd8d3eb5fa1878487bb2f57d9f6b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "spaced",
+      "source": "[a] (b c)\n",
+      "source_bytes": 10,
+      "source_sha256": "9ebff2d8880527600ede771ef3a7b3778a7d90b4f6ac32f097621e729fbfb5ff",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "unmatched",
+      "source": "[a](b c\n",
+      "source_bytes": 8,
+      "source_sha256": "e89c512f86891a7a65c31da548ee7d838090dcf457c5ad7f117b821955baed73",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "line-break",
+      "source": "[a](b\nc d)\n",
+      "source_bytes": 11,
+      "source_sha256": "191c3419036b7eb21ce3ae1a3bf116a94245d122b2651cf4be997b87207e2350",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "code-span",
+      "source": "`[a](b c)`\n",
+      "source_bytes": 11,
+      "source_sha256": "0214f11c822839c191380737fabb3e1caf4469b69bbe375a1814412e56f51cab",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "fenced",
+      "source": "```\n[a](b c)\n```\n",
+      "source_bytes": 17,
+      "source_sha256": "cbc8eb0dff031f87c4d4a4f432caa16fcd15fd45c052b5e8e6b1871867a5ea6e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "indented",
+      "source": "    [a](b c)\n",
+      "source_bytes": 13,
+      "source_sha256": "a46418b92ad67e01a50878d7e655bddf20dc34583e3cad9fa7579c2304d2526e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "html-block",
+      "source": "<div>\n[a](b c)\n</div>\n",
+      "source_bytes": 22,
+      "source_sha256": "fd2909949deb4bbaf5ece90f718d1fc4fb786b7e6160bb998a06bca8ad742868",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "raw-block",
+      "source": "<script>\n[a](b c)\n</script>\n",
+      "source_bytes": 28,
+      "source_sha256": "cd7873c17f53bf9ff71dd2283e1a2dae60bbfad14ea77f07d62829907310b2b4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "raw-tail",
+      "source": "<script>\nignored\n</script> [a](b c)\n",
+      "source_bytes": 36,
+      "source_sha256": "1a2a06157c52e116e69cc64cd9ad0f4cd0974af27503b17453e24e66fcfa53d6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "after-raw",
+      "source": "<script>\nignored\n</script>\n\n[a](b c)\n",
+      "source_bytes": 37,
+      "source_sha256": "0f0e11c55bc365704cc1e9f5fdd157e4b4d58d16640d8d652b365c4799958df6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            28,
+            36
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            9
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "inline-html-attribute",
+      "source": "x <span title=\"[a](b c)\">y</span>\n",
+      "source_bytes": 34,
+      "source_sha256": "64da0aca271878d8aaa30928d27191de8e8689285753c65c13e45fcf6ffb877f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "inline-html",
+      "source": "A <span>[a](b c)</span>.\n",
+      "source_bytes": 25,
+      "source_sha256": "214b4e94109ab64085d4896738c7733cb17c0449e876999f429b42ac2d451104",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            16
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "inline-raw",
+      "source": "a <textarea>[a](b c)</textarea> [d](e f)\n",
+      "source_bytes": 41,
+      "source_sha256": "ce11e8f7f3f10e1f5ff3f2aadde32178cee4642ad20a5be1803defc10ba9ff5c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            32,
+            40
+          ],
+          "start": [
+            1,
+            33
+          ],
+          "end": [
+            1,
+            41
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "link-text",
+      "source": "[x [a](b c) y](u)\n",
+      "source_bytes": 18,
+      "source_sha256": "996472674b49010362a98ef1533ad45bbdb70871141f5661b566f31c95bf6f1c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "image-alt",
+      "source": "![x [a](b c) y](u)\n",
+      "source_bytes": 19,
+      "source_sha256": "6d90f8d5fc087d2e7a0193a9c2d57f3f3bafc5962a66e1e371b62a777cf046a5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "frontmatter",
+      "source": "---\ntitle: \"[a](b c)\"\n---\n",
+      "source_bytes": 26,
+      "source_sha256": "920d6cda4d9b4eb8d49720d2113634460a42f4446a4509244c4508a40a7b9725",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "frontmatter": "yaml"
+      },
+      "findings": []
+    },
+    {
+      "name": "frontmatter-body",
+      "source": "---\ntitle: \"[a](b c)\"\n---\n[d](e f)\n",
+      "source_bytes": 35,
+      "source_sha256": "fce3dc3c3a9fd54fa708c49ef6f51c8695c0788394e060dc100621e234e79391",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "frontmatter": "yaml"
+      },
+      "findings": [
+        {
+          "bytes": [
+            26,
+            34
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            9
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "block-quote",
+      "source": "> [a](b c)\n",
+      "source_bytes": 11,
+      "source_sha256": "ca63f1ab5d8f0a3566abaf5edc818cc05bece0afed61bdcbe4139b9fffa0cd2e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "nested-block-quote",
+      "source": "> > [a](b c)\n",
+      "source_bytes": 13,
+      "source_sha256": "f65e59ec1b7209ea4b582ff9fbb4330603248e0647ef47acc9f1eaf7e6b35561",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            12
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "list-item",
+      "source": "- [a](b c)\n",
+      "source_bytes": 11,
+      "source_sha256": "f98c9664995db75d12c6ba231d929a772bdfef8bdc833ca6582532fd2fb09230",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "quoted-list",
+      "source": "> - [a](b c)\n",
+      "source_bytes": 13,
+      "source_sha256": "edca28e324e64c7b78d758f6da25d4bd52c049790f7011280469f900e845ee7b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            12
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "heading",
+      "source": "# [a](b c)\n",
+      "source_bytes": 11,
+      "source_sha256": "e91490887c104c324935c779ddda34ffe406630260a6d6323d7d8dcd70c8850d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "emphasis",
+      "source": "*[a](b c)*\n",
+      "source_bytes": 11,
+      "source_sha256": "d8019b5268dda953704d82b6ae5efa9c517a4786f3e1039909df1038f7a4913e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            9
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "strong",
+      "source": "x **[a](b c)** y\n",
+      "source_bytes": 17,
+      "source_sha256": "1b680629379afc0efc3aa8aea28353268ecc282dd148bfe7e67819223ead9dc3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            12
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "emphasis-label",
+      "source": "[*a*](b c)\n",
+      "source_bytes": 11,
+      "source_sha256": "4c52bcb199b5e892372e94df5e6de77b6eb1e20ac5adc9f269747f1482a161c4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "table-cell",
+      "source": "| h |\n| --- |\n| [a](b c) |\n",
+      "source_bytes": 27,
+      "source_sha256": "c94d0c3de15ff866eae5557bc4804b22df20c1a335d426283368c6c343a22cca",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            24
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            11
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "multibyte-prefix",
+      "source": "é [a](b c)\n",
+      "source_bytes": 12,
+      "source_sha256": "35fe700540b59d21c938480792a6d247359c64dcd9c8da6d63e150784c49aeb6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            11
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "multibyte-label",
+      "source": "[été](b c)\n",
+      "source_bytes": 13,
+      "source_sha256": "9f59b84a9715bd852865a00eea909db8301478de090042a6414c84d16eb36344",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            12
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "lf",
+      "source": "x\n[a](b c)\n",
+      "source_bytes": 11,
+      "source_sha256": "684641597f2f2add96fd1dbe18a4f7c3d87fa02e774abcf4f26d6dd70d4a1441",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            10
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "crlf",
+      "source": "x\r\n[a](b c)\r\n",
+      "source_bytes": 13,
+      "source_sha256": "ac3036e7848a740303dbce0cd4cbf30ef9e2c0b518d281f5fa0e9fdee673f2a0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            11
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "expected": "whitespace",
+          "message": "Whitespace in link destination."
+        }
+      ]
+    },
+    {
+      "name": "crlf-line-break",
+      "source": "[a](b\r\nc d)\r\n",
+      "source_bytes": 13,
+      "source_sha256": "f06547dbc80d6449d1213ad2a3cf2d8cc825b5c14ae3836cf74a8517cafe04c2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "disabled",
+      "source": "[Guide](my guide.md)\n",
+      "source_bytes": 21,
+      "source_sha256": "6ea7dced595a93f5a8637e65064f688120af7d744abe62de907bd2c0d30b9577",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "unknown-option",
+      "yaml": "MD062: {unknown: 1}"
+    },
+    {
+      "name": "style-option",
+      "yaml": "MD062: {style: default}"
+    },
+    {
+      "name": "disabled-invalid",
+      "yaml": "MD062: {enabled: false, unknown: true}"
+    },
+    {
+      "name": "enabled-string",
+      "yaml": "MD062: {enabled: \"true\"}"
+    },
+    {
+      "name": "enabled-null",
+      "yaml": "MD062: {enabled: null}"
+    },
+    {
+      "name": "directives-string",
+      "yaml": "MD062: {allow_directives: \"false\"}"
+    },
+    {
+      "name": "directives-null",
+      "yaml": "MD062: {allow_directives: null}"
+    },
+    {
+      "name": "scalar-rule",
+      "yaml": "MD062: true"
+    },
+    {
+      "name": "sequence-rule",
+      "yaml": "MD062: []"
+    },
+    {
+      "name": "duplicate-setting",
+      "yaml": "MD062: {enabled: true, enabled: false}"
+    }
+  ]
+}
