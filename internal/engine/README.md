@@ -804,3 +804,12 @@ delegates to `Document.TableCellCounts`, which returns detached parser-owned
 `RawCells` and table `Width` facts for every GFM table body row. The catalog
 proves MD056 inapplicable to CommonMark. MD056 is default-enabled and keeps its
 NoFix metadata; it is permanently report-only.
+
+MD058's `RuleContext.TableSpacing` facade preserves the same original
+parse/source/options and cumulative operation authority, with both caller and
+originating controls. It accepts no rule options, rejecting any non-empty
+option map with `parser.ErrModel`, and delegates to `Document.TableSpacing`.
+That fact shares MD065's private body walk with actual unprotected Table nodes
+as the targets and returns the same detached Point/Before facts. The catalog
+proves MD058 inapplicable to CommonMark. MD058 is default-enabled and keeps its
+PlannedFix metadata; no correction is registered.
