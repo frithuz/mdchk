@@ -1,0 +1,442 @@
+[
+  {
+    "name": "opening",
+    "source": "##  Install\n",
+    "candidate": "## Install\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "opening-and-closing",
+    "source": "##  Title  ##\n",
+    "candidate": "## Title ##\n",
+    "rules": [
+      "MD019",
+      "MD021"
+    ],
+    "edit_count": 2,
+    "config": ""
+  },
+  {
+    "name": "empty-shared",
+    "source": "#   #\n",
+    "candidate": "# #\n",
+    "rules": [
+      "MD021"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "empty-shared-long-close",
+    "source": "#   ###\n",
+    "candidate": "# ###\n",
+    "rules": [
+      "MD021"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "closing-with-trailing-spaces",
+    "source": "## Title   ##   \n",
+    "candidate": "## Title ##   \n",
+    "rules": [
+      "MD021"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "nested-unicode-crlf",
+    "source": "> - ###   雪  ###\r\n",
+    "candidate": "> - ### 雪 ###\r\n",
+    "rules": [
+      "MD019",
+      "MD021"
+    ],
+    "edit_count": 2,
+    "config": ""
+  },
+  {
+    "name": "crlf-body",
+    "source": "##  a\r\n\r\ntext\r\n",
+    "candidate": "## a\r\n\r\ntext\r\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "cr-body",
+    "source": "##  a\rb\r",
+    "candidate": "## a\rb\r",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "adjacent-code-span",
+    "source": "#  `x`\n",
+    "candidate": "# `x`\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "adjacent-comment",
+    "source": "#  <!-- c -->\n",
+    "candidate": "# <!-- c -->\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "shared-edit",
+    "source": "##  Title ##\n",
+    "candidate": "## Title ##\n",
+    "rules": [
+      "MD019",
+      "MD021"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "mixed-tab-first",
+    "source": "#\t  Mixed\n",
+    "candidate": "#\t  Mixed\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "mixed-tab-middle",
+    "source": "#  \t text\n",
+    "candidate": "#  \t text\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "mixed-separated",
+    "source": "# \t Title\n",
+    "candidate": "# \t Title\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "tab-only-shared",
+    "source": "#\t#\n",
+    "candidate": "#\t#\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "tab-only-both",
+    "source": "#\tTitle\t#\n",
+    "candidate": "#\tTitle\t#\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "judged-per-gap",
+    "source": "#  x\t#\n",
+    "candidate": "# x\t#\n",
+    "rules": [
+      "MD019",
+      "MD021"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "protected-fence",
+    "source": "```\n#  x\n```\n",
+    "candidate": "```\n#  x\n```\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "protected-indented",
+    "source": "    #  x\n",
+    "candidate": "    #  x\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "protected-html-block",
+    "source": "<div>\n#  x\n</div>\n",
+    "candidate": "<div>\n#  x\n</div>\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "protected-html-comment",
+    "source": "<!--\n#  x\n-->\n",
+    "candidate": "<!--\n#  x\n-->\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "protected-frontmatter",
+    "source": "---\n#  x: y\n---\n",
+    "candidate": "---\n#  x: y\n---\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "frontmatter"
+  },
+  {
+    "name": "not-heading-escaped",
+    "source": "\\#  x\n",
+    "candidate": "\\#  x\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "not-heading-seven",
+    "source": "#######  x\n",
+    "candidate": "#######  x\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "not-heading-setext",
+    "source": "a  b\n===\n",
+    "candidate": "a  b\n===\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "real-after-fence",
+    "source": "```\n#  x\n```\n\n##  Real\n",
+    "candidate": "```\n#  x\n```\n\n## Real\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "real-after-indented",
+    "source": "    #  x\n\n##  Real\n",
+    "candidate": "    #  x\n\n## Real\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "real-after-html-block",
+    "source": "<div>\n#  x\n</div>\n\n##  Real\n",
+    "candidate": "<div>\n#  x\n</div>\n\n## Real\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "real-after-comment",
+    "source": "<!--\n#  x\n-->\n\n##  Real\n",
+    "candidate": "<!--\n#  x\n-->\n\n## Real\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "real-after-frontmatter",
+    "source": "---\n#  x: y\n---\n\n##  Real\n",
+    "candidate": "---\n#  x: y\n---\n\n## Real\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": "frontmatter"
+  },
+  {
+    "name": "real-after-escaped",
+    "source": "\\#  x\n\n##  Real\n",
+    "candidate": "\\#  x\n\n## Real\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "real-after-seven",
+    "source": "#######  x\n\n##  Real\n",
+    "candidate": "#######  x\n\n## Real\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "real-after-setext",
+    "source": "a  b\n===\n\n##  Real\n",
+    "candidate": "a  b\n===\n\n## Real\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "directive-md019-disabled",
+    "source": "<!-- mdchk:disable MD019 -->\n##  a ##\n",
+    "candidate": "<!-- mdchk:disable MD019 -->\n## a ##\n",
+    "rules": [
+      "MD021"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "directive-both-disabled",
+    "source": "<!-- mdchk:disable MD019 MD021 -->\n##  a  ##\n",
+    "candidate": "<!-- mdchk:disable MD019 MD021 -->\n##  a  ##\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "config-md021-off",
+    "source": "#  x  #\n",
+    "candidate": "# x  #\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": "md021-off"
+  },
+  {
+    "name": "config-md019-off",
+    "source": "#  x  #\n",
+    "candidate": "# x #\n",
+    "rules": [
+      "MD021"
+    ],
+    "edit_count": 2,
+    "config": "md019-off"
+  },
+  {
+    "name": "config-both-off",
+    "source": "#  x  #\n",
+    "candidate": "#  x  #\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "both-off"
+  },
+  {
+    "name": "directive-not-allowed",
+    "source": "<!-- mdchk:disable MD019 MD021 -->\n##  a\n",
+    "candidate": "<!-- mdchk:disable MD019 MD021 -->\n## a\n",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": "no-permission"
+  },
+  {
+    "name": "directive-inside-heading",
+    "source": "#  <!-- mdchk:disable MD021 --> x  #\n",
+    "candidate": "# <!-- mdchk:disable MD021 --> x  #\n",
+    "rules": [
+      "MD019",
+      "MD021"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "with-md047",
+    "source": "##  a",
+    "candidate": "## a\n",
+    "rules": [
+      "MD019",
+      "MD047"
+    ],
+    "edit_count": 2,
+    "config": "md047"
+  },
+  {
+    "name": "with-md047-tasks",
+    "source": "##  Title\n\n- [x] task\n\nend",
+    "candidate": "## Title\n\n- [x] task\n\nend\n",
+    "rules": [
+      "MD019",
+      "MD047"
+    ],
+    "edit_count": 2,
+    "config": "md047"
+  },
+  {
+    "name": "with-md047-surplus",
+    "source": "##  a\n\n\n",
+    "candidate": "## a\n",
+    "rules": [
+      "MD019",
+      "MD047"
+    ],
+    "edit_count": 2,
+    "config": "md047"
+  },
+  {
+    "name": "with-md047-containers",
+    "source": "> - ##  a",
+    "candidate": "> - ## a\n",
+    "rules": [
+      "MD019",
+      "MD047"
+    ],
+    "edit_count": 2,
+    "config": "md047"
+  },
+  {
+    "name": "with-md047-empty-last",
+    "source": "##  a\n\n#",
+    "candidate": "## a\n\n#\n",
+    "rules": [
+      "MD019",
+      "MD047"
+    ],
+    "edit_count": 2,
+    "config": "md047"
+  },
+  {
+    "name": "deferred-md047-fence",
+    "source": "##  Title\n\n```\ncode",
+    "candidate": "## Title\n\n```\ncode",
+    "rules": [
+      "MD019"
+    ],
+    "edit_count": 1,
+    "config": "md047"
+  }
+]

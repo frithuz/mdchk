@@ -13,6 +13,7 @@ func closedHeadingSpaces(ctx context.Context, c engine.RuleContext) engine.RuleO
 		return engine.RuleOutcome{Err: err}
 	}
 	out := engine.RuleOutcome{}
+	edits := c.InteriorEdits()
 	for _, heading := range headings {
 		if err := c.Checkpoint(ctx, 1); err != nil {
 			out.Err = err
@@ -68,7 +69,16 @@ func closedHeadingSpaces(ctx context.Context, c engine.RuleContext) engine.RuleO
 					out.Err = err
 					return out
 				}
-				out.Findings = append(out.Findings, engine.Finding{Span: span, Message: "Closed heading delimiter gaps must contain exactly one ASCII space."})
+				finding := engine.Finding{Span: span, Message: "Closed heading delimiter gaps must contain exactly one ASCII space."}
+				// A gap containing a tab stays manual, including a tab-only gap's point.
+				if count > 1 && count == len(text) {
+					finding.FixEligible, err = edits.Eligible(ctx, "MD021", span, span)
+					if err != nil {
+						out.Err = err
+						return out
+					}
+				}
+				out.Findings = append(out.Findings, finding)
 			}
 		}
 	}
