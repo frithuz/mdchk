@@ -326,6 +326,27 @@ excluded. Use dialect-owned structural pipes, escaping, protected inline spans a
 classification. Rows already inside a parsed table belong to MD056 rather than MD075; do not
 manufacture a table from malformed rows.
 
+MD075 analysis is implemented for GFM only, enabled by default, with no
+rule-specific options. A read-only parser fact lists every physical Paragraph
+line with at least one structural pipe, in document order and including
+paragraphs in block quotes and list items, with its trimmed start and end (the
+container prefix, indentation, trailing spaces and tabs and the line ending
+removed), its paragraph and physical line, and the source cell count, outer
+pipes and delimiter shape from the separator classification the GFM table
+splitter itself uses: odd backslash runs escape a pipe, and pipes inside code
+spans stay structural. A delimiter-shaped line has only `:?-+:?` cells and
+starts with `|`, `:` or `-`. Table rows, headings, code, HTML blocks, front
+matter and link reference definitions are never read. A run is a maximal
+sequence of candidate lines on consecutive physical lines of one paragraph. A
+run of two or more lines reports one finding over the run when its lines share
+one cell count of at least two, every line has both outer pipes, or a line is
+delimiter-shaped; a run in a paragraph directly beside a sibling table on the
+adjacent physical line is reported at any length, which the current parser
+never produces. The message is `Pipe rows are not part of a table.` Missing or
+inconsistent paragraph provenance atomically withholds all findings with
+`Paragraph pipe-row context is unavailable; the complete MD075 inventory is withheld.`
+MD075 is permanently report-only. See the [MD075 contract](../rules/tables/md075.md).
+
 ### Corrections
 
 Retain the existing rule-specific correction policies. MD069, MD037, MD052, MD062 and MD075 stay

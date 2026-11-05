@@ -822,3 +822,12 @@ value is `aligned`, `compact` or `tight`, rejects any other option shape with
 detached parser-owned row and cell field/text bounds for every GFM table. The
 catalog proves MD060 inapplicable to CommonMark. MD060 is disabled by default
 and keeps its PlannedFix metadata; no correction is registered.
+
+MD075's `RuleContext.PipeRowCandidates` facade preserves the same original
+parse/source/options and cumulative operation authority, with both caller and
+originating controls. It rejects any option with `parser.ErrModel` and
+delegates to `Document.PipeRowCandidates`, which returns detached pipe-row
+candidate facts for every physical Paragraph line with a structural pipe,
+classified by the GFM table splitter's own separator logic. The catalog proves
+MD075 inapplicable to CommonMark. MD075 is default-enabled and keeps its NoFix
+metadata; it is permanently report-only.
