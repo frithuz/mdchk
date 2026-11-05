@@ -70,6 +70,8 @@ func TestDestinationWhitespaceCandidates(t *testing.T) {
 		{"line-break", "[a](b\nc d)", false, nil},
 		{"emphasis", "*[a](b c)*", false, [][2]int{{1, 9}}},
 		{"emphasis-label", "[*a*](b c)", false, nil},
+		{"emphasis-destination", "[a](*b* c)", false, nil},
+		{"code-span-destination", "[a](`b` c)", false, nil},
 		{"code-span", "`[a](b c)`", false, nil},
 		{"fenced", "```\n[a](b c)\n```", false, nil},
 		{"indented", "    [a](b c)", false, nil},

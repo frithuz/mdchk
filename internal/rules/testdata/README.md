@@ -81,7 +81,7 @@ separate trusted API and actual YAML/JSON numeric-type admission checks. Expecte
 results must never be regenerated from production output.
 
 `md062.json` is the independent issue-104 MD062 oracle (SHA-256
-`bca8967f53ceb7739dddc48e6387506a860c5aff3d83999e86a96218fde66b61`): 76
+`fb015ce6170104d19665a9e5ddfe96738fd8b67f4982dd7b3eebf36c6f796f6b`): 78
 records with original source size/SHA, selected flavors and settings, and
 authored candidate byte/scalar ranges with the constant
 `Whitespace in link destination.` message. They cover the page examples, image

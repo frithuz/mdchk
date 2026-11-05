@@ -71,11 +71,11 @@ type md062Literal struct {
 func md062Literals(t *testing.T) []md062Literal {
 	t.Helper()
 	b, e := os.ReadFile("testdata/md062.json")
-	if e != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != "bca8967f53ceb7739dddc48e6387506a860c5aff3d83999e86a96218fde66b61" {
+	if e != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != "fb015ce6170104d19665a9e5ddfe96738fd8b67f4982dd7b3eebf36c6f796f6b" {
 		t.Fatal("oracle identity", e)
 	}
 	var v struct{ Cases []md062Literal }
-	if e = json.Unmarshal(b, &v); e != nil || len(v.Cases) != 76 {
+	if e = json.Unmarshal(b, &v); e != nil || len(v.Cases) != 78 {
 		t.Fatal(e, len(v.Cases))
 	}
 	return v.Cases
