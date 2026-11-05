@@ -13,20 +13,44 @@ type ThematicSpacingFact struct {
 	Before bool
 }
 
+// TableSpacingFact identifies one missing source-body separator around a
+// table. It shares the thematic break fact shape and its detached authority.
+type TableSpacingFact = ThematicSpacingFact
+
 // ThematicSpacing reports missing immediate physical separators around eligible
-// thematic breaks in their real owning bodies. It compares source participants.
-// Removed definitions are merged once, in source order. Only ancestor prefixes
-// are active during a comparison. Terminal list/item summaries propagate real
-// content floors, while quotes and opaque blocks retain their entire boundary.
-// Any interruption withholds the complete inventory.
+// thematic breaks in their real owning bodies. Any interruption withholds the
+// complete inventory.
 func (d *Document) ThematicSpacing(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions) ([]ThematicSpacingFact, error) {
 	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 1, 1); err != nil {
 		return nil, err
 	}
-	eligible, err := d.thematicSpacingTargets(ctx, budget)
+	eligible, err := d.spacingTargets(ctx, budget, ThematicBreak)
 	if err != nil {
 		return nil, err
 	}
+	return d.bodySpacing(ctx, budget, index, options, eligible)
+}
+
+// TableSpacing reports missing immediate physical separators around eligible
+// GFM tables in their real owning bodies, with ThematicSpacing's semantics.
+// Any interruption withholds the complete inventory.
+func (d *Document) TableSpacing(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions) ([]TableSpacingFact, error) {
+	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 1, 1); err != nil {
+		return nil, err
+	}
+	eligible, err := d.spacingTargets(ctx, budget, Table)
+	if err != nil {
+		return nil, err
+	}
+	return d.bodySpacing(ctx, budget, index, options, eligible)
+}
+
+// bodySpacing compares source participants around the eligible targets, in
+// tree order. Removed definitions are merged once, in source order. Only
+// ancestor prefixes are active during a comparison. Terminal list/item
+// summaries propagate real content floors, while quotes and opaque blocks
+// retain their entire boundary.
+func (d *Document) bodySpacing(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, eligible []*Node) ([]ThematicSpacingFact, error) {
 	target := 0
 	type lineState struct{ last, prefix int }
 	if err := headingFactCharge(ctx, budget, int64(len(index.lines))+1, int64(len(index.lines))); err != nil {
@@ -61,7 +85,7 @@ func (d *Document) ThematicSpacing(ctx context.Context, budget *OperationBudget,
 	}
 	type participant struct {
 		span          Span
-		thematic      bool
+		target        bool
 		marker, floor int
 	}
 	type frame struct {
@@ -128,7 +152,7 @@ func (d *Document) ThematicSpacing(ctx context.Context, budget *OperationBudget,
 		}
 		body := f.node.Kind() == DocumentKind || f.node.Kind() == BlockQuote || f.node.Kind() == ListItem
 		previous := f.previous
-		if body && previous.span.Present() && (previous.thematic || current.thematic) {
+		if body && previous.span.Present() && (previous.target || current.target) {
 			last, err := locate(previous.floor - 1)
 			if err != nil {
 				return err
@@ -139,7 +163,7 @@ func (d *Document) ThematicSpacing(ctx context.Context, budget *OperationBudget,
 			}
 			// Check each target's immediate physical neighbor, never a distant
 			// blank or a blank retained inside its neighboring participant.
-			if previous.thematic {
+			if previous.target {
 				if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
 					return err
 				}
@@ -150,7 +174,7 @@ func (d *Document) ThematicSpacing(ctx context.Context, budget *OperationBudget,
 					}
 				}
 			}
-			if current.thematic {
+			if current.target {
 				if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
 					return err
 				}
@@ -258,11 +282,11 @@ func (d *Document) ThematicSpacing(ctx context.Context, budget *OperationBudget,
 				if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
 					return nil, err
 				}
-				thematic := target < len(eligible) && eligible[target] == child
-				if thematic {
+				matched := target < len(eligible) && eligible[target] == child
+				if matched {
 					target++
 				}
-				if err := accept(f, participant{span: child.spec.Envelope, thematic: thematic, marker: -1, floor: child.spec.Envelope.End()}); err != nil {
+				if err := accept(f, participant{span: child.spec.Envelope, target: matched, marker: -1, floor: child.spec.Envelope.End()}); err != nil {
 					return nil, err
 				}
 			}
@@ -301,11 +325,12 @@ func (d *Document) ThematicSpacing(ctx context.Context, budget *OperationBudget,
 	return out, nil
 }
 
-// thematicSpacingTargets follows the complete inline/tree/raw-tail order before
-// body comparisons. Inline HTML in a Paragraph may protect a later block; Image
+// spacingTargets collects nodes of kind outside any open raw HTML
+// lifetime. It follows the complete inline/tree/raw-tail order before body
+// comparisons. Inline HTML in a Paragraph may protect a later block; Image
 // alternatives save and restore the surrounding raw state. Borrowed node pointers
 // remain private to this call and confer no AST authority.
-func (d *Document) thematicSpacingTargets(ctx context.Context, budget *OperationBudget) ([]*Node, error) {
+func (d *Document) spacingTargets(ctx context.Context, budget *OperationBudget, kind Kind) ([]*Node, error) {
 	charge := func(work, nodes int64) error { return headingFactCharge(ctx, budget, work, nodes) }
 	grow := func(length, capacity int) (int, error) {
 		if length < capacity {
@@ -364,7 +389,7 @@ func (d *Document) thematicSpacingTargets(ctx context.Context, budget *Operation
 			}
 			continue
 		}
-		if n.Kind() == ThematicBreak && raw == "" {
+		if n.Kind() == kind && raw == "" {
 			capacity, err := grow(len(out), cap(out))
 			if err != nil {
 				return nil, err
