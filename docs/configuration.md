@@ -86,7 +86,7 @@ minima, each defaulting to 1; MD072 accepts boolean `recursive` (default false) 
 (default `<!-- toc -->`) and `end_marker` (default `<!-- /toc -->`) and heading levels
 `min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009,
 MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043,
-MD061, MD063, MD072, MD073, MD080, MD083, MD082, MD090, MD081, MD088, MD033, MD086, MD087, MD093 and MD071 are report-only.
+MD061, MD063, MD072, MD073, MD080, MD083, MD084, MD082, MD090, MD081, MD088, MD033, MD086, MD087, MD093 and MD071 are report-only.
 Rules marked unavailable in the linked inventory remain pending. Every default-enabled
 rule is available for CommonMark and GFM; an enabled rule without an implementation
 would produce a coverage deficit rather than a clean result. Valid UTF-8 with all
@@ -607,3 +607,11 @@ valid-UTF-8 domain, checked even when the rule is disabled; empty sequences are
 inert and duplicates are harmless. Sequences compare by original UTF-8 bytes,
 match anywhere inside a word and never scan code blocks. All findings are
 report-only; see [MD083](rules/encoding/md083.md) for the matching policy.
+
+MD084 hidden-character analysis is available but disabled by default for
+CommonMark and GFM. `allowed_codepoints` defaults to an empty list of
+hexadecimal Unicode scalars, without a `U+` or `0x` prefix; entries match by
+numeric value, so `feff`, `FEFF` and `00FEFF` are the same, and surrogates or
+values above `10FFFF` are rejected even when the rule is disabled. Allowing a
+code point MD084 never reports has no effect. All findings are report-only; see
+[MD084](rules/encoding/md084.md) for the reported set and prose scope.
