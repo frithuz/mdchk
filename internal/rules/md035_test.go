@@ -113,7 +113,7 @@ func TestMD035DefaultAvailabilityAndStrictSettings(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		out, err := r.Lint(context.Background(), []engine.Input{in}, engine.RunOptions{})
+		out, err := registry(t, registrationsWithout("MD071")).Lint(context.Background(), []engine.Input{in}, engine.RunOptions{})
 		if err != nil || out.Complete {
 			t.Fatal(out, err)
 		}

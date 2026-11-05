@@ -48,7 +48,7 @@ func TestMD087FrozenProductionOracle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if fmt.Sprintf("%x", sha256.Sum256(raw)) != "512bde0c95a3868acd8c8c7f498cda34eebc85daac513dce00997ccc2aa13af4" {
+	if fmt.Sprintf("%x", sha256.Sum256(raw)) != "76110b9b7ea25d0317b89e354aab3f0be6ed5688585108b5d07051799b910464" {
 		t.Fatal("immutable root oracle identity")
 	}
 	var oracle struct {
@@ -109,7 +109,12 @@ func TestMD087FrozenProductionOracle(t *testing.T) {
 						t.Fatal(err)
 					}
 				}
-				r := registry(t, Registrations())
+				regs := Registrations()
+				if tc.Name == "known-unavailable-mixed" {
+					// Keep a default-enabled target without an implementation.
+					regs = registrationsWithout("MD071")
+				}
+				r := registry(t, regs)
 				selection, e := r.SelectRules(s, engine.ValidationProviders{})
 				if e != nil {
 					t.Fatal(e)

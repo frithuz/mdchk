@@ -122,7 +122,7 @@ func TestCompiledApplyAdmissionAndReporting(t *testing.T) {
 	got := runAppliedFix(t, binary, root, "fix", "doc.md", "--format=json")
 	//nolint:gosec // Access only synthetic test fixtures or the fixed repository source overlay.
 	saved, _ := os.ReadFile(filepath.Join(root, "doc.md"))
-	if got.Status != 15 || string(saved) != "hello\n" || got.Result.Files[0].WriteStatus != "written" {
+	if got.Status != 10 || !got.Result.Complete || len(got.Result.Coverage) != 0 || string(saved) != "hello\n" || got.Result.Files[0].WriteStatus != "written" {
 		t.Fatal(got, string(saved))
 	}
 }

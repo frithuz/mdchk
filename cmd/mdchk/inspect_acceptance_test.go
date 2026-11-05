@@ -72,8 +72,8 @@ func TestCompiledInspectionWorkflow(t *testing.T) {
 	if p.File.ResolvedPath != filepath.Join(root, "README.md") || p.File.SizeBytes != int64(len(source)) || p.File.SHA1 != hex.EncodeToString(one[:]) || p.File.SHA256 != hex.EncodeToString(two[:]) || p.File.BinaryVersion == "" || p.File.PhysicalLineCount != 6 || full.Result.CheckedFiles[0] != "README.md" || full.Result.Files[0].InputSnapshot.SHA256 != p.File.SHA256 {
 		t.Fatal(p.File, full.Result.Files)
 	}
-	if full.Result.Complete || len(full.Result.Coverage) == 0 {
-		t.Fatal("default unavailable implementations looked complete")
+	if !full.Result.Complete || len(full.Result.Coverage) != 0 {
+		t.Fatal("available default implementations looked incomplete")
 	}
 	selected, q := runInspection(t, binary, root, root, "inspect", "--lines=4-5", "--format=json", "README.md")
 	if selected.Status != 0 || q.File.SHA256 != p.File.SHA256 || q.File.SelectedLines.Start != 4 || q.File.SelectedRegion.ByteRange.Start != strings.Index(source, "> one") || !(*q.Directives.Data)[0].ContextOnly || q.AST.Data.Root.ByteRange.End != len(source) {

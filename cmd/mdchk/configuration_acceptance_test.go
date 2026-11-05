@@ -399,7 +399,7 @@ func testConfigurationStrict(t *testing.T, binary string) {
 	})
 	t.Run("capability preflight", func(t *testing.T) {
 		for _, tc := range []configurationNegative{
-			{"explicit enabled default", availableConfiguration + "rules: {MD071: {}}\n", "rules.MD071", "explicitly enabled rule is unavailable", 4, 16},
+			{"explicit enabled default", availableConfiguration + "rules: {MD066: {}}\n", "rules.MD066", "explicitly enabled rule is unavailable", 4, 16},
 			{"explicit enabled unavailable", availableConfiguration + "rules: {MD061: {enabled: true}}\n", "rules.MD061", "explicitly enabled rule is unavailable", 4, 16},
 			{"removed flavor", "version: 1\nflavor: pandoc\ndirectives: {enabled: false}\n", "flavor", "expected commonmark or gfm", 2, 9},
 			{"resource index not representable", availableConfiguration + "resources: {index_file: .git}\n", "resources.index_file", "not representable", 4, 25},
@@ -448,20 +448,9 @@ func testConfigurationStrict(t *testing.T, binary string) {
 		putConfigurationFile(t, root, ".mdchk.yaml", availableConfiguration+rules)
 		putConfigurationFile(t, root, "good.md", "# good\r\n")
 		run := runConfiguration(t, binary, root, root, "lint", "--format=json", "good.md")
-		if run.Status != 15 || run.Result.Status != "incomplete" || run.Result.Complete || len(run.Result.CheckedFiles) != 1 {
+		// Every default-enabled CommonMark rule is available, so defaults are complete.
+		if run.Status != 0 || run.Result.Status != "clean" || !run.Result.Complete || len(run.Result.CheckedFiles) != 1 || len(run.Result.Coverage) != 0 {
 			t.Fatalf("valid configuration/default coverage: %+v", run)
-		}
-		md005 := false
-		for _, c := range run.Result.Coverage {
-			if c.Rule == "MD071" {
-				md005 = true
-			}
-			if c.Rule == "MD013" {
-				t.Fatal("disabled MD013 incurred coverage")
-			}
-		}
-		if !md005 {
-			t.Fatal("implicit enabled MD071 disappeared")
 		}
 	}
 	root := configurationProject(t)

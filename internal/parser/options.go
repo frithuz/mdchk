@@ -41,6 +41,10 @@ func NewFrontmatterOptions(enabled bool, formats []string) (FrontmatterOptions, 
 	return options, nil
 }
 
+// Enabled reports whether header recognition is selected. It grants no
+// decoding, format or consumer authority.
+func (o FrontmatterOptions) Enabled() bool { return o.enabled }
+
 // ParseOptions selects the complete GFM profile and independent frontmatter
 // recognition. Its zero value has the same CommonMark/disabled behavior as Parse.
 // It contains only immutable values and is safe to reuse across operations.

@@ -148,14 +148,14 @@ func TestCompiledGFMSelectionAndConsumers(t *testing.T) {
 			default:
 				got = runConfiguration(t, binary, root, root, args...)
 			}
-			want := 15
+			want := 10
 			if args[0] == "inspect" {
 				want = 0
 				var p inspect.Projection
 				_ = json.Unmarshal(got.Result.Inspection, &p)
 				assertCompiledGFM(t, p, "gfm")
 			}
-			if got.Status != want || got.Result.Complete || len(got.Result.Coverage) == 0 {
+			if got.Status != want || !got.Result.Complete || len(got.Result.Coverage) != 0 {
 				t.Fatal("default catalog coverage", got)
 			}
 		}

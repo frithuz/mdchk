@@ -249,10 +249,10 @@ func TestCompiledProductionFixBoundaryAndNoWrites(t *testing.T) {
 			}
 		}
 	}
-	// The untouched catalog defaults still expose reduced coverage honestly.
+	// The untouched catalog defaults are all available, so coverage is complete.
 	putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\nflavor: commonmark\n")
 	got := runFixConfiguration(t, binary, root, "fix", "--dry-run", "doc.md", "--format=json")
-	if got.Status != 15 || len(got.Result.Coverage) == 0 {
+	if got.Status != 10 || !got.Result.Complete || len(got.Result.Coverage) != 0 {
 		t.Fatal(got.Status, got.Stdout)
 	}
 }

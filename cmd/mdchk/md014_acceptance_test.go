@@ -999,7 +999,7 @@ func TestCompiledPlatformMD014DefaultCatalogCoverage(t *testing.T) {
 	before := readinessState(t, root)
 	got := md014NativeRun(t, binary, root, "lint", "doc.md", "--format=json")
 	out := md014NativeJSON(t, []byte(got.Stdout), "lint")
-	if got.Status != 15 || out.Complete || len(out.Coverage) == 0 {
+	if got.Status != 10 || !out.Complete || len(out.Coverage) != 0 {
 		t.Fatal(got, out)
 	}
 	found := false

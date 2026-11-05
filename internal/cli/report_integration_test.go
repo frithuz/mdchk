@@ -199,9 +199,25 @@ func TestCompiledReportStreamsAndExits(t *testing.T) {
 			t.Fatalf("missing text summary: %q", &stdout)
 		}
 	}
+	// Every default-enabled CommonMark rule is available, so defaults are complete.
 	put(t, filepath.Join(root, config.Filename), availableConfig)
+	{
+		cmd := exec.Command(binary, "lint", "--format=json", "good.md") //nolint:gosec // Controlled compiled fixture.
+		cmd.Env = testenv.Environ()
+		cmd.Dir = root
+		var stdout, stderr bytes.Buffer
+		cmd.Stdout, cmd.Stderr = &stdout, &stderr
+		if err := cmd.Run(); err != nil || stderr.Len() != 0 {
+			t.Fatalf("default analysis must be complete: %v %q", err, &stderr)
+		}
+		if r := validateEmitted(t, root, stdout.Bytes()); r.Status != "clean" || !r.Complete || len(r.Coverage) != 0 {
+			t.Fatalf("default result: %+v", r)
+		}
+	}
+	put(t, filepath.Join(root, "open.md"), "---\ngood\n")
+	put(t, filepath.Join(root, config.Filename), availableConfig+"frontmatter: {enabled: true}\n")
 	for _, format := range []string{"text", "json"} {
-		cmd := exec.Command(binary, "lint", "--format="+format, "good.md") //nolint:gosec // Controlled compiled fixture.
+		cmd := exec.Command(binary, "lint", "--format="+format, "open.md") //nolint:gosec // Controlled compiled fixture.
 		cmd.Env = testenv.Environ()
 		cmd.Dir = root
 		var stdout, stderr bytes.Buffer
@@ -219,11 +235,11 @@ func TestCompiledReportStreamsAndExits(t *testing.T) {
 				t.Fatalf("zero-finding incomplete result: %+v", r)
 			}
 			for _, c := range r.Coverage {
-				if c.Reason != result.RuleUnavailable || c.Rule == "" || c.Path != "good.md" || c.Range != nil {
-					t.Fatalf("fabricated or missing default-rule coverage: %+v", c)
+				if c.Reason == result.RuleUnavailable || c.Rule != "" || c.Path != "open.md" || c.Range != nil {
+					t.Fatalf("fabricated or missing unterminated-header coverage: %+v", c)
 				}
 			}
-		} else if !strings.Contains(stdout.String(), "Found 0 violations.") || !strings.Contains(stdout.String(), "incomplete (complete: false)") || !strings.Contains(stdout.String(), "rule-unavailable:") {
+		} else if !strings.Contains(stdout.String(), "Found 0 violations.") || !strings.Contains(stdout.String(), "incomplete (complete: false)") || !strings.Contains(stdout.String(), "parser-uncertain:") {
 			t.Fatalf("incomplete text: %q", &stdout)
 		}
 	}

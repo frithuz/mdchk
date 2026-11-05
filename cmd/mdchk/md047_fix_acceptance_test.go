@@ -130,7 +130,7 @@ func TestCompiledProductionMD047FixBoundsAndRemainingCoverage(t *testing.T) {
 	putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\nflavor: commonmark\n")
 	putConfigurationFile(t, root, "doc.md", "hello")
 	got := runFixConfiguration(t, binary, root, "fix", "--dry-run", "doc.md", "--format=json")
-	if got.Status != 15 || len(got.Result.Changes) != 1 || got.Result.Complete || got.Result.Changes[0].Candidate.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte("hello\n"))) {
+	if got.Status != 10 || len(got.Result.Changes) != 1 || !got.Result.Complete || len(got.Result.Coverage) != 0 || got.Result.Changes[0].Candidate.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte("hello\n"))) {
 		t.Fatal(got)
 	}
 	putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))

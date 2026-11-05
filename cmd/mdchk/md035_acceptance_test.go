@@ -391,24 +391,17 @@ func TestCompiledPlatformMD035ImplicitDefaultCoverage(t *testing.T) {
 			putConfigurationFile(t, root, "doc.md", "---\n\n***\n")
 			got := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=json")
 			out := validateConfigurationJSON(t, []byte(got.Stdout))
-			if got.Status != 15 || out.Complete {
+			// Every default-enabled rule is available, so defaults are complete.
+			if got.Status != 10 || !out.Complete || len(out.Coverage) != 0 {
 				t.Fatal(got)
 			}
-			unrelated, found := false, false
-			for _, c := range out.Coverage {
-				if c.Rule == "MD035" {
-					t.Fatal(c)
-				}
-				if c.Reason == result.RuleUnavailable {
-					unrelated = true
-				}
-			}
+			found := false
 			for _, d := range out.Diagnostics {
 				if d.Rule == "MD035" {
 					found = true
 				}
 			}
-			if !unrelated || !found {
+			if !found {
 				t.Fatal(got)
 			}
 		})

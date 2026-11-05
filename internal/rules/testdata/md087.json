@@ -534,7 +534,7 @@
     {
       "name": "known-unavailable-mixed",
       "source": "# A\n<!-- mdchk:disable MD047 MD001 MD047 MD071 -->\n### B\n",
-      "settings": "Default-enabled unavailable MD071 retained; do not explicitly enable it in config. Explicitly enable MD087, MD001, MD047.",
+      "settings": "Default-enabled MD071 retained with its registration omitted so it is unavailable; do not explicitly enable it in config. Explicitly enable MD087, MD001, MD047.",
       "findings": [
         {
           "target": "MD047",

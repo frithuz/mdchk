@@ -112,7 +112,7 @@ func TestMD009FinalPublicationWithholdsAllFindings(t *testing.T) {
 
 func TestMD009CatalogOptionsDefaultAndDirectives(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD009") || r.Available("MD071") || len(r.Metadata()) != 87 {
+	if !r.Available("MD009") || r.Available("MD095") || len(r.Metadata()) != 87 {
 		t.Fatal("availability")
 	}
 	for _, m := range r.Metadata() {

@@ -180,7 +180,7 @@ func TestCompiledEditorCommandsCanonicalTruth(t *testing.T) {
 	}{
 		{"lint-Unicode", "\t雪😀x", fixConfiguration(), []string{"lint", "nested/doc.md"}, 10},
 		{"lint-clean", "clean\n", fixConfiguration(), []string{"lint", "nested/doc.md"}, 0},
-		{"lint-coverage", "clean\n", availableConfig, []string{"lint", "nested/doc.md"}, 15},
+		{"lint-coverage", "---\nclean\n", availableConfig + "frontmatter: {enabled: true}\n", []string{"lint", "nested/doc.md"}, 15},
 		{"safe-preview", "UNIQUE raw Markdown", fixConfiguration(), []string{"fix", "--dry-run", "nested/doc.md"}, 0},
 		{"protected-preview", "\n<!-- 😀x", fixConfiguration(), []string{"fix", "--dry-run", "nested/doc.md"}, 10},
 		{"apply", "safe", fixConfiguration(), []string{"fix", "nested/doc.md"}, -1},

@@ -152,8 +152,7 @@ func TestCompiledMD047ProductionAnalysis(t *testing.T) {
 			}
 		})
 	}
-	// Missing ordinary defaults still make lint incomplete; inspection reports
-	// their absence as observations without changing the implemented rule status.
+	// Every ordinary default is available, so default lint is complete.
 	putConfigurationFile(t, root, ".mdchk.yaml", availableConfiguration)
 	putConfigurationFile(t, root, "doc.md", "missing")
 	got := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=json")
@@ -164,12 +163,7 @@ func TestCompiledMD047ProductionAnalysis(t *testing.T) {
 			md047Count++
 		}
 	}
-	if got.Status != 15 || md047Count != 1 || out.Complete {
+	if got.Status != 10 || md047Count != 1 || !out.Complete || len(out.Coverage) != 0 {
 		t.Fatal(got)
-	}
-	for _, c := range out.Coverage {
-		if c.Rule == "MD047" {
-			t.Fatal("implemented MD047 reported unavailable", c)
-		}
 	}
 }
