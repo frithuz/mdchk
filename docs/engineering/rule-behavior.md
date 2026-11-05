@@ -199,6 +199,21 @@ otherwise ambiguous malformed delimiters. Keep valid parsed destination checks i
 candidate grammar handles forms which otherwise fall back to plain text. No percent-encoding fix is
 implied.
 
+MD062 analysis is implemented for CommonMark and GFM with no rule-specific
+options and default enablement. It reports the complete original candidate
+span, from a leading `!` or the first `[` through the closing `)`, with
+`Whitespace in link destination.` Only exact unescaped bracket and parenthesis
+bytes establish syntax, and both groups must be flat and byte-adjacent. After
+trimming edge spaces and tabs, the destination must hold a literal ASCII space
+or tab run; content opening with `<`, a first run followed by `"` or `'`, runs
+directly after a literal `\`, and entity, escape or percent-encoded whitespace
+are excluded. Whole Link/Image/CodeSpan owners are opaque, and candidates stay
+inside one contiguous Text island on one line without crossing code, raw HTML
+lifetimes/tails, metadata or control boundaries. Chains and candidates adjacent
+to a parsed link or image are excluded. Unknown necessary provenance before a
+possible candidate atomically withholds all findings. No MD062 correction is
+produced. See the [MD062 contract](../rules/links-and-images/md062.md).
+
 ### Md075
 
 Require at least two consecutive pipe-row candidates in one container, or a candidate row
