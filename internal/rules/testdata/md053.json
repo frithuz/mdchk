@@ -1,0 +1,1091 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "page-bad",
+      "source": "[unused]: guide.md",
+      "source_bytes": 18,
+      "source_sha256": "823565353b17aa75beb1d649fcf8bf49a093d1c35a77f6ecac4f156b9acff685",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            9
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "expected": "unused",
+          "message": "Definition \"unused\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "page-good",
+      "source": "[Guide][manual]\n\n[manual]: guide.md",
+      "source_bytes": 35,
+      "source_sha256": "3223175adf90313982079c1ff386099d427e8181c4e8c90de9e3c1d5ee7da533",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "page-bad-disabled",
+      "source": "[unused]: guide.md",
+      "source_bytes": 18,
+      "source_sha256": "823565353b17aa75beb1d649fcf8bf49a093d1c35a77f6ecac4f156b9acff685",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary prose\n",
+      "source_bytes": 15,
+      "source_sha256": "922c8578527e7cd2ae1f5047cf1c7d7644035cb6caf0899483ff2ca4e2742c0f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "unused-two",
+      "source": "[a]: x\n[b]: y\n",
+      "source_bytes": 14,
+      "source_sha256": "34682d08cc7a05ef416df05cc5e43fafd1b4c029488e47c474cede13183a2970",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"a\" is not used by any reference."
+        },
+        {
+          "bytes": [
+            7,
+            11
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"b\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "title-and-angle",
+      "source": "[a]: <u> \"t\"\n",
+      "source_bytes": 13,
+      "source_sha256": "8564ce3279c4f5a67a3f5d40a62dda672b722eaf5cee357c5c0ff6681d959b24",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"a\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "shadowed-first-used",
+      "source": "[a]\n\n[a]: x\n[A]: y\n",
+      "source_bytes": 19,
+      "source_sha256": "23d78f4825ba4f19d5bd4c3476276abb0143dd8631bbf94a2b86f3508b9c7137",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            16
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            5
+          ],
+          "expected": "shadowed",
+          "message": "Definition \"a\" is shadowed by an earlier definition of the same label."
+        }
+      ]
+    },
+    {
+      "name": "shadowed-first-used-crlf",
+      "source": "[a]\r\n\r\n[a]: x\r\n[A]: y\r\n",
+      "source_bytes": 23,
+      "source_sha256": "8e6c416b048e2a660ed3a3056e5b1e299e13e64d297624299b3c70c89898929e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            19
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            5
+          ],
+          "expected": "shadowed",
+          "message": "Definition \"a\" is shadowed by an earlier definition of the same label."
+        }
+      ]
+    },
+    {
+      "name": "shadowed-first-unused",
+      "source": "[a]: x\n[a]: y\n",
+      "source_bytes": 14,
+      "source_sha256": "ddfc71d10c52ee970e97bdc894c331c0d4482bb149682d88309269298c28d1fa",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"a\" is not used by any reference."
+        },
+        {
+          "bytes": [
+            7,
+            11
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "expected": "shadowed",
+          "message": "Definition \"a\" is shadowed by an earlier definition of the same label."
+        }
+      ]
+    },
+    {
+      "name": "shadowed-three",
+      "source": "[a]\n\n[a]: x\n[A]: y\n[ a ]: z\n",
+      "source_bytes": 28,
+      "source_sha256": "9c6e30a81442ee7831d402e7c10f5531c10c70964812f57b95ed90288b8504a0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            16
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            5
+          ],
+          "expected": "shadowed",
+          "message": "Definition \"a\" is shadowed by an earlier definition of the same label."
+        },
+        {
+          "bytes": [
+            19,
+            25
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            7
+          ],
+          "expected": "shadowed",
+          "message": "Definition \"a\" is shadowed by an earlier definition of the same label."
+        }
+      ]
+    },
+    {
+      "name": "used-and-unused-mixed",
+      "source": "[b]\n\n[a]: x\n[b]: y\n[B]: z\n",
+      "source_bytes": 26,
+      "source_sha256": "29e6287d1c013a6c21d52a0a70e9380cecb0109918315718e2e1253bb6f743a5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            5,
+            9
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"a\" is not used by any reference."
+        },
+        {
+          "bytes": [
+            19,
+            23
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            5
+          ],
+          "expected": "shadowed",
+          "message": "Definition \"b\" is shadowed by an earlier definition of the same label."
+        }
+      ]
+    },
+    {
+      "name": "case-and-whitespace-variants",
+      "source": "[Foo  Bar]\n\n[foo bar]: x\n[FOO\tBAR]: y\n",
+      "source_bytes": 38,
+      "source_sha256": "c85ccbe1d95a86e09c0cac8e1b784fd280471b088ed667f4aa16cb176aa1902a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            25,
+            35
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            11
+          ],
+          "expected": "shadowed",
+          "message": "Definition \"foo bar\" is shadowed by an earlier definition of the same label."
+        }
+      ]
+    },
+    {
+      "name": "full-collapsed-shortcut-uses",
+      "source": "[x][full] [coll][] [short]\n\n[full]: a\n[coll]: b\n[short]: c\n",
+      "source_bytes": 59,
+      "source_sha256": "5c56d7584ad4e4ee1877a84b5cc3377a4312670d099d7b758fb8778a0c6406ae",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "image-uses",
+      "source": "![a][img] ![b][] ![pic]\n\n[img]: a.png\n[b]: b.png\n[pic]: c.png\n",
+      "source_bytes": 62,
+      "source_sha256": "cca70a1619558289cd54552ac7a75458f5feaa8f8beb52985a5b1cb79e6726c4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "use-inside-inline-html",
+      "source": "a <span>[x]</span>\n\n[x]: u\n",
+      "source_bytes": 27,
+      "source_sha256": "d455300e16f48fdbd4a68a1f53602b70a73d4e06222d2eef01c32458362d5763",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "inline-link-is-not-a-use",
+      "source": "[x](u)\n\n[x]: v\n",
+      "source_bytes": 15,
+      "source_sha256": "c4d1bfc409ff3483e292e2d5565ffd91291a1934b3cfc183f04f88ee964c5694",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            12
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"x\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "block-quote-list-used",
+      "source": "> - [x]: u\n\n[x]\n",
+      "source_bytes": 16,
+      "source_sha256": "5ea9837927a102c84e96af1f551d54c1ba4f2357d8148fcfb382c0a9542d1c99",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "block-quote-list-unused",
+      "source": "> - [x]: u\n",
+      "source_bytes": 11,
+      "source_sha256": "29704bc676154e720605f590f2c46c358705229279d009299cc9189531957ed3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            8
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "unused",
+          "message": "Definition \"x\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "nested-list-used",
+      "source": "- a\n  - [y]: u\n\n[y]\n",
+      "source_bytes": 20,
+      "source_sha256": "8089c4c6921d1edf2b7aa4a12b02575dda573bbcad3f245ad693d76768f7bb9b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "nested-list-unused",
+      "source": "- a\n  - [y]: u\n",
+      "source_bytes": 15,
+      "source_sha256": "2e449a39c27ab95795a4a96f5de7a0a4422e95635e69e26890011e7dea7087dc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            12
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            9
+          ],
+          "expected": "unused",
+          "message": "Definition \"y\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "use-inside-block-quote",
+      "source": "> [x]\n\n[x]: u\n",
+      "source_bytes": 14,
+      "source_sha256": "5e4c02c18ec25753c00fe7e1a1f5e4c82eb9400b93883001f30832c109baa6de",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "code-span-is-not-a-use",
+      "source": "`[x]`\n\n[x]: u\n",
+      "source_bytes": 14,
+      "source_sha256": "db52a7c1a9ae7006ce4e170e95bb6ed3e29b8a73c14b921deb75ce618bbfa7a5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            7,
+            11
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"x\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "fenced-code-is-not-a-use",
+      "source": "```\n[x]\n```\n\n[x]: u\n",
+      "source_bytes": 20,
+      "source_sha256": "26f3393140f7af7f98b288891dd799a3abb87700158208596b16b74805f6126b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            13,
+            17
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"x\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "indented-code-is-not-a-use",
+      "source": "    [x]\n\n[x]: u\n",
+      "source_bytes": 16,
+      "source_sha256": "67dec38bbf0b04a65dbcb043123d6e0f37074fb1d468f569ef7b9d634bd5f472",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            9,
+            13
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"x\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "html-block-is-not-a-use",
+      "source": "<div>\n[x]\n</div>\n\n[x]: u\n",
+      "source_bytes": 25,
+      "source_sha256": "b781a515f48d92c3d4683cb7d719e135c4fdb658591a5a5c07b3d3708ab99eee",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            18,
+            22
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"x\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "ignored-label-normalized",
+      "source": "[foo bar]: x\n[FOO BAR]: y\n",
+      "source_bytes": 26,
+      "source_sha256": "db92b570b7fe0d5302fff2f5c875d67390d7e151c948450cc71b37e462bf9995",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "ignored_labels": [
+          "Foo  Bar"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            13,
+            23
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            11
+          ],
+          "expected": "shadowed",
+          "message": "Definition \"foo bar\" is shadowed by an earlier definition of the same label."
+        }
+      ]
+    },
+    {
+      "name": "ignored-label-other",
+      "source": "[a]: x\n[b]: y\n",
+      "source_bytes": 14,
+      "source_sha256": "34682d08cc7a05ef416df05cc5e43fafd1b4c029488e47c474cede13183a2970",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "ignored_labels": [
+          "B"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"a\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "ignored-label-empty-entry",
+      "source": "[a]: x\n",
+      "source_bytes": 7,
+      "source_sha256": "7728ed964f4606ce9c7f554a1a1fcb66be38c87979a3e70fa2affe5de1d408ab",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "ignored_labels": [
+          "",
+          "  "
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"a\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "ignored-label-with-brackets",
+      "source": "[a]: x\n",
+      "source_bytes": 7,
+      "source_sha256": "7728ed964f4606ce9c7f554a1a1fcb66be38c87979a3e70fa2affe5de1d408ab",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "ignored_labels": [
+          "[a]"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"a\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "line-endings-lf",
+      "source": "intro\n\n[one]: a\n> [two]: b\n",
+      "source_bytes": 27,
+      "source_sha256": "8238820962ed5a1875546c85ea00f4ca273d7195f9372100e73013b9edb0fb46",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            7,
+            13
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "expected": "unused",
+          "message": "Definition \"one\" is not used by any reference."
+        },
+        {
+          "bytes": [
+            18,
+            24
+          ],
+          "start": [
+            4,
+            3
+          ],
+          "end": [
+            4,
+            9
+          ],
+          "expected": "unused",
+          "message": "Definition \"two\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "line-endings-crlf",
+      "source": "intro\r\n\r\n[one]: a\r\n> [two]: b\r\n",
+      "source_bytes": 31,
+      "source_sha256": "8631d428dc08126183cf840f73c80fe5948443ff42acb3af03631c641263d3f6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            9,
+            15
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            7
+          ],
+          "expected": "unused",
+          "message": "Definition \"one\" is not used by any reference."
+        },
+        {
+          "bytes": [
+            21,
+            27
+          ],
+          "start": [
+            4,
+            3
+          ],
+          "end": [
+            4,
+            9
+          ],
+          "expected": "unused",
+          "message": "Definition \"two\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "non-ascii-label",
+      "source": "[Ünïcödé]: x\n[ünïcödé]: y\n",
+      "source_bytes": 34,
+      "source_sha256": "c897da13e35874b392f4b8c6ab21216490527c893340d74ff962c0cf80e8e4e1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            14
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "unused",
+          "message": "Definition \"ünïcödé\" is not used by any reference."
+        },
+        {
+          "bytes": [
+            17,
+            31
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            11
+          ],
+          "expected": "shadowed",
+          "message": "Definition \"ünïcödé\" is shadowed by an earlier definition of the same label."
+        }
+      ]
+    },
+    {
+      "name": "full-case-folding",
+      "source": "[ẞ]: x\n[ss]: y\n",
+      "source_bytes": 17,
+      "source_sha256": "ad4424614322e2fdf6ac55a3dee84221d1097747a1135d23af230ccb0b31af1a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "unused",
+          "message": "Definition \"ss\" is not used by any reference."
+        },
+        {
+          "bytes": [
+            9,
+            14
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "shadowed",
+          "message": "Definition \"ss\" is shadowed by an earlier definition of the same label."
+        }
+      ]
+    },
+    {
+      "name": "multi-line-label",
+      "source": "[foo\nbar]: x\n",
+      "source_bytes": 13,
+      "source_sha256": "b2865cd88b6e18618faef172091f747c508f14092fc752c5d2abb744b93e0afc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            10
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "unused",
+          "message": "Definition \"foo bar\" is not used by any reference."
+        }
+      ]
+    },
+    {
+      "name": "multi-line-label-crlf",
+      "source": "[foo\r\nbar]: x\r\n",
+      "source_bytes": 15,
+      "source_sha256": "d28a63c5eef1dc27f0e136017525f4ea2001704559301b7a6f423177acf7cdaa",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "expected": "unused",
+          "message": "Definition \"foo bar\" is not used by any reference."
+        }
+      ]
+    }
+  ]
+}
