@@ -108,7 +108,7 @@ linters:
     # No default false-positive presets: suppress only individually reviewed cases.
     presets: []
     rules:
-      - path: '^(cmd/mdchk/main\.go|internal/conformance/cmd/specadapter/main\.go)$'
+      - path: '^(cmd/mdchk/main\.go|internal/conformance/cmd/specadapter/main\.go|tools/testrun/main\.go)$'
         linters:
           - forbidigo
 

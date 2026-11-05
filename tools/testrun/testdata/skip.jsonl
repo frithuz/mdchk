@@ -1,0 +1,17 @@
+{"Time":"2026-11-05T13:18:05.157990937Z","Action":"start","Package":"example.com/m/skip"}
+{"Time":"2026-11-05T13:18:05.158067187Z","Action":"start","Package":"example.com/m/empty"}
+{"Time":"2026-11-05T13:18:05.158075562Z","Action":"output","Package":"example.com/m/empty","Output":"?   \texample.com/m/empty\t[no test files]\n"}
+{"Time":"2026-11-05T13:18:05.158082228Z","Action":"skip","Package":"example.com/m/empty","Elapsed":0}
+{"Time":"2026-11-05T13:18:05.158740645Z","Action":"run","Package":"example.com/m/skip","Test":"TestSkip"}
+{"Time":"2026-11-05T13:18:05.158755395Z","Action":"output","Package":"example.com/m/skip","Test":"TestSkip","Output":"=== RUN   TestSkip\n","OutputType":"frame"}
+{"Time":"2026-11-05T13:18:05.15876077Z","Action":"output","Package":"example.com/m/skip","Test":"TestSkip","Output":"    s_test.go:3: skipped reason\n"}
+{"Time":"2026-11-05T13:18:05.158768978Z","Action":"output","Package":"example.com/m/skip","Test":"TestSkip","Output":"--- SKIP: TestSkip (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-05T13:18:05.158771895Z","Action":"skip","Package":"example.com/m/skip","Test":"TestSkip","Elapsed":0}
+{"Time":"2026-11-05T13:18:05.158773437Z","Action":"run","Package":"example.com/m/skip","Test":"TestNoise"}
+{"Time":"2026-11-05T13:18:05.158775353Z","Action":"output","Package":"example.com/m/skip","Test":"TestNoise","Output":"=== RUN   TestNoise\n","OutputType":"frame"}
+{"Time":"2026-11-05T13:18:05.158776812Z","Action":"output","Package":"example.com/m/skip","Test":"TestNoise","Output":"    s_test.go:4: noise\n"}
+{"Time":"2026-11-05T13:18:05.158779437Z","Action":"output","Package":"example.com/m/skip","Test":"TestNoise","Output":"--- PASS: TestNoise (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-05T13:18:05.15878052Z","Action":"pass","Package":"example.com/m/skip","Test":"TestNoise","Elapsed":0}
+{"Time":"2026-11-05T13:18:05.15878152Z","Action":"output","Package":"example.com/m/skip","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-11-05T13:18:05.158879562Z","Action":"output","Package":"example.com/m/skip","Output":"ok  \texample.com/m/skip\t0.001s\n"}
+{"Time":"2026-11-05T13:18:05.15913527Z","Action":"pass","Package":"example.com/m/skip","Elapsed":0.001}

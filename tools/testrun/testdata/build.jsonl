@@ -1,0 +1,10 @@
+{"ImportPath":"example.com/m/build [example.com/m/build.test]","Action":"build-output","Output":"# example.com/m/build [example.com/m/build.test]\n"}
+{"ImportPath":"example.com/m/build [example.com/m/build.test]","Action":"build-output","Output":"build/b_test.go:3:37: declared and not used: x\n"}
+{"ImportPath":"example.com/m/build [example.com/m/build.test]","Action":"build-output","Output":"build/b_test.go:3:45: cannot use \"s\" (untyped string constant) as int value in variable declaration\n"}
+{"ImportPath":"example.com/m/build [example.com/m/build.test]","Action":"build-fail"}
+{"Time":"2026-11-05T13:18:05.093512645Z","Action":"start","Package":"example.com/m/build"}
+{"Time":"2026-11-05T13:18:05.093544687Z","Action":"output","Package":"example.com/m/build","Output":"FAIL\texample.com/m/build [build failed]\n","OutputType":"frame"}
+{"Time":"2026-11-05T13:18:05.09354902Z","Action":"fail","Package":"example.com/m/build","Elapsed":0,"FailedBuild":"example.com/m/build [example.com/m/build.test]"}
+{"Time":"2026-11-05T13:18:05.09359027Z","Action":"start","Package":"example.com/m/empty"}
+{"Time":"2026-11-05T13:18:05.093593187Z","Action":"output","Package":"example.com/m/empty","Output":"?   \texample.com/m/empty\t[no test files]\n"}
+{"Time":"2026-11-05T13:18:05.093594728Z","Action":"skip","Package":"example.com/m/empty","Elapsed":0}
