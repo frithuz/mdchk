@@ -44,9 +44,10 @@ not imply inapplicability: callbacks report unmet prerequisites as coverage.
 MD073 validates complete single-line comment markers, distinctness and ordered
 heading bounds. MD095 `allowed_hosts` carries the pinned Unicode 17.0.0 semantic
 domain. A nonempty list requires `ValidationProviders.ValidateHostname` with the
-complete accepted nontransitional UTS #46 profile; no such provider is supplied
-by this catalog implementation. Without it resolution fails with
-`ErrHostnameValidationUnavailable`, including on disabled rules. Empty/default
+complete accepted nontransitional UTS #46 profile. Production supplies the pinned
+`internal/idna` provider; the catalog itself supplies none, so nil providers still
+fail resolution with `ErrHostnameValidationUnavailable`, including on disabled
+rules. Empty/default
 lists need no hostname processing. The catalog neither normalizes input nor
 substitutes a structural approximation for semantic validation.
 
