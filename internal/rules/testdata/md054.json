@@ -1,0 +1,1734 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary prose\n",
+      "source_bytes": 15,
+      "source_sha256": "922c8578527e7cd2ae1f5047cf1c7d7644035cb6caf0899483ff2ca4e2742c0f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "page-bad",
+      "source": "[Guide](guide.md)",
+      "source_bytes": 17,
+      "source_sha256": "813addce25763d2325f2bcf5897358cd491894d310bf8b90ca95ac1e45fab9e5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            17
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "page-bad-default",
+      "source": "[Guide](guide.md)",
+      "source_bytes": 17,
+      "source_sha256": "813addce25763d2325f2bcf5897358cd491894d310bf8b90ca95ac1e45fab9e5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "page-good",
+      "source": "[Guide][manual]\n\n[manual]: guide.md",
+      "source_bytes": 35,
+      "source_sha256": "3223175adf90313982079c1ff386099d427e8181c4e8c90de9e3c1d5ee7da533",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "page-good-default",
+      "source": "[Guide][manual]\n\n[manual]: guide.md",
+      "source_bytes": 35,
+      "source_sha256": "3223175adf90313982079c1ff386099d427e8181c4e8c90de9e3c1d5ee7da533",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "inline-link-excluded",
+      "source": "[a](u)\n",
+      "source_bytes": 7,
+      "source_sha256": "c0e2bde50a4af449e7665f5ee713a69c61077611b7c51d8538a1f5c439ae54ae",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference",
+          "collapsed_reference",
+          "shortcut_reference",
+          "autolink"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "inline-link-allowed",
+      "source": "[a](u)\n",
+      "source_bytes": 7,
+      "source_sha256": "c0e2bde50a4af449e7665f5ee713a69c61077611b7c51d8538a1f5c439ae54ae",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "inline-image-excluded",
+      "source": "![a](u)\n",
+      "source_bytes": 8,
+      "source_sha256": "df156c012ee560e036bdecf35f1a776722806d55765cda277c5baca0ed02a331",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference",
+          "collapsed_reference",
+          "shortcut_reference",
+          "autolink"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            7
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "expected": "inline",
+          "message": "Image representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "inline-image-allowed",
+      "source": "![a](u)\n",
+      "source_bytes": 8,
+      "source_sha256": "df156c012ee560e036bdecf35f1a776722806d55765cda277c5baca0ed02a331",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "full_reference-link-excluded",
+      "source": "[a][b]\n\n[b]: u\n",
+      "source_bytes": 15,
+      "source_sha256": "4510e84670e9574c4f7561376aa2483de9c05e116c3ef9e5bbf050da3904b824",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline",
+          "collapsed_reference",
+          "shortcut_reference",
+          "autolink"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "expected": "full_reference",
+          "message": "Link representation style \"full_reference\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "full_reference-link-allowed",
+      "source": "[a][b]\n\n[b]: u\n",
+      "source_bytes": 15,
+      "source_sha256": "4510e84670e9574c4f7561376aa2483de9c05e116c3ef9e5bbf050da3904b824",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "full_reference-image-excluded",
+      "source": "![a][b]\n\n[b]: u\n",
+      "source_bytes": 16,
+      "source_sha256": "390ab00bf8ef64f6214c2406591825dc8140c5a4a6b5d19696b807f2105ea867",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline",
+          "collapsed_reference",
+          "shortcut_reference",
+          "autolink"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            7
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            8
+          ],
+          "expected": "full_reference",
+          "message": "Image representation style \"full_reference\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "full_reference-image-allowed",
+      "source": "![a][b]\n\n[b]: u\n",
+      "source_bytes": 16,
+      "source_sha256": "390ab00bf8ef64f6214c2406591825dc8140c5a4a6b5d19696b807f2105ea867",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "collapsed_reference-link-excluded",
+      "source": "[a][]\n\n[a]: u\n",
+      "source_bytes": 14,
+      "source_sha256": "c49c8ccd8b4a6c102e543b5ee3a406ee594814c74e780cbe8118c51d150c7a0d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline",
+          "full_reference",
+          "shortcut_reference",
+          "autolink"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            5
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "expected": "collapsed_reference",
+          "message": "Link representation style \"collapsed_reference\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "collapsed_reference-link-allowed",
+      "source": "[a][]\n\n[a]: u\n",
+      "source_bytes": 14,
+      "source_sha256": "c49c8ccd8b4a6c102e543b5ee3a406ee594814c74e780cbe8118c51d150c7a0d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "collapsed_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "collapsed_reference-image-excluded",
+      "source": "![a][]\n\n[a]: u\n",
+      "source_bytes": 15,
+      "source_sha256": "9bb608e3b4295246fa478f75028a1853e44345ede7ad5e0bdc65c0d014b14c54",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline",
+          "full_reference",
+          "shortcut_reference",
+          "autolink"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "expected": "collapsed_reference",
+          "message": "Image representation style \"collapsed_reference\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "collapsed_reference-image-allowed",
+      "source": "![a][]\n\n[a]: u\n",
+      "source_bytes": 15,
+      "source_sha256": "9bb608e3b4295246fa478f75028a1853e44345ede7ad5e0bdc65c0d014b14c54",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "collapsed_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "shortcut_reference-link-excluded",
+      "source": "[a]\n\n[a]: u\n",
+      "source_bytes": 12,
+      "source_sha256": "540a377ca5ecfd5b2f6eeebc5dcf81e08ca0bf264b6074b8629b458368cd7916",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline",
+          "full_reference",
+          "collapsed_reference",
+          "autolink"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            3
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            4
+          ],
+          "expected": "shortcut_reference",
+          "message": "Link representation style \"shortcut_reference\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "shortcut_reference-link-allowed",
+      "source": "[a]\n\n[a]: u\n",
+      "source_bytes": 12,
+      "source_sha256": "540a377ca5ecfd5b2f6eeebc5dcf81e08ca0bf264b6074b8629b458368cd7916",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "shortcut_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "shortcut_reference-image-excluded",
+      "source": "![a]\n\n[a]: u\n",
+      "source_bytes": 13,
+      "source_sha256": "9cf3c218b0001e64fab08530e58ec9a1c846a30c450c463beda3a8f0fad29b2d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline",
+          "full_reference",
+          "collapsed_reference",
+          "autolink"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            4
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            5
+          ],
+          "expected": "shortcut_reference",
+          "message": "Image representation style \"shortcut_reference\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "shortcut_reference-image-allowed",
+      "source": "![a]\n\n[a]: u\n",
+      "source_bytes": 13,
+      "source_sha256": "9cf3c218b0001e64fab08530e58ec9a1c846a30c450c463beda3a8f0fad29b2d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "shortcut_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "autolink-link-excluded",
+      "source": "<https://example.com>\n",
+      "source_bytes": 22,
+      "source_sha256": "2f4bd2ba1ec0361fbba3653d6603aa4422873a76ec3e81267468cb8777c25363",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline",
+          "full_reference",
+          "collapsed_reference",
+          "shortcut_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            21
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "expected": "autolink",
+          "message": "Link representation style \"autolink\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "autolink-link-allowed",
+      "source": "<https://example.com>\n",
+      "source_bytes": 22,
+      "source_sha256": "2f4bd2ba1ec0361fbba3653d6603aa4422873a76ec3e81267468cb8777c25363",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "autolink"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "autolink-email-excluded",
+      "source": "<user@example.com>\n",
+      "source_bytes": 19,
+      "source_sha256": "b5707750d84b57e8b5e1114e21387a73255d8138f920df07da225f72804964f1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            18
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "expected": "autolink",
+          "message": "Link representation style \"autolink\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "multi-inline-autolink",
+      "source": "[a](u) [b][c] [c][] [c] <https://example.com>\n\n[c]: v\n",
+      "source_bytes": 54,
+      "source_sha256": "90efd642ee4e81fafb2c5f5ca7c3aa5648b94166da2fcdb07d934e191bddcee1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline",
+          "autolink"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            7,
+            13
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "expected": "full_reference",
+          "message": "Link representation style \"full_reference\" is not allowed."
+        },
+        {
+          "bytes": [
+            14,
+            19
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "expected": "collapsed_reference",
+          "message": "Link representation style \"collapsed_reference\" is not allowed."
+        },
+        {
+          "bytes": [
+            20,
+            23
+          ],
+          "start": [
+            1,
+            21
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "expected": "shortcut_reference",
+          "message": "Link representation style \"shortcut_reference\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "multi-references",
+      "source": "[a](u) [b][c] [c][] [c] <https://example.com>\n\n[c]: v\n",
+      "source_bytes": 54,
+      "source_sha256": "90efd642ee4e81fafb2c5f5ca7c3aa5648b94166da2fcdb07d934e191bddcee1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference",
+          "collapsed_reference",
+          "shortcut_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        },
+        {
+          "bytes": [
+            24,
+            45
+          ],
+          "start": [
+            1,
+            25
+          ],
+          "end": [
+            1,
+            46
+          ],
+          "expected": "autolink",
+          "message": "Link representation style \"autolink\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "multi-all-default",
+      "source": "[a](u) [b][c] [c][] [c] <https://example.com>\n\n[c]: v\n",
+      "source_bytes": 54,
+      "source_sha256": "90efd642ee4e81fafb2c5f5ca7c3aa5648b94166da2fcdb07d934e191bddcee1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "multi-all-explicit",
+      "source": "[a](u) [b][c] [c][] [c] <https://example.com>\n\n[c]: v\n",
+      "source_bytes": 54,
+      "source_sha256": "90efd642ee4e81fafb2c5f5ca7c3aa5648b94166da2fcdb07d934e191bddcee1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline",
+          "full_reference",
+          "collapsed_reference",
+          "shortcut_reference",
+          "autolink"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "multi-images",
+      "source": "![a](u) ![b][c]\n\n[c]: v\n",
+      "source_bytes": 24,
+      "source_sha256": "659c0db4abdaa2bb5beed68cffc01bf6af196fb1a6980f8351fd001188a6426f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline",
+          "collapsed_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            15
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "expected": "full_reference",
+          "message": "Image representation style \"full_reference\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "angle-autolink",
+      "source": "<https://example.com>\n",
+      "source_bytes": 22,
+      "source_sha256": "2f4bd2ba1ec0361fbba3653d6603aa4422873a76ec3e81267468cb8777c25363",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            21
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "expected": "autolink",
+          "message": "Link representation style \"autolink\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "bare-url-gfm",
+      "source": "https://example.com\n",
+      "source_bytes": 20,
+      "source_sha256": "65cdccbca9388a68023519f997367783be69ed42864398cac568e56f65ce0e75",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            19
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "expected": "autolink",
+          "message": "Link representation style \"autolink\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "bare-url-commonmark",
+      "source": "https://example.com\n",
+      "source_bytes": 20,
+      "source_sha256": "65cdccbca9388a68023519f997367783be69ed42864398cac568e56f65ce0e75",
+      "flavors": [
+        "commonmark"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "bare-www-gfm",
+      "source": "see www.example.com today\n",
+      "source_bytes": 26,
+      "source_sha256": "fe0b003d1b263a566637a2e370214fe327002dd76d46c7380f00b3d3f01edae0",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            19
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "expected": "autolink",
+          "message": "Link representation style \"autolink\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "bare-email-gfm",
+      "source": "mail user@example.com\n",
+      "source_bytes": 22,
+      "source_sha256": "4d56ba6aff9dde290acbe073c8822e14e092a60ab7c7d25450da594ccea638be",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            5,
+            21
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "expected": "autolink",
+          "message": "Link representation style \"autolink\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "bare-url-allowed-gfm",
+      "source": "https://example.com\n",
+      "source_bytes": 20,
+      "source_sha256": "65cdccbca9388a68023519f997367783be69ed42864398cac568e56f65ce0e75",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "autolink"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "code-span",
+      "source": "`[a](u)` `<https://example.com>`\n",
+      "source_bytes": 33,
+      "source_sha256": "c6903cc856b7de9da6498ee6a0c153ac21bef46403ce23363e393ca44600c8f1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "fenced",
+      "source": "```\n[a](u)\n```\n",
+      "source_bytes": 15,
+      "source_sha256": "42ad827ddda022798084d521777ee4fa52f1cc1a3cfdae6b6a65baf1923540e0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "indented",
+      "source": "    [a](u)\n",
+      "source_bytes": 11,
+      "source_sha256": "17813ea8541ca95c973c4caab64317f2b5408b0972a98269b68816f5295d1aa3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "html-block",
+      "source": "<div>\n[a](u)\n</div>\n",
+      "source_bytes": 20,
+      "source_sha256": "773b6373b533d40b9c9112759e4a6ee9fa01b6f30021c4e550a921e0e54165d9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "inline-html",
+      "source": "x <span title=\"[a](u)\">y</span>\n",
+      "source_bytes": 32,
+      "source_sha256": "fb9dd972b1fd3b8c03dcf9d392905c8f6c9e1f7451bdd45dcf9fa89f325da87a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "inline-raw-html",
+      "source": "x <pre>[a](u)</pre>\n",
+      "source_bytes": 20,
+      "source_sha256": "258cf076eac4f427d24ec8d037b0fcbc9597ac7017e62f59e323f53439fc13e4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "definition",
+      "source": "[a]: <https://example.com>\n",
+      "source_bytes": 27,
+      "source_sha256": "65778757101854bfbd9b5ecf9806fe2a55f1ccc18ff4d2a4c38cd5e10c952115",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "definition-with-use",
+      "source": "[a](u)\n\n[b]: <https://example.com> \"t\"\n",
+      "source_bytes": 39,
+      "source_sha256": "1b512f8c432b96e7800854730a12c61e089afbdc2c031418661f4637c960ca8e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "bracket-text",
+      "source": "[not a link]\n",
+      "source_bytes": 13,
+      "source_sha256": "fbbbcbd2b5e97685d54220fd68964067dde229b5bd6903c490f31cdfbd339d94",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "escaped",
+      "source": "\\[a](u) \\<https://example.com>\n",
+      "source_bytes": 31,
+      "source_sha256": "a62086ee3bf1c03483852a21fb0060b30c5fd0db4ed4899e22eec10238335882",
+      "flavors": [
+        "commonmark"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": []
+    },
+    {
+      "name": "block-quote",
+      "source": "> [a](u)\n",
+      "source_bytes": 9,
+      "source_sha256": "c6d0a136eede1a9cf5512bd30baea2293234f35ed50a617664f6472011171bca",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            8
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "list-item",
+      "source": "- [a](u)\n",
+      "source_bytes": 9,
+      "source_sha256": "357b9ed6cd6ac890ae86fea7494cd6d51ad8e7ccbfdb0ab6ac713f109e96dc97",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            8
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "quoted-list",
+      "source": "> - [a](u)\n",
+      "source_bytes": 11,
+      "source_sha256": "260d5e67777df9b2fdf9f63472192684b6e6d0a2ea1813eb2a10ed5a4d72176b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            10
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "heading",
+      "source": "# [a](u)\n",
+      "source_bytes": 9,
+      "source_sha256": "0bf770fe099e5af3f125b1e310713db029fb24705695209e56d19c6cffd3f590",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            8
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "table-cell",
+      "source": "| h |\n| --- |\n| [a](u) |\n",
+      "source_bytes": 25,
+      "source_sha256": "b23e01de7de2cae86b41485eec46484cd7d4fd6ef8d99c0837aaf407eb1f366e",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            22
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            9
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "table-cell-commonmark",
+      "source": "| h |\n| --- |\n| [a](u) |\n",
+      "source_bytes": 25,
+      "source_sha256": "b23e01de7de2cae86b41485eec46484cd7d4fd6ef8d99c0837aaf407eb1f366e",
+      "flavors": [
+        "commonmark"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            22
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            9
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "multiline-quoted",
+      "source": "> [a\n> b](u)\n",
+      "source_bytes": 13,
+      "source_sha256": "287ac5d59f616036406586c607d9c0900de7d0cefb751456b6a3507d8aea61f8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            2,
+            12
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "image-in-link",
+      "source": "[![alt](a.png)](b)\n",
+      "source_bytes": 19,
+      "source_sha256": "fcbda736185343ac6401d3a5485e10b4d0dbf9ae54993be0a3fe8e08f579a0fe",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            18
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        },
+        {
+          "bytes": [
+            1,
+            14
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            15
+          ],
+          "expected": "inline",
+          "message": "Image representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "link-in-image",
+      "source": "![x [a](u) y](i.png)\n",
+      "source_bytes": 21,
+      "source_sha256": "faf632808b2e6c15874d22dac0f0e2b03e7af447dcb27e35dd03f1bdff5599f7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            20
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "expected": "inline",
+          "message": "Image representation style \"inline\" is not allowed."
+        },
+        {
+          "bytes": [
+            4,
+            10
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "reference-image-in-link",
+      "source": "[![alt][i]](b)\n\n[i]: a.png\n",
+      "source_bytes": 27,
+      "source_sha256": "65d3663a591769badaed6c4424a9dd599861b0b6301bcbfe9bb1a0f94c7c0ee0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "inline"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            1,
+            10
+          ],
+          "start": [
+            1,
+            2
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "expected": "full_reference",
+          "message": "Image representation style \"full_reference\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "multibyte-prefix",
+      "source": "\u00e9 [a](u)\n",
+      "source_bytes": 10,
+      "source_sha256": "bde740678571845f84b311bf5b15ea2b1e4348a5fbc0795aaf08a30c78f3870b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            9
+          ],
+          "start": [
+            1,
+            3
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "second-line",
+      "source": "intro\n[a](u) and ![b][]\n\n[b]: v\n",
+      "source_bytes": 32,
+      "source_sha256": "5cead1663c5da2c234a106255b3246644587a21823ba0f015c0ddf9b1319c464",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            6,
+            12
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        },
+        {
+          "bytes": [
+            17,
+            23
+          ],
+          "start": [
+            2,
+            12
+          ],
+          "end": [
+            2,
+            18
+          ],
+          "expected": "collapsed_reference",
+          "message": "Image representation style \"collapsed_reference\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "crlf",
+      "source": "x\r\n[a](u)\r\n",
+      "source_bytes": 11,
+      "source_sha256": "1937bc2cdd08aeb869b07269f8aef4c9c279fec069eaf60b39daf0b7c2d4d341",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            3,
+            9
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            7
+          ],
+          "expected": "inline",
+          "message": "Link representation style \"inline\" is not allowed."
+        }
+      ]
+    },
+    {
+      "name": "disabled",
+      "source": "[Guide](guide.md)",
+      "source_bytes": 17,
+      "source_sha256": "813addce25763d2325f2bcf5897358cd491894d310bf8b90ca95ac1e45fab9e5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": false,
+        "allowed_styles": [
+          "full_reference"
+        ]
+      },
+      "findings": []
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "empty-list",
+      "yaml": "MD054: {allowed_styles: []}"
+    },
+    {
+      "name": "unknown-style",
+      "yaml": "MD054: {allowed_styles: [reference]}"
+    },
+    {
+      "name": "wrong-case-style",
+      "yaml": "MD054: {allowed_styles: [Inline]}"
+    },
+    {
+      "name": "scalar-styles",
+      "yaml": "MD054: {allowed_styles: inline}"
+    },
+    {
+      "name": "number-style",
+      "yaml": "MD054: {allowed_styles: [1]}"
+    },
+    {
+      "name": "null-styles",
+      "yaml": "MD054: {allowed_styles: null}"
+    },
+    {
+      "name": "unknown-option",
+      "yaml": "MD054: {style: inline}"
+    },
+    {
+      "name": "disabled-invalid",
+      "yaml": "MD054: {enabled: false, unknown: true}"
+    },
+    {
+      "name": "enabled-string",
+      "yaml": "MD054: {enabled: \"yes\"}"
+    },
+    {
+      "name": "enabled-null",
+      "yaml": "MD054: {enabled: null}"
+    },
+    {
+      "name": "directives-string",
+      "yaml": "MD054: {allow_directives: \"false\"}"
+    },
+    {
+      "name": "scalar-rule",
+      "yaml": "MD054: true"
+    },
+    {
+      "name": "sequence-rule",
+      "yaml": "MD054: []"
+    },
+    {
+      "name": "duplicate-setting",
+      "yaml": "MD054: {enabled: true, enabled: false}"
+    }
+  ]
+}
