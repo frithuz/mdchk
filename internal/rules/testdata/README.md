@@ -231,3 +231,23 @@ origins report the whole Link or Image envelope; inline origins report the
 destination bytes. LF and CRLF twins differ only in offsets. The expectations
 were authored from the sources, not from production output, and must never be
 regenerated from it.
+
+`md094.json` holds 28 hand-authored MD094 cases, read by
+`internal/engine/md094_fixtures_test.go` through `ValidateEncoding` and by the
+compiled binary in `cmd/mdchk/md094_acceptance_test.go`. Each case has `name`,
+`source_hex` (the lowercase hex of the exact source bytes, because JSON strings
+cannot hold invalid UTF-8) and `expected`. `expected` is `null` for valid
+UTF-8; otherwise it gives the zero-based `byte_offset` of the first byte that
+cannot start a valid scalar and the one-based `line` and Unicode-scalar
+`column` of that point. Malformed and truncated sequences are anchored at their
+leading byte. The cases cover an invalid lead byte, a lone continuation byte,
+truncated 2-, 3- and 4-byte sequences at EOF, a malformed continuation,
+overlong forms, an encoded surrogate, a value above U+10FFFF, bad bytes on line
+1, after multibyte text, after LF, CRLF and lone CR lines and as the final
+byte, bad bytes inside fenced code, a block quote, a nested list in a block
+quote, YAML front matter and an HTML comment, a directive before the bad byte,
+both rule-page examples, and valid empty, BOM, literal U+FFFD and mixed-ending
+input. Each case runs with MD094 attribution enabled and disabled. Tests pin the
+whole-file digest
+(`9d26032a205b45369f13f8eee941dab4293151b3da5d97fe7658df799f7bfefb`). Expected
+values were written by hand; never regenerate them from production output.
