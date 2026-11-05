@@ -1,6 +1,9 @@
 package parser
 
-import "unicode/utf8"
+import (
+	"context"
+	"unicode/utf8"
+)
 
 type referenceLinkSyntax struct {
 	close, end, keyStart, keyEnd int
@@ -12,25 +15,31 @@ type referenceLinkSyntax struct {
 // grammar/counting as definitions. Escaped punctuation remains two characters;
 // CRLF is one preprocessed ending while all offsets still address original bytes.
 func (s *inlineScanner) referenceLabelEnd(start int) (int, bool) {
-	meterWork(s.ctx, 1)
+	return referenceLabelEndContext(s.ctx, s.text, start)
+}
+
+// referenceLabelEndContext is the shared label grammar for inline resolution
+// and MD052 candidates. It returns the offset of the closing bracket.
+func referenceLabelEndContext(ctx context.Context, text string, start int) (int, bool) {
+	meterWork(ctx, 1)
 	characters, nonblank := 0, false
-	for i := start; i < len(s.text); {
-		meterWork(s.ctx, 1)
-		if interruption(s.ctx) != "" || s.text[i] == '[' {
+	for i := start; i < len(text); {
+		meterWork(ctx, 1)
+		if interruption(ctx) != "" || text[i] == '[' {
 			return 0, false
 		}
-		if s.text[i] == ']' {
+		if text[i] == ']' {
 			return i, nonblank
 		}
-		r, width := utf8.DecodeRuneInString(s.text[i:])
-		if r == '\r' && i+1 < len(s.text) && s.text[i+1] == '\n' {
+		r, width := utf8.DecodeRuneInString(text[i:])
+		if r == '\r' && i+1 < len(text) && text[i+1] == '\n' {
 			width = 2
 		}
 		characters++
 		if r != ' ' && r != '\t' && r != '\r' && r != '\n' {
 			nonblank = true
 		}
-		if escapedReferenceByte(s.text, i) {
+		if escapedReferenceByte(text, i) {
 			i++
 			characters++
 		}
