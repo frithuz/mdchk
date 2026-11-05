@@ -2,10 +2,17 @@
 """Exercise the real lint configuration in a disposable module, never the checkout."""
 
 from pathlib import Path
+import os
 import shutil
 import subprocess
 import sys
 import tempfile
+
+
+def progress(message):
+    """Print a progress line only when DEBUG is set to a value other than 0."""
+    if os.environ.get("DEBUG", "") not in ("", "0"):
+        print(message)
 
 
 def write(root, name, content):
@@ -109,7 +116,7 @@ func Dependencies() { toml.Helper(); yaml.Helper(); sdk.Helper(); unapproved.Hel
                 raise AssertionError(f"missing {boundary} detection:\n{output}")
         if "G401" not in output or "Fatal" not in output:
             raise AssertionError(f"missing security/fatal logging detection:\n{output}")
-        print("All 11 analyzers detect representative violations; #nosec cannot bypass gosec.")
+        progress("All 11 analyzers detect representative violations; #nosec cannot bypass gosec.")
 
         # External parser tests may import the test renderer. Process entry
         # points alone may terminate; an aliased os import must still be handled.
@@ -160,7 +167,7 @@ func TestAdapter(t *testing.T) { conformance.Helper() }
         code, output = run(binary, root, "run", "--config", ".golangci.yml", "./...")
         if code:
             raise AssertionError(f"legitimate tests/entry points rejected:\n{output}")
-        print("External parser tests and both process entry points pass.")
+        progress("External parser tests and both process entry points pass.")
 
         # The integration exception names exactly the two bounded adapters. Neither
         # another integration file nor the core parser inherits YAML access.
@@ -185,7 +192,7 @@ func Parse() { yaml.Helper() }
                 raise AssertionError(f"missing narrow YAML boundary {required}:\n{output}")
         if "internal/integration/yaml_context.go:" in output or "internal/integration/mkdocs_yaml.go:" in output:
             raise AssertionError(f"approved bounded adapter rejected:\n{output}")
-        print("Only the bounded shared YAML and MkDocs adapters gain YAML access; other integration/parser files fail.")
+        progress("Only the bounded shared YAML and MkDocs adapters gain YAML access; other integration/parser files fail.")
 
         write(root, "internal/metadata/other.go", '// Package metadata owns bounded source decoding.\npackage metadata\nimport toml "github.com/pelletier/go-toml/v2"\nfunc Other() { toml.Helper() }\n')
         code, output = run(binary, root, "run", "--config", ".golangci.yml", "./...")
@@ -194,14 +201,14 @@ func Parse() { yaml.Helper() }
         for allowed in ("internal/yamlsource/probe.go:", "internal/metadata/yaml.go:", "internal/metadata/toml.go:"):
             if allowed in output:
                 raise AssertionError(f"bounded metadata adapter rejected {allowed}:\n{output}")
-        print("Only the neutral YAML and format-specific metadata adapters gain native parser access.")
+        progress("Only the neutral YAML and format-specific metadata adapters gain native parser access.")
 
         with (root / ".golangci.yml").open("a", encoding="utf-8") as config:
             config.write("\nunknown-configuration-key: true\n")
         code, output = run(binary, root, "config", "verify", "--config", ".golangci.yml")
         if code == 0:
             raise AssertionError(f"invalid configuration accepted:\n{output}")
-        print("Configuration errors fail the gate.")
+        progress("Configuration errors fail the gate.")
 
 
 if __name__ == "__main__":

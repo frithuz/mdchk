@@ -2,10 +2,17 @@
 """Check the real vulnerability gate using disposable modules and local v1 databases."""
 
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
+
+
+def progress(message):
+    """Print a progress line only when DEBUG is set to a value other than 0."""
+    if os.environ.get("DEBUG", "") not in ("", "0"):
+        print(message)
 
 
 def write(root, name, content):
@@ -70,23 +77,23 @@ func TestCompare(t *testing.T) {
             code, output = scan(database)
             if code != 0 or "No vulnerabilities found" not in output:
                 raise AssertionError(f"{database} should pass (exit {code}):\n{output}")
-            print(f"{database}: clean symbol scan passes.")
+            progress(f"{database}: clean symbol scan passes.")
         for database, symbol in (("called", "Clone"), ("test-only", "Compare")):
             code, output = scan(database)
             if code != 3 or not all(value in output for value in (
                     "GO-2099-0001", f"strings.{symbol}", "Fixed in:", "go9.0")):
                 raise AssertionError(f"{database} must fail with actionable finding (exit {code}):\n{output}")
-            print(f"{database}: applicable strings.{symbol} fails with ID, trace and fixed version.")
+            progress(f"{database}: applicable strings.{symbol} fails with ID, trace and fixed version.")
         write(root / "broken", "index/modules.json", "invalid JSON")
         code, output = scan("broken")
         if code == 0 or "invalid character" not in output:
             raise AssertionError(f"database corruption must fail (exit {code}):\n{output}")
-        print("Corrupt database fails with a diagnostic.")
+        progress("Corrupt database fails with a diagnostic.")
         write(root, "probe.go", "package probe\nfunc Invalid(\n")
         code, output = scan("clean")
         if code == 0 or "probe.go" not in output:
             raise AssertionError(f"package loading must fail (exit {code}):\n{output}")
-        print("Package loading failure fails with a source diagnostic.")
+        progress("Package loading failure fails with a source diagnostic.")
 
 
 if __name__ == "__main__":
