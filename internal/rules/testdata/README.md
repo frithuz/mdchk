@@ -218,3 +218,16 @@ input, leading indentation and trailing spaces, non-ASCII cells, multiple runs,
 are read by the config test. Tests pin the whole-file digest
 (`999ebb4ad8cb5c3da271399b8f9845d2732a35d8f6b513c1683a62eeabf58eb0`). Expected
 values were written by hand; never regenerate them from production output.
+
+`md057.json` records 19 independent issue-102 MD057 cases, each run for both
+CommonMark and GFM. Every case gives the original source with its size and
+SHA-256, the `check_images` option, an optional `resources.index_file`, an
+optional frontmatter format and a native layout of files, directories and
+symbolic links created around the selected `docs/self.md`. Expected findings
+carry original byte ranges, one-based line/Unicode-scalar start and exclusive
+end positions, the literal source slice and the message; expected coverage
+carries the same located range for context-unavailable records. Reference
+origins report the whole Link or Image envelope; inline origins report the
+destination bytes. LF and CRLF twins differ only in offsets. The expectations
+were authored from the sources, not from production output, and must never be
+regenerated from it.
