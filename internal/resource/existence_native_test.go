@@ -252,7 +252,7 @@ func TestExistenceResolverRootIsExempt(t *testing.T) {
 	f := fragmentNativeFixture(t, "docs/source.md", "index.md", destinations)
 	resolver := existenceNativeResolver(t, filesystemTestService(t, f), f.view)
 	for _, destination := range destinations[:4] {
-		if got := existenceResolve(t, resolver, f.source, destination); got.Outcome() != ExistenceFound || len(got.Observations()) != 0 {
+		if got := existenceResolve(t, resolver, f.source, destination); got.Outcome() != ExistenceFound || len(got.Observations()) != 0 || got.state.query.hasIndex {
 			t.Fatal(destination, got.Outcome(), got.Observations())
 		}
 	}
