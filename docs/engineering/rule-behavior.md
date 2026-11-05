@@ -276,7 +276,8 @@ MD057 analysis is implemented for CommonMark and GFM, enabled by default with
 `check_images: true`. It reads the prose Link and Image inventory MD051 uses,
 without the fragment filter, and checks each local destination with a nonempty
 path through one existence-only lookup in the shared resource service; a
-directory tries `resources.index_file` once. Only authoritative absence or a
+directory tries `resources.index_file` once, except the project root, which is
+exempt from the index check. Only authoritative absence or a
 known file/directory type mismatch reports, with one of four fixed messages at the
 destination (inline) or whole Link/Image (reference origins). Unknown, blocked,
 oversized or unavailable context is reduced coverage, never a finding. No MD057
