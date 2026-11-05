@@ -1,0 +1,1586 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary prose | with a pipe\n",
+      "source_bytes": 29,
+      "source_sha256": "349352b21b1f54af7034a63af69dc3608f7cae8e596b48993b79353994d30e0e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "spec-example",
+      "source": "A | B\n--- | ---\n| 1 | 2 |\n",
+      "source_bytes": 26,
+      "source_sha256": "c5d1f11192d4c4719982aa5feeb19028824600d1c39d3053f1973e497d0fdddd",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            17
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            24,
+            25
+          ],
+          "start": [
+            3,
+            9
+          ],
+          "end": [
+            3,
+            10
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        }
+      ]
+    },
+    {
+      "name": "spec-example-crlf",
+      "source": "A | B\r\n--- | ---\r\n| 1 | 2 |\r\n",
+      "source_bytes": 29,
+      "source_sha256": "3c6ad1ef07dd7a58ce438f93f7f0ba14b54836f60f72370161296b5cef31f94a",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            18,
+            19
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            26,
+            27
+          ],
+          "start": [
+            3,
+            9
+          ],
+          "end": [
+            3,
+            10
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        }
+      ]
+    },
+    {
+      "name": "spec-accepted",
+      "source": "A | B\n--- | ---\n1 | 2\n",
+      "source_bytes": 22,
+      "source_sha256": "4ddb20d766aafffcfb0b9e9113ffc3b6dbe63f0e42cabfcebb391c1a977d8f55",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "consistent-explicit",
+      "source": "A | B\n--- | ---\n| 1 | 2 |\n",
+      "source_bytes": 26,
+      "source_sha256": "c5d1f11192d4c4719982aa5feeb19028824600d1c39d3053f1973e497d0fdddd",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "consistent"
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            17
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            24,
+            25
+          ],
+          "start": [
+            3,
+            9
+          ],
+          "end": [
+            3,
+            10
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        }
+      ]
+    },
+    {
+      "name": "commonmark-table",
+      "source": "| A | B |\n| --- | --- |\n1 | 2\n",
+      "source_bytes": 30,
+      "source_sha256": "1674fafff29cafc5451fd9be342626eae8aadcba3b73414c22c6a52673c874e4",
+      "flavors": [
+        "commonmark"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "leading_and_trailing"
+      },
+      "findings": []
+    },
+    {
+      "name": "leading-and-trailing-missing",
+      "source": "A | B\n--- | ---\n1 | 2\n",
+      "source_bytes": 22,
+      "source_sha256": "4ddb20d766aafffcfb0b9e9113ffc3b6dbe63f0e42cabfcebb391c1a977d8f55",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "leading_and_trailing"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            0
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            6,
+            6
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            15,
+            15
+          ],
+          "start": [
+            2,
+            10
+          ],
+          "end": [
+            2,
+            10
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            16,
+            16
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            21,
+            21
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        }
+      ]
+    },
+    {
+      "name": "leading-and-trailing-missing-crlf",
+      "source": "A | B\r\n--- | ---\r\n1 | 2\r\n",
+      "source_bytes": 25,
+      "source_sha256": "3c3edd901745997cb0c04a76c9f75350482207a1e30998ab6089fe2634cbf827",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "leading_and_trailing"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            0
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            5,
+            5
+          ],
+          "start": [
+            1,
+            6
+          ],
+          "end": [
+            1,
+            6
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            7,
+            7
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            16,
+            16
+          ],
+          "start": [
+            2,
+            10
+          ],
+          "end": [
+            2,
+            10
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            18,
+            18
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            23,
+            23
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        }
+      ]
+    },
+    {
+      "name": "leading-and-trailing-clean",
+      "source": "| A | B |\n| --- | --- |\n| 1 | 2 |\n",
+      "source_bytes": 34,
+      "source_sha256": "2a1ca4dc2c54e5a9908168c29774bf9aa5c984828af3d969c1e763b4901fdf8f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "leading_and_trailing"
+      },
+      "findings": []
+    },
+    {
+      "name": "none-fully-piped",
+      "source": "| A | B |\n| --- | --- |\n| 1 | 2 |\n",
+      "source_bytes": 34,
+      "source_sha256": "2a1ca4dc2c54e5a9908168c29774bf9aa5c984828af3d969c1e763b4901fdf8f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "none"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            1
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            8,
+            9
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            10,
+            11
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            22,
+            23
+          ],
+          "start": [
+            2,
+            13
+          ],
+          "end": [
+            2,
+            14
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            24,
+            25
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            32,
+            33
+          ],
+          "start": [
+            3,
+            9
+          ],
+          "end": [
+            3,
+            10
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        }
+      ]
+    },
+    {
+      "name": "none-fully-piped-crlf",
+      "source": "| A | B |\r\n| --- | --- |\r\n| 1 | 2 |\r\n",
+      "source_bytes": 37,
+      "source_sha256": "60728e86fd154fdfb72b6c85dd4dc4882b0eacc2d35918a4633094c3db5103ca",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "none"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            1
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            8,
+            9
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            11,
+            12
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            23,
+            24
+          ],
+          "start": [
+            2,
+            13
+          ],
+          "end": [
+            2,
+            14
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            26,
+            27
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            34,
+            35
+          ],
+          "start": [
+            3,
+            9
+          ],
+          "end": [
+            3,
+            10
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        }
+      ]
+    },
+    {
+      "name": "none-clean",
+      "source": "A | B\n--- | ---\n1 | 2\n",
+      "source_bytes": 22,
+      "source_sha256": "4ddb20d766aafffcfb0b9e9113ffc3b6dbe63f0e42cabfcebb391c1a977d8f55",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "none"
+      },
+      "findings": []
+    },
+    {
+      "name": "consistent-both",
+      "source": "| A | B |\n| --- | --- |\n1 | 2 |\n| 3 | 4\n",
+      "source_bytes": 40,
+      "source_sha256": "9ec7aac6ff43671e7173eb06373183b880ed5a04affcc9d7788c290ce517c8ac",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            24,
+            24
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            39,
+            39
+          ],
+          "start": [
+            4,
+            8
+          ],
+          "end": [
+            4,
+            8
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        }
+      ]
+    },
+    {
+      "name": "consistent-delimiter-row",
+      "source": "| A | B |\n--- | ---\n| 1 | 2 |\n",
+      "source_bytes": 30,
+      "source_sha256": "54c36836050e7baf62995eb9c92e01b6a14dec9e761dc4fb613b546206020c3c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            19,
+            19
+          ],
+          "start": [
+            2,
+            10
+          ],
+          "end": [
+            2,
+            10
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        }
+      ]
+    },
+    {
+      "name": "consistent-leading-only",
+      "source": "| A | B\n| --- | ---\n| 1 | 2 |\n",
+      "source_bytes": 30,
+      "source_sha256": "d3503d0656937ca50bd443dba4eabf72fad06d53a20ec48813fce7b33657aa72",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            28,
+            29
+          ],
+          "start": [
+            3,
+            9
+          ],
+          "end": [
+            3,
+            10
+          ],
+          "message": "Unexpected trailing pipe; expected a leading pipe only."
+        }
+      ]
+    },
+    {
+      "name": "consistent-trailing-only",
+      "source": "A | B |\n--- | --- |\n| 1 | 2\n",
+      "source_bytes": 28,
+      "source_sha256": "735e75abd9ad4ae81eda52b2d1c989fda4715da021837f6eeb366f6b1c599db2",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            20,
+            21
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected a trailing pipe only."
+        },
+        {
+          "bytes": [
+            27,
+            27
+          ],
+          "start": [
+            3,
+            8
+          ],
+          "end": [
+            3,
+            8
+          ],
+          "message": "Missing trailing pipe; expected a trailing pipe only."
+        }
+      ]
+    },
+    {
+      "name": "consistent-neither",
+      "source": "A | B\n--- | ---\n| 1 | 2\n3 | 4 |\n",
+      "source_bytes": 32,
+      "source_sha256": "562c9f29b22f52018b10ddb8f82025803cecacd19b9ba976c594f0026af50cee",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            17
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            30,
+            31
+          ],
+          "start": [
+            4,
+            7
+          ],
+          "end": [
+            4,
+            8
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        }
+      ]
+    },
+    {
+      "name": "escaped-pipe-edge",
+      "source": "| A | B |\n| --- | --- |\n| 1 | 2 \\|\n\\| 3 | 4 |\n",
+      "source_bytes": 46,
+      "source_sha256": "ad5db8c47672d36f48bb185bb7a1af909e1fdb2f1acc55a3e3cf00e1f3bc9429",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            34,
+            34
+          ],
+          "start": [
+            3,
+            11
+          ],
+          "end": [
+            3,
+            11
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            35,
+            35
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        }
+      ]
+    },
+    {
+      "name": "code-span-pipe",
+      "source": "| A | B |\n| --- | --- |\n| `a|b` | c |\n| d | `e|` |\n",
+      "source_bytes": 51,
+      "source_sha256": "5a6a767f340769af2be5c4a79a546d08b51dca24eb81db22583baebfb040cefd",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-edge-cells",
+      "source": "|  | a |\n| --- | --- |\n|  |  |\n",
+      "source_bytes": 31,
+      "source_sha256": "0d6be8342e2f0e978eac98c89bff975a8a1104faa8f8ef266f3d9946988dcaf8",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-edge-cells-none",
+      "source": "|  | a |\n| --- | --- |\n|  |  |\n",
+      "source_bytes": 31,
+      "source_sha256": "0d6be8342e2f0e978eac98c89bff975a8a1104faa8f8ef266f3d9946988dcaf8",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "none"
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            1
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            7,
+            8
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            9,
+            10
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            21,
+            22
+          ],
+          "start": [
+            2,
+            13
+          ],
+          "end": [
+            2,
+            14
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            23,
+            24
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            29,
+            30
+          ],
+          "start": [
+            3,
+            7
+          ],
+          "end": [
+            3,
+            8
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        }
+      ]
+    },
+    {
+      "name": "body-cell-counts",
+      "source": "| A | B |\n| --- | --- |\n| 1 | 2 | 3 |\n| 4 |\n5 | 6 | 7\n",
+      "source_bytes": 54,
+      "source_sha256": "3351efa6d503db7ec87108ad279d26ea6130c9f5d76b1a7d0c159d46baae7af6",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            44,
+            44
+          ],
+          "start": [
+            5,
+            1
+          ],
+          "end": [
+            5,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            53,
+            53
+          ],
+          "start": [
+            5,
+            10
+          ],
+          "end": [
+            5,
+            10
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        }
+      ]
+    },
+    {
+      "name": "body-row-without-pipes",
+      "source": "| A | B |\n| --- | --- |\nplain\n",
+      "source_bytes": 30,
+      "source_sha256": "625ffb3eedc04c0d6150906233b4aa0a08254fc3cc4f490906a693c974b7f871",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            24,
+            24
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            29,
+            29
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        }
+      ]
+    },
+    {
+      "name": "block-quote",
+      "source": "> | A | B |\n> | --- | --- |\n> 1 | 2\n",
+      "source_bytes": 36,
+      "source_sha256": "d096ac70951bfe40bd139dae7aff3a1eb9c8c7b12b5d6b798bd4801127cbd8d1",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            30,
+            30
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            35,
+            35
+          ],
+          "start": [
+            3,
+            8
+          ],
+          "end": [
+            3,
+            8
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        }
+      ]
+    },
+    {
+      "name": "block-quote-crlf",
+      "source": "> | A | B |\r\n> | --- | --- |\r\n> 1 | 2\r\n",
+      "source_bytes": 39,
+      "source_sha256": "df137137822ba909439d3aa32d2ce3dc949046016c09cfa1646392181a78ef43",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            32,
+            32
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            37,
+            37
+          ],
+          "start": [
+            3,
+            8
+          ],
+          "end": [
+            3,
+            8
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        }
+      ]
+    },
+    {
+      "name": "list-item",
+      "source": "- | A | B |\n  | --- | --- |\n  1 | 2 |\n",
+      "source_bytes": 38,
+      "source_sha256": "2bf62871f99612760e58bb433ec9dadb8392cbb2b78bfcc5efe04c8f3a095b87",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            30,
+            30
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            3
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        }
+      ]
+    },
+    {
+      "name": "block-quote-lazy-line",
+      "source": "> | A | B |\n> | --- | --- |\n1 | 2\n",
+      "source_bytes": 34,
+      "source_sha256": "b1a00f8cdbfa5c66e358f956bf2ef7726cfc06d7774bd4847110df726b4d718c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "leading_and_trailing"
+      },
+      "findings": []
+    },
+    {
+      "name": "fenced-code",
+      "source": "```\n| A | B |\n--- | ---\n| 1 | 2 |\n```\n",
+      "source_bytes": 38,
+      "source_sha256": "f1d50cf8f1a86a10db2a91b6594fb4d9ea975ed089ed720ee5811237930d4d5c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "none"
+      },
+      "findings": []
+    },
+    {
+      "name": "indented-code",
+      "source": "    | A | B |\n    | --- | --- |\n    | 1 | 2 |\n",
+      "source_bytes": 46,
+      "source_sha256": "696098fa7f2620faab1c53de5fadbd6953c2d502b8d73c97b05c5d3fb3eda799",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "none"
+      },
+      "findings": []
+    },
+    {
+      "name": "html-block",
+      "source": "<div>\n| A | B |\n| --- | --- |\n| 1 | 2 |\n</div>\n",
+      "source_bytes": 47,
+      "source_sha256": "98951759b930c17d29f4930634b3dd2bc07f12824c77ec64460f1661005f9cfd",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "none"
+      },
+      "findings": []
+    },
+    {
+      "name": "no-delimiter-row",
+      "source": "| A | B |\n| 1 | 2 |\n",
+      "source_bytes": 20,
+      "source_sha256": "59b73dcf4d5e8fb5afe23730819f2856bf9b34440d7347908b2746fc3e9e9885",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "none"
+      },
+      "findings": []
+    },
+    {
+      "name": "trailing-spaces",
+      "source": "| A | B |  \n| --- | --- |\t\n1 | 2   \n",
+      "source_bytes": 36,
+      "source_sha256": "d31973a958e06df231e99716caa14db1ac6ee0bf0c937ab85fc9564ebe38f12c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            27,
+            27
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            32,
+            32
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        }
+      ]
+    },
+    {
+      "name": "trailing-spaces-crlf",
+      "source": "| A | B |  \r\n| --- | --- |\t\r\n1 | 2   \r\n",
+      "source_bytes": 39,
+      "source_sha256": "598f5dd5dda80aec086ef30e3b6d961607fe2a28190f646ec2162fdac2fe9dbe",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            29,
+            29
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            34,
+            34
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        }
+      ]
+    },
+    {
+      "name": "non-ascii",
+      "source": "| Ä | 日本 |\n| --- | --- |\n| é | 語 \n日本 | x |\n",
+      "source_bytes": 55,
+      "source_sha256": "dde55a7eb9ac7ee7fd063d881b00867500a38b47b99f59ea748ccc7d54f0226b",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            40,
+            40
+          ],
+          "start": [
+            3,
+            8
+          ],
+          "end": [
+            3,
+            8
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            42,
+            42
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        }
+      ]
+    },
+    {
+      "name": "non-ascii-none",
+      "source": "Ä | 日本 |\n--- | ---\n",
+      "source_bytes": 24,
+      "source_sha256": "1bbc10bd567a948b50562bc3bc3f0fa60bbff885d531c2c2291f33c9715d90af",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "style": "none"
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            13
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            9
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        }
+      ]
+    },
+    {
+      "name": "multiple-tables",
+      "source": "| A | B |\n| --- | --- |\n1 | 2\n\nC | D\n--- | ---\n| 3 | 4 |\n",
+      "source_bytes": 57,
+      "source_sha256": "77707654fd72aff51aa9b86f1442d3523ebeb4dc64a5b3b95626214984f866c9",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            24,
+            24
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            1
+          ],
+          "message": "Missing leading pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            29,
+            29
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Missing trailing pipe; expected leading and trailing pipes."
+        },
+        {
+          "bytes": [
+            47,
+            48
+          ],
+          "start": [
+            7,
+            1
+          ],
+          "end": [
+            7,
+            2
+          ],
+          "message": "Unexpected leading pipe; expected no outer pipes."
+        },
+        {
+          "bytes": [
+            55,
+            56
+          ],
+          "start": [
+            7,
+            9
+          ],
+          "end": [
+            7,
+            10
+          ],
+          "message": "Unexpected trailing pipe; expected no outer pipes."
+        }
+      ]
+    },
+    {
+      "name": "disabled",
+      "source": "A | B\n--- | ---\n| 1 | 2 |\n",
+      "source_bytes": 26,
+      "source_sha256": "c5d1f11192d4c4719982aa5feeb19028824600d1c39d3053f1973e497d0fdddd",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "unknown-style",
+      "yaml": "MD055: {style: both}"
+    },
+    {
+      "name": "numeric-style",
+      "yaml": "MD055: {style: 1}"
+    },
+    {
+      "name": "unknown-option",
+      "yaml": "MD055: {styles: none}"
+    },
+    {
+      "name": "null-style",
+      "yaml": "MD055: {style: null}"
+    },
+    {
+      "name": "sequence-style",
+      "yaml": "MD055: {style: [none]}"
+    },
+    {
+      "name": "enabled-string",
+      "yaml": "MD055: {enabled: \"yes\"}"
+    },
+    {
+      "name": "allow-directives-string",
+      "yaml": "MD055: {allow_directives: \"false\"}"
+    },
+    {
+      "name": "scalar-rule",
+      "yaml": "MD055: true"
+    },
+    {
+      "name": "sequence-rule",
+      "yaml": "MD055: []"
+    },
+    {
+      "name": "duplicate-setting",
+      "yaml": "MD055: {style: none, style: none}"
+    }
+  ]
+}
