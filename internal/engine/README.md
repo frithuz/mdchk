@@ -796,3 +796,11 @@ option shape with `parser.ErrModel`, and delegates to `Document.TableOuterPipes`
 which returns detached parser-owned outer-pipe facts for every GFM table row.
 The catalog proves MD055 inapplicable to CommonMark. MD055 is default-enabled
 and keeps its PlannedFix metadata; no correction is registered.
+
+MD056's `RuleContext.TableCellCounts` facade preserves the same original
+parse/source/options and cumulative operation authority, with both caller and
+originating controls. It rejects any option with `parser.ErrModel` and
+delegates to `Document.TableCellCounts`, which returns detached parser-owned
+`RawCells` and table `Width` facts for every GFM table body row. The catalog
+proves MD056 inapplicable to CommonMark. MD056 is default-enabled and keeps its
+NoFix metadata; it is permanently report-only.

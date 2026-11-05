@@ -230,6 +230,23 @@ withhold all findings with
 `Table row context is unavailable; the complete MD055 inventory is withheld.`
 No MD055 correction is produced. See the [MD055 contract](../rules/tables/md055.md).
 
+### Md056
+
+MD056 analysis is implemented for GFM only, enabled by default, with no
+rule-specific options. A read-only parser fact lists every body TableRow of
+every Table in document order, including tables in block quotes and list items,
+with its trimmed start and end (the line ending, then edge spaces and tabs,
+removed), the parser-owned `RawCells` source cell count before padding or
+truncation, and its table's `Width`; it never rescans the text for pipes. Each
+body row whose `RawCells` differs from `Width`, short or long, reports one
+finding over its trimmed row, so a CRLF is never split. Header and delimiter
+rows are never reported; a GFM header/delimiter count mismatch is not a table.
+Messages are `Row has <n> cell(s); table has <w> column(s).`, with singular
+`cell` or `column` for a count of 1. Missing table or row properties atomically
+withhold all findings with
+`Table row context is unavailable; the complete MD056 inventory is withheld.`
+MD056 is permanently report-only. See the [MD056 contract](../rules/tables/md056.md).
+
 ### Md059
 
 MD059 analysis is implemented for CommonMark and GFM, enabled by default, with
