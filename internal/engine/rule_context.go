@@ -60,6 +60,38 @@ func (c RuleContext) FrontmatterTitle(ctx context.Context) (metadata.Title, erro
 	return decoded.Title(ctx, binding)
 }
 
+// MetadataOrdering consumes only ordering policy for a frontmatter-aware rule
+// with resolved recursive and case_sensitive options. It binds, decodes and
+// evaluates the actual original header on demand, sharing its document and
+// operation controls. Reliable lexical absence means no orders with complete
+// coverage, without decoding. Complete reports whether the decoded result is
+// complete; incomplete mappings are withheld by the policy itself. This narrow
+// semantic access exposes no decoded values beyond the returned orders and
+// grants no correction authority.
+func (c RuleContext) MetadataOrdering(ctx context.Context) (orders []metadata.Order, complete bool, err error) {
+	recursive, okRecursive := c.options["recursive"].(bool)
+	sensitive, okSensitive := c.options["case_sensitive"].(bool)
+	if ctx == nil || c.operation == nil || c.document == nil || !c.syntaxReliable || c.document.Source().Token() != c.Source().Token() || !c.frontmatterAware || !okRecursive || !okSensitive {
+		return nil, false, metadata.ErrContract
+	}
+	binding, err := metadata.Bind(ctx, c.operation, c.budget, c.document)
+	if err != nil {
+		return nil, false, err
+	}
+	if binding.State() == metadata.Absent {
+		return nil, true, nil
+	}
+	decoded, err := metadata.Decode(ctx, binding)
+	if err != nil {
+		return nil, false, err
+	}
+	orders, err = decoded.Ordering(ctx, binding, metadata.OrderOptions{Recursive: recursive, CaseInsensitive: !sensitive})
+	if err != nil {
+		return nil, false, err
+	}
+	return orders, decoded.Complete(), nil
+}
+
 // OpeningHashCandidates projects parser-owned missing-separator points using
 // the original operation, source and allowance. Reliable syntax is required.
 func (c RuleContext) OpeningHashCandidates(ctx context.Context) (out []parser.Span, err error) {

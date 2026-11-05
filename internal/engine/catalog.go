@@ -70,7 +70,7 @@ func Catalog() []Metadata {
 		{ID: "MD069", Name: "Repeated list markers", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD070", Name: "Outer fence length for nested examples", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD071", Name: "Blank line following metadata", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD072", Name: "Metadata key ordering", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"recursive": boolean(false), "case_sensitive": boolean(true)}},
+		{ID: "MD072", Name: "Metadata key ordering", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, UsesFrontmatter: true, Options: OptionSchema{"recursive": boolean(false), "case_sensitive": boolean(true)}},
 		{ID: "MD073", Name: "Table of contents versus headings", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"start_marker": {Kind: String, Default: "<!-- toc -->", Domain: HTMLComment}, "end_marker": {Kind: String, Default: "<!-- /toc -->", Domain: HTMLComment}, "min_level": headingLevel(1), "max_level": headingLevel(6)}},
 		{ID: "MD074", Name: "MkDocs navigation file targets", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"config_path": text("mkdocs.yml"), "check_omitted": boolean(false), "check_absolute": boolean(false)}},
 		{ID: "MD075", Name: "Pipe rows without a table header", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, AppliesTo: pipeTablesApply, Options: OptionSchema{}},

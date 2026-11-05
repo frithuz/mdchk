@@ -69,7 +69,7 @@ func TestMD001ProductionAdmission(t *testing.T) {
 		"MD001: {enabled: false, allow_directives: null}",
 		"MD025: {enabled: true, level: 7}",
 		"MD095: {enabled: true}",
-		"MD072: {enabled: true}",
+		"MD072: {enabled: true, recursive: 'yes'}",
 	} {
 		t.Run(entry, func(t *testing.T) {
 			root := project(t)
