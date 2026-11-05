@@ -62,7 +62,7 @@ func acquireLintContext(ctx context.Context, inv *lintInvocation, _ io.Writer) i
 	inv.acquisition = acquired
 	var inputs []engine.Input
 	var fragments *fragmentResources
-	md051 := inv.plan.Rules()["MD051"]
+	resources := resourceRules(inv.plan.Rules())
 	// A known oversized input is a batch preflight rejection: no parser or rule
 	// callback starts. Independent runtime failures otherwise retain good work.
 	if len(acquired.PreflightErrors) == 0 {
@@ -73,7 +73,7 @@ func acquireLintContext(ctx context.Context, inv *lintInvocation, _ io.Writer) i
 				return inv.fail(err, "invalid-input", result.Internal)
 			}
 			inputs = append(inputs, in)
-			if md051.Enabled && md051.Available {
+			if resources {
 				if fragments == nil {
 					fragments = newFragmentResources(ctx, budget, inv.plan.CandidatePlan().Context(), resource.RootCLI, inv.workingDirectory, inv.selectedConfig(), "")
 				}

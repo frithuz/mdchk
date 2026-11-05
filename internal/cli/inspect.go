@@ -162,7 +162,7 @@ func executeInspect(ctx context.Context, opts inspectOptions, version, cwd strin
 	}
 	analyze := inspection.AnalyzeOptions{}
 	if plan := snapshot.ExecutionPlan(); plan != nil {
-		if rule := plan.Rules()["MD051"]; rule.Enabled && rule.Available {
+		if resourceRules(plan.Rules()) {
 			file := snapshot.File()
 			session := newFragmentResources(ctx, budget, plan.CandidatePlan().Context(), resource.RootInspect, cwd, snapshot.SelectedConfigPath(), file.Path)
 			session.targets = []fragmentTarget{{id: file.Path, path: file.Path, source: snapshot.Source()}}

@@ -180,6 +180,17 @@ func (f *fragmentResources) Close() error {
 	return err
 }
 
+// resourceRules reports whether a rule that consults the shared read-only
+// resource session is enabled and available. MD051 and MD057 share one session.
+func resourceRules(rules map[string]engine.ResolvedRule) bool {
+	for _, id := range []string{"MD051", "MD057"} {
+		if rule := rules[id]; rule.Enabled && rule.Available {
+			return true
+		}
+	}
+	return false
+}
+
 func interrupted(err error) bool {
 	var limit *parser.LimitExceeded
 	return errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) || errors.As(err, &limit)
