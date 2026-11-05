@@ -1,66 +1,24 @@
 # mdchk
 
-[MD091 Markdown-in-HTML analysis](docs/rules/html-and-comments/md091.md) is available
-for CommonMark and GFM, disabled by default, with no rule-specific options and
-permanent report-only support. It checks bounded emphasis, link and ATX heading
-candidates in actual literal HTML block payload. Tokens, attributes and literal
-interiors stay protected; unknown required context withholds the whole inventory.
-
-[MD087 unused-suppression analysis](docs/rules/html-and-comments/md087.md) is available for CommonMark and GFM,
-disabled by default, with no rule-specific options and permanent report-only support.
-Each allowed disable target is judged using its actual owned interval and shared
-original-source observations. Unknown observations retain incomplete coverage.
-
-[MD086 unmatched-comment analysis](docs/rules/html-and-comments/md086.md) is available for CommonMark and GFM,
-enabled by default with no rule-specific options and permanently report-only.
-Actual eligible HTML owners and their tails are analyzed once; matching ends at
-the owner/container boundary. Each unmatched opener reports only its original
-four bytes. Code, metadata, whole Images, raw payload and opaque HTML tokens stay
-protected; ordinary unowned Text is excluded. Unavailable owned named-token
-context withholds the complete MD086 inventory with explicit coverage. MD047
-remains the sole current correction producer; MCP parity remains downstream.
-
-[MD033 embedded-HTML analysis](docs/rules/html-and-comments/md033.md) is available for CommonMark and GFM,
-disabled by default and permanently report-only. `allowed_tags: []` accepts a
-string list and matches whole names with ASCII case folding, without trimming.
-Each disallowed complete named tag has its own full original range. Opaque HTML
-tokens and actual raw payload stay protected; unavailable owned-tag context
-withholds the entire MD033 inventory with explicit coverage. No MD033 edits or
-previews are produced; MD047 remains the sole current fixer.
-
-
 mdchk helps people and AI agents keep Markdown files consistent with their project's expectations. Check files without changing them, apply safe corrections when requested, and get a clear report of anything that still needs attention.
 
 Start with the [documentation index](docs/index.md) for global options, commands, and integration guides.
 
-GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
-comparison units pass, including every published case. Default and explicit GFM
-selection share the real lint, fix and inspection pipeline, including source
-facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
-analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation
-analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis,
-MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD065 horizontal-rule blank-line analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD091 literal-Markdown analysis, MD018 missing opening-hash spacing, MD019 extra
-opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading
-delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation
-analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026
-heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041
-opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization
-analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090
-thematic-break-before-heading analysis, MD034 bare-URL analysis, MD039 link-label-whitespace analysis, MD042 links-without-destinations, MD045 image-alternative-text and MD051 unresolved-fragment analysis and MD052 references-without-definitions analysis and MD053 unneeded-definition analysis and MD062 whitespace-in-destination analysis and MD054 link-and-image-representation-style analysis and MD057 missing-local-target analysis and MD059 uninformative-link-label analysis and MD055 GFM outer-table-pipe analysis and MD056 GFM mismatched-cell-count analysis and MD058 GFM blank-lines-around-tables analysis and MD060 GFM table-column-layout analysis and MD075 GFM pipe-rows-without-header analysis and MD093 inline-formatting-in-headings analysis
-are also available. MD065 is enabled by default for CommonMark and GFM; its
-findings are manual and corrections are deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD054, MD060, MD087, MD091 and MD093 are
-available but disabled by default. MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD057, MD062 and MD059 are available and enabled by default for CommonMark and GFM, with manual
-findings; MD055, MD056, MD058 and MD075 are available and enabled by default for GFM only, with manual findings; MD060 is available but disabled by default for GFM only, with manual findings. MD039, MD042, MD045, MD051, MD052, MD057, MD062, MD059, MD056 and MD075 are permanently report-only, and MD053, MD054, MD055, MD058 and MD060 are report-only until their planned corrections land (MD051 reads other documents only with `cross_file: true`, and MD057 checks local target existence without reading content, through the bounded read-only resource service in `lint`, `inspect` and `fix`); URL corrections remain deferred. Other named rules remain unavailable. See the [parser
-verification record](docs/engineering/gfm-verification.md).
+## Current status
+
+mdchk is under active development. This build provides:
+
+- **Markdown formats.** [CommonMark 0.31.2](docs/markdown-formats.md) passes all 652 specification examples. GFM uses CommonMark plus all five pinned extensions and passes 2,117 approved comparison units, including every published case; see the [parser verification record](docs/engineering/gfm-verification.md). GFM is the default. Optional YAML and TOML frontmatter is supported in both formats.
+- **Rules.** 76 of the [87 rules](docs/rules/index.md) are implemented for both formats; the table rules MD055, MD056, MD058, MD060 and MD075 apply to GFM only.
+
+  - Disabled by default: MD013, MD026, MD033, MD036, MD040, MD043, MD044, MD054, MD060, MD063, MD070, MD080, MD081, MD082, MD085, MD087, MD088, MD089, MD090, MD091 and MD093.
+  - Not yet implemented: MD061, MD066, MD067, MD068, MD071, MD072, MD073, MD074, MD083, MD084 and MD095.
+- **Corrections.** MD047, a missing final newline, is the only automatic correction so far. Every other rule reports findings for a person or agent to resolve.
+- **Commands.** `lint`, `fix`, `inspect` and `config validate` are available. The [MCP server](#use-with-ai-agents) is planned.
 
 ## Check Markdown
 
-First follow the [current-build quick start](docs/index.md#get-started-with-this-build):
-use the published CommonMark+MD047 configuration, which explicitly disables other
-ordinary checks. This reduced selection is not full Markdown conformance.
-Without configuration, GFM is selected and missing default checks return `15`.
-CommonMark has the same missing-rule limitation.
+First follow the [current-build quick start](docs/index.md#get-started-with-this-build). It uses the published CommonMark+MD047 configuration, which explicitly disables other checks. Without configuration, GFM is selected, and because some rules that are enabled by default are not yet implemented, `lint` reports incomplete coverage and exits with `15`.
 
 Run `lint` on a file or directory to find problems without modifying files:
 
@@ -88,7 +46,9 @@ mdchk fix docs/ --dry-run
 
 The report shows which files changed, what was corrected, and which problems remain. `--dry-run` shows a proposed diff without writing files. After applying corrections, mdchk checks the resulting files again so reported locations match the saved content.
 
-Safe corrections are small and specific. For example, mdchk can add a missing final newline. It preserves intentional Markdown hard breaks and leaves code examples, front matter, and ambiguous edits alone. Protected EOF contexts remain manual. Heading-level and code-language checks remain planned; their policies forbid guessing the intended structure or language. Apply works on Linux, macOS and Windows from a build without cgo; other operating systems refuse writes with `13`. Concurrent writers are detected but not locked out; see [native writes](docs/engineering/native-writes.md).
+Safe corrections are small and specific. For example, mdchk can add a missing final newline. It preserves intentional Markdown hard breaks and leaves code examples, front matter, and ambiguous edits alone. Some rules, such as heading levels and code block languages, will always report instead of correcting, because a fix would have to guess the intended structure or language.
+
+Applying corrections works on Linux, macOS and Windows, including builds without cgo; other operating systems refuse writes with exit code `13`. Concurrent writers are detected but not locked out; see [native writes](docs/engineering/native-writes.md).
 
 ## Inspect processing details
 
@@ -102,9 +62,7 @@ Use [`mdchk config validate`](docs/commands/config/validate.md) to check all eli
 
 ## Use with AI agents
 
-The planned MCP server is unavailable in this build. Its accepted future contract exposes `lint` and `fix` actions. Agents receive structured findings and fix results so they can check their work, apply safe corrections, and address the remaining problems.
-
-Future server invocation (currently rejected):
+The MCP server is planned and not available in this build; `mdchk mcp` is currently rejected. Its accepted contract exposes `lint` and `fix` actions, returning structured findings and fix results so agents can check their work, apply safe corrections, and address the remaining problems.
 
 ```sh
 mdchk mcp --root .
@@ -124,18 +82,12 @@ See the [result formats guide](docs/output-formats.md) for readable output, JSON
 
 ## Rules and scope
 
-mdchk provides file and directory checks, safe fixes with previews, project configuration, results for people and integrations, and a planned MCP server.
-
-The [ruleset to implement](docs/rules/index.md) defines 87 checks with stable numeric IDs and reserved gaps. Rule pages are grouped by focus area. Each page specifies behavior, default enablement, options, examples, and correction policies.
-
-The approved [format contracts](docs/markdown-formats.md) define CommonMark 0.31.2 and the fixed GFM profile. The [resource contract](docs/engineering/resources.md) defines bounded link/anchor lookup and standalone context. The internal CommonMark core passes all 652 specification examples in normalized and strict comparisons. CLI lint now selects and acquires immutable source snapshots, runs mandatory UTF-8 validation, parses Markdown, resolves inherited directive permissions and suppression, and executes available registered checks. It emits readable text by default or one bounded schema-v1 JSON result on stdout, including errors and partial outcomes. Lint, fix and config validate support all four reporters; inspect supports text/JSON. MD047 is the first production ordinary rule and correction, with native application bounded as above. Missing default rule implementations remain explicit coverage deficits. GFM's five extensions and independently optional opaque YAML/TOML frontmatter use the shared lint, fix and inspection pipeline. On-demand source-mapped YAML/TOML interpretation is available internally; MD001, MD025 and MD041 consume exact nonblank top-level titles on opt-in; MD003 checks heading syntax without metadata baselines; MD004 checks actual bullet markers against one document-wide first-bullet style or an explicit marker; MD005 compares structural marker indentation against each actual group's first direct item, retaining parent baselines across nesting; MD007 checks each actual bullet against its actual parent marker and padding or numbered content target, with exact root indentation and retained quote ancestry; MD018 checks missing opening-hash spacing in parser-owned paragraph candidates; MD019 checks excess spaces in actual ATX opening separators; MD020 checks missing separators before unescaped terminal hash runs; MD021 checks closed-heading delimiter gaps; MD022 checks minimum blank body lines around actual headings; MD023 checks leaf indentation on every actual heading line; MD024 compares normalized semantic heading text; MD043 matches an exact configured heading outline with wildcard entries; MD063 checks heading capitalization while protecting code and configured proper names; MD080 compares shared unsuffixed heading anchor bases under local anchor policy; MD082 checks global actual sections for substantive content; MD090 checks thematic breaks immediately before same-container headings with explicit slide exemptions; MD093 reports disallowed actual inline constructs inside headings; [MD081](docs/rules/formatting/md081.md) paragraph-emphasis analysis is available for CommonMark and GFM, disabled by default and permanently report-only, with no edits or previews; [MD088](docs/rules/formatting/md088.md) ASCII-punctuation analysis is available for both flavors, disabled by default with style `ascii` only; its findings are manual in Pass 1 and PlannedFix describes future work; [MD033](docs/rules/html-and-comments/md033.md) embedded-HTML analysis is available for both flavors, disabled by default and permanently report-only, with whole-name ASCII allowed_tags matching and no edits or previews; [MD086](docs/rules/html-and-comments/md086.md) unmatched-comment analysis is available for both flavors, enabled by default and permanently report-only, with exact four-byte original opener ranges; broader metadata-rule/inspection integration, other ordinary and named rules, MCP integration and production rendering remain separate deliveries; see the [delivered parser contract](docs/engineering.md#delivered-commonmark-core).
+The [rules index](docs/rules/index.md) defines 87 checks with stable numeric IDs and reserved gaps, grouped by focus area. Each rule page specifies behavior, default enablement, options, examples, and correction policy. The [resource contract](docs/engineering/resources.md) defines how link and anchor checks look up other files.
 
 Full-document formatting, prose rewriting, remote link checks, dedicated editor extensions, and third-party rules are outside mdchk's scope.
 
-See [the engineering design](docs/engineering.md) for accepted contracts and remaining implementation work. See the [contract index](docs/engineering/contracts.md) for the complete policy set.
+See [the engineering design](docs/engineering.md) for accepted contracts and remaining implementation work, and the [contract index](docs/engineering/contracts.md) for the complete policy set.
 
 ## Contribute
 
-See the [contributor guide](docs/contributing.md) for the Go 1.27.2 minimum,
-build/test commands, current parser foundation, and native Git commit hook setup
-and integration tests.
+See the [contributor guide](docs/contributing.md) for the Go 1.27.2 minimum, build and test commands, the Git hook setup, and integration tests.
