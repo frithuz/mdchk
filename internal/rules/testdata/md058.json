@@ -1,0 +1,1027 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary prose | with a pipe\n",
+      "source_bytes": 29,
+      "source_sha256": "349352b21b1f54af7034a63af69dc3608f7cae8e596b48993b79353994d30e0e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "spec-example",
+      "source": "# Heading\nA | B\n--- | ---\n",
+      "source_bytes": 26,
+      "source_sha256": "16ed7034945d12660bf2eebf59e34e1a22c5a11b8a89edf1e4969b1051c596c9",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "spec-example-crlf",
+      "source": "# Heading\r\nA | B\r\n--- | ---\r\n",
+      "source_bytes": 29,
+      "source_sha256": "bd008c200973e6723efe2fd61fc69f845189f7dfeadff448ac53c7962f74f0fb",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            11
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "spec-accepted",
+      "source": "# Heading\n\nA | B\n--- | ---\n",
+      "source_bytes": 27,
+      "source_sha256": "9a80be359c6cdb92702eea19af4567ce59b73050f17a669efc74642a57622cf8",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "both-sides",
+      "source": "# Title\n| a |\n| - |\n# Next\n",
+      "source_bytes": 27,
+      "source_sha256": "9ce2154bca503262de3ba23803edfee3b65f0876ea830747b5f364a32b03fb9c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            8
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            19,
+            19
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Table requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "both-sides-crlf",
+      "source": "# Title\r\n| a |\r\n| - |\r\n# Next\r\n",
+      "source_bytes": 31,
+      "source_sha256": "4bd20e367c531c67fbd39ad1d5625aa2d781e2066ba5fff2c8d8bb98594f1f8c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            9,
+            9
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            21,
+            21
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Table requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "before-heading",
+      "source": "# Title\n| a |\n| - |\n",
+      "source_bytes": 20,
+      "source_sha256": "bc49fc9717742337e473ba0c8f1666455458315e2f2fefbbd09486794b0bc279",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            8
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "before-fenced-code",
+      "source": "```\nx\n```\n| a |\n| - |\n",
+      "source_bytes": 22,
+      "source_sha256": "6d08f4426fd73bd34ceaa4a20b0273f037e78a856e26eebef5b68a0424f972e9",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            10,
+            10
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "before-thematic-break",
+      "source": "***\n| a |\n| - |\n",
+      "source_bytes": 16,
+      "source_sha256": "de4c027a427576eb53117fd987fe967d04a13a0678544630546cc84d7e23dcee",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            4
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "before-definition",
+      "source": "[r]: /u\n| a |\n| - |\n",
+      "source_bytes": 20,
+      "source_sha256": "2c2fa3c745f9b7e56a172a71539619de4b840b10a3c79b39e5a1c8ceff89e31c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            8
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "after-heading",
+      "source": "| a |\n| - |\n# Next\n",
+      "source_bytes": 19,
+      "source_sha256": "e4f2cff0347bdec0b7ada2737a078ad8a1aa92d713e5bc6d1f09c05ce75081ee",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            11
+          ],
+          "start": [
+            2,
+            6
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "message": "Table requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "after-fenced-code",
+      "source": "| a |\n| - |\n```\nx\n```\n",
+      "source_bytes": 22,
+      "source_sha256": "06c6b2887904b1cc158e7516dbbab2d08658afeb91d5d14a5bf765e4b6e6482f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            11
+          ],
+          "start": [
+            2,
+            6
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "message": "Table requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "after-block-quote",
+      "source": "| a |\n| - |\n> quote\n",
+      "source_bytes": 20,
+      "source_sha256": "1701fe78d530024d5fcc393bf6356ffa54ffcd7aa1252ca6b84a45739ef82196",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            11
+          ],
+          "start": [
+            2,
+            6
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "message": "Table requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "after-bullet-list",
+      "source": "| a |\n| - |\n- item\n",
+      "source_bytes": 19,
+      "source_sha256": "0ce079a763002f4044d07bd1d95fa346be6445ca9ddf0ffc9f2110ade131cbe0",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            11
+          ],
+          "start": [
+            2,
+            6
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "message": "Table requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "after-ordered-list",
+      "source": "| a |\n| - |\n1. item\n",
+      "source_bytes": 20,
+      "source_sha256": "3612c84c47a93fb0a53a3c0291b25779897f1a77a40cc0448fcd83926201645e",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            11
+          ],
+          "start": [
+            2,
+            6
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "message": "Table requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "after-html-block",
+      "source": "| a |\n| - |\n<div>\n",
+      "source_bytes": 18,
+      "source_sha256": "1994e3aea9c7061d90054b589624748f91cb709b8d78e670e7a4737dcfad68c8",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            11
+          ],
+          "start": [
+            2,
+            6
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "message": "Table requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "after-thematic-break",
+      "source": "| a |\n| - |\n***\n",
+      "source_bytes": 16,
+      "source_sha256": "f76a0eb7c0eaf3f6f12a66723e93eb507c0ea6c0208c74755b80c9b5a8fa6ec9",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            11
+          ],
+          "start": [
+            2,
+            6
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "message": "Table requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "accepted-spacing",
+      "source": "# T\n\n| a |\n| - |\n\n# N\n",
+      "source_bytes": 22,
+      "source_sha256": "f053d41c94485e38914db4afaf536b9f7ce1a907431e57346dce84cc84368010",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "document-edges",
+      "source": "| a |\n| - |\n",
+      "source_bytes": 12,
+      "source_sha256": "59d7d4dc1ede22114f01e911a1b02cb1e9c1fccb66bce4f225d481227963dc82",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "no-final-ending",
+      "source": "# T\n| a |\n| - |",
+      "source_bytes": 15,
+      "source_sha256": "e42853e64040e863e79f2e4cc75ac9d69877961fc86cdebf1253ca264b8f4db9",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            4
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "block-quote-before",
+      "source": "> # T\n> | a |\n> | - |\n",
+      "source_bytes": 22,
+      "source_sha256": "4f69b563f09ef442f1762fae4b7b563fd3449a1fec61222fb67dec2c6c1c7907",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            8
+          ],
+          "start": [
+            2,
+            3
+          ],
+          "end": [
+            2,
+            3
+          ],
+          "message": "Table requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "block-quote-prefix-blank",
+      "source": "> # T\n>\n> | a |\n> | - |\n",
+      "source_bytes": 24,
+      "source_sha256": "331e404c2b491f5880606448c81fb55add1e6182ba221e1c920dd4e411c63e58",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "block-quote-edges",
+      "source": "> | a |\n> | - |\n",
+      "source_bytes": 16,
+      "source_sha256": "4007218def7d78af12b30a1154cb219fad3a00531328ebf221edc08948819eae",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "list-item-edges",
+      "source": "- | a |\n  | - |\n",
+      "source_bytes": 16,
+      "source_sha256": "6ae16a0648d784320dc9781681a6d585af53e1cb8f93fbf34b28dec4267680e5",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "list-item-after",
+      "source": "- | a |\n  | - |\n  # N\n",
+      "source_bytes": 22,
+      "source_sha256": "d5cee1907d00f2521a6494426eec60b218ba65616c8208797a38cecbbf918b1c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            15
+          ],
+          "start": [
+            2,
+            8
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "message": "Table requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "quote-in-list-item",
+      "source": "- > # T\n  > | a |\n  > | - |\n",
+      "source_bytes": 28,
+      "source_sha256": "86fa898be6d7f16f857ce34b5c39794e1e81d4a019483bc1b0997df3292533dc",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            12
+          ],
+          "start": [
+            2,
+            5
+          ],
+          "end": [
+            2,
+            5
+          ],
+          "message": "Table requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "indented-table",
+      "source": "# T\n  | a |\n  | - |\n",
+      "source_bytes": 20,
+      "source_sha256": "b680d6398a79657d7c032574bb710677bee0a971fa097acf25aa2baf683ba567",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            4
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "trailing-spaces",
+      "source": "| a |  \n| - |  \n# N\n",
+      "source_bytes": 20,
+      "source_sha256": "c8d6769c062b43b375027ce93a6a7ebadc9f296e993f80d09e45c993fb05bd4f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            15
+          ],
+          "start": [
+            2,
+            8
+          ],
+          "end": [
+            2,
+            8
+          ],
+          "message": "Table requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "body-rows",
+      "source": "# T\n| a |\n| - |\n| 1 |\n# N\n",
+      "source_bytes": 26,
+      "source_sha256": "9b3e9a98c71f3cd9a1665ff31304e4cca06fe0d3a009106859df41ed283e39ba",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            4
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            21,
+            21
+          ],
+          "start": [
+            4,
+            6
+          ],
+          "end": [
+            4,
+            6
+          ],
+          "message": "Table requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "non-ascii",
+      "source": "# 雪\n| 雪 |\n| - |\n# N\n",
+      "source_bytes": 24,
+      "source_sha256": "8710245bd0fd259ed0aa74bf0d5f7df3fb2ada994f096d4868ac12e4d08759f2",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            6,
+            6
+          ],
+          "start": [
+            2,
+            1
+          ],
+          "end": [
+            2,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        },
+        {
+          "bytes": [
+            19,
+            19
+          ],
+          "start": [
+            3,
+            6
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Table requires a blank body line after it."
+        }
+      ]
+    },
+    {
+      "name": "multiple-tables",
+      "source": "| a |\n| - |\n# M\n| b |\n| - |\n",
+      "source_bytes": 28,
+      "source_sha256": "0caec08403beb5ba2e0217dd469d0a4bd96c52d7b0e552ddc1d992e3c41f59e4",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            11
+          ],
+          "start": [
+            2,
+            6
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "message": "Table requires a blank body line after it."
+        },
+        {
+          "bytes": [
+            16,
+            16
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "fenced-code-pipes",
+      "source": "```\n| a |\n| - |\n```\n",
+      "source_bytes": 20,
+      "source_sha256": "0f13d67790fb989260a2fd73463816ddf51819012178ccdd9bcde0dd8a2a8ee2",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "indented-code-pipes",
+      "source": "    | a |\n    | - |\n",
+      "source_bytes": 20,
+      "source_sha256": "a98dd6d73506b0f26df2c4844ddb6a0b16c5b1f2e6467d7740f9a68a26822653",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "html-block-pipes",
+      "source": "<div>\n| a |\n| - |\n",
+      "source_bytes": 18,
+      "source_sha256": "467838abbf50529d2f5908f73ff9eccc352dbfac9f4a82f0155aad42ad3266b7",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "not-a-table",
+      "source": "Text\nA | B\n--- | ---\n",
+      "source_bytes": 21,
+      "source_sha256": "782b334cdd7a582fdc2f81eaab65f9c41f76e81ca6dc779eec21842822ef7b6f",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "raw-html-protected",
+      "source": "a <script>\n\n# T\n| a |\n| - |\n",
+      "source_bytes": 28,
+      "source_sha256": "a04046c21edd337be32ec86b3950ecad76e5c2865870674ffaba829b31536cc3",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "image-raw-restored",
+      "source": "![<script>](x)\n\n# T\n| a |\n| - |\n",
+      "source_bytes": 32,
+      "source_sha256": "c9f302ab7b8f060bc15d65407f5296c9c4c8621696a6e728202ea901486ebeba",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            20,
+            20
+          ],
+          "start": [
+            4,
+            1
+          ],
+          "end": [
+            4,
+            1
+          ],
+          "message": "Table requires a blank body line before it."
+        }
+      ]
+    },
+    {
+      "name": "commonmark-table",
+      "source": "# Title\n| a |\n| - |\n",
+      "source_bytes": 20,
+      "source_sha256": "bc49fc9717742337e473ba0c8f1666455458315e2f2fefbbd09486794b0bc279",
+      "flavors": [
+        "commonmark"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "disabled",
+      "source": "# Title\n| a |\n| - |\n",
+      "source_bytes": 20,
+      "source_sha256": "bc49fc9717742337e473ba0c8f1666455458315e2f2fefbbd09486794b0bc279",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "unknown-option",
+      "yaml": "MD058: {unknown: true}"
+    },
+    {
+      "name": "before-option",
+      "yaml": "MD058: {before: 1}"
+    },
+    {
+      "name": "string-enabled",
+      "yaml": "MD058: {enabled: \"yes\"}"
+    },
+    {
+      "name": "string-allow-directives",
+      "yaml": "MD058: {allow_directives: \"false\"}"
+    },
+    {
+      "name": "disabled-unknown-option",
+      "yaml": "MD058: {enabled: false, unknown: true}"
+    },
+    {
+      "name": "null-enabled",
+      "yaml": "MD058: {enabled: null}"
+    }
+  ]
+}

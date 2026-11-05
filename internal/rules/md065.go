@@ -24,7 +24,13 @@ func horizontalRuleBlankLines(ctx context.Context, c engine.RuleContext) (out en
 	return compareHorizontalRuleBlankLines(ctx, c, items)
 }
 
-func compareHorizontalRuleBlankLines(ctx context.Context, c engine.RuleContext, items []parser.ThematicSpacingFact) (out engine.RuleOutcome) {
+func compareHorizontalRuleBlankLines(ctx context.Context, c engine.RuleContext, items []parser.ThematicSpacingFact) engine.RuleOutcome {
+	return compareBlankLinePoints(ctx, c, items, "Horizontal rule")
+}
+
+// compareBlankLinePoints validates detached zero-width points and reports each
+// one as a missing blank body line before or after the named construct.
+func compareBlankLinePoints(ctx context.Context, c engine.RuleContext, items []parser.ThematicSpacingFact, construct string) (out engine.RuleOutcome) {
 	defer func() {
 		out.Err = errors.Join(out.Err, c.SectionCheckpoint(ctx, 0, 0))
 		if out.Err != nil {
@@ -77,9 +83,9 @@ func compareHorizontalRuleBlankLines(ctx context.Context, c engine.RuleContext, 
 			out.Err = err
 			return out
 		}
-		message := "Horizontal rule requires a blank body line after it."
+		message := construct + " requires a blank body line after it."
 		if item.Before {
-			message = "Horizontal rule requires a blank body line before it."
+			message = construct + " requires a blank body line before it."
 		}
 		out.Findings = append(out.Findings, engine.Finding{Span: item.Point, Message: message})
 	}
