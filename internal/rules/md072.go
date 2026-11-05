@@ -38,13 +38,13 @@ func metadataKeyOrdering(ctx context.Context, c engine.RuleContext) engine.RuleO
 			}
 			previous, _ := mapping.KnownEntry(i - 1)
 			current, _ := mapping.KnownEntry(i)
+			if !current.KeySpan().Present() {
+				complete = false
+				continue
+			}
 			// A projected alias use has no authored key; the anchored definition
 			// is checked where it is written.
 			if current.KeySpan() == mapping.Span() {
-				continue
-			}
-			if !current.KeySpan().Present() {
-				complete = false
 				continue
 			}
 			findings = append(findings, engine.Finding{Span: current.KeySpan(), Message: fmt.Sprintf("Metadata key %q should come before %q.", current.Key(), previous.Key())})
