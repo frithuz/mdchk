@@ -132,6 +132,24 @@ base. This context does not decode metadata or acquire resources. Failed annotat
 or unresolved header recognition stays unavailable; it never becomes ordinary false.
 Line filtering keeps the document context. Output limits can omit the whole section.
 
+The `Metadata` text section and JSON `metadata` section report what a recognized
+header decodes to. `state` is `disabled`, `absent`, `unterminated`, `complete` or
+`incomplete`; the first two carry nothing else, and an unterminated header carries
+only its format and location beside the existing parsing note. A decoded header
+also lists located `problems` (`malformed`, `unsupported`, `duplicate-key`), a
+`title` decision (`found` with its text, `missing` or `unknown`), and `ordering`:
+each mapping checked under MD072's effective `recursive` and `case_sensitive`
+options, whether it is out of order, and its `offending_keys`.
+
+These are observations, not findings: they appear even with MD072 disabled and
+change no rule state, count, `diagnostics` or `complete`. Decoding shares the
+inspection's limits and runs after rules, so a limit reached there returns
+incomplete/15 with this section unavailable and completed sections intact. Line
+filtering keeps the whole record and flags it `context_only` or `extends_region`
+like the opaque header. Text escapes terminal controls in decoded strings; JSON
+keeps them. Exact field rules are in
+[inspection projection version 1](../engineering/inspection-projection-v1.md#metadata-record).
+
 An explicitly exempt MD090 rule is marked `inapplicable`. If unrelated parser or
 directive work is unavailable, known exemption rows can appear in a partial rules
 section; this does not claim full rule counts, body syntax or complete analysis.

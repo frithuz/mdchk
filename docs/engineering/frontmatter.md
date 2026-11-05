@@ -2,8 +2,8 @@
 
 Status: accepted on 2026-10-15. Opaque recognition, shared protection and source
 inspection and on-demand structured metadata interpretation are implemented;
-MD001, MD025 and MD041 opt-in title consumption is implemented; broader production metadata-rule
-integration and corrections remain pending. The
+MD001, MD025 and MD041 opt-in title consumption, MD072 ordering and the inspection
+metadata record are implemented; corrections remain pending. The
 cross-operation recognition matrix is verified for both
 supported flavors; see [operation parity fixtures](../../internal/testutil/frontmatter/README.md).
 These requirements incorporate the revised **1 MiB per-file limit** where applicable.
@@ -94,10 +94,13 @@ are implemented in [internal/metadata](../../internal/metadata/README.md). Concr
 format decoding/source projection (#179) is implemented. MD001, MD025 and MD041 consume title
 policy through narrow engine-owned access under the original
 parse budget and operation. It retains body-only finding protection; semantic
-title access does not grant UsesFrontmatter header-observation authority. Broader
-production rule integration (#180) and metadata correction authorization (#181)
-remain separate
-work. Model records and
+title access does not grant UsesFrontmatter header-observation authority. MD072
+consumes ordering policy through the engine, and its coverage names the first
+decoder problem and its location. Inspection reports state, problems, title and
+ordering in a separate
+[metadata record](inspection-projection-v1.md#metadata-record), without a decoded
+value tree. Metadata correction authorization (#181) remains separate work.
+Model records and
 eligibility never bypass ordinary opaque-header protection.
 
 ### Parser strategy

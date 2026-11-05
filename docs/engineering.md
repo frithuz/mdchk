@@ -110,8 +110,8 @@ and independent complete GFM selection. Recognized headers are opaque typed
 document records, with body parsing against the same original snapshot; legacy
 entry points remain unchanged. Shared CLI consumers preserve recognition settings,
 protect header envelopes and project source-backed records. On-demand internal
-YAML/TOML decoding preserves native values and original source spans; production
-metadata integration,
+YAML/TOML decoding preserves native values and original source spans; inspection
+reports them in a separate metadata record;
 other production rules, MCP and rendering remain separate.
 
 The first phase identifies paragraphs, ATX/Setext headings, fenced/indented code,
@@ -350,8 +350,11 @@ header recognition. Metadata interpretation supports MD001, MD025 and MD041 opt-
 `frontmatter_title` consumer under the original engine-owned document and budget;
 MD072 consumes ordering policy through the engine, report-only, with header findings
 permitted by `UsesFrontmatter` and no correction authority. MD001, MD025 and MD041 are report-only;
-their title access grants no header findings or corrections. Broader metadata
-inspection, consumer and correction integration remain separate deliveries.
+their title access grants no header findings or corrections. Inspection reports
+decoded state, problems, title and ordering observations in its
+[metadata record](engineering/inspection-projection-v1.md#metadata-record), under the
+same budget and with no correction authority. Correction integration remains a
+separate delivery.
 Omitted flavor configuration selects built-in GFM through the same whole-profile
 parser. Configuration and read
 failures return 12; output failures return 13.

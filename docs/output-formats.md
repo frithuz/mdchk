@@ -65,7 +65,7 @@ SHA-256 and byte count. See the [semantic contract](engineering/results.md).
 
 For lint/fix checks, `status` is `clean`, `violations`, `incomplete`, or `error`. An operational error selects `error`; otherwise coverage deficits, interruptions or omissions select `incomplete`, then remaining findings select `violations`, and a complete check without findings selects `clean`. Error entries retain their categories: `usage`, `configuration`, `io`, or `internal`. Check `complete`, `coverage`, and `errors` before treating absent findings as a clean result. File failures or reduced analysis coverage make the result incomplete.
 
-Inspection JSON uses operation `inspect` and status `inspected` when a report is produced. Its `inspection` object contains resolved path, binary version, `size_display` and integer `size_bytes`, full-file checksums, flavor, AST, rules, active and inactive counts, directives, parsing notes, selected lines, and data availability. Reported findings remain in `diagnostics`; suppressed observations appear in `suppressed_diagnostics`. Unresolved processing data is marked unavailable, rather than represented as a successful empty check. An inspection can return success with `complete: false` and configuration errors in the report because it reveals processing details rather than validating them.
+Inspection JSON uses operation `inspect` and status `inspected` when a report is produced. Its `inspection` object contains resolved path, binary version, `size_display` and integer `size_bytes`, full-file checksums, flavor, AST, rules, active and inactive counts, directives, parsing notes, the decoded [metadata record](engineering/inspection-projection-v1.md#metadata-record), selected lines, and data availability. Reported findings remain in `diagnostics`; suppressed observations appear in `suppressed_diagnostics`. Unresolved processing data is marked unavailable, rather than represented as a successful empty check. An inspection can return success with `complete: false` and configuration errors in the report because it reveals processing details rather than validating them.
 
 Positions use one-based lines and Unicode code-point columns; tabs count as one column. Range ends are exclusive. Paths are relative to the command's working directory. Fix diagnostics describe the saved content; dry-run diagnostics describe the proposed content. Changes distinguish written corrections from proposed corrections and include diffs for previews.
 
@@ -89,6 +89,8 @@ Runtime interruption also has an `interruptions` record so config validation can
 report stopped scanning while keeping Markdown `coverage` empty. Completed
 inspect can retain `inspected`/exit 0 for observations; interrupted inspect uses
 `incomplete`/exit 15 unless an operational error takes precedence.
+
+MD072 names what withheld its ordering checks and, for a decoder problem, carries that problem's `range` and `snapshot`; see [its messages](rules/frontmatter/md072.md).
 
 Coverage deficits are distinct from Markdown violations and operational errors. A read or decoding failure remains an operational error and may coexist with coverage records. They cannot be suppressed by inline directives; actual rule disablement or inapplicability determines whether a check is required.
 
