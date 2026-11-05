@@ -210,6 +210,26 @@ image descriptions cannot open or close a raw region. Missing link properties
 or unknown raw state atomically withhold all findings. No MD054 correction is
 produced. See the [MD054 contract](../rules/links-and-images/md054.md).
 
+### Md055
+
+MD055 analysis is implemented for GFM only, enabled by default, with the
+catalog `style` option. A read-only parser fact lists every TableRow of every
+Table in document order, including tables in block quotes and list items, with
+its role, its trimmed start and end (the line ending, then edge spaces and tabs,
+removed) and the parser-owned `LeadingPipe` and `TrailingPipe` spans; it never
+rescans the text for pipes. Each table has an expected leading/trailing pair:
+`leading_and_trailing` expects both, `none` neither, and `consistent` copies
+each edge from the table's header row, which is then never reported. Every
+other row (and under the fixed styles the header too) reports one finding per
+mismatched edge, leading before trailing: an unexpected pipe over its one byte,
+a missing pipe as a zero-width point at the trimmed start or end, so a CRLF is
+never split. Messages are `Missing|Unexpected leading|trailing pipe; expected
+<convention>.` with `leading and trailing pipes`, `a leading pipe only`, `a
+trailing pipe only` or `no outer pipes`. Missing row properties atomically
+withhold all findings with
+`Table row context is unavailable; the complete MD055 inventory is withheld.`
+No MD055 correction is produced. See the [MD055 contract](../rules/tables/md055.md).
+
 ### Md059
 
 MD059 analysis is implemented for CommonMark and GFM, enabled by default, with
