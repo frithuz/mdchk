@@ -370,7 +370,7 @@ An interrupted projection withholds its inventory atomically. Raw/comment state
 uses actual private nodes and owned content/tails, excluding container prefixes.
 This provider does not build an anchor index or consume AnchorStyle, metadata,
 resource availability, correction, write or MCP authority. MD082 remains default
-disabled and report-only; MD047 retains the sole production correction.
+disabled and report-only; this analysis produces no edits.
 
 
 ### Thematic breaks before headings and explicit slides
@@ -390,7 +390,7 @@ admitted options and explicit context before syntax; it cannot borrow partial sy
 Known slide exemptions are retained independently of unrelated parser/directive
 uncertainty. Inspection prepares context before callbacks and preserves truthful
 completed sections when a later operation stop occurs. MD090 stays default disabled
-and manual; MD047 remains the sole production correction.
+and manual; this analysis produces no edits.
 
 ## Heading inline construct projection
 
@@ -407,7 +407,7 @@ final publication checks withhold incomplete inventories. The immutable admitted
 allow list is read under the same controls into five fixed allowance bits; returned
 facts own their slice and cannot mutate syntax or options. Nested constructs stay
 independent and source geometry uses original envelopes, including container gaps.
-The rule remains default disabled, RequiresSyntax and NoFix; MD047 alone owns edits.
+The rule remains default disabled, RequiresSyntax and NoFix.
 
 ## Original list structure projection
 
@@ -424,7 +424,7 @@ construction. Caller and originating controls, sticky work/node/time stops and
 final publication checks withhold unfinished inventories. MD004 selects one
 per-document first-bullet baseline before directive filtering, or an admitted
 explicit marker, and emits marker-only manual findings. It remains enabled by
-default with PlannedFix metadata; MD047 alone supplies executable corrections.
+default with PlannedFix metadata; this analysis produces no edits.
 
 MD005 reuses the same detached list facts. It compares structural marker
 indentation (`ContentIndent - MarkerWidth - Padding`) against each actual group's
@@ -447,7 +447,7 @@ parents remain anchors. A bounded invocation-local map keys constant source-toke
 and item offsets, retaining ordered anchors before children; storage, work and
 finding growth reserve the original allowance even on clean inputs. Final caller
 and origin checks withhold interrupted findings. Findings own one bullet byte
-and remain manual despite PlannedFix metadata; MD047 alone produces edits.
+and remain manual despite PlannedFix metadata; this analysis produces no edits.
 
 MD029 reuses the original detached list facts and borrows its admitted `style`
 under the same original operation controls. Each actual ordered group keeps an
@@ -460,23 +460,23 @@ source-token and group offsets, with storage, work, capacity, copies and finding
 records reserved before construction, including clean inputs. Caller and origin
 checks atomically withhold interrupted findings. Diagnostics own the full digits
 and delimiter only. Default-enabled PlannedFix remains metadata; findings are
-manual and MD047 alone supplies executable edits.
+manual and this analysis produces no edits.
 
 MD032 borrows the completed original ListSpacing inventory under caller and origin
 controls. It emits zero-width manual points before first list markers or at the
 following non-list body start. Context precedes directive filtering; default
 enablement and PlannedFix metadata grant no edit authority. Finding capacity,
 copies and logical records are reserved before construction, with final atomic
-withholding. MD047 remains the sole edit producer.
+withholding.
 
 MD069 borrows maximal repeated-marker spans through ListRepetitions under both
 caller and originating operation controls. Callback findings reserve capacity,
 copied prefixes and logical records before publication, which is atomic on
 interruption. The default-enabled NoFix metadata and optionless schema remain
-unchanged; MD047 is the sole correction producer.
+unchanged.
 
 
-MD027 borrows the narrow completed-original BlockquoteSpaces projection through a no-options facade. Actual Paragraph contributions, confirmed prefix replay and source-ordered literal/raw continuation govern eligibility. Detached excess SPACE ranges remain manual under both caller and origin controls, sticky work/node/time limits and final atomic withholding. MD047 alone supplies corrections.
+MD027 borrows the narrow completed-original BlockquoteSpaces projection through a no-options facade. Actual Paragraph contributions, confirmed prefix replay and source-ordered literal/raw continuation govern eligibility. Detached excess SPACE ranges remain manual under both caller and origin controls, sticky work/node/time limits and final atomic withholding. This analysis produces no edits.
 
 
 MD028 borrows BlockquoteGaps through a no-options facade. Completed original sibling ownership and whole physical blank gaps determine detached manual body spans, including present empty positions. Caller and origin controls, sticky work/node/time limits and final atomic withholding apply at all seams. NoFix metadata grants no correction authority.
@@ -493,7 +493,7 @@ probe, traversal frame, capacity, copied prefix and logical span/finding is rese
 before work, including empty/clean/protected input. Caller and original controls,
 sticky finite work/nodes/time and final producer/facade/callback checks atomically
 withhold failure. No reparse, renderer, source/tree clone, retained AST, new allowance
-or correction authority is added; MD047 remains the sole correction producer.
+or correction authority is added; this analysis produces no edits.
 
 
 MD085 borrows the completed original production source, index, options, profile
@@ -508,7 +508,7 @@ traversal frames, growth capacity, copied prefixes and logical spans/findings ar
 reserved before work. Empty/clean/protected input retains caller and originating
 controls, sticky finite work/nodes/elapsed and atomic producer/facade/callback
 publication. No reparse, source/index/tree clone, renderer, decoder, new allowance
-or correction authority is introduced. MD047 remains the sole correction producer.
+or correction authority is introduced. This analysis produces no edits.
 
 
 MD089 shares the original completed production source/index/options/profile and
@@ -532,7 +532,7 @@ prefixes and detached span/finding records reserve the original finite allowance
 before work. Empty, clean and protected inputs retain caller/origin controls and
 final atomic withholding at producer, facade and callback. No reparse, retained
 AST, source/index/options clone, decoder, new allowance or correction authority
-is added. MD035 is default enabled and manual; MD047 alone supplies corrections.
+is added. MD035 is default enabled and manual; this analysis produces no edits.
 
 MD037 borrows the completed original source/index/options/profile and operation
 through DelimiterStyle. Actual Emphasis/Strong marker facts remain distinct from
@@ -541,7 +541,7 @@ escape/entity payload, raw lifetimes, HTML tails and isolated image alternatives
 Each authored edge-whitespace span is detached and manual; caller/origin controls,
 precharged scalar/traversal/capacity/copy/record work and final atomic withholding
 apply at producer, facade and callback. No reparse, decoder or correction authority
-is introduced; MD047 alone supplies corrections.
+is introduced; this analysis produces no edits.
 
 MD038 borrows actual completed CodeSpan ownership through CodeSpanSpaces under
 original source/index/options/profile and operation authority. Actual normalized
@@ -552,8 +552,7 @@ and image-alternative isolation preserve protected contexts. Traversal, source
 associations, failed byte probes, capacity/copies and logical ranges/findings
 reserve original work/nodes before use. Caller/origin cancellation, sticky limits
 and final producer/facade/callback checks withhold failed dependent output, including
-empty/clean/protected cases. PlannedFix metadata grants no correction authority;
-MD047 alone supplies executable corrections.
+empty/clean/protected cases. PlannedFix metadata grants no correction authority.
 
 MD044 borrows ConfiguredNames through a narrow facade binding the actual original
 source/index/options/profile and budget. Option list copies, one fold per name,
@@ -606,7 +605,7 @@ Unicode table shape is guarded before bounded scalar classifications. Producer,
 getter, facade, comparison and distinct whole-callback final checks bind caller
 and origin and atomically withhold all dependent output on error, including empty,
 clean, protected, minimum-skipped and post-output paths. MD081 remains disabled
-and manual; MD047 alone produces corrections.
+and manual; this analysis produces no edits.
 
 
 ## MD088 original ASCII punctuation analysis
@@ -632,7 +631,7 @@ is used. Finite application accounting is not a CPU/RSS or throughput guarantee.
 Exactly one original three-byte/one-code-point range per eligible scalar uses
 `Use ASCII quotes and dashes in prose.` Full context precedes shared START
 suppression and inspect intersection. Default OFF/style ascii/PlannedFix remain;
-this pass creates no MD088 edits, previews or corrected content. MD047 is sole fixer.
+this pass creates no MD088 edits, previews or corrected content.
 
 ## MD033 embedded HTML inventory
 
@@ -656,8 +655,7 @@ allowed and post-output paths observe caller AND origin controls and sticky
 work/nodes/elapsed limits through producer/getter/facade/comparison/distinct outer
 final publication. The detached allowlist getter preserves the permissive string
 list domain; equal-length whole-name ASCII comparison has no trim/Unicode fold.
-MD033 remains default OFF, RequiresSyntax, UsesFrontmatter=false and NoFix; MD047
-alone supplies corrections. Finite application accounting is not a hard CPU/RSS,
+MD033 remains default OFF, RequiresSyntax, UsesFrontmatter=false and NoFix. Finite application accounting is not a hard CPU/RSS,
 throughput or OS preemption guarantee.
 
 ## MD086 original unmatched-comment inventory
@@ -684,8 +682,7 @@ introduced. Finite application accounting is not a CPU/RSS guarantee.
 
 MD086 is default ON, RequiresSyntax, UsesFrontmatter=false and permanently NoFix.
 Findings use `HTML comment is missing a closing delimiter.` over exactly the
-original four-byte opener. Shared START suppression precedes inspection slicing;
-MD047 remains the sole correction producer.
+original four-byte opener. Shared START suppression precedes inspection slicing.
 
 MD031 analysis uses the completed-original FencedSpacing projection under the
 same parser operation and source/index authority. It combines actual fenced-node

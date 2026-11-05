@@ -127,9 +127,11 @@ Amended by #261: there is no cross-process lock. The original design serialized 
 invocations with Darwin `flock`; that required platform-specific code and is removed in favor of
 one portable implementation. Stale protection still detects concurrent changes to the source,
 its dependencies and the parent immediately before the rename, but it does not serialize writers,
-and a noncooperating writer can change a file between the last check and the rename. With MD047
-as the only fixer, two concurrent runs compute identical output, so nothing is lost today.
-Revisit before a second fixer ships. Do not imply that any editor or process honors a lock.
+and a noncooperating writer can change a file between the last check and the rename. Reviewed
+when MD019 and MD021 corrections joined MD047: there is no new lock, in line with #261 and the
+rule that a full no-lost-update guarantee requires exclusive access during apply. Two concurrent
+runs with the same configuration compute identical output. Runs with different configurations
+can compute different output, and the last writer can overwrite the other's result. Do not imply that any editor or process honors a lock.
 
 ### Preconditions
 
@@ -278,15 +280,42 @@ Only admitted entries reach deterministic ordering and later target selection.
 
 ### Production rule integration
 
-`internal/rules.Corrections` regenerates MD047 groups from each current round's
-actual shared analysis and source-owned diagnostic range. The source's retained
-physical-line index supplies the same terminal facts as analysis; the shared
-`fix.InsertionEnding` chooses inserted spelling without normalizing input.
-The independent `rules.CorrectionCheckers` registration proves the precise
-minimal suffix transformation and unchanged body bytes. Complete shared parser,
-protected envelope/payload/binding and mapped directive checks remain binding.
-The engine's bounded terminal eligibility query withholds positive fix flags
-when syntax, permissions or EOF protection cannot establish safety.
+`internal/rules.Corrections` regenerates MD047, MD019 and MD021 groups from each
+current round's actual shared analysis and source-owned diagnostic ranges. For
+MD047, the source's retained physical-line index supplies the same terminal facts
+as analysis; the shared `fix.InsertionEnding` chooses inserted spelling without
+normalizing input. The independent `rules.CorrectionCheckers` registration proves
+the precise minimal suffix transformation and unchanged bytes outside the round's
+edits. Complete shared parser, protected envelope/payload/binding and mapped
+directive checks remain binding. The engine's bounded terminal eligibility query
+withholds positive fix flags when syntax, permissions or EOF protection cannot
+establish safety.
+
+Interior edits use `engine.InteriorEditQuery`, or `RuleContext.InteriorEdits` in a
+rule callback. It answers with the same protection sources as `fix.Plan` (literal
+spans, front matter and directive comment candidates) and `AllowsEdit`. It returns
+false for hidden observations, disabled anchors, unreliable syntax, incomplete
+parses and any parse uncertainty. A rule run builds its protected-span index at
+most once, on the first finding that needs it.
+
+Combined rounds propose all of a document's eligible corrections together, so a
+document whose edits are all accepted finishes in one changing round plus the
+read-only final check. A failing checker still defers every group in the file for
+that round, so a producer must not propose an edit its checker would reject. An
+MD047 finding without `fix_available` is therefore held back until no other
+correction remains, and is then proposed alone: it defers as it always did, without
+costing the heading corrections already retained. MD047's checker proves its own
+suffix edit and `CheckContext.OnlyEditsChanged`; task sources compare through the
+edit mapping rather than by absolute offset.
+
+A checker runs once per accepted group, and `BoundedViews`, `Edits` and
+`ForbidNewFindings` charge whole-round costs on every call. Proof that spans the
+round goes through `CheckContext.Once`, which computes it at most once per file and
+round. MD019 and MD021 compare heading count and order, level, style, closed state,
+visible text, raw labels, containers, mapped envelopes and anchor bases there. Each
+group then only checks its own edit against the before parse: one deletion of the
+second through last space of a parser-confirmed spaces-only gap that belongs to the
+group's rule.
 
 Future corrections add rule producers, separately registered trusted checkers,
 implemented catalog metadata and affirmative per-finding eligibility. Compose
@@ -296,6 +325,8 @@ self-authorize preservation through requirement flags. Keep ambiguous rules
 report-only until independent proof and production acceptance exist. Retained
 compiled fixtures in `cmd/mdchk/testdata/md047_corrections.json` are available
 for later consumer acceptance; they do not claim filesystem apply or MCP support.
+`cmd/mdchk/testdata/heading_spacing_corrections.json` runs through preview and
+saved modes.
 
 Original selected-file UTF-8 failures remain local observations during correction
 validation. They withhold their correction component and selected-target proof
@@ -308,8 +339,7 @@ other shared failures and runtime stops retain fail-closed behavior.
 MD033 embedded-HTML analysis is available for CommonMark and GFM, disabled by
 default and permanently NoFix. Full original tag ranges remain manual, including
 candidate and saved analysis after an independent MD047 newline correction.
-MD033 produces no edits, eligibility, previews or corrected contents. MD047 is
-the sole current fixer. Apply on an unsupported operating system returns an early
+MD033 produces no edits, eligibility, previews or corrected contents. Apply on an unsupported operating system returns an early
 complete I/O refusal 13 with empty analysis/effects and unchanged files; a build
 without cgo applies normally.
 
@@ -317,8 +347,7 @@ without cgo applies normally.
 
 MD086 unmatched-comment analysis is enabled by default for CommonMark and GFM,
 with no rule-specific options and permanent NoFix. It emits no edits, eligibility,
-previews or corrected content. MD047 remains the sole current correction producer.
-An unmatched opener in an ended quote owner remains a manual MD086 finding when
+previews or corrected content. An unmatched opener in an ended quote owner remains a manual MD086 finding when
 MD047 adds an eligible final LF to later ordinary text. An unclosed comment at
 physical EOF protects that EOF, so MD047 remains deferred and MD086 remains manual.
 Candidate and saved diagnostics retain their exact source identities.

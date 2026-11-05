@@ -11,16 +11,14 @@ Actual eligible HTML owners and their tails are analyzed once; matching ends at
 the owner/container boundary. Each unmatched opener reports only its original
 four bytes. Code, metadata, whole Images, raw payload and opaque HTML tokens stay
 protected; ordinary unowned Text is excluded. Unavailable owned named-token
-context withholds the complete MD086 inventory with explicit coverage. MD047
-remains the sole current correction producer; MCP parity remains downstream.
+context withholds the complete MD086 inventory with explicit coverage. This analysis produces no edits; MCP parity remains downstream.
 
 [MD033 embedded-HTML analysis](../rules/html-and-comments/md033.md) is available for CommonMark and GFM,
 disabled by default and permanently report-only. `allowed_tags: []` accepts a
 string list and matches whole names with ASCII case folding, without trimming.
 Each disallowed complete named tag has its own full original range. Opaque HTML
 tokens and actual raw payload stay protected; unavailable owned-tag context
-withholds the entire MD033 inventory with explicit coverage. No MD033 edits or
-previews are produced; MD047 remains the sole current fixer.
+withholds the entire MD033 inventory with explicit coverage. No MD033 edits or previews are produced.
 
 
 The ordinary executable has a compiled acceptance journey in
@@ -112,14 +110,13 @@ MD010 analysis/configuration is available for CommonMark and GFM. Each original
 TAB is a separate manual one-byte finding; code_blocks only admits actual code
 block bytes, while CodeSpan/HTML/recognized metadata remain protected. Positive
 spaces_per_tab is analysis-neutral. Required acceptance includes full-context
-directives and inspection, unchanged source/configuration, and MD047-only
-candidate composition; MD010 adds no edit or apply capability.
+directives and inspection, unchanged source/configuration, and MD047 candidate composition; MD010 adds no edit or apply capability.
 
 MD012 analysis/configuration is available for both flavors. Literal fixtures and
 compiled CLI checks cover original body ranges, actual protection and container
 transitions, active directives/metadata, inherited denials, slicing, strict options
-and all reporters. Findings remain manual, including zero-width bodies. MD047
-alone supplies candidate corrections; MD012 reanalysis identifies that snapshot.
+and all reporters. Findings remain manual, including zero-width bodies. MD012
+produces no edits; reanalysis identifies a correction candidate's snapshot.
 
 [MD088 ASCII-punctuation analysis](../rules/formatting/md088.md) is available for CommonMark and GFM,
 disabled by default with sole string option `style: ascii`. Invalid styles and

@@ -13,7 +13,7 @@ mdchk is under active development. This build provides:
 
   - Disabled by default: MD013, MD026, MD033, MD036, MD040, MD043, MD044, MD054, MD060, MD061, MD063, MD070, MD072, MD073, MD074, MD080, MD081, MD082, MD083, MD084, MD085, MD087, MD088, MD089, MD090, MD091 and MD093.
   - Not yet implemented: MD066, MD067, MD068 and MD095.
-- **Corrections.** MD047, a missing final newline, is the only automatic correction so far. Every other rule reports findings for a person or agent to resolve.
+- **Corrections.** Automatic corrections cover MD047 (a missing final newline) and MD019 and MD021 (excess spaces in heading delimiter gaps). Every other rule reports findings for a person or agent to resolve.
 - **Commands.** `lint`, `fix`, `inspect` and `config validate` are available. The [MCP server](#use-with-ai-agents) is planned.
 
 ## Check Markdown
