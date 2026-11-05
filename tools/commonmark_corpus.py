@@ -51,7 +51,9 @@ def generate():
     if result.stderr:
         # Newer interpreters warn about legacy escapes in the unmodified helper.
         # Diagnostics do not invalidate a successful, byte-verified extraction.
-        sys.stderr.buffer.write(result.stderr)
+        # Write text, since a test runner may replace sys.stderr with a
+        # text-only stream.
+        sys.stderr.write(result.stderr.decode("utf-8", "backslashreplace"))
     output = result.stdout
     expected = provenance["generated"]
     if (len(output) != expected["byte_count"]
