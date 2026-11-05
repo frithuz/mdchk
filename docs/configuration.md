@@ -23,7 +23,7 @@ withholds the entire MD033 inventory with explicit coverage. No MD033 edits or
 previews are produced; MD047 remains the sole current fixer.
 
 
-Use `.mdchk.yaml` to define your project's Markdown expectations. Lint and fix use the same rules and exclusions from the terminal; the planned MCP modes share this contract. Without a configuration file, mdchk uses its defaults, including the supported GFM profile. Missing default rule implementations produce incomplete analysis (`15`).
+Use `.mdchk.yaml` to define your project's Markdown expectations. Lint and fix use the same rules and exclusions from the terminal; the planned MCP modes share this contract. Without a configuration file, mdchk uses its defaults, including the supported GFM profile. Every rule enabled by default is available, so default analysis can complete.
 
 This is the approved configuration contract. Lint loads and validates configuration before target access, then acquires source snapshots and executes the shared parser and available registered checks. Lint, fix and config validate support text, schema-v1 JSON, VS Code and GitHub reports; inspect supports text/JSON.
 
@@ -84,10 +84,11 @@ rule-specific options; MD025 and MD041 accept integer `level` from 1 through 6 (
 minima, each defaulting to 1; MD072 accepts boolean `recursive` (default false) and
 `case_sensitive` (default true). MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009,
 MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043,
-MD063, MD072, MD080, MD082, MD090, MD081, MD088, MD033, MD086, MD087 and MD093 are report-only.
-Rules marked unavailable in the linked inventory remain pending. Missing enabled
-defaults produce coverage deficits rather than clean results; valid UTF-8 with all ordinary rules disabled can return clean
-`0`. See [initial capability handling](#initial-capability-handling) for how development
+MD063, MD072, MD080, MD082, MD090, MD081, MD088, MD033, MD086, MD087, MD093 and MD071 are report-only.
+Rules marked unavailable in the linked inventory remain pending. Every default-enabled
+rule is available for CommonMark and GFM; an enabled rule without an implementation
+would produce a coverage deficit rather than a clean result. Valid UTF-8 with all
+ordinary rules disabled can return clean `0`. See [initial capability handling](#initial-capability-handling) for how development
 builds must report unavailable behavior.
 
 [MD081 paragraph-emphasis analysis](rules/formatting/md081.md) is available for CommonMark and
@@ -102,13 +103,12 @@ PlannedFix retains future correction scope. No MD088 edits or previews are emitt
 
 For a runnable current setup, copy the [MD047-only example](examples/editor-ci/.mdchk.yaml)
 to `.mdchk.yaml` in your project root and follow the [quick start](index.md#get-started-with-this-build).
-It selects CommonMark and explicitly disables other ordinary checks. CommonMark
-alone still returns incomplete/`15` for unavailable defaults; this reduced
+It selects CommonMark and explicitly disables other ordinary checks. This reduced
 selection is not full Markdown conformance.
 
 The following configuration is accepted by this build. MD004 checks parsed bullet
-markers with `marker: dash`. Other unmentioned default-enabled rules that remain
-unavailable still produce incomplete coverage (`15`).
+markers with `marker: dash`. Other unmentioned default-enabled rules run with their
+defaults.
 
 ```yaml
 version: 1

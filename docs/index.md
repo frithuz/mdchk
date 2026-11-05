@@ -54,11 +54,13 @@ MD023 heading indentation analysis, MD024 repeated heading analysis, MD025
 multiple-title analysis, MD026 heading-end punctuation analysis, MD036
 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline
 analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision
-analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and
-MD093 inline-formatting-in-headings analysis are implemented; MD013, MD026, MD036, MD043,
-MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 are disabled by default. Missing
-enabled defaults for other rules still return `15`. Valid UTF-8 with all ordinary rules disabled can
-return clean `0`; available registered checks retain findings and coverage.
+analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis,
+MD093 inline-formatting-in-headings analysis and MD071 frontmatter blank-line analysis
+are implemented; MD013, MD026, MD036, MD043,
+MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 are disabled by default. Every
+rule enabled by default is available for CommonMark and GFM, so default analysis
+can complete. Valid UTF-8 with all ordinary rules disabled can return clean `0`;
+available registered checks retain findings and coverage.
 
 [MD081 paragraph-emphasis analysis](rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.
@@ -103,11 +105,10 @@ unchanged. Apply saves that newline on Linux, macOS and Windows;
 other operating systems refuse with `13` and leave the file unchanged.
 After a successful apply, lint returns `0`.
 
-Without configuration, the supported default GFM profile analyzes the document,
-but unavailable default checks make lint and fix incomplete (`15`). CommonMark
-alone has the same missing-rule coverage. Inspect can complete its observation
-with exit `0` while reporting that coverage; unavailable selected contexts or
-explicit rules fail configuration with `12`.
+Without configuration, the supported default GFM profile analyzes the document
+with every default check available, so lint and fix complete with `0` or `10`.
+CommonMark alone is complete as well. Unavailable selected contexts or explicit
+rules fail configuration with `12`.
 See the [configuration guide](configuration.md) before choosing another rule
 selection, and the [runnable integration setup](output-formats.md#runnable-integration-setup)
 for editor and CI examples.

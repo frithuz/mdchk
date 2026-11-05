@@ -20,7 +20,7 @@ mdchk fix [options] [paths...]
 
 The examples below assume the [current reduced setup](../index.md#get-started-with-this-build):
 a CommonMark+MD047 configuration and readable fixture paths. Without it,
-default GFM and CommonMark both retain missing default-rule coverage (`15`). Apply additionally requires the verified native adapter above.
+default GFM and CommonMark both run every default check with complete coverage. Apply additionally requires the verified native adapter above.
 
 [MD088 ASCII-punctuation analysis](../rules/formatting/md088.md) is available for CommonMark and GFM,
 disabled by default with sole string option `style: ascii`. Invalid styles and

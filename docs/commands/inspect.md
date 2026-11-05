@@ -18,8 +18,7 @@ mdchk inspect docs/guide.md --lines 18-30
 
 These examples assume the [current reduced setup](../index.md#get-started-with-this-build):
 a CommonMark+MD047 configuration and readable fixture paths. GFM is also
-available; lint/fix report missing default-rule coverage with `15` for either
-flavor unless unavailable checks are disabled. Inspect instead completes observations with `0`
+available; every default check runs for either flavor. Inspect completes observations with `0`
 even when configuration or check availability is unresolved. Replace
 `/path/to/project` with a real project path and ensure line-range examples have
 enough physical lines.
