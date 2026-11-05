@@ -1,5 +1,10 @@
 # Rules to implement
 
+[MD053 unneeded-definition analysis](links-and-images/md053.md) is available
+for CommonMark and GFM, enabled by default with `ignored_labels: []`.
+Definitions no parsed reference uses, and later definitions shadowed by an
+earlier one with the same label, produce report-only findings.
+
 [MD054 link and image representation style analysis](links-and-images/md054.md)
 is available for CommonMark and GFM, disabled by default. When enabled, each
 link and image whose style is not in `allowed_styles` produces a report-only
@@ -121,7 +126,7 @@ including opt-in YAML/TOML title baselines. MD003 heading-style analysis and
 configuration are also implemented for both flavors. MD004 bullet-marker, MD005
 sibling-list alignment, MD007 bullet nesting indentation, MD029 numbered-list prefix and
 MD030 list-marker separator, MD032 list-boundary blank-line, MD069 repeated-list-marker
-and MD076 list-item spacing, MD077 list-continuation indentation, MD009 trailing-whitespace, MD010 tab-character, MD012 blank-body-run and MD013 maximum-line-width and MD014 shell-prompt and MD031 fenced-block blank-line and MD040 fenced-language and MD046 code-block representation and MD048 fence-delimiter and MD011 swapped-link-delimiter and MD034 bare-URL and MD039 link-label-whitespace and MD042 links-without-destinations and MD051 unresolved-fragment and MD052 references-without-definitions and MD062 whitespace-in-destination and MD054 link-and-image-representation-style and MD045 image-alternative-text and MD070 nested-example and MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space and MD085 paragraph-continuation, MD089 CJK/Latin-spacing, MD035 horizontal-rule-style and MD037 emphasis-whitespace and MD038 inline-code-whitespace and MD044 configured-name-capitalization and MD049 italic-delimiter-style and MD050 bold-delimiter-style and MD065 horizontal-rule-blank-line and MD081 paragraph-emphasis analysis and MD088 ASCII-punctuation analysis and MD033 embedded-HTML analysis and MD086 unmatched-comment analysis and
+and MD076 list-item spacing, MD077 list-continuation indentation, MD009 trailing-whitespace, MD010 tab-character, MD012 blank-body-run and MD013 maximum-line-width and MD014 shell-prompt and MD031 fenced-block blank-line and MD040 fenced-language and MD046 code-block representation and MD048 fence-delimiter and MD011 swapped-link-delimiter and MD034 bare-URL and MD039 link-label-whitespace and MD042 links-without-destinations and MD051 unresolved-fragment and MD052 references-without-definitions and MD053 unneeded-definition and MD062 whitespace-in-destination and MD054 link-and-image-representation-style and MD045 image-alternative-text and MD070 nested-example and MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space and MD085 paragraph-continuation, MD089 CJK/Latin-spacing, MD035 horizontal-rule-style and MD037 emphasis-whitespace and MD038 inline-code-whitespace and MD044 configured-name-capitalization and MD049 italic-delimiter-style and MD050 bold-delimiter-style and MD065 horizontal-rule-blank-line and MD081 paragraph-emphasis analysis and MD088 ASCII-punctuation analysis and MD033 embedded-HTML analysis and MD086 unmatched-comment analysis and
 configuration are implemented for both flavors. MD018 missing opening-hash spacing,
 MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021
 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading
@@ -131,7 +136,7 @@ opening-heading analysis, MD043 required-outline analysis, MD063 heading-capital
 analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090
 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis
 and configuration are implemented for both flavors. MD001, MD003, MD004, MD005, MD007,
-MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD014, MD031, MD040, MD046, MD048, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD062, MD054, MD070, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD044, MD049, MD050, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026,
+MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD014, MD031, MD040, MD046, MD048, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD062, MD054, MD070, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD044, MD049, MD050, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026,
 MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 are report-only. MD013, MD026, MD036,
 MD040, MD043, MD044, MD063, MD070, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD054, MD087 and MD093 are available but disabled by default. Other
 ordinary rule callbacks remain planned. The mandatory UTF-8 gate is implemented

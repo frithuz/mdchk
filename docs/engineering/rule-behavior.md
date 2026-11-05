@@ -174,6 +174,26 @@ to a parsed link or image are excluded. Unavailable definitions or unknown
 necessary provenance atomically withhold all findings. No MD052 correction is
 produced. See the [MD052 contract](../rules/links-and-images/md052.md).
 
+### Md053
+
+MD053 analysis is implemented for CommonMark and GFM, enabled by default with
+`ignored_labels: []`. `Document.UnneededDefinitions` reads the completed
+definition collection in source order. A definition is used when a parsed
+full, collapsed or shortcut Link or Image anywhere in the tree has an available
+resolution whose normalized label looks up to that definition's index; bracket
+text that yields no parsed reference node never counts. Every definition after
+the first with the same normalized label is shadowed and reported once; a first
+definition with no use is reported once as unused. `ignored_labels` entries are
+normalized with the parser's label normalizer and exempt only first definitions
+from unused findings; an entry that normalizes to the empty string matches
+nothing. Each finding covers the original `label-open` marker through the
+`definition-colon` marker and names the normalized label. An unavailable
+definition collection withholds every finding. An unavailable lookup, or a
+reference node without an available resolution, keeps the shadowed findings and
+withholds every unused finding, with its own coverage message. No MD053
+correction is produced yet. See the
+[MD053 contract](../rules/links-and-images/md053.md).
+
 ### Md054
 
 MD054 analysis is implemented for CommonMark and GFM, disabled by default, with

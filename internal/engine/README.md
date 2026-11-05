@@ -778,3 +778,12 @@ errors, incomplete targets). The provider is bound to one exact view (original, 
 lint, inspect and fix supply it. Without one such links are skipped, or reported as
 `context-unavailable` when `cross_file` is true. MD051 is default-enabled, accepts only
 `cross_file` and permanently retains NoFix metadata.
+
+MD053's `RuleContext.UnneededDefinitions` facade preserves the same original
+parse/source/options and cumulative operation authority, with both caller and
+originating controls. It reads exactly one admitted `ignored_labels` string
+list, passes a detached copy to `Document.UnneededDefinitions`, and rejects any
+other option shape with `parser.ErrModel`. The inventory carries separate
+availabilities for shadowed and unused definitions, so an unknown reference-use
+set withholds only the unused findings. MD053 is default-enabled and keeps its
+PlannedFix metadata; no correction is registered.
