@@ -700,6 +700,39 @@ https://www.unicode.org/Public/17.0.0/security/confusables.txt
 
 745683
 
+### Idna data
+
+#### Version
+
+17.0.0
+
+#### Url
+
+https://www.unicode.org/Public/17.0.0/idna/IdnaMappingTable.txt
+
+#### Sha256
+
+87f05505dc026fdb2bff16132bdc68a8014675836882a9a2b1844540ad3be382
+
+#### Bytes
+
+787378
+
+#### Conformance url
+
+https://www.unicode.org/Public/17.0.0/idna/IdnaTestV2.txt
+
+#### Conformance sha256
+
+beb5d0be20e896189b03209a82fdc34f06351502bbd4b8e2523583fc2954d9cf
+
+#### Conformance bytes
+
+775973
+
+The normalization, Bidi_Class and Joining_Type sources and their hashes are listed
+in the [retained data README](../../internal/idna/testdata/unicode/17.0.0/README.md).
+
 ### Idna
 
 Pin Unicode 17.0.0 hostname processing and normalization alongside the confusable table. Use UTS #46

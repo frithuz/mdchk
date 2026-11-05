@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+"""Regenerate or check the pinned Unicode 17.0.0 UTS #46 hostname tables offline."""
+
+import argparse
+import hashlib
+from pathlib import Path
+import subprocess
+
+
+ROOT = Path(__file__).resolve().parent.parent
+DATA = ROOT / "internal/idna/testdata/unicode/17.0.0"
+OUTPUT = ROOT / "internal/idna/tables.go"
+SOURCES = {
+    "IdnaMappingTable.txt": "87f05505dc026fdb2bff16132bdc68a8014675836882a9a2b1844540ad3be382",
+    "UnicodeData.txt": "2e1efc1dcb59c575eedf5ccae60f95229f706ee6d031835247d843c11d96470c",
+    "CompositionExclusions.txt": "2f239196ef3b5b61db5cc476e9bd80f534d15aa1b74e1be1dea5d042a344c85f",
+    "DerivedJoiningType.txt": "f39ebe974825d6736aee15582250307aa532b2cfab3caf3f86bd23fddc9c5c4d",
+    # Test-only sources; pinned here so a changed byte fails --check too.
+    "IdnaTestV2.txt": "beb5d0be20e896189b03209a82fdc34f06351502bbd4b8e2523583fc2954d9cf",
+    "NormalizationTest.txt": "5019ffd530751a741900c849c0e010332f142a3612234639bd200b82138a87db",
+    "LICENSE.txt": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96",
+}
+STATUSES = {
+    "valid": "statusValid",
+    "mapped": "statusMapped",
+    "deviation": "statusDeviation",
+    "disallowed": "statusDisallowed",
+    "ignored": "statusIgnored",
+}
+BIDI = {c: "bidi" + c for c in ("R", "AL", "AN", "EN", "ES", "CS", "ET", "ON", "BN", "NSM")}
+JOINING = {"D": "joiningD", "L": "joiningL", "R": "joiningR", "T": "joiningT"}
+
+
+def read_sources():
+    texts = {}
+    for name, digest in SOURCES.items():
+        data = (DATA / name).read_bytes()
+        # Pinned Unicode 17.0.0 sources; never use the host Python Unicode database.
+        if hashlib.sha256(data).hexdigest() != digest:
+            raise SystemExit("pinned %s hash mismatch" % name)
+        texts[name] = data.decode("utf-8")
+    return texts
+
+
+def records(text):
+    for line in text.splitlines():
+        fields = [f.strip() for f in line.split("#", 1)[0].split(";")]
+        if len(fields) > 1:
+            yield fields
+
+
+def code_range(field):
+    lo, _, hi = field.partition("..")
+    return int(lo, 16), int(hi or lo, 16)
+
+
+def go_string(points):
+    return '"%s"' % "".join(("\\u%04x" if p <= 0xFFFF else "\\U%08x") % p for p in points)
+
+
+def mapping_rows(text):
+    rows, expected = [], 0
+    for fields in records(text):
+        lo, hi = code_range(fields[0])
+        if lo != expected or fields[1] not in STATUSES:
+            raise SystemExit("IdnaMappingTable.txt is not a contiguous known-status table at %04X" % lo)
+        expected = hi + 1
+        status = STATUSES[fields[1]]
+        mapping = [int(c, 16) for c in fields[2].split()] if len(fields) > 2 and fields[1] in ("mapped", "deviation") else []
+        if rows and rows[-1][1:] == (status, mapping):
+            continue
+        rows.append((lo, status, mapping))
+    if expected != 0x110000:
+        raise SystemExit("IdnaMappingTable.txt does not cover U+0000..U+10FFFF")
+    return rows
+
+
+def unicode_data(text):
+    props, pending = {}, None
+    for fields in records(text):
+        code = int(fields[0], 16)
+        if fields[1].endswith(", First>"):
+            pending = code
+            continue
+        first = pending if fields[1].endswith(", Last>") else code
+        pending = None
+        for c in range(first, code + 1):
+            props[c] = (fields[2], int(fields[3]), fields[4], fields[5])
+    return props
+
+
+def runs(values):
+    """Group code point -> value pairs into maximal contiguous (lo, hi, value) runs."""
+    result = []
+    for c in sorted(values):
+        if result and result[-1][1] == c - 1 and result[-1][2] == values[c]:
+            result[-1][1] = c
+        else:
+            result.append([c, c, values[c]])
+    return result
+
+
+def generate():
+    texts = read_sources()
+    props = unicode_data(texts["UnicodeData.txt"])
+    raw = {}
+    for c, (_, _, _, decomposition) in props.items():
+        if decomposition and not decomposition.startswith("<"):
+            raw[c] = [int(p, 16) for p in decomposition.split()]
+
+    def full(c):
+        return [q for p in raw[c] for q in (full(p) if p in raw else [p])]
+
+    def ccc(c):
+        return props[c][1] if c in props else 0
+
+    excluded = set()
+    for line in texts["CompositionExclusions.txt"].splitlines():
+        field = line.split("#", 1)[0].strip()
+        if field:
+            lo, hi = code_range(field)
+            excluded.update(range(lo, hi + 1))
+    compositions = {}
+    for c, parts in raw.items():
+        # Full_Composition_Exclusion: listed exclusions, singletons and non-starter decompositions.
+        if c in excluded or len(parts) != 2 or ccc(c) != 0 or ccc(parts[0]) != 0:
+            continue
+        compositions[tuple(parts)] = c
+
+    joining = {}
+    for fields in records(texts["DerivedJoiningType.txt"]):
+        if fields[1] in JOINING:
+            lo, hi = code_range(fields[0])
+            joining.update((c, JOINING[fields[1]]) for c in range(lo, hi + 1))
+
+    lines = ["// Code generated by tools/unicode_idna.py; DO NOT EDIT.",
+             "// Unicode 17.0.0 UTS #46 mapping, canonical normalization, Bidi_Class,",
+             "// Joining_Type and General_Category=Mark data.",
+             "// Source and Unicode license: testdata/unicode/17.0.0/.",
+             "", "package idna", "",
+             "// mappingRanges is sorted and contiguous; each row ends before the next.",
+             "var mappingRanges = []mappingRange{"]
+    for lo, status, mapping in mapping_rows(texts["IdnaMappingTable.txt"]):
+        lines.append("{0x%X, %s, %s}," % (lo, status, go_string(mapping)))
+    lines += ["}", "", "// combiningClasses lists every nonzero Canonical_Combining_Class.",
+              "var combiningClasses = []propertyRange{"]
+    lines += ["{0x%X, 0x%X, %d}," % tuple(r) for r in runs({c: p[1] for c, p in props.items() if p[1]})]
+    lines += ["}", "", "// bidiClasses lists assigned code points whose Bidi_Class is not L.",
+              "var bidiClasses = []propertyRange{"]
+    lines += ["{0x%X, 0x%X, %s}," % (lo, hi, BIDI.get(v, "bidiOther"))
+              for lo, hi, v in runs({c: p[2] for c, p in props.items() if p[2] != "L"})]
+    lines += ["}", "", "// marks lists General_Category=Mark (Mn, Mc, Me).", "var marks = []propertyRange{"]
+    lines += ["{0x%X, 0x%X, 1}," % (lo, hi) for lo, hi, _ in runs({c: 1 for c, p in props.items() if p[0] in ("Mn", "Mc", "Me")})]
+    lines += ["}", "", "// joiningTypes lists Joining_Type D, L, R and T.", "var joiningTypes = []propertyRange{"]
+    lines += ["{0x%X, 0x%X, %s}," % tuple(r) for r in runs(joining)]
+    lines += ["}", "", "// decompositions holds full canonical decompositions; Hangul syllables are algorithmic.",
+              "var decompositions = map[rune]string{"]
+    lines += ["0x%X: %s," % (c, go_string(full(c))) for c in sorted(raw)]
+    lines += ["}", "", "// compositions maps primary composite pairs; Hangul syllables are algorithmic.",
+              "var compositions = map[[2]rune]rune{"]
+    lines += ["{0x%X, 0x%X}: 0x%X," % (a, b, c) for (a, b), c in sorted(compositions.items())]
+    lines.append("}")
+    return subprocess.check_output(["gofmt"], input=("\n".join(lines) + "\n").encode())
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true")
+    args = parser.parse_args()
+    generated = generate()
+    if args.check:
+        if OUTPUT.read_bytes() != generated:
+            raise SystemExit("IDNA tables differ from pinned sources")
+        print("checked Unicode 17.0.0 IDNA tables")
+    else:
+        OUTPUT.write_bytes(generated)
+
+
+if __name__ == "__main__":
+    main()

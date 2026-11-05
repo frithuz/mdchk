@@ -854,6 +854,21 @@ all C/F mappings directly with the retained source, including default versus
 Turkic behavior. The [parser accounting specification](engineering/parser-limits.md) defines
 shared finite parser budgets and interruption semantics.
 
+### Unicode hostname processing
+
+MD095 `allowed_hosts` entries validate with the offline Unicode 17.0.0 UTS #46
+processor in `internal/idna`, using standard-library-only runtime code and tables
+generated from retained, hash-pinned Unicode data. See
+[provenance and license](../internal/idna/testdata/unicode/17.0.0/README.md).
+Regenerate/check offline with Python 3.9+ and gofmt, then run the IdnaTestV2,
+NormalizationTest and table-equivalence tests:
+
+```sh
+python3 -B tools/unicode_idna.py
+python3 -B tools/unicode_idna.py --check
+go test ./internal/idna -count=1
+```
+
 ## Initialize a new clone
 
 Install **Task v3.54.0**, the supported and verified repository task runner.
