@@ -171,15 +171,16 @@ Standalone MCP configuration is a JSON object with the same semantic schema and 
 
 Current local support: `resources.anchor_style` selects the anchor policy for MD051
 and MD080 in lint, fix and inspection, and `resources.index_file` names the directory
-index MD051 tries once for directory links. MD051 `cross_file` reads other documents
-through the bounded read-only resource service in the CLI; MCP resource integration
-and MD057/MD073 consumers remain separate deliveries. Selecting an anchor style or
-index file alone grants no resource reads.
+index MD051 and MD057 each try once for directory links. MD051 `cross_file` reads
+other documents, and MD057 checks local target existence without reading content,
+through one bounded read-only resource service in the CLI; MCP resource integration
+and MD073 consumers remain separate deliveries. Selecting an anchor style or index
+file alone grants no resource reads.
 
-Availability: MD051 same-document and cross-file checks and `resources.index_file`
-are delivered in the CLI (`lint`, `inspect`, `fix`); MD057, MD073 and MCP resource
-consumers remain planned and follow the same accepted policy. Explicitly requesting
-unavailable capabilities returns `12`.
+Availability: MD051 same-document and cross-file checks, MD057 local target checks
+and `resources.index_file` are delivered in the CLI (`lint`, `inspect`, `fix`);
+MD073 and MCP resource consumers remain planned and follow the same accepted policy.
+Explicitly requesting unavailable capabilities returns `12`.
 
 Set resource policy once for the operation:
 

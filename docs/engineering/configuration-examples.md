@@ -148,7 +148,7 @@ as recorded in the linked inventory. Lint parses
 selected valid UTF-8 sources, reports applicable missing default-enabled checks
 as `rule-unavailable`, sets `status: incomplete` and `complete: false`, and exits
 15. The complete 87-rule catalog remains intact: MD001 is default-enabled and
-executes along with MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD027, MD028, MD064, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053 and MD062, while unavailable default-enabled MD071 contributes
+executes along with MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD027, MD028, MD064, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD057 and MD062, while unavailable default-enabled MD071 contributes
 coverage. MD013 is available but default-disabled and does not incur a coverage penalty. Explicitly enabling
 an unavailable rule instead fails configuration admission with exit 12 before
 target processing. Text and JSON retain the same coverage and outcome.
@@ -362,7 +362,7 @@ rules:
 | --- | --- |
 | Omitted `resources`, or `resources: {}` | `index_file: index.md`, `anchor_style: github` |
 | `resources: {anchor_style: explicit}` | Available for same-document MD051 and MD080; MD073 and referenced Markdown consumption (cross-file MD051) remain separate deliveries |
-| `resources: {index_file: README.md}` | Accepted by the CLI when the native adapter can name it; directory links try that one filename once (MD051) |
+| `resources: {index_file: README.md}` | Accepted by the CLI when the native adapter can name it; directory links try that one filename once (MD051 and MD057) |
 | `resources: null`, a sequence, or an unknown resource field | Configuration error |
 | `resources: {index_file: docs/index.md}` | Configuration error: filename only |
 | Empty index filename, `.`/`..`, a glob, URL, query/fragment, drive prefix, backslash, or control character | Configuration error |

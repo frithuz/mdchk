@@ -6,9 +6,12 @@ the strict supplied-input boundary and shared destination normalization. Issue
 adds immutable partial/complete supplied-inventory lookup. Issue #253 adds the
 operation-owned first-observation service and parsed-source cache seam. Issue
 #254 adds the immutable CommonMark/GFM heading and verified HTML ID index.
-CLI `lint`, `inspect` and `fix` consume them for MD051 lazily through
+CLI `lint`, `inspect` and `fix` consume them for MD051 and MD057 lazily through
 `engine.RunOptions.Fragments` (internal/cli), using Original, per-target Candidate
-and observed Saved views of one operation. MCP remains downstream.
+and observed Saved views of one shared operation. MD057's `ExistenceResolver`
+composes the same normalizer and service with existence-only requests, and
+`ExistenceReport` projects its resolutions like `FragmentReport`. MCP remains
+downstream.
 
 A caller supplies an opaque root identity, immutable parser/index/anchor policy,
 a shared operation context and budget, and explicit selected target snapshots.
