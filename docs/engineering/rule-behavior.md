@@ -99,6 +99,15 @@ a narrow valid-UTF8 list domain, including disabled validation; no other lists
 are narrowed. See [MD044](../rules/formatting/md044.md) for the full policy.
 Pass 1 produces manual analysis only; MD047 remains the sole correction producer.
 
+### Md061
+
+MD061 shares MD044's prose walker with code blocks always off: the same owners,
+islands, barriers, protected regions and word boundaries apply. Terms compare
+through Unicode17 full C/F folding, or by original bytes when `case_sensitive`
+is true. Every leftmost-longest winner reports with `Configured prohibited term.`;
+there is no accepted spelling. See [MD061](../rules/content-and-navigation/md061.md)
+for the full policy. Findings are report-only.
+
 ### Md049
 
 MD049 consumes only actual Valid Emphasis facts of width one from the shared
