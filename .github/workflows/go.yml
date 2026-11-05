@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-26.04
+    runs-on: blacksmith-4vcpu-ubuntu-2604
     env:
       GOTOOLCHAIN: local
       GOWORK: "off"
@@ -33,7 +33,6 @@ jobs:
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         with:
           go-version-file: go.mod
-          cache: false
       - name: Check resource schema with ECMAScript regex engine
         run: node tools/resource_schema.mjs
       - name: Test
@@ -111,14 +110,23 @@ jobs:
         run: sh tools/vulncheck.sh --self-test
 
   cli-platform:
+    name: cli-platform (${{ matrix.os }})
     # These execute actual host binaries. Cross-vet is a separate compile check.
     # Apply is one portable implementation, so the same suite runs on every OS
     # with CGO_ENABLED=0. Linux runs these tests in the test and race jobs.
     strategy:
       fail-fast: false
       matrix:
-        os: [blacksmith-6vcpu-macos-26, blacksmith-2vcpu-windows-2025]
-    runs-on: ${{ matrix.os }}
+        # The compiled tests mostly wait on the processes they launch, so
+        # Windows runs more of them at once than it has CPUs.
+        include:
+          - os: macOS
+            runner: blacksmith-6vcpu-macos-26
+            parallel: 6
+          - os: Windows
+            runner: blacksmith-4vcpu-windows-2025
+            parallel: 8
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     env:
       GOTOOLCHAIN: local
@@ -135,7 +143,6 @@ jobs:
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         with:
           go-version-file: go.mod
-          cache: false
       - name: Identify actual runtime and native adapter prerequisites
         run: go env GOOS GOARCH CGO_ENABLED
       - name: Verify native confined resource reads and root selection
@@ -149,7 +156,7 @@ jobs:
         # Keep room for the complete inventory and later native integration gates.
         env:
           DEBUG: ${{ runner.debug }}
-        run: go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryApply|TestCompiledApplyNoCGOApplies|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -timeout=20m
+        run: go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryApply|TestCompiledApplyNoCGOApplies|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -parallel=${{ matrix.parallel }} -timeout=20m
       - name: Verify portable apply adapter without cgo
         env:
           CGO_ENABLED: "0"
@@ -172,6 +179,7 @@ jobs:
         run: go run ./tools/testrun ./internal/cli -run "^(TestCompiledEditor.*|TestDocumented.*|TestEditorRealCommandWriterFailuresAndBounds|TestEditorCommandArgumentsAndIndependentLifetime|TestValidateActualTinyReportingDeadline|TestValidateCompletedReportingAssertions|TestValidateExpiredReportingContextPreservesActualCounts)$" -count=1 -timeout=15m
 
   race:
+    name: race (${{ matrix.os }})
     # Go's race detector requires a supported OS/architecture, a C compiler and
     # CGO. This Ubuntu amd64 runner supplies GCC; unsupported hosts must report
     # race checks as unavailable rather than counting an ordinary test as a pass.
@@ -180,8 +188,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-26.04]
-    runs-on: ${{ matrix.os }}
+        include:
+          - os: Linux
+            runner: blacksmith-4vcpu-ubuntu-2604
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     env:
       GOTOOLCHAIN: local
@@ -195,7 +205,6 @@ jobs:
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         with:
           go-version-file: go.mod
-          cache: false
       - name: Test with race detector
         # The full native acceptance suite exceeds Go's default ten-minute
         # package timeout under race instrumentation.
@@ -214,7 +223,7 @@ jobs:
   fuzz:
     # Pushes and pull requests smoke every parser fuzz target in one job. The
     # weekly campaign gives each target its own runner and a longer budget.
-    runs-on: ubuntu-26.04
+    runs-on: blacksmith-4vcpu-ubuntu-2604
     timeout-minutes: 15
     strategy:
       fail-fast: false
@@ -232,7 +241,6 @@ jobs:
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         with:
           go-version-file: go.mod
-          cache: false
       - name: Bounded parser fuzz smoke or scheduled campaign
         env:
           EVENT_NAME: ${{ github.event_name }}

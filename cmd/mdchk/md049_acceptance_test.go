@@ -14,7 +14,8 @@ func md049Configuration(flavor string) string {
 }
 
 func TestCompiledPlatformMD049ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		id, source, flavor string
 		ranges             [][2]int
@@ -67,7 +68,8 @@ func TestCompiledPlatformMD049ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD049OptionsAndInheritance(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, setting := range []string{"{enabled: false, style: null}", "{enabled: false, style: [asterisk]}", "{enabled: false, style: Asterisk}", "{enabled: false, style: dash}", "{enabled: false, unknown: true}", "{enabled: false, allow_directives: null}"} {
 		t.Run(setting, func(t *testing.T) {
 			root := configurationProject(t)
@@ -108,8 +110,8 @@ func TestCompiledPlatformMD049OptionsAndInheritance(t *testing.T) {
 }
 
 func TestCompiledPlatformMD049NoCGOApply(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md049Configuration("gfm"))
 	putConfigurationFile(t, root, "doc.md", "*a* _b_")
@@ -120,7 +122,8 @@ func TestCompiledPlatformMD049NoCGOApply(t *testing.T) {
 }
 
 func TestCompiledPlatformMD049MD047Composition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, source := range []string{"`_a_`", "`_a_` tail"} {
 		t.Run(source, func(t *testing.T) {
 			root := configurationProject(t)
@@ -168,7 +171,8 @@ func TestCompiledPlatformMD049MD047Composition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD049DefaultsStylesAndOriginalContext(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, setting, source string
 		want, start           int

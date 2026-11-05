@@ -13,6 +13,7 @@ import (
 )
 
 func TestCompiledEditorPartialNativePublication(t *testing.T) {
+	t.Parallel()
 	// Build-time control performs a genuine stale-source refusal and normal native
 	// B publication. C's genuine publication is followed by loss of observation;
 	// the explicit uncertainty/owned-name evidence exercises recovery presentation.

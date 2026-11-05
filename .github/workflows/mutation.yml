@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   critical-behavior:
-    runs-on: ubuntu-26.04
+    runs-on: blacksmith-4vcpu-ubuntu-2604
     # Three 15-minute area deadlines, installation, replays and artifact margin.
     timeout-minutes: 65
     env:
@@ -25,7 +25,6 @@ jobs:
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         with:
           go-version-file: go.mod
-          cache: false
       - name: Verify mutation infrastructure failure paths
         run: python3 -B tools/test_mutation.py
       - name: Run isolated critical behavior baseline and semantic controls

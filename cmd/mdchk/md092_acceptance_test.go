@@ -114,7 +114,8 @@ func md092NativeDiagnostics(t *testing.T, out result.Result, tc md092NativeLiter
 }
 
 func TestCompiledPlatformMD092LiteralLint(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	cases := md092NativeLiterals(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, name := range []string{"published-cycle", "default-on-omitted", "bare-open", "bare-close", "bare-ancestor", "bare-separator", "six-all", "arbitrary-suffix-all", "nested-open-saturation", "physical-close-before-quote-stripping", "later-comment-does-not-mask", "nested-quote-fence-physical-close-protected", "yaml-recognized-protected", "toml-recognized-protected", "unicode-labels-crlf", "unicode-labels-cr", "owner-changes-keep-active", "hidden-open-keeps-context", "hidden-close-ends-context", "permission-denied-disable", "configured-off-enable", "configured-off-enable-denied", "md087-used-hidden-open", "md087-unused-no-open", "md087-used-hidden-standalone-close", "incoming-raw-htmlblock-matched-closer", "incoming-raw-htmlblock-no-closer", "incoming-raw-htmlblock-different-closer", "htmlblock-raw-open-persists", "htmlblock-raw-open-close-resumes", "form1-any4-close-resumes", "unknown-owned-tag-withholds-earlier-opener", "md087-unknown-withheld-prefix-uncertain", "known-unclosed-opaque-keeps-earlier-opener"} {
@@ -159,7 +160,8 @@ func TestCompiledPlatformMD092LiteralLint(t *testing.T) {
 }
 
 func TestCompiledPlatformMD092InspectionContextAndPermissions(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	cases := md092NativeLiterals(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, row := range []struct {
@@ -238,7 +240,8 @@ func TestCompiledPlatformMD092InspectionContextAndPermissions(t *testing.T) {
 }
 
 func TestCompiledPlatformMD092MD047Composition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md092NativeLiterals(t)["bare-open"]
 	tc.Source = "<<<<<<<\nend"
 	for _, flavor := range []string{"commonmark", "gfm"} {
@@ -310,7 +313,8 @@ func TestCompiledPlatformMD092MD047Composition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD092ProtectedEOFFix(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md092NativeLiterals(t)["bare-open"]
 	tc.Source = "<<<<<<<\n\n```\nx"
 	for _, flavor := range []string{"commonmark", "gfm"} {
@@ -342,8 +346,8 @@ func TestCompiledPlatformMD092ProtectedEOFFix(t *testing.T) {
 }
 
 func TestCompiledPlatformMD092NoCGOAnalysisAndApply(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	tc := md092NativeLiterals(t)["bare-open"]
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
@@ -397,7 +401,8 @@ func TestCompiledPlatformMD092NoCGOAnalysisAndApply(t *testing.T) {
 }
 
 func TestCompiledPlatformMD092DefaultsAndAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md092NativeLiterals(t)["bare-open"]
 	for _, setting := range []string{"OMITTED", "{}", "{enabled: true}", "{enabled: false}"} {
 		t.Run(setting, func(t *testing.T) {
@@ -441,7 +446,8 @@ func TestCompiledPlatformMD092DefaultsAndAdmission(t *testing.T) {
 }
 
 func TestCompiledPlatformMD092FourReporters(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md092NativeLiterals(t)["bare-open"]
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md092NativeConfig("gfm", tc, false))
@@ -825,7 +831,8 @@ func md092NativeJSON(t *testing.T, data []byte, operation string) result.Result 
 }
 
 func TestCompiledPlatformMD092NoFix(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md092NativeLiterals(t)["bare-open"]
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, dry := range []bool{false, true} {
@@ -858,7 +865,8 @@ func TestCompiledPlatformMD092NoFix(t *testing.T) {
 }
 
 func TestCompiledPlatformMD092InvalidUTF8Admission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md092NativeLiterals(t)["bare-open"]
 	for _, attribution := range []bool{false, true} {
 		t.Run(fmt.Sprintf("md094-%v", attribution), func(t *testing.T) {

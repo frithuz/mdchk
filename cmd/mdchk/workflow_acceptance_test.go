@@ -12,7 +12,8 @@ import (
 )
 
 func TestLintWorkflowAcceptance(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	t.Run("metadata bypasses project access", func(t *testing.T) {
 		for _, invalid := range []bool{false, true} {
 			root, err := filepath.EvalSymlinks(t.TempDir())
@@ -92,6 +93,7 @@ func TestLintWorkflowAcceptance(t *testing.T) {
 }
 
 func TestLintRegisteredRuleWorkflow(t *testing.T) {
+	t.Parallel()
 	binary := buildConfigurationFixtureExecutable(t)
 	t.Run("validated options and enablement reach callback", func(t *testing.T) {
 		root := configurationProject(t)

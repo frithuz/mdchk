@@ -51,7 +51,8 @@ func md058NativeAssert(t *testing.T, out result.Result, tc md058NativeLiteral, v
 }
 
 func TestCompiledPlatformMD058AnalysisFixtures(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range md058NativeLiterals(t) {
 		if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 			t.Fatal("fixture source identity")
@@ -121,7 +122,8 @@ func md058NativeFindings(t *testing.T, out result.Result) []result.Diagnostic {
 // The spec acceptance inputs run with only version and flavor configured, so
 // MD058 is enabled by its default and other default rules run alongside it.
 func TestCompiledPlatformMD058SpecExamplesWithDefaults(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	before, after := "Table requires a blank body line before it.", "Table requires a blank body line after it."
 	point := func(message string, at, line, column int) result.Diagnostic {
 		p := result.Position{Line: line, Column: column}
@@ -192,7 +194,8 @@ func TestCompiledPlatformMD058SpecExamplesWithDefaults(t *testing.T) {
 }
 
 func TestCompiledPlatformMD058SettingsAndInvalidAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, value := range []string{"omitted", "{}", "{enabled: true}", "{enabled: false}", "{allow_directives: false}", "{unknown: true}", "{enabled: false, unknown: true}", "{enabled: \"yes\"}", "{allow_directives: \"false\"}"} {
 		t.Run(value, func(t *testing.T) {
 			root := configurationProject(t)
@@ -239,7 +242,8 @@ func TestCompiledPlatformMD058SettingsAndInvalidAdmission(t *testing.T) {
 }
 
 func TestCompiledPlatformMD058DirectiveSuppression(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, allow := range []bool{false, true} {
 		t.Run(fmt.Sprintf("allow-%v", allow), func(t *testing.T) {
 			root := configurationProject(t)

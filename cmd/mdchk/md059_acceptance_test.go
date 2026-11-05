@@ -71,7 +71,8 @@ func md059NativeSetting(t *testing.T, tc md059NativeLiteral) string {
 }
 
 func TestCompiledPlatformMD059AnalysisFixtures(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range md059NativeLiterals(t) {
 		if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 			t.Fatal("fixture source identity")
@@ -129,7 +130,8 @@ func TestCompiledPlatformMD059AnalysisFixtures(t *testing.T) {
 }
 
 func TestCompiledPlatformMD059SpecExampleWithDefaults(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, "a.md", "[Click here](guide.md)\n")
 	before := readinessState(t, root)
@@ -150,7 +152,8 @@ func TestCompiledPlatformMD059SpecExampleWithDefaults(t *testing.T) {
 }
 
 func TestCompiledPlatformMD059SettingsAndInvalidAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, value := range []string{"omitted", "{}", "{enabled: true}", "{enabled: false}", "{phrases: [link]}", "{phrases: []}", "{phrases: [\"  Click   HERE \"]}", "{phrases: [here], allow_directives: false}", "{phrase: [here]}", "{phrases: here}", "{phrases: [1]}", "{enabled: \"yes\"}"} {
 			t.Run(flavor+"/"+value, func(t *testing.T) {
@@ -196,7 +199,8 @@ func TestCompiledPlatformMD059SettingsAndInvalidAdmission(t *testing.T) {
 }
 
 func TestCompiledPlatformMD059DirectiveSuppression(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, allow := range []bool{false, true} {
 		t.Run(fmt.Sprintf("allow-%v", allow), func(t *testing.T) {
 			root := configurationProject(t)

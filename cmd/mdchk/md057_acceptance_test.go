@@ -69,7 +69,8 @@ const (
 // and fix --dry-run: the shared resource service and strict no-follow reader
 // decide every outcome, and no command creates or changes a file.
 func TestCompiledPlatformMD057MissingLocalTargets(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, rule, source, extra string
 		target                    string
@@ -158,10 +159,11 @@ func TestCompiledPlatformMD057MissingLocalTargets(t *testing.T) {
 // An unreadable directory is an operational failure, not absence: one located
 // coverage record and one attributed io error.
 func TestCompiledPlatformMD057UnreadableDirectory(t *testing.T) {
+	t.Parallel()
 	if runtime.GOOS == "windows" || os.Geteuid() == 0 {
 		t.Skip("directory permissions are not enforced for this user")
 	}
-	binary := buildConfigurationExecutable(t, "")
+	binary := sharedExecutable(t)
 	root := md057Project(t, md057Configuration("{}"))
 	putConfigurationFile(t, root, "docs/self.md", "[x](locked/a.md) [y](locked/a.md#b)\n")
 	before := configurationBytes(t, root)
@@ -194,7 +196,8 @@ func TestCompiledPlatformMD057UnreadableDirectory(t *testing.T) {
 // MD057 owns missing documents; MD051 never reports them. Disabling either
 // rule leaves the other unchanged, and both share one resource session.
 func TestCompiledPlatformMD057AndMD051Ownership(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, md051, md057 string
 		md051Findings      int

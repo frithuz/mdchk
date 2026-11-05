@@ -16,7 +16,8 @@ func md077Configuration(flavor string) string {
 	return strings.Replace(strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1), "MD077: {enabled: false}", "MD077: {enabled: true}", 1)
 }
 func TestCompiledPlatformMD077ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	data, err := os.ReadFile("../../internal/rules/testdata/md077.json")
 	if err != nil {
 		t.Fatal(err)
@@ -96,7 +97,8 @@ func TestCompiledPlatformMD077ProductionAnalysis(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD077ConfigurationAndComposition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, option := range []string{"null", "{enabled: false, unknown: true}", "{enabled: null}", "{enabled: false, allow_directives: null}", "{enabled: false, allow_directives: 1}", "{enabled: false, style: Loose}", "{style: null}", "{style: 1}", "{style: bad}"} {
 			t.Run(flavor+"/invalid_"+option, func(t *testing.T) {
@@ -186,7 +188,8 @@ func TestCompiledPlatformMD077ConfigurationAndComposition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD077DirectivesAndValidation(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	source := "<!-- mdchk:disable MD077 -->\n- A\n Text <!-- mdchk:enable MD077 -->\n More"
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, tc := range []struct {
@@ -227,7 +230,8 @@ func TestCompiledPlatformMD077DirectivesAndValidation(t *testing.T) {
 }
 
 func TestCompiledPlatformMD077InheritedDirectivePermissions(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, tc := range []struct {
 			name         string
@@ -257,7 +261,8 @@ func TestCompiledPlatformMD077InheritedDirectivePermissions(t *testing.T) {
 }
 
 func TestCompiledPlatformMD077InspectionRetainsHiddenParent(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
 			root := configurationProject(t)

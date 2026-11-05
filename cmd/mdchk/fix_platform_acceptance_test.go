@@ -92,8 +92,8 @@ func fixFixtureEntries(t *testing.T, root string) map[string]string {
 // Ordinary apply preserves each line-ending convention and replaces exactly the
 // selected file, on every supported host and from a CGO-free build.
 func TestCompiledOrdinaryApply(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	for _, ending := range []string{"\n", "\r\n", "\r"} {
 		t.Run(strings.ReplaceAll(strings.ReplaceAll(ending, "\r", "CR"), "\n", "LF"), func(t *testing.T) {
 			root := configurationProject(t)
@@ -125,7 +125,8 @@ func TestCompiledOrdinaryApply(t *testing.T) {
 }
 
 func TestCompiledFixHelpWithoutProject(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := t.TempDir()
 	for _, args := range [][]string{{"--help"}, {"fix", "--help"}, {"--help", "fix"}} {
 		got := runConfigurationProcess(t, binary, root, args...)

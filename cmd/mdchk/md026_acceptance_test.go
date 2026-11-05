@@ -11,7 +11,8 @@ import (
 )
 
 func TestCompiledPlatformMD026ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	for _, tc := range []struct {
 		name, source, option string
@@ -102,7 +103,8 @@ func md026ExpectedEnd(name string, start result.Position, span result.ByteRange)
 // The newline proposal must leave the original manual heading finding visible
 // against the validated candidate, and a second preview must be stable.
 func TestCompiledPlatformMD026RawCloserNewlineComposition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, ending := range []struct{ name, text string }{{"LF", "\n"}, {"CRLF", "\r\n"}, {"CR", "\r"}} {
 			t.Run(flavor+"/"+ending.name, func(t *testing.T) {

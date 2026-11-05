@@ -64,7 +64,8 @@ func md055NativeSetting(tc md055NativeLiteral) string {
 }
 
 func TestCompiledPlatformMD055AnalysisFixtures(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range md055NativeLiterals(t) {
 		if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 			t.Fatal("fixture source identity")
@@ -119,7 +120,8 @@ func TestCompiledPlatformMD055AnalysisFixtures(t *testing.T) {
 }
 
 func TestCompiledPlatformMD055SpecExamplesWithDefaults(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		flavor, source string
 		want           []result.Diagnostic
@@ -175,7 +177,8 @@ func TestCompiledPlatformMD055SpecExamplesWithDefaults(t *testing.T) {
 }
 
 func TestCompiledPlatformMD055SettingsAndInvalidAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, value := range []string{"omitted", "{}", "{enabled: true}", "{enabled: false}", "{style: consistent}", "{style: none}", "{style: leading_and_trailing}", "{style: none, allow_directives: false}", "{style: both}", "{style: 1}", "{styles: none}", "{enabled: \"yes\"}", "{allow_directives: \"false\"}"} {
 		t.Run(value, func(t *testing.T) {
 			root := configurationProject(t)
@@ -222,7 +225,8 @@ func TestCompiledPlatformMD055SettingsAndInvalidAdmission(t *testing.T) {
 }
 
 func TestCompiledPlatformMD055DirectiveSuppression(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, allow := range []bool{false, true} {
 		t.Run(fmt.Sprintf("allow-%v", allow), func(t *testing.T) {
 			root := configurationProject(t)

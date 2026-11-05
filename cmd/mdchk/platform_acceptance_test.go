@@ -21,8 +21,9 @@ import (
 // The host's actual filesystem and compiled command are the oracle. Logical
 // paths and source byte hashes are checked independently of native arguments.
 func TestCompiledPlatformPathsAndStreams(t *testing.T) {
+	t.Parallel()
 	t.Logf("runtime GOOS=%s GOARCH=%s", runtime.GOOS, runtime.GOARCH)
-	binary := buildConfigurationExecutable(t, "")
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
 	name := filepath.Join("space ü", "nested", "δ document.md")
@@ -115,7 +116,8 @@ func platformProcess(t *testing.T, binary, root string, args ...string) (int, st
 }
 
 func TestCompiledPlatformFilesystemCapabilities(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	t.Run("independent path errors", func(t *testing.T) {
 		root := configurationProject(t)
 		putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
@@ -216,7 +218,8 @@ func TestCompiledPlatformFilesystemCapabilities(t *testing.T) {
 }
 
 func TestCompiledPlatformOutputDescriptors(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
 	putConfigurationFile(t, root, "doc.md", "x")

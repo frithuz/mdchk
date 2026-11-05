@@ -24,6 +24,7 @@ import (
 // operation. Expected bytes and scalar positions are fixture literals, not
 // values obtained from the correction provider or another command's output.
 func TestCompiledCLIReadinessJourney(t *testing.T) {
+	// Not parallel: t.Setenv changes the whole test process environment.
 	testenv.Clear(t)
 	t.Setenv("GIT_CONFIG_NOSYSTEM", "1")
 	gitHome, err := filepath.EvalSymlinks(t.TempDir())
@@ -31,7 +32,7 @@ func TestCompiledCLIReadinessJourney(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Setenv("GIT_CONFIG_GLOBAL", filepath.Join(gitHome, "absent-gitconfig"))
-	binary := buildConfigurationExecutable(t, "")
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	const original = "# 雪\r\nπ\tend"
 	const candidate = "# 雪\r\nπ\tend\r\n"

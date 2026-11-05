@@ -84,7 +84,8 @@ func md048NativeAssert(t *testing.T, out result.Result, tc md048NativeLiteral, v
 	}
 }
 func TestCompiledPlatformMD048LiteralLint(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	cases := md048NativeLiterals(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, name := range md048NativeNames(cases) {
@@ -113,7 +114,8 @@ func TestCompiledPlatformMD048LiteralLint(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD048InspectionFocus(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	base := md048NativeLiterals(t)["alternating"]
 	for _, focus := range []string{"", "5", "6", "13"} {
 		t.Run("line-"+focus, func(t *testing.T) {
@@ -145,7 +147,8 @@ func TestCompiledPlatformMD048InspectionFocus(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD048ManualAndMD047Preview(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	base := md048NativeLiterals(t)["fixed-tilde"]
 	for _, composition := range []bool{false, true} {
 		t.Run(fmt.Sprintf("composition-%v", composition), func(t *testing.T) {
@@ -213,7 +216,8 @@ func md048NativeInvalid(t *testing.T) []md048InvalidLiteral {
 }
 
 func TestCompiledPlatformMD048InvalidAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md048NativeLiterals(t)["page-bad"]
 	for _, command := range []string{"lint", "fix"} {
 		for _, row := range md048NativeInvalid(t) {
@@ -239,8 +243,8 @@ func TestCompiledPlatformMD048InvalidAdmission(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD048NoCGO(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	info, err := buildinfo.ReadFile(binary)
 	if err != nil {
 		t.Fatal("read actual compiled binary metadata", err)
@@ -291,7 +295,8 @@ func TestCompiledPlatformMD048NoCGO(t *testing.T) {
 }
 
 func TestCompiledPlatformMD048DirectiveAndUnknownCoverage(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, source              string
 		denied, incomplete        bool
@@ -340,7 +345,8 @@ func TestCompiledPlatformMD048DirectiveAndUnknownCoverage(t *testing.T) {
 }
 
 func TestCompiledPlatformMD048InheritedDirectiveDenial(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, global := range []bool{false, true} {
 		t.Run(fmt.Sprintf("global-%v", global), func(t *testing.T) {
 			root := configurationProject(t)
@@ -435,7 +441,8 @@ func md048NativeFixed() md048NativeLiteral {
 }
 
 func TestCompiledPlatformMD048SuppressedExemplar(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	conf := strings.Replace(md048NativeConfig("commonmark", md048NativeLiteral{}), "directives: {enabled: false}", "directives: {enabled: true}", 1)
 	source := "<!-- mdchk:disable MD048 -->\n```\nx\n```\n<!-- mdchk:enable MD048 -->\n~~~\ny\n~~~"
@@ -464,7 +471,8 @@ func md048NativeNames(cases map[string]md048NativeLiteral) []string {
 }
 
 func TestCompiledPlatformMD048ReportersAndManualRefusal(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md048NativeLiterals(t)["page-bad"]
 	for _, format := range []string{"text", "json", "vscode", "github"} {
 		t.Run(format, func(t *testing.T) {
@@ -497,7 +505,8 @@ func TestCompiledPlatformMD048ReportersAndManualRefusal(t *testing.T) {
 }
 
 func TestCompiledPlatformMD048ClosingFenceEOFRefusal(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md048NativeLiterals(t)["fixed-tilde"]
 	root := configurationProject(t)
 	conf := strings.Replace(md048NativeConfig("commonmark", tc), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
@@ -523,7 +532,8 @@ func TestCompiledPlatformMD048ClosingFenceEOFRefusal(t *testing.T) {
 }
 
 func TestCompiledPlatformMD048LiteralFocusControl(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	source := "```\nx\n```\n\n~~~\ny\n~~~"
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, focus := range []string{"", "5", "6"} {

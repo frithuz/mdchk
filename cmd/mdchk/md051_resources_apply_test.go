@@ -12,7 +12,8 @@ import (
 // The saved-unavailable path needs an induced post-write read failure and is not
 // reachable from a compiled-CLI fixture.
 func TestCompiledProductionMD051ResourceFragmentsApplySavedView(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, row := range []struct {
 		crossFile          string
 		findings, coverage int

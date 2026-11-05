@@ -14,7 +14,8 @@ func md050Configuration(flavor string) string {
 }
 
 func TestCompiledPlatformMD050ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		id, source, flavor string
 		ranges             [][2]int
@@ -67,7 +68,8 @@ func TestCompiledPlatformMD050ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD050OptionsAndInheritance(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, setting := range []string{"{enabled: false, style: null}", "{enabled: false, style: [asterisk]}", "{enabled: false, style: Asterisk}", "{enabled: false, style: dash}", "{enabled: false, unknown: true}", "{enabled: false, allow_directives: null}"} {
 		t.Run(setting, func(t *testing.T) {
 			root := configurationProject(t)
@@ -108,8 +110,8 @@ func TestCompiledPlatformMD050OptionsAndInheritance(t *testing.T) {
 }
 
 func TestCompiledPlatformMD050NoCGOApply(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md050Configuration("gfm"))
 	putConfigurationFile(t, root, "doc.md", "**a** __b__")
@@ -120,7 +122,8 @@ func TestCompiledPlatformMD050NoCGOApply(t *testing.T) {
 }
 
 func TestCompiledPlatformMD050DefaultsStylesAndOriginalContext(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, setting, source string
 		want, start           int
@@ -203,7 +206,8 @@ func TestCompiledPlatformMD050DefaultsStylesAndOriginalContext(t *testing.T) {
 }
 
 func TestCompiledPlatformMD050MD047Composition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, source := range []string{"**a** __b__", "`__a__`"} {
 		t.Run(source, func(t *testing.T) {
 			root := configurationProject(t)

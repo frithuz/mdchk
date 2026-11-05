@@ -15,7 +15,8 @@ func md030Configuration(flavor string) string {
 	return strings.Replace(strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1), "MD030: {enabled: false}", "MD030: {enabled: true}", 1)
 }
 func TestCompiledPlatformMD030ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	data, err := os.ReadFile("../../internal/rules/testdata/md030.json")
 	if err != nil {
 		t.Fatal(err)
@@ -100,7 +101,8 @@ func TestCompiledPlatformMD030ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD030ConfigurationAndComposition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, option := range []string{"null", "{enabled: false, unknown: true}", "{enabled: null}", "{enabled: false, spaces: null}", "{enabled: false, spaces: 0}", "{enabled: false, spaces: -1}", "{enabled: false, spaces: true}", `{enabled: false, spaces: "1"}`, "{enabled: false, spaces: 1.5}", "{enabled: false, allow_directives: null}", "{enabled: false, allow_directives: 1}"} {
 			t.Run(flavor+"/invalid_"+option, func(t *testing.T) {
@@ -183,7 +185,8 @@ func TestCompiledPlatformMD030ConfigurationAndComposition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD030DirectivesAndValidation(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	source := "<!-- mdchk:disable MD030 -->\n- a\n-  b\n  <!-- mdchk:enable MD030 -->\n- c\n-  d"
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, tc := range []struct {
@@ -224,7 +227,8 @@ func TestCompiledPlatformMD030DirectivesAndValidation(t *testing.T) {
 }
 
 func TestCompiledPlatformMD030MaximumPositiveInteger(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		root := configurationProject(t)
 		conf := strings.Replace(md030Configuration(flavor), "MD030: {enabled: true}", fmt.Sprintf("MD030: {enabled: true, spaces: %d}", int(^uint(0)>>1)), 1)

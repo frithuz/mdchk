@@ -13,7 +13,8 @@ func md088Configuration(flavor string) string {
 	return strings.Replace(strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1), "MD088: {enabled: false}", "MD088: {enabled: true, style: ascii}", 1)
 }
 func TestCompiledPlatformMD088ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, source, flavor string
 		starts               []int
@@ -61,7 +62,8 @@ func TestCompiledPlatformMD088ProductionAnalysis(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD088TypedOptionsAndDefaults(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		setting          string
 		status, findings int
@@ -102,7 +104,8 @@ func TestCompiledPlatformMD088TypedOptionsAndDefaults(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD088DirectiveInheritanceAndSelection(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, denial := range []string{"allowed", "global", "rule"} {
 		t.Run(denial, func(t *testing.T) {
 			root := configurationProject(t)
@@ -151,7 +154,8 @@ func TestCompiledPlatformMD088DirectiveInheritanceAndSelection(t *testing.T) {
 	})
 }
 func TestCompiledPlatformMD088FourReporters(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md088Configuration("gfm"))
 	putConfigurationFile(t, root, "doc.md", "—")
@@ -186,7 +190,8 @@ func TestCompiledPlatformMD088FourReporters(t *testing.T) {
 	readinessAssertEqual(t, "reporters", before, readinessState(t, root))
 }
 func TestCompiledPlatformMD088MD047Composition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, source := range []string{"“a”—", "`“a”—`"} {
 		t.Run(source, func(t *testing.T) {
 			root := configurationProject(t)
@@ -250,8 +255,8 @@ func TestCompiledPlatformMD088MD047Composition(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD088NoCGOApply(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	root := configurationProject(t)
 	conf := strings.Replace(md088Configuration("gfm"), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
 	putConfigurationFile(t, root, ".mdchk.yaml", conf)

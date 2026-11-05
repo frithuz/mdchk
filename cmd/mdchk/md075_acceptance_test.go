@@ -54,7 +54,8 @@ func md075NativeAssert(t *testing.T, out result.Result, tc md075NativeLiteral, v
 }
 
 func TestCompiledPlatformMD075AnalysisFixtures(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range md075NativeLiterals(t) {
 		if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 			t.Fatal("fixture source identity")
@@ -112,7 +113,8 @@ func TestCompiledPlatformMD075AnalysisFixtures(t *testing.T) {
 }
 
 func TestCompiledPlatformMD075SpecExamplesWithDefaults(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	finding := func(start, end int, from, to [2]int) []result.Diagnostic {
 		return []result.Diagnostic{{Message: "Pipe rows are not part of a table.", ByteRange: result.ByteRange{Start: start, End: end}, Range: result.Range{Start: result.Position{Line: from[0], Column: from[1]}, End: result.Position{Line: to[0], Column: to[1]}}}}
 	}
@@ -187,7 +189,8 @@ func TestCompiledPlatformMD075SpecExamplesWithDefaults(t *testing.T) {
 }
 
 func TestCompiledPlatformMD075SettingsAndInvalidAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, value := range []string{"omitted", "{}", "{enabled: true}", "{enabled: false}", "{enabled: true, allow_directives: false}", "{style: x}", "{unknown: 1}", "{enabled: \"yes\"}", "{allow_directives: \"false\"}"} {
 		t.Run(value, func(t *testing.T) {
 			root := configurationProject(t)
@@ -232,7 +235,8 @@ func TestCompiledPlatformMD075SettingsAndInvalidAdmission(t *testing.T) {
 }
 
 func TestCompiledPlatformMD075DirectiveSuppression(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, allow := range []bool{false, true} {
 		t.Run(fmt.Sprintf("allow-%v", allow), func(t *testing.T) {
 			root := configurationProject(t)

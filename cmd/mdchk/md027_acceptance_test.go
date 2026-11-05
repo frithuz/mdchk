@@ -16,7 +16,8 @@ func md027Configuration(flavor string) string {
 	return strings.Replace(strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1), "MD027: {enabled: false}", "MD027: {enabled: true}", 1)
 }
 func TestCompiledPlatformMD027ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	data, err := os.ReadFile("../../internal/rules/testdata/md027.json")
 	if err != nil {
 		t.Fatal(err)
@@ -102,7 +103,8 @@ func TestCompiledPlatformMD027ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD027DefaultsAndConfiguration(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, setting := range []string{"OMITTED", "{}", "{enabled: true}", "{enabled: false}"} {
 			t.Run(flavor+"/"+setting, func(t *testing.T) {
@@ -147,7 +149,8 @@ func TestCompiledPlatformMD027DefaultsAndConfiguration(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD027ActiveControls(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, tc := range []struct {
 			name, source, setting     string
@@ -195,7 +198,8 @@ func TestCompiledPlatformMD027ActiveControls(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD027ActiveMetadata(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	data, e := os.ReadFile("../../internal/rules/testdata/md027_active_metadata.json")
 	if e != nil {
 		t.Fatal(e)
@@ -262,7 +266,8 @@ func TestCompiledPlatformMD027ActiveMetadata(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD027InheritedPermissionsAndSlicing(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, tc := range []struct {
 			name         string
@@ -301,7 +306,8 @@ func TestCompiledPlatformMD027InheritedPermissionsAndSlicing(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD027ReportersAndReset(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
 			root := configurationProject(t)
@@ -335,7 +341,8 @@ func TestCompiledPlatformMD027ReportersAndReset(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD027Composition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	data, e := os.ReadFile("../../internal/rules/testdata/md027_composition.json")
 	if e != nil {
 		t.Fatal(e)
@@ -387,7 +394,8 @@ func TestCompiledPlatformMD027Composition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD027ManualApplyAndInvalidUTF8(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
 			root := configurationProject(t)

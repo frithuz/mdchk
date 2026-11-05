@@ -22,7 +22,8 @@ func md047Configuration(enabled, permission bool) string {
 	return strings.Replace(config, "MD047: {enabled: false}", "MD047: {enabled: "+value+", allow_directives: "+allowed+"}", 1)
 }
 func TestCompiledMD047ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	config := md047Configuration(true, true)
 	putConfigurationFile(t, root, ".mdchk.yaml", config)

@@ -14,6 +14,7 @@ import (
 )
 
 func TestExecutableClosedOutputPipe(t *testing.T) {
+	// Not parallel: signal delivery is timing sensitive under load.
 	binary := filepath.Join(t.TempDir(), "mdchk")
 	//nolint:gosec // Fixed Go tool and test-owned temporary build destination.
 	build := exec.Command("go", "build", "-o", binary, ".")

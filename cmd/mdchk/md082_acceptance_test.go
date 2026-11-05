@@ -15,7 +15,8 @@ type md082NativeExpected struct {
 }
 
 func TestCompiledPlatformMD082ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
@@ -159,7 +160,8 @@ func TestCompiledPlatformMD082ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD082NewlinePolicyComposition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, style := range []string{"false", "true"} {
 			for _, ending := range []struct{ name, text string }{{"LF", "\n"}, {"CRLF", "\r\n"}, {"CR", "\r"}} {

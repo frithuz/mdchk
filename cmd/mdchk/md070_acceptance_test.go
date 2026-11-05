@@ -56,7 +56,8 @@ func md070NativeLiterals(t *testing.T) map[string]md070NativeLiteral {
 }
 
 func TestCompiledPlatformMD070InspectionFocus(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	base := md070NativeLiterals(t)["inner-unclosed"]
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, focus := range []string{"", "2", "3", "6"} {
@@ -86,7 +87,8 @@ func TestCompiledPlatformMD070InspectionFocus(t *testing.T) {
 }
 
 func TestCompiledPlatformMD070ManualAndMD047Preview(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	base := md070NativeLiterals(t)["inner-unclosed"]
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, composition := range []bool{false, true} {
@@ -124,7 +126,8 @@ func TestCompiledPlatformMD070ManualAndMD047Preview(t *testing.T) {
 }
 
 func TestCompiledPlatformMD070ClosingFenceEOFRefusal(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	base := md070NativeLiterals(t)["inner-unclosed"]
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
@@ -169,7 +172,8 @@ func TestCompiledPlatformMD070ClosingFenceEOFRefusal(t *testing.T) {
 }
 
 func TestCompiledPlatformMD070DirectiveControls(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	base := md070NativeLiterals(t)["inner-unclosed"]
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, mode := range []string{"used", "denied", "unused", "enable", "enable-denied", "unknown"} {
@@ -273,7 +277,8 @@ func md070NativeAssert(t *testing.T, out result.Result, tc md070NativeLiteral, v
 	}
 }
 func TestCompiledPlatformMD070LiteralLint(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	cases := md070NativeLiterals(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, name := range md070NativeNames(cases) {
@@ -335,7 +340,8 @@ func md070NativeInvalid(t *testing.T) []md070InvalidLiteral {
 }
 
 func TestCompiledPlatformMD070InvalidAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md070NativeLiterals(t)["page-bad"]
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, command := range []string{"lint", "fix"} {
@@ -363,8 +369,8 @@ func TestCompiledPlatformMD070InvalidAdmission(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD070NoCGO(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	info, err := buildinfo.ReadFile(binary)
 	if err != nil {
 		t.Fatal("read actual compiled binary metadata", err)
@@ -421,7 +427,8 @@ func TestCompiledPlatformMD070NoCGO(t *testing.T) {
 }
 
 func TestCompiledPlatformMD070ConfiguredOffInspection(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md070NativeLiterals(t)["explicit-disabled"]
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
@@ -466,7 +473,8 @@ func md070NativeNames(cases map[string]md070NativeLiteral) []string {
 }
 
 func TestCompiledPlatformMD070ReportersAndManualRefusal(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md070NativeLiterals(t)["page-bad"]
 	for _, format := range []string{"text", "json", "vscode", "github"} {
 		t.Run(format, func(t *testing.T) {
@@ -499,7 +507,8 @@ func TestCompiledPlatformMD070ReportersAndManualRefusal(t *testing.T) {
 }
 
 func TestCompiledPlatformMD070LiteralInspection(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	cases := md070NativeLiterals(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, name := range md070NativeNames(cases) {
@@ -526,7 +535,8 @@ func TestCompiledPlatformMD070LiteralInspection(t *testing.T) {
 	}
 }
 func TestCompiledPlatformMD070InheritedDirectiveDenial(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, global := range []bool{false, true} {
 		t.Run(fmt.Sprintf("global-%v", global), func(t *testing.T) {
 			root := configurationProject(t)

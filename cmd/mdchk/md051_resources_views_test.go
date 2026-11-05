@@ -37,7 +37,8 @@ func md051Facts(out result.Result) (findings, coverage []string) {
 // lint, inspect and fix --dry-run agree on MD051 facts; only the snapshot view
 // label differs (original, original, candidate). Lookups never change files.
 func TestCompiledPlatformMD051ResourceFragmentsInspectAndFixDryRun(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, crossFile := range []string{"true", "false"} {
 		t.Run("cross_file="+crossFile, func(t *testing.T) {
 			root := md051ViewsProject(t, crossFile)

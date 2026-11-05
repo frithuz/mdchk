@@ -16,7 +16,8 @@ func md007Configuration(flavor string) string {
 	return strings.Replace(strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1), "MD007: {enabled: false}", "MD007: {enabled: true}", 1)
 }
 func TestCompiledPlatformMD007ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	data, err := os.ReadFile("../../internal/rules/testdata/md007.json")
 	if err != nil {
 		t.Fatal(err)
@@ -102,7 +103,8 @@ func TestCompiledPlatformMD007ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD007ConfigurationAndComposition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, option := range []string{"null", "{enabled: false, unknown: true}", "{enabled: false, indent: 0}", "{enabled: false, indent: -1}", "{enabled: false, indent: 1.5}", "{enabled: false, indent: true}", "{enabled: false, indent: null}", "{enabled: false, indent: '2'}", "{enabled: false, start_indented: null}", "{enabled: false, start_indented: 1}", "{enabled: null}", "{enabled: false, allow_directives: 1}", "{enabled: false, allow_directives: null}"} {
 			t.Run(flavor+"/invalid_"+option, func(t *testing.T) {
@@ -184,7 +186,8 @@ func TestCompiledPlatformMD007ConfigurationAndComposition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD007DirectivesAndValidation(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	source := "<!-- mdchk:disable MD007 -->\n - one\n- two\n  <!-- mdchk:enable MD007 -->\n - three"
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, tc := range []struct {
@@ -225,7 +228,8 @@ func TestCompiledPlatformMD007DirectivesAndValidation(t *testing.T) {
 }
 
 func TestCompiledPlatformMD007LiteralOptions(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, indent := range []int{1, 2, 4, 1000000000, int(^uint(0) >> 1)} {
 			for _, start := range []bool{false, true} {

@@ -8,7 +8,8 @@ import (
 )
 
 func TestCompiledFrontmatterConsumers(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct{ flavor, format, marker string }{
 		{"commonmark", "yaml", "---"}, {"commonmark", "toml", "+++"},
 		{"gfm", "yaml", "---"}, {"gfm", "toml", "+++"},

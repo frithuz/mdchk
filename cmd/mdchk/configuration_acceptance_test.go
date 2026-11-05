@@ -15,6 +15,7 @@ import (
 	"reflect"
 	"runtime"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -30,13 +31,96 @@ type configurationRun struct {
 	Result result.Result
 }
 
+// sharedExecutables holds the unmodified mdchk builds that tests share. Every
+// build without an overlay produces the same executable for a given cgo
+// setting, and building dominates most compiled tests, so each setting builds
+// once per test process. Tests must not modify a shared executable.
+var sharedExecutables struct {
+	sync.Mutex
+	builds map[string]*sharedBuild
+}
+
+type sharedBuild struct {
+	once   sync.Once
+	dir    string
+	binary string
+	err    error
+}
+
+// TestMain removes the shared builds once every test has finished with them.
+func TestMain(m *testing.M) {
+	m.Run()
+	for _, build := range sharedExecutables.builds {
+		if build.dir != "" {
+			_ = os.RemoveAll(build.dir)
+		}
+	}
+}
+
+// sharedExecutable returns the mdchk build for the environment's cgo setting.
+func sharedExecutable(t *testing.T) string {
+	t.Helper()
+	return sharedExecutableFor(t, "")
+}
+
+// sharedNoCGOExecutable returns the mdchk build with CGO_ENABLED=0.
+func sharedNoCGOExecutable(t *testing.T) string {
+	t.Helper()
+	return sharedExecutableFor(t, "0")
+}
+
+// sharedExecutableFor builds with cgo set to CGO_ENABLED, or with the
+// environment's setting when cgo is empty.
+func sharedExecutableFor(t *testing.T, cgo string) string {
+	t.Helper()
+	sharedExecutables.Lock()
+	if sharedExecutables.builds == nil {
+		sharedExecutables.builds = map[string]*sharedBuild{}
+	}
+	build := sharedExecutables.builds[cgo]
+	if build == nil {
+		build = &sharedBuild{}
+		sharedExecutables.builds[cgo] = build
+	}
+	sharedExecutables.Unlock()
+	build.once.Do(func() {
+		var env []string
+		if cgo != "" {
+			env = append(os.Environ(), "CGO_ENABLED="+cgo)
+		}
+		if build.dir, build.err = os.MkdirTemp("", "mdchk-executable-"); build.err != nil {
+			return
+		}
+		build.binary = filepath.Join(build.dir, executableName())
+		build.err = goBuildExecutable(build.binary, "", env)
+	})
+	if build.err != nil {
+		t.Fatalf("build shared executable: %v", build.err)
+	}
+	return build.binary
+}
+
+// buildConfigurationExecutable builds a private executable for an overlay.
+// Use sharedExecutable when the build has no overlay.
 func buildConfigurationExecutable(t *testing.T, overlay string) string {
 	t.Helper()
-	name := "mdchk"
-	if runtime.GOOS == "windows" {
-		name += ".exe"
+	binary := filepath.Join(t.TempDir(), executableName())
+	if err := goBuildExecutable(binary, overlay, nil); err != nil {
+		t.Fatalf("build executable: %v", err)
 	}
-	binary := filepath.Join(t.TempDir(), name)
+	return binary
+}
+
+func executableName() string {
+	if runtime.GOOS == "windows" {
+		return "mdchk.exe"
+	}
+	return "mdchk"
+}
+
+// goBuildExecutable builds this package to binary. A nil env inherits the
+// test process environment.
+func goBuildExecutable(binary, overlay string, env []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	args := []string{"build", "-o", binary}
@@ -46,10 +130,11 @@ func buildConfigurationExecutable(t *testing.T, overlay string) string {
 	args = append(args, ".")
 	//nolint:gosec // Fixed Go tool builds this package into a test-owned destination.
 	command := exec.CommandContext(ctx, "go", args...)
+	command.Env = env
 	if output, err := command.CombinedOutput(); err != nil {
-		t.Fatalf("build executable: %v\n%s", err, output)
+		return fmt.Errorf("%w\n%s", err, output)
 	}
-	return binary
+	return nil
 }
 
 func configurationProject(t *testing.T) string {
@@ -218,7 +303,8 @@ func validateConfigurationOperationJSON(t *testing.T, data []byte, operation str
 }
 
 func TestConfigurationAcceptance(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	t.Run("strict definitions", func(t *testing.T) { testConfigurationStrict(t, binary) })
 	t.Run("discovery and policy", func(t *testing.T) { testConfigurationDiscovery(t, binary) })
 }

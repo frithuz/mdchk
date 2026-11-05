@@ -16,7 +16,8 @@ func md037Configuration(flavor string) string {
 }
 
 func TestCompiledPlatformMD037ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, source, flavor string
 		want                 int
@@ -58,7 +59,8 @@ func TestCompiledPlatformMD037ProductionAnalysis(t *testing.T) {
 }
 
 func TestCompiledPlatformMD037ConfigurationAndReporters(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, setting := range []string{"OMITTED", "{}", "{enabled: false}", "{enabled: false, unknown: true}", "{enabled: false, allow_directives: null}", "null", "{enabled: nope}"} {
 		t.Run(setting, func(t *testing.T) {
 			root := configurationProject(t)
@@ -115,7 +117,8 @@ func TestCompiledPlatformMD037ConfigurationAndReporters(t *testing.T) {
 }
 
 func TestCompiledPlatformMD037FullSourceInspectionAndReset(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, source, setting, line string
 		active, hidden              int
@@ -152,7 +155,8 @@ func TestCompiledPlatformMD037FullSourceInspectionAndReset(t *testing.T) {
 }
 
 func TestCompiledPlatformMD037EncodingAndMD047Composition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	conf := strings.Replace(md037Configuration("gfm"), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
 	putConfigurationFile(t, root, ".mdchk.yaml", conf)
@@ -229,7 +233,8 @@ func TestCompiledPlatformMD037EncodingAndMD047Composition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD037HeadersAndInheritedPermissions(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, source, extra string
 		want, status        int
@@ -280,12 +285,13 @@ func TestCompiledPlatformMD037HeadersAndInheritedPermissions(t *testing.T) {
 }
 
 func TestCompiledPlatformMD037MixedEncodingIndependentCorrection(t *testing.T) {
-	md037MixedEncodingIndependentCorrection(t, buildConfigurationExecutable(t, ""))
+	t.Parallel()
+	md037MixedEncodingIndependentCorrection(t, sharedExecutable(t))
 }
 
 func TestCompiledPlatformMD037MixedEncodingIndependentCorrectionNoCGO(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	md037MixedEncodingIndependentCorrection(t, buildConfigurationExecutable(t, ""))
+	t.Parallel()
+	md037MixedEncodingIndependentCorrection(t, sharedNoCGOExecutable(t))
 }
 
 func md037MixedEncodingIndependentCorrection(t *testing.T, binary string) {

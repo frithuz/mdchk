@@ -9,7 +9,8 @@ import (
 )
 
 func TestCompiledPlatformMD024ProductionAnalysis(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	for _, tc := range []struct {
 		name, source string

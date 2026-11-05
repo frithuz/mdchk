@@ -10,7 +10,8 @@ import (
 )
 
 func TestCompiledApplySelectionAndInheritedPolicy(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, false))
 	putConfigurationFile(t, root, "nested/.mdchk.yaml", md047Configuration(true, true)+"exclude: ['excluded.md']\n")
@@ -71,7 +72,8 @@ func TestCompiledApplySelectionAndInheritedPolicy(t *testing.T) {
 }
 
 func TestCompiledApplyMalformedExistingConfigBeforeTargets(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	config := strings.Replace(md047Configuration(true, true), "MD047: {enabled: true, allow_directives: true}", "MD047: {enabled: true, unknown_option: true}", 1)
 	putConfigurationFile(t, root, ".mdchk.yaml", config)
@@ -91,7 +93,8 @@ func TestCompiledApplyMalformedExistingConfigBeforeTargets(t *testing.T) {
 }
 
 func TestCompiledApplySymlinkSelection(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, kind := range []string{"symlink-target", "symlink-parent"} {
 		t.Run(kind, func(t *testing.T) {
 			root := configurationProject(t)

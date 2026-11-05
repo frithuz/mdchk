@@ -18,6 +18,7 @@ import (
 // config discovery, parser, result finalization and reporters remain production
 // code. Only two synthetic callbacks are registered against the full catalog.
 func TestConfigurationFixtureAcceptance(t *testing.T) {
+	t.Parallel()
 	binary := buildConfigurationFixtureExecutable(t)
 	for _, tc := range []struct {
 		name       string

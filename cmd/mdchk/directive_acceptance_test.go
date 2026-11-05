@@ -21,6 +21,7 @@ func directiveFixtureConfiguration(finding, failure bool) string {
 }
 
 func TestCompiledDirectiveSuppressionAndDirectEngineParity(t *testing.T) {
+	t.Parallel()
 	binary := buildConfigurationFixtureExecutable(t)
 	for _, tc := range []struct {
 		name, source                                    string
@@ -155,7 +156,8 @@ func directiveDirectResult(t *testing.T, yaml, source string) result.Result {
 }
 
 func TestProductionDirectiveCapabilityAndTruthfulCoverage(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	yaml := strings.Replace(cleanConfiguration(), "directives: {enabled: false}\n", "", 1)
 	putConfigurationFile(t, root, ".mdchk.yaml", yaml)
@@ -183,6 +185,7 @@ func TestProductionDirectiveCapabilityAndTruthfulCoverage(t *testing.T) {
 }
 
 func TestCompiledInheritedDirectivePolicyAndDocumentIsolation(t *testing.T) {
+	t.Parallel()
 	binary := buildConfigurationFixtureExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\nrules: {MD001: {allow_directives: false}}\n")

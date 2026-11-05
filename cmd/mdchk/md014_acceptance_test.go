@@ -121,7 +121,8 @@ func md014NativeDiagnostics(t *testing.T, out result.Result, tc md014NativeLiter
 }
 
 func TestCompiledPlatformMD014LiteralLint(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	cases := md014NativeLiterals(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, name := range []string{"published-dollar-prompt", "published-without-prompt", "default-enabled-omitted", "empty-option-mapping-keeps-defaults", "multiple-prompts-ignore-ascii-blanks", "prompt-tab-separator", "crlf-payload", "lone-cr-payload", "unicode-prefix-snapshot-geometry", "quote-list-owned-payload", "partial-tab-retained-payload-is-output", "custom-language-selected", "custom-list-replaces-defaults", "empty-languages-select-none", "duplicate-languages-single-finding", "info-numeric-entity-decoded-once", "info-no-second-decoding", "yaml-header-opaque", "toml-header-opaque", "incoming-raw-through-html-owner-match", "incoming-raw-through-html-owner-different", "form1-any4-owner-close-resumes", "image-local-raw-open-does-not-protect", "image-local-raw-close-does-not-end-outer", "known-opaque-remainder-is-owner-local", "unknown-required-html-context", "unknown-unselected-language-irrelevant", "empty-languages-ignore-unknown-context", "unknown-withholds-earlier-prompt", "md087-used-hidden-prompt", "md087-unused-mixed-output", "repeated-disables-last-owner-used", "md087-unknown-withheld-prefix-uncertain"} {
@@ -169,7 +170,8 @@ func TestCompiledPlatformMD014LiteralLint(t *testing.T) {
 }
 
 func TestCompiledPlatformMD014InspectionContextAndPermissions(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	cases := md014NativeLiterals(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, row := range []struct {
@@ -248,7 +250,8 @@ func TestCompiledPlatformMD014InspectionContextAndPermissions(t *testing.T) {
 }
 
 func TestCompiledPlatformMD014MD047Composition(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md014NativeLiterals(t)["published-dollar-prompt"]
 	tc.Source = "```sh\n$ pwd\n```\nend"
 	for _, flavor := range []string{"commonmark", "gfm"} {
@@ -320,7 +323,8 @@ func TestCompiledPlatformMD014MD047Composition(t *testing.T) {
 }
 
 func TestCompiledPlatformMD014ProtectedEOFFix(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md014NativeLiterals(t)["published-dollar-prompt"]
 	tc.Source = "```sh\n$ pwd"
 	for _, flavor := range []string{"commonmark", "gfm"} {
@@ -352,8 +356,8 @@ func TestCompiledPlatformMD014ProtectedEOFFix(t *testing.T) {
 }
 
 func TestCompiledPlatformMD014NoCGOAnalysisAndApply(t *testing.T) {
-	t.Setenv("CGO_ENABLED", "0")
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	tc := md014NativeLiterals(t)["published-dollar-prompt"]
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
@@ -407,7 +411,8 @@ func TestCompiledPlatformMD014NoCGOAnalysisAndApply(t *testing.T) {
 }
 
 func TestCompiledPlatformMD014DefaultsAndAdmission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md014NativeLiterals(t)["published-dollar-prompt"]
 	for _, setting := range []string{"OMITTED", "{}", "{enabled: true}", "{enabled: false}"} {
 		t.Run(setting, func(t *testing.T) {
@@ -451,7 +456,8 @@ func TestCompiledPlatformMD014DefaultsAndAdmission(t *testing.T) {
 }
 
 func TestCompiledPlatformMD014FourReporters(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md014NativeLiterals(t)["published-dollar-prompt"]
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md014NativeConfig("gfm", tc, false))
@@ -857,7 +863,8 @@ func md014ResultJSON(t *testing.T, data []byte, operation string) result.Result 
 }
 
 func TestCompiledPlatformMD014NoFix(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md014NativeLiterals(t)["published-dollar-prompt"]
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, dry := range []bool{false, true} {
@@ -890,7 +897,8 @@ func TestCompiledPlatformMD014NoFix(t *testing.T) {
 }
 
 func TestCompiledPlatformMD014InvalidUTF8Admission(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	tc := md014NativeLiterals(t)["published-dollar-prompt"]
 	for _, attribution := range []bool{false, true} {
 		t.Run(fmt.Sprintf("md094-%v", attribution), func(t *testing.T) {
@@ -919,7 +927,8 @@ func TestCompiledPlatformMD014InvalidUTF8Admission(t *testing.T) {
 }
 
 func TestCompiledPlatformMD014AllInvalidConfigurationOperations(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	b, err := os.ReadFile("../../internal/rules/testdata/md014-v2.json")
 	if err != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != "b06f76546386295e38b4dc71b871d21398fc25b5e647ae1093ccdb1e5e787431" {
 		t.Fatal(err)
@@ -983,7 +992,8 @@ func TestCompiledPlatformMD014AllInvalidConfigurationOperations(t *testing.T) {
 }
 
 func TestCompiledPlatformMD014DefaultCatalogCoverage(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, "doc.md", "```sh\n$ pwd\n```\n")
 	before := readinessState(t, root)
@@ -1013,7 +1023,8 @@ func TestCompiledPlatformMD014DefaultCatalogCoverage(t *testing.T) {
 }
 
 func TestCompiledPlatformMD014FullBlockFocusAndInheritedDenials(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, global := range []bool{false, true} {
 		t.Run(fmt.Sprintf("global-%v", global), func(t *testing.T) {
 			tc := md014NativeLiterals(t)["denied-disable-keeps-prompt"]
@@ -1055,6 +1066,7 @@ func TestCompiledPlatformMD014FullBlockFocusAndInheritedDenials(t *testing.T) {
 // No public CLI flag requests inactive observations. Exercise the actual native
 // inspection API separately, preserving that boundary instead of inventing one.
 func TestNativeMD014RequestedInactiveInspectionAPI(t *testing.T) {
+	t.Parallel()
 	for _, observe := range []bool{false, true} {
 		t.Run(fmt.Sprintf("observe-%v", observe), func(t *testing.T) {
 			tc := md014NativeLiterals(t)["configured-off-not-demanded"]

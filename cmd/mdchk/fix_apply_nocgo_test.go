@@ -2,31 +2,18 @@ package main
 
 import (
 	"os"
-	"os/exec"
 	"path/filepath"
 	"reflect"
-	"runtime"
 	"strings"
 	"testing"
-
-	"github.com/frithuz/mdchk/internal/testenv"
 )
 
 // A CGO_ENABLED=0 build applies corrections through the same portable adapter
 // as every other build, and still finishes terminal discovery without asking
 // for native write authority.
 func TestCompiledApplyNoCGOApplies(t *testing.T) {
-	name := "mdchk"
-	if runtime.GOOS == "windows" {
-		name += ".exe"
-	}
-	binary := filepath.Join(t.TempDir(), name)
-	//nolint:gosec // Fixed Go tool builds this package into a synthetic destination.
-	command := exec.Command("go", "build", "-o", binary, ".")
-	command.Env = append(testenv.Environ(), "CGO_ENABLED=0")
-	if output, e := command.CombinedOutput(); e != nil {
-		t.Fatalf("build: %v %s", e, output)
-	}
+	t.Parallel()
+	binary := sharedNoCGOExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", md047Configuration(true, true))
 	putConfigurationFile(t, root, "doc.md", "hello")

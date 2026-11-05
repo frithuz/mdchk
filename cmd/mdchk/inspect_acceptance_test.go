@@ -42,7 +42,8 @@ func runInspection(t *testing.T, binary, cwd, snapshotRoot string, args ...strin
 }
 
 func TestCompiledInspectionWorkflow(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\nflavor: commonmark\n")
 	source := "# 雪\r\n\r\n<!-- mdchk:disable MD001 MD013 -->\r\n> one\r\n> two\r\n\r\n"
@@ -99,7 +100,8 @@ func TestCompiledInspectionWorkflow(t *testing.T) {
 }
 
 func TestCompiledInspectionObservationsBoundsAndAccess(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	for _, tc := range []struct {
 		name, source, yaml string
 		lines              string
@@ -197,7 +199,8 @@ func TestCompiledInspectionObservationsBoundsAndAccess(t *testing.T) {
 }
 
 func TestCompiledInspectionTargetConfigAndSymlinks(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\nflavor: commonmark\n")
 	putConfigurationFile(t, root, "child/.mdchk.yaml", "version: 1\nflavor: commonmark\nexclude: ['**']\n")
@@ -232,7 +235,8 @@ func TestCompiledInspectionTargetConfigAndSymlinks(t *testing.T) {
 }
 
 func TestCompiledInspectionBoundedOutput(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\nflavor: commonmark\n")
 	putConfigurationFile(t, root, "doc.md", strings.Repeat("paragraph <&> 雪\n\n", 180))
@@ -323,6 +327,7 @@ func TestCompiledInspectionBoundedOutput(t *testing.T) {
 }
 
 func TestCompiledInspectionSyntheticLintParity(t *testing.T) {
+	t.Parallel()
 	binary := buildConfigurationFixtureExecutable(t)
 	root := configurationProject(t)
 	yaml := directiveFixtureConfiguration(true, false)
@@ -364,7 +369,8 @@ func inspectionModes(t *testing.T, root string) map[string]fs.FileMode {
 }
 
 func TestCompiledInspectionTerminalControlsAndOptionDiagnostics(t *testing.T) {
-	binary := buildConfigurationExecutable(t, "")
+	t.Parallel()
+	binary := sharedExecutable(t)
 	root := configurationProject(t)
 	putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\nflavor: commonmark\n")
 	name := "review\x1b[2J\x1b[H\b\x7f\u009b.md"
