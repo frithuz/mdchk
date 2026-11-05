@@ -1,0 +1,662 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "prose",
+      "source": "ordinary prose | with a pipe\n",
+      "source_bytes": 29,
+      "source_sha256": "349352b21b1f54af7034a63af69dc3608f7cae8e596b48993b79353994d30e0e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "spec-example",
+      "source": "A | B\n--- | ---\n1 | 2 | 3\n",
+      "source_bytes": 26,
+      "source_sha256": "fe2ded31f2e09b83047dae9eb61d65027a86320c3d52d1a5277a71d79cdc9929",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            25
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            10
+          ],
+          "message": "Row has 3 cells; table has 2 columns."
+        }
+      ]
+    },
+    {
+      "name": "spec-example-crlf",
+      "source": "A | B\r\n--- | ---\r\n1 | 2 | 3\r\n",
+      "source_bytes": 29,
+      "source_sha256": "d70c2b1a562bbf48d8d36b0a84cf58dabd1a69bbac4a4a2e961dfff2ed6e2011",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            18,
+            27
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            10
+          ],
+          "message": "Row has 3 cells; table has 2 columns."
+        }
+      ]
+    },
+    {
+      "name": "spec-accepted",
+      "source": "A | B\n--- | ---\n1 | 2\n",
+      "source_bytes": 22,
+      "source_sha256": "4ddb20d766aafffcfb0b9e9113ffc3b6dbe63f0e42cabfcebb391c1a977d8f55",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "code-span-pipe",
+      "source": "| A | B |\n| --- | --- |\n| `a|b` | c |\n",
+      "source_bytes": 38,
+      "source_sha256": "2a3d17d245d5009bdd8c2ee139e7ea5d0c85539cd1b3f6244c465e982ab5973a",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            24,
+            37
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            14
+          ],
+          "message": "Row has 3 cells; table has 2 columns."
+        }
+      ]
+    },
+    {
+      "name": "code-span-pipe-crlf",
+      "source": "| A | B |\r\n| --- | --- |\r\n| `a|b` | c |\r\n",
+      "source_bytes": 41,
+      "source_sha256": "8001ab9d53f94d518985895ea7bd2f3d6497f617cd46ae31026221bf41df05a5",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            26,
+            39
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            14
+          ],
+          "message": "Row has 3 cells; table has 2 columns."
+        }
+      ]
+    },
+    {
+      "name": "escaped-pipe",
+      "source": "| A | B |\n| --- | --- |\n| `a\\|b` | c |\n",
+      "source_bytes": 39,
+      "source_sha256": "ae2d9a8c63849ca33f6e1dbda73d08515196f6a3e53518d52cdc751102c5e3d8",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "short-row",
+      "source": "| A | B | C |\n| --- | --- | --- |\n| 1 |\n",
+      "source_bytes": 40,
+      "source_sha256": "8f794f09768436b97dc857692313922b37f0ec4a1193d5341bf95e9d3f8cc786",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            34,
+            39
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Row has 1 cell; table has 3 columns."
+        }
+      ]
+    },
+    {
+      "name": "short-row-crlf",
+      "source": "| A | B | C |\r\n| --- | --- | --- |\r\n| 1 |\r\n",
+      "source_bytes": 43,
+      "source_sha256": "a61ca4ffbe9ff7f47bf61616b885ed784b87da88e90d487d7f892a5d3140c6dd",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            36,
+            41
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            6
+          ],
+          "message": "Row has 1 cell; table has 3 columns."
+        }
+      ]
+    },
+    {
+      "name": "body-row-without-pipes",
+      "source": "A | B\n--- | ---\nonly\n",
+      "source_bytes": 21,
+      "source_sha256": "816cb6340b7e9957b473a8b3daa7b510c0e5d13d5916001cce7ac8abbc8390cb",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            20
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            5
+          ],
+          "message": "Row has 1 cell; table has 2 columns."
+        }
+      ]
+    },
+    {
+      "name": "long-row",
+      "source": "A | B\n--- | ---\n1 | 2 | 3 | 4\n",
+      "source_bytes": 30,
+      "source_sha256": "3ce384073a8fe9cddb2fa9dc242009f357e8264148325c937ef8b7fee4425c46",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            29
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            14
+          ],
+          "message": "Row has 4 cells; table has 2 columns."
+        }
+      ]
+    },
+    {
+      "name": "single-column",
+      "source": "| A |\n| - |\n| 1 | 2 |\n",
+      "source_bytes": 22,
+      "source_sha256": "d8c4e0be824c619a6c9e56e41a8874b9d80b855aa0b4988bb49bb685808eb660",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            21
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            10
+          ],
+          "message": "Row has 2 cells; table has 1 column."
+        }
+      ]
+    },
+    {
+      "name": "header-delimiter-mismatch",
+      "source": "| A | B | C |\n| --- | --- |\n| 1 | 2 |\n",
+      "source_bytes": 38,
+      "source_sha256": "82b25b9873afdf76067e3102dbac878115e5c61bb022f39d774bb77a6ab7b3c4",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "block-quote",
+      "source": "> A | B\n> --- | ---\n> 1 | 2 | 3\n",
+      "source_bytes": 32,
+      "source_sha256": "c204cd127affadb914b43e51b16a0ef413d0c5adf4841c82e43ad92f72c057e1",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            22,
+            31
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            12
+          ],
+          "message": "Row has 3 cells; table has 2 columns."
+        }
+      ]
+    },
+    {
+      "name": "block-quote-crlf",
+      "source": "> A | B\r\n> --- | ---\r\n> 1 | 2 | 3\r\n",
+      "source_bytes": 35,
+      "source_sha256": "7eea5254243c58a1ee3ccd735f26f5c46d3b0db64016e83ad4397c703f4bdfac",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            24,
+            33
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            12
+          ],
+          "message": "Row has 3 cells; table has 2 columns."
+        }
+      ]
+    },
+    {
+      "name": "list-item",
+      "source": "- A | B\n  --- | ---\n  1 | 2 | 3\n",
+      "source_bytes": 32,
+      "source_sha256": "5dd4349eeea2ebf80a515c9c4c62d8aaae271b987f817ddbf39ea5e3d494438e",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            22,
+            31
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            12
+          ],
+          "message": "Row has 3 cells; table has 2 columns."
+        }
+      ]
+    },
+    {
+      "name": "fenced-code",
+      "source": "```\nA | B\n--- | ---\n1 | 2 | 3\n```\n",
+      "source_bytes": 34,
+      "source_sha256": "68cdd363bd0cd999d889ead3c41d7ea8546a19917f5fd66e4cdb2aee287634ad",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "indented-code",
+      "source": "    A | B\n    --- | ---\n    1 | 2 | 3\n",
+      "source_bytes": 38,
+      "source_sha256": "098c5697c0834b28bee3e00e7e39b981a451543a19af85eda2a6009fa9a4a616",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "html-block",
+      "source": "<div>\nA | B\n--- | ---\n1 | 2 | 3\n</div>\n",
+      "source_bytes": 39,
+      "source_sha256": "db7e82926a0445994574179c62bc1f3270f0b189bb11f76fb3f29ea92f86eb55",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "no-delimiter-row",
+      "source": "A | B\n1 | 2 | 3\n",
+      "source_bytes": 16,
+      "source_sha256": "bfb28bf6beb8f03b2fed231dff8a0dd485eac661a13483114cdc4c0480188d13",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "indented-trailing-spaces",
+      "source": "A | B\n--- | ---\n  1 | 2 | 3  \t\n",
+      "source_bytes": 31,
+      "source_sha256": "482a45c777258f04c4a46369d72baf58f623106cefe60c8b2c253c6420642e53",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            18,
+            27
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            12
+          ],
+          "message": "Row has 3 cells; table has 2 columns."
+        }
+      ]
+    },
+    {
+      "name": "indented-trailing-spaces-crlf",
+      "source": "A | B\r\n--- | ---\r\n  1 | 2 | 3  \t\r\n",
+      "source_bytes": 34,
+      "source_sha256": "1bbacdea8db37647567dcde5e85204c4d0664b02f24dd5eb08be389e41a4ea12",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            20,
+            29
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            3,
+            12
+          ],
+          "message": "Row has 3 cells; table has 2 columns."
+        }
+      ]
+    },
+    {
+      "name": "non-ascii",
+      "source": "| A | B |\n| --- | --- |\n| é | ü | ß |\n",
+      "source_bytes": 41,
+      "source_sha256": "efafcbbb121cc37ce831fe41b8f956d801b98d416b073c067b576c926c2fcf78",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            24,
+            40
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            14
+          ],
+          "message": "Row has 3 cells; table has 2 columns."
+        }
+      ]
+    },
+    {
+      "name": "multiple-tables",
+      "source": "A | B\n--- | ---\n1 | 2 | 3\n\n| A | B | C |\n| --- | --- | --- |\n| 1 | 2 |\n| 1 | 2 | 3 |\n",
+      "source_bytes": 85,
+      "source_sha256": "31ed6b66602c14251550bf5e3c3643252a11cbe6f8a0704f8b5d0fa2328844a7",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            25
+          ],
+          "start": [
+            3,
+            1
+          ],
+          "end": [
+            3,
+            10
+          ],
+          "message": "Row has 3 cells; table has 2 columns."
+        },
+        {
+          "bytes": [
+            61,
+            70
+          ],
+          "start": [
+            7,
+            1
+          ],
+          "end": [
+            7,
+            10
+          ],
+          "message": "Row has 2 cells; table has 3 columns."
+        }
+      ]
+    },
+    {
+      "name": "commonmark-table",
+      "source": "A | B\n--- | ---\n1 | 2 | 3\n",
+      "source_bytes": 26,
+      "source_sha256": "fe2ded31f2e09b83047dae9eb61d65027a86320c3d52d1a5277a71d79cdc9929",
+      "flavors": [
+        "commonmark"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "disabled",
+      "source": "A | B\n--- | ---\n1 | 2 | 3\n",
+      "source_bytes": 26,
+      "source_sha256": "fe2ded31f2e09b83047dae9eb61d65027a86320c3d52d1a5277a71d79cdc9929",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": []
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "style-option",
+      "yaml": "MD056: {style: x}"
+    },
+    {
+      "name": "unknown-option",
+      "yaml": "MD056: {unknown: 1}"
+    },
+    {
+      "name": "enabled-string",
+      "yaml": "MD056: {enabled: \"yes\"}"
+    },
+    {
+      "name": "enabled-null",
+      "yaml": "MD056: {enabled: null}"
+    },
+    {
+      "name": "allow-directives-string",
+      "yaml": "MD056: {allow_directives: \"false\"}"
+    },
+    {
+      "name": "scalar-rule",
+      "yaml": "MD056: true"
+    },
+    {
+      "name": "sequence-rule",
+      "yaml": "MD056: []"
+    },
+    {
+      "name": "duplicate-setting",
+      "yaml": "MD056: {enabled: true, enabled: true}"
+    }
+  ]
+}
