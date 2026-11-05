@@ -210,6 +210,28 @@ image descriptions cannot open or close a raw region. Missing link properties
 or unknown raw state atomically withhold all findings. No MD054 correction is
 produced. See the [MD054 contract](../rules/links-and-images/md054.md).
 
+### Md059
+
+MD059 analysis is implemented for CommonMark and GFM, enabled by default, with
+the catalog `phrases` option. A read-only parser fact visits each parsed inline,
+full, collapsed and shortcut Link outside Image descriptions and builds its
+visible label by the MD045 description rules: Text and CodeSpan semantic values
+in order, formatting descendants, one whitespace per soft or hard break, no
+inline HTML, and a nested Image's own description, so an image-only label is
+its alt text. The reference identifier never contributes. The label and each
+phrase are trimmed and their internal whitespace runs (TAB, LF, FF, CR and
+Unicode Zs) collapse to one space; they match under Unicode simple case
+folding, without Unicode normalization or punctuation stripping, and an empty
+phrase matches nothing. A configured list replaces the default. Each match
+reports `Link label is uninformative.` over the original label interior,
+between the `[` and `]` markers. Autolinks, bare GFM URLs, raw HTML `<a>`,
+unresolved bracket text, definitions, code, HTML blocks and raw HTML lifetimes
+are skipped. Missing link properties or unknown raw state atomically withhold
+all findings with
+`Link label context is unavailable; the complete MD059 inventory is withheld.`
+No MD059 correction is produced. See the
+[MD059 contract](../rules/links-and-images/md059.md).
+
 ### Md062
 
 Recognize flat, fully closed inline link/image candidates with whitespace inside a bare destination,
