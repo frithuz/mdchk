@@ -247,6 +247,29 @@ withhold all findings with
 `Table row context is unavailable; the complete MD056 inventory is withheld.`
 MD056 is permanently report-only. See the [MD056 contract](../rules/tables/md056.md).
 
+### Md060
+
+MD060 analysis is implemented for GFM only, disabled by default, with the
+catalog `style` option (default `aligned`). A read-only parser fact lists every
+Table in document order, including tables in block quotes and list items, with
+each row's role, trimmed start and end and outer pipes, and each source cell's
+field (its TableCell envelope clipped to the trimmed row) and text (the field
+without edge spaces and tabs); it never rescans the text for pipes. Each
+column's width W is the most code points of text in that column across every
+row of one table, with excess source cells as their own columns and
+parser-added cells never measured. `tight` allows no padding on a piped side,
+`compact` exactly one space and `aligned` spaces making a piped cell exactly
+W + 2 code points, a first cell without a leading pipe W + 1, and a last cell
+without a trailing pipe one leading space with no width requirement. Empty
+cells must be `||`, one space or W + 2 spaces, and a tab in padding always
+violates. Each violating cell reports one finding over its field, zero-width
+for `||`, so a CRLF is never split. Messages are `Cell padding does not match
+the aligned style; column width is <W>.` and `Cell padding does not match the
+compact|tight style.` Missing table, row or cell properties atomically withhold
+all findings with
+`Table row context is unavailable; the complete MD060 inventory is withheld.`
+No MD060 correction is produced. See the [MD060 contract](../rules/tables/md060.md).
+
 ### Md059
 
 MD059 analysis is implemented for CommonMark and GFM, enabled by default, with

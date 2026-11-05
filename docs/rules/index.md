@@ -1,5 +1,10 @@
 # Rules to implement
 
+[MD060 table column layout analysis](tables/md060.md) is available for GFM
+only, disabled by default with `style: aligned`. When enabled, parsed
+pipe-table cells whose padding does not match the aligned, compact or tight
+layout produce report-only findings.
+
 [MD056 mismatched cell count analysis](tables/md056.md) is available for GFM
 only, enabled by default with no rule-specific options. Parsed pipe-table body
 rows whose original source cell count differs from their table's width produce
@@ -156,10 +161,10 @@ opening-heading analysis, MD043 required-outline analysis, MD063 heading-capital
 analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090
 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis
 and configuration are implemented for both flavors. MD055 outer-table-pipe analysis,
-MD056 mismatched-cell-count analysis, MD058 blank-lines-around-tables analysis and their configuration are implemented for GFM only, enabled by default. MD001, MD003, MD004, MD005, MD007,
-MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD014, MD031, MD040, MD046, MD048, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD062, MD054, MD059, MD055, MD056, MD058, MD070, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD044, MD049, MD050, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026,
+MD056 mismatched-cell-count analysis, MD058 blank-lines-around-tables analysis and their configuration are implemented for GFM only, enabled by default. MD060 table-column-layout analysis and configuration are implemented for GFM only, disabled by default. MD001, MD003, MD004, MD005, MD007,
+MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD014, MD031, MD040, MD046, MD048, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD062, MD054, MD059, MD055, MD056, MD058, MD060, MD070, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD044, MD049, MD050, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026,
 MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 are report-only. MD013, MD026, MD036,
-MD040, MD043, MD044, MD063, MD070, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD054, MD087 and MD093 are available but disabled by default. Other
+MD040, MD043, MD044, MD063, MD070, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD054, MD060, MD087 and MD093 are available but disabled by default. Other
 ordinary rule callbacks remain planned. The mandatory UTF-8 gate is implemented
 independently; MD094 controls attribution, not an ordinary production callback. Each
 linked page defines its behavior, configuration, examples, correction policy, and

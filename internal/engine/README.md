@@ -813,3 +813,12 @@ That fact shares MD065's private body walk with actual unprotected Table nodes
 as the targets and returns the same detached Point/Before facts. The catalog
 proves MD058 inapplicable to CommonMark. MD058 is default-enabled and keeps its
 PlannedFix metadata; no correction is registered.
+
+MD060's `RuleContext.TableLayout` facade preserves the same original
+parse/source/options and cumulative operation authority, with both caller and
+originating controls. It requires exactly one admitted `style` option whose
+value is `aligned`, `compact` or `tight`, rejects any other option shape with
+`parser.ErrModel`, and delegates to `Document.TableLayout`, which returns
+detached parser-owned row and cell field/text bounds for every GFM table. The
+catalog proves MD060 inapplicable to CommonMark. MD060 is disabled by default
+and keeps its PlannedFix metadata; no correction is registered.
