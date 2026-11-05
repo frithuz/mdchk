@@ -32,8 +32,10 @@ func TestMD045RequestedInactiveInspection(t *testing.T) {
 				definition := "version: 1\nflavor: " + flavor + "\n" + md087Definition(false)
 				write(t, filepath.Join(root, "x.md"), []byte(source))
 				write(t, filepath.Join(root, config.Filename), []byte(definition))
+				// Observing the inactive MD057 needs the link target to exist.
+				write(t, filepath.Join(root, "x"), nil)
 				snapshot := acquire(t, "x.md", options)
-				out, err := Analyze(context.Background(), snapshot, AnalyzeOptions{ObserveInactive: observe})
+				out, err := Analyze(context.Background(), snapshot, AnalyzeOptions{ObserveInactive: observe, Fragments: newNativeResources(t, root, snapshot)})
 				if err != nil || !out.Result.Complete || len(out.Result.Diagnostics)+len(out.Result.Errors)+len(out.Result.Coverage)+len(out.Result.Changes)+len(out.Result.Documents)+len(out.Result.DeferredFixes) != 0 {
 					t.Fatal(out, err)
 				}

@@ -1,0 +1,959 @@
+{
+  "issue": 102,
+  "cases": [
+    {
+      "name": "violating",
+      "source": "[Guide](missing.md)\n",
+      "source_bytes": 20,
+      "source_sha256": "4ee979e2d96239a14519fa1f512dff0127f311a583b434f6d9342b0ff7d2a97d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            18
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "expected": "missing.md",
+          "message": "Local link target does not exist."
+        }
+      ],
+      "coverage": []
+    },
+    {
+      "name": "accepted",
+      "source": "[Guide](guide.md)\n",
+      "source_bytes": 18,
+      "source_sha256": "e87fb7ba40005211b3b2a17ed929f7adf37eb0fe6564a9d3b1548731be463f10",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [
+        {
+          "path": "docs/guide.md",
+          "kind": "file",
+          "content": "# Guide\n"
+        }
+      ],
+      "findings": [],
+      "coverage": []
+    },
+    {
+      "name": "image-missing",
+      "source": "![logo](missing.png)\n",
+      "source_bytes": 21,
+      "source_sha256": "5e1d34c1cba8e1b06dfbe9814ed00cf42740f6cee35696e506662c13aad4d6be",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [],
+      "findings": [
+        {
+          "bytes": [
+            8,
+            19
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "expected": "missing.png",
+          "message": "Local link target does not exist."
+        }
+      ],
+      "coverage": []
+    },
+    {
+      "name": "image-check-images-false",
+      "source": "![logo](missing.png)\n",
+      "source_bytes": 21,
+      "source_sha256": "5e1d34c1cba8e1b06dfbe9814ed00cf42740f6cee35696e506662c13aad4d6be",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": false
+      },
+      "index_file": "",
+      "layout": [],
+      "findings": [],
+      "coverage": []
+    },
+    {
+      "name": "image-existing-binary",
+      "source": "![logo](logo.png)\n",
+      "source_bytes": 18,
+      "source_sha256": "d9d14fb89f1612b6ce8b7bf76ed36b37c76ad5cabb68d1b652b7ac70d9311c40",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [
+        {
+          "path": "docs/logo.png",
+          "kind": "file",
+          "content": "ÿ\u0000þ"
+        }
+      ],
+      "findings": [],
+      "coverage": []
+    },
+    {
+      "name": "image-inside-link",
+      "source": "[![logo](missing.png)](missing.md)\n",
+      "source_bytes": 35,
+      "source_sha256": "17b7f904c1b760244c742ab9585dd20b632219e9df06ba208e01fdfa76ab835f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [],
+      "findings": [
+        {
+          "bytes": [
+            9,
+            20
+          ],
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "expected": "missing.png",
+          "message": "Local link target does not exist."
+        },
+        {
+          "bytes": [
+            23,
+            33
+          ],
+          "start": [
+            1,
+            24
+          ],
+          "end": [
+            1,
+            34
+          ],
+          "expected": "missing.md",
+          "message": "Local link target does not exist."
+        }
+      ],
+      "coverage": []
+    },
+    {
+      "name": "image-inside-link-check-images-false",
+      "source": "[![logo](missing.png)](missing.md)\n",
+      "source_bytes": 35,
+      "source_sha256": "17b7f904c1b760244c742ab9585dd20b632219e9df06ba208e01fdfa76ab835f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": false
+      },
+      "index_file": "",
+      "layout": [],
+      "findings": [
+        {
+          "bytes": [
+            23,
+            33
+          ],
+          "start": [
+            1,
+            24
+          ],
+          "end": [
+            1,
+            34
+          ],
+          "expected": "missing.md",
+          "message": "Local link target does not exist."
+        }
+      ],
+      "coverage": []
+    },
+    {
+      "name": "reference-origins",
+      "source": "[x][r] [c][] [s] ![i][r] [ok][g]\n\n[r]: missing.md\n[c]: missing.md#intro\n[s]: <missing dir/>\n[g]: guide.md\n",
+      "source_bytes": 106,
+      "source_sha256": "2e5e42599b155545f9e118ad0074c4c5009535f5abcb8f71b89fe109ad30c188",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [
+        {
+          "path": "docs/guide.md",
+          "kind": "file",
+          "content": "# Guide\n"
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "expected": "[x][r]",
+          "message": "Local link target does not exist."
+        },
+        {
+          "bytes": [
+            7,
+            12
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "expected": "[c][]",
+          "message": "Local link target does not exist."
+        },
+        {
+          "bytes": [
+            13,
+            16
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "expected": "[s]",
+          "message": "Local link target does not exist."
+        },
+        {
+          "bytes": [
+            17,
+            24
+          ],
+          "start": [
+            1,
+            18
+          ],
+          "end": [
+            1,
+            25
+          ],
+          "expected": "![i][r]",
+          "message": "Local link target does not exist."
+        }
+      ],
+      "coverage": []
+    },
+    {
+      "name": "reference-origins-crlf",
+      "source": "[x][r] [c][] [s] ![i][r] [ok][g]\r\n\r\n[r]: missing.md\r\n[c]: missing.md#intro\r\n[s]: <missing dir/>\r\n[g]: guide.md\r\n",
+      "source_bytes": 112,
+      "source_sha256": "266927670fc95b0b6f06d0c35d728443641d20bb31c9eb5b4eec396d4ea759a6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [
+        {
+          "path": "docs/guide.md",
+          "kind": "file",
+          "content": "# Guide\n"
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            0,
+            6
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            1,
+            7
+          ],
+          "expected": "[x][r]",
+          "message": "Local link target does not exist."
+        },
+        {
+          "bytes": [
+            7,
+            12
+          ],
+          "start": [
+            1,
+            8
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "expected": "[c][]",
+          "message": "Local link target does not exist."
+        },
+        {
+          "bytes": [
+            13,
+            16
+          ],
+          "start": [
+            1,
+            14
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "expected": "[s]",
+          "message": "Local link target does not exist."
+        },
+        {
+          "bytes": [
+            17,
+            24
+          ],
+          "start": [
+            1,
+            18
+          ],
+          "end": [
+            1,
+            25
+          ],
+          "expected": "![i][r]",
+          "message": "Local link target does not exist."
+        }
+      ],
+      "coverage": []
+    },
+    {
+      "name": "nested-containers",
+      "source": "- [a](missing.md)\n\n> [b](missing.md)\n\n> - item\n>   - [c](missing.md)\n\n1. > [d](guide.md) [e](missing.md)\n",
+      "source_bytes": 105,
+      "source_sha256": "5b5bcf621e91c726585e01fdcd62aefdd01f8c3ee652d9bc55a0bfdd504b0fed",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [
+        {
+          "path": "docs/guide.md",
+          "kind": "file",
+          "content": "# Guide\n"
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            6,
+            16
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "expected": "missing.md",
+          "message": "Local link target does not exist."
+        },
+        {
+          "bytes": [
+            25,
+            35
+          ],
+          "start": [
+            3,
+            7
+          ],
+          "end": [
+            3,
+            17
+          ],
+          "expected": "missing.md",
+          "message": "Local link target does not exist."
+        },
+        {
+          "bytes": [
+            57,
+            67
+          ],
+          "start": [
+            6,
+            11
+          ],
+          "end": [
+            6,
+            21
+          ],
+          "expected": "missing.md",
+          "message": "Local link target does not exist."
+        },
+        {
+          "bytes": [
+            93,
+            103
+          ],
+          "start": [
+            8,
+            24
+          ],
+          "end": [
+            8,
+            34
+          ],
+          "expected": "missing.md",
+          "message": "Local link target does not exist."
+        }
+      ],
+      "coverage": []
+    },
+    {
+      "name": "nested-containers-crlf",
+      "source": "- [a](missing.md)\r\n\r\n> [b](missing.md)\r\n\r\n> - item\r\n>   - [c](missing.md)\r\n\r\n1. > [d](guide.md) [e](missing.md)\r\n",
+      "source_bytes": 113,
+      "source_sha256": "ac409122643811fe1e8af190b7819d93c239b7784142d456e5aea26b37572afa",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [
+        {
+          "path": "docs/guide.md",
+          "kind": "file",
+          "content": "# Guide\n"
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            6,
+            16
+          ],
+          "start": [
+            1,
+            7
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "expected": "missing.md",
+          "message": "Local link target does not exist."
+        },
+        {
+          "bytes": [
+            27,
+            37
+          ],
+          "start": [
+            3,
+            7
+          ],
+          "end": [
+            3,
+            17
+          ],
+          "expected": "missing.md",
+          "message": "Local link target does not exist."
+        },
+        {
+          "bytes": [
+            62,
+            72
+          ],
+          "start": [
+            6,
+            11
+          ],
+          "end": [
+            6,
+            21
+          ],
+          "expected": "missing.md",
+          "message": "Local link target does not exist."
+        },
+        {
+          "bytes": [
+            100,
+            110
+          ],
+          "start": [
+            8,
+            24
+          ],
+          "end": [
+            8,
+            34
+          ],
+          "expected": "missing.md",
+          "message": "Local link target does not exist."
+        }
+      ],
+      "coverage": []
+    },
+    {
+      "name": "protected-content",
+      "source": "`[a](missing.md)`\n\n```\n[b](missing.md)\n```\n\n    [c](missing.md)\n\n<div>\n[d](missing.md)\n</div>\n\n<!-- [e](missing.md) -->\n\n<pre>\n[g](missing.md)\n</pre>\n",
+      "source_bytes": 150,
+      "source_sha256": "7b168cb927439eae3dbc615246de72a4853142cf3af732b7fc789165ec78c101",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [],
+      "findings": [],
+      "coverage": []
+    },
+    {
+      "name": "frontmatter",
+      "source": "---\nlink: \"[a](missing.md)\"\n---\n\n[b](missing.md)\n",
+      "source_bytes": 49,
+      "source_sha256": "c4ab6892fac509f5579ff88470162c83c30377f57702837e03867d6de09603c9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "yaml",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [],
+      "findings": [
+        {
+          "bytes": [
+            37,
+            47
+          ],
+          "start": [
+            5,
+            5
+          ],
+          "end": [
+            5,
+            15
+          ],
+          "expected": "missing.md",
+          "message": "Local link target does not exist."
+        }
+      ],
+      "coverage": []
+    },
+    {
+      "name": "fragments-and-queries",
+      "source": "[a](missing.md#intro) [b](guide.md#%ZZ) [c](guide.md#ok) [d](guide.md?v=1)\n",
+      "source_bytes": 75,
+      "source_sha256": "119337f09572d18a54c799bfda6703aa4a6aa2b78027b5fb2d7bffe5b996f5ea",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [
+        {
+          "path": "docs/guide.md",
+          "kind": "file",
+          "content": "# Guide\n"
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            4,
+            20
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "expected": "missing.md#intro",
+          "message": "Local link target does not exist."
+        }
+      ],
+      "coverage": []
+    },
+    {
+      "name": "ignored-destinations",
+      "source": "[a](https://example.test/a.md) [b](//host/a.md) [c](#top) [d]() [e](?a=1#x) [f](self.md) [g](./self.md#x) [h](mailto:x@example.test) <missing.md> https://example.test/missing.md\n",
+      "source_bytes": 178,
+      "source_sha256": "18302b73fb2b756652a353ef23b509c75d9487c09703e28ce18a994c6db4eb4b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [],
+      "findings": [],
+      "coverage": []
+    },
+    {
+      "name": "directories",
+      "source": "[a](sub/) [b](bare/) [c](guide.md/) [d](sub2/) [e](sub) [f](empty/) [g](../docs/sub/)\n",
+      "source_bytes": 86,
+      "source_sha256": "af4517ddae034228d51a08bc23c86b110c84bcb475b4c5894658c518756e90ba",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [
+        {
+          "path": "docs/sub/index.md",
+          "kind": "file",
+          "content": "# Sub\n"
+        },
+        {
+          "path": "docs/bare/README.md",
+          "kind": "file",
+          "content": "# Bare\n"
+        },
+        {
+          "path": "docs/guide.md",
+          "kind": "file",
+          "content": "# Guide\n"
+        },
+        {
+          "path": "docs/sub2/index.md/index.md",
+          "kind": "file",
+          "content": "# Nested\n"
+        },
+        {
+          "path": "docs/empty",
+          "kind": "directory"
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            14,
+            19
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "expected": "bare/",
+          "message": "Directory has no configured index file."
+        },
+        {
+          "bytes": [
+            25,
+            34
+          ],
+          "start": [
+            1,
+            26
+          ],
+          "end": [
+            1,
+            35
+          ],
+          "expected": "guide.md/",
+          "message": "Local link target is a file, but the destination requires a directory."
+        },
+        {
+          "bytes": [
+            40,
+            45
+          ],
+          "start": [
+            1,
+            41
+          ],
+          "end": [
+            1,
+            46
+          ],
+          "expected": "sub2/",
+          "message": "Directory index path is a directory, not a file."
+        },
+        {
+          "bytes": [
+            60,
+            66
+          ],
+          "start": [
+            1,
+            61
+          ],
+          "end": [
+            1,
+            67
+          ],
+          "expected": "empty/",
+          "message": "Directory has no configured index file."
+        }
+      ],
+      "coverage": []
+    },
+    {
+      "name": "index-file-readme",
+      "source": "[a](bare/) [b](sub/)\n",
+      "source_bytes": 21,
+      "source_sha256": "2f66f4b2693a39a877c486fa1a835b9c34f86a8bc3571bfe21a545b3e86da888",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "README.md",
+      "layout": [
+        {
+          "path": "docs/sub/index.md",
+          "kind": "file",
+          "content": "# Sub\n"
+        },
+        {
+          "path": "docs/bare/README.md",
+          "kind": "file",
+          "content": "# Bare\n"
+        },
+        {
+          "path": "docs/guide.md",
+          "kind": "file",
+          "content": "# Guide\n"
+        },
+        {
+          "path": "docs/sub2/index.md/index.md",
+          "kind": "file",
+          "content": "# Nested\n"
+        },
+        {
+          "path": "docs/empty",
+          "kind": "directory"
+        }
+      ],
+      "findings": [
+        {
+          "bytes": [
+            15,
+            19
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "expected": "sub/",
+          "message": "Directory has no configured index file."
+        }
+      ],
+      "coverage": []
+    },
+    {
+      "name": "root-escape-coverage",
+      "source": "[a](../../outside.md) [b](missing.md)\n",
+      "source_bytes": 38,
+      "source_sha256": "53df118bd220dbc70c0b85c58cc4e1c4f0541c666f335020730a156becde3835",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [],
+      "findings": [
+        {
+          "bytes": [
+            26,
+            36
+          ],
+          "start": [
+            1,
+            27
+          ],
+          "end": [
+            1,
+            37
+          ],
+          "expected": "missing.md",
+          "message": "Local link target does not exist."
+        }
+      ],
+      "coverage": [
+        {
+          "bytes": [
+            4,
+            20
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            21
+          ],
+          "expected": "../../outside.md"
+        }
+      ]
+    },
+    {
+      "name": "symlink-coverage",
+      "source": "[a](linked.md) [b](guide.md)\n",
+      "source_bytes": 29,
+      "source_sha256": "da070f4d15e7fa6bc4640be164d1f1d7b08ca78a5e456d9b3fb419885391676b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "frontmatter": "",
+      "options": {
+        "check_images": true
+      },
+      "index_file": "",
+      "layout": [
+        {
+          "path": "docs/guide.md",
+          "kind": "file",
+          "content": "# Guide\n"
+        },
+        {
+          "path": "docs/linked.md",
+          "kind": "symlink",
+          "target": "guide.md"
+        }
+      ],
+      "findings": [],
+      "coverage": [
+        {
+          "bytes": [
+            4,
+            13
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "expected": "linked.md"
+        }
+      ]
+    }
+  ]
+}
