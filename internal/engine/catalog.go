@@ -79,7 +79,7 @@ func Catalog() []Metadata {
 		{ID: "MD080", Name: "Colliding heading anchors", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD081", Name: "Overuse of bold and italic text", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"maximum_ratio": {Kind: Number, Default: 0.5, Minimum: bound(0), Maximum: bound(1)}, "minimum_characters": integer(20, 1)}},
 		{ID: "MD082", Name: "Sections without content", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"allow_final_section": boolean(false)}},
-		{ID: "MD083", Name: "Text corrupted by encoding mismatch", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"sequences": list("Ã", "Â", "â€")}},
+		{ID: "MD083", Name: "Text corrupted by encoding mismatch", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"sequences": {Kind: Strings, Default: []string{"Ã", "Â", "â€"}, Domain: ConfiguredNameUTF8}}},
 		{ID: "MD084", Name: "Hidden or discouraged Unicode characters", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"allowed_codepoints": {Kind: Strings, Default: []string{}, Domain: UnicodeScalarHex}}},
 		{ID: "MD085", Name: "Indented paragraph continuation lines", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD086", Name: "Comments lacking a closing delimiter", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},

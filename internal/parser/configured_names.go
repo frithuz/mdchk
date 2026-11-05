@@ -11,19 +11,28 @@ import (
 // owner-local physical prose islands. Returned spans belong to the original
 // completed parse; this projection supplies neither edits nor parse authority.
 func (d *Document) ConfiguredNames(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, names []string, codeBlocks bool) ([]Span, error) {
-	return d.proseMatches(ctx, budget, index, options, names, codeBlocks, false, false)
+	return d.proseMatches(ctx, budget, index, options, names, codeBlocks, false, false, true)
 }
 
 // ProhibitedTerms reports every leftmost-longest configured term occurrence in
 // the same prose islands as ConfiguredNames, never scanning code blocks. Terms
 // compare through full case folding unless caseSensitive selects exact bytes.
 func (d *Document) ProhibitedTerms(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, terms []string, caseSensitive bool) ([]Span, error) {
-	return d.proseMatches(ctx, budget, index, options, terms, false, true, caseSensitive)
+	return d.proseMatches(ctx, budget, index, options, terms, false, true, caseSensitive, true)
+}
+
+// SuspiciousSequences reports every leftmost-longest configured sequence
+// occurrence in the same prose islands as ProhibitedTerms, never scanning code
+// blocks. Sequences compare by exact original bytes and may start or end
+// anywhere inside a word.
+func (d *Document) SuspiciousSequences(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, sequences []string) ([]Span, error) {
+	return d.proseMatches(ctx, budget, index, options, sequences, false, true, true, false)
 }
 
 // proseMatches is the shared walker. Prohibited mode publishes every winner;
 // otherwise winners spelled exactly as a fold-equal configured name are accepted.
-func (d *Document) proseMatches(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, names []string, codeBlocks, prohibited, caseSensitive bool) (out []Span, err error) {
+// Whole-word mode requires both outside neighbors to be non-word scalars.
+func (d *Document) proseMatches(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, names []string, codeBlocks, prohibited, caseSensitive, wholeWord bool) (out []Span, err error) {
 	if err = d.headingProjectionCheckpoint(ctx, budget, index, options, 1, 1); err != nil {
 		return nil, err
 	}
@@ -111,7 +120,7 @@ func (d *Document) proseMatches(ctx context.Context, budget *OperationBudget, in
 			if i > 0 {
 				before = island[i-1].word
 			}
-			if before {
+			if before && wholeWord {
 				i++
 				continue
 			}
@@ -149,7 +158,7 @@ func (d *Document) proseMatches(ctx context.Context, budget *OperationBudget, in
 				if j < len(island) {
 					after = island[j].word
 				}
-				if after {
+				if after && wholeWord {
 					continue
 				}
 				if e := charge(int64(island[j-1].end-island[i].start)+1, 0); e != nil {
