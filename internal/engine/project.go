@@ -20,22 +20,59 @@ func LintOnlyCoverage(rules map[string]ResolvedRule) []result.Coverage {
 	return nil
 }
 
-// ProjectSpan projects a span of a source that is not a lint target, such as
-// the MkDocs configuration, with the canonical line index and original snapshot
-// identity that document findings use. Positions charge the operation budget,
-// then the shared reporting reserve.
-func ProjectSpan(ctx context.Context, budget *parser.OperationBudget, source parser.Source, span parser.Span) (result.Range, result.ByteRange, result.Snapshot, error) {
-	if ctx == nil || budget == nil || span.SourceToken() != source.Token() {
+// IsLintOnlyCoverage reports whether c is the coverage LintOnlyCoverage made.
+func IsLintOnlyCoverage(c result.Coverage) bool {
+	return c.Rule == "MD074" && c.Reason == result.ContextUnavailable && c.Message == LintOnlyMessage && c.Range == nil
+}
+
+// SpanProjector projects spans of one source that is not a lint target, such
+// as the MkDocs configuration, with the canonical line index and original
+// snapshot identity that document findings use. One projector serves a whole
+// operation: positions charge the operation budget and, after it stops, one
+// shared reporting reserve that never restarts. Stop returns the operation
+// cause the projector observed, so callers record it as an interruption.
+type SpanProjector struct {
+	projection projector
+	snapshot   result.Snapshot
+	err        error
+}
+
+// NewSpanProjector charges the line-index scan once, before any projection.
+func NewSpanProjector(ctx context.Context, budget *parser.OperationBudget, source parser.Source) *SpanProjector {
+	s := &SpanProjector{projection: projector{ctx: ctx, budget: budget, reporting: &reportingReserve{}, source: source}}
+	if ctx == nil || budget == nil {
+		s.err = fmt.Errorf("nil projection context or budget")
+		return s
+	}
+	if s.err = s.projection.checkpoint(int64(source.Len()) + 1); s.err != nil {
+		return s
+	}
+	s.projection.index = parser.NewLineIndex(source)
+	s.snapshot = snapshot(source)
+	return s
+}
+
+// Project returns span's coordinates, or the error that stopped projection.
+// Once the reserve is exhausted every later call fails without new work.
+func (s *SpanProjector) Project(span parser.Span) (result.Range, result.ByteRange, result.Snapshot, error) {
+	if s.err != nil {
+		return result.Range{}, result.ByteRange{}, result.Snapshot{}, s.err
+	}
+	if span.SourceToken() != s.projection.source.Token() {
 		return result.Range{}, result.ByteRange{}, result.Snapshot{}, fmt.Errorf("span does not belong to source")
 	}
-	projection := projector{ctx: ctx, budget: budget, reporting: &reportingReserve{}, source: source, index: parser.NewLineIndex(source)}
-	start, err := projection.position(span.Start())
-	if err != nil {
-		return result.Range{}, result.ByteRange{}, result.Snapshot{}, err
+	start, err := s.projection.position(span.Start())
+	if err == nil {
+		var end parser.Position
+		end, err = s.projection.position(span.End())
+		if err == nil {
+			return result.Range{Start: start, End: end}, result.ByteRange{Start: span.Start(), End: span.End()}, s.snapshot, nil
+		}
 	}
-	end, err := projection.position(span.End())
-	if err != nil {
-		return result.Range{}, result.ByteRange{}, result.Snapshot{}, err
-	}
-	return result.Range{Start: start, End: end}, result.ByteRange{Start: span.Start(), End: span.End()}, snapshot(source), nil
+	s.err = err
+	return result.Range{}, result.ByteRange{}, result.Snapshot{}, err
 }
+
+// Stop is the operation budget, deadline or cancellation cause observed while
+// projecting, even when the reserve let projection continue.
+func (s *SpanProjector) Stop() error { return s.projection.stop }

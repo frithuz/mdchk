@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -439,4 +440,30 @@ func md074JSON(t *testing.T, run configurationRun, root, operation string) resul
 func jsonInts(values ...int) string {
 	data, _ := json.Marshal(values)
 	return string(data)
+}
+
+// Projection shares the operation budget: a configuration whose record
+// positions exceed the work limit is interrupted and incomplete, never a
+// complete result with every finding.
+func TestCompiledMD074ProjectionHonorsOperationBudget(t *testing.T) {
+	t.Parallel()
+	binary := sharedExecutable(t)
+	var config strings.Builder
+	config.WriteString("# " + strings.Repeat("x", 100000) + "\nnav:\n")
+	for i := range 3000 {
+		config.WriteString("  - m" + strconv.Itoa(i) + ".md\n")
+	}
+	root := md074Project(t, md074Configuration("{enabled: true}"), map[string]string{"mkdocs.yml": config.String()})
+	got := md014NativeRun(t, binary, root, "lint", "--format=json", "README.md")
+	out := md074JSON(t, got, root, "lint")
+	limited, coverage := false, false
+	for _, c := range out.Coverage {
+		coverage = coverage || c.Path == "mkdocs.yml" && c.Rule == "MD074" && c.Reason == "limit-exceeded"
+	}
+	for _, stop := range out.Interruptions {
+		limited = limited || stop.Path == "mkdocs.yml" && stop.Reason == "limit-exceeded"
+	}
+	if got.Status != 15 || out.Complete || !limited || !coverage || len(out.Diagnostics) >= 3000 {
+		t.Fatal(got.Status, out.Complete, out.Interruptions, len(out.Diagnostics))
+	}
 }
