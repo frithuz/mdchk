@@ -140,7 +140,8 @@ func (r *ExistenceResolver) Prepare(link Link) (ExistenceQuery, error) {
 		return ExistenceQuery{}, err
 	}
 	q := &existenceQueryState{resolver: r, normalized: n, location: result.Range{Start: start, End: end}, snapshot: p.snapshot}
-	if n.class == Local && n.location.root.identity != nil && n.same == (parser.Source{}) {
+	// The resource root is exempt from the index check, so it plans no index.
+	if n.class == Local && n.location.root.identity != nil && n.same == (parser.Source{}) && !n.location.IsRootDirectory() {
 		q.index, err = n.DirectoryIndex()
 		if err != nil {
 			var limit *parser.LimitExceeded

@@ -434,6 +434,59 @@ func TestMD057Directives(t *testing.T) {
 	}
 }
 
+// A link to the resource root passes MD057 without an index lookup, for native
+// and supplied (virtual) roots alike. MD051 cross_file keeps its own directory
+// semantics: a root fragment resolves the configured index for its anchors, and
+// a root without that index is inapplicable to MD051, never a finding.
+func TestMD057RootExemptionAcrossRootsAndMD051(t *testing.T) {
+	const source = "# Self\n\n[a](../) [b](..) [c](../#top) [d](../#nope) [e](sub/)\n"
+	settings := func() engine.Settings {
+		s := md057Settings(true)
+		on := true
+		s["MD051"] = engine.RuleSetting{Enabled: &on, Options: engine.Options{"cross_file": true}}
+		return s
+	}
+	collect := func(out result.Result) []string {
+		var got []string
+		for _, d := range out.Diagnostics {
+			got = append(got, d.Rule+" "+source[d.ByteRange.Start:d.ByteRange.End])
+		}
+		return got
+	}
+	subIndexMissing := "MD057 sub/"
+	for _, row := range []struct {
+		name   string
+		layout []md057Entry
+		want   []string
+	}{
+		{"native-root-without-index", []md057Entry{{Path: "README.md", Kind: "file", Content: "# Top\n"}, {Path: "docs/sub/README.md", Kind: "file", Content: "# Sub\n"}}, []string{subIndexMissing}},
+		{"native-root-with-index", []md057Entry{{Path: "index.md", Kind: "file", Content: "# Top\n"}, {Path: "docs/sub/README.md", Kind: "file", Content: "# Sub\n"}}, []string{"MD051 ../#nope", subIndexMissing}},
+	} {
+		t.Run(row.name, func(t *testing.T) {
+			out, _ := md057Lint(t, source, settings(), engine.DocumentContext{Flavor: "gfm"}, func(s parser.Source) *md057Resources {
+				return md057Native(t, row.layout, "gfm", "", s)
+			})
+			if got := collect(out); !out.Complete || !reflect.DeepEqual(got, row.want) || len(out.Coverage)+len(out.Errors) != 0 {
+				t.Fatal(got, out)
+			}
+		})
+	}
+	for _, row := range []struct {
+		name, raw string
+		want      []string
+	}{
+		{"supplied-root-without-index", `{"complete":true,"entries":[{"path":"docs/sub","kind":"directory"}]}`, []string{subIndexMissing}},
+		{"supplied-root-with-index", `{"complete":true,"entries":[{"path":"index.md","kind":"file","content":"# Top\n"},{"path":"docs/sub","kind":"directory"}]}`, []string{"MD051 ../#nope", subIndexMissing}},
+	} {
+		t.Run(row.name, func(t *testing.T) {
+			out, _ := md057Lint(t, source, settings(), engine.DocumentContext{Flavor: "gfm"}, func(s parser.Source) *md057Resources { return md057Supplied(t, row.raw, s) })
+			if got := collect(out); !out.Complete || !reflect.DeepEqual(got, row.want) || len(out.Coverage)+len(out.Errors) != 0 {
+				t.Fatal(got, out)
+			}
+		})
+	}
+}
+
 // Reporting provenance is charged once per source, so many links in a large
 // document stay within the default budgets.
 func TestMD057ManyLinksWithinDefaultBudget(t *testing.T) {
