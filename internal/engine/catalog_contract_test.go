@@ -66,7 +66,7 @@ func documentedOptions() map[string]engine.OptionSchema {
 		"MD057": {"check_images": b(true)},
 		"MD059": {"phrases": list("click here", "here", "more", "read more")},
 		"MD060": {"style": choice("aligned", "compact", "tight")},
-		"MD061": {"terms": list(), "case_sensitive": b(false)},
+		"MD061": {"terms": domain(engine.ConfiguredNameUTF8), "case_sensitive": b(false)},
 		"MD063": {"style": choice("sentence", "title"), "proper_names": list()},
 		"MD064": {"maximum": n(1, 1)},
 		"MD072": {"recursive": b(false), "case_sensitive": b(true)},
