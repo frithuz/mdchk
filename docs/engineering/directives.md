@@ -233,9 +233,10 @@ and reason. The existing per-effect reason field exposes these decisions via
 [documented joins](inspection-projection-v1.md#md087-per-target-audit-reasons),
 without replacing recognition, permission, effect or provenance. All work uses
 the original source/parse/context/options/resource authority and cumulative
-finite meter. Candidate and actual saved views recompute on their own snapshots
-with residual original allowance. No audit replay, extra audit parse or reset
-budget is introduced.
+finite meter. Candidate views recompute on their own snapshots with residual
+original allowance, and actual saved views under the
+[saved-run allowance](limits.md#saved-fix-runs). The audit adds no replay, extra audit
+parse or budget reset of its own.
 
 ## MD070 example extents and suppression
 

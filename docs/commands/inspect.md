@@ -263,8 +263,8 @@ to owned rule intervals; final intervals own EOF. Full-document conclusions
 precede focus, retaining preceding owners as context_only.
 
 The audit produces no edit or preview. A separately authorized MD047 correction
-recomputes the audit against candidate and actual saved source with the original
-residual budget. Hidden observations bypass correction eligibility; ordinary
+recomputes the audit against candidate source with the original residual budget and
+against actual saved source under the [saved-run allowance](../engineering/limits.md#saved-fix-runs). Hidden observations bypass correction eligibility; ordinary
 active MD047 corrections retain their established behavior.
 
 MD092 evaluates conflict state on the full original source before inspection

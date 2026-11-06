@@ -8,8 +8,9 @@ reporting time and report reserve feasibility (including both editor streams).
 Inspect enforces text/JSON projection/reporting bounds. Config validation also
 enforces bounded configuration/Git-source acquisition, directory/path limits,
 structured and alias depth, and shared node/work/time budgets; it rejects
-inapplicable overrides. Fix shares candidate, reparse, preservation, diff and
-saved-content accounting, and admits the mandatory write-outcome manifest before
+inapplicable overrides. Fix shares candidate, reparse and preservation accounting
+on one allowance, keeps a saved run's rechecking on a fresh one (see
+[saved fix runs](#saved-fix-runs)), and admits the mandatory write-outcome manifest before
 native publication. Native writes run on Linux, macOS and Windows. Remaining traversal, resource and MCP adapter/application limits
 and their end-to-end verification remain pending. Issue #251 adds internal raw
 native acquisition counters for path/depth, directory entries, actual content
@@ -84,10 +85,10 @@ the accepted implementation contract.
 | `structured-input-depth` | 64 nested containers | Raw protocol JSON and configuration syntax. Reject before ordinary decoding loses evidence or allocates unbounded structures. |
 | `syntax-depth` | 256 nested constructs | Markdown/metadata syntax and alias traversal; unavailable syntax remains explicit rather than being flattened. |
 | `document-nodes` | 250,000 nodes or source records | Each individual document parse, including metadata and retained source records, before allocating beyond the cap. |
-| `total-nodes` | 2,000,000 nodes or source records constructed | Operation cumulative construction, including reparses/fix rounds/retries; reusing immutable nodes does not construct them again. |
-| `work-units` | 250,000,000 metered work units | Operation-wide parser, rule, metadata, diff and preservation work; charge byte inspections/comparisons and structural/candidate visits with documented adapter metering. All fix rounds and counterfactual MD087 work share the meter. After a complete validation, confirming and analyzing the saved result uses a fresh allowance of the same limits. |
+| `total-nodes` | 2,000,000 nodes or source records constructed | Operation cumulative construction, including reparses/fix rounds/retries; reusing immutable nodes does not construct them again. A saved `fix` run applies this cap to each half; see [saved fix runs](#saved-fix-runs). |
+| `work-units` | 250,000,000 metered work units | Operation-wide parser, rule, metadata, diff and preservation work; charge byte inspections/comparisons and structural/candidate visits with documented adapter metering. All fix rounds and counterfactual MD087 work share the meter. A saved `fix` run applies this cap to each half; see [saved fix runs](#saved-fix-runs). |
 | `snapshot-retries` | 2 additional attempts | At most 3 acquisition attempts per unstable logical snapshot; retry bytes/work remain charged. |
-| `operation-time` | 60 seconds | Monotonic wall time for validation/discovery/queueing/analysis/fix commits; MCP begins once the bounded message is received for processing. Network body/idle timeouts belong to transport policy. |
+| `operation-time` | 60 seconds | Monotonic wall time for validation/discovery/queueing/analysis/fix commits; MCP begins once the bounded message is received for processing. Network body/idle timeouts belong to transport policy. The deadline covers a whole saved `fix` run and does not restart for its second half. |
 | `reporting-time` | 2 additional seconds | Reserved cleanup/outcome reconciliation/report construction after analysis stops; never used for additional fixes. It cannot guarantee interruption of an unresponsive OS call or report delivery to a disconnected client. |
 | `report-reserve-bytes` | 65,536 bytes within response budget | Minimum reserve for the envelope, interruption and omission summary; reserve the entire bounded per-target write-outcome manifest in addition before commits. |
 | `active-calls` | 4 MCP tool calls | Server-wide active calls; separate small protocol-control handling must remain responsive. |
@@ -96,6 +97,27 @@ the accepted implementation contract.
 | `project-fixes` | 1 MCP project fix operation | Serialize project fix operations, including project previews initially; cooperating interprocess write coordination remains required separately. |
 | `workers-per-operation` | 1 worker | Initial intra-operation engine worker limit; raise only through explicit operator setting and verified implementation support. |
 | `fix-rounds` | 10 changing rounds | Previously accepted fixed correction cap plus a read-only convergence check; not raised by the generic limit override. |
+
+## Saved fix runs
+
+`--limit` caps each half of a saved `fix` run, not its total. The first half is
+everything through publication: selection, acquisition, every fix round, candidate
+analysis, preservation proof and the writes. After a complete validation, the second half
+uses a fresh allowance of the same limits: confirming saved content, analyzing it,
+and building diffs and result records. A saved run can therefore spend up to twice
+`work-units` and twice `total-nodes`. Per-document and per-parse caps such as
+`document-nodes` apply as usual in each half.
+
+The context deadline set from `operation-time` does not restart, so both halves
+together stay within one `operation-time`, and cancellation stops either half.
+
+The second half gets its own allowance because the validated bytes were already analyzed
+within the limits, so a spent budget can't report a successful write as incomplete. `lint`,
+`inspect`, `fix --dry-run` and a saved run whose validation did not complete have one
+allowance. Resource lookups for the saved view stay on the first allowance, because resource
+bytes are acquired once per operation. Status `15` can still accompany a `written` change
+if the run is cancelled, if a limit stops the write itself or a later file, or if such
+a lookup exhausts the first allowance.
 
 ## Overrides
 

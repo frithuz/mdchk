@@ -82,7 +82,7 @@ rule-specific options; MD025 and MD041 accept integer `level` from 1 through 6 (
 minima, each defaulting to 1; MD072 accepts boolean `recursive` (default false) and
 `case_sensitive` (default true); MD073 accepts HTML comment strings `start_marker`
 (default `<!-- toc -->`) and `end_marker` (default `<!-- /toc -->`) and heading levels
-`min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009,
+`min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077,
 MD018, MD020, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043,
 MD061, MD063, MD072, MD073, MD080, MD083, MD084, MD082, MD090, MD081, MD088, MD033, MD086, MD087, MD093 and MD071 are report-only.
 Rules marked unavailable in the linked inventory remain pending. Every default-enabled

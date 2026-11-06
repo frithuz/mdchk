@@ -212,11 +212,10 @@ existing precedence even if the unsaved candidate was clean. Post-write checks d
 saved content, not a promise that external writers cannot change it later.
 
 After a complete validation, a saved run confirms and analyzes its result on a fresh
-allowance of the same limits. Those bytes were already analyzed within the limits, so a
-spent budget can't report a successful write as incomplete. This doubles what one
-operation can spend at most. Status `15` can still accompany a `written` change if the
-operation is cancelled, if a limit stops the write itself or a later file, or if a
-resource lookup for the saved view exhausts the budget, which stays shared.
+allowance of the same limits, so a spent budget can't report a successful write as
+incomplete. `--limit` therefore caps each half of a saved run, and the context deadline
+does not restart. [Saved fix runs](limits.md#saved-fix-runs) states the contract and when
+status `15` can still accompany a `written` change.
 
 ### Design status
 
@@ -409,5 +408,6 @@ eligibility before its protection checks or GFM candidate parse; ordinary
 active MD047 findings retain their established correction behavior. The engine
 also bypasses eligibility for hidden findings discovered by a reused ordinary
 callback. Separately authorized MD047 fixes recompute the audit on candidate
-and actual observed saved source using the original operation's residual
-allowance, preserving the remaining manual MD087 finding.
+source using the original operation's residual allowance and on actual observed
+saved source using the allowance described under
+[saved fix runs](limits.md#saved-fix-runs), preserving the remaining manual MD087 finding.

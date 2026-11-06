@@ -91,7 +91,8 @@ Public `Parse`/`ParseWithBudget` remain core-only. The closed tagged bridge is
 verification infrastructure. `ParseGFMWithBudget` exposes only the whole profile
 within the internal package boundary and shares the existing parse lifecycle.
 Default/explicit GFM now drive actual lint, inspect and fix, including candidate
-and saved analysis, with the same immutable plan and residual operation budget.
+and saved analysis, with the same immutable plan. Candidate analysis uses the residual
+operation budget, and saved analysis the [saved-run allowance](limits.md#saved-fix-runs).
 
 Permanent consumer fixtures assert independently specified LF/CRLF/UTF-8 source
 facts, exact diagnostic coordinates, genuine versus opaque directives, protected
