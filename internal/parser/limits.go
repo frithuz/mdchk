@@ -60,6 +60,24 @@ type OperationBudget struct {
 	work, nodes int64
 	checkpoints int64
 	exceeded    *LimitExceeded
+	scale       contentScale
+}
+
+// Per-byte allowances granted for acquired content when scaling is enabled.
+// Measured analysis with every rule enabled costs about 2,300 work units and
+// 9 nodes per source byte; these rates keep headroom for fix rounds while
+// operation-time remains the wall-clock backstop.
+const (
+	ContentWorkPerByte  = 8192
+	ContentNodesPerByte = 32
+)
+
+// contentScale grows the work and node allowances with acquired content. A zero
+// rate leaves that limit at its fixed allowance.
+type contentScale struct {
+	workPerByte, nodesPerByte int64
+	content                   int64
+	workBonus, nodesBonus     int64
 }
 
 func NewOperationBudget(l Limits) (*OperationBudget, error) {
@@ -67,6 +85,58 @@ func NewOperationBudget(l Limits) (*OperationBudget, error) {
 		return nil, err
 	}
 	return &OperationBudget{identity: &operationIdentity{}, limits: l, started: time.Now()}, nil
+}
+
+// ScaleWithContent makes the work-units and total-nodes allowances grow by the
+// given amounts for every byte later reported to GrantContent, on top of the
+// configured limits. A zero rate keeps that limit fixed, which is how an
+// operator-set limit stays a hard cap. Call it before any charge.
+func (b *OperationBudget) ScaleWithContent(workPerByte, nodesPerByte int64) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.scale.workPerByte, b.scale.nodesPerByte = max(workPerByte, 0), max(nodesPerByte, 0)
+	b.scale.grant(0)
+}
+
+// GrantContent raises the scaled allowances for newly acquired source bytes. It
+// is a no-op unless ScaleWithContent enabled a rate, and it never lowers an
+// allowance or revives an exhausted budget.
+func (b *OperationBudget) GrantContent(bytes int64) {
+	if b == nil || bytes <= 0 {
+		return
+	}
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.scale.grant(bytes)
+}
+
+func (c *contentScale) grant(bytes int64) {
+	c.content = addBounded(c.content, bytes)
+	c.workBonus = mulBounded(c.content, c.workPerByte)
+	c.nodesBonus = mulBounded(c.content, c.nodesPerByte)
+}
+
+func mulBounded(a, n int64) int64 {
+	if a != 0 && n > math.MaxInt64/a {
+		return math.MaxInt64
+	}
+	return a * n
+}
+
+// Renewed returns a fresh operation budget with the same limits and scaling,
+// already granted the content this one acquired. Saved fix runs use it for
+// their second half, which re-analyzes the same bytes.
+func (b *OperationBudget) Renewed() (*OperationBudget, error) {
+	b.mu.Lock()
+	scale := b.scale
+	b.mu.Unlock()
+	fresh, err := NewOperationBudget(b.limits)
+	if err != nil {
+		return nil, err
+	}
+	fresh.ScaleWithContent(scale.workPerByte, scale.nodesPerByte)
+	fresh.GrantContent(scale.content)
+	return fresh, nil
 }
 
 // OperationToken is immutable authority identifying one shared budget. Its zero
@@ -111,9 +181,9 @@ func (b *OperationBudget) chargeLocked(name string, n int64) *LimitExceeded {
 	var allowed int64
 	switch name {
 	case "work-units":
-		counter, allowed = &b.work, b.limits.WorkUnits
+		counter, allowed = &b.work, addBounded(b.limits.WorkUnits, b.scale.workBonus)
 	case "total-nodes":
-		counter, allowed = &b.nodes, b.limits.TotalNodes
+		counter, allowed = &b.nodes, addBounded(b.limits.TotalNodes, b.scale.nodesBonus)
 	default:
 		return nil
 	}

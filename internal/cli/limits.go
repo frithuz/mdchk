@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/frithuz/mdchk/internal/parser"
 )
 
 // These defaults are the accepted application profile, not an execution engine.
@@ -18,6 +20,26 @@ var limitDefaults = map[string]int64{
 	"work-units": 250000000, "snapshot-retries": 2, "operation-time": int64(60 * time.Second), "reporting-time": int64(2 * time.Second),
 	"report-reserve-bytes": 65536, "active-calls": 4, "queued-calls": 8, "queue-time": int64(10 * time.Second),
 	"project-fixes": 1, "workers-per-operation": 1, "fix-rounds": 10,
+}
+
+// newOperationBudget scales the work and node allowances with acquired content
+// so a large project is not refused by a fixed operation-wide allowance. The
+// configured value stays the floor. A limit the operator set explicitly stays a
+// hard cap.
+func newOperationBudget(profile parser.Limits, overrides map[string]int64) (*parser.OperationBudget, error) {
+	budget, err := parser.NewOperationBudget(profile)
+	if err != nil {
+		return nil, err
+	}
+	var work, nodes int64 = parser.ContentWorkPerByte, parser.ContentNodesPerByte
+	if _, pinned := overrides["work-units"]; pinned {
+		work = 0
+	}
+	if _, pinned := overrides["total-nodes"]; pinned {
+		nodes = 0
+	}
+	budget.ScaleWithContent(work, nodes)
+	return budget, nil
 }
 
 func parseLimit(raw string) (string, int64, error) {

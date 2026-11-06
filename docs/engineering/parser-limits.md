@@ -14,6 +14,8 @@ operation instead construct `NewOperationBudget(limits)` and call
 candidate. The same operation's `ChargeWork` charges non-parser adapter work.
 Every parse resets only its document construction counter. Work, total
 construction and monotonic elapsed time continue from operation construction.
+`ScaleWithContent` lets an adapter raise the work and node allowances per source
+byte it reports through `GrantContent`; see [content scaling](limits.md#content-scaling).
 The accepted initial worker count is one: simultaneous parses and adapter
 charges sharing one operation serialize. Independent operations execute
 concurrently without mutable global parse state. An operation is a pointer

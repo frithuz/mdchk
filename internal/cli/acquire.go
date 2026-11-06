@@ -38,7 +38,7 @@ func acquireLintContext(ctx context.Context, inv *lintInvocation, _ io.Writer) i
 		DocumentNodes: inv.limit("document-nodes"), TotalNodes: inv.limit("total-nodes"),
 		WorkUnits: inv.limit("work-units"), OperationTime: time.Duration(inv.limit("operation-time")),
 	}
-	budget, err := parser.NewOperationBudget(limits)
+	budget, err := newOperationBudget(limits, inv.options.limits)
 	if err != nil {
 		return inv.fail(err, "unsupported-limits", result.Usage)
 	}

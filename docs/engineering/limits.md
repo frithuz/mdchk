@@ -85,8 +85,8 @@ the accepted implementation contract.
 | `structured-input-depth` | 64 nested containers | Raw protocol JSON and configuration syntax. Reject before ordinary decoding loses evidence or allocates unbounded structures. |
 | `syntax-depth` | 256 nested constructs | Markdown/metadata syntax and alias traversal; unavailable syntax remains explicit rather than being flattened. |
 | `document-nodes` | 250,000 nodes or source records | Each individual document parse, including metadata and retained source records, before allocating beyond the cap. |
-| `total-nodes` | 2,000,000 nodes or source records constructed | Operation cumulative construction, including reparses/fix rounds/retries; reusing immutable nodes does not construct them again. A saved `fix` run applies this cap to each half; see [saved fix runs](#saved-fix-runs). |
-| `work-units` | 250,000,000 metered work units | Operation-wide parser, rule, metadata, diff and preservation work; charge byte inspections/comparisons and structural/candidate visits with documented adapter metering. All fix rounds and counterfactual MD087 work share the meter. A saved `fix` run applies this cap to each half; see [saved fix runs](#saved-fix-runs). |
+| `total-nodes` | 2,000,000 nodes or source records constructed, plus 32 per acquired source byte | Operation cumulative construction, including reparses/fix rounds/retries; reusing immutable nodes does not construct them again. A saved `fix` run applies this cap to each half; see [saved fix runs](#saved-fix-runs). |
+| `work-units` | 250,000,000 metered work units, plus 8,192 per acquired source byte | Operation-wide parser, rule, metadata, diff and preservation work; charge byte inspections/comparisons and structural/candidate visits with documented adapter metering. All fix rounds and counterfactual MD087 work share the meter. A saved `fix` run applies this cap to each half; see [saved fix runs](#saved-fix-runs). |
 | `snapshot-retries` | 2 additional attempts | At most 3 acquisition attempts per unstable logical snapshot; retry bytes/work remain charged. |
 | `operation-time` | 60 seconds | Monotonic wall time for validation/discovery/queueing/analysis/fix commits; MCP begins once the bounded message is received for processing. Network body/idle timeouts belong to transport policy. The deadline covers a whole saved `fix` run and does not restart for its second half. |
 | `reporting-time` | 2 additional seconds | Reserved cleanup/outcome reconciliation/report construction after analysis stops; never used for additional fixes. It cannot guarantee interruption of an unresponsive OS call or report delivery to a disconnected client. |
@@ -98,12 +98,31 @@ the accepted implementation contract.
 | `workers-per-operation` | 1 worker | Initial intra-operation engine worker limit; raise only through explicit operator setting and verified implementation support. |
 | `fix-rounds` | 10 changing rounds | Previously accepted fixed correction cap plus a read-only convergence check; not raised by the generic limit override. |
 
+## Content scaling
+
+`work-units` and `total-nodes` are operation-wide, so a fixed value would cap how much Markdown one
+run can analyze regardless of the 8 MiB `total-content-bytes` and 5,000 `target-files` the same
+profile admits. The listed default is therefore a floor: each byte of target content acquired
+raises the work allowance by 8,192 units and the node allowance by 32 records. The accepted bound
+on content (`total-content-bytes`) and `operation-time` remain the ceilings on total effort.
+
+Measured analysis of this repository's documentation with every rule enabled costs about 2,300
+work units and 9 nodes per source byte, so the rates leave headroom for fix rounds. A default
+configuration over 145 files (1.27 MB) previously stopped after 13 files and now completes.
+
+An operator-set `--limit work-units` or `--limit total-nodes` disables scaling for that limit and
+is a hard cap, which is how to reproduce the fixed budget. Reports show the configured floor as
+the effective limit; `allowed` in a limit interruption is the allowance in force when it was
+exhausted. Per-document caps (`document-bytes`, `document-nodes`, `syntax-depth`) do not scale.
+Only content acquired as lint, fix or inspect targets grants allowance; resource lookups and
+candidate overlays do not.
+
 ## Saved fix runs
 
 `--limit` caps each half of a saved `fix` run, not its total. The first half is
 everything through publication: selection, acquisition, every fix round, candidate
 analysis, preservation proof and the writes. After a complete validation, the second half
-uses a fresh allowance of the same limits: confirming saved content, analyzing it,
+uses a fresh allowance of the same limits, with the same content scaling and grant: confirming saved content, analyzing it,
 and building diffs and result records. A saved run can therefore spend up to twice
 `work-units` and twice `total-nodes`. Per-document and per-parse caps such as
 `document-nodes` apply as usual in each half.
@@ -154,6 +173,7 @@ precise MCP location follows its protocol decision.
 - Use checked arithmetic and enforce caps before large allocations. The AST/work counter specification must identify metering points for every parser, metadata adapter, rule, preservation validator and diff routine; add deadline/cancellation checkpoints around bounded loops and I/O.
 - These are application-work limits, not a hard process-RSS or crash-proof OS isolation guarantee. Server concurrency multiplies resident operation data; operators must size deployment memory accordingly.
 - Changing numeric defaults requires documented review and representative/adversarial benchmarks; this contract selects starting values, not a claim that absent implementation has already met performance targets.
+- The 2026-11-06 revision makes `work-units` and `total-nodes` floors that scale with acquired target content; see [Content scaling](#content-scaling).
 - The 2026-10-15 revision reduces per-text, aggregate-content, request and response byte defaults by a factor of eight. Independent node, work, count and timing limits are unchanged. These starting values are not benchmark-derived performance promises.
 
 

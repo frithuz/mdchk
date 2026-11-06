@@ -83,7 +83,7 @@ func runFix(ctx context.Context, args []string, w, stderr io.Writer, presentatio
 	}
 	opts.presentation = presentation
 	profile := parser.Limits{DocumentBytes: reportLimit(opts.limits, "document-bytes"), SyntaxDepth: reportLimit(opts.limits, "syntax-depth"), DocumentNodes: reportLimit(opts.limits, "document-nodes"), TotalNodes: reportLimit(opts.limits, "total-nodes"), WorkUnits: reportLimit(opts.limits, "work-units"), OperationTime: time.Duration(reportLimit(opts.limits, "operation-time"))}
-	budget, err := parser.NewOperationBudget(profile)
+	budget, err := newOperationBudget(profile, opts.limits)
 	if err == nil && (reportLimit(opts.limits, "structured-input-depth") > 4096 || reportLimit(opts.limits, "total-config-bytes") > 1<<30) {
 		err = errors.New("unsupported configuration limits")
 	}
@@ -254,7 +254,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 		// so a fresh allowance is enough to describe them after the write. Sharing the
 		// spent one could report a successful write as incomplete.
 		if err == nil {
-			fresh, freshErr := parser.NewOperationBudget(budget.Limits())
+			fresh, freshErr := budget.Renewed()
 			if freshErr != nil {
 				out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "saved-analysis-budget", Scope: "operation", Message: freshErr.Error()})
 			} else {

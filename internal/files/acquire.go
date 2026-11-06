@@ -73,6 +73,7 @@ func acquireFS(ctx context.Context, selection *Selection, options AcquireOptions
 		if err != nil {
 			return nil, err
 		}
+		options.Budget.ScaleWithContent(parser.ContentWorkPerByte, parser.ContentNodesPerByte)
 	}
 	out := &Acquisition{Selection: selection}
 	targets := slices.Clone(selection.Targets)
@@ -190,6 +191,7 @@ func readDocument(file readHandle, target Target, options AcquireOptions, total 
 			return nil, "read", errors.New("invalid reader count")
 		}
 		*total += int64(n)
+		options.Budget.GrantContent(int64(n))
 		chargeErr := options.Budget.ChargeWork(int64(n)*3 + 1)
 		// Preserve a read failure even when the bytes returned alongside it also
 		// cross a quota: I/O failures retain their accepted precedence.

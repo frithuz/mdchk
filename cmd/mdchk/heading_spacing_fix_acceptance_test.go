@@ -235,7 +235,8 @@ func TestCompiledHeadingSpacingScale(t *testing.T) {
 
 	source = spacingScaleSource(5000)
 	putConfigurationFile(t, root, "doc.md", source)
-	got = runConfigurationProcess(t, binary, root, "fix", "doc.md", "--format=json")
+	// Pinning the limits keeps them hard caps; unpinned allowances grow with content.
+	got = runConfigurationProcess(t, binary, root, "fix", "doc.md", "--format=json", "--limit", "work-units=250000000", "--limit", "total-nodes=2000000")
 	out = validateConfigurationOperationJSON(t, []byte(got.Stdout), "fix")
 	if got.Status != 15 || out.Complete {
 		t.Fatalf("status %d complete %v", got.Status, out.Complete)

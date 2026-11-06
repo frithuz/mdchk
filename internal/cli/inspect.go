@@ -93,7 +93,7 @@ func runInspect(ctx context.Context, args []string, stdout io.Writer, version st
 		return output(stdout, "mdchk "+version+"\n", 0)
 	}
 	profile := parser.Limits{DocumentBytes: reportLimit(opts.limits, "document-bytes"), SyntaxDepth: reportLimit(opts.limits, "syntax-depth"), DocumentNodes: reportLimit(opts.limits, "document-nodes"), TotalNodes: reportLimit(opts.limits, "total-nodes"), WorkUnits: reportLimit(opts.limits, "work-units"), OperationTime: time.Duration(reportLimit(opts.limits, "operation-time"))}
-	budget, err := parser.NewOperationBudget(profile)
+	budget, err := newOperationBudget(profile, opts.limits)
 	if err == nil && (reportLimit(opts.limits, "structured-input-depth") > 4096 || reportLimit(opts.limits, "total-config-bytes") > 1<<30) {
 		err = errors.New("unsupported configuration limits")
 	}
