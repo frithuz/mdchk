@@ -1,0 +1,2344 @@
+{
+  "authority": "Hand-specified oracle for MD095; expected ranges and messages written from the rule contract, positions in Unicode scalars.",
+  "cases": [
+    {
+      "name": "page-violating",
+      "source": "<https://ex\u0430mple.org> where \u0430 is Cyrillic U+0430.\n",
+      "source_bytes": 52,
+      "source_sha256": "2f1cc658a531747aa001c49abad1e8c9ec5d18b1b44bad42fcb88d2387a418b7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            13
+          ],
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "page-accepted",
+      "source": "https://example.org\n",
+      "source_bytes": 20,
+      "source_sha256": "3758d679fe7fe11fffcc0c3454200e9d40776e3fb0c8f93fcc979ca8b91d2cc8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "bare-prose",
+      "source": "https://ex\u0430mple.org where \u0430 is Cyrillic U+0430.\n",
+      "source_bytes": 50,
+      "source_sha256": "9f5d369f9a4cece665d16e71e51d6de72381cb6c523223be981116d1ffac9a27",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "gfm-bare-punycode",
+      "source": "https://xn--exmple-4nf.org\n",
+      "source_bytes": 27,
+      "source_sha256": "b113659eb32b9b26a3bc622ec5d9b22e250da36632926a171ce36d9a4de1271b",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            26
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            27
+          ],
+          "message": "Hostname \"xn--exmple-4nf.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "commonmark-bare-punycode",
+      "source": "https://xn--exmple-4nf.org\n",
+      "source_bytes": 27,
+      "source_sha256": "b113659eb32b9b26a3bc622ec5d9b22e250da36632926a171ce36d9a4de1271b",
+      "flavors": [
+        "commonmark"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "gfm-www",
+      "source": "see www.xn--exmple-4nf.org/x\n",
+      "source_bytes": 29,
+      "source_sha256": "a6b90082e24beffca05c0f23d808e181d02dd03eb126bb03d9d24a73a246ac8d",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            4,
+            26
+          ],
+          "start": [
+            1,
+            5
+          ],
+          "end": [
+            1,
+            27
+          ],
+          "message": "Hostname \"www.xn--exmple-4nf.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "commonmark-www",
+      "source": "see www.xn--exmple-4nf.org/x\n",
+      "source_bytes": 29,
+      "source_sha256": "a6b90082e24beffca05c0f23d808e181d02dd03eb126bb03d9d24a73a246ac8d",
+      "flavors": [
+        "commonmark"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "inline-link",
+      "source": "[x](https://ex\u0430mple.org/path)\n",
+      "source_bytes": 31,
+      "source_sha256": "5ad1d34856f5c550d7e6d60f9badd5dcd07c85a388d1dd8c1dd2318c83cec5cc",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            14,
+            16
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "image",
+      "source": "![x](https://ex\u0430mple.org/i.png)\n",
+      "source_bytes": 33,
+      "source_sha256": "b94f1b8bee4fd53caff09a93fac88bdd916663099f3317088038d76a3ce22b3e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            17
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "angle-autolink",
+      "source": "<https://ex\u0430mple.org>\n",
+      "source_bytes": 23,
+      "source_sha256": "6a5c8e6dc419bf5fed3254abb88e9beb805873791b701158e026e8c02458e1c7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            13
+          ],
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "link-title",
+      "source": "[x](https://ex\u0430mple.org \"t\")\n",
+      "source_bytes": 30,
+      "source_sha256": "2d60dd6caeabcf6ad6f09fa15a10cfb59f7ad900425b08c9ab6ec62e3d328182",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            14,
+            16
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "angle-destination",
+      "source": "[x](<https://ex\u0430mple.org/a b>)\n",
+      "source_bytes": 32,
+      "source_sha256": "087d06675c15c27111e655b41c0197d616891bd9eeb6d7286bc3ff0a8b16c55b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            17
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "protocol-relative",
+      "source": "[x](//ex\u0430mple.org/)\n",
+      "source_bytes": 21,
+      "source_sha256": "cad4faa429f6c0d5f8bfdd488bf97cf4d419c48d7ab093acd1a1c6c26567f4ed",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            8,
+            10
+          ],
+          "start": [
+            1,
+            9
+          ],
+          "end": [
+            1,
+            10
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "scheme-case",
+      "source": "[x](HTTPS://ex\u0430mple.org)\n",
+      "source_bytes": 26,
+      "source_sha256": "b64d82ea6b343e7bba9d8a0ea47cfd1c9c3fcd267d67e2b965bc995ea90b373c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            14,
+            16
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "other-scheme",
+      "source": "[x](ftp://ex\u0430mple.org/f)\n",
+      "source_bytes": 26,
+      "source_sha256": "46f41b2246cc87188cc92b6a7579e47109617b1f097dc3878fe38555164c5829",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            14
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "reference-three-uses",
+      "source": "[a]: https://ex\u0430mple.org\n\n[a] [a] [a]\n",
+      "source_bytes": 39,
+      "source_sha256": "2cab0e1b4bdb60584d0ef191e7a2f7b89e4ca982093191866d55f079e16a04ad",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            17
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "reference-forms",
+      "source": "[x][a] [a][] [a] ![i][a]\n\n[a]: https://ex\u0430mple.org\n",
+      "source_bytes": 52,
+      "source_sha256": "e673eac2e54ca415fade9cbb6a31105903b801dd03479bf60f17d18b89b8cf36",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            41,
+            43
+          ],
+          "start": [
+            3,
+            16
+          ],
+          "end": [
+            3,
+            17
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "reference-unused",
+      "source": "[a]: https://ex\u0430mple.org\n",
+      "source_bytes": 26,
+      "source_sha256": "5f0786b9e412bf85b6d3d43d49499aef59d31599f6858b64bd1da984fe2cc2d9",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            17
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "reference-angle-title",
+      "source": "[a]: <https://ex\u0430mple.org> 'title'\n\n[a]\n",
+      "source_bytes": 41,
+      "source_sha256": "442f72747e7c41c2c5838206f23507e85ddf8ef729159fb45af22770ded5fc5e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            18
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "reference-duplicate",
+      "source": "[a]: https://ex\u0430mple.org\n[a]: https://ex\u0430mple.org/2\n\n[a]\n",
+      "source_bytes": 59,
+      "source_sha256": "59bf96ea54cbc62e87c323ea51b46819395dde0acd20765e7b493b575f04cee3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            17
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        },
+        {
+          "bytes": [
+            41,
+            43
+          ],
+          "start": [
+            2,
+            16
+          ],
+          "end": [
+            2,
+            17
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "punycode",
+      "source": "[x](https://xn--exmple-4nf.org)\n",
+      "source_bytes": 32,
+      "source_sha256": "c734697ef5400be7bf135f38a8a7056b1ac49ff2fee39cb8cf97f20a9b7511eb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            30
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "message": "Hostname \"xn--exmple-4nf.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "punycode-unicode-twin",
+      "source": "[x](https://ex\u0430mple.org)\n",
+      "source_bytes": 26,
+      "source_sha256": "e8d18e92fd09d54e6ceb09050d48c90c57b3f5f9711cc058106b23d60b29bc39",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            14,
+            16
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "punycode-uppercase",
+      "source": "[x](https://XN--EXMPLE-4NF.ORG)\n",
+      "source_bytes": 32,
+      "source_sha256": "e97465fde670099b681d19044999cf7f91b26d777d52dbcc77bf97ca6b8e20b0",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            30
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            31
+          ],
+          "message": "Hostname \"XN--EXMPLE-4NF.ORG\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "percent-encoded",
+      "source": "[x](https://ex%D0%B0mple.org)\n",
+      "source_bytes": 30,
+      "source_sha256": "201641c7ba47e382dbfdc9cdb94484352f12620023fb24a14a05350769eefaa8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            28
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "message": "Hostname \"ex%D0%B0mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "percent-lowercase",
+      "source": "[x](https://ex%d0%b0mple.org/%20)\n",
+      "source_bytes": 34,
+      "source_sha256": "694d04b0503699f4ad1a1c071d69755a4c0370411198bc3f7cfd746bc40a5532",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            28
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            29
+          ],
+          "message": "Hostname \"ex%d0%b0mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "percent-dot",
+      "source": "[x](https://ex\u0430mple%2Eorg)\n",
+      "source_bytes": 28,
+      "source_sha256": "6d90b0b48430593ed60367bb6cf9f5e0a4397b59878e095a00f2227ba42a0494",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            26
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "message": "Hostname \"ex\u0430mple%2Eorg\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "entity",
+      "source": "[x](https://ex&#x430;mple.org)\n",
+      "source_bytes": 31,
+      "source_sha256": "10bc2e72c2f13a2ee85b34ea3ef9130e632d5a3536f997572e94ae8e289c8196",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            29
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            30
+          ],
+          "message": "Hostname \"ex&#x430;mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "escape",
+      "source": "[x](https://ex\u0430mple\\.org)\n",
+      "source_bytes": 27,
+      "source_sha256": "a20894933479fa3d7a62d4ff15259c384d7a59f946c62393e145876c7bb1a27f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            25
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            25
+          ],
+          "message": "Hostname \"ex\u0430mple\\.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "uppercase",
+      "source": "[x](https://EX\u0410MPLE.org)\n",
+      "source_bytes": 26,
+      "source_sha256": "d709aec3d69920b55dadfab5152b5b8b6cfed2b7bdc94aa22051d0a60f9e572b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            24
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            24
+          ],
+          "message": "Hostname \"EX\u0410MPLE.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "nfc-changed",
+      "source": "[x](https://ex\u0430mple.cafe\u0301)\n",
+      "source_bytes": 29,
+      "source_sha256": "895914bf1ea4604886f6edb2a7e40767fc0c2ec459a68e5b064d44e9cd172cd2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            27
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "message": "Hostname \"ex\u0430mple.cafe\u0301\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "several-flagged",
+      "source": "[x](https://\u0430\u0435x\u0430mple.org)\n",
+      "source_bytes": 29,
+      "source_sha256": "60c9dc68e7c7cb929135b4ca601a50bbd4e3a25a3cf2a1e0aa4dbf2278b0e577",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            19
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "message": "Hostname \"\u0430\u0435x\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\", U+0435 looks like \"e\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "several-labels",
+      "source": "[x](https://\u0430b.c\u0430.org)\n",
+      "source_bytes": 25,
+      "source_sha256": "475102903a3e7f7e6ff8855c63d261a3c97265ba68a23bb417eede2ea2c82a38",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            19
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "message": "Hostname \"\u0430b.c\u0430.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "multi-letter",
+      "source": "[x](https://\u00e6xample.org)\n",
+      "source_bytes": 26,
+      "source_sha256": "457466b7a3ca1d09a2900b2edaee204a2f3d93714abbac0453e0f721b4028c28",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            14
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "message": "Hostname \"\u00e6xample.org\" contains lookalike characters: U+00E6 looks like \"ae\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "mixed-script-unflagged",
+      "source": "[x](https://\u4e2dexample.org)\n",
+      "source_bytes": 28,
+      "source_sha256": "9300d94f4c0c847cf9cbf7dd97550020d78e5a7d3ceab582659a502932da1161",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "accented-unflagged",
+      "source": "[x](https://caf\u00e9.org)\n",
+      "source_bytes": 23,
+      "source_sha256": "f589c6c7e286b396e99b434a149ffa4c758d96b1e8c24ca4ba1e29ac79efa80e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "fullwidth-compatibility",
+      "source": "[x](https://\uff45\uff58\uff41\uff4d\uff50\uff4c\uff45.org)\n",
+      "source_bytes": 39,
+      "source_sha256": "7d1db7ef5fd3d3937dc917c94ea9a40cdbb915553d01f13c4af9710b63800353",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "digit-mapping",
+      "source": "[x](https://\u0437ero.org)\n",
+      "source_bytes": 23,
+      "source_sha256": "1d54ba49279e9b5c43334755406baed22fbed9bcbb75abb1c57498c0d875098c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "punctuation-mapping",
+      "source": "[x](https://x\u02bcy.org)\n",
+      "source_bytes": 22,
+      "source_sha256": "78eb96a00ac8da865b0da114aad685bca54399d4381036979472b8012f6931ce",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "ascii-only",
+      "source": "[x](https://my_host.example) [y](https://rnicrosoft.com)\n",
+      "source_bytes": 57,
+      "source_sha256": "ada0ff3bc9704d41d0024c18976f96a20e1e71465b5a4b32d29467f60cbd7ee4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "userinfo-lookalike",
+      "source": "[x](https://ex\u0430mple.org@example.org/)\n",
+      "source_bytes": 39,
+      "source_sha256": "b471eb284017880a345f4ecfcd213317a77069e4fffcf3a28bfa41e72ab984e6",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "userinfo-and-host",
+      "source": "[x](https://u:p@ex\u0430mple.org/)\n",
+      "source_bytes": 31,
+      "source_sha256": "6a798748b4743ddf3649332297d6d2f807080b9dc044e7ea3393fea805b96043",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            18,
+            20
+          ],
+          "start": [
+            1,
+            19
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "port",
+      "source": "[x](https://ex\u0430mple.org:8443/)\n",
+      "source_bytes": 32,
+      "source_sha256": "6ba68f7fd2dd3ed155ef8e7019045e4615e33c39491d0ec5953c0ece9d421e97",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            14,
+            16
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "empty-port",
+      "source": "[x](https://ex\u0430mple.org:/)\n",
+      "source_bytes": 28,
+      "source_sha256": "933dd9bfe654f8be217e2fa5f87947981c07a31fdde663ed8ce05c5be0d71a13",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            14,
+            16
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "root-dot",
+      "source": "[x](https://ex\u0430mple.org./)\n",
+      "source_bytes": 28,
+      "source_sha256": "87abad1804759a3f5f880c73cac1d3cb30308d59cefbe94101da4815c5997a9c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            14,
+            16
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "message": "Hostname \"ex\u0430mple.org.\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "ipv4",
+      "source": "[a](https://127.0.0.1/) [b](https://0x7f.1/) [c](https://\u0430.1/)\n",
+      "source_bytes": 64,
+      "source_sha256": "4fc574b22fd494d9c9ebddd99366ef57429ad226ddeee37beb451be50fcf3300",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "ipv6",
+      "source": "[a](https://[::1]:8080/) [b](https://[v1.\u0430]/)\n",
+      "source_bytes": 47,
+      "source_sha256": "0ae8c6b13a32997cae412d2dd131b446e65e45e3df9bcd17112243c7fc769d12",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "opaque-and-local",
+      "source": "<mailto:u@ex\u0430mple.org> [m](mailto:u@ex\u0430mple.org) [t](tel:\u0430) [a](docs/ex\u0430mple.org) [b](/ex\u0430mple.org) [c](#ex\u0430mple.org) [d](?q=ex\u0430mple.org) [e]() [f](file:///ex\u0430mple.org)\n",
+      "source_bytes": 177,
+      "source_sha256": "0f25ad89eb6b97e3782923a557addd5e095f0177e7db024744e57b180d82fa67",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "bare-email",
+      "source": "u@ex\u0430mple.org\n",
+      "source_bytes": 15,
+      "source_sha256": "b9f63d1458ac751f6664ba84c9534e62d338e500402a5d8a4fb3b60ec32b0e33",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "lookalike-outside-host",
+      "source": "[ex\u0430mple.org](https://example.org/ex\u0430mple.org?q=ex\u0430mple.org#ex\u0430mple.org)\n",
+      "source_bytes": 77,
+      "source_sha256": "914d4c0f4f951c39045f46b067f8c9ca57fa96298c62377e3b679904d8a82b20",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "allow-unicode",
+      "source": "<https://ex\u0430mple.org> <https://ex\u0430mple.org:8443/>\n",
+      "source_bytes": 52,
+      "source_sha256": "3e28dd91ec3bc00519e5d534a909b2b2bed83fbdb105c550b2df44f8489d884c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_hosts": [
+          "ex\u0430mple.org"
+        ]
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "allow-punycode",
+      "source": "<https://ex\u0430mple.org> <https://ex\u0430mple.org:8443/>\n",
+      "source_bytes": 52,
+      "source_sha256": "3e28dd91ec3bc00519e5d534a909b2b2bed83fbdb105c550b2df44f8489d884c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_hosts": [
+          "xn--exmple-4nf.org"
+        ]
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "allow-uppercase",
+      "source": "<https://ex\u0430mple.org> <https://ex\u0430mple.org:8443/>\n",
+      "source_bytes": 52,
+      "source_sha256": "3e28dd91ec3bc00519e5d534a909b2b2bed83fbdb105c550b2df44f8489d884c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_hosts": [
+          "EX\u0410MPLE.ORG"
+        ]
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "allow-root-dot",
+      "source": "<https://ex\u0430mple.org> <https://ex\u0430mple.org:8443/>\n",
+      "source_bytes": 52,
+      "source_sha256": "3e28dd91ec3bc00519e5d534a909b2b2bed83fbdb105c550b2df44f8489d884c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_hosts": [
+          "ex\u0430mple.org."
+        ]
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "allow-matches-punycode-source",
+      "source": "[x](https://xn--exmple-4nf.org)\n",
+      "source_bytes": 32,
+      "source_sha256": "c734697ef5400be7bf135f38a8a7056b1ac49ff2fee39cb8cf97f20a9b7511eb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_hosts": [
+          "ex\u0430mple.org"
+        ]
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "allow-ascii-lookalike",
+      "source": "<https://ex\u0430mple.org>\n",
+      "source_bytes": 23,
+      "source_sha256": "6a5c8e6dc419bf5fed3254abb88e9beb805873791b701158e026e8c02458e1c7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_hosts": [
+          "example.org"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            13
+          ],
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "allow-no-subdomain",
+      "source": "<https://www.ex\u0430mple.org> <https://ex\u0430mple.org>\n",
+      "source_bytes": 50,
+      "source_sha256": "4dd950d35cb8394e385116168157a2c64429c8674eecf7fce071382726f77fb2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_hosts": [
+          "ex\u0430mple.org"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            17
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "message": "Hostname \"www.ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "allow-no-parent",
+      "source": "<https://ex\u0430mple.org>\n",
+      "source_bytes": 23,
+      "source_sha256": "6a5c8e6dc419bf5fed3254abb88e9beb805873791b701158e026e8c02458e1c7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "allowed_hosts": [
+          "www.ex\u0430mple.org"
+        ]
+      },
+      "findings": [
+        {
+          "bytes": [
+            11,
+            13
+          ],
+          "start": [
+            1,
+            12
+          ],
+          "end": [
+            1,
+            13
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "invalid-port",
+      "source": "[a](https://ex\u0430mple.org:80a/) [b](https://ex\u0430mple.org)\n",
+      "source_bytes": 57,
+      "source_sha256": "d16225b1f2cb64b1b88c89a5555ea73e62f186ee387685d6dab0c66043bc5d5e",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            45,
+            47
+          ],
+          "start": [
+            1,
+            45
+          ],
+          "end": [
+            1,
+            46
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": [
+        {
+          "bytes": [
+            12,
+            28
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            28
+          ],
+          "message": "Hostname cannot be checked for lookalike characters: invalid URL authority."
+        }
+      ]
+    },
+    {
+      "name": "unterminated-bracket",
+      "source": "[a](https://[::1/) [b](https://ex\u0430mple.org)\n",
+      "source_bytes": 45,
+      "source_sha256": "e0608adc1ca1742296e614d2408769383ea6dc24c3cd7506036d95000e069fff",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            33,
+            35
+          ],
+          "start": [
+            1,
+            34
+          ],
+          "end": [
+            1,
+            35
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": [
+        {
+          "bytes": [
+            12,
+            16
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "message": "Hostname cannot be checked for lookalike characters: invalid URL authority."
+        }
+      ]
+    },
+    {
+      "name": "invalid-percent",
+      "source": "[a](https://ex%D0mple.org) [b](https://ex\u0430mple.org)\n",
+      "source_bytes": 53,
+      "source_sha256": "e2f29624d658ac555a2b54e30c87b159735375855abf0b4073e9cadde32d994d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            41,
+            43
+          ],
+          "start": [
+            1,
+            42
+          ],
+          "end": [
+            1,
+            43
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": [
+        {
+          "bytes": [
+            12,
+            25
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            26
+          ],
+          "message": "Hostname cannot be checked for lookalike characters: invalid percent-encoded UTF-8."
+        }
+      ]
+    },
+    {
+      "name": "invalid-percent-escape",
+      "source": "[a](https://ex\u0430%zz.org) [b](https://ex\u0430mple.org)\n",
+      "source_bytes": 51,
+      "source_sha256": "b3d4479f760e120387738c4090d0bdeea0d990fc68478b1fe15ff54b7512fe5b",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            39,
+            41
+          ],
+          "start": [
+            1,
+            39
+          ],
+          "end": [
+            1,
+            40
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": [
+        {
+          "bytes": [
+            12,
+            23
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            23
+          ],
+          "message": "Hostname cannot be checked for lookalike characters: invalid percent-encoded UTF-8."
+        }
+      ]
+    },
+    {
+      "name": "invalid-punycode",
+      "source": "[a](https://xn--a.org) [b](https://ex\u0430mple.org)\n",
+      "source_bytes": 49,
+      "source_sha256": "2080aec0453865336b12e0a7f5b3e05872385d79a5237b2a3cb8d5ef17293ca1",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            37,
+            39
+          ],
+          "start": [
+            1,
+            38
+          ],
+          "end": [
+            1,
+            39
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": [
+        {
+          "bytes": [
+            12,
+            21
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            22
+          ],
+          "message": "Hostname cannot be checked for lookalike characters: label 0: disallowed code point (V7)."
+        }
+      ]
+    },
+    {
+      "name": "std3-disallowed",
+      "source": "[a](https://ex\u0430mple_.org) [b](https://ex\u0430mple.org)\n",
+      "source_bytes": 53,
+      "source_sha256": "485131a952d009aad0387543785ae24a59b12904205f0b47df6147144a586e25",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            41,
+            43
+          ],
+          "start": [
+            1,
+            41
+          ],
+          "end": [
+            1,
+            42
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": [
+        {
+          "bytes": [
+            12,
+            25
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            25
+          ],
+          "message": "Hostname cannot be checked for lookalike characters: label 0: ASCII character other than a-z, 0-9 or hyphen (U1)."
+        }
+      ]
+    },
+    {
+      "name": "unavailable-raw-state",
+      "source": "<div>\n<x title=\"\n\n[x](https://ex\u0430mple.org)\n",
+      "source_bytes": 44,
+      "source_sha256": "7c338bba7fd3113c70bc9d5c13bc212ebe11381a46d65084a1c172a1f9d4969d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": [],
+      "incomplete": "Link destination context is unavailable; the complete MD095 inventory is withheld."
+    },
+    {
+      "name": "code-span",
+      "source": "`[x](https://ex\u0430mple.org)`\n",
+      "source_bytes": 28,
+      "source_sha256": "1b0578fcc5c0c167514f9ca7fc20af93961386eb740d0d946a93afc4080c5988",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "fenced-code",
+      "source": "```\n[x](https://ex\u0430mple.org)\n<https://ex\u0430mple.org>\n```\n",
+      "source_bytes": 57,
+      "source_sha256": "384100bce53e03f4957406b121a0f744c4ef9eb75b3a45fca37c1366dc7c84ef",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "indented-code",
+      "source": "    [x](https://ex\u0430mple.org)\n",
+      "source_bytes": 30,
+      "source_sha256": "6b85d1525a4aada17db87590d5644781cd4653ba4a6a18750eab01b2530f98dd",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "html-block",
+      "source": "<div>\n[x](https://ex\u0430mple.org)\n</div>\n",
+      "source_bytes": 39,
+      "source_sha256": "4fbe8314699b559d69b9e16c6fe9214c0977015a0f829fa54ea88a6bdd8ea672",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "raw-inline-html",
+      "source": "x <pre>[x](https://ex\u0430mple.org)</pre>\n",
+      "source_bytes": 39,
+      "source_sha256": "eec46aae7015d29cd32adb0a2fa44b19b0259689f872bfbb724275f1a1459456",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "html-attribute",
+      "source": "<a href=\"https://ex\u0430mple.org\">x</a>\n",
+      "source_bytes": 37,
+      "source_sha256": "f8e0fac911b30d4672fcda5307b26875a512e27417dab1f925159952ea97e732",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "frontmatter",
+      "source": "---\nurl: \"[x](https://ex\u0430mple.org)\"\n---\n",
+      "source_bytes": 41,
+      "source_sha256": "e8bc686ab22014c1bdffcae0417c1a84e087a6e31e3f4106433d3cc71243a420",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "frontmatter": "yaml"
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
+      "name": "frontmatter-body",
+      "source": "---\nurl: https://ex\u0430mple.org\n---\n[x](https://ex\u0430mple.org)\n",
+      "source_bytes": 60,
+      "source_sha256": "79c47ae8aaea88d6de847f24a9bef10af5771552aa1fffb8089f7e0027ee6936",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true,
+        "frontmatter": "yaml"
+      },
+      "findings": [
+        {
+          "bytes": [
+            48,
+            50
+          ],
+          "start": [
+            4,
+            15
+          ],
+          "end": [
+            4,
+            16
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "list",
+      "source": "- [x](https://ex\u0430mple.org)\n",
+      "source_bytes": 28,
+      "source_sha256": "383861fed957347f2282a5d09fa905ddd5f0fec38c3dfe5b273f4580b410e2de",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            18
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "block-quote",
+      "source": "> [x](https://ex\u0430mple.org)\n",
+      "source_bytes": 28,
+      "source_sha256": "fc1a09eca8cd2e5525882d481bc602804d2ab261dc74b7a386bb14d20c239a1d",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            18
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "quote-in-list",
+      "source": "- > [x](https://ex\u0430mple.org)\n",
+      "source_bytes": 30,
+      "source_sha256": "e4c4713c8bfe02e79657171afc14cd8da860baccffe331d9969af754276cc303",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            18,
+            20
+          ],
+          "start": [
+            1,
+            19
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "definition-in-quote",
+      "source": "> [a]: https://ex\u0430mple.org\n>\n> [a]\n",
+      "source_bytes": 36,
+      "source_sha256": "ccc2df40ac6f377e3116c0d8b2d50c10770be157d8a2fd658344e1df2c9070d5",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            17,
+            19
+          ],
+          "start": [
+            1,
+            18
+          ],
+          "end": [
+            1,
+            19
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "heading",
+      "source": "# [x](https://ex\u0430mple.org)\n",
+      "source_bytes": 28,
+      "source_sha256": "6a3083469bb2a3061a83e7c822f6aa10cdd8eb3ac69d59df83123ae2aafb60a4",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            18
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "emphasis",
+      "source": "*[x](https://ex\u0430mple.org)*\n",
+      "source_bytes": 28,
+      "source_sha256": "ee35a4a9162d35c1cf86aa1dcec37ed09bd62f9716449235d2e50d7cfb4827d8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            17
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "table-cell",
+      "source": "| a |\n| - |\n| [x](https://ex\u0430mple.org) |\n",
+      "source_bytes": 42,
+      "source_sha256": "2269a0056f89dac677d5866ddf6ff7510481451bf9c07d317c0541f92fc0eac8",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            28,
+            30
+          ],
+          "start": [
+            3,
+            17
+          ],
+          "end": [
+            3,
+            18
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "multibyte-line",
+      "source": "\u96ea \u96ea [x](https://ex\u0430mple.org)\n",
+      "source_bytes": 34,
+      "source_sha256": "7bd7495b37f18d542e304c64645f045592cf5f6a3ceb6fb8467ddb0c3df73a2a",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            22,
+            24
+          ],
+          "start": [
+            1,
+            19
+          ],
+          "end": [
+            1,
+            20
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "lf",
+      "source": "intro\n\n- [x](https://ex\u0430mple.org)\n\n[a]: https://ex\u0430mple.org\n",
+      "source_bytes": 62,
+      "source_sha256": "5836564d6fe1010da06dd988f2171981dd119eb87a7999317d173c7d05cfb73f",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            23,
+            25
+          ],
+          "start": [
+            3,
+            17
+          ],
+          "end": [
+            3,
+            18
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        },
+        {
+          "bytes": [
+            51,
+            53
+          ],
+          "start": [
+            5,
+            16
+          ],
+          "end": [
+            5,
+            17
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "crlf",
+      "source": "intro\r\n\r\n- [x](https://ex\u0430mple.org)\r\n\r\n[a]: https://ex\u0430mple.org\r\n",
+      "source_bytes": 67,
+      "source_sha256": "66d67f1151bb5c97044c5bfdb1f9ff8086644d2a1edcaa2df32174ea07cfa29c",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            25,
+            27
+          ],
+          "start": [
+            3,
+            17
+          ],
+          "end": [
+            3,
+            18
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        },
+        {
+          "bytes": [
+            55,
+            57
+          ],
+          "start": [
+            5,
+            16
+          ],
+          "end": [
+            5,
+            17
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "disabled",
+      "source": "<https://ex\u0430mple.org>\n",
+      "source_bytes": 23,
+      "source_sha256": "6a5c8e6dc419bf5fed3254abb88e9beb805873791b701158e026e8c02458e1c7",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": false
+      },
+      "findings": [],
+      "problems": []
+    }
+  ],
+  "invalid_configurations": [
+    {
+      "name": "url",
+      "yaml": "MD095: {enabled: true, allowed_hosts: ['https://example.org']}",
+      "path": "rules.MD095.allowed_hosts[0]"
+    },
+    {
+      "name": "leading-space",
+      "yaml": "MD095: {enabled: true, allowed_hosts: [' example.org']}",
+      "path": "rules.MD095.allowed_hosts[0]"
+    },
+    {
+      "name": "trailing-space",
+      "yaml": "MD095: {enabled: true, allowed_hosts: [example.org, 'example.org ']}",
+      "path": "rules.MD095.allowed_hosts[1]"
+    },
+    {
+      "name": "wildcard",
+      "yaml": "MD095: {enabled: true, allowed_hosts: ['*.example.org']}",
+      "path": "rules.MD095.allowed_hosts[0]"
+    },
+    {
+      "name": "port",
+      "yaml": "MD095: {enabled: true, allowed_hosts: ['example.org:443']}",
+      "path": "rules.MD095.allowed_hosts[0]"
+    },
+    {
+      "name": "userinfo",
+      "yaml": "MD095: {enabled: true, allowed_hosts: ['user@example.org']}",
+      "path": "rules.MD095.allowed_hosts[0]"
+    },
+    {
+      "name": "path",
+      "yaml": "MD095: {enabled: true, allowed_hosts: [example.org/path]}",
+      "path": "rules.MD095.allowed_hosts[0]"
+    },
+    {
+      "name": "empty",
+      "yaml": "MD095: {enabled: true, allowed_hosts: ['']}",
+      "path": "rules.MD095.allowed_hosts[0]"
+    },
+    {
+      "name": "empty-label",
+      "yaml": "MD095: {enabled: true, allowed_hosts: [example..org]}",
+      "path": "rules.MD095.allowed_hosts[0]"
+    },
+    {
+      "name": "invalid-punycode",
+      "yaml": "MD095: {enabled: true, allowed_hosts: [xn--a.org]}",
+      "path": "rules.MD095.allowed_hosts[0]"
+    },
+    {
+      "name": "disabled-invalid",
+      "yaml": "MD095: {enabled: false, allowed_hosts: ['*.example.org']}",
+      "path": "rules.MD095.allowed_hosts[0]"
+    },
+    {
+      "name": "scalar",
+      "yaml": "MD095: {enabled: true, allowed_hosts: example.org}",
+      "path": "rules.MD095.allowed_hosts"
+    },
+    {
+      "name": "number",
+      "yaml": "MD095: {enabled: true, allowed_hosts: [1]}",
+      "path": "rules.MD095.allowed_hosts[0]"
+    },
+    {
+      "name": "null",
+      "yaml": "MD095: {enabled: true, allowed_hosts: null}",
+      "path": "rules.MD095.allowed_hosts"
+    },
+    {
+      "name": "unknown-option",
+      "yaml": "MD095: {unknown: true}",
+      "path": "rules.MD095.unknown"
+    },
+    {
+      "name": "enabled-string",
+      "yaml": "MD095: {enabled: \"true\"}",
+      "path": "rules.MD095.enabled"
+    }
+  ]
+}
