@@ -38,7 +38,9 @@ Options may appear before or after paths. Use -- for dash-prefixed paths.
 Exit 0/10 describes saved content (candidate content for --dry-run).
 Incomplete analysis returns 15; apply works on Linux, macOS and Windows.
 Usage returns 11, configuration 12, I/O 13 and internal failures 14.
-MD047 corrects safe final-newline changes; ambiguous contexts remain manual.
+MD047 corrects safe final-newline changes and MD009 corrects trailing whitespace:
+it removes a suffix, or normalizes a real hard break to hard_break_spaces. Ambiguous
+contexts stay manual and appear under deferred_fixes.
 Text/JSON include preview diffs; editor formats report remaining findings only.
 VS Code unlocated errors and both editor formats' recovery outcomes use stderr.
 Run GitHub output from the checkout root; invocation CWD declares path authority.
@@ -422,11 +424,16 @@ func appendFixDecisions(ctx context.Context, budget *parser.OperationBudget, out
 	if view.RuntimeRollback && runtimeReason != "" {
 		rollback = runtimeReason
 	}
-	reasons := func(decision fix.Decision) []fix.Reason {
+	// A later round re-decides everything still open, so only the round that saw the
+	// retained content describes what stays deferred.
+	reasons := func(attempt fix.Attempt, decision fix.Decision) []fix.Reason {
 		if decision.Accepted {
 			if rollback != "" {
 				return []fix.Reason{{Code: rollback}}
 			}
+			return nil
+		}
+		if attempt.Source != view.Candidate {
 			return nil
 		}
 		return decision.Reasons
@@ -435,7 +442,7 @@ func appendFixDecisions(ctx context.Context, budget *parser.OperationBudget, out
 	total := 0
 	for _, attempt := range view.Attempts {
 		for _, decision := range attempt.Decisions {
-			total += len(reasons(decision))
+			total += len(reasons(attempt, decision))
 		}
 	}
 	omit := func(err error) error {
@@ -447,7 +454,7 @@ func appendFixDecisions(ctx context.Context, budget *parser.OperationBudget, out
 	for _, attempt := range view.Attempts {
 		count := 0
 		for _, decision := range attempt.Decisions {
-			count += len(reasons(decision))
+			count += len(reasons(attempt, decision))
 		}
 		if count == 0 {
 			continue
@@ -480,7 +487,7 @@ func appendFixDecisions(ctx context.Context, budget *parser.OperationBudget, out
 		lines := parser.NewLineIndex(attempt.Source)
 		snapshot := attemptIdentity(view, attempt)
 		for _, decision := range attempt.Decisions {
-			for _, reason := range reasons(decision) {
+			for _, reason := range reasons(attempt, decision) {
 				a, err := lines.PositionBounded(ctx, budget, decision.Group.Anchor.Start())
 				if err != nil {
 					return omit(err)

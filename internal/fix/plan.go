@@ -38,11 +38,14 @@ type Edit struct {
 
 // Group is producer input. ID is a stable, unique producer provenance identifier.
 // Anchor is the original diagnostic span; permission is checked at its start.
+// DeferReason names why a group without edits is withheld; the planner reports it
+// instead of empty-group. It grants nothing to a group that has edits.
 type Group struct {
 	ID, Rule, Provenance string
 	Anchor               parser.Span
 	Edits                []Edit
 	Requirements         []Requirement
+	DeferReason          string
 }
 type Reason struct {
 	Code    string
@@ -282,6 +285,12 @@ func Plan(ctx context.Context, parsed parser.ParseResult, state engine.Directive
 		}
 		if len(g.Edits) == 0 {
 			why = "empty-group"
+			if g.DeferReason != "" {
+				why = g.DeferReason
+			}
+		}
+		if len(g.Edits) > 0 && g.DeferReason != "" {
+			why = "invalid-deferral"
 		}
 		if len(g.Requirements) == 0 {
 			why = "preservation-unresolved"

@@ -39,6 +39,9 @@ func (e *reportingStopped) Unwrap() error { return e.cause }
 // reserves its worst-case complete source-prefix cost, so distinct positions on
 // one long line cannot cause unaccounted quadratic scanning. The small bounded
 // cache helps repeated endpoints without allocating in proportion to findings.
+// A lint target's projector sets lineCost and reserves the conversion's actual
+// search and line-prefix cost instead, so a line-oriented inventory on one target
+// does not pay for the whole source per finding.
 type projector struct {
 	ctx       context.Context
 	budget    *parser.OperationBudget
@@ -48,6 +51,7 @@ type projector struct {
 	cached    map[int]parser.Position
 	stop      error
 	strict    bool // MD087 evidence cannot spend the reporting reserve
+	lineCost  bool
 }
 
 func (p *projector) checkpoint(units int64) error {
@@ -101,7 +105,11 @@ func (p *projector) position(offset int) (parser.Position, error) {
 		}
 		return position, nil
 	}
-	if err := p.checkpoint(int64(p.source.Len()) + 1); err != nil {
+	work := int64(p.source.Len())
+	if p.lineCost {
+		work = p.index.PositionWork(offset)
+	}
+	if err := p.checkpoint(work + 1); err != nil {
 		return parser.Position{}, err
 	}
 	position, err := p.index.Position(offset)

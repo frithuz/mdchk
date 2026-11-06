@@ -35,9 +35,11 @@ func TestMD009AnalysisFixtures(t *testing.T) {
 		SizeBytes                                 int
 
 		Expected []struct {
-			Range   []int
-			Source  string
-			Message string
+			Range           []int
+			Source          string
+			Message         string
+			FixAvailable    bool
+			FixAvailableGFM *bool
 		}
 	}
 	if err := json.Unmarshal(data, &fixtures); err != nil {
@@ -73,7 +75,11 @@ func TestMD009AnalysisFixtures(t *testing.T) {
 				for i, w := range f.Expected {
 					d := out.Diagnostics[i]
 					got := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD009" || d.FixAvailable || d.Message != w.Message {
+					fixAvailable := w.FixAvailable
+					if flavor == "gfm" && w.FixAvailableGFM != nil {
+						fixAvailable = *w.FixAvailableGFM
+					}
+					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD009" || d.FixAvailable != fixAvailable || d.Message != w.Message {
 						t.Fatal(got, d, w)
 					}
 				}
@@ -116,7 +122,7 @@ func TestMD009CatalogOptionsDefaultAndDirectives(t *testing.T) {
 		t.Fatal("availability")
 	}
 	for _, m := range r.Metadata() {
-		if m.ID == "MD009" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.PlannedFix || len(m.Options) != 3) {
+		if m.ID == "MD009" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.ImplementedFix || len(m.Options) != 3) {
 			t.Fatal(m)
 		}
 	}
@@ -135,7 +141,7 @@ func TestMD009CatalogOptionsDefaultAndDirectives(t *testing.T) {
 		s := md009Settings()
 		delete(s, "MD009")
 		out := analyzeHeadings(t, r, "a \n", s, engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
-		if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD009" || out.Diagnostics[0].FixAvailable {
+		if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD009" || !out.Diagnostics[0].FixAvailable {
 			t.Fatal(out)
 		}
 		for _, tc := range []struct {

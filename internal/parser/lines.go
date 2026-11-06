@@ -146,6 +146,18 @@ func (index LineIndex) positionAt(offset int) (Position, error) {
 	return Position{Line: n + 1, Column: utf8.RuneCountInString(text[line.start:offset]) + 1}, nil
 }
 
+// PositionWork is the cost PositionBounded charges for one conversion: both binary
+// searches plus the line-prefix bytes it decodes. Callers meter Position with it.
+func (index LineIndex) PositionWork(offset int) int64 {
+	work := int64(2*bits.Len(uint(len(index.lines))) + 16)
+	if len(index.lines) > 0 && offset >= 0 && offset <= index.source.Len() {
+		if n := sort.Search(len(index.lines), func(i int) bool { return index.lines[i].start > offset }) - 1; n >= 0 {
+			work += int64(offset - index.lines[n].start)
+		}
+	}
+	return work
+}
+
 // PositionBounded performs the same conversion as Position, charging the caller's
 // existing operation budget before binary searches and Unicode prefix decoding.
 // The charge is O(log line-count + actual line-prefix bytes), not source size.

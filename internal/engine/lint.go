@@ -231,7 +231,7 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 		if !syntaxReliable {
 			out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Reason: result.ParserUncertain, Message: "The requested syntax is not completely recognized."})
 		}
-		projection := projector{ctx: ctx, budget: budget, reporting: reporting, source: in.source, index: index}
+		projection := projector{ctx: ctx, budget: budget, reporting: reporting, source: in.source, index: index, lineCost: true}
 		for _, uncertainty := range parsed.Uncertainty {
 			if uncertainty.Reason == parser.UnterminatedFrontmatter {
 				if err := appendDirectiveNote(&out, in.path, snap, &projection, DirectiveNote{Code: string(parser.UnterminatedFrontmatter), Message: "Frontmatter has no closing delimiter; its original region remains protected and analysis is incomplete.", Span: uncertainty.Region}); err != nil {
