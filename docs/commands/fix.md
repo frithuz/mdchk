@@ -117,8 +117,8 @@ Exit code `0` means analysis completed and no violations remain after correction
 
 Errors can occur after other files have changed. Inspect both successful changes and failures before retrying. If a file changes during fixing, mdchk refuses stale edits rather than overwriting the newer contents. See the [exit code guide](../exit-codes.md) for usage, configuration, I/O, and internal error codes.
 
-An invalid original UTF-8 target retains one encoding I/O error and receives no
-content correction. Independent valid targets continue analysis and eligible
+An invalid original UTF-8 target retains its encoding I/O errors and any retention
+omission, and receives no content correction. Independent valid targets continue analysis and eligible
 MD047 correction; proof-dependent components remain unchanged and explicitly
 unavailable. Preview reports only independently approved proposals; supported
 apply reports actual saved snapshots. Operating systems outside Linux, macOS and

@@ -52,7 +52,10 @@ JSON output is one object, without terminal decorations. The normative
 [complete lint example](contracts/results/violations-lint.json),
 [preview example](contracts/results/fix-preview.json),
 [partial-write example](contracts/results/partial-project-writes.json), and
-[inspection example](contracts/results/inspection-invalid-utf8.json).
+[inspection example](contracts/results/inspection-invalid-utf8.json). The
+[multiple-error](contracts/results/invalid-utf8-multiple.json) and
+[capped](contracts/results/invalid-utf8-truncated.json) examples show invalid
+UTF-8 records.
 
 Every result contains `schema_version: 1`, `operation`, `mode`, `status`, `complete`,
 and arrays `checked_files`, `skipped_files`, `files`, `diagnostics`, `coverage`,
@@ -166,6 +169,10 @@ names. All fields visibly escape CR/LF, terminal controls, Unicode line separato
 and bidi controls. The one-based columns count Unicode scalars, with tabs counting
 one; no editor-specific UTF-16 conversion is applied. Located configuration
 errors use their stable public error code; located coverage uses `coverage`.
+Each retained `invalid-utf8` error is also a located line, such as
+`bad.md:1:4: error: invalid-utf8: Invalid UTF-8 byte sequence 0xE2 0x82 at byte offset 3.`
+Other I/O errors stay on stderr.
+
 Location-free errors and coverage, interruptions, omissions, incomplete status,
 and necessary partial-write/recovery evidence go to stderr. Both output streams
 share one escaped-byte budget and keep operation-specific exit precedence.
@@ -308,6 +315,12 @@ known empty envelope. After discovery, an infeasible actual target manifest
 stops before acquisition/analysis as incomplete `15`, with exact `/files` and
 `/coverage` omissions. The final report can use the full response budget.
 Reporting pre-encodes an essential partial fallback for its independent deadline.
+Past a file's first error, excess `invalid-utf8` records are the first thing
+reduced, with an exact path-less `/errors` omission. Separately, a file with more
+invalid sequences than the [retention caps](engineering/limits.md#encoding-error-retention)
+gets a `/errors` omission naming that file and the exact count. That omission makes
+the result `complete: false`, but on its own a capped `inspect` still exits `0` with
+status `inspected`; path-less omissions and interruptions still give `15`.
 A failed output write,
 including a short write, returns `13` unless an established internal error
 requires `14`; a failed delivery can leave a partial report.

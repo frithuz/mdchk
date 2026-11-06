@@ -52,8 +52,9 @@ directory without a file). Missing or unreadable targets and invalid UTF-8 retur
 `13`; successful selection with no targets, including excluded-only input,
 returns `11`. Independent readable targets are retained even when another fails.
 UTF-8 validation is mandatory regardless of rule enablement; MD094 only controls
-error attribution. It reports the first invalid sequence's original byte offset
-and Unicode position, retaining the original size and SHA-256 snapshot identity.
+error attribution. It reports each invalid sequence's original byte offset, byte
+span and position, up to 1,000 per file and 10,000 per run with an exact omission
+for the rest, retaining the original size and SHA-256 snapshot identity.
 
 The admitted plan runs the internal parser and available registered checks with
 the original source and validated options. MD047 terminating-newline, MD001 heading-increment, MD003 heading-style, MD004 bullet-marker analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD018 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading delimiter spacing
