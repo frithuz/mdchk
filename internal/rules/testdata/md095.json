@@ -1246,6 +1246,207 @@
       "problems": []
     },
     {
+      "name": "special-extra-slash",
+      "source": "[x](https:///ex\u0430mple.org/)\n",
+      "source_bytes": 28,
+      "source_sha256": "24780aaa101656526dede6819eb08c8d8db1f0a5840279119e8d1e9049f708d3",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            15,
+            17
+          ],
+          "start": [
+            1,
+            16
+          ],
+          "end": [
+            1,
+            17
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "special-many-slashes",
+      "source": "[x](https:////ex\u0430mple.org)\n",
+      "source_bytes": 28,
+      "source_sha256": "9478cba6c3ccf9f26b3cec16f813afb11bef22db6b43d4540bf9f24ff1461102",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            16,
+            18
+          ],
+          "start": [
+            1,
+            17
+          ],
+          "end": [
+            1,
+            18
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "special-no-slash",
+      "source": "[x](https:ex\u0430mple.org)\n",
+      "source_bytes": 24,
+      "source_sha256": "378f4a268c05357f4b6d8ee41b756349f4a652d940b784738d66bcb8d687f894",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            12,
+            14
+          ],
+          "start": [
+            1,
+            13
+          ],
+          "end": [
+            1,
+            14
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "special-backslashes",
+      "source": "[x](https:\\\\ex\u0430mple.org)\n",
+      "source_bytes": 26,
+      "source_sha256": "2a88c39baea8c467927b250c831e2b94451d54a48b3a3738c863fa01b6e9d0e2",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            14,
+            16
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "special-backslash-ends-authority",
+      "source": "[x](https://ex\u0430mple.org\\\\@good.org)\n",
+      "source_bytes": 37,
+      "source_sha256": "157175d3feb996456d4d8a7ec59fd22da11d915ca7d8666b819d6d50087ce369",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            14,
+            16
+          ],
+          "start": [
+            1,
+            15
+          ],
+          "end": [
+            1,
+            16
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "protocol-relative-extra-slash",
+      "source": "[x](///ex\u0430mple.org)\n",
+      "source_bytes": 21,
+      "source_sha256": "8545cff57f23fe3a856fb9ccebff4be57e73341472c26816475bab1657722beb",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            9,
+            11
+          ],
+          "start": [
+            1,
+            10
+          ],
+          "end": [
+            1,
+            11
+          ],
+          "message": "Hostname \"ex\u0430mple.org\" contains lookalike characters: U+0430 looks like \"a\"."
+        }
+      ],
+      "problems": []
+    },
+    {
+      "name": "special-empty-host",
+      "source": "[x](https:///) [y](file:///ex\u0430mple.org) [z](git:///ex\u0430mple.org)\n",
+      "source_bytes": 66,
+      "source_sha256": "58d506031502e15898cb2c9727c8c0cb0daaaf4d0400f6e30a624d5e21225903",
+      "flavors": [
+        "commonmark",
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [],
+      "problems": []
+    },
+    {
       "name": "bare-email",
       "source": "u@ex\u0430mple.org\n",
       "source_bytes": 15,

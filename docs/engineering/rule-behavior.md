@@ -835,7 +835,10 @@ MD095 reads the shared parsed destination inventory: inline Link and Image desti
 autolinks, GFM extended autolinks and each reference definition once; reference-origin uses are
 owned by their definition. Prose, code, HTML blocks, raw HTML regions, raw HTML attributes and
 frontmatter are excluded. The host is the authority after the last `@` of a scheme `://` or `//`
-destination, before the last `:` port; bracketed, IPv4 (decimal or `0x` final label) and empty
+destination, before the last `:` port. For the special schemes `http`, `https`, `ws`, `wss` and
+`ftp`, and for a destination opening with two or more slashes, any run of `/` and `\` before the
+authority is skipped and `\` also ends it, as WHATWG URL parsing does, so `https:///host` and
+`https:\\host` are checked like `https://host`; bracketed, IPv4 (decimal or `0x` final label) and empty
 hosts are skipped, and a non-digit port or unterminated `[` is an invalid authority. The host is
 percent-decoded once. A host that is then ASCII with no `xn--` label is not processed further;
 every other host goes through the pinned UTS #46 canonicalization. Each finding reads

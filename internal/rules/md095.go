@@ -32,22 +32,41 @@ const (
 // protocol-relative destination. User information is everything up to the
 // last "@"; the port follows the last ":". Bracketed and IPv4 literals, empty
 // hosts and every other destination have no host to check.
+//
+// Special schemes (http, https, ws, wss, ftp) and protocol-relative
+// destinations follow WHATWG URL parsing, as browsers do: any run of "/" and
+// "\" after the scheme, or a leading run of two or more, is skipped, and "\"
+// also ends the authority. Otherwise "https:///host" would hide its host.
 func md095SplitAuthority(destination string) (out md095Authority) {
-	start := 0
-	if strings.HasPrefix(destination, "//") {
-		start = 2
+	slashes := func(i int) int {
+		for i < len(destination) && (destination[i] == '/' || destination[i] == '\\') {
+			i++
+		}
+		return i
+	}
+	start, special := 0, true
+	if n := slashes(0); n >= 2 {
+		start = n
 	} else {
 		i := 0
 		for i < len(destination) && (asciiAlpha(destination[i]) || i > 0 && (destination[i] >= '0' && destination[i] <= '9' || destination[i] == '+' || destination[i] == '-' || destination[i] == '.')) {
 			i++
 		}
-		if i == 0 || !strings.HasPrefix(destination[i:], "://") {
+		if i == 0 || i >= len(destination) || destination[i] != ':' {
 			return out
 		}
-		start = i + 3
+		switch strings.ToLower(destination[:i]) {
+		case "http", "https", "ws", "wss", "ftp":
+			start = slashes(i + 1)
+		default:
+			if !strings.HasPrefix(destination[i:], "://") {
+				return out
+			}
+			start, special = i+3, false
+		}
 	}
 	end := start
-	for end < len(destination) && destination[end] != '/' && destination[end] != '?' && destination[end] != '#' {
+	for end < len(destination) && destination[end] != '/' && destination[end] != '?' && destination[end] != '#' && (!special || destination[end] != '\\') {
 		end++
 	}
 	out.authorityStart, out.authorityEnd = start, end
