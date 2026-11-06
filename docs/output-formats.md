@@ -320,7 +320,9 @@ reduced, with an exact path-less `/errors` omission. Separately, a file with mor
 invalid sequences than the [retention caps](engineering/limits.md#encoding-error-retention)
 gets a `/errors` omission naming that file and the exact count. That omission makes
 the result `complete: false`, but on its own a capped `inspect` still exits `0` with
-status `inspected`; path-less omissions and interruptions still give `15`.
+status `inspected`; path-less omissions and interruptions still give `15`. If a
+lint or fix text or JSON report still does not fit, those per-file omissions become
+one path-less `/errors` omission with their exact total.
 A failed output write,
 including a short write, returns `13` unless an established internal error
 requires `14`; a failed delivery can leave a partial report.

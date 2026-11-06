@@ -262,6 +262,13 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 		if err != nil {
 			return encodedReport{}, err
 		}
+		if !ok && collapseEncodingRetention(&out) {
+			engine.FinalizeLintResult(&out)
+			ok, err = fits()
+			if err != nil {
+				return encodedReport{}, err
+			}
+		}
 		if !ok {
 			summarizeErrors(&out)
 			engine.FinalizeLintResult(&out)
@@ -597,6 +604,30 @@ func reduceEncodingErrors(ctx context.Context, out result.Result, format string,
 	return best, nil
 }
 
+// collapseEncodingRetention replaces the file-scoped retention omissions with one
+// path-less omission holding their exact total. They grow with the number of
+// invalid files, so they must not be what stops a report from fitting. It reports
+// whether there was anything to collapse.
+func collapseEncodingRetention(out *result.Result) bool {
+	total, found := 0, false
+	kept := make([]result.Omission, 0, len(out.Omissions))
+	for _, o := range out.Omissions {
+		if !o.EncodingRetention() {
+			kept = append(kept, o)
+			continue
+		}
+		found = true
+		if o.Count != nil {
+			total += *o.Count
+		}
+	}
+	if !found {
+		return false
+	}
+	out.Omissions = append(kept, result.Omission{Section: "/errors", Reason: "output-limit", Message: "invalid UTF-8 records past the retention cap omitted; per-file counts combined to satisfy response-bytes", Count: &total})
+	return true
+}
+
 func deadlineReport(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
 	if format == "github" {
 		return reservedEditorReport(ctx, original, limits, encodeGitHub)
@@ -644,6 +675,13 @@ func deadlineReport(ctx context.Context, original result.Result, format string, 
 		if err != nil {
 			return encodedReport{}, err
 		}
+		n, err = reportSize(ctx, out, format)
+		if err != nil {
+			return encodedReport{}, err
+		}
+	}
+	if n > reportLimit(limits, "response-bytes") && collapseEncodingRetention(&out) {
+		engine.FinalizeLintResult(&out)
 		n, err = reportSize(ctx, out, format)
 		if err != nil {
 			return encodedReport{}, err

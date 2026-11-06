@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"slices"
 	"strings"
 	"testing"
@@ -175,6 +176,72 @@ func TestEncodingReductionLaterReductionsStillApply(t *testing.T) {
 	}
 	if count := encodingReductionOmission(t, got.out); count != 999 {
 		t.Fatal(count)
+	}
+}
+
+// Each file's first error and outcome fit, so the retention omissions must not be
+// what empties the report.
+func TestEncodingRetentionOmissionsCollapseBeforeReportFails(t *testing.T) {
+	sources := map[string]int{}
+	for i := range 200 {
+		sources[fmt.Sprintf("f%03d.md", i)] = 1100
+	}
+	for _, format := range []string{"json", "text"} {
+		r := encodingResult("lint", sources)
+		firsts := cloneReport(r)
+		firsts.Errors = slices.DeleteFunc(firsts.Errors, func(e result.Error) bool { return *e.ByteOffset != 0 })
+		firsts.Coverage = []result.Coverage{}
+		firsts.Omissions = []result.Omission{}
+		engine.FinalizeLintResult(&firsts)
+		essential, err := reportSize(context.Background(), firsts, format)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// Room for the fixed notices, but not for 200 per-file omissions.
+		bound := essential + 2048
+		got, err := buildReportCore(context.Background(), r, format, map[string]int64{"response-bytes": bound})
+		if err != nil {
+			t.Fatal(format, err)
+		}
+		if len(got.data) == 0 || int64(len(got.data)) > bound || lintExit(got.out) != 13 {
+			t.Fatal(format, len(got.data), bound, lintExit(got.out))
+		}
+		retained, total := 0, 0
+		for _, e := range got.out.Errors {
+			if *e.ByteOffset == 0 {
+				retained++
+			}
+		}
+		for _, o := range got.out.Omissions {
+			if o.EncodingRetention() {
+				t.Fatal(format, "file-scoped omission survived", o)
+			}
+			if strings.HasPrefix(o.Message, "invalid UTF-8 records past the retention cap") {
+				total += *o.Count
+			}
+		}
+		if retained != 200 || total != 200*100 {
+			t.Fatal(format, retained, total)
+		}
+		if format == "json" {
+			validateEmitted(t, t.TempDir(), got.data)
+		}
+		deadline, err := deadlineReport(context.Background(), r, format, map[string]int64{"response-bytes": bound})
+		if err != nil || len(deadline.data) == 0 || int64(len(deadline.data)) > bound {
+			t.Fatal(format, err, len(deadline.data), bound)
+		}
+	}
+}
+
+// A report that fits keeps the omission for each file.
+func TestEncodingRetentionOmissionsSurviveWhenTheyFit(t *testing.T) {
+	r := encodingResult("lint", map[string]int{"a.md": 1100, "b.md": 1100})
+	got, err := buildReportCore(context.Background(), r, "json", map[string]int64{"response-bytes": 1 << 20})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got.out.Omissions) != 2 || got.out.Omissions[0].Path != "a.md" || got.out.Omissions[1].Path != "b.md" {
+		t.Fatal(got.out.Omissions)
 	}
 }
 
