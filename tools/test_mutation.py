@@ -164,6 +164,57 @@ class MutationHarness(unittest.TestCase):
             self.assertEqual(lived[0]["identity"], rows[0]["identity"],
                              "review identity must remain stable when test outcomes change")
 
+    def test_flat_area_report_keeps_package_file(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "internal/rules").mkdir(parents=True)
+            (root / "internal/rules/md001.go").write_text("a > b\n")
+            path = root / "report.json"
+            path.write_text(json.dumps({"go_module": "github.com/frithuz/mdchk", "files": [
+                {"file_name": "md001.go", "mutations": [
+                    {"type": "CONDITIONALS_BOUNDARY", "status": "KILLED", "line": 1, "column": 3}]}]}))
+            _, rows = MUTATION.validate_report(path, "rules", root)
+            self.assertEqual(rows[0]["file"], "internal/rules/md001.go")
+
+    def test_nested_area_report_follows_package_path(self):
+        with tempfile.TemporaryDirectory() as folder, \
+                patch.dict(MUTATION.AREAS, {"rules/md001": ("md001.go",)}):
+            root = Path(folder)
+            (root / "internal/rules/md001").mkdir(parents=True)
+            (root / "internal/rules/md001/md001.go").write_text("a > b\n")
+            path = root / "report.json"
+            valid = {"go_module": "github.com/frithuz/mdchk", "files": [{"file_name": "md001.go", "mutations": [
+                {"type": "CONDITIONALS_BOUNDARY", "status": "KILLED", "line": 1, "column": 3}]}]}
+            path.write_text(json.dumps(valid))
+            _, rows = MUTATION.validate_report(path, "rules/md001", root)
+            self.assertEqual(rows[0]["file"], "internal/rules/md001/md001.go")
+            self.assertEqual(rows[0]["expression"], "a > b")
+            valid["files"][0]["file_name"] = "parser.go"
+            path.write_text(json.dumps(valid))
+            with self.assertRaises(ValueError):
+                MUTATION.validate_report(path, "rules/md001", root)
+
+    def test_area_label_replaces_separators(self):
+        self.assertEqual(MUTATION.area_label("rules/md001"), "rules-md001")
+        for area in ("rules", "config", "fix"):
+            self.assertEqual(MUTATION.area_label(area), area)
+
+    def test_replay_command_follows_package_path(self):
+        self.assertEqual(MUTATION.replay_command("fix", "TestX"),
+                         ["go", "test", "-p", "2", "./internal/fix", "-run", "^TestX$", "-count=1", "-v"])
+        self.assertEqual(MUTATION.replay_command("rules/md001", "TestX"),
+                         ["go", "test", "-p", "2", "./internal/rules/md001", "-run", "^TestX$", "-count=1", "-v"])
+
+    def test_area_rejects_unsafe_keys(self):
+        for area in ("", "/rules", "../rules", "rules/../config", "rules//md001", "rules/", "./rules",
+                     "rules\\md001"):
+            with self.subTest(area=area), self.assertRaises(ValueError):
+                MUTATION.area_package(area)
+        self.assertEqual(MUTATION.area_package("rules/md001"), "internal/rules/md001")
+        with patch.dict(MUTATION.AREAS, {"../rules": ("md001.go",)}), self.assertRaises(ValueError):
+            MUTATION.validate_areas()
+        MUTATION.validate_areas()
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
