@@ -214,6 +214,13 @@ does not fit, the per-file retention omissions are replaced by one path-less
 `/errors` omission with their exact total, because they grow with the number of
 invalid files.
 
+The first-error guarantee is for retention and these reductions. If a lint text or
+JSON report's essential records still exceed `response-bytes`, lint emits a
+[minimal report](results.md#shared-result-schema): located errors become category
+summaries with an exact `/errors` omission, and JSON can also omit `checked_files`
+and file snapshots. File paths and outcomes stay, which the pre-analysis manifest
+check reserves room for. A report that fits never reaches this step.
+
 The scan is one forward pass charged to `work-units`: at least one unit per source
 byte and a constant per retained record, in addition to the indexing reserve.
 

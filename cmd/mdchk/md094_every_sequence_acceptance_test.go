@@ -400,6 +400,40 @@ func TestCompiledFixMD094TightResponseLimit(t *testing.T) {
 	validateConfigurationOperationJSON(t, []byte(stdout), "inspect")
 }
 
+// A bound under each file's first error still gets a report, not just an exit code.
+func TestCompiledFixMD094MinimalLintReport(t *testing.T) {
+	t.Parallel()
+	binary := sharedExecutable(t)
+	files, targets := map[string][]byte{}, []string{}
+	for i := range 1000 {
+		name := fmt.Sprintf("f%04d.md", i)
+		files[name] = bytes.Repeat([]byte{0xFF}, 1100)
+		targets = append(targets, name)
+	}
+	root := md094Project(t, md094Configuration(""), files)
+	lint := append([]string{"lint"}, targets...)
+	for _, bound := range []int{230000, 260000, 320000, 500000, 680000} {
+		limit := fmt.Sprintf("--limit=response-bytes=%d", bound)
+		status, stdout, stderr := md094Streams(t, binary, root, append(slices.Clone(lint), "--format=json", limit)...)
+		if status != 13 || stderr != "" || len(stdout) == 0 || len(stdout) > bound {
+			t.Fatal(bound, status, stderr, len(stdout))
+		}
+		out := validateConfigurationOperationJSON(t, []byte(stdout), "lint")
+		if len(out.Files) != 1000 || out.Complete || out.Status != "error" {
+			t.Fatal(bound, len(out.Files), out.Complete, out.Status)
+		}
+		for i, f := range out.Files {
+			if f.Path != targets[i] || f.Analysis != "failed" {
+				t.Fatal(bound, f)
+			}
+		}
+		status, stdout, stderr = md094Streams(t, binary, root, append(slices.Clone(lint), limit)...)
+		if status != 13 || stderr != "" || !strings.Contains(stdout, "/errors") || len(stdout) > bound {
+			t.Fatal("text", bound, status, stderr, len(stdout))
+		}
+	}
+}
+
 // Per-file omissions grow with the number of invalid files. They must not be what
 // empties a report whose first errors and file outcomes would fit.
 func TestCompiledFixMD094ManyFilesStillReport(t *testing.T) {

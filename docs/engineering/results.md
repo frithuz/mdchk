@@ -221,9 +221,17 @@ Read-only configuration reports can reduce oversized known `files` and
 `checked_files` collections with exact omissions. If error identities alone
 exceed the bound, explicit category/count summaries preserve all encountered
 error categories and precedence, with `/errors` omissions for the replaced
-located details. This is configuration-specific; lint's pre-admitted essential
-manifest and future write outcomes are not discarded. Response quotas are
-interruptions, while actual output-delivery failures remain IO.
+located details. Those `files` and `checked_files` reductions are
+configuration-specific; future write outcomes are not discarded.
+
+Lint has a last-resort minimal text and JSON report for when its essential
+records still exceed the bound, such as many invalid files under a small
+`response-bytes`. Located errors become category summaries that keep the exit
+precedence, with an exact `/errors` omission, so a file's first `invalid-utf8`
+error can be absent at these bounds. Other detail families are omitted whole. JSON
+then omits `checked_files` and, if needed, file snapshots, with exact omissions.
+Every file record keeps its path and outcome. Response quotas are interruptions,
+while actual output-delivery failures remain IO.
 
 Configuration validation additionally pre-encodes a fixed-record emergency result
 before starting timed full-fallback/detail construction. Error-category counts

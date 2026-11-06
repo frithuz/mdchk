@@ -148,11 +148,119 @@ func buildReport(ctx context.Context, original result.Result, format string, lim
 	// on optional detail counting. If counting/encoding reaches the deadline,
 	// this complete, already encoded envelope remains available for delivery.
 	fallback, fallbackErr := deadlineReport(ctx, original, format, limits)
+	if errors.Is(fallbackErr, errReportBudget) {
+		fallback, fallbackErr = minimalLintReport(ctx, original, format, limits, result.Interruption{Reason: "deadline-exceeded", Phase: "reporting", Message: "reporting-time exhausted while constructing result details"})
+	}
 	encoded, err := buildReportCore(ctx, original, format, limits)
+	if errors.Is(err, errReportBudget) {
+		encoded, err = minimalLintReport(ctx, original, format, limits, result.Interruption{Reason: "limit-exceeded", Phase: "reporting", Message: "essential detail records exceed response-bytes; whole records omitted"})
+	}
 	if err != nil && ctx.Err() != nil && fallbackErr == nil {
 		return fallback, nil
 	}
 	return encoded, err
+}
+
+// minimalLintReport is lint's last resort when each file's first error and outcome
+// do not fit, so an operator never gets an exit code with no explanation. Error
+// records become category summaries that keep exit precedence. JSON then gives up
+// checked_files, which files repeats, and file snapshots. File paths and outcomes
+// stay: the pre-analysis manifest check reserved room for those, so it is not a
+// builder for feasibility checks, which must still see the full essential report.
+func minimalLintReport(ctx context.Context, original result.Result, format string, limits map[string]int64, stop result.Interruption) (encodedReport, error) {
+	if original.Operation != "lint" {
+		return encodedReport{}, errReportBudget
+	}
+	if err := ctx.Err(); err != nil {
+		return encodedReport{}, err
+	}
+	bound := reportLimit(limits, "response-bytes")
+	out := cloneReport(original)
+	setReportLimits(&out, limits)
+	engine.FinalizeLintResult(&out)
+	omit := func(section, message string, count int) {
+		if count > 0 {
+			out.Omissions = append(out.Omissions, result.Omission{Section: section, Reason: "output-limit", Message: message, Count: &count})
+		}
+	}
+	const detail = "whole records omitted from the minimal report; the essential report exceeds response-bytes"
+	omit("/diagnostics", detail, len(out.Diagnostics))
+	omit("/suppressed_diagnostics", detail, len(out.SuppressedDiagnostics))
+	omit("/notes", detail, len(out.Notes))
+	omit("/coverage", detail, len(out.Coverage))
+	omit("/skipped_files", detail, len(out.SkippedFiles))
+	omit("/errors", "located error records replaced by category summaries; the essential report exceeds response-bytes", len(out.Errors))
+	collapseEncodingRetention(&out)
+	out.Diagnostics, out.Coverage, out.SkippedFiles = []result.Diagnostic{}, []result.Coverage{}, []result.SkippedFile{}
+	out.Notes, out.SuppressedDiagnostics = []json.RawMessage{}, []json.RawMessage{}
+	out.Errors = lintErrorSummaries(out.Errors)
+	out.Interruptions = append(out.Interruptions, stop)
+	engine.FinalizeLintResult(&out)
+	n, err := reportSize(ctx, out, format)
+	if err != nil {
+		return encodedReport{}, err
+	}
+	// Text prints neither field, and its summary line counts checked_files.
+	if n > bound && format == "json" {
+		omit("/checked_files", "checked paths omitted; files lists every target and its outcome", len(out.CheckedFiles))
+		out.CheckedFiles = []string{}
+		engine.FinalizeLintResult(&out)
+		if n, err = reportSize(ctx, out, format); err != nil {
+			return encodedReport{}, err
+		}
+	}
+	if n > bound && format == "json" {
+		count := 0
+		for i := range out.Files {
+			if out.Files[i].InputSnapshot != nil || out.Files[i].ResultSnapshot != nil {
+				out.Files[i].InputSnapshot, out.Files[i].ResultSnapshot = nil, nil
+				count++
+			}
+		}
+		omit("/files", "snapshot identities omitted from these file records; paths and outcomes remain", count)
+		engine.FinalizeLintResult(&out)
+		if n, err = reportSize(ctx, out, format); err != nil {
+			return encodedReport{}, err
+		}
+	}
+	if n > bound {
+		return encodedReport{}, errReportBudget
+	}
+	var data []byte
+	if format == "json" {
+		data, err = json.Marshal(out)
+		data = append(data, '\n')
+	} else {
+		var b bytes.Buffer
+		err = renderText(ctx, &b, out)
+		data = b.Bytes()
+	}
+	if err != nil {
+		return encodedReport{}, err
+	}
+	return encodedReport{data: data, out: out}, ctx.Err()
+}
+
+// lintErrorSummaries keeps one record per encountered category and scope, so a
+// summary cannot change the exit precedence or status the located errors had.
+func lintErrorSummaries(records []result.Error) []result.Error {
+	type key struct {
+		category result.ErrorCategory
+		scope    string
+	}
+	counts := map[key]int{}
+	for _, e := range records {
+		counts[key{e.Category, e.Scope}]++
+	}
+	summaries := []result.Error{}
+	for _, category := range []result.ErrorCategory{result.Usage, result.Configuration, result.IO, result.Internal} {
+		for _, scope := range []string{"operation", "observation"} {
+			if count := counts[key{category, scope}]; count > 0 {
+				summaries = append(summaries, result.Error{Category: category, Scope: scope, Code: "lint-error-summary", Message: fmt.Sprintf("%d encountered %s errors; located details omitted to satisfy response-bytes.", count, category)})
+			}
+		}
+	}
+	return summaries
 }
 
 func buildReportCore(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
