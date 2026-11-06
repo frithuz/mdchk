@@ -107,9 +107,10 @@ budget.
 
 The shared lint engine now processes these intervals before scheduling callbacks
 and calculating missing-rule coverage. The implementation lives in
-`internal/engine`. Configuration admission binds private immutable authority through the engine's
-consumer-owned policy interface. Direct registry inputs use their owned resolved
-settings with global permission enabled.
+`internal/engine`. Configuration admission binds private immutable authority
+through the engine's consumer-owned policy interface. Direct registry inputs use
+their owned resolved settings with global permission enabled. Production
+CommonMark directive capability is available on the shared engine path.
 
 Callbacks receive full original context and options. A validated finding's start
 anchor selects its state; crossing the interval end does not change attribution.
