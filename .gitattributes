@@ -9,5 +9,7 @@ internal/parser/testdata/gfm/profile/*.json -text
 tools/gfm_profile.py text eol=lf
 # Unicode IDNA sources and test vectors keep their pinned bytes on every host.
 internal/idna/testdata/unicode/17.0.0/*.txt -text -whitespace
+# Unicode confusables data keeps its pinned bytes on every host.
+internal/confusables/testdata/unicode/17.0.0/*.txt -text -whitespace
 # MD074 project fixtures keep their exact line endings, including CRLF.
 internal/rules/testdata/md074/** -text
