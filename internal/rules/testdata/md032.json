@@ -131,18 +131,6 @@
     "Expected": [
       {
         "Range": [
-          9,
-          9,
-          2,
-          3,
-          2,
-          3
-        ],
-        "Source": "",
-        "Side": "before"
-      },
-      {
-        "Range": [
           17,
           17,
           3,
@@ -275,20 +263,7 @@
   {
     "Name": "parent item blank",
     "Source": "- Outer\n  - One\n  \n  # H",
-    "Expected": [
-      {
-        "Range": [
-          10,
-          10,
-          2,
-          3,
-          2,
-          3
-        ],
-        "Source": "",
-        "Side": "before"
-      }
-    ]
+    "Expected": []
   },
   {
     "Name": "deep quote terminal",
@@ -847,6 +822,329 @@
         ],
         "Source": "",
         "Side": "after"
+      }
+    ]
+  },
+  {
+    "Name": "nested bullet in bullet",
+    "Source": "- a\n  - nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested bullet in ordered",
+    "Source": "1. a\n   - nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested ordered in bullet",
+    "Source": "- a\n  1. nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested ordered in ordered",
+    "Source": "1. a\n   1. nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested tab indent bullet parent",
+    "Source": "- a\n\t- nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested tab after marker and tab indent",
+    "Source": "-\ta\n\t- nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested tab indent ordered parent",
+    "Source": "1. a\n\t- nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested CRLF",
+    "Source": "- a\r\n  - nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested CR",
+    "Source": "- a\r  - nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested after multi-line paragraph",
+    "Source": "- a\n  b\n  - nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested after lazy continuation",
+    "Source": "- a\nb\n  - nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested after text on line after marker",
+    "Source": "-\n  a\n  - nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested in later sibling item",
+    "Source": "- x\n- a\n  - nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested after ATX heading",
+    "Source": "- # H\n  - nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested after setext heading",
+    "Source": "- H\n  ===\n  - nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested after task item text",
+    "Source": "- [ ] a\n  - nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested parent list in quote",
+    "Source": "> - a\n>   - nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested parent list in quote tab indent",
+    "Source": "> - a\n>\t- nested",
+    "Expected": []
+  },
+  {
+    "Name": "nested two levels",
+    "Source": "- a\n  - b\n    - c",
+    "Expected": []
+  },
+  {
+    "Name": "nested adjacent list groups",
+    "Source": "- a\n  - one\n  + two",
+    "Expected": []
+  },
+  {
+    "Name": "nested after table lines paragraph",
+    "Source": "- | a |\n  | - |\n  - nested",
+    "Flavor": "commonmark",
+    "Expected": []
+  },
+  {
+    "Name": "kept list in quote inside item",
+    "Source": "- > a\n  > - nested",
+    "Expected": [
+      {
+        "Range": [
+          10,
+          10,
+          2,
+          5,
+          2,
+          5
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "kept after item block quote",
+    "Source": "- > a\n  - nested",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          8,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "kept after item fenced code",
+    "Source": "- ```\n  x\n  ```\n  - nested",
+    "Expected": [
+      {
+        "Range": [
+          18,
+          18,
+          4,
+          3,
+          4,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "kept after item indented code",
+    "Source": "-     code\n  - nested",
+    "Expected": [
+      {
+        "Range": [
+          13,
+          13,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "kept after item HTML",
+    "Source": "- <!-- c -->\n  - nested",
+    "Expected": [
+      {
+        "Range": [
+          15,
+          15,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "kept after item thematic break",
+    "Source": "- ***\n  - nested",
+    "Expected": [
+      {
+        "Range": [
+          8,
+          8,
+          2,
+          3,
+          2,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "kept after item table",
+    "Source": "- | a |\n  | - |\n  - nested",
+    "Flavor": "gfm",
+    "Expected": [
+      {
+        "Range": [
+          18,
+          18,
+          3,
+          3,
+          3,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "kept text after leading definition",
+    "Source": "- [a]: /url\n  b\n  - nested",
+    "Expected": [
+      {
+        "Range": [
+          18,
+          18,
+          3,
+          3,
+          3,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "kept after later paragraph",
+    "Source": "- a\n\n  b\n  - nested",
+    "Expected": [
+      {
+        "Range": [
+          11,
+          11,
+          4,
+          3,
+          4,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "kept after later paragraph CRLF",
+    "Source": "- a\r\n\r\n  b\r\n  - nested",
+    "Expected": [
+      {
+        "Range": [
+          14,
+          14,
+          4,
+          3,
+          4,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "kept HTML between text and list",
+    "Source": "- a\n  <!-- c -->\n  - nested",
+    "Expected": [
+      {
+        "Range": [
+          19,
+          19,
+          3,
+          3,
+          3,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
+      }
+    ]
+  },
+  {
+    "Name": "kept only second list reported",
+    "Source": "- a\n  - one\n\n  b\n  - two",
+    "Expected": [
+      {
+        "Range": [
+          19,
+          19,
+          5,
+          3,
+          5,
+          3
+        ],
+        "Source": "",
+        "Side": "before"
       }
     ]
   }

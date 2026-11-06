@@ -17,6 +17,8 @@ type ListSpacingFact struct {
 // Removed definitions are merged once, in source order. Only ancestor prefixes
 // are active during a comparison. Terminal list/item summaries propagate real
 // content floors, while quotes and opaque blocks retain their entire boundary.
+// A list directly after a ListItem's first participant is exempt when that
+// participant is a paragraph or heading; a retained definition counts as first.
 // Any interruption withholds the complete inventory.
 func (d *Document) ListSpacing(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions) ([]ListSpacingFact, error) {
 	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 1, 1); err != nil {
@@ -55,7 +57,7 @@ func (d *Document) ListSpacing(ctx context.Context, budget *OperationBudget, ind
 	}
 	type participant struct {
 		span          Span
-		list          bool
+		list, text    bool
 		marker, floor int
 	}
 	type frame struct {
@@ -64,6 +66,7 @@ func (d *Document) ListSpacing(ctx context.Context, budget *OperationBudget, ind
 		previous      participant
 		marker, floor int
 		entered       bool
+		leading       bool // previous is this frame's first participant and text
 	}
 	type rollback struct{ line, prefix int }
 	stack := make([]frame, 1)
@@ -92,7 +95,8 @@ func (d *Document) ListSpacing(ctx context.Context, budget *OperationBudget, ind
 		}
 		body := f.node.Kind() == DocumentKind || f.node.Kind() == BlockQuote || f.node.Kind() == ListItem
 		previous := f.previous
-		if body && previous.span.Present() && previous.list != current.list {
+		exempt := f.node.Kind() == ListItem && current.list && f.leading
+		if body && previous.span.Present() && previous.list != current.list && !exempt {
 			last, err := locate(previous.floor - 1)
 			if err != nil {
 				return err
@@ -132,6 +136,7 @@ func (d *Document) ListSpacing(ctx context.Context, budget *OperationBudget, ind
 				out = append(out, ListSpacingFact{Point: span, Before: current.list})
 			}
 		}
+		f.leading = current.text && !previous.span.Present()
 		f.previous = current
 		f.floor = max(f.floor, current.floor)
 		if f.marker < 0 && current.marker >= 0 {
@@ -222,7 +227,7 @@ func (d *Document) ListSpacing(ctx context.Context, budget *OperationBudget, ind
 				if reference < len(definitions) && definitions[reference].spec.Envelope.Start() < child.spec.Envelope.End() {
 					return nil, ErrModel
 				}
-				if err := accept(f, participant{span: child.spec.Envelope, marker: -1, floor: child.spec.Envelope.End()}); err != nil {
+				if err := accept(f, participant{span: child.spec.Envelope, text: child.Kind() == Paragraph || child.Kind() == Heading, marker: -1, floor: child.spec.Envelope.End()}); err != nil {
 					return nil, err
 				}
 			}
