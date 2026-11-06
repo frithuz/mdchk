@@ -99,6 +99,27 @@ func TestPlannerProtectsDocumentOpeningWithUnrecognizedBlock(t *testing.T) {
 			}
 		})
 	}
+	// Bytes that are all line endings up to EOF still can't split a CRLF: the shared
+	// boundary check rejects the span before the terminal shape is considered.
+	for _, tc := range []struct {
+		name, text string
+		start      int
+	}{
+		{"final crlf", block + "\r\n", len(block) + 1},
+		{"last of excess crlf", block + "\r\n\r\n", len(block) + 3},
+		{"from inside first crlf", block + "\r\n\r\n", len(block) + 1},
+	} {
+		t.Run("deletion splitting "+tc.name, func(t *testing.T) {
+			f := setup(t, tc.text, nil, true)
+			if !f.parsed.Document.UnrecognizedBlock() {
+				t.Fatal("fixture is not an unrecognized block")
+			}
+			p := plan(t, f, group(t, f, "new", edit(t, f, tc.start, len(tc.text), "")))
+			if len(accepted(p)) != 0 || !reason(p, "new", "invalid-span") || string(p.ProvisionalBytes()) != tc.text {
+				t.Fatal("CRLF interior deletion accepted", p.Decisions())
+			}
+		})
+	}
 	for _, text := range []string{"---\n\nbody", "\n---\nx\n---\nbody", "---\nx\n+++\nbody"} {
 		f := setup(t, text, nil, true)
 		at := strings.Index(text, "body")
