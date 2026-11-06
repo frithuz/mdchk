@@ -127,13 +127,22 @@ func TestMD047GFMTaskEOFPreservation(t *testing.T) {
 // proves the independent candidate checker cannot inherit eligibility authority.
 func TestMD047GFMIndependentCheckerRejectsForcedEligibility(t *testing.T) {
 	registrations := Registrations()
-	realRule := registrations[0].Check
-	registrations[0].Check = func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
-		out := realRule(ctx, c)
-		for i := range out.Findings {
-			out.Findings[i].FixEligible = true
+	wrapped := false
+	for i := range registrations {
+		if registrations[i].ID == "MD047" {
+			realRule := registrations[i].Check
+			registrations[i].Check = func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
+				out := realRule(ctx, c)
+				for i := range out.Findings {
+					out.Findings[i].FixEligible = true
+				}
+				return out
+			}
+			wrapped = true
 		}
-		return out
+	}
+	if !wrapped {
+		t.Fatal("MD047 registration not found")
 	}
 	r := registry(t, registrations)
 	selection, err := r.SelectRules(settings(), engine.ValidationProviders{})
