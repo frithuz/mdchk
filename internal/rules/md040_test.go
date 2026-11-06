@@ -45,14 +45,6 @@ func md040Literals(t *testing.T) []md040Literal {
 	return v.Cases
 }
 
-func md040Settings() engine.Settings {
-	s := md031Settings()
-	off, on := false, true
-	s["MD031"] = engine.RuleSetting{Enabled: &off}
-	s["MD040"] = engine.RuleSetting{Enabled: &on}
-	return s
-}
-
 func TestMD040FrozenProductionOracle(t *testing.T) {
 	for _, tc := range md040Literals(t) {
 		for _, flavor := range tc.Flavors {
@@ -61,7 +53,7 @@ func TestMD040FrozenProductionOracle(t *testing.T) {
 					if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 						t.Fatal("source identity")
 					}
-					s := md040Settings()
+					s := onlyMD040Settings()
 					setting := s["MD040"]
 					if tc.Options.Enabled != nil {
 						setting.Enabled = tc.Options.Enabled
@@ -186,7 +178,7 @@ func TestMD040DirectivesSharedObservationAndInactiveDemand(t *testing.T) {
 					regs[i].Check = func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome { calls++; return actual(ctx, c) }
 				}
 			}
-			s := md040Settings()
+			s := onlyMD040Settings()
 			on := true
 			s["MD040"] = engine.RuleSetting{Enabled: &tc.enabled, AllowDirectives: &tc.allow}
 			s["MD087"] = engine.RuleSetting{Enabled: &on}
@@ -262,7 +254,7 @@ func TestMD040UnknownContextWithholdsObservation(t *testing.T) {
 	for _, audit := range []bool{false, true} {
 		t.Run(fmt.Sprintf("audit-%v", audit), func(t *testing.T) {
 			source := "x\n```\n```\n\n<div>\n<x title=\"\n\n~~~\nx\n~~~"
-			s := md040Settings()
+			s := onlyMD040Settings()
 			if audit {
 				source = "<!-- mdchk:disable MD040 -->\n" + source
 				s["MD087"] = engine.RuleSetting{Enabled: &audit}
@@ -286,7 +278,7 @@ func TestMD040UnknownContextWithholdsObservation(t *testing.T) {
 
 func TestMD040RepeatedDisableLastOwner(t *testing.T) {
 	source := "<!-- mdchk:disable MD040 -->\n<!-- mdchk:disable MD040 -->\n```\nx\n```"
-	s := md040Settings()
+	s := onlyMD040Settings()
 	on := true
 	s["MD087"] = engine.RuleSetting{Enabled: &on}
 	sel, e := registry(t, Registrations()).SelectRules(s, engine.ValidationProviders{})
@@ -348,7 +340,7 @@ func TestMD040RepeatedDisableLastOwner(t *testing.T) {
 
 func TestMD040AdmittedAllowlistOwnership(t *testing.T) {
 	list := []string{"go"}
-	s := md040Settings()
+	s := onlyMD040Settings()
 	setting := s["MD040"]
 	setting.Options = engine.Options{"allowed_languages": list}
 	s["MD040"] = setting

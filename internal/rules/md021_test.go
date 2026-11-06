@@ -190,7 +190,7 @@ func TestMD021LateInterruptionRetainsObservedFinding(t *testing.T) {
 				var observed engine.RuleOutcome
 				var token parser.SourceToken
 				r := registry(t, []engine.Registration{{ID: "MD021", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
-					check := &md018LateContext{Context: ctx, reason: tc.err}
+					check := &lateStopContext{Context: ctx, reason: tc.err}
 					if late {
 						check.stop = calls - 3
 					}
@@ -262,7 +262,7 @@ func TestMD021SameHeadingLateStopRetainsOpening(t *testing.T) {
 		for _, late := range []bool{false, true} {
 			var observed engine.RuleOutcome
 			r := registry(t, []engine.Registration{{ID: "MD021", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
-				check := &md018LateContext{Context: ctx, reason: reason}
+				check := &lateStopContext{Context: ctx, reason: reason}
 				if late {
 					check.stop = calls
 				}

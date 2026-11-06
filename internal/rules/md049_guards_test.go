@@ -33,14 +33,14 @@ func TestMD049CallbackFinalCallerAndOrigin(t *testing.T) {
 		for _, originating := range []bool{false, true} {
 			for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 				t.Run(fmt.Sprintf("%s/origin-%t/%s", tc.name, originating, reason), func(t *testing.T) {
-					origin := &md018LateContext{Context: context.Background(), stop: 1 << 20, reason: reason}
+					origin := &lateStopContext{Context: context.Background(), stop: 1 << 20, reason: reason}
 					var observed engine.RuleOutcome
 					r := registry(t, []engine.Registration{{ID: "MD049", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 						items, err := c.DelimiterStyle(ctx)
 						if err != nil {
 							t.Fatal(err)
 						}
-						stop := &md018LateContext{Context: context.Background(), stop: tc.final, reason: reason}
+						stop := &lateStopContext{Context: context.Background(), stop: tc.final, reason: reason}
 						caller := context.Context(stop)
 						if originating {
 							origin.calls = 0
@@ -180,7 +180,7 @@ func TestMD049WholeCallbackFinalWithdrawal(t *testing.T) {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(fmt.Sprintf("%s/%s/%s", tc.source, tc.style, reason), func(t *testing.T) {
 				r := registry(t, []engine.Registration{{ID: "MD049", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
-					stop := &md018LateContext{Context: context.Background(), stop: tc.final, reason: reason}
+					stop := &lateStopContext{Context: context.Background(), stop: tc.final, reason: reason}
 					out := italicDelimiterStyle(stop, c)
 					if !errors.Is(out.Err, reason) || out.Findings != nil || stop.calls != tc.final {
 						t.Fatal(out, stop.calls, tc.final)

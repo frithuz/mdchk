@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"reflect"
-	"slices"
 	"testing"
 
 	"github.com/frithuz/mdchk/internal/engine"
@@ -16,12 +15,6 @@ import (
 )
 
 const md071Message = "Frontmatter requires a blank line before the document body."
-
-// registrationsWithout keeps implicit unavailable-rule coverage testable after
-// the named rules gained production implementations.
-func registrationsWithout(ids ...string) []engine.Registration {
-	return slices.DeleteFunc(Registrations(), func(g engine.Registration) bool { return slices.Contains(ids, g.ID) })
-}
 
 func md071Settings() engine.Settings {
 	s := settings()

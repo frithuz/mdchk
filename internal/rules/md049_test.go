@@ -15,7 +15,7 @@ import (
 )
 
 func md049Settings(style string) engine.Settings {
-	s := md037Settings()
+	s := onlyDefaultMD037Settings()
 	off := false
 	s["MD037"] = engine.RuleSetting{Enabled: &off}
 	s["MD049"] = engine.RuleSetting{Options: engine.Options{"style": style}}

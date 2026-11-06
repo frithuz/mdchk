@@ -62,7 +62,7 @@ func TestMD084StrictRuleContextOptions(t *testing.T) {
 		return engine.RuleOutcome{Err: observed}
 	}}})
 	off, on := false, true
-	s := md038Settings()
+	s := onlyDefaultMD038Settings()
 	s["MD038"] = engine.RuleSetting{Enabled: &off}
 	s["MD061"] = engine.RuleSetting{Enabled: &on, Options: engine.Options{"terms": []string{"a"}}}
 	out := analyzeHeadings(t, r, "a\u200bb", s, engine.DocumentContext{}, engine.RunOptions{})

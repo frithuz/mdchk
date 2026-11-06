@@ -210,7 +210,7 @@ func TestMD063NameMatchingWorkAndWithholding(t *testing.T) {
 		var observed engine.RuleOutcome
 		calls := 0
 		r := registry(t, []engine.Registration{{ID: "MD063", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
-			check := &md018LateContext{Context: ctx, reason: reason, stop: stop}
+			check := &lateStopContext{Context: ctx, reason: reason, stop: stop}
 			observed = headingCapitalization(check, c)
 			calls = check.calls
 			return observed
@@ -280,7 +280,7 @@ func TestMD063FinalCandidateWithholding(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			count := &md018LateContext{Context: ctx, stop: stop, reason: reason}
+			count := &lateStopContext{Context: ctx, stop: stop, reason: reason}
 			span, failure = capitalizationFinding(count, c, "sentence", nil, headings[0])
 			calls = count.calls
 			return engine.RuleOutcome{Err: failure}

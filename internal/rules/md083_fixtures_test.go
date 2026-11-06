@@ -13,7 +13,7 @@ import (
 )
 
 func md083Settings(sequences []string) engine.Settings {
-	s := md038Settings()
+	s := onlyDefaultMD038Settings()
 	off, on := false, true
 	s["MD038"] = engine.RuleSetting{Enabled: &off}
 	s["MD083"] = engine.RuleSetting{Enabled: &on, Options: engine.Options{"sequences": sequences}}

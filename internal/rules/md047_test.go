@@ -12,22 +12,6 @@ import (
 	"testing"
 )
 
-func registry(t testing.TB, registrations []engine.Registration) *engine.Registry {
-	t.Helper()
-	r, err := engine.NewCatalogRegistry(registrations)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return r
-}
-func settings() engine.Settings {
-	out := engine.Settings{}
-	for _, m := range engine.Catalog() {
-		v := m.ID == "MD047"
-		out[m.ID] = engine.RuleSetting{Enabled: &v}
-	}
-	return out
-}
 func analyze(t *testing.T, r *engine.Registry, text string, s engine.Settings, opts engine.RunOptions) result.Result {
 	t.Helper()
 	caller := []byte(text)
@@ -198,22 +182,6 @@ func TestMD047SharedConfigurationAndOwnership(t *testing.T) {
 	}
 }
 
-// The callback gets the engine's real immutable context and residual budget.
-// Interrupt after it has entered the suffix traversal, rather than cancelling
-// before acquisition and accidentally testing only the engine's early gate.
-type traversalContext struct {
-	context.Context
-	calls int
-	err   error
-}
-
-func (c *traversalContext) Err() error {
-	c.calls++
-	if c.calls >= 4 {
-		return c.err
-	}
-	return nil
-}
 func TestMD047SharedInterruptionsAndUTF8(t *testing.T) {
 	for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 		r := registry(t, []engine.Registration{{ID: "MD047", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {

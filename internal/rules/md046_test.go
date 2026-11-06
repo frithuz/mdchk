@@ -45,14 +45,6 @@ func md046Literals(t *testing.T) []md046Literal {
 	return v.Cases
 }
 
-func md046Settings() engine.Settings {
-	s := md040Settings()
-	off, on := false, true
-	s["MD040"] = engine.RuleSetting{Enabled: &off}
-	s["MD046"] = engine.RuleSetting{Enabled: &on}
-	return s
-}
-
 func TestMD046FrozenProductionOracle(t *testing.T) {
 	for _, tc := range md046Literals(t) {
 		for _, flavor := range tc.Flavors {
@@ -61,7 +53,7 @@ func TestMD046FrozenProductionOracle(t *testing.T) {
 					if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 						t.Fatal("source identity")
 					}
-					s := md046Settings()
+					s := onlyMD046Settings()
 					setting := s["MD046"]
 					if tc.Options.Enabled != nil {
 						setting.Enabled = tc.Options.Enabled
@@ -189,7 +181,7 @@ func TestMD046DirectivesSharedObservationAndInactiveDemand(t *testing.T) {
 					regs[i].Check = func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome { calls++; return actual(ctx, c) }
 				}
 			}
-			s := md046Settings()
+			s := onlyMD046Settings()
 			on := true
 			s["MD046"] = engine.RuleSetting{Enabled: &tc.enabled, AllowDirectives: &tc.allow, Options: engine.Options{"style": "indented"}}
 			s["MD087"] = engine.RuleSetting{Enabled: &on}
@@ -265,7 +257,7 @@ func TestMD046UnknownContextWithholdsObservation(t *testing.T) {
 	for _, audit := range []bool{false, true} {
 		t.Run(fmt.Sprintf("audit-%v", audit), func(t *testing.T) {
 			source := "x\n```\n```\n\n<div>\n<x title=\"\n\n~~~\nx\n~~~"
-			s := md046Settings()
+			s := onlyMD046Settings()
 			s["MD046"] = engine.RuleSetting{Options: engine.Options{"style": "indented"}}
 			if audit {
 				source = "<!-- mdchk:disable MD046 -->\n" + source
@@ -290,7 +282,7 @@ func TestMD046UnknownContextWithholdsObservation(t *testing.T) {
 
 func TestMD046RepeatedDisableLastOwner(t *testing.T) {
 	source := "<!-- mdchk:disable MD046 -->\n<!-- mdchk:disable MD046 -->\n```\nx\n```"
-	s := md046Settings()
+	s := onlyMD046Settings()
 	s["MD046"] = engine.RuleSetting{Options: engine.Options{"style": "indented"}}
 	on := true
 	s["MD087"] = engine.RuleSetting{Enabled: &on}
@@ -353,7 +345,7 @@ func TestMD046RepeatedDisableLastOwner(t *testing.T) {
 
 func TestMD046AdmittedStyleOwnership(t *testing.T) {
 	options := engine.Options{"style": "fenced"}
-	s := md046Settings()
+	s := onlyMD046Settings()
 	s["MD046"] = engine.RuleSetting{Options: options}
 	selected, e := registry(t, Registrations()).SelectRules(s, engine.ValidationProviders{})
 	if e != nil {
@@ -375,7 +367,7 @@ func TestMD046AdmittedStyleOwnership(t *testing.T) {
 }
 
 func TestMD046SuppressedFirstExemplarAndDocumentIsolation(t *testing.T) {
-	s := md046Settings()
+	s := onlyMD046Settings()
 	source := "<!-- mdchk:disable MD046 -->\n    first\n\n<!-- mdchk:enable MD046 -->\n~~~\nsecond\n~~~"
 	out := analyzeHeadings(t, registry(t, Registrations()), source, s, engine.DocumentContext{}, engine.RunOptions{})
 	if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD046" || out.Diagnostics[0].Message != "Code block should use indented style." || out.Diagnostics[0].Range.Start.Line != 5 || out.Diagnostics[0].Range.Start.Column != 1 || out.Diagnostics[0].Range.End.Column != 4 {
@@ -398,7 +390,7 @@ func TestMD046SuppressedFirstExemplarAndDocumentIsolation(t *testing.T) {
 
 func TestMD046MixedConsistencyUnknownAfterPositive(t *testing.T) {
 	source := "    first\n\n~~~\nsecond\n~~~\n\n<div>\n<x title=\"\n\n    last"
-	out := analyzeHeadings(t, registry(t, Registrations()), source, md046Settings(), engine.DocumentContext{}, engine.RunOptions{})
+	out := analyzeHeadings(t, registry(t, Registrations()), source, onlyMD046Settings(), engine.DocumentContext{}, engine.RunOptions{})
 	if out.Complete || len(out.Diagnostics)+len(out.Errors)+len(out.SuppressedDiagnostics) != 0 || len(out.Coverage) != 1 || out.Coverage[0].Rule != "MD046" || out.Coverage[0].Reason != result.ContextUnavailable {
 		t.Fatal(out)
 	}

@@ -43,7 +43,7 @@ func TestMD011SuppressionInactiveAndRepeatedOwnership(t *testing.T) {
 				if mode == "inactive" {
 					source = md011Example
 				}
-				s := md011Settings()
+				s := onlyMD011Settings()
 				on, allow, enabled := true, mode != "denied", mode != "inactive"
 				s["MD011"] = engine.RuleSetting{Enabled: &enabled, AllowDirectives: &allow}
 				s["MD087"] = engine.RuleSetting{Enabled: &on}
@@ -138,7 +138,7 @@ func TestMD011ConfiguredOffEnableAndDenial(t *testing.T) {
 	for _, allow := range []bool{false, true} {
 		t.Run(fmt.Sprintf("allow-%v", allow), func(t *testing.T) {
 			off := false
-			s := md011Settings()
+			s := onlyMD011Settings()
 			s["MD011"] = engine.RuleSetting{Enabled: &off, AllowDirectives: &allow}
 			out := analyzeHeadings(t, registry(t, Registrations()), "<!-- mdchk:enable MD011 -->\n"+md011Example, s, engine.DocumentContext{}, engine.RunOptions{})
 			want := 0
@@ -158,7 +158,7 @@ func TestMD011ConfiguredOffEnableAndDenial(t *testing.T) {
 func TestMD011UnknownContextWithholdsObservation(t *testing.T) {
 	for _, audit := range []bool{false, true} {
 		t.Run(fmt.Sprintf("audit-%v", audit), func(t *testing.T) {
-			s := md011Settings()
+			s := onlyMD011Settings()
 			source := md011Example + "\n\n<div>\n<x title=\"\n\n" + md011Example
 			if audit {
 				on := true
@@ -188,7 +188,7 @@ func TestMD011OriginalParsingAndDocumentIsolation(t *testing.T) {
 			source := md011Example + "\n\n```\n" + md011Example + "\n```"
 			var baseline []result.Diagnostic
 			for _, enabled := range []bool{false, true} {
-				s := md011Settings()
+				s := onlyMD011Settings()
 				on := true
 				s["MD011"] = engine.RuleSetting{Enabled: &enabled}
 				s["MD040"] = engine.RuleSetting{Enabled: &on}
@@ -213,11 +213,11 @@ func TestMD011OriginalParsingAndDocumentIsolation(t *testing.T) {
 				t.Fatal("original fence language precondition", baseline)
 			}
 			r := registry(t, Registrations())
-			a, err := engine.NewInput("a.md", []byte(md011Example), md011Settings(), engine.DocumentContext{Flavor: flavor})
+			a, err := engine.NewInput("a.md", []byte(md011Example), onlyMD011Settings(), engine.DocumentContext{Flavor: flavor})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := engine.NewInput("b.md", []byte("[Guide](https://example.org)"), md011Settings(), engine.DocumentContext{Flavor: flavor})
+			b, err := engine.NewInput("b.md", []byte("[Guide](https://example.org)"), onlyMD011Settings(), engine.DocumentContext{Flavor: flavor})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -259,14 +259,6 @@ func md011Literals(t *testing.T) []md011Literal {
 	return v.Cases
 }
 
-func md011Settings() engine.Settings {
-	s := md048Settings()
-	off, on := false, true
-	s["MD048"] = engine.RuleSetting{Enabled: &off}
-	s["MD011"] = engine.RuleSetting{Enabled: &on}
-	return s
-}
-
 func TestMD011FrozenProductionOracle(t *testing.T) {
 	for _, tc := range md011Literals(t) {
 		for _, flavor := range tc.Flavors {
@@ -275,7 +267,7 @@ func TestMD011FrozenProductionOracle(t *testing.T) {
 					if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 						t.Fatal("source identity")
 					}
-					s := md011Settings()
+					s := onlyMD011Settings()
 					setting := s["MD011"]
 					if tc.Options.Enabled != nil {
 						setting.Enabled = tc.Options.Enabled
@@ -365,7 +357,7 @@ func TestMD011FrozenProductionOracle(t *testing.T) {
 func TestMD011DoesNotExecuteProtectedDirectives(t *testing.T) {
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
-			s := md011Settings()
+			s := onlyMD011Settings()
 			on := true
 			s["MD087"] = engine.RuleSetting{Enabled: &on}
 			selected, err := registry(t, Registrations()).SelectRules(s, engine.ValidationProviders{})
@@ -393,7 +385,7 @@ func TestMD011DefaultAndEmptyOptionsEnabled(t *testing.T) {
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, empty := range []bool{false, true} {
 			t.Run(fmt.Sprintf("%s/empty-%v", flavor, empty), func(t *testing.T) {
-				s := md011Settings()
+				s := onlyMD011Settings()
 				delete(s, "MD011")
 				if empty {
 					s["MD011"] = engine.RuleSetting{Options: engine.Options{}}

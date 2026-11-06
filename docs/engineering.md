@@ -408,7 +408,7 @@ Both modes use the shared engine and correction policy. Project mode reads and w
 
 ## Verification and release criteria
 
-Use fixture-based rule tests with valid documents, violations, expected spans, configuration variants, and expected corrections. Include hard breaks, nested lists, fenced and indented code, front matter, HTML, Unicode, and both newline conventions.
+Use fixture-based rule tests with valid documents, violations, expected spans, configuration variants, and expected corrections. Include hard breaks, nested lists, fenced and indented code, front matter, HTML, Unicode, and both newline conventions. Put test helpers that more than one rule's tests use in `internal/rules/helpers_test.go` with rule-neutral names. A rule's test files must not use symbols declared in another rule's test files.
 
 Maintain parser fixtures derived from specification examples, respecting their license and attribution requirements. Assert parsed structure and source spans as well as resulting diagnostics. Cover delimiter precedence, container nesting, continuation lines, malformed input, and extension interactions. Include adversarial inputs to detect excessive time or memory use. Separate parser coverage from rule coverage so a passing rule test does not imply dialect conformance.
 

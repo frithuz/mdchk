@@ -81,14 +81,6 @@ func md052Literals(t *testing.T) []md052Literal {
 	return v.Cases
 }
 
-func md052Settings() engine.Settings {
-	s := md011Settings()
-	off, on := false, true
-	s["MD011"] = engine.RuleSetting{Enabled: &off}
-	s["MD052"] = engine.RuleSetting{Enabled: &on}
-	return s
-}
-
 func TestMD052FrozenProductionOracle(t *testing.T) {
 	for _, tc := range md052Literals(t) {
 		for _, flavor := range tc.Flavors {
@@ -97,7 +89,7 @@ func TestMD052FrozenProductionOracle(t *testing.T) {
 					if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 						t.Fatal("source identity")
 					}
-					s := md052Settings()
+					s := onlyMD052Settings()
 					setting := s["MD052"]
 					if tc.Options.Enabled != nil {
 						setting.Enabled = tc.Options.Enabled
@@ -181,7 +173,7 @@ func TestMD052LineEndingsShareRanges(t *testing.T) {
 			var ranges [2][]result.Range
 			for i, ending := range []string{"\n", "\r\n"} {
 				source := "intro" + ending + "[a][b] and ![c][]" + ending + ending + "> [d][e]" + ending
-				out := analyzeHeadings(t, registry(t, Registrations()), source, md052Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
+				out := analyzeHeadings(t, registry(t, Registrations()), source, onlyMD052Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
 				if !out.Complete || len(out.Diagnostics) != 3 || len(out.Errors)+len(out.Coverage) != 0 {
 					t.Fatal(out)
 				}
@@ -210,7 +202,7 @@ func TestMD052SuppressionInactiveAndUnused(t *testing.T) {
 				if mode == "inactive" {
 					source = md052Example
 				}
-				s := md052Settings()
+				s := onlyMD052Settings()
 				on, allow, enabled := true, mode != "denied", mode != "inactive"
 				s["MD052"] = engine.RuleSetting{Enabled: &enabled, AllowDirectives: &allow}
 				s["MD087"] = engine.RuleSetting{Enabled: &on}
@@ -287,7 +279,7 @@ func TestMD052ConfiguredOffEnableAndDenial(t *testing.T) {
 	for _, allow := range []bool{false, true} {
 		t.Run(fmt.Sprintf("allow-%v", allow), func(t *testing.T) {
 			off := false
-			s := md052Settings()
+			s := onlyMD052Settings()
 			s["MD052"] = engine.RuleSetting{Enabled: &off, AllowDirectives: &allow}
 			out := analyzeHeadings(t, registry(t, Registrations()), "<!-- mdchk:enable MD052 -->\n"+md052Example, s, engine.DocumentContext{}, engine.RunOptions{})
 			want := 0
@@ -307,7 +299,7 @@ func TestMD052ConfiguredOffEnableAndDenial(t *testing.T) {
 func TestMD052UnknownContextWithholdsObservation(t *testing.T) {
 	for _, audit := range []bool{false, true} {
 		t.Run(fmt.Sprintf("audit-%v", audit), func(t *testing.T) {
-			s := md052Settings()
+			s := onlyMD052Settings()
 			source := md052Example + "\n\n<div>\n<x title=\"\n\n" + md052Example
 			if audit {
 				on := true
@@ -350,7 +342,7 @@ func TestMD052UnavailableInventoryOutcome(t *testing.T) {
 				}
 				return out
 			}}})
-			out := analyzeHeadings(t, r, md052Example, md052Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
+			out := analyzeHeadings(t, r, md052Example, onlyMD052Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
 			if !called || out.Complete || len(out.Diagnostics)+len(out.Errors) != 0 || len(out.Coverage) != 1 || out.Coverage[0].Rule != "MD052" || out.Coverage[0].Reason != result.ContextUnavailable || out.Coverage[0].Message != "Reference-definition context is unavailable; the complete MD052 inventory is withheld." {
 				t.Fatal(out)
 			}
@@ -364,7 +356,7 @@ func TestMD052ReportOnlyLeavesSourceAndPlansNothing(t *testing.T) {
 			t.Run(flavor+"/"+mode, func(t *testing.T) {
 				source := md052Example + "\n\n![Logo][]\n"
 				caller := []byte(source)
-				in, err := engine.NewInput("literal.md", caller, md052Settings(), engine.DocumentContext{Flavor: flavor})
+				in, err := engine.NewInput("literal.md", caller, onlyMD052Settings(), engine.DocumentContext{Flavor: flavor})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -388,7 +380,7 @@ func TestMD052ReportOnlyLeavesSourceAndPlansNothing(t *testing.T) {
 func TestMD052DoesNotExecuteProtectedDirectives(t *testing.T) {
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
-			s := md052Settings()
+			s := onlyMD052Settings()
 			on := true
 			s["MD087"] = engine.RuleSetting{Enabled: &on}
 			selected, err := registry(t, Registrations()).SelectRules(s, engine.ValidationProviders{})
@@ -416,7 +408,7 @@ func TestMD052DefaultAndEmptyOptionsEnabled(t *testing.T) {
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, empty := range []bool{false, true} {
 			t.Run(fmt.Sprintf("%s/empty-%v", flavor, empty), func(t *testing.T) {
-				s := md052Settings()
+				s := onlyMD052Settings()
 				delete(s, "MD052")
 				if empty {
 					s["MD052"] = engine.RuleSetting{Options: engine.Options{}}

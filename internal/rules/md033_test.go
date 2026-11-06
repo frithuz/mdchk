@@ -341,7 +341,7 @@ func TestMD033ComparisonAndOuterFinalCallerAndOrigin(t *testing.T) {
 			for _, originating := range []bool{false, true} {
 				for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 					t.Run(fmt.Sprintf("%s/whole-%v/origin-%v/%v", tc.name, whole, originating, reason), func(t *testing.T) {
-						origin := &md033StopAt{Context: context.Background(), stop: 1 << 30, reason: reason}
+						origin := &stopAtContext{Context: context.Background(), stop: 1 << 30, reason: reason}
 						observed := false
 						r := registry(t, []engine.Registration{{ID: "MD033", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 							var items parser.EmbeddedHTML
@@ -356,7 +356,7 @@ func TestMD033ComparisonAndOuterFinalCallerAndOrigin(t *testing.T) {
 							if whole {
 								final += tc.producerFinal + 11
 							}
-							caller := &md033StopAt{Context: context.Background(), stop: final, reason: reason}
+							caller := &stopAtContext{Context: context.Background(), stop: final, reason: reason}
 							var target context.Context = caller
 							if originating {
 								origin.stop = origin.calls + final
@@ -391,20 +391,6 @@ func TestMD033ComparisonAndOuterFinalCallerAndOrigin(t *testing.T) {
 			}
 		}
 	}
-}
-
-type md033StopAt struct {
-	context.Context
-	calls, stop int
-	reason      error
-}
-
-func (c *md033StopAt) Err() error {
-	c.calls++
-	if c.calls >= c.stop {
-		return c.reason
-	}
-	return c.Context.Err()
 }
 
 func TestMD033CallbackStickyControls(t *testing.T) {

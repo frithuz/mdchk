@@ -86,16 +86,8 @@ func md055Literals(t *testing.T) []md055Literal {
 	return v.Cases
 }
 
-func md055Settings() engine.Settings {
-	s := md059Settings()
-	off, on := false, true
-	s["MD059"] = engine.RuleSetting{Enabled: &off}
-	s["MD055"] = engine.RuleSetting{Enabled: &on}
-	return s
-}
-
 func md055LiteralSettings(tc md055Literal) engine.Settings {
-	s := md055Settings()
+	s := onlyMD055Settings()
 	setting := s["MD055"]
 	if tc.Options.Enabled != nil {
 		setting.Enabled = tc.Options.Enabled
@@ -287,7 +279,7 @@ func TestMD055SuppressionInactiveAndUnused(t *testing.T) {
 			if mode == "inactive" {
 				source = md055Example
 			}
-			s := md055Settings()
+			s := onlyMD055Settings()
 			on, allow, enabled := true, mode != "denied", mode != "inactive"
 			s["MD055"] = engine.RuleSetting{Enabled: &enabled, AllowDirectives: &allow}
 			s["MD087"] = engine.RuleSetting{Enabled: &on}
@@ -361,7 +353,7 @@ func TestMD055CommonMarkIsInapplicable(t *testing.T) {
 	source := "| A | B |\n| --- | --- |\n1 | 2\n"
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
-			out := analyzeHeadings(t, registry(t, Registrations()), source, md055Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
+			out := analyzeHeadings(t, registry(t, Registrations()), source, onlyMD055Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
 			want := 2
 			if flavor == "commonmark" {
 				want = 0
@@ -392,7 +384,7 @@ func TestMD055UnavailableInventoryOutcome(t *testing.T) {
 		}
 		return out
 	}}})
-	out := analyzeHeadings(t, r, md055Example, md055Settings(), engine.DocumentContext{Flavor: "gfm"}, engine.RunOptions{})
+	out := analyzeHeadings(t, r, md055Example, onlyMD055Settings(), engine.DocumentContext{Flavor: "gfm"}, engine.RunOptions{})
 	if !called || out.Complete || len(out.Diagnostics)+len(out.Errors) != 0 || len(out.Coverage) != 1 || out.Coverage[0].Rule != "MD055" || out.Coverage[0].Reason != result.ContextUnavailable || out.Coverage[0].Message != "Table row context is unavailable; the complete MD055 inventory is withheld." {
 		t.Fatal(out)
 	}
@@ -403,7 +395,7 @@ func TestMD055ReportOnlyLeavesSourceAndPlansNothing(t *testing.T) {
 		t.Run(mode, func(t *testing.T) {
 			source := md055Example + "\n| C | D |\n| --- | --- |\n3 | 4\n"
 			caller := []byte(source)
-			s := md055Settings()
+			s := onlyMD055Settings()
 			outcomes := 0
 			r := registry(t, []engine.Registration{{ID: "MD055", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 				out := outerTablePipes(ctx, c)
@@ -444,7 +436,7 @@ func TestMD055ReportOnlyLeavesSourceAndPlansNothing(t *testing.T) {
 }
 
 func TestMD055DoesNotExecuteProtectedDirectives(t *testing.T) {
-	s := md055Settings()
+	s := onlyMD055Settings()
 	on := true
 	s["MD087"] = engine.RuleSetting{Enabled: &on}
 	selected, err := registry(t, Registrations()).SelectRules(s, engine.ValidationProviders{})

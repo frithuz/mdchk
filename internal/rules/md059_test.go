@@ -87,17 +87,8 @@ func md059Literals(t *testing.T) []md059Literal {
 	return v.Cases
 }
 
-func md059Settings() engine.Settings {
-	s := md011Settings()
-	off, on := false, true
-	s["MD011"] = engine.RuleSetting{Enabled: &off}
-	s["MD034"] = engine.RuleSetting{Enabled: &off}
-	s["MD059"] = engine.RuleSetting{Enabled: &on}
-	return s
-}
-
 func md059LiteralSettings(tc md059Literal) engine.Settings {
-	s := md059Settings()
+	s := onlyMD059Settings()
 	setting := s["MD059"]
 	if tc.Options.Enabled != nil {
 		setting.Enabled = tc.Options.Enabled
@@ -274,7 +265,7 @@ func TestMD059SuppressionInactiveAndUnused(t *testing.T) {
 				if mode == "inactive" {
 					source = md059Example
 				}
-				s := md059Settings()
+				s := onlyMD059Settings()
 				on, allow, enabled := true, mode != "denied", mode != "inactive"
 				s["MD059"] = engine.RuleSetting{Enabled: &enabled, AllowDirectives: &allow}
 				s["MD087"] = engine.RuleSetting{Enabled: &on}
@@ -291,7 +282,7 @@ func TestMD059SuppressionInactiveAndUnused(t *testing.T) {
 					t.Fatal(err)
 				}
 				// Observing the inactive MD057 needs the link target to exist.
-				resources := md051Native(t, map[string]string{"docs/guide.md": ""}, flavor, "literal.md", in.Source())
+				resources := newNativeFragments(t, map[string]string{"docs/guide.md": ""}, flavor, "literal.md", in.Source())
 				out, trace, err := plan.Inspect(context.Background(), in, engine.RunOptions{Fragments: resources}, engine.InspectionOptions{ObserveInactive: mode == "inactive"})
 				if err != nil || !out.Complete || len(out.Errors)+len(out.Coverage)+len(out.Changes)+len(out.Documents)+len(out.DeferredFixes) != 0 {
 					t.Fatal(out, err)
@@ -353,7 +344,7 @@ func TestMD059ConfiguredOffEnableAndDenial(t *testing.T) {
 	for _, allow := range []bool{false, true} {
 		t.Run(fmt.Sprintf("allow-%v", allow), func(t *testing.T) {
 			off := false
-			s := md059Settings()
+			s := onlyMD059Settings()
 			s["MD059"] = engine.RuleSetting{Enabled: &off, AllowDirectives: &allow}
 			out := analyzeHeadings(t, registry(t, Registrations()), "<!-- mdchk:enable MD059 -->\n"+md059Example, s, engine.DocumentContext{}, engine.RunOptions{})
 			want := 0
@@ -373,7 +364,7 @@ func TestMD059ConfiguredOffEnableAndDenial(t *testing.T) {
 func TestMD059UnknownContextWithholdsObservation(t *testing.T) {
 	for _, audit := range []bool{false, true} {
 		t.Run(fmt.Sprintf("audit-%v", audit), func(t *testing.T) {
-			s := md059Settings()
+			s := onlyMD059Settings()
 			source := md059Example + "\n\n<div>\n<x title=\"\n\n" + md059Example
 			if audit {
 				on := true
@@ -421,7 +412,7 @@ func TestMD059UnavailableInventoryOutcome(t *testing.T) {
 				}
 				return out
 			}}})
-			out := analyzeHeadings(t, r, md059Example, md059Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
+			out := analyzeHeadings(t, r, md059Example, onlyMD059Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
 			if !called || out.Complete || len(out.Diagnostics)+len(out.Errors) != 0 || len(out.Coverage) != 1 || out.Coverage[0].Rule != "MD059" || out.Coverage[0].Reason != result.ContextUnavailable || out.Coverage[0].Message != "Link label context is unavailable; the complete MD059 inventory is withheld." {
 				t.Fatal(out)
 			}
@@ -435,7 +426,7 @@ func TestMD059ReportOnlyLeavesSourceAndPlansNothing(t *testing.T) {
 			t.Run(flavor+"/"+mode, func(t *testing.T) {
 				source := md059Example + "\n\n[more][]\n\n[more]: more.md\n"
 				caller := []byte(source)
-				s := md059Settings()
+				s := onlyMD059Settings()
 				outcomes := 0
 				r := registry(t, []engine.Registration{{ID: "MD059", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 					out := uninformativeLinkLabels(ctx, c)
@@ -479,7 +470,7 @@ func TestMD059ReportOnlyLeavesSourceAndPlansNothing(t *testing.T) {
 func TestMD059DoesNotExecuteProtectedDirectives(t *testing.T) {
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
-			s := md059Settings()
+			s := onlyMD059Settings()
 			on := true
 			s["MD087"] = engine.RuleSetting{Enabled: &on}
 			selected, err := registry(t, Registrations()).SelectRules(s, engine.ValidationProviders{})
@@ -507,7 +498,7 @@ func TestMD059EmptyPhrasesReportNothingWithoutDeficit(t *testing.T) {
 	source := "[here](u) [more][c] [c][] [c] [click here](u) [Read more](u)\n\n[c]: v\n"
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
-			s := md059Settings()
+			s := onlyMD059Settings()
 			on := true
 			s["MD059"] = engine.RuleSetting{Enabled: &on, Options: engine.Options{"phrases": []string{}}}
 			out := analyzeHeadings(t, registry(t, Registrations()), source, s, engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
