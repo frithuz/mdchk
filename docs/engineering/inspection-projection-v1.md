@@ -190,7 +190,7 @@ comment-looking mdchk spellings. It retains exact `raw_base64` and byte ranges,
 including malformed UTF-8, with `confirmed`, `literal` or `unconfirmed` context.
 Code and raw-HTML interior spellings cannot fabricate confirmed directive records
 or transitions. Invalid configuration, unavailable parsing or bad UTF-8 leaves
-raw context unconfirmed. UTF-8 failures retain the first original-byte observation
+raw context unconfirmed. UTF-8 failures retain their original-byte observations
 and withhold normal parsing, directives and callbacks; a literal U+FFFD is valid.
 Invalid configuration supplies no defaults. A known unavailable flavor keeps its
 validated configuration and flavor while dependent sections remain unavailable.

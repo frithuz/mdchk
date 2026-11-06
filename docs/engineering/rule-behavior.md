@@ -975,8 +975,8 @@ replacement characters.
 
 Keep MD094 enabled by default with no rule-specific options. Accept shared enabled and
 allow_directives booleans under ordinary type validation. enabled controls MD094 attribution only:
-an invalid target document emits a single io error attributed to MD094 when enabled; when disabled,
-emit the same encoding failure as a generic io error without a rule attribution. Disabling
+an invalid target document emits its io errors attributed to MD094 when enabled; when disabled, emit
+the same encoding failures as generic io errors without a rule attribution. Disabling
 attribution does not make malformed bytes acceptable or make the operation complete. With unresolved
 configuration in inspection, use the generic encoding error rather than guessing enablement.
 
@@ -992,16 +992,25 @@ to it.
 
 ### Error location
 
-Emit one encoding error per failed target snapshot, identifying the first byte where decoding can no
-longer consume a valid UTF-8 scalar. For a malformed or truncated multibyte sequence, anchor at its
-leading byte. Preserve a zero-based original byte offset as the authoritative location. A one-based
-line/code-point-column point may be derived from the valid prefix using the shared line index; do
-not invent a Unicode width for an invalid byte or transcode to compute it. If a range is needed it
-is zero-width at that point; an original byte span may identify the first byte separately.
+Emit a separate encoding error for each invalid maximal subpart of a failed target snapshot, in source
+order. Boundaries follow Unicode U+FFFD substitution of maximal subparts (chapter 3, table 3-7): a
+subpart is the longest prefix of a well-formed sequence. After `E0` the next byte must be `A0..BF`,
+after `ED` `80..9F`, after `F0` `90..BF` and after `F4` `80..8F`; other continuation positions take
+`80..BF`. `C0`, `C1`, `F5..FF` and a lone continuation byte are each one subpart.
+
+The zero-based `byte_offset` of the subpart's leading byte is the authoritative location and
+`byte_range` is its half-open span. The message names the bytes, as in `Invalid UTF-8 byte sequence
+0xE2 0x82 at byte offset 7.`. Derive the one-based line and column from the shared physical lines,
+without transcoding: each valid scalar, including a BOM and a tab, counts as one column, and each
+earlier invalid subpart on the line counts as one column. `range` is zero-width at that point. The
+scan is one forward pass, linear in file size whatever the error count.
 
 ### Results
 
-Store this as one operational io error, not also as an ordinary rule violation. Lint/fix/preview
+Store these as operational io errors, not also as ordinary rule violations. One `decoding-failed`
+coverage record per file links to all of its retained errors. A file retains at most 1,000 errors and
+an operation at most 10,000, and every file keeps its first error; the
+[retention contract](limits.md#encoding-error-retention) gives the omission shape. Lint/fix/preview
 become incomplete with error status and exit 13 unless an existing higher-precedence internal
 failure applies. Decoding-dependent coverage remains unavailable with the encoding cause attached.
 Ordinary Markdown findings cannot be produced from a partially decoded file. Exact error and
@@ -1010,7 +1019,8 @@ availability fields follow the [shared result schema](results.md#shared-result-s
 ### Inspection
 
 If the raw file snapshot can be acquired and the report delivered, inspect retains status inspected
-and exit 0, includes original byte size/digests and the encoding error, and marks complete false.
+and exit 0, includes original byte size/digests and the encoding errors with any retention omission,
+and marks complete false.
 AST, parsed directives and decoding-dependent analysis are explicitly unavailable. Do not invent
 active/inactive state where unavailable directive interpretation could change it; independently
 resolved configuration data remains visible. Existing argument, target-acquisition, delivery and

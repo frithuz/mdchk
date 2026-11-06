@@ -185,6 +185,35 @@ precise MCP location follows its protocol decision.
 - Never truncate a corrected content string. Standalone fix may withhold entire file-content records with explicit path/outcome attribution; do not label those files as successfully returned. If the essential file-identity/status list cannot fit, reject before analysis rather than silently dropping identities.
 - An output-size limit cannot discard the reserved manifest for files actually written. Later output delivery failure remains io under the accepted precedence. No automatic background storage, filesystem report spool for standalone payloads, pagination or opaque continuation token is introduced.
 
+## Encoding error retention
+
+MD094 reports each invalid maximal subpart, and a binary or mis-encoded file can
+hold as many as `document-bytes`. Two fixed bounds, which are not configurable
+limits, keep those records bounded:
+
+- A file retains at most 1,000 `invalid-utf8` errors.
+- An operation retains at most 10,000, shared across every per-target analysis.
+  Files consume this allowance in path order, so `lint` and `fix` retain the same
+  records for the same targets.
+
+A file always retains its first error, even after the operation allowance is
+spent, so it always has a cause and a located record. The worst case is 14,999
+records, since `target-files` caps the targets at 5,000.
+
+Each file with errors left out gets one omission: `section: /errors`, `reason:
+output-limit`, `path` set to the file, and `count` set to the exact number left
+out. It makes a lint or fix result `complete: false`. An `inspect` result is also
+`complete: false`, but this omission alone keeps exit `0` and status `inspected`,
+because the observation itself completed.
+
+When a lint or fix text or JSON result still exceeds `response-bytes`, the first
+reduction drops trailing `invalid-utf8` records, never a file's first, and records
+one path-less `/errors` omission with the exact count. Those path-less omissions
+keep their usual meaning, including exit `15` for `inspect`.
+
+The scan is one forward pass charged to `work-units`: at least one unit per source
+byte and a constant per retained record, in addition to the indexing reserve.
+
 ## Impact of the 1 MiB revision
 
 | Budget | Previous | Accepted |

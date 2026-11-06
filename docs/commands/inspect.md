@@ -89,7 +89,7 @@ A completed inspection returns `0`, regardless of Markdown findings, directive p
 
 Errors that prevent inspection still use the operational codes: `11` for missing or extra arguments, a directory target, or invalid line bounds; `13` for an unreadable or missing target or output failure; and `14` for an internal execution failure. An unreadable configuration is shown as unresolved configuration within the inspection when the target itself is readable. See [exit codes](../exit-codes.md).
 
-Runtime limits, deadlines and cancellation instead return `15` unless an operational error takes precedence. An acquired invalid UTF-8 snapshot can still produce a completed inspection: exit `0`, status `inspected`, `complete: false`, byte metadata and a decoding observation, with parsed sections unavailable.
+Runtime limits, deadlines and cancellation instead return `15` unless an operational error takes precedence. An acquired invalid UTF-8 snapshot can still produce a completed inspection: exit `0`, status `inspected`, `complete: false`, byte metadata and a decoding observation per retained invalid sequence, with parsed sections unavailable. A file capped at its [retained error count](../engineering/limits.md#encoding-error-retention) keeps that exit and status and adds an exact `/errors` omission for the file.
 
 ## Current implementation
 

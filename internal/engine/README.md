@@ -72,10 +72,13 @@ execution meter; a bounded 256-entry cache avoids repeated endpoint conversions.
 The engine checks interruption before each finding and endpoint. It does not treat
 result projection as unaccounted work.
 
-Strict UTF-8 validation precedes Markdown and rule execution. Its first failing
-byte produces exactly one `io` / `invalid-utf8` error with the original byte
-index, `LineIndex.FailurePosition`, snapshot identity and a decoding coverage
-record. MD094 enablement controls only error attribution. No normal check runs
+Strict UTF-8 validation precedes Markdown and rule execution. Each invalid
+maximal subpart produces one `io` / `invalid-utf8` error with its original byte
+offset and span, a zero-width point from `LineIndex.InvalidSubparts`, and snapshot
+identity, in source order. One decoding coverage record links them all. A file
+retains at most `MaxFileEncodingErrors` and an operation
+`MaxOperationEncodingErrors`, shared through its `OperationBudget`; a file always
+keeps its first, and a path-scoped `/errors` omission counts the rest. MD094 enablement controls only error attribution. No normal check runs
 for that file, including MD094; literal U+FFFD is valid. Other valid inputs can
 continue. Acquired files entering validation, including decoding failures, appear
 in `checked_files`; the per-file outcomes remain authoritative.
