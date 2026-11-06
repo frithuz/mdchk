@@ -1075,10 +1075,12 @@ All findings are manual; this analysis produces no edits.
 
 MD012 specializes blank body runs: ASCII space/TAB after each physical line's
 actual final prefix bytes, globally consecutive across container changes, one
-first-excess remaining-body finding per run. Actual protected code/raw/header
-lines break runs, including empty payload lines with retained endings. Count real
-BOF/EOF blanks without a virtual line. Present zero-width ranges are manual source
-evidence, never edit authority. See [MD012](../rules/whitespace/md012.md).
+first-excess remaining-body finding per run. Empty list marker lines are nonblank
+and break runs; quote-only lines still count, including `- >`. Actual protected
+code/raw/header lines break runs, including empty payload lines with retained
+endings. Count real BOF/EOF blanks without a virtual line. Present zero-width
+ranges are manual source evidence, never edit authority. See
+[MD012](../rules/whitespace/md012.md).
 
 MD013 specializes original physical-source scalar width, including prefixes and syntax, with four-column TAB stops. Protected bytes occupy width but cannot anchor; the first eligible overflowing scalar is the sole manual finding per physical line. Code/literal contribution gaps remain ordinary; table/heading false options deliberately exempt whole physical lines. See [MD013](../rules/whitespace/md013.md) for exact raw, destination and option boundaries.
 
