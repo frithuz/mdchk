@@ -209,7 +209,10 @@ because the observation itself completed.
 When a lint or fix text or JSON result still exceeds `response-bytes`, the first
 reduction drops trailing `invalid-utf8` records, never a file's first, and records
 one path-less `/errors` omission with the exact count. Those path-less omissions
-keep their usual meaning, including exit `15` for `inspect`.
+keep their usual meaning, including exit `15` for `inspect`. If the report still
+does not fit, the per-file retention omissions are replaced by one path-less
+`/errors` omission with their exact total, because they grow with the number of
+invalid files.
 
 The scan is one forward pass charged to `work-units`: at least one unit per source
 byte and a constant per retained record, in addition to the indexing reserve.

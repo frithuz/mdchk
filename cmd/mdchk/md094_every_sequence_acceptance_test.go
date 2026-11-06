@@ -399,3 +399,44 @@ func TestCompiledFixMD094TightResponseLimit(t *testing.T) {
 	}
 	validateConfigurationOperationJSON(t, []byte(stdout), "inspect")
 }
+
+// Per-file omissions grow with the number of invalid files. They must not be what
+// empties a report whose first errors and file outcomes would fit.
+func TestCompiledFixMD094ManyFilesStillReport(t *testing.T) {
+	t.Parallel()
+	const bound = 480000
+	binary := sharedExecutable(t)
+	files, targets := map[string][]byte{}, []string{}
+	for i := range 600 {
+		name := fmt.Sprintf("f%03d.md", i)
+		files[name] = bytes.Repeat([]byte{0xFF}, 1100)
+		targets = append(targets, name)
+	}
+	root := md094Project(t, md094Configuration(""), files)
+	args := append(append([]string{"lint"}, targets...), "--format=json", fmt.Sprintf("--limit=response-bytes=%d", bound))
+	status, stdout, stderr := md094Streams(t, binary, root, args...)
+	if status != 13 || stderr != "" || len(stdout) == 0 || len(stdout) > bound {
+		t.Fatal(status, stderr, len(stdout))
+	}
+	out := validateConfigurationOperationJSON(t, []byte(stdout), "lint")
+	first := map[string]bool{}
+	for _, e := range out.Errors {
+		first[e.Path] = true
+	}
+	if len(first) != 600 {
+		t.Fatal(len(first))
+	}
+	total := 0
+	for _, o := range out.Omissions {
+		if o.Path != "" {
+			t.Fatal(o)
+		}
+		if strings.HasPrefix(o.Message, "invalid UTF-8 records past the retention cap") {
+			total += *o.Count
+		}
+	}
+	// The first ten files spend the operation allowance; the rest keep one error.
+	if total != 10*100+590*1099 {
+		t.Fatal(total, out.Omissions)
+	}
+}
