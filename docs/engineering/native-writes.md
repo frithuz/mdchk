@@ -241,8 +241,10 @@ Logical report paths are explicitly mapped to native acquisition authority.
 Per-file publication continues after independent I/O failures. Successful writes
 remain written after a later sync/close/unlock error. Unknown outcomes do not
 become confirmed writes. The command confirms otherwise unobserved targets with
-bounded stable acquisition, then analyzes observed saved snapshots using the
-original residual budget. Unavailable saved content has explicit coverage.
+bounded stable acquisition, then analyzes observed saved snapshots. After a complete
+validation this work uses the fresh allowance described under
+[saved fix runs](limits.md#saved-fix-runs); otherwise it uses the original residual
+budget. Unavailable saved content has explicit coverage.
 Candidate identities remain separate from saved result snapshots.
 
 Targets whose retained proof depends on another changed candidate are
