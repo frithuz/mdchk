@@ -83,7 +83,7 @@ func TestMD076AnalysisFixtures(t *testing.T) {
 
 func TestMD076CatalogOptionsAndDefaultActivation(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD076") || r.Available("MD095") || len(r.Metadata()) != 87 {
+	if !r.Available("MD076") || r.Available("MD066") || len(r.Metadata()) != 87 {
 		t.Fatal("availability")
 	}
 	enabledCount := 0

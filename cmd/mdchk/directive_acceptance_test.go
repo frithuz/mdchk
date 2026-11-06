@@ -167,7 +167,9 @@ func TestProductionDirectiveCapabilityAndTruthfulCoverage(t *testing.T) {
 	}{
 		{"plain", 0, 0, 0},
 		{"<!-- mdchk:wat MD999 -->", 10, 1, 0},
-		{"<!-- mdchk:enable MD095 -->", 15, 0, 1},
+		// MD066 is unregistered but inapplicable to CommonMark, so lint skips
+		// it; engine tests cover rule-unavailable coverage.
+		{"<!-- mdchk:enable MD066 -->", 0, 0, 0},
 		{"<!-- mdchk:disable MD073 -->", 0, 0, 0},
 		{"<!-- mdchk:disable MD074 MD094 -->", 0, 0, 0},
 	} {
@@ -176,9 +178,6 @@ func TestProductionDirectiveCapabilityAndTruthfulCoverage(t *testing.T) {
 			got := runConfiguration(t, binary, root, root, "lint", "--format=json", "doc.md")
 			if got.Status != tc.status || len(got.Result.Diagnostics) != tc.violations || len(got.Result.Coverage) != tc.coverage {
 				t.Fatal(got.Status, got.Result)
-			}
-			if tc.coverage > 0 && (got.Result.Coverage[0].Rule != "MD095" || got.Result.Coverage[0].Reason != "rule-unavailable") {
-				t.Fatal(got.Result.Coverage)
 			}
 		})
 	}
