@@ -88,5 +88,6 @@ func Registrations() []engine.Registration {
 		{ID: "MD091", Check: markdownInsideHTML},
 		{ID: "MD092", Check: conflictMarkers},
 		{ID: "MD093", Check: inlineFormattingInHeadings},
+		{ID: "MD095", Check: lookalikeHostnames},
 	}
 }
