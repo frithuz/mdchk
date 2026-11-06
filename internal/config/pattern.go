@@ -186,7 +186,7 @@ func (p Patterns) MatchFirstBounded(ctx context.Context, budget *parser.Operatio
 
 // Excludes reports a direct match or a matching ancestor directory. Thus an
 // explicitly submitted file beneath an excluded directory is still excluded.
-// Use Match for consumers such as slide annotations that need direct matching.
+// Use Match for consumers that need direct matching.
 func (p Patterns) Excludes(name string, isDir, inBase bool) (bool, error) {
 	return p.match(name, isDir, inBase, true, nil)
 }

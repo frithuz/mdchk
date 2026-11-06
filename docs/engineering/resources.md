@@ -310,13 +310,6 @@ options. MD080 still compares unsuffixed heading bases; MD073 still includes onl
 eligible headings, not every arbitrary ID-bearing node. Duplicate suffix allocation
 must respect occupied explicit targets deterministically under #172's contract.
 
-MD074 consumes the shared index policy.
-Its configured docs root is a subroot of authorized resource access. The [MkDocs integration](integrations.md#mkdocs-navigation)
-defines nav URLs, absolute-path handling and omitted-file inventories; generic lookup does not infer MkDocs plugins,
-rewrites, `.html`→`.md` conversion, or arbitrary YAML execution. MkDocs' own link
-validation depends on its configuration, reinforcing the need for an explicit
-integration contract. [MkDocs configuration reference](https://www.mkdocs.org/user-guide/configuration/#validation).
-
 ## Snapshots, caching, fixes, and limits
 
 Resolve configuration once per operation. Acquire target snapshots before running

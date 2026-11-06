@@ -43,8 +43,7 @@ closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 headi
 indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis,
 MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041
 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization
-analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090
-thematic-break-before-heading analysis, MD034 bare-URL analysis and MD093 inline-formatting-in-headings analysis
+analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD034 bare-URL analysis and MD093 inline-formatting-in-headings analysis
 are implemented. MD065 is enabled by default for CommonMark and GFM; its findings
 are manual and corrections are deferred. Other ordinary callbacks, MCP integration and production rendering
 remain separate deliveries.
@@ -55,7 +54,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction, and MD009, MD019 and MD021 also correct; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD014, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD034 and MD093 analysis are also available. MD065 horizontal-rule blank-line analysis is enabled by default and report-only, with corrections deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 are available but disabled by default. MD034 is available and enabled by default for CommonMark and GFM, with manual
+production correction, and MD009, MD019 and MD021 also correct; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD014, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD034 and MD093 analysis are also available. MD065 horizontal-rule blank-line analysis is enabled by default and report-only, with corrections deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD087 and MD093 are available but disabled by default. MD034 is available and enabled by default for CommonMark and GFM, with manual
 findings; URL corrections remain deferred. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 [MD088 ASCII-punctuation analysis](rules/formatting/md088.md) is available for CommonMark and GFM,

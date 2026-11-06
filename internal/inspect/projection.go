@@ -44,30 +44,10 @@ func notRequested[T any]() Section[T] {
 	return Section[T]{Availability: "not-requested", Reasons: []string{}}
 }
 
-// DocumentContextData describes acquired annotation and opaque header recognition,
-// never metadata interpretation or a resource capability.
+// DocumentContextData describes opaque header recognition, never metadata
+// interpretation or a resource capability.
 type DocumentContextData struct {
-	Slides               bool        `json:"slides"`
-	MatchedSlidePatterns []string    `json:"matched_slide_patterns"`
-	Frontmatter          string      `json:"frontmatter"`
-	SlideMatch           *SlideMatch `json:"slide_match,omitempty"`
-}
-type SlideMatch struct {
-	Pattern string      `json:"pattern"`
-	Index   int         `json:"index"`
-	Origin  SlideOrigin `json:"origin"`
-}
-type SlideOrigin struct {
-	Path         string               `json:"path"`
-	PropertyPath string               `json:"property_path"`
-	Position     *SlideOriginPosition `json:"position,omitempty"`
-}
-
-// SlideOriginPosition keeps the declared JSON spelling independently of the
-// parser's internal Position value and the diagnostic Range wire adapter.
-type SlideOriginPosition struct {
-	Line   int `json:"line"`
-	Column int `json:"column"`
+	Frontmatter string `json:"frontmatter"`
 }
 
 type InspectionFile struct {
@@ -291,14 +271,8 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 	out.CheckedFiles = []string{f.Path}
 	out.Files = []result.File{{Path: f.Path, Analysis: "not-started", WriteStatus: "not-requested", ReturnStatus: "not-requested", InputSnapshot: &snap, ErrorIDs: []string{}, CoverageIDs: []string{}, ChangeIDs: []string{}}}
 	build := builder{ctx: ctx, budget: s.budget, source: s.source, index: s.lines}
-	lintOnly := false
 	var finish func(error) (Analysis, error)
 	finish = func(cause error) (Analysis, error) {
-		// Inspection never acquires MkDocs context, so an enabled MD074 cannot pass.
-		if plan := s.ExecutionPlan(); plan != nil && !lintOnly {
-			lintOnly = true
-			out.Coverage = append(out.Coverage, engine.LintOnlyCoverage(plan.Rules())...)
-		}
 		engine.FinalizeLintResult(&out)
 		ids := []string{}
 		for _, e := range out.Errors {
@@ -462,7 +436,7 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 	var fullRange result.Range
 	prepared := false
 	projectContext := func(trace *engine.InspectionTrace) error {
-		if dc, known := trace.DocumentContext(); known && dc.Slides.Known {
+		if dc, known := trace.DocumentContext(); known && dc.Flavor != "" {
 			frontmatter := "disabled"
 			parsedContext := trace.Parsed()
 			contextReady := true
@@ -482,7 +456,7 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 			if !contextReady {
 				return nil
 			}
-			contextData, contextErr := build.slideContext(dc.Slides, frontmatter)
+			contextData, contextErr := build.documentContext(frontmatter)
 			if contextErr != nil {
 				return contextErr
 			}
@@ -1296,24 +1270,16 @@ func (b *builder) authority(analysis *Analysis, work int64) error {
 	return nil
 }
 
-// slideContext encodes only known annotation, independently of parser confidence.
-// Exempt rule rows remain partial when unrelated source/directive data is unknown.
-func (b *builder) slideContext(c engine.SlideContext, frontmatter string) (json.RawMessage, error) {
-	if err := b.charge(8*int64(len(c.Pattern)+len(c.OriginPath)+len(c.OriginProperty)) + 1024); err != nil {
+// documentContext encodes the opaque header recognition result, independently of
+// parser confidence.
+func (b *builder) documentContext(frontmatter string) (json.RawMessage, error) {
+	if err := b.charge(1024); err != nil {
 		return nil, err
 	}
-	if err := b.budget.ChargeNodes(12); err != nil {
+	if err := b.budget.ChargeNodes(4); err != nil {
 		return nil, err
 	}
-	data := DocumentContextData{Slides: c.Slides, MatchedSlidePatterns: []string{}, Frontmatter: frontmatter}
-	if c.Slides {
-		m := &SlideMatch{Pattern: c.Pattern, Index: c.PatternIndex, Origin: SlideOrigin{Path: c.OriginPath, PropertyPath: c.OriginProperty}}
-		if c.OriginPosition != (parser.Position{}) {
-			m.Origin.Position = &SlideOriginPosition{Line: c.OriginPosition.Line, Column: c.OriginPosition.Column}
-		}
-		data.SlideMatch = m
-		data.MatchedSlidePatterns = append(data.MatchedSlidePatterns, c.Pattern)
-	}
+	data := DocumentContextData{Frontmatter: frontmatter}
 	raw, err := json.Marshal(data)
 	if err != nil {
 		return nil, err

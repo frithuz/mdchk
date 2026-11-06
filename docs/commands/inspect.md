@@ -85,7 +85,7 @@ See [configuration](../configuration.md) for settings and [result formats](../ou
 
 ## Understand the result
 
-A completed inspection returns `0`, regardless of Markdown findings, directive problems, configuration problems shown in the report, or parsing notes. It does not return validation codes `10`, `12`, or `15` for those observations. Use [lint](lint.md) or [config validate](config/validate.md) when you want a validation result. The one exception is [MD074](../rules/content-and-navigation/md074.md): inspect does not check MkDocs navigation, so with MD074 enabled it records the lint-only coverage `MkDocs navigation is checked only by lint.` and returns `15` unless an error takes precedence.
+A completed inspection returns `0`, regardless of Markdown findings, directive problems, configuration problems shown in the report, or parsing notes. It does not return validation codes `10`, `12`, or `15` for those observations. Use [lint](lint.md) or [config validate](config/validate.md) when you want a validation result.
 
 Errors that prevent inspection still use the operational codes: `11` for missing or extra arguments, a directory target, or invalid line bounds; `13` for an unreadable or missing target or output failure; and `14` for an internal execution failure. An unreadable configuration is shown as unresolved configuration within the inspection when the target itself is readable. See [exit codes](../exit-codes.md).
 
@@ -95,8 +95,8 @@ Runtime limits, deadlines and cancellation instead return `15` unless an operati
 
 This build implements the text/JSON command using one shared snapshot, analysis
 and line-filtering budget. CommonMark and GFM are available; unavailable selected flavors
-and missing ordinary rule implementations remain visible observations. Explicit
-slide annotation and opaque frontmatter recognition are reported in document context.
+and missing ordinary rule implementations remain visible observations. Opaque
+frontmatter recognition is reported in document context.
 Resources remain not requested.
 
 Applicable overrides are `document-bytes`, `total-content-bytes`, `config-bytes`,
@@ -123,13 +123,9 @@ retains the acquired metadata, leaves analysis explicitly not started, and
 returns incomplete/15 without invoking rule callbacks.
 
 
-The JSON `document_context` section reports `slides`, `matched_slide_patterns` (zero
-or one first matching pattern), and opaque `frontmatter` recognition (`disabled`,
-`absent`, `yaml`, `toml` or `unterminated`). A matched slide adds `slide_match` with
-its zero-based configured `index`, `pattern`, and `origin` (`path`, `property_path`
-and optional one-based `position`). Origin paths use the invocation-relative path
-base. This context does not decode metadata or acquire resources. Failed annotation
-or unresolved header recognition stays unavailable; it never becomes ordinary false.
+The JSON `document_context` section reports only opaque `frontmatter` recognition (`disabled`,
+`absent`, `yaml`, `toml` or `unterminated`). This context does not decode metadata
+or acquire resources. Unresolved header recognition stays unavailable; it never becomes ordinary false.
 Line filtering keeps the document context. Output limits can omit the whole section.
 
 The `Metadata` text section and JSON `metadata` section report what a recognized
@@ -150,9 +146,9 @@ like the opaque header. Text escapes terminal controls in decoded strings; JSON
 keeps them. Exact field rules are in
 [inspection projection version 1](../engineering/inspection-projection-v1.md#metadata-record).
 
-An explicitly exempt MD090 rule is marked `inapplicable`. If unrelated parser or
-directive work is unavailable, known exemption rows can appear in a partial rules
-section; this does not claim full rule counts, body syntax or complete analysis.
+If unrelated parser or
+directive work is unavailable, a partial rules section can appear; this does not
+claim full rule counts, body syntax or complete analysis.
 
 MD029 is available for both flavors, with admitted `ordered` or `one` style.
 Inspection reports analysis availability; PlannedFix metadata grants no MD029

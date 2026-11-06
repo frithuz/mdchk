@@ -77,7 +77,7 @@ func TestValidationDefaultsAcrossBuilds(t *testing.T) {
 				no++
 			}
 		}
-		if yes != 59 || no != 28 || len(got.Rules) != 87 {
+		if yes != 56 || no != 26 || len(got.Rules) != 82 {
 			t.Fatal(yes, no)
 		}
 		if !reflect.DeepEqual(got.Settings, DefaultSettings()) {
@@ -106,7 +106,7 @@ func TestExplicitRules(t *testing.T) {
 	}
 }
 func TestSchemaDomainsEvenDisabled(t *testing.T) {
-	for _, tt := range []struct{ body, path string }{{"rules: {md001: {}}", "rules.md001"}, {"rules: {MD002: {}}", "rules.MD002"}, {"rules: {MD051: {enabled: false, anchor_style: github}}", "rules.MD051.anchor_style"}, {"rules: {MD080: {enabled: false, anchor_style: explicit}}", "rules.MD080.anchor_style"}, {"rules: {MD057: {enabled: false, index_file: index.md}}", "rules.MD057.index_file"}, {"rules: {MD013: {enabled: false, length: -1}}", "rules.MD013.length"}, {"rules: {MD013: {length: 99999999999999999999999999999}}", "rules.MD013.length"}, {"rules: {MD093: {allowed_constructs: [emphasis, wrong]}}", "rules.MD093.allowed_constructs[1]"}, {"rules: {MD093: {allowed_constructs: [emphasis, 1]}}", "rules.MD093.allowed_constructs[1]"}, {"frontmatter: {enabled: false, formats: []}", "frontmatter.formats"}, {"frontmatter: {formats: [yaml, yaml]}", "frontmatter.formats[1]"}, {"exclude: [good, '[']", "exclude[1]"}, {"documents: {slides: [good, '[']}", "documents.slides[1]"}, {"resources: {anchor_style: unknown}", "resources.anchor_style"}, {"flavor: unsupported+extension", "flavor"}} {
+	for _, tt := range []struct{ body, path string }{{"rules: {md001: {}}", "rules.md001"}, {"rules: {MD002: {}}", "rules.MD002"}, {"rules: {MD051: {enabled: false, anchor_style: github}}", "rules.MD051.anchor_style"}, {"rules: {MD080: {enabled: false, anchor_style: explicit}}", "rules.MD080.anchor_style"}, {"rules: {MD057: {enabled: false, index_file: index.md}}", "rules.MD057.index_file"}, {"rules: {MD013: {enabled: false, length: -1}}", "rules.MD013.length"}, {"rules: {MD013: {length: 99999999999999999999999999999}}", "rules.MD013.length"}, {"rules: {MD093: {allowed_constructs: [emphasis, wrong]}}", "rules.MD093.allowed_constructs[1]"}, {"rules: {MD093: {allowed_constructs: [emphasis, 1]}}", "rules.MD093.allowed_constructs[1]"}, {"frontmatter: {enabled: false, formats: []}", "frontmatter.formats"}, {"frontmatter: {formats: [yaml, yaml]}", "frontmatter.formats[1]"}, {"exclude: [good, '[']", "exclude[1]"}, {"resources: {anchor_style: unknown}", "resources.anchor_style"}, {"flavor: unsupported+extension", "flavor"}} {
 		t.Run(tt.body, func(t *testing.T) {
 			_, e := ValidateDefinition(yamlFor(t, "version: 1\n"+tt.body+"\n"), registryFor(t), engine.ValidationProviders{})
 			assertPath(t, e, tt.path)
@@ -142,7 +142,7 @@ func TestOptionalCapabilities(t *testing.T) {
 	for _, tt := range []struct {
 		body, path string
 		caps       Capabilities
-	}{{"", "flavor", Capabilities{CommonMark: true, DirectiveProcessing: true}}, {"frontmatter: {enabled: true, formats: [yaml]}", "frontmatter.enabled", baseCaps()}, {"frontmatter: {enabled: true}", "frontmatter.enabled", func() Capabilities { c := baseCaps(); c.FrontmatterYAML = true; return c }()}, {"documents: {slides: ['slides/**']}", "documents.slides", baseCaps()}, {"rules: {MD001: {frontmatter_title: true}}", "rules.MD001.frontmatter_title", baseCaps()}, {"resources: {index_file: index.md}", "resources.index_file", baseCaps()}, {"resources: {anchor_style: github}", "resources.anchor_style", baseCaps()}} {
+	}{{"", "flavor", Capabilities{CommonMark: true, DirectiveProcessing: true}}, {"frontmatter: {enabled: true, formats: [yaml]}", "frontmatter.enabled", baseCaps()}, {"frontmatter: {enabled: true}", "frontmatter.enabled", func() Capabilities { c := baseCaps(); c.FrontmatterYAML = true; return c }()}, {"rules: {MD001: {frontmatter_title: true}}", "rules.MD001.frontmatter_title", baseCaps()}, {"resources: {index_file: index.md}", "resources.index_file", baseCaps()}, {"resources: {anchor_style: github}", "resources.anchor_style", baseCaps()}} {
 		t.Run(tt.body, func(t *testing.T) {
 			v := schemaFor(t, "version: 1\n"+tt.body+"\n", registryFor(t, "MD001"))
 			_, e := v.Admit(tt.caps, Permissions{})
@@ -152,7 +152,6 @@ func TestOptionalCapabilities(t *testing.T) {
 	c := baseCaps()
 	c.FrontmatterYAML = true
 	c.MetadataInterpretation = true
-	c.SlideAnnotation = true
 	c.ResourceIndex = true
 	c.ExplicitAnchors = true
 	c.RepresentIndexFile = func(s string) error {
@@ -161,11 +160,11 @@ func TestOptionalCapabilities(t *testing.T) {
 		}
 		return nil
 	}
-	v := schemaFor(t, "version: 1\nflavor: gfm\nfrontmatter: {enabled: true, formats: [yaml]}\ndocuments: {slides: ['s/**']}\nresources: {index_file: README.md, anchor_style: explicit}\nrules: {MD001: {frontmatter_title: true}}\n", registryFor(t, "MD001"))
+	v := schemaFor(t, "version: 1\nflavor: gfm\nfrontmatter: {enabled: true, formats: [yaml]}\nresources: {index_file: README.md, anchor_style: explicit}\nrules: {MD001: {frontmatter_title: true}}\n", registryFor(t, "MD001"))
 	if _, e := v.Admit(c, Permissions{}); e != nil {
 		t.Fatal(e)
 	}
-	for _, s := range []string{"resources: {}", "frontmatter: {enabled: false}", "documents: {slides: []}", "rules: {MD001: {enabled: false, frontmatter_title: true}}"} {
+	for _, s := range []string{"resources: {}", "frontmatter: {enabled: false}", "rules: {MD001: {enabled: false, frontmatter_title: true}}"} {
 		v := schemaFor(t, "version: 1\n"+s+"\n", registryFor(t))
 		if _, e := v.Admit(baseCaps(), Permissions{}); e != nil {
 			t.Fatal(e)

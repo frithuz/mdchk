@@ -21,7 +21,7 @@ is incomplete. Observation errors remain separate from active findings.
 Analyze supplies full-document data with counts `not-requested`. Filter adds
 contextual selection and counts as described below. The inspect CLI renders this
 projection in text/JSON and preserves its identities and causal links. It includes MD087 per-target suppression conclusions from the shared engine. Resource
-and slide processing retain their own admission gates, and the
+processing retains its own admission gate, and the
 [metadata record](#metadata-record) decodes only a recognized header;
 no CommonMark substitute or guessed document context is supplied.
 

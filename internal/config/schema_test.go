@@ -49,11 +49,10 @@ func TestDefaultSettingsContractAndIsolation(t *testing.T) {
 	if first.Flavor != "gfm" || first.IndexFile != "index.md" || first.AnchorStyle != "github" || first.FrontmatterEnabled || !first.DirectivesEnabled || !first.AllowDirectives || !first.AllowNestedExcludes {
 		t.Fatalf("unexpected approved defaults: %+v", first)
 	}
-	if !reflect.DeepEqual(first.FrontmatterFormats, []string{"yaml", "toml"}) || len(first.Slides) != 0 || len(first.Exclude) != 0 {
+	if !reflect.DeepEqual(first.FrontmatterFormats, []string{"yaml", "toml"}) || len(first.Exclude) != 0 {
 		t.Fatalf("unexpected collection defaults: %+v", first)
 	}
 	first.FrontmatterFormats[0] = "changed"
-	first.Slides = append(first.Slides, "slides/**")
 	first.Exclude = append(first.Exclude, "vendor/**")
 	if !reflect.DeepEqual(second, DefaultSettings()) {
 		t.Fatal("one operation modified another operation's defaults")

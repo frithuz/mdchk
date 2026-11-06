@@ -1,6 +1,6 @@
 package engine
 
-// Catalog returns an independent snapshot of all 89 accepted rule contracts.
+// Catalog returns an independent snapshot of all 82 accepted rule contracts.
 // Planned corrections are metadata only: no executable callbacks or correction
 // implementations are installed. Defaults never depend on a build's providers.
 func Catalog() []Metadata {
@@ -64,15 +64,11 @@ func Catalog() []Metadata {
 		{ID: "MD063", Name: "Heading capitalization", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("sentence", "title"), "proper_names": list()}},
 		{ID: "MD064", Name: "Repeated spaces in prose", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"maximum": integer(1, 1)}},
 		{ID: "MD065", Name: "Blank lines around horizontal rules", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD066", Name: "Unmatched footnote references and definitions", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, AppliesTo: footnotesApply, Options: OptionSchema{}},
-		{ID: "MD067", Name: "Definition order versus reference order", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, AppliesTo: footnotesApply, Options: OptionSchema{}},
-		{ID: "MD068", Name: "Footnotes without content", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, AppliesTo: footnotesApply, Options: OptionSchema{}},
 		{ID: "MD069", Name: "Repeated list markers", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD070", Name: "Outer fence length for nested examples", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD071", Name: "Blank line following metadata", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, UsesFrontmatter: true, Options: OptionSchema{}},
 		{ID: "MD072", Name: "Metadata key ordering", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, UsesFrontmatter: true, Options: OptionSchema{"recursive": boolean(false), "case_sensitive": boolean(true)}},
 		{ID: "MD073", Name: "Table of contents versus headings", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"start_marker": {Kind: String, Default: "<!-- toc -->", Domain: HTMLComment}, "end_marker": {Kind: String, Default: "<!-- /toc -->", Domain: HTMLComment}, "min_level": headingLevel(1), "max_level": headingLevel(6)}},
-		{ID: "MD074", Name: "MkDocs navigation file targets", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"config_path": {Kind: String, Default: "mkdocs.yml", Domain: ResourceKey}, "check_omitted": boolean(false), "check_absolute": boolean(false)}},
 		{ID: "MD075", Name: "Pipe rows without a table header", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, AppliesTo: pipeTablesApply, Options: OptionSchema{}},
 		{ID: "MD076", Name: "Consistent spacing between list items", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "tight", "loose")}},
 		{ID: "MD077", Name: "Indentation of list continuation content", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
@@ -86,7 +82,6 @@ func Catalog() []Metadata {
 		{ID: "MD087", Name: "Suppressions that hide no findings", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD088", Name: "Quote and dash normalization", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("ascii")}},
 		{ID: "MD089", Name: "Spacing between CJK and Latin text", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD090", Name: "Horizontal rules before headings", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"allow_slides": boolean(true)}},
 		{ID: "MD091", Name: "Markdown syntax inside HTML blocks", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD092", Name: "Unresolved version-control conflict markers", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD093", Name: "Inline formatting in headings", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"allowed_constructs": {Kind: Strings, Default: []string{}, Choices: []string{"emphasis", "strong", "code", "link", "image"}}}},
@@ -120,8 +115,4 @@ func list(values ...string) OptionSpec {
 // execution admission and parser coverage handle unavailable dialect support.
 func pipeTablesApply(dc DocumentContext) bool {
 	return dc.Flavor != "commonmark"
-}
-
-func footnotesApply(dc DocumentContext) bool {
-	return dc.Flavor != "commonmark" && dc.Flavor != "gfm"
 }

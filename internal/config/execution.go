@@ -17,7 +17,6 @@ import (
 type ExecutionPlan struct {
 	engine        *engine.ExecutionPlan
 	configuration *Resolution
-	slides        *SlidePolicy
 }
 
 func cloneResolution(r *Resolution) *Resolution {
@@ -25,9 +24,7 @@ func cloneResolution(r *Resolution) *Resolution {
 	q.plan = nil
 	q.Settings.FrontmatterFormats = slices.Clone(r.Settings.FrontmatterFormats)
 	q.Settings.Exclude = slices.Clone(r.Settings.Exclude)
-	q.Settings.Slides = slices.Clone(r.Settings.Slides)
 	q.Exclude = ownedPatterns(r.Exclude)
-	q.Slides = ownedPatterns(r.Slides)
 	q.Rules = make(map[string]engine.ResolvedRule, len(r.Rules))
 	for id, rule := range r.Rules {
 		rule.Options = cloneOptions(rule.Options)

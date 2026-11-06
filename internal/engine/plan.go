@@ -50,7 +50,6 @@ type ExecutionPlan struct {
 	rules           map[string]ResolvedRule
 	documentContext DocumentContext
 	directivePolicy DirectivePolicy
-	slides          SlideProvider
 }
 
 // Plan preserves validated membership and options while applying effective

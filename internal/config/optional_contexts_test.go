@@ -7,16 +7,15 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 )
 
-// Optional contexts annotate a selected profile independently. Admission must
+// Optional contexts configure a selected profile independently. Admission must
 // preserve their settings and catalog defaults rather than activate related
-// contexts or rules merely because a dialect or annotation is supported.
+// contexts or rules merely because a dialect or context is supported.
 func TestOptionalContextIndependence(t *testing.T) {
-	slides := DefaultSettings()
-	slides.Flavor = "commonmark"
-	slides.FrontmatterEnabled = true
-	slides.FrontmatterFormats = []string{"yaml"}
-	slides.Slides = []string{"talks/**"}
-	slides.Exclude = []string{"generated/**"}
+	profile := DefaultSettings()
+	profile.Flavor = "commonmark"
+	profile.FrontmatterEnabled = true
+	profile.FrontmatterFormats = []string{"yaml"}
+	profile.Exclude = []string{"generated/**"}
 	for _, tc := range []struct {
 		name     string
 		body     string
@@ -25,11 +24,11 @@ func TestOptionalContextIndependence(t *testing.T) {
 		explicit map[string]bool
 	}{
 		{
-			name:     "slides preserve profile exclusions and independent contexts",
-			body:     "flavor: commonmark\nfrontmatter: {enabled: true, formats: [yaml]}\ndocuments: {slides: ['talks/**']}\nexclude: ['generated/**']\n",
-			caps:     Capabilities{CommonMark: true, FrontmatterYAML: true, SlideAnnotation: true, DirectiveProcessing: true},
-			want:     slides,
-			explicit: map[string]bool{"flavor": true, "frontmatter.enabled": true, "frontmatter.formats": true, "documents.slides": true, "exclude": true},
+			name:     "frontmatter preserves profile exclusions and independent contexts",
+			body:     "flavor: commonmark\nfrontmatter: {enabled: true, formats: [yaml]}\nexclude: ['generated/**']\n",
+			caps:     Capabilities{CommonMark: true, FrontmatterYAML: true, DirectiveProcessing: true},
+			want:     profile,
+			explicit: map[string]bool{"flavor": true, "frontmatter.enabled": true, "frontmatter.formats": true, "exclude": true},
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -53,7 +52,7 @@ func TestOptionalContextIndependence(t *testing.T) {
 					}
 				}
 			}
-			for _, path := range []string{"flavor", "frontmatter.enabled", "frontmatter.formats", "documents.slides", "exclude", "rules.MD090.enabled"} {
+			for _, path := range []string{"flavor", "frontmatter.enabled", "frontmatter.formats", "exclude"} {
 				p, ok := view.Provenance[path]
 				if !ok || p.Explicit != tc.explicit[path] {
 					t.Fatalf("%s provenance=%#v, want explicit=%v", path, p, tc.explicit[path])

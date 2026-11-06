@@ -18,7 +18,6 @@ type DocumentContext struct {
 	AnchorStyle string
 	// IndexFile is the shared resources.index_file used once for directory links.
 	IndexFile string
-	Slides    SlideContext
 }
 
 // ParseOptions preserves the exact immutable recognition selection for every
@@ -50,12 +49,6 @@ func NewInput(path string, content []byte, settings Settings, dc DocumentContext
 	}
 	if dc.Flavor == "" {
 		dc.Flavor = "commonmark"
-	}
-	if dc.Slides == (SlideContext{}) {
-		dc.Slides.Known = true
-	}
-	if err := dc.Slides.validate(); err != nil {
-		return Input{}, err
 	}
 	if err := dc.resolveAnchorStyle(); err != nil {
 		return Input{}, err

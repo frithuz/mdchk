@@ -399,8 +399,6 @@ func testConfigurationStrict(t *testing.T, binary string) {
 	})
 	t.Run("capability preflight", func(t *testing.T) {
 		for _, tc := range []configurationNegative{
-			{"explicit enabled default", availableConfiguration + "rules: {MD066: {}}\n", "rules.MD066", "explicitly enabled rule is unavailable", 4, 16},
-			{"explicit enabled unavailable", availableConfiguration + "rules: {MD066: {enabled: true}}\n", "rules.MD066", "explicitly enabled rule is unavailable", 4, 16},
 			{"removed flavor", "version: 1\nflavor: pandoc\ndirectives: {enabled: false}\n", "flavor", "expected commonmark or gfm", 2, 9},
 			{"resource index not representable", availableConfiguration + "resources: {index_file: .git}\n", "resources.index_file", "not representable", 4, 25},
 		} {
@@ -417,7 +415,7 @@ func testConfigurationStrict(t *testing.T, binary string) {
 	// invalid UTF-8/missing targets demonstrates admission without a clean-result
 	// shortcut, and proves that the negatives cannot pass via an unrelated capability.
 	t.Run("corrected semantic controls", func(t *testing.T) {
-		for _, rules := range []string{"rules: {MD013: {enabled: false, length: 100}}\n", "rules: {MD013: {enabled: false, length: 80}}\n", "rules: {MD013: {}}\n", "documents: {slides: ['talk/**']}\n"} {
+		for _, rules := range []string{"rules: {MD013: {enabled: false, length: 100}}\n", "rules: {MD013: {enabled: false, length: 80}}\n", "rules: {MD013: {}}\n"} {
 			root := configurationProject(t)
 			putConfigurationFile(t, root, ".mdchk.yaml", availableConfiguration+rules)
 			putConfigurationFile(t, root, "bad.md", "bad\xff")

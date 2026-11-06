@@ -251,7 +251,7 @@ use `engine.NewCatalogRegistry` with the build's actual registration subset.
 Synthetic partial or altered catalogs are rejected. Rule domain resolution uses
 `Registry.ResolveSettings` and its validation providers, including disabled-rule
 and ancestor-only hostname validation. Patterns use `CompilePatterns` for the
-entire exclusion and slide lists before returning a candidate.
+entire exclusion list before returning a candidate.
 
 The returned `Validated` is an immutable schema-valid snapshot, suitable for an
 ancestor consulted only for policy. Unavailable ancestor flavors, rule
@@ -273,12 +273,12 @@ is effective; per-rule permission denials do not substitute for that global gate
 
 `Capabilities` is an explicit trusted assertion by the build adapter, independent
 of default settings. Separate dimensions cover CommonMark/GFM, directive processing, YAML and TOML recognition, metadata
-interpretation, slide annotation, index handling and each
+interpretation, index handling and each
 anchor style. An explicit index basename also requires the pure active-adapter
 `RepresentIndexFile` predicate. No capability flag implements those features or
 grants resource access. Explicit resource values equal to built-ins remain
 requests; an empty resource mapping requests neither field. Disabled recognition
-needs no format capability. A nonempty slide list requests annotation directly.
+needs no format capability.
 Available enabled rules requesting `frontmatter_title: true` additionally require
 metadata interpretation. Context selection never enables rules or another context.
 
@@ -319,7 +319,7 @@ Resolved defaults are not converted into supplied settings: absent enabled
 implementations still produce `rule-unavailable`, while explicit enabled absent
 implementations fail admission before target access. Disabled and positively
 dialect-inapplicable checks do not reduce coverage. Catalog table rules apply to
-GFM; footnote contracts are inactive for both supported profiles. Missing optional resource or
+GFM. Missing optional resource or
 integration context never establishes dialect inapplicability.
 
 CLI preparation retains this plan and execution passes acquired snapshots to it
@@ -330,8 +330,8 @@ and per-file references before deriving the shared outcome. Public CLI paths
 are relative to the invocation directory; acquisition keeps native names private.
 Lint text and JSON reporters present the canonical result without rereading
 configuration sources or target documents. CommonMark/GFM, MD001 analysis with opt-in metadata titles, MD003 heading-style
-analysis, MD004 bullet marker analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD018/MD019 opening-hash spacing analysis, MD020 terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis, MD047, directives,
-shared suppression and VS Code/GitHub reporters are implemented. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 are disabled by default. Other rule
+analysis, MD004 bullet marker analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis, MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD018/MD019 opening-hash spacing analysis, MD020 terminal-hash spacing, MD021 closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis thematic-break-before-heading analysis and MD093 inline-formatting-in-headings analysis, MD047, directives,
+shared suppression and VS Code/GitHub reporters are implemented. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD087 and MD093 are disabled by default. Other rule
 callbacks and optional contexts remain separate deliveries.
 
 [MD081 paragraph-emphasis analysis](../rules/formatting/md081.md) is available for CommonMark and
@@ -365,7 +365,7 @@ Maintain metadata for all known catalog IDs separately from executable implement
 
 An unavailable rule with an explicit entry and effective `enabled: true` is a configuration error. Explicitly disabled unavailable rules are valid after option validation. Unmentioned unavailable default-enabled rules remain enabled expectations and produce `rule-unavailable` coverage records during analysis; unavailable default-disabled rules do not. Evaluate dialect applicability separately: a rule inapplicable to the selected dialect does not reduce coverage. Preserve the catalog defaults rather than enabling only registered implementations.
 
-Validate effective flavor and directive-processing availability before analysis. Default GFM never falls back to CommonMark. The shared CommonMark lint engine implements directive processing; adapters must declare that capability only when bound to the shared processor. Validate the approved `frontmatter` and `documents.slides` settings. Explicitly enabled recognition and enabled-rule options requiring unavailable metadata capabilities fail capability validation. See [initial capability handling](../configuration.md#initial-capability-handling).
+Validate effective flavor and directive-processing availability before analysis. Default GFM never falls back to CommonMark. The shared CommonMark lint engine implements directive processing; adapters must declare that capability only when bound to the shared processor. Validate the approved `frontmatter` settings. Explicitly enabled recognition and enabled-rule options requiring unavailable metadata capabilities fail capability validation. See [initial capability handling](../configuration.md#initial-capability-handling).
 
 Separate schema/policy validation from selected-operation capability validation. Ancestors consulted only for policy must be completely schema-valid, but their unselected rule options and flavor do not undergo execution-availability checks or become inherited settings. Each definition visited by `config validate` is checked as a selected definition using inherited permissions. Unmentioned unavailable default rules do not make that scan incomplete because it does not run Markdown checks.
 

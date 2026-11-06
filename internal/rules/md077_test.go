@@ -346,7 +346,7 @@ func TestMD077DistinctInputsAndConcurrency(t *testing.T) {
 
 func TestMD077CatalogOptionsAndDefaultActivation(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD077") || r.Available("MD066") || len(r.Metadata()) != 87 {
+	if !r.Available("MD077") || r.Available("MD066") || len(r.Metadata()) != 82 {
 		t.Fatal("catalog")
 	}
 	enabled := 0
@@ -358,7 +358,7 @@ func TestMD077CatalogOptionsAndDefaultActivation(t *testing.T) {
 			t.Fatal(m)
 		}
 	}
-	if enabled != 59 {
+	if enabled != 56 {
 		t.Fatal(enabled)
 	}
 	for _, mapping := range []map[string]any{{"unknown": true}, {"enabled": false, "unknown": true}, {"enabled": nil}, {"enabled": "true"}, {"enabled": 1}, {"allow_directives": nil}, {"allow_directives": 1}} {

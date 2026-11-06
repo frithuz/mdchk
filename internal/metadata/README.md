@@ -77,9 +77,9 @@ permitted by `UsesFrontmatter` and no correction authority. Inspection decodes
 separately, after rule execution under the same budget, to report observations
 that are neither findings nor correction authority.
 
-YAML uses the pinned goccy AST through `internal/yamlsource`, shared with MkDocs.
+YAML uses the pinned goccy AST through `internal/yamlsource`.
 That neutral boundary owns normalization, tag/tab/escape reconciliation, guarded
-lexing and original-byte mapping; metadata never imports MkDocs policy or the
+lexing and original-byte mapping; metadata never imports the
 configuration schema. Empty scalar tags are reconciled across lexical comments
 and separation without consuming sibling keys or merge syntax; presentation
 comments cannot create scalar content or native defaults. Core classification

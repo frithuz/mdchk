@@ -143,7 +143,7 @@ func TestMD086AvailabilityAndStrictOptions(t *testing.T) {
 			t.Fatal(metadata)
 		}
 	}
-	if on != 59 || off != 28 {
+	if on != 56 || off != 26 {
 		t.Fatal(on, off)
 	}
 	disabled := false

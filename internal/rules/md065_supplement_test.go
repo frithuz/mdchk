@@ -25,7 +25,7 @@ func TestMD065AvailabilityDefaultsAndStrictOptions(t *testing.T) {
 			t.Fatal(m)
 		}
 	}
-	if !executable || !r.Available("MD065") || on != 59 || off != 28 {
+	if !executable || !r.Available("MD065") || on != 56 || off != 26 {
 		t.Fatal(executable, on, off)
 	}
 	for _, enabled := range []bool{false, true} {

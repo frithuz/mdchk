@@ -98,7 +98,7 @@ def inspection_semantic(x):
             if reason.startswith('suppression-'):
                 require(reason in audit_reasons,'unknown suppression audit reason')
                 require(d.get('operation')=='disable' and effect['effect']=='disable' and effect['permission']=='allowed','audit conclusion on ineligible effect')
-                require(effect['rule'] not in ('MD074','MD094'),'audit conclusion on nondocument target')
+                require(effect['rule'] not in ('MD094',),'audit conclusion on nondocument target')
                 require((reason=='suppression-excluded')==(effect['rule']=='MD087'),'invalid suppression self exclusion')
                 require(any(t['name']==effect['rule'] for t in d.get('named_tokens',[])),'audit decision lacks actual target token')
     ast=section('ast')

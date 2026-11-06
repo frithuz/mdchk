@@ -60,7 +60,6 @@ the original source and validated options. MD047 terminating-newline, MD001 head
 and MD071 frontmatter blank-line analysis are implemented, among others; every
 default-enabled rule is available, and an enabled rule without an implementation
 would produce a coverage deficit and return `15`. Disabling all ordinary rules permits a clean `0` for valid UTF-8.
-When enabled, [MD074](../rules/content-and-navigation/md074.md) runs once per lint operation, even with no selected target, and reports at the MkDocs configuration's path without adding it to `files`.
 Available registered checks can return violations (`10`); interruptions retain
 partial findings and known targets, with runtime precedence `14 > 13 > 15 > 10 > 0`.
 Text reports are the default; `--format json` emits one undecorated schema-v1
@@ -132,11 +131,11 @@ MD023 heading indentation analysis, MD024 repeated heading analysis, MD025
 multiple-title analysis, MD026 heading-end punctuation analysis, MD036
 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline
 analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision
-analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and
+analysis, MD082 empty-section analysis and
 MD093 inline-formatting-in-headings analysis are available. MD013, MD026, MD036, MD043, MD063,
-MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 are available but disabled by default. The catalog
-contains 87 entries, with 59 enabled
-and 28 disabled by default; the mandatory UTF-8 gate is available independently
+MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD087 and MD093 are available but disabled by default. The catalog
+contains 82 entries, with 56 enabled
+and 26 disabled by default; the mandatory UTF-8 gate is available independently
 of ordinary checks. Explicitly requesting an unavailable rule returns `12`.
 Omitting configuration selects GFM and runs every default-enabled rule, so analysis is complete.
 

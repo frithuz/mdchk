@@ -84,7 +84,6 @@ func Registrations() []engine.Registration {
 		{ID: "MD087", Check: engine.CheckUnusedSuppressions},
 		{ID: "MD088", Check: asciiPunctuation},
 		{ID: "MD089", Check: cjkSpacing},
-		{ID: "MD090", Check: thematicBreaksBeforeHeadings, Applies: thematicHeadingsApply},
 		{ID: "MD091", Check: markdownInsideHTML},
 		{ID: "MD092", Check: conflictMarkers},
 		{ID: "MD093", Check: inlineFormattingInHeadings},

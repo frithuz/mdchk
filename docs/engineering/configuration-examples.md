@@ -117,7 +117,7 @@ flavor: commonmark
 This configuration works with the current production executable. The following
 examples of available features are not exhaustive; see the
 [current rule inventory](../rules/index.md) for availability and defaults.
-CommonMark 0.31.2, GFM, directive processing, MD001/MD003/MD004/MD005/MD007/MD029/MD030/MD032/MD069/MD076/MD077/MD009/MD010/MD012/MD013/MD027/MD028/MD064/MD085/MD089/MD035/MD037/MD038/MD081/MD088/MD033/MD086/MD087/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD090/MD093/MD034 analysis and MD047 analysis/correction
+CommonMark 0.31.2, GFM, directive processing, MD001/MD003/MD004/MD005/MD007/MD029/MD030/MD032/MD069/MD076/MD077/MD009/MD010/MD012/MD013/MD027/MD028/MD064/MD085/MD089/MD035/MD037/MD038/MD081/MD088/MD033/MD086/MD087/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD093/MD034 analysis and MD047 analysis/correction
 are available.
 
 MD039 link-label-whitespace analysis is also available for
@@ -140,14 +140,14 @@ read-only resource service (directory links use `resources.index_file` once);
 known-missing documents stay with MD057, and unknown or blocked context reports
 located reduced coverage.
 
-MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
+MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD087 and MD093 remain disabled by default. MD001, MD025 and MD041 also support opt-in YAML/TOML title consumption with
 independently enabled header recognition. Some ordinary rules remain unavailable,
 as recorded in the linked inventory, but none of them is enabled by default for
 CommonMark or GFM. Lint parses selected valid UTF-8 sources and runs every
 default-enabled check, so default analysis is complete and exits 0 or 10. An
 applicable missing default-enabled check would instead be reported as
 `rule-unavailable` with `status: incomplete`, `complete: false` and exit 15.
-The complete 87-rule catalog remains intact: MD001 is default-enabled and
+The complete 82-rule catalog remains intact: MD001 is default-enabled and
 executes along with MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD027, MD028, MD064, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD057, MD062 and MD071;
 MD071 is inapplicable unless frontmatter recognition is enabled.
 MD013 is available but default-disabled and does not incur a coverage penalty. Explicitly enabling
@@ -264,7 +264,6 @@ processor rows describe capability-bound adapter fixtures.
 | Explicit MD013 entry without `enabled` | MD013 unavailable | Remains default-disabled, without coverage penalty |
 | No MD001 entry | MD001 unavailable and applicable | Lint/fix incomplete with exit 15 |
 | Unmentioned default-disabled rule | Implementation unavailable | Inactive without coverage penalty |
-| Unmentioned footnote rules in a dialect without footnotes | Extension inapplicable | No footnote coverage penalty |
 | Explicit metadata-dependent option on an enabled rule | Required metadata interpretation unavailable | Configuration error |
 | Enabled applicable resource-dependent check | Context unavailable | Analysis incomplete with `context-unavailable` |
 | A known unavailable rule enabled by a permitted source directive | Directive processor available | Retain state transition and report `rule-unavailable` for required coverage |
@@ -385,11 +384,11 @@ the [resource contract](resources.md#verification-and-handoff).
 
 The [optional context settings](../configuration.md#optional-document-contexts)
 are schema-1 fields. Use the complete default object there as a valid fixture.
-Also accept `frontmatter: {enabled: true, formats: [yaml]}`,
-and `documents: {slides: ["slides/**"]}` when required capabilities are available.
+Also accept `frontmatter: {enabled: true, formats: [yaml]}`
+when required capabilities are available. Reject the removed `documents` mapping as an unknown key.
 
 Reject string booleans, `frontmatter.formats: [json]`, empty/duplicate format
-lists, unknown settings, malformed slide patterns, and null mappings.
+lists, unknown settings, and null mappings.
 Reject `rules.MD088.replacements` even when MD088 is disabled; its mapping is fixed.
 Reject `limits` or HTTP authentication fields in project/supplied configuration.
 Capability tests must distinguish accepted schema from an unavailable implementation.
@@ -409,23 +408,6 @@ rules:
 container headings in the context. Null, strings, numbers and unknown options are
 configuration errors even when MD082 is disabled. Anchor policy is unrelated.
 
-
-MD090 is available, report-only and disabled by default. Slide annotation alone
-never enables it:
-
-```yaml
-documents:
-  slides: ["talks/**", "**/*.slides.md"]
-rules:
-  MD090:
-    enabled: true
-    allow_slides: true
-```
-
-Set `allow_slides: false` to check declared slides normally. Patterns use the
-selected configuration directory and direct matching; no syntax infers slides.
-Invalid later patterns, nulls and nonboolean options are errors even while the
-rule is disabled and before target access. Inspection identifies the first match.
 
 ## Inline formatting in headings
 

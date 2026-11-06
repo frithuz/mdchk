@@ -27,7 +27,7 @@ func TestGFMPrivateScopesPreserveProductionAdmission(t *testing.T) {
 		c.RepresentIndexFile = nil
 		return c, present
 	}
-	if got, present := flags(baseline); !present || !reflect.DeepEqual(got, config.Capabilities{CommonMark: true, GFM: true, SlideAnnotation: true, DirectiveProcessing: true, FrontmatterYAML: true, FrontmatterTOML: true, MetadataInterpretation: true, GitHubAnchors: true, ExplicitAnchors: true, ResourceIndex: true}) {
+	if got, present := flags(baseline); !present || !reflect.DeepEqual(got, config.Capabilities{CommonMark: true, GFM: true, DirectiveProcessing: true, FrontmatterYAML: true, FrontmatterTOML: true, MetadataInterpretation: true, GitHubAnchors: true, ExplicitAnchors: true, ResourceIndex: true}) {
 		t.Fatal("production capabilities changed", baseline)
 	}
 	baselineFlags, _ := flags(baseline)

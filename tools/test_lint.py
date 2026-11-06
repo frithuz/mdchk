@@ -127,16 +127,6 @@ package config
 import yaml "github.com/goccy/go-yaml"
 func Decode() { yaml.Helper() }
 ''')
-        write(root, "internal/integration/yaml_context.go", '''// Package integration owns bounded YAML adaptation.
-package integration
-import yaml "github.com/goccy/go-yaml"
-func DecodeOptions() { yaml.Helper() }
-''')
-        write(root, "internal/integration/mkdocs_yaml.go", '''// Package integration owns bounded MkDocs YAML adaptation.
-package integration
-import yaml "github.com/goccy/go-yaml"
-func DecodeMkDocs() { yaml.Helper() }
-''')
         for path, name in (("internal/yamlsource/probe.go", "Source"), ("internal/metadata/yaml.go", "YAML")):
             write(root, path, f'// Package {Path(path).parent.name} owns bounded source decoding.\npackage {Path(path).parent.name}\nimport yaml "github.com/goccy/go-yaml"\nfunc {name}() {{ yaml.Helper() }}\n')
         write(root, "internal/metadata/toml.go", '// Package metadata owns bounded source decoding.\npackage metadata\nimport toml "github.com/pelletier/go-toml/v2"\nfunc TOML() { toml.Helper() }\n')
@@ -169,9 +159,9 @@ func TestAdapter(t *testing.T) { conformance.Helper() }
             raise AssertionError(f"legitimate tests/entry points rejected:\n{output}")
         progress("External parser tests and both process entry points pass.")
 
-        # The integration exception names exactly the two bounded adapters. Neither
-        # another integration file nor the core parser inherits YAML access.
-        write(root, "internal/integration/other.go", '''package integration
+        # The exception names only the bounded adapters. Neither another package
+        # nor the core parser inherits YAML access.
+        write(root, "internal/rules/other.go", '''package rules
 import yaml "github.com/goccy/go-yaml"
 func OtherOptions() { yaml.Helper() }
 ''')
@@ -186,13 +176,11 @@ func Parse() { yaml.Helper() }
         # Depguard reports the first applicable denied rule for an import.
         # The earlier probe independently exercises parser-standard-library;
         # these two YAML imports must both remain configuration-adapter errors.
-        for required in ("internal/integration/other.go", "internal/parser/probe.go",
+        for required in ("internal/rules/other.go", "internal/parser/probe.go",
                          "configuration-adapter"):
             if required not in output:
                 raise AssertionError(f"missing narrow YAML boundary {required}:\n{output}")
-        if "internal/integration/yaml_context.go:" in output or "internal/integration/mkdocs_yaml.go:" in output:
-            raise AssertionError(f"approved bounded adapter rejected:\n{output}")
-        progress("Only the bounded shared YAML and MkDocs adapters gain YAML access; other integration/parser files fail.")
+        progress("Only the bounded YAML adapters gain YAML access; other rule and parser files fail.")
 
         write(root, "internal/metadata/other.go", '// Package metadata owns bounded source decoding.\npackage metadata\nimport toml "github.com/pelletier/go-toml/v2"\nfunc Other() { toml.Helper() }\n')
         code, output = run(binary, root, "run", "--config", ".golangci.yml", "./...")

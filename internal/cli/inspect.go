@@ -293,9 +293,7 @@ func inspectionOutcome(out *result.Result) {
 }
 func inspectionExit(out result.Result) int {
 	status := 0
-	// Lint-only project rules are unassessed, not an observation of the file.
-	lintOnly := slices.ContainsFunc(out.Coverage, engine.IsLintOnlyCoverage)
-	if len(out.Interruptions) > 0 || len(out.Omissions) > 0 || lintOnly {
+	if len(out.Interruptions) > 0 || len(out.Omissions) > 0 {
 		status = exitIncomplete
 	}
 	for _, category := range []result.ErrorCategory{result.Usage, result.Configuration, result.IO, result.Internal} {
@@ -370,15 +368,6 @@ func rebaseInspection(out *result.Result, p *inspection.Projection, cwd string) 
 		_ = json.Unmarshal(raw, &d)
 		d.Diagnostic.Path = logical(d.Diagnostic.Path)
 		out.SuppressedDiagnostics[i], _ = json.Marshal(d)
-	}
-	if p.DocumentContext.Data != nil {
-		var data inspection.DocumentContextData
-		if json.Unmarshal(*p.DocumentContext.Data, &data) == nil && data.SlideMatch != nil {
-			data.SlideMatch.Origin.Path = logical(data.SlideMatch.Origin.Path)
-			raw, _ := json.Marshal(data)
-			message := json.RawMessage(raw)
-			p.DocumentContext.Data = &message
-		}
 	}
 	if p.Configuration.Data != nil {
 		c := p.Configuration.Data

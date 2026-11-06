@@ -24,7 +24,6 @@ type Definition struct {
 	Flavor              *string
 	Resources           *Resources
 	Frontmatter         *Frontmatter
-	Documents           *Documents
 	Rules               map[string]RuleSetting
 	Exclude             *[]string
 	Directives          *Directives
@@ -42,7 +41,6 @@ type Frontmatter struct {
 	Formats *[]string
 }
 
-type Documents struct{ Slides *[]string }
 type Directives struct{ Enabled *bool }
 
 // RuleSetting separates permissions from engine rule options. Map membership in
@@ -70,7 +68,6 @@ type Builtins struct {
 	AnchorStyle         string
 	FrontmatterEnabled  bool
 	FrontmatterFormats  []string
-	Slides              []string
 	Exclude             []string
 	DirectivesEnabled   bool
 	AllowDirectives     bool
@@ -84,7 +81,7 @@ func DefaultSettings() Builtins {
 	return Builtins{
 		Flavor: "gfm", IndexFile: "index.md", AnchorStyle: "github",
 		FrontmatterFormats: []string{"yaml", "toml"},
-		Slides:             []string{}, Exclude: []string{},
-		DirectivesEnabled: true, AllowDirectives: true, AllowNestedExcludes: true,
+		Exclude:            []string{},
+		DirectivesEnabled:  true, AllowDirectives: true, AllowNestedExcludes: true,
 	}
 }

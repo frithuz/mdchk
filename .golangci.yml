@@ -60,9 +60,7 @@ linters:
           files:
             - '!${base-path}/internal/config/**'
             # Shared configuration YAML has a bounded, source-mapped
-            # adapter. All other integration/parser files stay denied.
-            - '!${base-path}/internal/integration/yaml_context.go'
-            - '!${base-path}/internal/integration/mkdocs_yaml.go'
+            # adapter. All other parser files stay denied.
             - '!${base-path}/internal/yamlsource/**'
             - '!${base-path}/internal/metadata/yaml.go'
           deny:

@@ -78,7 +78,7 @@ func TestSelectionAndExecutionMatchersRemainOwned(t *testing.T) {
 			t.Error(err)
 		}
 	}()
-	body := []byte("version: 1\nflavor: commonmark\ndirectives: {enabled: false}\nexclude: [private/**]\ndocuments: {slides: [slides/**]}\n")
+	body := []byte("version: 1\nflavor: commonmark\ndirectives: {enabled: false}\nexclude: [private/**]\n")
 	if err := access.WriteFile(config.Filename, body, 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -86,7 +86,7 @@ func TestSelectionAndExecutionMatchersRemainOwned(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	caps := config.Capabilities{CommonMark: true, SlideAnnotation: true}
+	caps := config.Capabilities{CommonMark: true}
 	selected, err := config.ResolveValidated(config.SelectionOptions{WorkingDirectory: base, BoundaryDirectory: base}, registry, engine.ValidationProviders{})
 	if err != nil {
 		t.Fatal(err)
@@ -104,14 +104,14 @@ func TestSelectionAndExecutionMatchersRemainOwned(t *testing.T) {
 		for _, tc := range []struct {
 			patterns *config.Patterns
 			name     string
-		}{{r.Exclude, "private/a.md"}, {r.Slides, "slides/a.md"}} {
+		}{{r.Exclude, "private/a.md"}} {
 			matched, err := tc.patterns.Match(tc.name, false, true)
 			if err != nil || !matched {
 				t.Fatalf("matcher no longer matches %q: %v", tc.name, err)
 			}
 		}
 	}
-	overwrite := func(r *config.Resolution) { t.Helper(); *r.Exclude = config.Patterns{}; *r.Slides = config.Patterns{} }
+	overwrite := func(r *config.Resolution) { t.Helper(); *r.Exclude = config.Patterns{} }
 	first := admit()
 	sibling := admit()
 	firstPlan := first.ExecutionPlan()

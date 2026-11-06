@@ -353,7 +353,7 @@ func ProcessDirectives(ctx context.Context, parsed parser.ParseResult, configura
 			case !permission.Allowed:
 				effect.Disposition = DirectiveBlocked
 				r.notes = append(r.notes, DirectiveNote{Code: "directive-blocked", Message: "directive effect blocked by configuration", Rule: id, Span: token, Restrictions: cloneDirectiveOrigins(permission.Restrictions)})
-			case id == "MD074" || id == "MD094":
+			case id == "MD094":
 				effect.Disposition = DirectiveInapplicable
 				r.notes = append(r.notes, DirectiveNote{Code: "directive-inapplicable", Message: "document directives do not control this rule", Rule: id, Span: token})
 			default:

@@ -104,6 +104,3 @@ Validate every pattern before file selection, including patterns that match noth
 Git ignore support for lint and fix is deferred in the current design. A `.gitignore` entry alone therefore does not define their exclusions. Put Markdown paths you want skipped in the selected configuration's `exclude` list.
 
 See [troubleshooting](troubleshooting.md) when selected files or configuration differ from what you expected.
-
-Slide patterns only annotate selected documents; they never select or exclude
-targets. See [optional contexts](configuration.md#optional-document-contexts).

@@ -47,13 +47,13 @@ func TestLintConfigurationStopsBeforeTargets(t *testing.T) {
 	for _, tc := range []struct{ name, body, explicit, want string }{
 		{"invalid nearest", "version: 2\n", "", "version"},
 		{"missing explicit", availableConfig, "missing.yaml", "missing.yaml"},
-		{"explicit unavailable rule", availableConfig + "rules: {MD066: {enabled: true}}\n", "", "MD066"},
+		{"removed rule", availableConfig + "rules: {MD074: {enabled: true}}\n", "", "MD074"},
 		{"invalid disabled options", availableConfig + "rules: {MD013: {enabled: false, length: -1}}\n", "", "length"},
 		{"removed flavor", "version: 1\nflavor: pandoc\n", "", "flavor"},
 		{"invalid pattern", availableConfig + "exclude: ['bad/**x']\n", "", "exclude"},
 		{"disabled hostname provider", availableConfig + "rules: {MD095: {enabled: false, allowed_hosts: ['example.com:443']}}\n", "", "allowed_hosts"},
 		{"unsupported frontmatter", availableConfig + "frontmatter: {enabled: true, formats: [json]}\n", "", "frontmatter"},
-		{"invalid slides", availableConfig + "documents: {slides: ['talk/**', '[']}\n", "", "slides"},
+		{"removed documents mapping", availableConfig + "documents: {slides: ['talk/**']}\n", "", "documents"},
 		{"unrepresentable resource index", availableConfig + "resources: {index_file: .git}\n", "", "index_file"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -122,7 +122,7 @@ func TestLintPreparationRetainsOwnedSelection(t *testing.T) {
 	calls := 0
 	status := run([]string{"lint", "other/target.md", "missing.md"}, io.Discard, io.Discard, "dev", prepareLint, func(inv *lintInvocation, _, _ io.Writer) int {
 		calls++
-		if inv.selection.SelectedPath != path || inv.selection.Resolution.Settings.Flavor != "commonmark" || len(inv.selection.Resolution.Rules) != 87 || len(inv.options.paths) != 2 {
+		if inv.selection.SelectedPath != path || inv.selection.Resolution.Settings.Flavor != "commonmark" || len(inv.selection.Resolution.Rules) != 82 || len(inv.options.paths) != 2 {
 			t.Fatalf("incomplete selection: %+v", inv)
 		}
 		r := inv.selection.Resolution.Rules["MD013"]

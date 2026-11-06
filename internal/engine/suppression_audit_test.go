@@ -286,7 +286,7 @@ func TestSuppressionAuditSourceDerivedPlanningLimits(t *testing.T) {
 		{"effect-work", 4, 100, "work-units", 5},
 		{"bulk-work", 37, 100, "work-units", 38},
 		{"bulk-nodes", 1000, 11, "total-nodes", 12},
-		{"catalog-work", 215, 100, "work-units", 216},
+		{"catalog-work", 205, 100, "work-units", 206},
 		{"target-index-nodes", 1000, 18, "total-nodes", 19},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

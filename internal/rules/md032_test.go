@@ -82,7 +82,7 @@ func TestMD032AnalysisFixtures(t *testing.T) {
 
 func TestMD032CatalogOptionsAndDefaultActivation(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD032") || r.Available("MD066") || len(r.Metadata()) != 87 {
+	if !r.Available("MD032") || r.Available("MD066") || len(r.Metadata()) != 82 {
 		t.Fatal("availability")
 	}
 	enabledCount := 0
@@ -94,7 +94,7 @@ func TestMD032CatalogOptionsAndDefaultActivation(t *testing.T) {
 			t.Fatal(m)
 		}
 	}
-	if enabledCount != 59 {
+	if enabledCount != 56 {
 		t.Fatal(enabledCount)
 	}
 	for _, mapping := range []map[string]any{{"unknown": true}, {"enabled": false, "unknown": true}, {"enabled": nil}, {"enabled": "true"}, {"allow_directives": nil}, {"allow_directives": 1}} {

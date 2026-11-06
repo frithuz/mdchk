@@ -5,7 +5,7 @@ Use inline HTML comments with canonical MDxxx rule IDs to enable or disable rule
 Directives are intended for exceptions to specific rules within a document. To exclude a whole file from all rule linting, add its path to `exclude` in configuration. Do not enumerate every rule in a directive to suppress linting across the file. A whole-file exclusion does not prevent an explicitly requested inspection.
 
 Current availability: CommonMark/GFM directive processing is delivered in lint,
-fix and inspect. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD072, MD073, MD080, MD082, MD090, MD093 and MD047 are production checks; the MD040 examples below
+fix and inspect. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD072, MD073, MD080, MD082, MD093 and MD047 are production checks; the MD040 examples below
 illustrate rule-state syntax for an unavailable check. Permitted directives that
 enable unavailable rules produce incomplete coverage. Independently recognized
 YAML/TOML headers remain protected from directives, including when MD001, MD025 or MD041 consumes
@@ -115,7 +115,7 @@ Inspect includes directives in that region and earlier directives still affectin
 
 ## Special rule effects
 
-MD074 is project-scoped and MD094 controls pre-parse UTF-8 error attribution; directives targeting either have an inapplicable effect. A valid mixed-rule comment still applies its other permitted effects. UTF-8 validation cannot be disabled.
+MD094 controls pre-parse UTF-8 error attribution; directives targeting it have an inapplicable effect. A valid mixed-rule comment still applies its other permitted effects. UTF-8 validation cannot be disabled.
 
 MD087 observes otherwise-enabled target rules without disable intervals, on the original source and shared budgets. Last permitted disable instructions own intervals, including repeated disables. A proved hidden finding establishes use; only complete absence establishes an unused suppression. Missing context, unavailable rules or interruption withhold that conclusion and report incomplete coverage. See the [counterfactual contract](engineering/rule-behavior.md#unused-suppressions).
 

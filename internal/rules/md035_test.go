@@ -69,7 +69,7 @@ func TestMD035AnalysisFixtures(t *testing.T) {
 
 func TestMD035DefaultAvailabilityAndStrictSettings(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD035") || len(r.Metadata()) != 87 {
+	if !r.Available("MD035") || len(r.Metadata()) != 82 {
 		t.Fatal("catalog")
 	}
 	on, off := 0, 0
@@ -83,7 +83,7 @@ func TestMD035DefaultAvailabilityAndStrictSettings(t *testing.T) {
 			t.Fatal(m)
 		}
 	}
-	if on != 59 || off != 28 {
+	if on != 56 || off != 26 {
 		t.Fatal(on, off)
 	}
 	for _, enabled := range []bool{false, true} {

@@ -128,13 +128,12 @@ func TestMappedSpellingEndingsAndEOF(t *testing.T) {
 }
 func TestPermissionStatesAndSpecialEffects(t *testing.T) {
 	c := policy(t, "rules:\n  MD001: {enabled: true, allow_directives: false}\n  MD013: {enabled: false, length: 101}\n  MD040: {enabled: false, allow_directives: false}\n")
-	r := process(t, "<!-- mdchk:disable MD001 MD040 MD074 MD094 -->\n<!-- mdchk:enable MD013 -->", c)
+	r := process(t, "<!-- mdchk:disable MD001 MD040 MD094 -->\n<!-- mdchk:enable MD013 -->", c)
 	enabled(t, r, "MD001", r.Source().Len(), true, -1)
 	enabled(t, r, "MD040", r.Source().Len(), false, -1)
-	enabled(t, r, "MD074", r.Source().Len(), false, -1)
 	enabled(t, r, "MD094", r.Source().Len(), true, -1)
 	enabled(t, r, "MD013", r.Source().Len(), true, 1)
-	if len(r.Notes()) != 4 || len(r.Diagnostics()) != 0 || r.Candidates()[0].Effects[2].Disposition != engine.DirectiveInapplicable {
+	if len(r.Notes()) != 3 || len(r.Diagnostics()) != 0 || r.Candidates()[0].Effects[2].Disposition != engine.DirectiveInapplicable {
 		t.Fatal(r.Notes(), r.Candidates())
 	}
 	state, _ := r.StateAt("MD013", r.Source().Len())
@@ -145,7 +144,7 @@ func TestPermissionStatesAndSpecialEffects(t *testing.T) {
 	if len(disabled.Candidates()) != 1 || len(disabled.Diagnostics()) != 0 || disabled.Candidates()[0].Disposition != engine.DirectiveInactive {
 		t.Fatal(disabled)
 	}
-	mixed := process(t, "<!-- mdchk:disable MD001 MD074 MD094 -->", policy(t, ""))
+	mixed := process(t, "<!-- mdchk:disable MD001 MD094 -->", policy(t, ""))
 	enabled(t, mixed, "MD001", mixed.Source().Len(), false, 0)
 }
 func TestLiteralAndUnclosedComments(t *testing.T) {

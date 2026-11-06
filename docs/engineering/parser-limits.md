@@ -458,26 +458,6 @@ This provider does not build an anchor index or consume AnchorStyle, metadata,
 resource availability, correction, write or MCP authority. MD082 remains default
 disabled and report-only; this analysis produces no edits.
 
-
-### Thematic breaks before headings and explicit slides
-
-MD090 borrows direct actual body-block siblings under the complete original
-production profile/options/source/index/budget witness. An iterative reserved stack
-keeps each container sequence separate; owned first/last thematic markers provide
-one original range without raw scanning. Comments interrupt this adjacency. Labels,
-traversal/output storage and final publication share original operation controls.
-
-A narrow immutable per-path slide provider stays on the selected execution plan,
-including candidate and saved views. Configuration owns the existing direct bounded
-matcher, first match and exact origin; adapters bind invocation paths to the selected
-configuration directory once. The annotation follows mandatory encoding validation
-and changes neither selection nor format. Option-aware applicability may use only
-admitted options and explicit context before syntax; it cannot borrow partial syntax.
-Known slide exemptions are retained independently of unrelated parser/directive
-uncertainty. Inspection prepares context before callbacks and preserves truthful
-completed sections when a later operation stop occurs. MD090 stays default disabled
-and manual; this analysis produces no edits.
-
 ## Heading inline construct projection
 
 MD093 borrows actual inline kinds and complete source envelopes from each real

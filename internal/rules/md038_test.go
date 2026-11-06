@@ -29,7 +29,7 @@ func TestMD038DefaultsSettingsAndAvailability(t *testing.T) {
 			t.Fatal(m)
 		}
 	}
-	if on != 59 || off != 28 || !r.Available("MD038") {
+	if on != 56 || off != 26 || !r.Available("MD038") {
 		t.Fatal(on, off)
 	}
 	for _, enabled := range []bool{true, false} {

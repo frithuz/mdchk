@@ -34,10 +34,6 @@ type yamlTokenRange struct{ start, end int }
 
 var yamlBlockHeader = regexp.MustCompile(`^[|>](?:[1-9][+-]?|[+-][1-9]?)?$`)
 
-// YAML 1.2.2 Core integer forms; classification only, after the scalar charge.
-var yamlCoreInteger = regexp.MustCompile(`^(?:[-+]?[0-9]+|0o[0-7]+|0x[0-9a-fA-F]+)$`)
-var yamlCoreNumber = regexp.MustCompile(`^[-+]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][-+]?[0-9]+)?$`)
-
 type yamlMapper struct {
 	source parser.Source
 	body   []yamlMap
@@ -107,16 +103,6 @@ func (m yamlMapper) location(start, end int) Location {
 	}
 	return Location{m.source, span}
 }
-
-type yamlScalar int
-
-const (
-	yamlUnknown yamlScalar = iota
-	yamlString
-	yamlOther
-	yamlMapping
-	yamlSequence
-)
 
 type yamlDecoder struct {
 	checkpoint    func(int64, int64) error
@@ -745,166 +731,6 @@ func (d *yamlDecoder) scalarLocation(n ast.Node, use *ast.AliasNode) Location {
 	}
 	return d.tokenLocation(n.GetToken())
 }
-func (d *yamlDecoder) read(n ast.Node, depth int, use *ast.AliasNode, top bool) (string, Location, yamlScalar) {
-	if n == nil {
-		return "", d.out.block, yamlOther
-	}
-	d.charge(1, 1)
-	limit := d.depth
-	if int64(depth) > limit {
-		panic(yamlStop{&parser.LimitExceeded{Name: "structured-input-depth", Observed: int64(depth), Allowed: limit}})
-	}
-	if d.active[n] {
-		d.issue(n.GetToken(), "Cyclic YAML alias.")
-		return "", d.out.block, yamlUnknown
-	}
-	d.active[n] = true
-	defer delete(d.active, n)
-	loc := d.scalarLocation(n, use)
-	switch v := n.(type) {
-	case *ast.MappingKeyNode:
-		return d.read(v.Value, depth, use, false)
-	case *ast.AnchorNode:
-		if use == nil {
-			name := v.Name.GetToken().Value
-			d.charge(int64(len(name))+1, 1)
-			d.anchors[name] = v.Value
-		}
-		value, child, kind := d.read(v.Value, depth+1, use, top)
-		if use == nil && loc.valid() && child.valid() {
-			span, err := d.mapper.source.Span(min(loc.span.Start(), child.span.Start()), max(loc.span.End(), child.span.End()))
-			if err == nil {
-				child = Location{d.mapper.source, span}
-			}
-		}
-		return value, child, kind
-	case *ast.AliasNode:
-		target, visited := d.bindings[v]
-		if !visited {
-			target = d.anchors[v.Value.GetToken().Value]
-			d.bindings[v] = target
-		}
-		if target == nil {
-			d.issue(v.GetToken(), "Unresolved YAML alias.")
-			return "", loc, yamlUnknown
-		}
-		if use == nil {
-			use = v
-		}
-		return d.read(target, depth+1, use, top)
-	case *ast.TagNode:
-		tag := v.Start.Value
-		if strings.HasPrefix(tag, "!!") {
-			tag = strings.TrimPrefix(tag, "!!")
-		} else if strings.HasPrefix(tag, "!<tag:yaml.org,2002:") && strings.HasSuffix(tag, ">") {
-			tag = strings.TrimSuffix(strings.TrimPrefix(tag, "!<tag:yaml.org,2002:"), ">")
-		} else {
-			d.issue(v.GetToken(), "Custom YAML tags are unsupported.")
-			return "", loc, yamlUnknown
-		}
-		if tag == "map" || tag == "seq" {
-			value, location, kind := d.read(v.Value, depth+1, use, top)
-			want := yamlMapping
-			if tag == "seq" {
-				want = yamlSequence
-			}
-			if kind != want {
-				d.issue(v.GetToken(), "YAML core tag has the wrong value kind.")
-				return "", loc, yamlUnknown
-			}
-			return value, location, kind
-		}
-		child := v.Value
-		if anchor, ok := child.(*ast.AnchorNode); ok {
-			name := anchor.Name.GetToken().Value
-			d.charge(int64(len(name))+1, 1)
-			if use == nil {
-				// The alias target must retain the scalar's explicit tag.
-				d.anchors[name] = v
-			}
-			child = anchor.Value
-		}
-		value, ok := yamlTaggedScalar(child)
-		if !ok {
-			d.issue(v.GetToken(), "YAML core tag requires a scalar.")
-			return "", loc, yamlUnknown
-		}
-		d.charge(int64(len(value))+1, 0)
-		if use == nil {
-			child := d.scalarLocation(child, nil)
-			if child.valid() && loc.valid() {
-				span, e := d.mapper.source.Span(loc.span.Start(), child.span.End())
-				if e == nil {
-					loc = Location{d.mapper.source, span}
-				}
-			}
-		}
-		switch tag {
-		case "str":
-			return value, loc, yamlString
-		case "int":
-			ok = yamlCoreInteger.MatchString(value)
-		case "float":
-			ok = yamlCoreNumber.MatchString(value) || yamlSpecialNumber(value)
-		case "bool":
-			ok = strings.EqualFold(value, "true") || strings.EqualFold(value, "false")
-		case "null":
-			ok = value == "" || value == "~" || strings.EqualFold(value, "null")
-		default:
-			ok = false
-		}
-		if !ok {
-			d.issue(v.GetToken(), "Unsupported or invalid YAML core tag.")
-			return "", loc, yamlUnknown
-		}
-		return "", loc, yamlOther
-	case *ast.MergeKeyNode:
-		d.issue(v.GetToken(), "Merged YAMLs are unsupported.")
-		return "", loc, yamlUnknown
-	case *ast.MappingNode:
-		d.charge(int64(len(v.Values))+1, int64(len(v.Values)))
-		seen := map[string]bool{}
-		for _, entry := range v.Values {
-			key, _, kind := d.read(entry.Key, depth+1, use, false)
-			if kind != yamlString {
-				d.issue(entry.Key.GetToken(), "YAML keys must be ordinary strings.")
-			}
-			if seen[key] {
-				d.issue(entry.Key.GetToken(), "Duplicate YAML key.")
-			}
-			seen[key] = true
-			d.read(entry.Value, depth+1, use, false)
-
-		}
-		return "", loc, yamlMapping
-	case *ast.MappingValueNode:
-		d.issue(v.GetToken(), "Unsupported YAML mapping structure.")
-		return "", loc, yamlUnknown
-	case *ast.SequenceNode:
-		for _, entry := range v.Values {
-			d.read(entry, depth+1, use, false)
-		}
-		return "", loc, yamlSequence
-	case *ast.StringNode:
-		d.charge(int64(len(v.Value))+1, 0)
-		if v.Token.Type == token.StringType && (yamlCoreNumber.MatchString(v.Value) || yamlSpecialNumber(v.Value)) {
-			return "", loc, yamlOther
-		}
-		return v.Value, loc, yamlString
-	case *ast.LiteralNode:
-		if v.Value == nil {
-			d.issue(v.GetToken(), "Malformed YAML block scalar.")
-			return "", loc, yamlUnknown
-		}
-		d.charge(int64(len(v.Value.Value))+1, 0)
-		return v.Value.Value, loc, yamlString
-	case *ast.IntegerNode, *ast.FloatNode, *ast.BoolNode, *ast.NullNode, *ast.InfinityNode, *ast.NanNode:
-		return "", loc, yamlOther
-	default:
-		d.issue(n.GetToken(), "Unsupported YAML syntax.")
-		return "", loc, yamlUnknown
-	}
-}
 func yamlTaggedScalar(n ast.Node) (string, bool) {
 	if n != nil && n.GetToken() != nil && n.GetToken().Type == token.ImplicitNullType {
 		return "", true
@@ -920,11 +746,6 @@ func yamlTaggedScalar(n ast.Node) (string, bool) {
 		return n.GetToken().Value, true
 	}
 	return "", false
-}
-
-func yamlSpecialNumber(value string) bool {
-	v := strings.ToLower(value)
-	return v == ".nan" || v == ".inf" || v == "+.inf" || v == "-.inf"
 }
 
 // Adapt only the pinned lexer's synthetic empty-block/dedent defect; all other
@@ -1012,11 +833,6 @@ func (d *yamlDecoder) NodeSpan(n ast.Node, use *ast.AliasNode) parser.Span {
 	return d.scalarLocation(n, use).span
 }
 func (d *yamlDecoder) TokenSpan(t *token.Token) parser.Span { return d.tokenLocation(t).span }
-func (d *yamlDecoder) Read(n ast.Node, depth int, use *ast.AliasNode) (string, parser.Span, int) {
-	text, loc, kind := d.read(n, depth, use, false)
-	return text, loc.span, int(kind)
-}
-func (d *yamlDecoder) Target(n *ast.AliasNode) ast.Node { return d.bindings[n] }
 func (d *yamlDecoder) Problems() []parser.Span {
 	d.charge(int64(len(d.out.issues))+1, int64(len(d.out.issues))+1)
 	out := make([]parser.Span, 0, len(d.out.issues))
@@ -1038,8 +854,7 @@ func (d *yamlDecoder) Issue(i int) (parser.Span, string, bool) {
 	issue := d.out.issues[i]
 	return issue.location.span, issue.message, true
 }
-func (d *yamlDecoder) InvalidQuote(t *token.Token) bool { return d.invalidQuotes[t] }
-func (d *yamlDecoder) HasInvalidQuotes() bool           { return len(d.invalidQuotes) > 0 }
+func (d *yamlDecoder) HasInvalidQuotes() bool { return len(d.invalidQuotes) > 0 }
 
 // Synthetic nulls refer to their maintained parser base token at column-1.
 // Index the already monotonic/source-reconciled lexical positions once. This

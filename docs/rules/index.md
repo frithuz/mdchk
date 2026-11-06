@@ -157,7 +157,7 @@ withholds the entire MD033 inventory with explicit coverage. No MD033 edits or p
 
 We target the implemented rule list from `rumdl` because it covers markdownlint's built-in rules and adds further checks. The individual rule specifications define mdchk's behavior internally. We may expand this ruleset with additional custom rules in the future.
 
-The mdchk ruleset contains 87 rules, of which 84 are active. MD066, MD067 and MD068 are inactive because neither CommonMark nor the GFM profile recognizes footnotes and Pandoc support has been canceled. The 87 rules are MD001 through MD095, excluding MD002, MD006, MD008, MD015, MD016, MD017, MD078, and MD079. Preserve these reserved gaps; do not implement checks under those IDs.
+The mdchk ruleset contains 82 rules, all of which are active. The 82 rules are MD001 through MD095, excluding MD002, MD006, MD008, MD015, MD016, MD017, MD066, MD067, MD068, MD074, MD078, MD079, and MD090. Preserve these reserved gaps; do not implement checks under those IDs.
 
 MD047 analysis, configuration, safe previews and native application are implemented for
 CommonMark. Apply works on Linux, macOS and Windows; other operating systems
@@ -174,13 +174,12 @@ closed-heading delimiter spacing, MD022 heading blank-line analysis, MD023 headi
 indentation analysis, MD024 repeated heading analysis, MD025 multiple-title analysis,
 MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041
 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization
-analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090
-thematic-break-before-heading analysis, MD093 inline-formatting-in-headings analysis and
+analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD093 inline-formatting-in-headings analysis and
 MD094 invalid-UTF-8 analysis and configuration are implemented for both flavors. MD055 outer-table-pipe analysis,
 MD056 mismatched-cell-count analysis, MD058 blank-lines-around-tables analysis, MD075 pipe-rows-without-header analysis and their configuration are implemented for GFM only, enabled by default. MD060 table-column-layout analysis and configuration are implemented for GFM only, disabled by default. MD001, MD003, MD004, MD005, MD007,
 MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD014, MD031, MD040, MD046, MD048, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD062, MD054, MD057, MD059, MD055, MD056, MD058, MD060, MD075, MD070, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD044, MD061, MD083, MD084, MD049, MD050, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD020, MD022, MD023, MD024, MD025, MD026,
-MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093, MD094 and MD095 are report-only. MD013, MD026, MD036,
-MD040, MD043, MD044, MD061, MD083, MD084, MD063, MD070, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD054, MD060, MD087, MD093 and MD095 are available but disabled by default. Other
+MD036, MD041, MD043, MD063, MD080, MD082, MD093, MD094 and MD095 are report-only. MD013, MD026, MD036,
+MD040, MD043, MD044, MD061, MD083, MD084, MD063, MD070, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD054, MD060, MD087, MD093 and MD095 are available but disabled by default. Other
 ordinary rule callbacks remain planned. The mandatory UTF-8 gate is implemented
 independently; MD094 is enabled by default and controls attribution, not an ordinary production callback. Each
 linked page defines its behavior, configuration, examples, correction policy, and
@@ -197,7 +196,7 @@ PlannedFix retains future correction scope. No MD088 edits or previews are emitt
 
 | Area | Rules |
 | --- | --- |
-| [Headings](headings/index.md) | 19 |
+| [Headings](headings/index.md) | 18 |
 | [Lists](lists/index.md) | 9 |
 | [Whitespace](whitespace/index.md) | 10 |
 | [Formatting](formatting/index.md) | 9 |
@@ -205,9 +204,8 @@ PlannedFix retains future correction scope. No MD088 edits or previews are emitt
 | [Code blocks](code-blocks/index.md) | 8 |
 | [Links and images](links-and-images/index.md) | 13 |
 | [Tables](tables/index.md) | 5 |
-| [Footnotes](footnotes/index.md) | 3 (inactive) |
 | [Frontmatter](frontmatter/index.md) | 2 |
-| [Content and navigation](content-and-navigation/index.md) | 3 |
+| [Content and navigation](content-and-navigation/index.md) | 2 |
 | [Encoding](encoding/index.md) | 3 |
 
 ## Skipped IDs
@@ -268,7 +266,7 @@ Use parser context and preserved source bytes. Respect the selected format, dire
 
 Before marking a rule implemented, verify valid and invalid cases, configuration boundaries, intentional exceptions, diagnostic ranges, and applicable formats. Fixtures must exercise interactions with protected regions and containers. Fixes require reparsing, rule-specific preservation checks, and idempotence. Pass 1 rule completion requires reusable engine analysis fixtures; it does not wait for MCP transports or later correction passes. CLI/project/standalone parity for equivalent source and context is verified in #196, #200 and #206 after the adapters exist. See the [delivery stages](../engineering/contracts.md#delivery-stages-and-prerequisites).
 
-MkDocs navigation requires an explicit project context. This remains required work beyond the confirmed CommonMark and GFM format contracts. Metadata key sorting requires a format-aware parser and is an explicit exception to opaque metadata handling. UTF-8 validation is unconditional before parsing; MD094 controls attribution only. Invalid bytes produce one I/O error, never a duplicate rule violation. See the [UTF-8 contract](../engineering/rule-behavior.md#utf-8-validation).
+Metadata key sorting requires a format-aware parser and is an explicit exception to opaque metadata handling. UTF-8 validation is unconditional before parsing; MD094 controls attribution only. Invalid bytes produce one I/O error, never a duplicate rule violation. See the [UTF-8 contract](../engineering/rule-behavior.md#utf-8-validation).
 
 See the [engineering design](../engineering.md#rules-and-diagnostics), [Markdown formats](../markdown-formats.md), and [configuration guide](../configuration.md).
 

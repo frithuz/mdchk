@@ -61,7 +61,7 @@ analysis, MD023 heading indentation analysis, MD024 repeated heading analysis, M
 multiple-title analysis, MD026 heading-end punctuation analysis, MD036
 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline
 analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision
-analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis and
+analysis, MD082 empty-section analysis and
 MD093 inline-formatting-in-headings analysis and MD081 paragraph-emphasis analysis and MD088 ASCII-punctuation analysis and MD033 embedded-HTML analysis and MD086 unmatched-comment analysis and MD087 unused-suppression analysis are implemented. MD093 is available but
 disabled by default, with exact `allowed_constructs` choices and nested behavior
 documented on its [rule page](rules/headings/md093.md); MD026 is available but disabled
@@ -84,7 +84,7 @@ minima, each defaulting to 1; MD072 accepts boolean `recursive` (default false) 
 (default `<!-- toc -->`) and `end_marker` (default `<!-- /toc -->`) and heading levels
 `min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077,
 MD018, MD020, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043,
-MD061, MD063, MD072, MD073, MD080, MD083, MD084, MD082, MD090, MD081, MD088, MD033, MD086, MD087, MD093, MD095 and MD071 are report-only.
+MD061, MD063, MD072, MD073, MD080, MD083, MD084, MD082, MD081, MD088, MD033, MD086, MD087, MD093, MD095 and MD071 are report-only.
 Rules marked unavailable in the linked inventory remain pending. Every default-enabled
 rule is available for CommonMark and GFM; an enabled rule without an implementation
 would produce a coverage deficit rather than a clean result. Valid UTF-8 with all
@@ -140,7 +140,7 @@ To exclude a whole file from all rule linting, list its path under `exclude`. In
 
 `rules` sets expectations by canonical, case-sensitive numeric ID, such as `MD013`. Use `enabled: true` to enable a rule or `enabled: false` to disable it. Rule-specific options, such as the list `marker` above, sit alongside `enabled`. Omitted rules and options keep their defaults.
 
-The [implementation ruleset](rules/index.md) defines 87 numeric rule IDs; each rule page supplies its option schema and default enablement. Descriptive aliases, lowercase IDs, unknown IDs, and reserved IDs are rejected. Repeating an ID is an error even when its settings are identical. Descriptions may accompany IDs in reports without becoming configuration names.
+The [implementation ruleset](rules/index.md) defines 82 numeric rule IDs; each rule page supplies its option schema and default enablement. Descriptive aliases, lowercase IDs, unknown IDs, and reserved IDs are rejected. Repeating an ID is an error even when its settings are identical. Descriptions may accompany IDs in reports without becoming configuration names.
 
 ## Configuration syntax
 
@@ -158,7 +158,6 @@ Types are strict: strings do not become booleans or numbers, numbers do not beco
 | `flavor` | `commonmark` or `gfm` | `gfm` |
 | `resources` | Shared resource policy mapping | `index_file: index.md`, `anchor_style: github` |
 | `frontmatter` | Mapping with `enabled` and `formats` | `enabled: false`, `formats: [yaml, toml]` |
-| `documents` | Mapping with `slides` pattern sequence | `slides: []` |
 | `rules` | Mapping from MDxxx IDs to option mappings | Catalog defaults |
 | `exclude` | Sequence of valid pattern strings | Empty sequence |
 | `directives` | Mapping containing optional boolean `enabled` | `enabled: true`, subject to ancestor restrictions |
@@ -215,18 +214,13 @@ enabled independently. MD072 consumes YAML/TOML key ordering and reports inside 
 recognized header; without recognition it has nothing to check. `mdchk inspect` reports
 the decoded state, problems, title and key ordering in its
 [metadata record](engineering/inspection-projection-v1.md#metadata-record). Metadata corrections
-remain pending. Explicit slide annotation is implemented in lint, fix candidate
-analysis and inspection; MD090 consumes it without enabling itself. MD074 is the
-MkDocs context consumer: lint checks the navigation, while fix and inspect report
-it as lint-only coverage.
+remain pending.
 
 ```yaml
 version: 1
 frontmatter:
   enabled: false
   formats: [yaml, toml]
-documents:
-  slides: []
 ```
 
 `frontmatter.enabled` is Boolean and defaults to false. `formats` is a nonempty
@@ -237,19 +231,6 @@ preserved UTF-8 BOM. Delimiters are unindented lines with only optional trailing
 spaces/tabs. Recognized headers are opaque to ordinary rules and directives;
 an unterminated header is protected through EOF with incomplete coverage and no
 edits there. JSON headers are deferred. See [frontmatter and metadata](engineering/frontmatter.md).
-
-`documents.slides` is a sequence of patterns using the exclusion grammar and its
-base directory, but only annotates already selected files. It does not select or
-exclude files, choose a flavor, or enable MD090. Only the selected configuration
-supplies these patterns; standalone uses its virtual root. MD090's default
-`allow_slides: true` exempts marked documents; false checks them normally.
-
-MD074 enablement itself opts into the [MkDocs context](engineering/integrations.md#mkdocs-navigation).
-There is no second integration flag. `config_path`, default `mkdocs.yml`, resolves
-from the operation resource root and must stay inside it. It must be a canonical
-relative path: an empty string, an absolute or drive path, backslashes, `.` or `..`
-segments and URLs are located configuration errors (`12`) in lint and
-`config validate`.
 
 Shared [resource limits](engineering/limits.md) and [HTTP policy](engineering/http.md)
 are operator options, not project configuration fields.

@@ -61,15 +61,11 @@ rules:
   MD063: {enabled: false}
   MD064: {enabled: false}
   MD065: {enabled: false}
-  MD066: {enabled: false}
-  MD067: {enabled: false}
-  MD068: {enabled: false}
   MD069: {enabled: false}
   MD070: {enabled: false}
   MD071: {enabled: false}
   MD072: {enabled: false}
   MD073: {enabled: false}
-  MD074: {enabled: false}
   MD075: {enabled: false}
   MD076: {enabled: false}
   MD077: {enabled: false}
@@ -83,7 +79,6 @@ rules:
   MD087: {enabled: false}
   MD088: {enabled: false}
   MD089: {enabled: false}
-  MD090: {enabled: false}
   MD091: {enabled: false}
   MD092: {enabled: false}
   MD093: {enabled: false}

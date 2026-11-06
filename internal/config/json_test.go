@@ -208,7 +208,6 @@ func TestJSONAndYAMLCapabilityParity(t *testing.T) {
 		{"index", "resources: {index_file: index.md}", `"resources":{"index_file":"index.md"}`, "resources.index_file"},
 		{"anchors", "resources: {anchor_style: github}", `"resources":{"anchor_style":"github"}`, "resources.anchor_style"},
 		{"frontmatter", "frontmatter: {enabled: true}", `"frontmatter":{"enabled":true}`, "frontmatter.enabled"},
-		{"slides", "documents: {slides: ['slides/**']}", `"documents":{"slides":["slides/**"]}`, "documents.slides"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			yd, ye := DecodeYAML("cap.yaml", []byte("version: 1\nflavor: commonmark\ndirectives: {enabled: false}\n"+tc.yaml+"\n"))

@@ -481,7 +481,7 @@ func fields(v LocatedValue, allowed string, visit func(string, LocatedValue) err
 func definition(root LocatedValue) (*Definition, error) {
 	d := &Definition{syntax: root, Provenance: map[string]Origin{}}
 	var err error
-	err = fields(root, "version flavor rules exclude directives allow_nested_excludes resources frontmatter documents", func(k string, v LocatedValue) error {
+	err = fields(root, "version flavor rules exclude directives allow_nested_excludes resources frontmatter", func(k string, v LocatedValue) error {
 		switch k {
 		case "version":
 			if e := requireKind(v, IntegerValue); e != nil {
@@ -523,9 +523,6 @@ func definition(root LocatedValue) (*Definition, error) {
 				}
 				return e
 			})
-		case "documents":
-			d.Documents = &Documents{}
-			err = fields(v, "slides", func(_ string, x LocatedValue) error { var e error; d.Documents.Slides, e = stringsSetting(x); return e })
 		case "rules":
 			if e := requireKind(v, MappingValue); e != nil {
 				return e

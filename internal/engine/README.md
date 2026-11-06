@@ -11,8 +11,8 @@ failures, unavailable implementations and interruption never become skips.
 map. Each canonical, nonreserved MDxxx ID has one metadata entry and at most
 one executable implementation. Adding a rule changes registration, without
 changing command dispatch. Metadata can describe unavailable implementations;
-`Catalog` supplies all 87 known rules, preserving reserved gaps and the 59
-enabled / 28 disabled defaults. `NewCatalogRegistry` combines those contracts
+`Catalog` supplies all 82 known rules, preserving reserved gaps and the 56
+enabled / 26 disabled defaults. `NewCatalogRegistry` combines those contracts
 with only the supplied callbacks; planned corrections remain metadata. Tests and
 other trusted consumers may still provide a smaller metadata set to `NewRegistry`.
 Options admit bool, int, finite number, string and copied string-list domains,
@@ -36,8 +36,8 @@ Markdown analysis. Inputs from another plan or registry fail before analysis.
 Configuration adapters retain the complete admitted policy/context snapshot;
 mutable resolution views never become execution authority.
 
-The catalog proves table rules MD055/056/058/060/075 inapplicable to CommonMark,
-and footnote rules MD066/067/068 inapplicable to CommonMark/GFM. Unknown or absent
+The catalog proves table rules MD055/056/058/060/075 inapplicable to CommonMark.
+Unknown or absent
 dialect context stays conservative. Resource/integration context absence does
 not imply inapplicability: callbacks report unmet prerequisites as coverage.
 
@@ -372,26 +372,6 @@ uses actual private nodes and owned content/tails, excluding container prefixes.
 This provider does not build an anchor index or consume AnchorStyle, metadata,
 resource availability, correction, write or MCP authority. MD082 remains default
 disabled and report-only; this analysis produces no edits.
-
-
-### Thematic breaks before headings and explicit slides
-
-MD090 borrows direct actual body-block siblings under the complete original
-production profile/options/source/index/budget witness. An iterative reserved stack
-keeps each container sequence separate; owned first/last thematic markers provide
-one original range without raw scanning. Comments interrupt this adjacency. Labels,
-traversal/output storage and final publication share original operation controls.
-
-A narrow immutable per-path slide provider stays on the selected execution plan,
-including candidate and saved views. Configuration owns the existing direct bounded
-matcher, first match and exact origin; adapters bind invocation paths to the selected
-configuration directory once. The annotation follows mandatory encoding validation
-and changes neither selection nor format. Option-aware applicability may use only
-admitted options and explicit context before syntax; it cannot borrow partial syntax.
-Known slide exemptions are retained independently of unrelated parser/directive
-uncertainty. Inspection prepares context before callbacks and preserves truthful
-completed sections when a later operation stop occurs. MD090 stays default disabled
-and manual; this analysis produces no edits.
 
 ## Heading inline construct projection
 

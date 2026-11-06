@@ -135,7 +135,7 @@ func TestSharedSuppressionParityAndLastOwner(t *testing.T) {
 	validateProduced(t, a)
 }
 func TestBlockedInvalidProtectedAndSpecialDirectives(t *testing.T) {
-	text := "<!-- mdchk:disable MD001 MD003 MD074 MD094 -->\n<!-- mdchk:disable MD999 -->\n`<!-- mdchk:disable MD001 -->`\n\n<script>\n<!-- mdchk:disable MD001 -->\n</script>\n"
+	text := "<!-- mdchk:disable MD001 MD003 MD094 -->\n<!-- mdchk:disable MD999 -->\n`<!-- mdchk:disable MD001 -->`\n\n<script>\n<!-- mdchk:disable MD001 -->\n</script>\n"
 	s, _ := projectionFixture(t, text, "rules: {MD001: {allow_directives: false}}\n", []engine.Registration{{ID: "MD001", Check: func(context.Context, engine.RuleContext) engine.RuleOutcome { return engine.RuleOutcome{} }}})
 	a := analyze(t, s, false)
 	d := *a.Projection.Directives.Data
@@ -146,7 +146,7 @@ func TestBlockedInvalidProtectedAndSpecialDirectives(t *testing.T) {
 	for _, e := range d[0].Effects {
 		effects[e.Rule] = e
 	}
-	if effects["MD001"].Effect != "blocked" || len(effects["MD001"].Provenance) == 0 || effects["MD003"].Effect != "disable" || effects["MD074"].Effect != "inapplicable" || effects["MD094"].Effect != "inapplicable" {
+	if effects["MD001"].Effect != "blocked" || len(effects["MD001"].Provenance) == 0 || effects["MD003"].Effect != "disable" || effects["MD094"].Effect != "inapplicable" {
 		t.Fatal(effects)
 	}
 	candidates := *a.Projection.RawCandidates.Data

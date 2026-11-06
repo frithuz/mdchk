@@ -107,18 +107,12 @@ func validID(id string) bool {
 		}
 	}
 	n, err := strconv.Atoi(id[2:])
-	return err == nil && n >= 1 && n <= 95 && !slices.Contains([]int{2, 6, 8, 15, 16, 17, 78, 79}, n)
+	return err == nil && n >= 1 && n <= 95 && !slices.Contains([]int{2, 6, 8, 15, 16, 17, 66, 67, 68, 74, 78, 79, 90}, n)
 }
-
-// ProjectRule reports whether id is a project check that an adapter runs once
-// per operation, outside the per-document loop. MD074 checks the MkDocs
-// configuration in lint only; it has no per-document callback.
-func ProjectRule(id string) bool { return id == "MD074" }
 
 // NewRegistry freezes catalog schemas and registration maps. No package-global
 // mutable registry exists. Metadata returns defensive copies. MD094 is a gate
-// attribution entry and cannot have a normal executable implementation. Lint
-// never invokes a per-document callback for a project rule.
+// attribution entry and cannot have a normal executable implementation.
 func NewRegistry(catalog []Metadata, implementations []Registration) (*Registry, error) {
 	r := &Registry{identity: &registryIdentity{}, metadata: make(map[string]Metadata), checks: make(map[string]Check), applies: make(map[string]func(context.Context, RuleContext) (bool, error))}
 	for _, m := range catalog {
@@ -175,5 +169,15 @@ func (r *Registry) Metadata() []Metadata {
 	return out
 }
 func (r *Registry) Available(id string) bool {
-	return (id == "MD094" || ProjectRule(id)) && r.metadata[id].ID != "" || r.checks[id] != nil
+	return id == "MD094" && r.metadata[id].ID != "" || r.checks[id] != nil
+}
+
+func (r *Registry) applicable(ctx context.Context, c RuleContext, m Metadata) (bool, error) {
+	if m.AppliesTo != nil && !m.AppliesTo(c.Context()) {
+		return false, nil
+	}
+	if applies := r.applies[m.ID]; applies != nil {
+		return applies(ctx, c)
+	}
+	return true, nil
 }

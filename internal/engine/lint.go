@@ -135,24 +135,6 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 			out.Files = append(out.Files, file)
 			continue
 		}
-		if in.plan != nil && in.plan.slides != nil {
-			annotation, err := in.plan.slides.Slides(ctx, budget, in.path)
-			if err == nil {
-				err = annotation.validate()
-			}
-			if err != nil {
-				if isInterruption(err) {
-					stopped = recordInterruption(&out, in.path, "context", err)
-				} else {
-					out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "document-context", Scope: "operation", Path: in.path, Message: err.Error()})
-					out.Coverage = append(out.Coverage, result.Coverage{Path: in.path, Reason: result.ContextUnavailable, Message: "Document annotation is unavailable."})
-				}
-				file.Analysis = "partial"
-				out.Files = append(out.Files, file)
-				continue
-			}
-			in.documentContext.Slides = annotation
-		}
 		if options.inspection != nil {
 			options.inspection.documentContext = in.documentContext
 			options.inspection.contextKnown = true
@@ -339,14 +321,6 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 					stopped = recordInterruption(&out, in.path, "analysis", err)
 					break
 				}
-			}
-			if ProjectRule(id) {
-				// Project rules never run per document. Inspection keeps the
-				// initial context-unavailable reason unless the rule is inactive.
-				if options.inspection != nil && !directives.EnabledSomewhere(id) {
-					options.inspection.skip(id, "inactive")
-				}
-				continue
 			}
 			state := settings[i][id]
 			m := r.metadata[id]

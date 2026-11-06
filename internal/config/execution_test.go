@@ -152,8 +152,8 @@ func TestExecutionExplicitMissingFailsBeforeTargets(t *testing.T) {
 }
 
 func TestExecutionDisabledAndDialectInapplicableMissingAreComplete(t *testing.T) {
-	// MD055 and MD066 are default-enabled but genuinely absent in CommonMark.
-	r := executionRegistry(t, map[string]bool{"MD001": true, "MD055": true, "MD066": true}, nil, false)
+	// MD055 is default-enabled but genuinely absent in CommonMark.
+	r := executionRegistry(t, map[string]bool{"MD001": true, "MD055": true}, nil, false)
 	p := executionResolution(t, r, "rules: {MD001: {enabled: false}}\n", engine.ValidationProviders{}).ExecutionPlan()
 	out := executionLint(t, p, context.Background(), executionInput(t, p, "a.md", []byte("ordinary\n")))
 	if !out.Complete || out.Status != "clean" || len(out.Coverage) != 0 {

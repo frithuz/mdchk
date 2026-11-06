@@ -9,8 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"unicode/utf8"
-
-	"github.com/frithuz/mdchk/internal/resource"
 )
 
 // Options admit only immutable scalars and copied string lists. A rule cannot
@@ -49,9 +47,6 @@ const (
 	DNSHostname        OptionDomain = "dns-hostname-unicode-17"
 	HeadingOutline     OptionDomain = "heading-outline"
 	ConfiguredNameUTF8 OptionDomain = "configured-name-utf8"
-	// ResourceKey is a canonical operation-root-relative resource key, such as
-	// MD074's config_path. URLs and absolute, drive or dot-segment paths fail.
-	ResourceKey OptionDomain = "resource-key"
 )
 
 var ErrHostnameValidationUnavailable = errors.New("hostname validation unavailable: requires Unicode 17.0.0 UTS #46")
@@ -108,7 +103,7 @@ func (s OptionSpec) validConstraints() bool {
 	switch s.Domain {
 	case "":
 		return true
-	case HTMLComment, ResourceKey:
+	case HTMLComment:
 		return s.Kind == String
 	case UnicodeScalarHex, DNSHostname, HeadingOutline, ConfiguredNameUTF8:
 		return s.Kind == Strings
@@ -161,12 +156,6 @@ func (s OptionSpec) validate(v any) error {
 		body := x[4 : len(x)-3]
 		if strings.Contains(body, "-->") || strings.Contains(body, "<!--") || strings.Contains(body, "--!>") || strings.HasPrefix(body, ">") || strings.HasPrefix(body, "->") || strings.HasSuffix(body, "<!-") {
 			return fmt.Errorf("invalid HTML comment marker")
-		}
-	}
-	if s.Domain == ResourceKey {
-		x, ok := v.(string)
-		if _, err := resource.NewKey(x); !ok || err != nil || strings.Contains(x, "://") {
-			return fmt.Errorf("expected a canonical relative resource path within the operation root")
 		}
 	}
 	if s.Domain == UnicodeScalarHex {

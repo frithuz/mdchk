@@ -24,7 +24,7 @@ func (f NameFact) Existence() Existence { return f.existence }
 
 // NameInventory is an adapter-produced enumeration witness. Completeness is
 // private and means all names below this exact directory/view were inspected;
-// it does not mean those names are eligible MkDocs pages.
+// it does not mean those names are eligible Markdown pages.
 type NameInventory struct {
 	source    *projectSourceState
 	directory Location

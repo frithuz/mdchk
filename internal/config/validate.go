@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"reflect"
 	"slices"
-	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -31,7 +30,6 @@ type Capabilities struct {
 	CommonMark, GFM                                          bool
 	DirectiveProcessing                                      bool
 	FrontmatterYAML, FrontmatterTOML, MetadataInterpretation bool
-	SlideAnnotation                                          bool
 	ResourceIndex, GitHubAnchors, ExplicitAnchors            bool
 	RepresentIndexFile                                       func(string) error
 }
@@ -65,11 +63,11 @@ func clonePermissions(p Permissions) Permissions {
 // Validated is an immutable schema-valid definition. It grants no execution
 // availability. Its private owned snapshot is independent of passive fields.
 type Validated struct {
-	selection       *engine.RuleSelection
-	definition      *Definition
-	rules           map[string]engine.ResolvedRule
-	settings        Builtins
-	exclude, slides *Patterns
+	selection  *engine.RuleSelection
+	definition *Definition
+	rules      map[string]engine.ResolvedRule
+	settings   Builtins
+	exclude    *Patterns
 }
 
 // Resolution is a fresh owned selected-operation snapshot. Own permissions and
@@ -82,7 +80,7 @@ type Resolution struct {
 	Rules                                map[string]engine.ResolvedRule
 	Origins                              map[string]Origin
 	OwnPermissions, EffectivePermissions Permissions
-	Exclude, Slides                      *Patterns
+	Exclude                              *Patterns
 }
 
 // ValidateDefinition performs complete schema and semantic validation without
@@ -151,9 +149,6 @@ func ValidateDefinition(input *Definition, registry *engine.Registry, providers 
 			seen[f] = true
 		}
 	}
-	if d.Documents != nil && d.Documents.Slides != nil {
-		b.Slides = slices.Clone(*d.Documents.Slides)
-	}
 	if d.Exclude != nil {
 		b.Exclude = slices.Clone(*d.Exclude)
 	}
@@ -175,10 +170,6 @@ func ValidateDefinition(input *Definition, registry *engine.Registry, providers 
 		return p, nil
 	}
 	ex, err := compile("exclude", b.Exclude)
-	if err != nil {
-		return nil, err
-	}
-	slides, err := compile("documents.slides", b.Slides)
 	if err != nil {
 		return nil, err
 	}
@@ -216,7 +207,7 @@ func ValidateDefinition(input *Definition, registry *engine.Registry, providers 
 		}
 		return nil, at(path, err)
 	}
-	return &Validated{selection: selection, definition: d, rules: selection.Rules(), settings: b, exclude: ex, slides: slides}, nil
+	return &Validated{selection: selection, definition: d, rules: selection.Rules(), settings: b, exclude: ex}, nil
 }
 func validIndexFile(s string) bool {
 	return s != "" && s != "." && s != ".." && utf8.ValidString(s) && !strings.ContainsAny(s, "/\\*?[]#:") && strings.IndexFunc(s, unicode.IsControl) < 0
@@ -274,9 +265,6 @@ func (v *Validated) Admit(c Capabilities, inherited Permissions) (*Resolution, e
 			}
 		}
 	}
-	if len(b.Slides) > 0 && !c.SlideAnnotation {
-		return fail("documents.slides", "slide annotation is unavailable")
-	}
 	if d.Resources != nil {
 		if d.Resources.IndexFile != nil {
 			if !c.ResourceIndex {
@@ -313,7 +301,6 @@ func (v *Validated) Admit(c Capabilities, inherited Permissions) (*Resolution, e
 		rules[id] = s
 	}
 	b.FrontmatterFormats = slices.Clone(b.FrontmatterFormats)
-	b.Slides = slices.Clone(b.Slides)
 	b.Exclude = slices.Clone(b.Exclude)
 	b.DirectivesEnabled = len(p.Directives) == 0
 	b.AllowNestedExcludes = len(p.NestedExcludes) == 0
@@ -336,19 +323,8 @@ func (v *Validated) Admit(c Capabilities, inherited Permissions) (*Resolution, e
 		return nil, located(d, "rules", err)
 	}
 	plan = plan.WithDirectivePolicy(v.configuration(c, inherited))
-	slidePolicy := ownedSlidePolicy(b.Slides, v.slides, origins["documents.slides"])
-	slidePolicy.origins = make([]Origin, len(b.Slides))
-	for i := range b.Slides {
-		key := "documents.slides[" + strconv.Itoa(i) + "]"
-		o, ok := origins[key]
-		if !ok {
-			o = origins["documents.slides"]
-		}
-		slidePolicy.origins[i] = cloneOrigin(o)
-	}
-	plan = plan.WithSlideProvider(slideProvider{policy: slidePolicy})
-	resolution := &Resolution{Settings: b, Rules: rules, Origins: origins, OwnPermissions: v.Permissions(Permissions{}), EffectivePermissions: p, Exclude: ownedPatterns(v.exclude), Slides: ownedPatterns(v.slides)}
-	resolution.plan = &ExecutionPlan{engine: plan, configuration: cloneResolution(resolution), slides: slidePolicy}
+	resolution := &Resolution{Settings: b, Rules: rules, Origins: origins, OwnPermissions: v.Permissions(Permissions{}), EffectivePermissions: p, Exclude: ownedPatterns(v.exclude)}
+	resolution.plan = &ExecutionPlan{engine: plan, configuration: cloneResolution(resolution)}
 	return resolution, nil
 }
 func cloneOptions(o engine.Options) engine.Options {

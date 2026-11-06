@@ -27,9 +27,6 @@ func TestCatalogOptionDomains(t *testing.T) {
 		{"MD073", "start_marker", []any{"<!-- -->", "<!---->", "<!-- CUSTOM -->"}, []any{"", "<!-->", "<!-- open", "close -->", "<!-- a\nb -->", " <!-- toc -->", "<!-- x -->suffix", "<!--><!-->", "<!-- <!-- -->", "<!-- a --!> b -->"}},
 		{"MD073", "min_level", []any{1, 6}, []any{0, 7}},
 		{"MD073", "max_level", []any{1, 6}, []any{0, 7}},
-		{"MD074", "config_path", []any{"mkdocs.yml", "site/mkdocs.yml", "a b/mkdocs.yaml"}, []any{"", "/abs/mkdocs.yml", "../mkdocs.yml", "site/../mkdocs.yml", "./mkdocs.yml", "site//mkdocs.yml", "site/", `site\mkdocs.yml`, "C:/mkdocs.yml", "c:mkdocs.yml", "https://example.com/mkdocs.yml", "file:///mkdocs.yml", "mk\x00docs.yml", "\xff.yml", 1, nil}},
-		{"MD074", "check_omitted", []any{true, false}, []any{"yes", 1, nil}},
-		{"MD074", "check_absolute", []any{true, false}, []any{"true", 0}},
 		{"MD081", "maximum_ratio", []any{0, 1, 0.0, 0.5, 1.0}, []any{-0.01, 1.01, math.NaN(), math.Inf(1), math.Inf(-1), "0.5", true, nil}},
 		{"MD081", "minimum_characters", []any{1, 20}, []any{0, -1, 1.0}},
 		{"MD084", "allowed_codepoints", []any{[]string{}, []string{"0000", "D7FF", "E000", "10FFFF", "feff"}}, []any{[]string{""}, []string{"D800"}, []string{"DFFF"}, []string{"110000"}, []string{"U+FEFF"}, []string{"0xFEFF"}, []string{"-1"}, []string{" FEFF"}}},
@@ -188,7 +185,7 @@ func TestCompleteCatalogExecutesOnlyAvailableEnabledApplicableChecks(t *testing.
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(r.Metadata()) != 87 || calls["MD001"] != 1 || calls["MD003"] != 0 || calls["MD013"] != 0 || out.Complete {
+	if len(r.Metadata()) != 82 || calls["MD001"] != 1 || calls["MD003"] != 0 || calls["MD013"] != 0 || out.Complete {
 		t.Fatalf("wrong catalog execution: calls=%v complete=%t", calls, out.Complete)
 	}
 	for _, coverage := range out.Coverage {

@@ -61,7 +61,7 @@ func TestCompiledInspectionWorkflow(t *testing.T) {
 		}
 		jsonArgs := append(append([]string{}, args...), "--format=json")
 		got, p := runInspection(t, binary, root, root, jsonArgs...)
-		if got.Status != 0 || got.Result.Status != "inspected" || p.ProjectionVersion != 1 || p.RuleCounts.Availability != "available" || len(*p.Rules.Data) != 87 {
+		if got.Status != 0 || got.Result.Status != "inspected" || p.ProjectionVersion != 1 || p.RuleCounts.Availability != "available" || len(*p.Rules.Data) != 82 {
 			t.Fatalf("unexpected full report: %+v", got)
 		}
 	}

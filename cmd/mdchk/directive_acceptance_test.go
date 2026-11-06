@@ -167,11 +167,8 @@ func TestProductionDirectiveCapabilityAndTruthfulCoverage(t *testing.T) {
 	}{
 		{"plain", 0, 0, 0},
 		{"<!-- mdchk:wat MD999 -->", 10, 1, 0},
-		// MD066 is unregistered but inapplicable to CommonMark, so lint skips
-		// it; engine tests cover rule-unavailable coverage.
-		{"<!-- mdchk:enable MD066 -->", 0, 0, 0},
 		{"<!-- mdchk:disable MD073 -->", 0, 0, 0},
-		{"<!-- mdchk:disable MD074 MD094 -->", 0, 0, 0},
+		{"<!-- mdchk:disable MD094 -->", 0, 0, 0},
 	} {
 		t.Run(fmt.Sprint(tc.status, tc.source), func(t *testing.T) {
 			putConfigurationFile(t, root, "doc.md", tc.source)

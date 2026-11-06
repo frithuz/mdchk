@@ -71,23 +71,21 @@ func documentedOptions() map[string]engine.OptionSchema {
 		"MD064": {"maximum": n(1, 1)},
 		"MD072": {"recursive": b(false), "case_sensitive": b(true)},
 		"MD073": {"start_marker": marker("<!-- toc -->"), "end_marker": marker("<!-- /toc -->"), "min_level": level(1), "max_level": level(6)},
-		"MD074": {"config_path": {Kind: engine.String, Default: "mkdocs.yml", Domain: engine.ResourceKey}, "check_omitted": b(false), "check_absolute": b(false)},
 		"MD076": {"style": choice("consistent", "tight", "loose")},
 		"MD081": {"maximum_ratio": {Kind: engine.Number, Default: 0.5, Minimum: &min, Maximum: &max}, "minimum_characters": n(20, 1)},
 		"MD082": {"allow_final_section": b(false)},
 		"MD083": {"sequences": {Kind: engine.Strings, Default: []string{"Ã", "Â", "â€"}, Domain: engine.ConfiguredNameUTF8}},
 		"MD084": {"allowed_codepoints": domain(engine.UnicodeScalarHex)},
 		"MD088": {"style": choice("ascii")},
-		"MD090": {"allow_slides": b(true)},
 		"MD093": {"allowed_constructs": {Kind: engine.Strings, Default: []string{}, Choices: []string{"emphasis", "strong", "code", "link", "image"}}},
 		"MD095": {"allowed_hosts": domain(engine.DNSHostname)},
 	}
 }
 
 func TestCatalogDocumentedContracts(t *testing.T) {
-	disabled := strings.Fields("MD013 MD026 MD033 MD036 MD040 MD043 MD044 MD054 MD060 MD061 MD063 MD070 MD072 MD073 MD074 MD080 MD081 MD082 MD083 MD084 MD085 MD087 MD088 MD089 MD090 MD091 MD093 MD095")
-	planned := strings.Fields("MD003 MD004 MD005 MD007 MD010 MD011 MD012 MD014 MD022 MD023 MD027 MD029 MD030 MD031 MD032 MD034 MD035 MD038 MD044 MD046 MD048 MD049 MD050 MD053 MD054 MD055 MD058 MD060 MD063 MD064 MD065 MD067 MD070 MD071 MD072 MD073 MD076 MD077 MD085 MD088 MD089")
-	reserved := []int{2, 6, 8, 15, 16, 17, 78, 79}
+	disabled := strings.Fields("MD013 MD026 MD033 MD036 MD040 MD043 MD044 MD054 MD060 MD061 MD063 MD070 MD072 MD073 MD080 MD081 MD082 MD083 MD084 MD085 MD087 MD088 MD089 MD091 MD093 MD095")
+	planned := strings.Fields("MD003 MD004 MD005 MD007 MD010 MD011 MD012 MD014 MD022 MD023 MD027 MD029 MD030 MD031 MD032 MD034 MD035 MD038 MD044 MD046 MD048 MD049 MD050 MD053 MD054 MD055 MD058 MD060 MD063 MD064 MD065 MD070 MD071 MD072 MD073 MD076 MD077 MD085 MD088 MD089")
+	reserved := []int{2, 6, 8, 15, 16, 17, 66, 67, 68, 74, 78, 79, 90}
 	var wantIDs []string
 	for i := 1; i <= 95; i++ {
 		if !slices.Contains(reserved, i) {
@@ -162,7 +160,7 @@ func TestCatalogDocumentedContracts(t *testing.T) {
 	if !reflect.DeepEqual(gotIDs, wantIDs) {
 		t.Errorf("catalog IDs = %v, want %v", gotIDs, wantIDs)
 	}
-	if len(names) != 87 || len(catalog) != 87 || enabled != 59 || len(disabled) != 28 {
+	if len(names) != 82 || len(catalog) != 82 || enabled != 56 || len(disabled) != 26 {
 		t.Fatalf("counts: docs=%d catalog=%d enabled=%d disabled=%d", len(names), len(catalog), enabled, len(disabled))
 	}
 }
@@ -186,12 +184,12 @@ func TestCatalogExecutableSubsetsPreserveMetadata(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, m := range r.Metadata() {
-			if states[m.ID].Available != (m.ID == "MD094" || m.ID == "MD074" || slices.Contains(ids, m.ID)) {
+			if states[m.ID].Available != (m.ID == "MD094" || slices.Contains(ids, m.ID)) {
 				t.Errorf("subset %v wrong availability for %s", ids, m.ID)
 			}
 		}
 	}
-	for _, id := range []string{"md001", "MD01", "MD000", "MD002", "MD006", "MD008", "MD015", "MD016", "MD017", "MD078", "MD079", "MD096", "MD999", "MD094"} {
+	for _, id := range []string{"md001", "MD01", "MD000", "MD002", "MD006", "MD008", "MD015", "MD016", "MD017", "MD066", "MD067", "MD068", "MD074", "MD078", "MD079", "MD090", "MD096", "MD999", "MD094"} {
 		if _, err := engine.NewCatalogRegistry([]engine.Registration{{ID: id, Check: check}}); err == nil {
 			t.Errorf("accepted registration %q", id)
 		}

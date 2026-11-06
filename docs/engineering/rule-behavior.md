@@ -861,8 +861,7 @@ earlier comments. Never remove directives automatically.
 
 Evaluate each deduplicated target rule in a valid, allowed mdchk:disable directive independently.
 Ignore enable directives, invalid directives, globally inactive directives, protected literal
-comments, permission-blocked targets and rules for which document directives do not apply (including
-project-scoped MD074). Preserve their ordinary inspection/diagnostic treatment.
+comments, permission-blocked targets and rules for which document directives do not apply. Preserve their ordinary inspection/diagnostic treatment.
 
 ### Ownership
 

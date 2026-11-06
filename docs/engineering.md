@@ -48,7 +48,7 @@ PlannedFix retains future correction scope. No MD088 edits or previews are emitt
 ## Confirmed choices
 
 - Name the command `mdchk`.
-- Implement the [87-rule catalog](rules/index.md) with stable numeric IDs and skipping MD002, MD006, MD008, MD015, MD016, MD017, MD078, and MD079.
+- Implement the [82-rule catalog](rules/index.md) with stable numeric IDs and skipping MD002, MD006, MD008, MD015, MD016, MD017, MD066, MD067, MD068, MD074, MD078, MD079, and MD090.
 - Implement the project in Go.
 - Build and maintain an internal Markdown parser instead of using a third-party parser.
 - Minimize third-party dependencies across the project.
@@ -169,10 +169,9 @@ delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation
 analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026
 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041
 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization
-analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD090
-thematic-break-before-heading analysis, MD034 bare-URL analysis, MD039 link-label-whitespace analysis, MD042 links-without-destinations, MD045 image-alternative-text and MD051 unresolved-fragment analysis and MD052 references-without-definitions analysis and MD053 unneeded-definition analysis and MD062 whitespace-in-destination analysis and MD054 link-and-image-representation-style analysis and MD057 missing-local-target analysis and MD059 uninformative-link-label analysis and MD055 GFM outer-table-pipe analysis and MD056 GFM mismatched-cell-count analysis and MD058 GFM blank-lines-around-tables analysis and MD060 GFM table-column-layout analysis and MD075 GFM pipe-rows-without-header analysis and MD093 inline-formatting-in-headings analysis
+analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD034 bare-URL analysis, MD039 link-label-whitespace analysis, MD042 links-without-destinations, MD045 image-alternative-text and MD051 unresolved-fragment analysis and MD052 references-without-definitions analysis and MD053 unneeded-definition analysis and MD062 whitespace-in-destination analysis and MD054 link-and-image-representation-style analysis and MD057 missing-local-target analysis and MD059 uninformative-link-label analysis and MD055 GFM outer-table-pipe analysis and MD056 GFM mismatched-cell-count analysis and MD058 GFM blank-lines-around-tables analysis and MD060 GFM table-column-layout analysis and MD075 GFM pipe-rows-without-header analysis and MD093 inline-formatting-in-headings analysis
 are also available. MD065 is enabled by default for CommonMark and GFM; its
-findings are manual and corrections are deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD054, MD060, MD087 and MD093 are
+findings are manual and corrections are deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD054, MD060, MD087 and MD093 are
 available but disabled by default. MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD057, MD062 and MD059 are available and enabled by default for CommonMark and GFM, with manual
 findings; MD055, MD056, MD058 and MD075 are available and enabled by default for GFM only, with manual findings; MD060 is available but disabled by default for GFM only, with manual findings. MD039, MD042, MD045, MD051, MD052, MD057, MD062, MD059, MD056 and MD075 are permanently report-only, and MD053, MD054, MD055, MD058 and MD060 are report-only until their planned corrections land (MD051 reads other documents only with `cross_file: true`, and MD057 checks local target existence without reading content, through the bounded read-only resource service in `lint`, `inspect` and `fix`); URL corrections remain deferred. Other named rules remain unavailable. See the [parser
 verification record](engineering/gfm-verification.md).
@@ -275,13 +274,13 @@ Keep packages internal initially. A public Go API can be designed later if there
 
 ## Rules and diagnostics
 
-Use the [ruleset to implement](rules/index.md) as the canonical scope. It contains 87 planned rules grouped by area, with one page per rule. Preserve the MDxxx IDs. Each rule page defines its internal behavior, options, default enablement, and correction policy.
+Use the [ruleset to implement](rules/index.md) as the canonical scope. It contains 82 rules grouped by area, with one page per rule. Preserve the MDxxx IDs. Each rule page defines its internal behavior, options, default enablement, and correction policy.
 
 Give each rule a summary, default setting, option schema, and documented fix policy. Use the defaults in the rule pages. Keep known-rule metadata separate from executable registration so unavailable checks retain their identity, defaults, and option schemas. Use canonical MDxxx IDs throughout configuration, directives, and reports.
 
 A diagnostic should carry the relative file path, rule ID, severity, message, source range, and fix availability. Internal spans should use byte offsets; public positions should use one-based lines and Unicode code-point columns, with tabs counted as one column. Document exclusive range ends. Sort results by path, source position, and rule ID for repeatable output.
 
-Follow the catalog's implementation contract for rule specifications, fixtures, format activation, and resource boundaries. Keep heading hierarchy and missing code language fixes report-only when author intent cannot be inferred safely. MkDocs and slide contexts follow the [integration contract](engineering/integrations.md); metadata and encoding checks follow the [frontmatter](engineering/frontmatter.md) and [special rule contracts](engineering/rule-behavior.md).
+Follow the catalog's implementation contract for rule specifications, fixtures, format activation, and resource boundaries. Keep heading hierarchy and missing code language fixes report-only when author intent cannot be inferred safely. Metadata and encoding checks follow the [frontmatter](engineering/frontmatter.md) and [special rule contracts](engineering/rule-behavior.md).
 
 Start with one violation severity and no warning threshold controls. Add severities only when concrete rules justify them.
 
@@ -333,7 +332,7 @@ convenience for other callers. Only main exits the process. Help and version
 perform no project I/O.
 After syntax checks, lint calls the shared `config.Resolve` with its working
 directory and optional explicit config, before accessing targets. Production
-assembly uses the complete catalog with real MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD014, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090, MD093 and MD047 analysis callbacks.
+assembly uses the complete catalog with real MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD014, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD093 and MD047 analysis callbacks.
 
 [MD081 paragraph-emphasis analysis](rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.
@@ -619,26 +618,6 @@ uses actual private nodes and owned content/tails, excluding container prefixes.
 This provider does not build an anchor index or consume AnchorStyle, metadata,
 resource availability, correction, write or MCP authority. MD082 remains default
 disabled and report-only; this analysis produces no edits.
-
-
-### Thematic breaks before headings and explicit slides
-
-MD090 borrows direct actual body-block siblings under the complete original
-production profile/options/source/index/budget witness. An iterative reserved stack
-keeps each container sequence separate; owned first/last thematic markers provide
-one original range without raw scanning. Comments interrupt this adjacency. Labels,
-traversal/output storage and final publication share original operation controls.
-
-A narrow immutable per-path slide provider stays on the selected execution plan,
-including candidate and saved views. Configuration owns the existing direct bounded
-matcher, first match and exact origin; adapters bind invocation paths to the selected
-configuration directory once. The annotation follows mandatory encoding validation
-and changes neither selection nor format. Option-aware applicability may use only
-admitted options and explicit context before syntax; it cannot borrow partial syntax.
-Known slide exemptions are retained independently of unrelated parser/directive
-uncertainty. Inspection prepares context before callbacks and preserves truthful
-completed sections when a later operation stop occurs. MD090 stays default disabled
-and manual; this analysis produces no edits.
 
 ## Heading inline construct projection
 

@@ -110,7 +110,7 @@ func TestMD020Directives(t *testing.T) {
 
 func TestMD020CatalogAndOptions(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD020") || r.Available("MD066") || len(r.Metadata()) != 87 {
+	if !r.Available("MD020") || r.Available("MD066") || len(r.Metadata()) != 82 {
 		t.Fatal("incorrect availability")
 	}
 	for _, m := range r.Metadata() {

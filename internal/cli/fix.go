@@ -146,11 +146,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	if selectedConfig.SelectedPath != "" {
 		base = filepath.Dir(selectedConfig.SelectedPath)
 	}
-	boundPlan, err := resolution.ExecutionPlan().WithDocumentPaths(cwd, base)
-	if err != nil {
-		return fail(err, "document-context", result.Internal)
-	}
-	inv := &lintInvocation{options: opts, selection: selectedConfig, plan: boundPlan, workingDirectory: cwd, exclusionBase: base, exclusions: resolution.Exclude}
+	inv := &lintInvocation{options: opts, selection: selectedConfig, plan: resolution.ExecutionPlan(), workingDirectory: cwd, exclusionBase: base, exclusions: resolution.Exclude}
 	selection, err := files.SelectBounded(ctx, files.Options{WorkingDirectory: cwd, ExclusionBase: base, Paths: opts.paths, Exclusions: resolution.Exclude}, budget)
 	if err != nil {
 		return fail(err, "selection-failed", result.IO)
@@ -184,7 +180,6 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	// Discovery already owns the terminal outcome when there is no target.
 	// In particular, no native write authority is needed for empty work.
 	if selection.Empty() {
-		manifest.Coverage = append(manifest.Coverage, engine.LintOnlyCoverage(inv.plan.Rules())...)
 		return manifest
 	}
 	var native *files.WriteSet
@@ -383,8 +378,6 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	if len(targets) > 0 && !validated.Complete() && err == nil {
 		out.Coverage = append(out.Coverage, result.Coverage{Reason: "fix-incomplete", Message: "Correction validation did not complete."})
 	}
-	// Fix never acquires MkDocs context, so an enabled MD074 cannot pass here.
-	out.Coverage = append(out.Coverage, engine.LintOnlyCoverage(inv.plan.Rules())...)
 	inv.mergeAcquisition(&out, selection, acquired)
 	// Result reconciliation cannot silently outrun the same operation deadline.
 	// Already validated identities and observations remain reliable on expiry.

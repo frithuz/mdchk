@@ -52,10 +52,10 @@ MD023 heading indentation analysis, MD024 repeated heading analysis, MD025
 multiple-title analysis, MD026 heading-end punctuation analysis, MD036
 emphasis-as-heading analysis, MD041 opening-heading analysis, MD043 required-outline
 analysis, MD063 heading-capitalization analysis, MD080 heading-anchor collision
-analysis, MD082 empty-section analysis, MD090 thematic-break-before-heading analysis,
+analysis, MD082 empty-section analysis,
 MD093 inline-formatting-in-headings analysis and MD071 frontmatter blank-line analysis
 are implemented; MD013, MD026, MD036, MD043,
-MD063, MD080, MD082, MD085, MD089, MD090, MD081, MD088, MD033, MD087 and MD093 are disabled by default. Every
+MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD087 and MD093 are disabled by default. Every
 rule enabled by default is available for CommonMark and GFM, so default analysis
 can complete. Valid UTF-8 with all ordinary rules disabled can return clean `0`;
 available registered checks retain findings and coverage.
@@ -160,7 +160,7 @@ is exactly the same selected value printed after `mdchk ` by `--version`.
 
 ## Rules
 
-The [ruleset to implement](rules/index.md) covers 87 rules, grouped by focus area, with one planning page per rule.
+The [ruleset to implement](rules/index.md) covers 82 rules, grouped by focus area, with one planning page per rule.
 
 ## Understand and integrate results
 
@@ -187,4 +187,4 @@ The [inspection design](engineering/inspect.md) covers parser and rule instrumen
 
 The [directive processing design](engineering/directives.md) defines shared recognition, rule-state tracking, and suppression behavior.
 
-The [accepted contract index](engineering/contracts.md) links all policy decisions and owning issues. Detailed contracts cover [frontmatter](engineering/frontmatter.md), [integrations](engineering/integrations.md), [rule behavior](engineering/rule-behavior.md), [fix safety](engineering/fixes.md), [results and schemas](engineering/results.md), [resource limits](engineering/limits.md), and [HTTP deployment](engineering/http.md).
+The [accepted contract index](engineering/contracts.md) links all policy decisions and owning issues. Detailed contracts cover [frontmatter](engineering/frontmatter.md), [rule behavior](engineering/rule-behavior.md), [fix safety](engineering/fixes.md), [results and schemas](engineering/results.md), [resource limits](engineering/limits.md), and [HTTP deployment](engineering/http.md).

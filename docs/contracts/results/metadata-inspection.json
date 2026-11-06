@@ -28,7 +28,6 @@
           "availability": {
             "/allow_nested_excludes": true,
             "/directives/enabled": true,
-            "/documents/slides": true,
             "/exclude": true,
             "/flavor": true,
             "/frontmatter/enabled": true,
@@ -44,9 +43,6 @@
           },
           "directives": {
             "enabled": true
-          },
-          "documents": {
-            "slides": []
           },
           "exclude": [],
           "flavor": "gfm",
@@ -96,11 +92,6 @@
           },
           {
             "pointer": "/directives/enabled",
-            "source_kind": "default",
-            "inherited": false
-          },
-          {
-            "pointer": "/documents/slides",
             "source_kind": "default",
             "inherited": false
           },
@@ -220,8 +211,6 @@
       "availability": "available",
       "reasons": [],
       "data": {
-        "slides": false,
-        "matched_slide_patterns": [],
         "frontmatter": "yaml"
       }
     },

@@ -47,7 +47,6 @@ func TestConfigurationValidationWorkflow(t *testing.T) {
 			{"unknown-rule", availableConfiguration + "rules: {MD999: {}}\n", "unknown or reserved rule", [][2]int{{4, 16}}},
 			{"unknown-option", availableConfiguration + "rules: {MD013: {enabled: false, lenght: 80}}\n", "unknown option", [][2]int{{4, 41}}},
 			{"disabled-domain", availableConfiguration + "rules: {MD013: {enabled: false, length: -1}}\n", "value outside integer option domain", [][2]int{{4, 41}}},
-			{"explicit-unavailable", availableConfiguration + "rules: {MD066: {}}\n", "explicitly enabled rule is unavailable", [][2]int{{4, 16}}},
 		}
 		for _, tc := range cases {
 			putConfigurationFile(t, root, tc.name+"/.mdchk.yaml", tc.yaml)
@@ -55,8 +54,8 @@ func TestConfigurationValidationWorkflow(t *testing.T) {
 		// Invalid UTF-8 proves validation does not accidentally begin Markdown work.
 		putConfigurationFile(t, root, "bad.md", "bad\xff")
 		got := run(t, root, root, "config", "validate", "--format=json")
-		assertValidationSummary(t, got, 12, true, 7, 2, 5, 0)
-		if len(got.Result.Errors) != 6 || len(got.Result.CheckedFiles) != 7 || len(got.Result.Files) != 7 {
+		assertValidationSummary(t, got, 12, true, 6, 2, 4, 0)
+		if len(got.Result.Errors) != 5 || len(got.Result.CheckedFiles) != 6 || len(got.Result.Files) != 6 {
 			t.Fatalf("independent decisions lost: %+v", got.Result)
 		}
 		for _, f := range got.Result.Files {
@@ -80,7 +79,7 @@ func TestConfigurationValidationWorkflow(t *testing.T) {
 			}
 		}
 		text := run(t, root, root, "config", "validate", "--format=text")
-		if text.Status != 12 || !strings.Contains(text.Stdout, "Checked 7 definitions: 2 valid, 5 invalid") {
+		if text.Status != 12 || !strings.Contains(text.Stdout, "Checked 6 definitions: 2 valid, 4 invalid") {
 			t.Fatalf("text counts/status: %+v", text)
 		}
 	})

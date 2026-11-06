@@ -81,7 +81,7 @@ func md094Project(t *testing.T, conf string, files map[string][]byte) string {
 	return root
 }
 
-// md094FixJSON checks the closed result schema for fix. md074JSON also checks
+// md094FixJSON checks the closed result schema for fix. md094ResultJSON also checks
 // that every snapshot is the original view, but fix reports the unchanged
 // bytes of a failed file as its candidate view.
 func md094FixJSON(t *testing.T, run configurationRun) result.Result {
@@ -186,7 +186,7 @@ func TestCompiledMD094FixtureLint(t *testing.T) {
 				root := md094Project(t, md094Configuration(row.rule), map[string][]byte{"doc.md": tc.Source})
 				before := configurationBytes(t, root)
 				got := md014NativeRun(t, binary, root, "lint", "--format=json", "doc.md")
-				out := md074JSON(t, got, root, "lint")
+				out := md094ResultJSON(t, got, root, "lint")
 				if tc.Expected == nil {
 					if got.Status != 0 || len(out.Errors) != 0 || !out.Complete {
 						t.Fatal(row.name, got.Status, got.Stdout)
@@ -234,7 +234,7 @@ func TestCompiledMD094RejectsOptions(t *testing.T) {
 	for _, rule := range []string{"{foo: 1}", "{enabled: 1}", "{enabled: yes-please}"} {
 		root := md094Project(t, md094Configuration(rule), map[string][]byte{"doc.md": bad})
 		got := md014NativeRun(t, binary, root, "lint", "--format=json", "doc.md")
-		out := md074JSON(t, got, root, "lint")
+		out := md094ResultJSON(t, got, root, "lint")
 		if got.Status != 12 || len(out.Errors) != 1 || out.Errors[0].Code != "config-definition" {
 			t.Fatal(rule, got.Status, got.Stdout)
 		}
@@ -254,7 +254,7 @@ func md094Notes(t *testing.T, out result.Result) []result.Note {
 
 func md094Inspection(t *testing.T, run configurationRun, root string) (result.Result, inspection.Projection) {
 	t.Helper()
-	out := md074JSON(t, run, root, "inspect")
+	out := md094ResultJSON(t, run, root, "inspect")
 	var p inspection.Projection
 	if err := json.Unmarshal(out.Inspection, &p); err != nil {
 		t.Fatal(err)
@@ -275,7 +275,7 @@ func TestCompiledMD094Directives(t *testing.T) {
 
 	root := md094Project(t, enabled, map[string][]byte{"doc.md": source})
 	got := md014NativeRun(t, binary, root, "lint", "--format=json", "doc.md")
-	out := md074JSON(t, got, root, "lint")
+	out := md094ResultJSON(t, got, root, "lint")
 	if got.Status != 10 || len(out.Errors) != 0 || !out.Complete {
 		t.Fatal(got.Status, got.Stdout)
 	}
@@ -306,7 +306,7 @@ func TestCompiledMD094Directives(t *testing.T) {
 	tc := md094Cases(t)["directive-before-bad-byte"]
 	root = md094Project(t, enabled, map[string][]byte{"doc.md": tc.Source})
 	got = md014NativeRun(t, binary, root, "lint", "--format=json", "doc.md")
-	out = md074JSON(t, got, root, "lint")
+	out = md094ResultJSON(t, got, root, "lint")
 	if got.Status != 13 {
 		t.Fatal(got.Status, got.Stdout)
 	}
@@ -330,7 +330,7 @@ func TestCompiledMD094MultiFile(t *testing.T) {
 	before := configurationBytes(t, root)
 
 	got := md014NativeRun(t, binary, root, "lint", "--format=json", "bad.md", "ok.md")
-	out := md074JSON(t, got, root, "lint")
+	out := md094ResultJSON(t, got, root, "lint")
 	if got.Status != 13 {
 		t.Fatal(got.Status, got.Stdout)
 	}
@@ -447,4 +447,29 @@ func TestCompiledMD094InspectDisabledStillValidates(t *testing.T) {
 	if active.Availability != "complete" || !reflect.DeepEqual(active.ByteRanges, []result.ByteRange{{Start: 0, End: len(source)}}) {
 		t.Fatal("coverage", active)
 	}
+}
+
+// md094ResultJSON validates a report against the closed schema and the shared
+// semantic checks.
+func md094ResultJSON(t *testing.T, run configurationRun, root, operation string) result.Result {
+	t.Helper()
+	run.Result = validateConfigurationOperationJSON(t, []byte(run.Stdout), operation)
+	b, err := os.ReadFile("../../docs/contracts/results/result.schema.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var schema, wire any
+	if err = json.Unmarshal(b, &schema); err != nil {
+		t.Fatal(err)
+	}
+	if err = json.Unmarshal([]byte(run.Stdout), &wire); err != nil {
+		t.Fatal(err)
+	}
+	if err = md014SchemaCheck(schema, schema, wire); err != nil {
+		t.Fatal("closed normative result schema", err, run.Stdout)
+	}
+	if operation != "inspect" {
+		checkConfigurationLinks(t, root, run)
+	}
+	return run.Result
 }

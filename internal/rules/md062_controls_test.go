@@ -200,11 +200,11 @@ func TestMD062StaticEmptyCallbackReservation(t *testing.T) {
 				r := registry(t, []engine.Registration{{ID: "MD062", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 					called = true
 					// Entire original setup is source-derived: acquisition1, original empty
-					// parse25/30, directive catalog87+87+87, Comments root1, entryCheckpoint1.
+					// parse25/30, directive catalog82+82+82, Comments root1, entryCheckpoint1.
 					// No MD087 implementation/inspection/applicability is registered here.
-					prefix := int64(289)
+					prefix := int64(274)
 					if flavor == "gfm" {
-						prefix = 294
+						prefix = 279
 					}
 					// Facade6 +empty comparator2 +distinct outer final1 =callback9W/0N.
 					if e := budget.ChargeWork(budget.Limits().WorkUnits - prefix - 9 - delta); e != nil {
@@ -245,7 +245,7 @@ func TestMD062StaticPositiveComparatorReservation(t *testing.T) {
 					// parse/index4096W; Text4409+144W; candidate/destination<=512W;
 					// traversal/growth2048W; engine acquisition57+catalog261+Comments<=16
 					// +entry1 and comparator42W. B_W65536 leaves fixed/root/filter reserve.
-					// Node allocations (parser <=1024, directive87, units45, candidates and
+					// Node allocations (parser <=1024, directive82, units45, candidates and
 					// vectors/sort<=256, comparator2)
 					// fit B_N4096. No used or remaining budget counters are observed.
 					per, bound := int64(42), int64(65536)

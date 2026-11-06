@@ -53,7 +53,6 @@ func (v *Validated) configuration(c Capabilities, inherited Permissions) *Config
 	b := v.settings
 	b.FrontmatterFormats = slices.Clone(b.FrontmatterFormats)
 	b.Exclude = slices.Clone(b.Exclude)
-	b.Slides = slices.Clone(b.Slides)
 	view := &Configuration{Selected: v.definition.Syntax().Origin(), Settings: b, Rules: map[string]engine.ResolvedRule{}, Provenance: map[string]SettingProvenance{}}
 	add := func(path string, available bool) {
 		o, explicit := v.definition.Provenance[path]
@@ -72,7 +71,6 @@ func (v *Validated) configuration(c Capabilities, inherited Permissions) *Config
 	}
 	add("frontmatter.enabled", formats)
 	add("frontmatter.formats", formats)
-	add("documents.slides", c.SlideAnnotation)
 	add("exclude", true)
 	add("directives.enabled", c.DirectiveProcessing)
 	add("allow_nested_excludes", true)
@@ -167,7 +165,6 @@ func (c *Configuration) Shared() result.ConfigurationData {
 		"version":              Version, "flavor": b.Flavor,
 		"resources":   map[string]any{"index_file": b.IndexFile, "anchor_style": b.AnchorStyle},
 		"frontmatter": map[string]any{"enabled": b.FrontmatterEnabled, "formats": slices.Clone(b.FrontmatterFormats)},
-		"documents":   map[string]any{"slides": slices.Clone(b.Slides)},
 		"exclude":     slices.Clone(b.Exclude), "directives": map[string]any{"enabled": b.DirectivesEnabled}, "allow_nested_excludes": b.AllowNestedExcludes, "rules": rules,
 	}
 	sourceKind := "supplied-config"

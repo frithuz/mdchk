@@ -54,11 +54,9 @@ problem, a disabled record with a title, a non-observation ordering kind, offend
 keys without a violation, a complete record with problems and a blank found title.
 
 
-The delivered document-context projection retains the existing `slides`,
-`matched_slide_patterns` and `frontmatter` fields. Matching records at most the first
-configured pattern. Optional `slide_match` adds its exact index and origin without
-changing schema version or granting metadata/resource authority. Unresolved context
-uses section availability rather than a guessed false or absent value.
+The delivered document-context projection reports the `frontmatter` field. It does not
+change schema version or grant metadata/resource authority. Unresolved context uses
+section availability rather than a guessed absent value.
 
 The suppression-audit directive fixture shows independent per-target reasons
 while retaining all duplicate named tokens and ordinary permission/effect

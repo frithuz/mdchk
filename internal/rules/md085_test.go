@@ -100,7 +100,7 @@ func TestMD085CatalogStrictSettingsAndDefaults(t *testing.T) {
 			t.Fatal(m)
 		}
 	}
-	if len(r.Metadata()) != 87 || enabled != 59 || !r.Available("MD085") {
+	if len(r.Metadata()) != 82 || enabled != 56 || !r.Available("MD085") {
 		t.Fatal("catalog")
 	}
 	off := false

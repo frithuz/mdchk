@@ -11,11 +11,10 @@ import (
 
 func TestCatalogDialectApplicability(t *testing.T) {
 	tables := map[string]bool{"MD055": true, "MD056": true, "MD058": true, "MD060": true, "MD075": true}
-	footnotes := map[string]bool{"MD066": true, "MD067": true, "MD068": true}
 	for _, flavor := range []string{"commonmark", "gfm", "", "unknown"} {
 		t.Run(flavor, func(t *testing.T) {
 			for _, m := range engine.Catalog() {
-				want := !(tables[m.ID] && flavor == "commonmark" || footnotes[m.ID] && (flavor == "commonmark" || flavor == "gfm"))
+				want := !(tables[m.ID] && flavor == "commonmark")
 				got := m.AppliesTo == nil || m.AppliesTo(engine.DocumentContext{Flavor: flavor})
 				if got != want {
 					t.Errorf("%s applicability = %v, want %v", m.ID, got, want)
@@ -25,7 +24,7 @@ func TestCatalogDialectApplicability(t *testing.T) {
 				if withProject != got {
 					t.Errorf("%s applicability depends on optional project context", m.ID)
 				}
-				if (tables[m.ID] || footnotes[m.ID]) && m.AppliesTo == nil {
+				if tables[m.ID] && m.AppliesTo == nil {
 					t.Errorf("%s lacks its production dialect predicate", m.ID)
 				}
 			}
@@ -34,7 +33,7 @@ func TestCatalogDialectApplicability(t *testing.T) {
 }
 
 func TestFullCatalogUnavailableCoverageRespectsDialect(t *testing.T) {
-	// The real catalog has 59 default-enabled contracts, including the MD094
+	// The real catalog has 56 default-enabled contracts, including the MD094
 	// mandatory gate. No executable registration is supplied: every applicable
 	// ordinary default must remain an explicit coverage deficit.
 	cases := []struct {
@@ -42,8 +41,8 @@ func TestFullCatalogUnavailableCoverageRespectsDialect(t *testing.T) {
 		omitted map[string]bool
 		count   int
 	}{
-		{"commonmark", map[string]bool{"MD055": true, "MD056": true, "MD058": true, "MD066": true, "MD067": true, "MD068": true, "MD075": true}, 51},
-		{"gfm", map[string]bool{"MD066": true, "MD067": true, "MD068": true}, 55},
+		{"commonmark", map[string]bool{"MD055": true, "MD056": true, "MD058": true, "MD075": true}, 51},
+		{"gfm", map[string]bool{}, 55},
 	}
 	reg, err := engine.NewCatalogRegistry(nil)
 	if err != nil {

@@ -71,8 +71,7 @@ mdchk fix docs/ --dry-run --format json
 ```
 
 Text and JSON previews include proposed diffs when a registered correction
-passes shared candidate validation. MD047 final-newline, MD009 trailing-whitespace, and MD019 and MD021 heading-spacing corrections are implemented. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD020, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD090 and MD093 remain report-only, with no edits or previews for their findings.
-Fix does not check MkDocs navigation: with [MD074](../rules/content-and-navigation/md074.md) enabled it records the lint-only coverage `MkDocs navigation is checked only by lint.` and returns `15` unless an error takes precedence.
+passes shared candidate validation. MD047 final-newline, MD009 trailing-whitespace, and MD019 and MD021 heading-spacing corrections are implemented. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD020, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082 and MD093 remain report-only, with no edits or previews for their findings.
 
 [MD019](../rules/headings/md019.md) and [MD021](../rules/headings/md021.md)
 corrections remove excess ASCII spaces from a heading delimiter gap: the second
