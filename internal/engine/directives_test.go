@@ -1,4 +1,4 @@
-package directives_test
+package engine_test
 
 import (
 	"context"
@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/frithuz/mdchk/internal/config"
-	"github.com/frithuz/mdchk/internal/directives"
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
 )
@@ -30,20 +29,20 @@ func policy(t *testing.T, yaml string) *config.Configuration {
 	}
 	return v.Configuration(config.Capabilities{})
 }
-func process(t *testing.T, text string, c *config.Configuration) directives.Result {
+func process(t *testing.T, text string, c *config.Configuration) engine.DirectiveResult {
 	t.Helper()
 	budget, err := parser.NewOperationBudget(parser.DefaultLimits())
 	if err != nil {
 		t.Fatal(err)
 	}
 	parsed := parser.ParseWithBudget(context.Background(), parser.NewSource([]byte(text)), budget)
-	r := directives.Process(context.Background(), parsed, c, budget)
+	r := engine.ProcessDirectives(context.Background(), parsed, c, budget)
 	if !r.Complete() {
 		t.Fatalf("incomplete: %v %+v", r.Err(), r.Notes())
 	}
 	return r
 }
-func enabled(t *testing.T, r directives.Result, id string, at int, want bool, owner int) {
+func enabled(t *testing.T, r engine.DirectiveResult, id string, at int, want bool, owner int) {
 	t.Helper()
 	got, err := r.StateAt(id, at)
 	if err != nil || got.Enabled != want || got.Owner != owner {
@@ -77,7 +76,7 @@ func TestAtomicGrammarAndKnownUnavailableCatalog(t *testing.T) {
 	for _, bad := range []string{"mdchk:disable", "mdchk:Disable MD001", "MDCHK:disable MD001", "mdchk:wat MD001", "mdchk disable MD001", "mdchk:disable MD001 MD999", "mdchk:disable MD001 MD008", "mdchk:disable md001", "mdchk:disable heading-increment", "mdchk:disable MD001,MD040", "mdchk:disable *", "mdchk:disable all"} {
 		t.Run(bad, func(t *testing.T) {
 			r := process(t, "<!-- "+bad+" -->\ntail", c)
-			if len(r.Diagnostics()) != 1 || r.Diagnostics()[0].Rule != "directive" || len(r.Candidates()) != 1 || r.Candidates()[0].Disposition != directives.Invalid {
+			if len(r.Diagnostics()) != 1 || r.Diagnostics()[0].Rule != "directive" || len(r.Candidates()) != 1 || r.Candidates()[0].Disposition != engine.DirectiveInvalid {
 				t.Fatalf("not exact invalid: %+v %+v", r.Candidates(), r.Diagnostics())
 			}
 			enabled(t, r, "MD001", r.Source().Len(), true, -1)
@@ -135,7 +134,7 @@ func TestPermissionStatesAndSpecialEffects(t *testing.T) {
 	enabled(t, r, "MD074", r.Source().Len(), false, -1)
 	enabled(t, r, "MD094", r.Source().Len(), true, -1)
 	enabled(t, r, "MD013", r.Source().Len(), true, 1)
-	if len(r.Notes()) != 4 || len(r.Diagnostics()) != 0 || r.Candidates()[0].Effects[2].Disposition != directives.Inapplicable {
+	if len(r.Notes()) != 4 || len(r.Diagnostics()) != 0 || r.Candidates()[0].Effects[2].Disposition != engine.DirectiveInapplicable {
 		t.Fatal(r.Notes(), r.Candidates())
 	}
 	state, _ := r.StateAt("MD013", r.Source().Len())
@@ -143,7 +142,7 @@ func TestPermissionStatesAndSpecialEffects(t *testing.T) {
 		t.Fatal(state)
 	}
 	disabled := process(t, "<!-- mdchk:wat MD999 -->", policy(t, "directives: {enabled: false}\n"))
-	if len(disabled.Candidates()) != 1 || len(disabled.Diagnostics()) != 0 || disabled.Candidates()[0].Disposition != directives.Inactive {
+	if len(disabled.Candidates()) != 1 || len(disabled.Diagnostics()) != 0 || disabled.Candidates()[0].Disposition != engine.DirectiveInactive {
 		t.Fatal(disabled)
 	}
 	mixed := process(t, "<!-- mdchk:disable MD001 MD074 MD094 -->", policy(t, ""))
@@ -161,13 +160,13 @@ func TestLiteralAndUnclosedComments(t *testing.T) {
 		})
 	}
 	inline := process(t, "x <script><!-- mdchk:disable MD001 --></script><!-- mdchk:disable MD040 -->", c)
-	if len(inline.Candidates()) != 2 || inline.Candidates()[0].Disposition != directives.Uncertain {
+	if len(inline.Candidates()) != 2 || inline.Candidates()[0].Disposition != engine.DirectiveUncertain {
 		t.Fatal(inline.Candidates())
 	}
 	enabled(t, inline, "MD001", inline.Source().Len(), true, -1)
 	enabled(t, inline, "MD040", inline.Source().Len(), false, 1)
 	open := process(t, "<!-- mdchk:disable MD001", c)
-	if len(open.Candidates()) != 1 || open.Candidates()[0].Disposition != directives.Uncertain || len(open.Notes()) != 1 {
+	if len(open.Candidates()) != 1 || open.Candidates()[0].Disposition != engine.DirectiveUncertain || len(open.Notes()) != 1 {
 		t.Fatal(open.Candidates(), open.Notes())
 	}
 	enabled(t, open, "MD001", open.Source().Len(), true, -1)
@@ -234,24 +233,24 @@ func TestUnresolvedAndPartialProofs(t *testing.T) {
 	forged.Document = constructed
 	bad = append(bad, forged)
 	for _, p := range bad {
-		r := directives.Process(context.Background(), p, c, budget)
+		r := engine.ProcessDirectives(context.Background(), p, c, budget)
 		if r.Complete() || len(r.Intervals("MD001")) != 0 || len(r.Notes()) == 0 {
 			t.Fatal(r)
 		}
 	}
-	nilPolicy := directives.Process(context.Background(), parsed, nil, budget)
+	nilPolicy := engine.ProcessDirectives(context.Background(), parsed, nil, budget)
 	if nilPolicy.Complete() || nilPolicy.Notes()[0].Code != "directive-policy-unresolved" {
 		t.Fatal(nilPolicy)
 	}
 	for _, view := range []*config.Configuration{nil, {}} {
-		r := directives.Process(context.Background(), parsed, view, budget)
+		r := engine.ProcessDirectives(context.Background(), parsed, view, budget)
 		if r.Complete() || r.Notes()[0].Code != "directive-policy-unresolved" {
 			t.Fatal(r)
 		}
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	r := directives.Process(ctx, parsed, c, budget)
+	r := engine.ProcessDirectives(ctx, parsed, c, budget)
 	if !errors.Is(r.Err(), context.Canceled) || r.Complete() {
 		t.Fatal(r.Err())
 	}
@@ -276,7 +275,7 @@ func TestSharedBudgetNoResetAndFiniteStorm(t *testing.T) {
 	if err := budget.ChargeWork(parser.DefaultLimits().WorkUnits); err == nil {
 		t.Fatal("expected cumulative exhaustion")
 	}
-	r := directives.Process(context.Background(), parsed, c, budget)
+	r := engine.ProcessDirectives(context.Background(), parsed, c, budget)
 	var limit *parser.LimitExceeded
 	if r.Complete() || !errors.As(r.Err(), &limit) || len(r.Intervals("MD001")) != 0 {
 		t.Fatal(r.Err())
@@ -300,13 +299,13 @@ func TestSharedBudgetNoResetAndFiniteStorm(t *testing.T) {
 		if p.Status != parser.Complete {
 			t.Fatalf("residual parse incomplete %d %+v", allow, p)
 		}
-		partial := directives.Process(context.Background(), p, c, b)
+		partial := engine.ProcessDirectives(context.Background(), p, c, b)
 		if partial.Complete() || len(partial.Intervals("MD001")) != 0 {
 			t.Fatal("partial effects escaped", allow)
 		}
 	}
 	replacement, _ := parser.NewOperationBudget(parser.DefaultLimits())
-	reset := directives.Process(context.Background(), parsed, c, replacement)
+	reset := engine.ProcessDirectives(context.Background(), parsed, c, replacement)
 	if reset.Complete() || len(reset.Intervals("MD001")) != 0 {
 		t.Fatal("replacement budget accepted")
 	}
@@ -380,7 +379,7 @@ func FuzzDirectiveIntervals(f *testing.F) {
 		budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
 		source := parser.NewSource([]byte(text))
 		parsed := parser.ParseWithBudget(context.Background(), source, budget)
-		r := directives.Process(context.Background(), parsed, policy(t, ""), budget)
+		r := engine.ProcessDirectives(context.Background(), parsed, policy(t, ""), budget)
 		if !r.Complete() {
 			if len(r.Intervals("MD001")) != 0 {
 				t.Fatal("incomplete state")
@@ -394,7 +393,7 @@ func FuzzDirectiveIntervals(f *testing.F) {
 				t.Fatal(intervals)
 			}
 			if v.Owner >= 0 {
-				if v.Owner >= len(cs) || cs[v.Owner].Disposition != directives.Applied || cs[v.Owner].Closing.End() != v.Start {
+				if v.Owner >= len(cs) || cs[v.Owner].Disposition != engine.DirectiveApplied || cs[v.Owner].Closing.End() != v.Start {
 					t.Fatal(v, cs)
 				}
 			}
@@ -449,13 +448,13 @@ func TestRawHTMLClosersAcrossBlockAndInlineNodes(t *testing.T) {
 			text := "x <" + tag + ">\n\n</" + tag + ">\n\n<!-- mdchk:disable MD001 -->"
 			r := process(t, text, c)
 			cs := r.Candidates()
-			if len(cs) != 1 || cs[0].Disposition != directives.Applied {
+			if len(cs) != 1 || cs[0].Disposition != engine.DirectiveApplied {
 				t.Fatal(cs)
 			}
 			enabled(t, r, "MD001", len(text)-1, true, -1)
 			enabled(t, r, "MD001", len(text), false, 0)
 			inside := process(t, "x <"+tag+">\n\n<!-- mdchk:disable MD001 -->\n\n</"+strings.ToUpper(tag)+">\n\n<!-- mdchk:disable MD040 -->", c)
-			if len(inside.Candidates()) != 2 || inside.Candidates()[0].Disposition != directives.Uncertain || inside.Candidates()[1].Disposition != directives.Applied {
+			if len(inside.Candidates()) != 2 || inside.Candidates()[0].Disposition != engine.DirectiveUncertain || inside.Candidates()[1].Disposition != engine.DirectiveApplied {
 				t.Fatal(inside.Candidates())
 			}
 			enabled(t, inside, "MD001", inside.Source().Len(), true, -1)
@@ -498,7 +497,7 @@ func TestPermissionProvenanceUsesResidualOperationBudget(t *testing.T) {
 			// uncharged origin expansion can be retained as a successful result.
 			measure, _ := parser.NewOperationBudget(parser.DefaultLimits())
 			p := parser.ParseWithBudget(context.Background(), source, measure)
-			first := directives.Process(context.Background(), p, small, measure)
+			first := engine.ProcessDirectives(context.Background(), p, small, measure)
 			if !first.Complete() {
 				t.Fatal(first.Err())
 			}
@@ -514,7 +513,7 @@ func TestPermissionProvenanceUsesResidualOperationBudget(t *testing.T) {
 			if p.Status != parser.Complete {
 				t.Fatal(p)
 			}
-			partial := directives.Process(context.Background(), p, large, b)
+			partial := engine.ProcessDirectives(context.Background(), p, large, b)
 			var exhausted *parser.LimitExceeded
 			if partial.Complete() || !errors.As(partial.Err(), &exhausted) || len(partial.Intervals("MD001")) != 0 {
 				t.Fatal("large provenance bypassed work budget", partial.Err())
@@ -547,7 +546,7 @@ func TestPermissionProvenanceUsesResidualOperationBudget(t *testing.T) {
 func TestUnclosedBlockTailRemainsInspectable(t *testing.T) {
 	r := process(t, "<!-- ordinary -->tail<!-- mdchk:disable MD001", policy(t, ""))
 	cs := r.Candidates()
-	if len(cs) != 1 || cs[0].Disposition != directives.Uncertain || cs[0].Closing.Present() {
+	if len(cs) != 1 || cs[0].Disposition != engine.DirectiveUncertain || cs[0].Closing.Present() {
 		t.Fatal(cs)
 	}
 	enabled(t, r, "MD001", r.Source().Len(), true, -1)
@@ -568,7 +567,7 @@ func TestTerminatedHTMLBlockTails(t *testing.T) {
 					text := prefix + command + "tail"
 					r := process(t, text, c)
 					cs := r.Candidates()
-					if len(cs) != 1 || cs[0].Raw != command || cs[0].Disposition != directives.Applied || cs[0].Span.Start() != len(prefix) || cs[0].Closing.End() != len(prefix)+len(command) {
+					if len(cs) != 1 || cs[0].Raw != command || cs[0].Disposition != engine.DirectiveApplied || cs[0].Span.Start() != len(prefix) || cs[0].Closing.End() != len(prefix)+len(command) {
 						t.Fatal(cs)
 					}
 					enabled(t, r, "MD001", len(prefix)+len(command)-1, true, -1)
