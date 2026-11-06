@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -472,5 +473,57 @@ func TestCompiledFixMD094ManyFilesStillReport(t *testing.T) {
 	// The first ten files spend the operation allowance; the rest keep one error.
 	if total != 10*100+590*1099 {
 		t.Fatal(total, out.Omissions)
+	}
+}
+
+// Logical order puts ../ro/z.md before a.md and native order after it. A failed
+// write must still report against the right targets, next to a blocked invalid file.
+func TestCompiledFixMD094PartialWriteAcrossPathOrders(t *testing.T) {
+	t.Parallel()
+	if runtime.GOOS == "windows" || os.Geteuid() == 0 {
+		t.Skip("needs a directory the test user can't write to")
+	}
+	binary := sharedExecutable(t)
+	conf := strings.Replace(md094Configuration(""), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
+	root := md094Project(t, conf, nil)
+	work := filepath.Join(root, "c")
+	readOnly := filepath.Join(root, "ro")
+	for _, dir := range []string{work, readOnly} {
+		if err := os.Mkdir(dir, 0700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	bad := []byte("x\xff\n")
+	for path, contents := range map[string][]byte{filepath.Join(work, "a.md"): []byte("a"), filepath.Join(readOnly, "z.md"): []byte("z"), filepath.Join(readOnly, "bad.md"): bad} {
+		if err := os.WriteFile(path, contents, 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.Chmod(readOnly, 0500); err != nil { //nolint:gosec // The test needs an unwritable directory.
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = os.Chmod(readOnly, 0700) }) //nolint:gosec // Restores the fixture so it can be removed.
+	status, stdout, stderr := md094Streams(t, binary, work, "fix", "../ro/bad.md", "../ro/z.md", "a.md", "--format=json")
+	if status != 13 || stderr != "" {
+		t.Fatal(status, stderr, stdout)
+	}
+	out := validateConfigurationOperationJSON(t, []byte(stdout), "fix")
+	outcome := map[string]result.File{}
+	for _, f := range out.Files {
+		outcome[f.Path] = f
+	}
+	if outcome["a.md"].WriteStatus != "written" || outcome["../ro/z.md"].WriteStatus == "written" || outcome["../ro/bad.md"].Analysis != "failed" || len(outcome["../ro/bad.md"].ChangeIDs) != 0 {
+		t.Fatal(outcome)
+	}
+	for _, e := range out.Errors {
+		if e.Code == "invalid-utf8" && e.Path != "../ro/bad.md" {
+			t.Fatal(e)
+		}
+	}
+	for path, want := range map[string]string{filepath.Join(work, "a.md"): "a\n", filepath.Join(readOnly, "z.md"): "z", filepath.Join(readOnly, "bad.md"): string(bad)} {
+		got, err := os.ReadFile(path) //nolint:gosec // Test-owned fixture path.
+		if err != nil || string(got) != want {
+			t.Fatal(path, err, string(got))
+		}
 	}
 }
