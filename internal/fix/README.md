@@ -28,7 +28,11 @@ bytes cannot be incidentally rewritten. Recognized frontmatter protects its full
 envelope, including BOM, delimiters and physical endings. Insertions inside
 protected spans are blocked; a header's document-start boundary and its EOF
 boundary on a header-only file are blocked too. Body-boundary insertions after a
-complete header still require semantic and directive revalidation.
+complete header still require semantic and directive revalidation. When
+`Document.UnrecognizedBlock` reports a complete leading block that isn't recognized,
+every edit in the document is blocked with `protected-syntax`, except one line ending
+inserted at EOF or a deletion of only line endings up to EOF. The check reads edit
+shape, never a rule ID.
 Fence delimiters are distinct from opaque code payload; any coordinated delimiter
 change remains subject to the later combined-candidate proof.
 
