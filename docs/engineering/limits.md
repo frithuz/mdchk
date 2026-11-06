@@ -116,8 +116,8 @@ within the limits, so a spent budget can't report a successful write as incomple
 `inspect`, `fix --dry-run` and a saved run whose validation did not complete have one
 allowance. Resource lookups for the saved view stay on the first allowance, because resource
 bytes are acquired once per operation. Status `15` can still accompany a `written` change
-if the run is cancelled, if a limit stops the write itself or a later file, or if such
-a lookup exhausts the first allowance.
+if the run is cancelled, if the `operation-time` deadline passes, if a limit stops the
+write itself or a later file, or if such a lookup exhausts the first allowance.
 
 ## Overrides
 
