@@ -11,6 +11,7 @@ import (
 	"slices"
 
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/fsroot"
 	"github.com/frithuz/mdchk/internal/parser"
 )
 
@@ -108,7 +109,7 @@ func (a *boundedDiscovery) readRegular(path string) ([]byte, error) {
 	if before.Size() > b.SourceBytes {
 		return nil, &parser.LimitExceeded{Name: "config-bytes", Observed: before.Size(), Allowed: b.SourceBytes}
 	}
-	file, err := parent.OpenFile(name, os.O_RDONLY|configOpenFlags, 0)
+	file, err := parent.OpenFile(name, os.O_RDONLY|fsroot.ReadFlags, 0)
 	if err != nil {
 		return nil, err
 	}
