@@ -27,8 +27,8 @@ type FragmentLinksInventory struct {
 // parser, for inline and resolved reference origins. It excludes autolinks,
 // bare URLs, protected content and Images.
 func (d *Document) FragmentLinks(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions) (FragmentLinksInventory, error) {
-	links, availability, err := proseLinks(d, ctx, budget, index, options, false, func(span Span, destination string, _ bool) (FragmentLink, bool) {
-		return FragmentLink{Span: span, Destination: destination}, strings.Contains(destination, "#")
+	links, availability, err := proseLinks(d, ctx, budget, index, options, proseFragments, func(span Span, destination Value, _ bool) (FragmentLink, bool) {
+		return FragmentLink{Span: span, Destination: destination.Semantic.Value}, strings.Contains(destination.Semantic.Value, "#")
 	}, func(l FragmentLink) int { return l.Span.start })
 	if err != nil || availability != Available {
 		return FragmentLinksInventory{Availability: availability}, err
@@ -56,8 +56,8 @@ type LocalLinksInventory struct {
 // and exclusions, whether or not they contain a fragment. An Image's description
 // is not traversed.
 func (d *Document) LocalLinks(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions) (LocalLinksInventory, error) {
-	links, availability, err := proseLinks(d, ctx, budget, index, options, true, func(span Span, destination string, image bool) (LocalLink, bool) {
-		return LocalLink{Span: span, Destination: destination, Image: image}, true
+	links, availability, err := proseLinks(d, ctx, budget, index, options, proseLocal, func(span Span, destination Value, image bool) (LocalLink, bool) {
+		return LocalLink{Span: span, Destination: destination.Semantic.Value, Image: image}, true
 	}, func(l LocalLink) int { return l.Span.start })
 	if err != nil || availability != Available {
 		return LocalLinksInventory{Availability: availability}, err
@@ -65,9 +65,24 @@ func (d *Document) LocalLinks(ctx context.Context, budget *OperationBudget, inde
 	return LocalLinksInventory{Links: links, Availability: Available}, nil
 }
 
-// proseLinks walks prose Links, and Images when images is set, publishing the
-// items keep admits. Images skip their children; Links classify after theirs.
-func proseLinks[T any](d *Document, ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, images bool, keep func(Span, string, bool) (T, bool), start func(T) int) (links []T, availability Availability, err error) {
+// proseLinkMode selects what proseLinks publishes. Fragments observes Links;
+// local adds Images. Destinations observes the destinations that source
+// spells: inline Links and Images, autolinks and reference definitions, but not
+// reference-origin uses, whose destination the definition owns.
+type proseLinkMode int
+
+const (
+	proseFragments proseLinkMode = iota
+	proseLocal
+	proseDestinations
+)
+
+// proseLinks walks prose Links, and Images unless mode is proseFragments,
+// publishing the items keep admits. Images skip their children; Links classify
+// after theirs.
+func proseLinks[T any](d *Document, ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, mode proseLinkMode, keep func(Span, Value, bool) (T, bool), start func(T) int) (links []T, availability Availability, err error) {
+	images := mode != proseFragments
+	destinations := mode == proseDestinations
 	if err = d.headingProjectionCheckpoint(ctx, budget, index, options, 1, 0); err != nil {
 		return nil, "", err
 	}
@@ -114,30 +129,32 @@ func proseLinks[T any](d *Document, ctx context.Context, budget *OperationBudget
 	}
 	// Destination components retain atomic escape/entity spellings. Validate the
 	// complete original mapping without decoding again or allocating a joined copy.
-	destination := func(n *Node) (Span, Availability, error) {
-		v := n.spec.Properties.Link.Destination
+	// Destinations mode also admits spanless synthetic autolink prefixes and
+	// unavailable mappings, which the consumer treats as unmapped source.
+	destination := func(envelope Span, v Value, reference bool) (Span, Availability, error) {
 		if !v.Semantic.Present {
 			return Span{}, Unavailable, nil
 		}
-		if n.spec.Properties.Link.Origin != "inline" {
+		if reference {
 			if e := charge(int64(len(v.Semantic.Value))+1, 0); e != nil {
 				return Span{}, "", e
 			}
-			return Span{source: index.source, start: n.spec.Envelope.start, end: n.spec.Envelope.end, present: true}, Available, nil
+			return Span{source: index.source, start: envelope.start, end: envelope.end, present: true}, Available, nil
 		}
 		if len(v.Segments) == 0 {
 			return Span{}, Unavailable, nil
 		}
-		previous, offset := n.spec.Envelope.start, 0
+		previous, offset, sourced := envelope.start, 0, false
 		start := v.Segments[0].Source.start
-		for j, part := range v.Segments {
+		for _, part := range v.Segments {
 			if e := charge(16, 0); e != nil {
 				return Span{}, "", e
 			}
-			if part.Transformation == MappingUnavailable || !part.Semantic.Present {
+			if !destinations && part.Transformation == MappingUnavailable || !part.Semantic.Present {
 				return Span{}, Unavailable, nil
 			}
-			if !part.Source.present || part.Source.SourceToken() != index.source.Token() || part.Source.start < previous || part.Source.end < part.Source.start || !contains(n.spec.Envelope, part.Source) || j > 0 && part.Source.start != previous {
+			spanless := destinations && !part.Source.present && (part.Transformation == Synthetic || part.Transformation == MappingUnavailable)
+			if !spanless && (!part.Source.present || part.Source.SourceToken() != index.source.Token() || part.Source.start < previous || part.Source.end < part.Source.start || !contains(envelope, part.Source) || !destinations && sourced && part.Source.start != previous) {
 				return Span{}, "", ErrModel
 			}
 			switch part.Transformation {
@@ -149,8 +166,18 @@ func proseLinks[T any](d *Document, ctx context.Context, budget *OperationBudget
 					return Span{}, "", ErrModel
 				}
 			case Normalized, Escape, Entity, PartialTab:
+			case Synthetic, MappingUnavailable:
+				if !destinations || part.Transformation == Synthetic && !spanless {
+					return Span{}, "", ErrModel
+				}
 			default:
 				return Span{}, "", ErrModel
+			}
+			if !spanless {
+				if !sourced {
+					start, sourced = part.Source.start, true
+				}
+				previous = part.Source.end
 			}
 			size := len(part.Semantic.Value)
 			if e := charge(int64(size)+1, 0); e != nil {
@@ -160,10 +187,12 @@ func proseLinks[T any](d *Document, ctx context.Context, budget *OperationBudget
 				return Span{}, "", ErrModel
 			}
 			offset += size
-			previous = part.Source.end
 		}
 		if offset != len(v.Semantic.Value) {
 			return Span{}, "", ErrModel
+		}
+		if !sourced {
+			return Span{}, Unavailable, nil
 		}
 		return Span{source: index.source, start: start, end: previous, present: true}, Available, nil
 	}
@@ -194,8 +223,8 @@ func proseLinks[T any](d *Document, ctx context.Context, budget *OperationBudget
 	raw := conflictRawState{}
 	rawKnown := true
 	uncertain := false
-	classify := func(n *Node, image bool) (Availability, error) {
-		span, available, e := destination(n)
+	classifyValue := func(envelope Span, v Value, reference, image bool) (Availability, error) {
+		span, available, e := destination(envelope, v, reference)
 		if e != nil || available != Available {
 			return available, e
 		}
@@ -203,14 +232,44 @@ func proseLinks[T any](d *Document, ctx context.Context, budget *OperationBudget
 			uncertain = true
 		}
 		if rawKnown && raw.name == "" {
-			value := n.spec.Properties.Link.Destination.Semantic.Value
-			if item, ok := keep(span, value, image); ok {
-				if e = publish(item, len(value)); e != nil {
+			if item, ok := keep(span, v, image); ok {
+				size := len(v.Semantic.Value)
+				if destinations {
+					size += 16 * len(v.Segments)
+				}
+				if e = publish(item, size); e != nil {
 					return "", e
 				}
 			}
 		}
 		return Available, nil
+	}
+	classify := func(n *Node, image bool) (Availability, error) {
+		return classifyValue(n.spec.Envelope, n.spec.Properties.Link.Destination, n.spec.Properties.Link.Origin != "inline" && !destinations, image)
+	}
+	// Reference definitions are not tree nodes. In destinations mode each one
+	// classifies under the raw state left by the nodes that start before it.
+	definitions := 0
+	flushDefinitions := func(before int) (Availability, error) {
+		for ; destinations && definitions < len(d.references.Definitions); definitions++ {
+			if e := charge(4, 0); e != nil {
+				return "", e
+			}
+			definition := d.references.Definitions[definitions]
+			if definition == nil {
+				return "", ErrModel
+			}
+			if definition.spec.Envelope.start >= before {
+				break
+			}
+			if available, e := classifyValue(definition.spec.Envelope, definition.spec.Destination, false, false); e != nil || available != Available {
+				return available, e
+			}
+		}
+		return Available, nil
+	}
+	if destinations && d.references.Availability != Available {
+		return nil, Unavailable, nil
 	}
 	if err = charge(2, 2); err != nil {
 		return nil, "", err
@@ -228,6 +287,15 @@ func proseLinks[T any](d *Document, ctx context.Context, budget *OperationBudget
 		n := f.node
 		if n == nil || !n.spec.Envelope.present || n.spec.Envelope.SourceToken() != index.source.Token() || n.spec.Envelope.start < 0 || n.spec.Envelope.end < n.spec.Envelope.start || n.spec.Envelope.end > index.source.Len() {
 			return nil, "", ErrModel
+		}
+		if !f.exit {
+			available, e := flushDefinitions(n.spec.Envelope.start)
+			if e != nil {
+				return nil, "", e
+			}
+			if available != Available {
+				return nil, Unavailable, nil
+			}
 		}
 		if f.exit {
 			available, e := classify(n, false)
@@ -267,7 +335,7 @@ func proseLinks[T any](d *Document, ctx context.Context, budget *OperationBudget
 				return nil, "", ErrModel
 			}
 			// The description is not traversed, so the Image classifies at once.
-			if prose {
+			if prose && (!destinations || p.Origin == "inline") {
 				available, e := classify(n, true)
 				if e != nil {
 					return nil, "", e
@@ -286,13 +354,20 @@ func proseLinks[T any](d *Document, ctx context.Context, budget *OperationBudget
 			}
 			switch p.Origin {
 			case "autolink", "bare-gfm":
-				continue
+				if !destinations {
+					continue
+				}
+				if prose {
+					if err = push(frame{node: n, exit: true}); err != nil {
+						return nil, "", err
+					}
+				}
 			case "full", "collapsed", "shortcut", "inline":
 				if p.Resolution != Available {
 					return nil, Unavailable, nil
 				}
 				// Visible children can change raw state, so classify after them.
-				if prose {
+				if prose && (!destinations || p.Origin == "inline") {
 					if err = push(frame{node: n, exit: true}); err != nil {
 						return nil, "", err
 					}
@@ -340,6 +415,9 @@ func proseLinks[T any](d *Document, ctx context.Context, budget *OperationBudget
 				}
 			}
 		}
+	}
+	if available, e := flushDefinitions(index.source.Len() + 1); e != nil || available != Available {
+		return nil, available, e
 	}
 	err = nestedExampleLocked(ctx, budget, index, func(work *parserContext, _ LineIndex) error {
 		slices.SortFunc(links, func(a, b T) int {
