@@ -23,9 +23,10 @@ A fresh checkout needs Go (the version in `go.mod`), Node and Python 3. Run
 `factory/checks.sh` runs the validation commands from the Linux `test` job in
 `.github/workflows/go.yml`: `go test ./...`, the no-cgo build, cross-target
 `go vet`, the conformance-tagged tests, `sh tools/lint.sh` and its self-test,
-and the CommonMark and GFM corpus, profile and table checks in `tools/`. CI
-also runs a vulnerability scan at the end of that job, plus race, fuzz and
-native macOS and Windows jobs.
+and the CommonMark and GFM corpus, profile and table checks in `tools/`. It also
+runs the result contract validator and the producer tests that use it, which CI
+doesn't. CI also runs a vulnerability scan at the end of that job, plus race,
+fuzz and native macOS and Windows jobs.
 
 CI runs Go tests through `go run ./tools/testrun`, which prints one summary
 line on a pass and only failing output otherwise; set `DEBUG=1` for the full

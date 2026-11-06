@@ -128,9 +128,12 @@ gate's `round-<N-1>/checks.md`, the reviews in `round-<N-1>/`, or
 **review.** Spawn every reviewer in `job.json` `agents.reviewers` **in one
 message**, so they run in parallel: `subagent_type` `reviewer-<r>` (or `<r>` itself
 for a lens in `config.json` `specialist_reviewers`), model from
-the same map, prompt `<header> Review round <N>.` **WAIT FOR ALL.** Each time one finishes, run
-`factory/bin/job sync <id>` so the dashboard fills in. When every reviewer has
-finished:
+the same map, prompt `<header> Review round <N>. Write your review to
+round-<N>/review-<r>.md in the job folder; its first line must be your VERDICT
+line.` **WAIT FOR ALL.** Each time one finishes, run `factory/bin/job sync <id>`
+so the dashboard fills in. A reviewer that replies without writing its file still
+counts as pending: resume it and tell it to write the file. When every reviewer
+has finished:
 
 - all PASS: `factory/bin/job advance <id> approve`, then spawn `approver` with
   `<header> PR: #<pr>. Final round: <N>.`

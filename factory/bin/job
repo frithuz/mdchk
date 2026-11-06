@@ -252,7 +252,10 @@ def transcripts_dir():
 
 
 def prompt_text(line):
-    content = json.loads(line)["message"]["content"]
+    try:
+        content = json.loads(line)["message"]["content"]
+    except (ValueError, KeyError, TypeError):
+        return ""
     if isinstance(content, str):
         return content
     return " ".join(b.get("text", "") for b in content if isinstance(b, dict))
