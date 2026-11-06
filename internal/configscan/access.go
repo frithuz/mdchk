@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/frithuz/mdchk/internal/fsroot"
 )
 
 // access pins every nonsymlink component from a filesystem volume root. It has
@@ -86,7 +88,7 @@ func (a *access) open(path string, directory bool) (readHandle, error) {
 	if directory && !info.IsDir() || !directory && !info.Mode().IsRegular() {
 		return nil, errors.New("source must have the expected nonsymlink type")
 	}
-	f, e := p.OpenFile(n, os.O_RDONLY|configOpenFlags, 0)
+	f, e := p.OpenFile(n, os.O_RDONLY|fsroot.ReadFlags, 0)
 	if e != nil {
 		return nil, e
 	}
