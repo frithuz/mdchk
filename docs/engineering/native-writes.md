@@ -173,14 +173,17 @@ Go API tried first:
 
 | File | Why it is required |
 | --- | --- |
-| `internal/fsroot/flags_unix.go` | `os.Root.OpenFile` accepts raw flags but the standard library exports no portable `O_NONBLOCK`/`O_NOFOLLOW`; the `syscall` constants are used (no cgo, no `x/sys`). A raced FIFO would otherwise hang a read. Also holds the Unix directory `fsync`, which `os.File.Sync` provides on a directory opened with `Root.Open(".")`. |
+| `internal/fsroot/flags_unix.go` | `os.Root.OpenFile` accepts raw flags but the standard library exports no portable `O_NONBLOCK`/`O_NOFOLLOW`; the `syscall` constants are used (no cgo, no `x/sys`). A raced FIFO would otherwise hang a read. Also holds the Unix directory `fsync`, which `os.File.Sync` provides on a directory opened with `Root.Open(".")`. Config discovery and config file reads (`internal/config`, `internal/configscan`) use `ReadFlags` too. |
 | `internal/fsroot/flags_other.go` | The Windows counterpart: no extra open flags are needed, and a directory handle cannot be synced. |
 | `internal/files/owner_unix.go` | `os.FileInfo` exposes no owner or link count; `Sys()` yields `*syscall.Stat_t` (stdlib). `os.File.Chown` applies it. |
 | `internal/files/owner_windows.go` | `os.FileInfo` carries no link count on Windows; the stdlib `syscall.GetFileInformationByHandle` reads it from the open handle. |
 | `internal/files/owner_other.go` | Windows: ownership is governed by inherited access control that `os.FileInfo` does not expose. |
 | `internal/files/xattr_unix.go` | The standard library has no extended attribute API. Pure-Go `golang.org/x/sys/unix` (`Flistxattr`, `Fgetxattr`, `Fsetxattr`, `Fremovexattr`) is the only dependency, enforced by `depguard`. |
 | `internal/files/xattr_other.go` | Windows has no extended attributes to copy. |
+| `internal/files/write_native.go` | The native write path, built only for Linux, macOS and Windows. It pairs with `write_unsupported.go`. |
 | `internal/files/write_unsupported.go` | The explicit refusal compiled only for hosts outside Linux, macOS and Windows. |
+| `cmd/mdchk/output_signals_unix.go` | Ignores `SIGPIPE` so that writes to a closed stdout or stderr return `EPIPE` and the CLI's exit precedence holds. Go otherwise ends the process on `SIGPIPE` for descriptors 1 and 2. This applies only to the executable. |
+| `cmd/mdchk/output_signals_other.go` | The non-Unix counterpart, which does nothing. |
 
 ### `internal/resource`
 
