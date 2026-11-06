@@ -39,6 +39,64 @@ func TestFrontmatterOptionsValidation(t *testing.T) {
 	}
 }
 
+func TestUnrecognizedBlockFact(t *testing.T) {
+	const off, yaml, toml, both = "off", "yaml", "toml", "both"
+	for _, tc := range []struct {
+		name, input, selection string
+		want                   bool
+	}{
+		{"lf", "---\nx: y\n---\n\nbody\n", off, true},
+		{"crlf", "---\r\nx: y\r\n---\r\nbody\r\n", off, true},
+		{"cr", "---\rx: y\r---\rbody\r", off, true},
+		{"bom", "\xef\xbb\xbf---\nx: y\n---\n", off, true},
+		{"toml", "+++\nx = 1\n+++\n", off, true},
+		{"dots closer", "---\nx: y\n...\n", off, true},
+		{"empty", "---\n---\n", off, true},
+		{"closer at eof", "---\nx: y\n---", off, true},
+		{"trailing whitespace", "--- \t\nx: y\n---  \n", off, true},
+		{"paired thematic breaks", "---\n\ntext\n\n---\n", off, true},
+		{"unterminated", "---\nx: y\n", off, false},
+		{"opener only", "---", off, false},
+		{"empty source", "", off, false},
+		{"plain", "body\n", off, false},
+		{"other format closer", "---\nx: y\n+++\n", off, false},
+		{"dots cannot open", "...\nx: y\n...\n", off, false},
+		{"extra marker", "----\nx: y\n----\n", off, false},
+		{"indented closer", "---\nx: y\n ---\n", off, false},
+		{"blank first line", "\n---\nx: y\n---\n", off, false},
+		{"unselected yaml", "---\nx: y\n---\n", toml, true},
+		{"unselected toml", "+++\nx = 1\n+++\n", yaml, true},
+		{"unselected unterminated", "---\nx: y\n", toml, false},
+		{"recognized yaml", "---\nx: y\n---\n", yaml, false},
+		{"recognized toml", "+++\nx = 1\n+++\n", toml, false},
+		{"recognized default formats", "---\nx: y\n---\n", both, false},
+		{"recognized unterminated", "---\nx: y\n", both, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var options FrontmatterOptions
+			switch tc.selection {
+			case yaml, toml:
+				options = frontmatterSelection(t, true, []string{tc.selection})
+			case both:
+				options = frontmatterSelection(t, true, nil)
+			}
+			source := NewSource([]byte(tc.input))
+			got := ParseWithOptions(context.Background(), source, budgetFor(t, DefaultLimits()), ParseOptions{Frontmatter: options})
+			if got.Document == nil || got.Document.UnrecognizedBlock() != tc.want {
+				t.Fatal("fact", got.Document)
+			}
+			if !tc.want {
+				return
+			}
+			_, present := got.Document.Frontmatter()
+			legacy := ParseWithBudget(context.Background(), source, budgetFor(t, DefaultLimits()))
+			if present || got.Status != Complete || !reflect.DeepEqual(got.Document.Root(), legacy.Document.Root()) || !reflect.DeepEqual(got.Document.References(), legacy.Document.References()) {
+				t.Fatal("the fact changed parsing")
+			}
+		})
+	}
+}
+
 func TestFrontmatterZeroOptionsPreserveLegacy(t *testing.T) {
 	source := NewSource([]byte("---\nx: y\n---\n\n~~ordinary~~\n"))
 	configured := ParseWithOptions(context.Background(), source, budgetFor(t, DefaultLimits()), ParseOptions{})

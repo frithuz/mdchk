@@ -80,6 +80,9 @@ type Document struct {
 	// A recognized header is separate from the ordinary body AST, like the
 	// non-rendered reference inventory. Only parsing can establish this record.
 	frontmatter Frontmatter
+	// A complete delimited block opens the source without being recognized. Only
+	// parsing can establish this fact; it adds no record and changes no node.
+	unrecognizedBlock bool
 	// Set only by a finished block pass that accounted for the entire source
 	// without inline payload. Constructed nodes or available references alone
 	// cannot establish this private parse handoff.
@@ -268,3 +271,10 @@ func (d *Document) References() ReferenceCollection { return cloneReferences(d.r
 func (d *Document) Frontmatter() (Frontmatter, bool) {
 	return d.frontmatter, d.frontmatter.boundary.region.Present()
 }
+
+// UnrecognizedBlock reports that the source opens with a complete `---` or `+++`
+// block under the frontmatter delimiter rules, and that recognition is disabled
+// or the block's format is unselected. The block may be metadata or a pair of
+// thematic breaks, so corrections other than a terminal line-ending change are
+// withheld for the whole document. An opener with no closer does not count.
+func (d *Document) UnrecognizedBlock() bool { return d.unrecognizedBlock }

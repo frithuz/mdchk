@@ -2046,7 +2046,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -2059,7 +2059,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -2072,7 +2072,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -2085,7 +2085,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       }
     ]
   },
@@ -2137,7 +2137,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -2150,7 +2150,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -2163,7 +2163,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -2176,7 +2176,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       }
     ]
   },
@@ -2228,7 +2228,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -2241,7 +2241,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -2254,7 +2254,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -2267,7 +2267,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       }
     ]
   },
@@ -2319,7 +2319,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -2332,7 +2332,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -2345,7 +2345,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -2358,7 +2358,7 @@
         ],
         "Source": " ",
         "Message": "Whitespace at line end.",
-        "FixAvailable": true
+        "FixAvailable": false
       }
     ]
   },

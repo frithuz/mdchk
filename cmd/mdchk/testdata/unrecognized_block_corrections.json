@@ -1,0 +1,223 @@
+[
+  {
+    "name": "yaml-comment",
+    "source": "---\n#  x\ntitle: y\n---\n\nbody\n",
+    "candidate": "---\n#  x\ntitle: y\n---\n\nbody\n",
+    "config": "default",
+    "guarded": true,
+    "withheld": [
+      "MD019"
+    ]
+  },
+  {
+    "name": "block-scalar",
+    "source": "---\ndesc: |\n  #  text\ntitle: y\n---\n\nbody\n",
+    "candidate": "---\ndesc: |\n  #  text\ntitle: y\n---\n\nbody\n",
+    "config": "default",
+    "guarded": true
+  },
+  {
+    "name": "toml-block",
+    "source": "+++\n#  x\n+++\n\nbody\n",
+    "candidate": "+++\n#  x\n+++\n\nbody\n",
+    "config": "default",
+    "guarded": true,
+    "withheld": [
+      "MD019"
+    ]
+  },
+  {
+    "name": "dots-closer",
+    "source": "---\n#  x\n...\n\nbody\n",
+    "candidate": "---\n#  x\n...\n\nbody\n",
+    "config": "default",
+    "guarded": true,
+    "withheld": [
+      "MD019"
+    ]
+  },
+  {
+    "name": "bom",
+    "source": "\ufeff---\n#  x\n---\n\nbody\n",
+    "candidate": "\ufeff---\n#  x\n---\n\nbody\n",
+    "config": "default",
+    "guarded": true,
+    "withheld": [
+      "MD019"
+    ]
+  },
+  {
+    "name": "crlf",
+    "source": "---\r\n#  x\r\n---\r\n\r\nbody\r\n",
+    "candidate": "---\r\n#  x\r\n---\r\n\r\nbody\r\n",
+    "config": "default",
+    "guarded": true,
+    "withheld": [
+      "MD019"
+    ]
+  },
+  {
+    "name": "delimiter-trailing-space",
+    "source": "--- \nt: y \n---\n\nbody\n",
+    "candidate": "--- \nt: y \n---\n\nbody\n",
+    "config": "default",
+    "guarded": true,
+    "withheld": [
+      "MD009"
+    ]
+  },
+  {
+    "name": "empty-block-body-findings",
+    "source": "---\n---\n\n##  x\n\nb \n",
+    "candidate": "---\n---\n\n##  x\n\nb \n",
+    "config": "default",
+    "guarded": true,
+    "withheld": [
+      "MD009",
+      "MD019"
+    ]
+  },
+  {
+    "name": "body-findings-all-rules",
+    "source": "---\nt: y\n---\n\n##  x  ##\n\nb \n",
+    "candidate": "---\nt: y\n---\n\n##  x  ##\n\nb \n",
+    "config": "default",
+    "guarded": true,
+    "withheld": [
+      "MD009",
+      "MD019",
+      "MD021"
+    ],
+    "fix_status": 10
+  },
+  {
+    "name": "leading-and-later-break",
+    "source": "---\n\ntext\n\n---\n\n##  x\n",
+    "candidate": "---\n\ntext\n\n---\n\n##  x\n",
+    "config": "default",
+    "guarded": true,
+    "withheld": [
+      "MD019"
+    ]
+  },
+  {
+    "name": "opener-no-closer",
+    "source": "---\n\n##  x\n\nb \n",
+    "candidate": "---\n\n## x\n\nb\n",
+    "config": "default",
+    "guarded": false
+  },
+  {
+    "name": "later-marker-not-first-line",
+    "source": "a\n---\n\n##  x\n\n---\n",
+    "candidate": "a\n---\n\n## x\n\n---\n",
+    "config": "default",
+    "guarded": false
+  },
+  {
+    "name": "blank-first-line",
+    "source": "\n---\n#  x\n---\n",
+    "candidate": "\n---\n# x\n---\n",
+    "config": "default",
+    "guarded": false
+  },
+  {
+    "name": "other-format-closer",
+    "source": "---\n#  x\n+++\n",
+    "candidate": "---\n# x\n+++\n",
+    "config": "default",
+    "guarded": false
+  },
+  {
+    "name": "dots-cannot-open",
+    "source": "...\n#  x\n...\n",
+    "candidate": "...\n# x\n...\n",
+    "config": "default",
+    "guarded": false
+  },
+  {
+    "name": "extra-marker-character",
+    "source": "----\n#  x\n----\n",
+    "candidate": "----\n# x\n----\n",
+    "config": "default",
+    "guarded": false
+  },
+  {
+    "name": "indented-closer",
+    "source": "---\n#  x\n ---\n",
+    "candidate": "---\n# x\n ---\n",
+    "config": "default",
+    "guarded": false
+  },
+  {
+    "name": "md047-block-at-eof",
+    "source": "---\nt: y\n---",
+    "candidate": "---\nt: y\n---\n",
+    "config": "default",
+    "guarded": true
+  },
+  {
+    "name": "md047-interior-finding-kept",
+    "source": "---\n#  x\n---\n\nbody",
+    "candidate": "---\n#  x\n---\n\nbody\n",
+    "config": "default",
+    "guarded": true,
+    "withheld": [
+      "MD019"
+    ]
+  },
+  {
+    "name": "md047-excess-endings",
+    "source": "---\nt: y\n---\n\nbody\n\n\n",
+    "candidate": "---\nt: y\n---\n\nbody\n",
+    "config": "default",
+    "guarded": true
+  },
+  {
+    "name": "md047-suffix-at-eof",
+    "source": "---\nt: y\n---\n\nbody ",
+    "candidate": "---\nt: y\n---\n\nbody \n",
+    "config": "default",
+    "guarded": true,
+    "withheld": [
+      "MD009"
+    ]
+  },
+  {
+    "name": "withheld-md009-no-deferral",
+    "source": "---\nt: y\n---\n\n[a](b \"t \nu\")\n",
+    "candidate": "---\nt: y\n---\n\n[a](b \"t \nu\")\n",
+    "config": "default",
+    "guarded": true,
+    "withheld": [
+      "MD009"
+    ]
+  },
+  {
+    "name": "unselected-yaml",
+    "source": "---\n#  x\n---\n\n##  y\n",
+    "candidate": "---\n#  x\n---\n\n##  y\n",
+    "config": "toml-only",
+    "guarded": true,
+    "withheld": [
+      "MD019"
+    ]
+  },
+  {
+    "name": "unselected-toml",
+    "source": "+++\n#  x\n+++\n\n##  y\n",
+    "candidate": "+++\n#  x\n+++\n\n##  y\n",
+    "config": "yaml-only",
+    "guarded": true,
+    "withheld": [
+      "MD019"
+    ]
+  },
+  {
+    "name": "recognized",
+    "source": "---\n#  x: y\n---\n\n##  Real\n",
+    "candidate": "---\n#  x: y\n---\n\n## Real\n",
+    "config": "enabled",
+    "guarded": false
+  }
+]

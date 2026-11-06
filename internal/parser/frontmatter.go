@@ -90,7 +90,8 @@ func (h Frontmatter) BodyOffset() int { return h.boundary.region.End() }
 // retaining or changing formats. Flavor is intentionally not an input: enabling
 // recognition and selecting formats are independent of Markdown interpretation.
 // The caller must perform source admission before constructing the line index.
-// Public parsing invokes this only through explicit frontmatter options.
+// Public parsing selects both formats and applies its options to the result, so
+// one scan also establishes Document.UnrecognizedBlock.
 func detectFrontmatter(index LineIndex, enabled bool, formats []string) (frontmatterBoundary, error) {
 	if !enabled || len(index.lines) == 0 {
 		return frontmatterBoundary{}, nil
@@ -133,6 +134,14 @@ func detectFrontmatter(index LineIndex, enabled bool, formats []string) (frontma
 		}
 	}
 	return header, nil
+}
+
+// frontmatterOpenerPrefix is a constant-time filter, not a delimiter decision: it
+// spares a document with recognition off any scan charge unless its first bytes
+// could open a block. detectFrontmatter still decides.
+func frontmatterOpenerPrefix(index LineIndex) bool {
+	content := strings.TrimPrefix(index.source.content, "\xef\xbb\xbf")
+	return strings.HasPrefix(content, "---") || strings.HasPrefix(content, "+++")
 }
 
 func frontmatterDelimiter(ctx context.Context, text string) (string, error) {
