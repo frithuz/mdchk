@@ -377,6 +377,45 @@ func TestCompiledMD009BesideHeadingSpacing(t *testing.T) {
 	}
 }
 
+// A run that validated completely has the budget to describe what it wrote, so the
+// exit code a preview promises holds for the saved run.
+func TestCompiledFixWriteIsNotReportedIncomplete(t *testing.T) {
+	t.Parallel()
+	binary := sharedExecutable(t)
+	source := strings.Repeat("# T\n\nbody text here\n\n", 50) + "end"
+	want := source + "\n"
+	conf := strings.Replace(cleanConfiguration(), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
+	run := func(limit int) (configurationRun, string) {
+		root := configurationProject(t)
+		putConfigurationFile(t, root, ".mdchk.yaml", conf)
+		putConfigurationFile(t, root, "doc.md", source)
+		got := runAppliedFix(t, binary, root, "fix", "doc.md", "--format=json", "--limit", fmt.Sprintf("work-units=%d", limit))
+		//nolint:gosec // Access only synthetic test fixtures.
+		saved, err := os.ReadFile(filepath.Join(root, "doc.md"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return got, string(saved)
+	}
+	// Find the smallest budget that writes.
+	low, high := 1000, 250000000
+	for high-low > 1 {
+		middle := (low + high) / 2
+		if _, saved := run(middle); saved == want {
+			high = middle
+		} else {
+			low = middle
+		}
+	}
+	// A stop in the write's own last steps stays visible, so start just above them.
+	for _, extra := range []int{1000, 5000, 20000, 50000} {
+		got, saved := run(high + extra)
+		if saved != want || got.Status != 0 || !got.Result.Complete {
+			t.Fatalf("limit %d: status %d saved %q: %s", high+extra, got.Status, saved, got.Stdout)
+		}
+	}
+}
+
 // Criterion 22: lint advertises exactly what fix then corrects. A finding's line is
 // stable across MD009 edits, so it identifies the same finding before and after.
 func TestCompiledMD009LintParity(t *testing.T) {
