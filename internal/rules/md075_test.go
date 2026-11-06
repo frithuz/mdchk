@@ -18,7 +18,7 @@ import (
 
 const md075Example = "A | B\n1 | 2\n"
 
-const md075FixtureSHA = "999ebb4ad8cb5c3da271399b8f9845d2732a35d8f6b513c1683a62eeabf58eb0"
+const md075FixtureSHA = "ab1f0cdd6c5e51fea5e3d7a9ea02bc4417c9d1ca264b2a5e26cbed3afa12b497"
 
 func TestMD075RegistrationAvailabilityAndOptions(t *testing.T) {
 	registered := false
@@ -80,7 +80,7 @@ func md075Literals(t *testing.T) []md075Literal {
 		t.Fatal("oracle identity", e)
 	}
 	var v struct{ Cases []md075Literal }
-	if e = json.Unmarshal(b, &v); e != nil || len(v.Cases) != 37 {
+	if e = json.Unmarshal(b, &v); e != nil || len(v.Cases) != 46 {
 		t.Fatal(e, len(v.Cases))
 	}
 	return v.Cases

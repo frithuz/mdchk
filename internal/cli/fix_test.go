@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
+	"slices"
 	"strings"
 	"testing"
 
@@ -299,5 +301,45 @@ func TestFixEmptyDiscoveryCausePrecedence(t *testing.T) {
 				validateEmitted(t, t.TempDir(), stdout.Bytes())
 			}
 		})
+	}
+}
+
+func fixHelpOutput(t *testing.T) string {
+	t.Helper()
+	var stdout, stderr bytes.Buffer
+	if status := Run([]string{"fix", "--help"}, &stdout, &stderr, "test"); status != 0 {
+		t.Fatal(status, stderr.String())
+	}
+	return stdout.String()
+}
+
+func TestFixHelpNamesCatalogCorrectingRules(t *testing.T) {
+	named := regexp.MustCompile(`MD[0-9]+`).FindAllString(fixHelpOutput(t), -1)
+	slices.Sort(named)
+	named = slices.Compact(named)
+	var correcting []string
+	for _, meta := range engine.Catalog() {
+		if meta.Fix == engine.ImplementedFix {
+			correcting = append(correcting, meta.ID)
+		}
+	}
+	for _, id := range correcting {
+		if !slices.Contains(named, id) {
+			t.Errorf("catalog rule %s corrects but is missing from the fix help", id)
+		}
+	}
+	for _, id := range named {
+		if !slices.Contains(correcting, id) {
+			t.Errorf("fix help names %s but the catalog does not mark it as correcting", id)
+		}
+	}
+}
+
+func TestFixHelpStatesSavedRunLimits(t *testing.T) {
+	help := strings.Join(strings.Fields(fixHelpOutput(t)), " ")
+	for _, want := range []string{"each half", "twice work-units and total-nodes", "operation-time deadline does not restart", "--dry-run has one allowance"} {
+		if !strings.Contains(help, want) {
+			t.Errorf("fix help does not state %q:\n%s", want, help)
+		}
 	}
 }

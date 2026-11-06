@@ -32,7 +32,8 @@ type PipeRowCandidatesInventory struct {
 // PipeRowCandidates classifies each physical Paragraph line, including
 // Paragraphs nested in block quotes and list items, with the same separator
 // classification the table splitter uses. It never reads lines outside
-// Paragraph content.
+// Paragraph content, except the envelope bytes after an empty task Paragraph's
+// separator, which it reads only to prove they hold no content.
 func (d *Document) PipeRowCandidates(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions) (out PipeRowCandidatesInventory, err error) {
 	if err = d.headingProjectionCheckpoint(ctx, budget, index, options, 1, 0); err != nil {
 		return out, err
@@ -134,11 +135,42 @@ func (d *Document) PipeRowCandidates(ctx context.Context, budget *OperationBudge
 		delimiter := shape.delimiter && (text[shape.start] == '|' || text[shape.start] == ':' || text[shape.start] == '-')
 		return publish(PipeRowCandidate{Start: shape.start, End: shape.end, Paragraph: paragraphs, Line: i + 1, Cells: shape.cells, LeadingPipe: shape.leading, TrailingPipe: shape.trailing, Delimiter: delimiter, NextToTable: nextToTable})
 	}
+	// emptyTask reports whether a Paragraph without Content is a task whose
+	// envelope holds only trailing whitespace after its separator. The task
+	// marker alone does not prove that the Paragraph is empty.
+	emptyTask := func(n *Node) (bool, error) {
+		task := n.spec.Properties.Task
+		if task == nil {
+			return false, nil
+		}
+		s, env := task.Separator, n.spec.Envelope
+		if !s.Present() || s.SourceToken() != index.source.Token() || s.start < env.start || s.end < s.start || s.end > env.end {
+			return false, nil
+		}
+		if e := charge(int64(env.end-s.end)+1, 0); e != nil {
+			return false, e
+		}
+		for i := s.end; i < env.end; i++ {
+			switch text[i] {
+			case ' ', '\t', '\r', '\n':
+			default:
+				return false, nil
+			}
+		}
+		return true, nil
+	}
 	// paragraph groups the Paragraph's content provenance by physical line. It
 	// reports false when that provenance is missing or inconsistent.
 	paragraph := func(n *Node, nextToTable bool) (bool, error) {
-		if !envelope(n) || len(n.spec.Content) == 0 {
+		if !envelope(n) {
 			return false, nil
+		}
+		if len(n.spec.Content) == 0 {
+			known, e := emptyTask(n)
+			if known && e == nil {
+				paragraphs++
+			}
+			return known, e
 		}
 		current, start, end, previous := -1, 0, 0, n.spec.Envelope.start
 		for _, part := range n.spec.Content {

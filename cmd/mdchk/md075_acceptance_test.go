@@ -30,7 +30,7 @@ type md075NativeLiteral struct {
 func md075NativeLiterals(t *testing.T) []md075NativeLiteral {
 	t.Helper()
 	b, e := os.ReadFile("../../internal/rules/testdata/md075.json")
-	if e != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != "999ebb4ad8cb5c3da271399b8f9845d2732a35d8f6b513c1683a62eeabf58eb0" {
+	if e != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != "ab1f0cdd6c5e51fea5e3d7a9ea02bc4417c9d1ca264b2a5e26cbed3afa12b497" {
 		t.Fatal("oracle identity", e)
 	}
 	var v struct{ Cases []md075NativeLiteral }
@@ -186,6 +186,67 @@ func TestCompiledPlatformMD075SpecExamplesWithDefaults(t *testing.T) {
 			readinessAssertEqual(t, "MD075 default fix", before, readinessState(t, root))
 		})
 	}
+}
+
+func md075AssertCompleteCoverage(t *testing.T, got configurationRun, want int) {
+	t.Helper()
+	if got.Status != want || !strings.Contains(got.Stdout, "complete: true") || strings.Contains(got.Stdout, "coverage t.md MD075") {
+		t.Fatal(got)
+	}
+}
+
+// An empty task item has no lines to check, so the default configuration
+// reports complete coverage for it.
+func TestCompiledPlatformMD075EmptyTaskDefaults(t *testing.T) {
+	t.Parallel()
+	binary := sharedExecutable(t)
+	for _, tc := range []struct {
+		source string
+		want   int
+	}{
+		{"- [x]\n", 10},
+		{"- [ ]\n", 10},
+		{"- [x] \n", 10},
+		{"- [x] ", 10},
+		{"- [x]\r\n", 10},
+		{"> - [x]\n", 10},
+		{"- a\n\n  - [x]\n", 10},
+		{"# T\n\n- [x]\n", 0},
+	} {
+		t.Run(fmt.Sprintf("%q", tc.source), func(t *testing.T) {
+			root := configurationProject(t)
+			putConfigurationFile(t, root, "t.md", tc.source)
+			md075AssertCompleteCoverage(t, md014NativeRun(t, binary, root, "lint", "t.md"), tc.want)
+		})
+	}
+	for _, tc := range []struct{ source, finding string }{
+		{"A | B\n1 | 2\n\n- [x]\n", "t.md:1:1 MD075: Pipe rows are not part of a table. [manual]"},
+		{"- [x]\n\n  a | b\n  1 | 2\n", "t.md:3:3 MD075: Pipe rows are not part of a table. [manual]"},
+	} {
+		t.Run(fmt.Sprintf("%q", tc.source), func(t *testing.T) {
+			root := configurationProject(t)
+			putConfigurationFile(t, root, "t.md", tc.source)
+			got := md014NativeRun(t, binary, root, "lint", "t.md")
+			md075AssertCompleteCoverage(t, got, 10)
+			if !strings.Contains(got.Stdout, tc.finding) {
+				t.Fatal(got)
+			}
+		})
+	}
+}
+
+// fix turns the trailing-space form into the form the next lint run checks.
+func TestCompiledPlatformMD075EmptyTaskFixThenLint(t *testing.T) {
+	t.Parallel()
+	binary := sharedExecutable(t)
+	root := configurationProject(t)
+	putConfigurationFile(t, root, "t.md", "- [x] ")
+	md075AssertCompleteCoverage(t, md014NativeRun(t, binary, root, "fix", "t.md"), 10)
+	//nolint:gosec // Read back only the test-owned fixture.
+	if b, e := os.ReadFile(filepath.Join(root, "t.md")); e != nil || string(b) != "- [x]\n" {
+		t.Fatal(string(b), e)
+	}
+	md075AssertCompleteCoverage(t, md014NativeRun(t, binary, root, "lint", "t.md"), 10)
 }
 
 func TestCompiledPlatformMD075SettingsAndInvalidAdmission(t *testing.T) {
