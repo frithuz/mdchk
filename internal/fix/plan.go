@@ -218,6 +218,7 @@ func Plan(ctx context.Context, parsed parser.ParseResult, state engine.Directive
 		}
 		protected = append(protected, header.Span())
 	}
+	guarded := parsed.Document.UnrecognizedBlock()
 	comments, err := state.CandidateSpans(ctx, budget)
 	if err != nil {
 		return StructuralPlan{}, err
@@ -372,7 +373,11 @@ func Plan(ctx context.Context, parsed parser.ParseResult, state engine.Directive
 				if hasHeader && e.Span.Start() == e.Span.End() && (e.Span.Start() == header.Span().Start() || e.Span.Start() == header.Span().End() && header.Span().End() == source.Len()) {
 					code = "protected-syntax"
 				}
-
+				// An unrecognized leading block may be metadata this run cannot see, so
+				// only a line-ending change at EOF is permitted in the whole document.
+				if guarded && !terminalEdit(original, e, source.Len()) {
+					code = "protected-syntax"
+				}
 			}
 			if code != "" {
 				if err := addReason(i, code, -1, parser.Span{}); err != nil {
@@ -570,6 +575,20 @@ func Plan(ctx context.Context, parsed parser.ParseResult, state engine.Directive
 		return StructuralPlan{}, err
 	}
 	return StructuralPlan{source, true, decisions, accepted, candidate}, nil
+}
+
+// terminalEdit recognizes the edit shapes that cannot change a value inside a
+// leading block: one line ending inserted at EOF, or line endings deleted up to EOF.
+// original is the edit's checked source text, already charged as its Expected bytes.
+func terminalEdit(original string, e Edit, size int) bool {
+	if e.Span.End() != size {
+		return false
+	}
+	if e.Span.Start() == e.Span.End() {
+		ending := string(e.Replacement)
+		return ending == "\n" || ending == "\r\n" || ending == "\r"
+	}
+	return len(e.Replacement) == 0 && strings.Trim(original, "\r\n") == ""
 }
 
 // indexSpans retains a sorted frontier of protected original-byte intervals. Queries are logarithmic;

@@ -58,6 +58,57 @@ func TestFrontmatterPlannerProtectsWholeHeader(t *testing.T) {
 	}
 }
 
+// These proposals come from no production rule: Plan protects the document by
+// edit shape alone, so a new producer that skips eligibility is still stopped.
+func TestPlannerProtectsDocumentOpeningWithUnrecognizedBlock(t *testing.T) {
+	block := "---\n#  x\n---\n\nbody"
+	for _, tc := range []struct {
+		name, text, replacement string
+		start, end              int
+		want                    bool
+	}{
+		{"replacement in block", block, " ", 5, 7, false},
+		{"replacement in body", block, "text", len(block) - 4, len(block), false},
+		{"replacement at eof", block, "\n", len(block) - 1, len(block), false},
+		{"prefix insertion", block, "\n", 0, 0, false},
+		{"interior line ending", block, "\n", 14, 14, false},
+		{"spaces removed at eof", block + "  ", "", len(block), len(block) + 2, false},
+		{"spaces and ending removed at eof", block + " \n", "", len(block), len(block) + 2, false},
+		{"ending deleted before eof", block + "\n\nx", "", len(block), len(block) + 1, false},
+		{"ending replaced at eof", block + "\n\n", "\n", len(block), len(block) + 2, false},
+		{"text inserted at eof", block, "x", len(block), len(block), false},
+		{"two endings inserted at eof", block, "\n\n", len(block), len(block), false},
+		{"ending inserted at eof", block, "\n", len(block), len(block), true},
+		{"crlf inserted at eof", block, "\r\n", len(block), len(block), true},
+		{"cr inserted at eof", block, "\r", len(block), len(block), true},
+		{"ending inserted after closer", "---\nt: y\n---", "\n", 12, 12, true},
+		{"excess endings deleted", block + "\n\n\n", "", len(block) + 1, len(block) + 3, true},
+		{"excess crlf deleted", block + "\r\n\r\n", "", len(block) + 2, len(block) + 4, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := setup(t, tc.text, nil, true)
+			if !f.parsed.Document.UnrecognizedBlock() {
+				t.Fatal("fixture is not an unrecognized block")
+			}
+			p := plan(t, f, group(t, f, "new", edit(t, f, tc.start, tc.end, tc.replacement)))
+			if (len(accepted(p)) == 1) != tc.want || reason(p, "new", "protected-syntax") == tc.want {
+				t.Fatal("wrong decision", p.Decisions())
+			}
+			if !tc.want && string(p.ProvisionalBytes()) != tc.text {
+				t.Fatal("deferred edit changed bytes")
+			}
+		})
+	}
+	for _, text := range []string{"---\n\nbody", "\n---\nx\n---\nbody", "---\nx\n+++\nbody"} {
+		f := setup(t, text, nil, true)
+		at := strings.Index(text, "body")
+		p := plan(t, f, group(t, f, "new", edit(t, f, at, at+4, "text")))
+		if len(accepted(p)) != 1 {
+			t.Fatal("document without a complete leading block protected", text, p.Decisions())
+		}
+	}
+}
+
 func frontmatterSemanticSetup(t *testing.T, gfm bool) semanticFixture {
 	t.Helper()
 	f := semanticSetup(t, nil, nil)

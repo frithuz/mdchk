@@ -279,6 +279,12 @@ func TestMD009FixEligibility(t *testing.T) {
 		{"task continuation", "gfm", "- [x] \n  b\n", false, false},
 		{"task lazy continuation", "gfm", "- [x] \nb\n", false, false},
 		{"task text continuation", "gfm", "- [x] a \n  b\n", false, true},
+		{"unrecognized block payload", "commonmark", "---\nt: y \n---\n\nb\n", false, false},
+		{"unrecognized block body", "commonmark", "---\nt: y\n---\n\na \nb\n", false, false},
+		{"unrecognized toml block body", "gfm", "+++\nt = 1\n+++\n\na \nb\n", false, false},
+		{"unrecognized block eof without md047", "commonmark", "---\nt: y\n---\n\na ", false, false},
+		{"paired thematic breaks", "commonmark", "---\n\na \n\n---\n", false, false},
+		{"opener without closer", "commonmark", "---\n\na \nb\n", false, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			s := md009Settings()

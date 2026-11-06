@@ -29,7 +29,8 @@ func NewInteriorEditQuery(parsed parser.ParseResult, state DirectiveResult, budg
 
 // Eligible reports whether a nonempty edit of span under the rule's anchor can
 // reach a correction. Insertions are withheld: Plan applies additional boundary
-// policy to them that this query does not repeat.
+// policy to them that this query does not repeat. A document opening with an
+// unrecognized block is withheld whole, as Plan does.
 func (q *InteriorEditQuery) Eligible(ctx context.Context, id string, anchor, span parser.Span) (bool, error) {
 	if ctx == nil || q.budget == nil {
 		return false, errors.New("nil interior edit context or budget")
@@ -41,7 +42,7 @@ func (q *InteriorEditQuery) Eligible(ctx context.Context, id string, anchor, spa
 		return false, err
 	}
 	p := q.parsed
-	if p.Status != parser.Complete || p.AST != parser.Available || p.Phases.Blocks != parser.PhaseComplete || p.Phases.Inlines != parser.PhaseComplete || len(p.Uncertainty) != 0 || p.Document == nil || p.Document.Source() != p.Source || q.state.Source() != p.Source || !q.state.Complete() || !q.state.InOperation(q.budget) {
+	if p.Status != parser.Complete || p.AST != parser.Available || p.Phases.Blocks != parser.PhaseComplete || p.Phases.Inlines != parser.PhaseComplete || len(p.Uncertainty) != 0 || p.Document == nil || p.Document.UnrecognizedBlock() || p.Document.Source() != p.Source || q.state.Source() != p.Source || !q.state.Complete() || !q.state.InOperation(q.budget) {
 		return false, nil
 	}
 	if _, err := p.Source.Text(span); err != nil || span.Start() == span.End() {

@@ -75,24 +75,22 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 	}
 	p := blockParser{index: newLineIndex(ctx, document.Source()), stack: []openBlock{{kind: DocumentKind}}, hooks: hooks, ctx: ctx}
 	bodyOffset := 0
-	if settings, ok := ctx.(*parserContext); ok && settings.frontmatter.enabled {
-		var selected [2]string
-		count := 0
-		if settings.frontmatter.yaml {
-			selected[count], count = "yaml", count+1
-		}
-		if settings.frontmatter.toml {
-			selected[count], count = "toml", count+1
-		}
-		header, err := detectFrontmatter(p.index, true, selected[:count])
+	if settings, ok := ctx.(*parserContext); ok && (settings.frontmatter.enabled || frontmatterOpenerPrefix(p.index)) {
+		// One scan with both formats answers recognition and the unrecognized-block
+		// fact, whatever the selection, so neither needs a second pass.
+		formats := [2]string{"yaml", "toml"}
+		header, err := detectFrontmatter(p.index, true, formats[:])
 		if err != nil || interruption(ctx) != "" {
 			return Interrupted, nil
 		}
-		if header.region.Present() {
+		selected := settings.frontmatter.enabled && (header.format == "yaml" && settings.frontmatter.yaml || header.format == "toml" && settings.frontmatter.toml)
+		if selected {
 			meterRecords(ctx, 1)
 			meterWork(ctx, 6) // fixed record and source-span copies
 			document.frontmatter = Frontmatter{boundary: header, records: settings.budget}
 			bodyOffset = header.region.End()
+		} else {
+			document.unrecognizedBlock = header.closer.Present()
 		}
 	}
 	state := PhaseComplete

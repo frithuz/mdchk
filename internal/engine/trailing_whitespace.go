@@ -79,10 +79,11 @@ func (c RuleContext) TrailingWhitespace(ctx context.Context) (out []TrailingWhit
 }
 
 // trailingFixEligible resolves one suffix from retained facts and directive
-// intervals only. Hidden and observational findings are never eligible. A suffix
+// intervals only. Hidden and observational findings are never eligible, and
+// neither is any suffix in a document opening with an unrecognized block. A suffix
 // at physical EOF conflicts with an MD047 obligation active there.
 func (c RuleContext) trailingFixEligible(ctx context.Context, item parser.TrailingSuffix) (bool, error) {
-	if c.observational || !c.syntaxReliable || !c.directives.complete || item.Literal || item.Withheld || item.Oversized {
+	if c.observational || !c.syntaxReliable || !c.directives.complete || c.document.UnrecognizedBlock() || item.Literal || item.Withheld || item.Oversized {
 		return false, nil
 	}
 	if err := c.auditCharge(ctx, directiveLookupWork(len(c.directives.intervals["MD009"]))+directiveLookupWork(len(c.directives.intervals["MD047"]))+1, 0); err != nil {

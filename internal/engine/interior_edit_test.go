@@ -59,6 +59,51 @@ func TestInteriorEditEligibility(t *testing.T) {
 	}
 }
 
+func TestInteriorEditUnrecognizedBlock(t *testing.T) {
+	ctx := context.Background()
+	for _, tc := range []struct {
+		name, text string
+		enabled    bool
+		formats    []string
+		start      int
+		want       bool
+	}{
+		{"disabled, in block", "---\n#  x\n---\n\nbody\n", false, nil, 6, false},
+		{"disabled, in body", "---\nt: y\n---\n\n##  x\n", false, nil, 18, false},
+		{"disabled, toml", "+++\nt = 1\n+++\n\n##  x\n", false, nil, 19, false},
+		{"unselected", "---\nt: y\n---\n\n##  x\n", true, []string{"toml"}, 18, false},
+		{"paired thematic breaks", "---\n\n##  x\n\n---\n", false, nil, 8, false},
+		{"opener without closer", "---\n\n##  x\n", false, nil, 8, true},
+		{"recognized, in body", "---\nt: y\n---\n\n##  x\n", true, nil, 18, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			r, err := NewRegistry([]Metadata{{ID: "MD019", Name: "spacing", DefaultEnabled: true, Fix: ImplementedFix}}, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			rules, err := r.ResolveSettings(nil, ValidationProviders{})
+			if err != nil {
+				t.Fatal(err)
+			}
+			options, err := parser.NewFrontmatterOptions(tc.enabled, tc.formats)
+			if err != nil {
+				t.Fatal(err)
+			}
+			budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
+			parsed := parser.ParseWithOptions(ctx, parser.NewSource([]byte(tc.text)), budget, parser.ParseOptions{Frontmatter: options})
+			state := ProcessDirectives(ctx, parsed, ruleDirectivePolicy{rules}, budget)
+			span, err := parsed.Source.Span(tc.start, tc.start+1)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := NewInteriorEditQuery(parsed, state, budget).Eligible(ctx, "MD019", span, span)
+			if err != nil || got != tc.want {
+				t.Fatal(got, err)
+			}
+		})
+	}
+}
+
 func TestInteriorEditRejectsUncertainAndIncompleteParses(t *testing.T) {
 	ctx := context.Background()
 	for _, tc := range []struct {

@@ -15,6 +15,9 @@ import (
 // deferral costs nothing but itself. An eligible one shares the first round. So does
 // one an MD009 suffix touches: the planner defers that pair as a conflict before any
 // proof, and the suffix must not be corrected without it.
+//
+// A document opening with an unrecognized block gets no MD009 group at all, not even
+// a deferral. MD019 and MD021 are already withheld by their flags, and MD047 stays.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
@@ -22,6 +25,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	}
 	var terminal *result.Diagnostic
 	var spacing, trailing []result.Diagnostic
+	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
 			return nil, err
@@ -36,7 +40,9 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 				spacing = append(spacing, d)
 			}
 		case "MD009":
-			trailing = append(trailing, d)
+			if !guarded {
+				trailing = append(trailing, d)
+			}
 		}
 	}
 	groups, err := headingSpacingGroups(ctx, c, spacing)
