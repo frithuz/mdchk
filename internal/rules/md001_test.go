@@ -140,7 +140,7 @@ func TestMD001DirectivesPreserveHeadingContext(t *testing.T) {
 
 func TestMD001CatalogAndOptions(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD001") || r.Available("MD095") || r.Available("MD095") {
+	if !r.Available("MD001") || r.Available("MD066") || r.Available("MD066") {
 		t.Fatal("incorrect availability")
 	}
 	for _, m := range r.Metadata() {

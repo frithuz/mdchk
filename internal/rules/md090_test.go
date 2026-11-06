@@ -62,7 +62,7 @@ func TestMD090AnalysisFixtures(t *testing.T) {
 }
 func TestMD090SlidesOptionsAndSchema(t *testing.T) {
 	r := registry(t, Registrations())
-	if !r.Available("MD090") || r.Available("MD095") || len(r.Metadata()) != 87 {
+	if !r.Available("MD090") || r.Available("MD066") || len(r.Metadata()) != 87 {
 		t.Fatal("availability")
 	}
 	for _, m := range r.Metadata() {
