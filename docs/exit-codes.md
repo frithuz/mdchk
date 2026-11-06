@@ -17,7 +17,7 @@ for these outcomes, including usage and configuration failures when a valid
 format is selected. Inspect supports text/JSON. Editor reporters use their
 documented diagnostic and operational streams. Apply uses one portable
 native replacement on Linux, macOS and Windows; hosts outside those return I/O/13. MD047 previews
-safe final-newline corrections and defers unsafe EOF contexts. MCP remains planned.
+safe final-newline corrections and defers unsafe EOF contexts; MD009 previews trailing-whitespace corrections. MCP remains planned.
 An output-delivery error, including a short write, returns `13` unless a
 previously established internal failure requires `14`; it may prevent a complete
 report from reaching stdout.
@@ -32,7 +32,7 @@ For `fix --dry-run`, the code describes the predicted result after the proposed 
 
 An error during fixing can occur after other files have already changed. Check both the changes and failures in the report before retrying. A failed write returns `13`, even if the proposed correction would have resolved the violation.
 
-Missing default-enabled rule implementations, uncertain supported syntax, or missing context needed by an enabled check return `15`. Available findings and safe changes remain in the report. Incomplete analysis takes precedence over remaining violations, so `15` can accompany findings or a diff. Intentionally disabled checks and rules inapplicable to the selected dialect do not incur a coverage penalty. An explicitly configured, enabled but unavailable rule or an unavailable selected dialect is instead a configuration error (`12`) before analysis.
+Missing default-enabled rule implementations, uncertain supported syntax, or missing context needed by an enabled check return `15`. Available findings and safe changes remain in the report. Incomplete analysis takes precedence over remaining violations, so `15` can accompany findings or a diff. `15` does not mean nothing was written: check each change's `disposition`. A run that validated completely rechecks its saved result on a fresh allowance, so limits alone don't turn a single-file write into `15`, apart from a stop during the write itself or a resource lookup. Intentionally disabled checks and rules inapplicable to the selected dialect do not incur a coverage penalty. An explicitly configured, enabled but unavailable rule or an unavailable selected dialect is instead a configuration error (`12`) before analysis.
 
 ## When multiple problems occur
 

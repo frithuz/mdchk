@@ -530,7 +530,9 @@ Its PlannedFix metadata grants no executable correction authority.
 MD009 is available and enabled by default for CommonMark/GFM. It accepts exact
 integer `hard_break_spaces >= 2` (default 2), boolean `strict` (false), and boolean
 `code_blocks` (false). Empty mappings keep defaults; disabled rules still validate
-all options. Every MD009 finding is manual.
+all options. `fix` corrects MD009 findings, except for literal code and the cases in
+[its correction policy](rules/whitespace/md009.md#correction-policy). `fix` won't grow a
+hard break past 8 spaces, whatever `hard_break_spaces` says.
 
 MD010 is available and enabled by default for both flavors, with boolean
 `code_blocks: false` and positive integer `spaces_per_tab: 4`. The latter is

@@ -364,7 +364,10 @@ manual with `fix_available: false`, without edits or returned content.
 
 MD009 reports one full physical ASCII-space/TAB suffix with Unicode code-point
 columns and exclusive ends. Its message is “Whitespace at line end.” and
-`fix_available` is always false. No MD009 changes or corrected documents appear.
+`fix_available` is true when `fix` can correct the suffix. It is false for literal code,
+for hidden and observational findings, for suffixes whose correction could change meaning
+or grow past the expansion limit, and for a suffix at physical EOF while MD047 is active
+there. See [MD009's correction policy](rules/whitespace/md009.md#correction-policy).
 
 MD010 reports one original TAB byte per manual finding, with message
 “Tab character.”, one scalar column and exclusive end. Adjacent TABs produce
