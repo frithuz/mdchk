@@ -39,11 +39,11 @@ type md095Literal struct {
 func md095Literals(t *testing.T) []md095Literal {
 	t.Helper()
 	b, e := os.ReadFile("testdata/md095.json")
-	if e != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != "3b315677febef9fc832aceaefae9bb347553bc6e93f78d3e8c088ad08e932951" {
+	if e != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != "20677564569fb578707dfca8c2d4b09a5ad5654acf42ef516892f5180b8d540f" {
 		t.Fatal("oracle identity", e)
 	}
 	var v struct{ Cases []md095Literal }
-	if e = json.Unmarshal(b, &v); e != nil || len(v.Cases) != 83 {
+	if e = json.Unmarshal(b, &v); e != nil || len(v.Cases) != 90 {
 		t.Fatal(e, len(v.Cases))
 	}
 	return v.Cases
