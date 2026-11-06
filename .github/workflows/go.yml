@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: blacksmith-4vcpu-ubuntu-2604
+    runs-on: ubuntu-26.04
     env:
       GOTOOLCHAIN: local
       GOWORK: "off"
@@ -111,6 +111,8 @@ jobs:
 
   cli-platform:
     name: cli-platform (${{ matrix.os }})
+    # Paused: this job does not run for now. Remove this condition to revive it.
+    if: false
     # These execute actual host binaries. Cross-vet is a separate compile check.
     # Apply is one portable implementation, so the same suite runs on every OS
     # with CGO_ENABLED=0. Linux runs these tests in the test and race jobs.
@@ -121,10 +123,10 @@ jobs:
         # Windows runs more of them at once than it has CPUs.
         include:
           - os: macOS
-            runner: blacksmith-6vcpu-macos-26
+            runner: macos-26
             parallel: 6
           - os: Windows
-            runner: blacksmith-4vcpu-windows-2025
+            runner: windows-2025
             parallel: 8
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
@@ -190,7 +192,7 @@ jobs:
       matrix:
         include:
           - os: Linux
-            runner: blacksmith-4vcpu-ubuntu-2604
+            runner: ubuntu-26.04
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     env:
@@ -223,7 +225,7 @@ jobs:
   fuzz:
     # Pushes and pull requests smoke every parser fuzz target in one job. The
     # weekly campaign gives each target its own runner and a longer budget.
-    runs-on: blacksmith-4vcpu-ubuntu-2604
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     strategy:
       fail-fast: false

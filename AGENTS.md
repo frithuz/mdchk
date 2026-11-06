@@ -25,8 +25,13 @@ A fresh checkout needs Go (the version in `go.mod`), Node and Python 3. Run
 `go vet`, the conformance-tagged tests, `sh tools/lint.sh` and its self-test,
 and the CommonMark and GFM corpus, profile and table checks in `tools/`. It also
 runs the result contract validator and the producer tests that use it, which CI
-doesn't. CI also runs a vulnerability scan at the end of that job, plus race,
-fuzz and native macOS and Windows jobs.
+doesn't. CI also runs a vulnerability scan at the end of that job, plus race
+and fuzz jobs.
+
+The native macOS and Windows `cli-platform` job is paused with `if: false` and
+will be revived later. Until then CI runs nothing on those hosts, so a passing
+run or a test matching that job's filters is not macOS or Windows evidence.
+Other docs and agent files still describe the job as running.
 
 CI runs Go tests through `go run ./tools/testrun`, which prints one summary
 line on a pass and only failing output otherwise; set `DEBUG=1` for the full
