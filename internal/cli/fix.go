@@ -245,6 +245,17 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	}
 	var applied map[string]fixApplied
 	if !opts.dryRun {
+		// A complete validation already analyzed these exact bytes within the limits,
+		// so a fresh allowance is enough to describe them after the write. Sharing the
+		// spent one could report a successful write as incomplete.
+		if err == nil {
+			fresh, freshErr := parser.NewOperationBudget(budget.Limits())
+			if freshErr != nil {
+				out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "saved-analysis-budget", Scope: "operation", Message: freshErr.Error()})
+			} else {
+				budget = fresh
+			}
+		}
 		applied = publishFix(ctx, inv, budget, native, acquired, validated, err, &out)
 	}
 
