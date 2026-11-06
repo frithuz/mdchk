@@ -84,7 +84,7 @@ minima, each defaulting to 1; MD072 accepts boolean `recursive` (default false) 
 (default `<!-- toc -->`) and `end_marker` (default `<!-- /toc -->`) and heading levels
 `min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077,
 MD018, MD020, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043,
-MD061, MD063, MD072, MD073, MD080, MD083, MD084, MD082, MD090, MD081, MD088, MD033, MD086, MD087, MD093 and MD071 are report-only.
+MD061, MD063, MD072, MD073, MD080, MD083, MD084, MD082, MD090, MD081, MD088, MD033, MD086, MD087, MD093, MD095 and MD071 are report-only.
 Rules marked unavailable in the linked inventory remain pending. Every default-enabled
 rule is available for CommonMark and GFM; an enabled rule without an implementation
 would produce a coverage deficit rather than a clean result. Valid UTF-8 with all
@@ -617,3 +617,14 @@ numeric value, so `feff`, `FEFF` and `00FEFF` are the same, and surrogates or
 values above `10FFFF` are rejected even when the rule is disabled. Allowing a
 code point MD084 never reports has no effect. All findings are report-only; see
 [MD084](rules/encoding/md084.md) for the reported set and prose scope.
+
+MD095 lookalike-hostname analysis is available but disabled by default for
+CommonMark and GFM. `allowed_hosts` defaults to an empty list of bare DNS
+hostnames in Unicode or `xn--` form. Each entry is validated with the pinned
+Unicode 17.0.0 UTS #46 profile even when the rule is disabled, and is never
+trimmed; URL syntax, ports, user information, wildcards and whitespace are
+rejected. A destination host is allowed when its canonical lowercase A-label,
+without one final root dot, equals an entry's; the port is ignored, and there is
+no subdomain or confusable-skeleton matching, so allowing `example.org` does not
+allow `exаmple.org`. All findings are report-only; see
+[MD095](rules/links-and-images/md095.md) for the destination scope.

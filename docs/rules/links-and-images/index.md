@@ -16,4 +16,4 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD057](md057.md) | Missing local link targets | Analysis/configuration implemented; report only |
 | [MD059](md059.md) | Uninformative link labels | Analysis/configuration implemented; report only |
 | [MD062](md062.md) | Whitespace in destination URLs | Analysis/configuration implemented; report only |
-| [MD095](md095.md) | Lookalike Unicode characters in destinations | Planned |
+| [MD095](md095.md) | Lookalike Unicode characters in destinations | Analysis/configuration implemented; report only |

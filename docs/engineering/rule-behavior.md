@@ -746,6 +746,9 @@ https://www.unicode.org/Public/17.0.0/security/confusables.txt
 
 745683
 
+The retained file, its license and the generated ASCII-letter table are described in the
+[confusables data README](../../internal/confusables/testdata/unicode/17.0.0/README.md).
+
 ### Idna data
 
 #### Version
@@ -825,6 +828,23 @@ destination. Exact result encoding follows the accepted shared result schema.
 Embed reviewed versioned data with its SHA-256 and license; run entirely offline, with no DNS, HTTP,
 reputation lookup or runtime table update. Upgrades require explicit table/profile version changes
 and fixture review. Never rewrite a hostname.
+
+### Implemented analysis scope
+
+MD095 reads the shared parsed destination inventory: inline Link and Image destinations, angle
+autolinks, GFM extended autolinks and each reference definition once; reference-origin uses are
+owned by their definition. Prose, code, HTML blocks, raw HTML regions, raw HTML attributes and
+frontmatter are excluded. The host is the authority after the last `@` of a scheme `://` or `//`
+destination, before the last `:` port; bracketed, IPv4 (decimal or `0x` final label) and empty
+hosts are skipped, and a non-digit port or unterminated `[` is an invalid authority. The host is
+percent-decoded once. A host that is then ASCII with no `xn--` label is not processed further;
+every other host goes through the pinned UTS #46 canonicalization. Each finding reads
+`Hostname "<source host>" contains lookalike characters: U+XXXX looks like "<letters>".`, listing
+each flagged code point once in order of appearance. Its range runs from the first to the last
+flagged character when every covering source segment is exact and the decoded host, without one
+root dot, equals the normalized Unicode host; otherwise it covers the whole original host. Hosts
+that cannot be checked are located parsing problems with the reason `invalid URL authority`,
+`invalid percent-encoded UTF-8`, `unmapped source` or the IDNA error.
 
 ## Unused suppressions
 
