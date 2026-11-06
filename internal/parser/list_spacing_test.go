@@ -32,6 +32,13 @@ func TestListSpacingProjectionSourceOwnership(t *testing.T) {
 			{"- <script>\n  \n  </script>\n# H", []Kind{List, Heading}, 0, 1},
 			{"> - One\n>\n> # H", []Kind{BlockQuote}, 0, 0},
 			{"- One\n+ Two\n1. Three\n2) Four", []Kind{List, List, List, List}, 0, 0},
+			{"- a\n  - nested", []Kind{List}, 0, 0},
+			{"- # H\n  - nested", []Kind{List}, 0, 0},
+			{"> - a\n>   - nested", []Kind{BlockQuote}, 0, 0},
+			{"- ```\n  x\n  ```\n  - nested", []Kind{List}, 0, 1},
+			{"- [a]: /url\n  b\n  - nested", []Kind{List}, 1, 1},
+			{"- a\n\n  b\n  - nested", []Kind{List}, 0, 1},
+			{"- Text\n  - One\n  # H", []Kind{List}, 0, 1},
 		} {
 			t.Run(tc.source+map[bool]string{false: "/commonmark", true: "/gfm"}[gfm], func(t *testing.T) {
 				source := NewSource([]byte(tc.source))
@@ -125,6 +132,7 @@ func TestListSpacingProjectionOriginalReservations(t *testing.T) {
 		{"clean traversal", "- one", 0, 12, 32},
 		{"prefix and definitions", "> [a]: /url\n> - one", 1, 24, 81},
 		{"output capacity copies records", "Text\n- a\n# H\n- b\n# J\n- c\n# K", 6, 45, 172},
+		{"exempt nested list", "- a\n  - nested", 0, 31, 76},
 	} {
 		for _, kind := range []string{"nodes", "work"} {
 			t.Run(tc.name+"/"+kind, func(t *testing.T) {
