@@ -18,11 +18,12 @@
     "security": { "security-review": "opus" },
     "fix": { "fix-review": "sonnet" },
     "contract": { "contract-review": "sonnet", "change-impact": "sonnet" },
-    "perf": { "performance-review": "sonnet" }
+    "perf": { "performance-review": "sonnet" },
+    "windows": { "windows-review": "sonnet" }
   },
   "specialist_reviewers": [
     "change-impact", "contract-review", "fix-review", "interface-review",
-    "performance-review", "qa-review", "security-review"
+    "performance-review", "qa-review", "security-review", "windows-review"
   ],
   "protected_paths": [
     "factory/checks.sh",

@@ -56,7 +56,10 @@ For ACCEPT, rate:
   compose, converge or are saved, `contract` if it changes a rule's
   definition, the config schema, a public interface or an engineering
   contract that other code or docs depend on, `perf` if it touches the parser,
-  rule execution or file I/O on a path that runs per document or per line.
+  rule execution or file I/O on a path that runs per document or per line,
+  `windows` if it touches path or filename handling, file I/O or replacement,
+  process, signal, console or argument handling, line endings or input bytes,
+  platform-specific code, or tests and CI jobs that run on Windows.
   Any combination, or `none`.
 
 ## Write intake.md
@@ -64,7 +67,7 @@ For ACCEPT, rate:
 ```markdown
 DECISION: ACCEPT | NEEDS-INFO | REJECT
 RISK: low | medium | high
-SURFACES: comma-separated from ui, security, fix, contract, perf | none
+SURFACES: comma-separated from ui, security, fix, contract, perf, windows | none
 RESCOPED: yes | no
 
 ## Summary
