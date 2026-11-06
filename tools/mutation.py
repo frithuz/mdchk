@@ -35,6 +35,28 @@ REPLAYS = [
 ]
 
 
+def area_package(area):
+    """Return the validated package path, relative to the source root, of an area key."""
+    # Empty keys, absolute paths and doubled or trailing slashes all leave an empty segment.
+    if "\\" in area or any(segment in {"", ".", ".."} for segment in area.split("/")):
+        raise ValueError(f"invalid mutation area: {area!r}")
+    return "internal/" + area
+
+
+def area_label(area):
+    """Map an area key to a file-safe output name."""
+    return area.replace("/", "-")
+
+
+def validate_areas():
+    for area in list(AREAS) + [replay[0] for replay in REPLAYS]:
+        area_package(area)
+
+
+def replay_command(area, test):
+    return ["go", "test", "-p", "2", f"./{area_package(area)}", "-run", f"^{test}$", "-count=1", "-v"]
+
+
 def digest(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -110,7 +132,7 @@ def validate_report(path, area, source):
         if name not in AREAS[area] or name in seen:
             raise ValueError(f"unexpected/duplicate report file: {name}")
         seen.add(name)
-        data = (source / "internal" / area / name).read_bytes()
+        data = (source / area_package(area) / name).read_bytes()
         lines = data.splitlines()
         for mutant in file["mutations"]:
             status = mutant["status"]
@@ -122,7 +144,7 @@ def validate_report(path, area, source):
                 raise ValueError("invalid source position")
             if mutant["type"] not in {"CONDITIONALS_BOUNDARY", "CONDITIONALS_NEGATION"}:
                 raise ValueError("unexpected mutation operator")
-            row = dict(mutant, file=f"internal/{area}/{name}", source_sha256=digest(data),
+            row = dict(mutant, file=f"{area_package(area)}/{name}", source_sha256=digest(data),
                        expression=lines[line - 1].decode("utf-8"))
             token = re.match(r"==|!=|<=|>=|<|>", lines[line - 1][column - 1:].decode("utf-8"))
             if token is None:
@@ -146,19 +168,19 @@ def validate_report(path, area, source):
 def replay(source, env, output, rows):
     evidence = []
     for area, name, expression, old, new, operator, test, markers in REPLAYS:
-        path = source / "internal" / area / name
+        path = source / area_package(area) / name
         original = path.read_text()
         if original.count(expression) != 1:
             raise RuntimeError(f"representative expression moved: {expression}")
         offset = original.index(expression) + expression.index(old)
         line = original[:offset].count("\n") + 1
         column = len(original[:offset].rsplit("\n", 1)[-1].encode()) + 1
-        match = [r for r in rows if r["file"] == f"internal/{area}/{name}" and
+        match = [r for r in rows if r["file"] == f"{area_package(area)}/{name}" and
                  (r["line"], r["column"], r["type"], r["status"]) == (line, column, operator, "KILLED")]
         if len(match) != 1:
             raise RuntimeError(f"representative absent or not killed: {area}:{line}:{column}")
-        label = f"replay-{area}-{name[:-3]}"
-        command = ["go", "test", "-p", "2", f"./internal/{area}", "-run", f"^{test}$", "-count=1", "-v"]
+        label = f"replay-{area_label(area)}-{name[:-3]}"
+        command = replay_command(area, test)
         run(command, source, env, output / f"{label}-baseline.log", 120)
         try:
             path.write_text(original[:offset] + new + original[offset + len(old):])
@@ -179,6 +201,7 @@ def replay(source, env, output, rows):
 
 
 def campaign(root, output):
+    validate_areas()
     env = environment()
     result = {"tool": PIN, "source_commit": subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=root, text=True).strip(), "host": platform.platform(),
@@ -204,24 +227,25 @@ def campaign(root, output):
             run(["go", "version"], scratch, env, output / "go-version.log", 30)
             rows = []
             for area, files in AREAS.items():
-                report_path = output / f"{area}.json"
+                package = source / area_package(area)
+                report_path = output / f"{area_label(area)}.json"
                 if report_path.exists():
                     raise RuntimeError("report destination must be fresh")
                 command = [binary, "--config", str(source / ".gremlins.yaml"), "unleash",
-                           str(source / "internal" / area), "--output", str(report_path)]
-                for path in sorted((source / "internal" / area).glob("*.go")):
+                           str(package), "--output", str(report_path)]
+                for path in sorted(package.glob("*.go")):
                     if path.name not in files and not path.name.endswith("_test.go"):
                         command.extend(["--exclude-files", r"(^|/)" + re.escape(path.name) + "$"])
                 print(f"Running {area}: {', '.join(files)} (900s deadline)", flush=True)
-                elapsed = run(command, source, env, output / f"{area}.log", 900)
+                elapsed = run(command, source, env, output / f"{area_label(area)}.log", 900)
                 report, area_rows = validate_report(report_path, area, source)
                 rows.extend(area_rows)
-                console = (output / f"{area}.log").read_text()
+                console = (output / f"{area_label(area)}.log").read_text()
                 coverage = re.search(r"Gathering coverage\.\.\. done in (\S+)", console)
                 result["areas"][area] = dict(command=command, wall_seconds=elapsed,
                     engine_seconds=report["elapsed_time"], coverage_console=coverage.group(1) if coverage else None,
                     counts=dict(Counter(r["status"] for r in area_rows)), total=len(area_rows),
-                    report_sha256=digest(report_path.read_bytes()), executed_tests=f"./internal/{area}",
+                    report_sha256=digest(report_path.read_bytes()), executed_tests=f"./{area_package(area)}",
                     mutation_files=list(files))
                 print(f"Completed {area}: {result['areas'][area]['counts']}, {elapsed}s", flush=True)
             (output / "mutants.json").write_text(json.dumps(rows, indent=2) + "\n")

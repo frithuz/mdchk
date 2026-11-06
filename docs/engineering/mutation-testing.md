@@ -27,6 +27,19 @@ bytes are checked after execution. Do not edit the candidate during a run.
 | Configuration permissions | internal/config/validate.go, policy.go | internal/config package |
 | Safe fix structure and semantic validation | internal/fix/plan.go, validate.go | internal/fix package |
 
+An area may also be a nested package under `internal/`, such as `rules/md001`.
+Its mutated files and executed tests then follow that package path
+(`internal/rules/md001/md001.go`, `./internal/rules/md001`), and per-area output
+names replace `/` with `-` (`rules-md001.json`, `rules-md001.log`,
+`replay-rules-md001-md001-*.log`). Flat areas keep their current names.
+
+The committed [mutation-baseline](mutation-baseline/) evidence is pinned to its
+source commit and manifest, so it is not regenerated when MD001 moves into its
+own package. The first campaign run after the move produces fresh evidence under
+the new paths and output names, and that evidence is reviewed as usual. Moving
+MD001 changes its row `file` values and therefore its mutant identities, so those
+rows will not match the committed `mutants.json` one to one.
+
 These are package-local campaigns. `coverpkg` is not used to imply consumer test
 execution. Production MD047 tests run in the rules package, but fix mutants are
 not tested against rules consumers in this initial baseline. Engine's separate
@@ -122,10 +135,11 @@ controls. The final documentation and committed reports were filled afterward;
 these evidence-only additions do not change campaign applicability. The whole
 campaign was not rerun simply to include its own generated evidence in a snapshot.
 
-The seven infrastructure tests run the actual signal entrypoint, assert owned
+The infrastructure tests run the actual signal entrypoint, assert owned
 descendant cleanup on SIGTERM and deadline, retain partial failure evidence,
 refuse stale/malformed/incomplete/empty/wrong-scope reports, and prove dirty/new
 candidate bytes are copied while ignored artifacts and Git metadata are omitted.
+Later tests also cover nested area paths, output labels and area key validation.
 
 Four original console logs contain intentional whitespace from printed source
 bytes. They are stored losslessly as `.log.gz` so repository whitespace checks
