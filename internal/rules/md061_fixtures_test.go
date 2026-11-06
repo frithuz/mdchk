@@ -13,7 +13,7 @@ import (
 )
 
 func md061Settings(terms []string, caseSensitive bool) engine.Settings {
-	s := md038Settings()
+	s := onlyDefaultMD038Settings()
 	off, on := false, true
 	s["MD038"] = engine.RuleSetting{Enabled: &off}
 	s["MD061"] = engine.RuleSetting{Enabled: &on, Options: engine.Options{"terms": terms, "case_sensitive": caseSensitive}}

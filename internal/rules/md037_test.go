@@ -14,16 +14,6 @@ import (
 	"github.com/frithuz/mdchk/internal/result"
 )
 
-func md037Settings() engine.Settings {
-	s := engine.Settings{}
-	off := false
-	for _, m := range engine.Catalog() {
-		s[m.ID] = engine.RuleSetting{Enabled: &off}
-	}
-	delete(s, "MD037")
-	return s
-}
-
 func TestMD037FrozenAnalysisFixtures(t *testing.T) {
 	data, err := os.ReadFile("testdata/md037.json")
 	if err != nil {
@@ -53,7 +43,7 @@ func TestMD037FrozenAnalysisFixtures(t *testing.T) {
 				if fmt.Sprintf("%x", sha256.Sum256([]byte(f.Source))) != f.SHA {
 					t.Fatal("literal identity")
 				}
-				out := analyzeHeadings(t, registry(t, Registrations()), f.Source, md037Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
+				out := analyzeHeadings(t, registry(t, Registrations()), f.Source, onlyDefaultMD037Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
 				if !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != len(f.Ranges) || len(out.Changes) != 0 {
 					t.Fatal(out)
 				}
@@ -102,7 +92,7 @@ func TestMD037PolicyBoundaries(t *testing.T) {
 			if tc.gfm {
 				flavor = "gfm"
 			}
-			out := analyzeHeadings(t, registry(t, Registrations()), tc.source, md037Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
+			out := analyzeHeadings(t, registry(t, Registrations()), tc.source, onlyDefaultMD037Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
 			var got [][2]int
 			for _, d := range out.Diagnostics {
 				got = append(got, [2]int{d.ByteRange.Start, d.ByteRange.End})
@@ -141,7 +131,7 @@ func TestMD037DefaultsSettingsAndAvailability(t *testing.T) {
 		}
 	}
 	for _, setting := range []engine.RuleSetting{{}, {Enabled: func() *bool { b := false; return &b }()}} {
-		s := md037Settings()
+		s := onlyDefaultMD037Settings()
 		s["MD037"] = setting
 		out := analyzeHeadings(t, r, "A * x *", s, engine.DocumentContext{}, engine.RunOptions{})
 		expected := 2
@@ -175,12 +165,12 @@ func TestMD037DefaultsSettingsAndAvailability(t *testing.T) {
 func TestMD037OpaqueHeadersAndDirectives(t *testing.T) {
 	fm, _ := parser.NewFrontmatterOptions(true, nil)
 	for _, source := range []string{"\ufeff---\nx: '* x *'\n---\nA * x *", "+++\nx = '* x *'\n+++\nA * x *"} {
-		out := analyzeHeadings(t, registry(t, Registrations()), source, md037Settings(), engine.DocumentContext{Frontmatter: fm}, engine.RunOptions{})
+		out := analyzeHeadings(t, registry(t, Registrations()), source, onlyDefaultMD037Settings(), engine.DocumentContext{Frontmatter: fm}, engine.RunOptions{})
 		if !out.Complete || len(out.Diagnostics) != 2 {
 			t.Fatal(out)
 		}
 	}
-	out := analyzeHeadings(t, registry(t, Registrations()), "---\nA * x *", md037Settings(), engine.DocumentContext{Frontmatter: fm}, engine.RunOptions{})
+	out := analyzeHeadings(t, registry(t, Registrations()), "---\nA * x *", onlyDefaultMD037Settings(), engine.DocumentContext{Frontmatter: fm}, engine.RunOptions{})
 	if out.Complete || len(out.Diagnostics) != 0 {
 		t.Fatal(out)
 	}
@@ -194,7 +184,7 @@ func TestMD037OpaqueHeadersAndDirectives(t *testing.T) {
 		{"off-then-enable", "A * x *\n<!-- mdchk:enable MD037 -->\nA * y *", false, true, 2},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			s := md037Settings()
+			s := onlyDefaultMD037Settings()
 			enabled, allow := !tc.off, !tc.denied
 			s["MD037"] = engine.RuleSetting{Enabled: &enabled, AllowDirectives: &allow}
 			out := analyzeHeadings(t, registry(t, Registrations()), tc.source, s, engine.DocumentContext{}, engine.RunOptions{})
@@ -219,7 +209,7 @@ func TestMD037DisabledAndUnselectedHeaderOwnership(t *testing.T) {
 		}(), 4},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			out := analyzeHeadings(t, registry(t, Registrations()), source, md037Settings(), engine.DocumentContext{Frontmatter: tc.fm}, engine.RunOptions{})
+			out := analyzeHeadings(t, registry(t, Registrations()), source, onlyDefaultMD037Settings(), engine.DocumentContext{Frontmatter: tc.fm}, engine.RunOptions{})
 			if !out.Complete || len(out.Diagnostics) != tc.want {
 				t.Fatal(out)
 			}

@@ -194,7 +194,7 @@ func TestMD005FinalPublicationWithholdsAllFindings(t *testing.T) {
 					}
 					// Fixed independent counts: reservation, one check per item, optional
 					// finding growth/emission, then the final publication check.
-					late := &md018LateContext{Context: ctx, reason: reason, stop: tc.final}
+					late := &lateStopContext{Context: ctx, reason: reason, stop: tc.final}
 					observed = compareListAlignment(late, c, items)
 					if late.calls != tc.final {
 						t.Fatal(late.calls, tc.final)
@@ -297,7 +297,7 @@ func TestMD005ElapsedAndCallerControlsAfterInventory(t *testing.T) {
 			if kind == "elapsed" {
 				time.Sleep(250 * time.Millisecond)
 			} else {
-				ctx = &md018LateContext{Context: ctx, stop: 1, reason: context.Canceled}
+				ctx = &lateStopContext{Context: ctx, stop: 1, reason: context.Canceled}
 			}
 			observed = compareListAlignment(ctx, c, items)
 			return observed

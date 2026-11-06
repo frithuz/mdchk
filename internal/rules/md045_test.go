@@ -171,7 +171,7 @@ func TestMD045DirectivesAndInactiveObservation(t *testing.T) {
 					t.Fatal(e)
 				}
 				// Observing the inactive MD057 needs the link target to exist.
-				resources := md051Native(t, map[string]string{"docs/x": ""}, flavor, "literal.md", in.Source())
+				resources := newNativeFragments(t, map[string]string{"docs/x": ""}, flavor, "literal.md", in.Source())
 				out, trace, e := plan.Inspect(context.Background(), in, engine.RunOptions{Fragments: resources}, engine.InspectionOptions{ObserveInactive: mode == "inactive"})
 				wantVisible := 0
 				if mode == "denied" || mode == "enable" || mode == "protected" {

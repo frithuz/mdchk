@@ -44,14 +44,6 @@ func md031Literals(t *testing.T) []md031Literal {
 	return v.Cases
 }
 
-func md031Settings() engine.Settings {
-	s := md014Settings()
-	off, on := false, true
-	s["MD014"] = engine.RuleSetting{Enabled: &off}
-	s["MD031"] = engine.RuleSetting{Enabled: &on}
-	return s
-}
-
 func TestMD031FrozenProductionOracle(t *testing.T) {
 	for _, tc := range md031Literals(t) {
 		for _, flavor := range tc.Flavors {
@@ -60,7 +52,7 @@ func TestMD031FrozenProductionOracle(t *testing.T) {
 					if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 						t.Fatal("source identity")
 					}
-					s := md031Settings()
+					s := onlyMD031Settings()
 					setting := s["MD031"]
 					if tc.Options.Enabled != nil {
 						setting.Enabled = tc.Options.Enabled
@@ -178,7 +170,7 @@ func TestMD031DirectivesSharedObservationAndInactiveDemand(t *testing.T) {
 					regs[i].Check = func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome { calls++; return actual(ctx, c) }
 				}
 			}
-			s := md031Settings()
+			s := onlyMD031Settings()
 			on := true
 			s["MD031"] = engine.RuleSetting{Enabled: &tc.enabled, AllowDirectives: &tc.allow}
 			s["MD087"] = engine.RuleSetting{Enabled: &on}
@@ -256,7 +248,7 @@ func TestMD031UnknownContextWithholdsObservation(t *testing.T) {
 	for _, audit := range []bool{false, true} {
 		t.Run(fmt.Sprintf("audit-%v", audit), func(t *testing.T) {
 			source := "x\n```\n```\n\n<div>\n<x title=\"\n\n~~~\nx\n~~~"
-			s := md031Settings()
+			s := onlyMD031Settings()
 			if audit {
 				source = "<!-- mdchk:disable MD031 -->\n" + source
 				s["MD087"] = engine.RuleSetting{Enabled: &audit}
@@ -280,7 +272,7 @@ func TestMD031UnknownContextWithholdsObservation(t *testing.T) {
 
 func TestMD031RepeatedDisableLastOwner(t *testing.T) {
 	source := "<!-- mdchk:disable MD031 -->\n<!-- mdchk:disable MD031 -->\n```\nx\n```"
-	s := md031Settings()
+	s := onlyMD031Settings()
 	on := true
 	s["MD087"] = engine.RuleSetting{Enabled: &on}
 	sel, e := registry(t, Registrations()).SelectRules(s, engine.ValidationProviders{})

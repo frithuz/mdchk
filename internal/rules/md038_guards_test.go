@@ -24,11 +24,11 @@ func TestMD038CallbackFinalPublication(t *testing.T) {
 					if err != nil {
 						t.Fatal(err)
 					}
-					late := &md018LateContext{Context: ctx, stop: tc.final, reason: reason}
+					late := &lateStopContext{Context: ctx, stop: tc.final, reason: reason}
 					observed = compareCodeSpanSpaces(late, c, inventory)
 					return observed
 				}}})
-				out := analyzeHeadings(t, r, tc.source, md038Settings(), engine.DocumentContext{}, engine.RunOptions{})
+				out := analyzeHeadings(t, r, tc.source, onlyDefaultMD038Settings(), engine.DocumentContext{}, engine.RunOptions{})
 				if !errors.Is(observed.Err, reason) || observed.Findings != nil || len(out.Diagnostics) != 0 || out.Complete || len(out.Interruptions) != 1 {
 					t.Fatal(observed, out)
 				}
@@ -43,7 +43,7 @@ func TestMD038CallbackOriginFinalPublication(t *testing.T) {
 		final        int
 	}{{"empty", "", 1}, {"clean", "a", 1}, {"protected", "```\nx\n```", 1}, {"findings", "` x `", 7}, {"growth", "` x `\n\n` x `\n\n` x `", 17}} {
 		t.Run(tc.name, func(t *testing.T) {
-			origin := &md018LateContext{Context: context.Background(), stop: 1 << 20, reason: context.Canceled}
+			origin := &lateStopContext{Context: context.Background(), stop: 1 << 20, reason: context.Canceled}
 			var observed engine.RuleOutcome
 			r := registry(t, []engine.Registration{{ID: "MD038", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 				inventory, err := c.CodeSpanSpaces(ctx)
@@ -58,7 +58,7 @@ func TestMD038CallbackOriginFinalPublication(t *testing.T) {
 				}
 				return observed
 			}}})
-			in, _ := engine.NewInput("doc.md", []byte(tc.source), md038Settings(), engine.DocumentContext{})
+			in, _ := engine.NewInput("doc.md", []byte(tc.source), onlyDefaultMD038Settings(), engine.DocumentContext{})
 			out, err := r.Lint(origin, []engine.Input{in}, engine.RunOptions{})
 			if err != nil || out.Complete || len(out.Diagnostics) != 0 || len(out.Interruptions) != 1 {
 				t.Fatal(out, err)
@@ -97,7 +97,7 @@ func TestMD038CallbackStickyOriginalControls(t *testing.T) {
 					}
 					return observed
 				}}})
-				out := analyzeHeadings(t, r, "` x `", md038Settings(), engine.DocumentContext{}, engine.RunOptions{Budget: b})
+				out := analyzeHeadings(t, r, "` x `", onlyDefaultMD038Settings(), engine.DocumentContext{}, engine.RunOptions{Budget: b})
 				if out.Complete || len(out.Diagnostics) != 0 {
 					t.Fatal(out)
 				}
@@ -119,7 +119,7 @@ func TestMD038CallbackManualFindings(t *testing.T) {
 		}
 		return out
 	}}})
-	out := analyzeHeadings(t, r, "` x `", md038Settings(), engine.DocumentContext{}, engine.RunOptions{})
+	out := analyzeHeadings(t, r, "` x `", onlyDefaultMD038Settings(), engine.DocumentContext{}, engine.RunOptions{})
 	if !out.Complete || len(out.Diagnostics) != 2 || len(out.Changes)+len(out.DeferredFixes)+len(out.Documents) != 0 {
 		t.Fatal(out)
 	}

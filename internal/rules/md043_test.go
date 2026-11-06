@@ -374,7 +374,7 @@ func TestMD043MatchingWorkAndFinalWithholding(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			count := &md018LateContext{Context: ctx, reason: reason, stop: stop}
+			count := &lateStopContext{Context: ctx, reason: reason, stop: stop}
 			span, err := compareHeadingOutline(count, c, p, hs)
 			calls = count.calls
 			observed = engine.RuleOutcome{Err: err}

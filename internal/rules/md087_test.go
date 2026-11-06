@@ -333,7 +333,7 @@ func TestMD087ActualMD086AtomicFailure(t *testing.T) {
 				}
 				// This valid private prefix is never returned to the engine. Fault the
 				// actual production entry's facade/publication path and return its result.
-				failed := unclosedHTMLComments(&md033StopAt{Context: ctx, stop: 1, reason: parser.ErrModel}, c)
+				failed := unclosedHTMLComments(&stopAtContext{Context: ctx, stop: 1, reason: parser.ErrModel}, c)
 				if failed.Err == nil || failed.Findings != nil {
 					t.Fatal(failed)
 				}

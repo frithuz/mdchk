@@ -32,10 +32,10 @@ type md014Literal struct {
 	Expected struct {
 		Complete             bool
 		Evaluation           string `json:"md014_evaluation"`
-		Findings, Suppressed []md092Finding
-		MD087                []md092Finding       `json:"md087_findings"`
-		Raw                  []md092AuditDecision `json:"raw_decisions"`
-		Requested            []md092AuditDecision `json:"requested_audit_decisions"`
+		Findings, Suppressed []oracleFinding
+		MD087                []oracleFinding `json:"md087_findings"`
+		Raw                  []auditDecision `json:"raw_decisions"`
+		Requested            []auditDecision `json:"requested_audit_decisions"`
 		Coverage             []result.Coverage
 		LintExit             int  `json:"isolated_lint_exit"`
 		InspectExit          int  `json:"completed_inspect_exit"`
@@ -57,17 +57,9 @@ func md014Literals(t *testing.T) []md014Literal {
 	return oracle.Cases
 }
 
-func md014Settings() engine.Settings {
-	s := md092Settings()
-	off, on := false, true
-	s["MD092"] = engine.RuleSetting{Enabled: &off}
-	s["MD014"] = engine.RuleSetting{Enabled: &on}
-	return s
-}
-
 func md014Plan(t *testing.T, r *engine.Registry, tc md014Literal, flavor string) *engine.ExecutionPlan {
 	t.Helper()
-	s := md014Settings()
+	s := onlyMD014Settings()
 	setting := engine.RuleSetting{Enabled: &tc.Configuration.Enabled, AllowDirectives: &tc.Configuration.Directives}
 	if tc.Configuration.Omitted {
 		setting.Enabled = nil
@@ -138,7 +130,7 @@ func TestMD014FrozenProductionOracle(t *testing.T) {
 					if out.Status != status {
 						t.Fatal("engine outcome", out.Status, status)
 					}
-					want := append(append([]md092Finding{}, tc.Expected.Findings...), tc.Expected.MD087...)
+					want := append(append([]oracleFinding{}, tc.Expected.Findings...), tc.Expected.MD087...)
 					sort.Slice(want, func(i, j int) bool {
 						if want[i].ByteRange.Start != want[j].ByteRange.Start {
 							return want[i].ByteRange.Start < want[j].ByteRange.Start
@@ -152,7 +144,7 @@ func TestMD014FrozenProductionOracle(t *testing.T) {
 						if d.Path != "literal.md" {
 							t.Fatal(d)
 						}
-						md092AssertDiagnostic(t, tc.Source, d, want[i])
+						assertOracleDiagnostic(t, tc.Source, d, want[i])
 					}
 					if len(out.SuppressedDiagnostics) != len(tc.Expected.Suppressed) {
 						t.Fatal(out.SuppressedDiagnostics, tc.Expected.Suppressed)
@@ -165,7 +157,7 @@ func TestMD014FrozenProductionOracle(t *testing.T) {
 						if h.Diagnostic.Path != "literal.md" {
 							t.Fatal(h)
 						}
-						md092AssertDiagnostic(t, tc.Source, h.Diagnostic, tc.Expected.Suppressed[i])
+						assertOracleDiagnostic(t, tc.Source, h.Diagnostic, tc.Expected.Suppressed[i])
 					}
 					var hidden []engine.DirectiveSuppression
 					var decisions []engine.SuppressionDecision
@@ -183,7 +175,7 @@ func TestMD014FrozenProductionOracle(t *testing.T) {
 						t.Fatal(hidden, tc.Expected.Suppressed)
 					}
 					for i, h := range hidden {
-						md092AssertDiagnostic(t, tc.Source, h.Diagnostic, tc.Expected.Suppressed[i])
+						assertOracleDiagnostic(t, tc.Source, h.Diagnostic, tc.Expected.Suppressed[i])
 						joined := false
 						for _, d := range decisions {
 							if d.Owner == h.Owner && d.Rule == h.Diagnostic.Rule && d.Token == h.Token && h.Diagnostic.ByteRange.Start >= d.Interval.Start && h.Diagnostic.ByteRange.Start < d.Interval.End {
@@ -194,14 +186,14 @@ func TestMD014FrozenProductionOracle(t *testing.T) {
 							t.Fatal("hidden original owner join", h, decisions)
 						}
 					}
-					validated := md092AssertRawDecisions(t, in.Source(), decisions, tc.Expected.Raw)
-					var requested []md092AuditDecision
+					validated := assertRawDecisions(t, in.Source(), decisions, tc.Expected.Raw)
+					var requested []auditDecision
 					for _, d := range validated {
 						if d.Reason != "suppression-not-requested" {
 							requested = append(requested, d)
 						}
 					}
-					if !md092EqualDecisions(requested, tc.Expected.Requested) {
+					if !equalAuditDecisions(requested, tc.Expected.Requested) {
 						t.Fatal("requested audit inventory", requested, tc.Expected.Requested)
 					}
 					coverage := append([]result.Coverage{}, out.Coverage...)
@@ -221,7 +213,7 @@ func TestMD014FrozenProductionOracle(t *testing.T) {
 						if e != nil {
 							t.Fatal(e)
 						}
-						md092AssertRawDecisions(t, in.Source(), rows, tc.Expected.Raw)
+						assertRawDecisions(t, in.Source(), rows, tc.Expected.Raw)
 						found := false
 						for _, ev := range trace.Evaluations() {
 							if ev.Rule == "MD014" {

@@ -17,7 +17,7 @@ func TestMD031ComparisonAndDistinctOuterFinalControls(t *testing.T) {
 			for _, originating := range []bool{false, true} {
 				for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 					t.Run(fmt.Sprintf("%q/whole-%v/origin-%v/%v", source, whole, originating, reason), func(t *testing.T) {
-						origin := &md014PublicationStop{Context: context.Background(), reason: reason}
+						origin := &gateStopContext{Context: context.Background(), reason: reason}
 						called := false
 						r := registry(t, []engine.Registration{{ID: "MD031", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 							items, e := c.FencedSpacing(ctx)
@@ -34,7 +34,7 @@ func TestMD031ComparisonAndDistinctOuterFinalControls(t *testing.T) {
 							if whole {
 								gate = ".fencedBlockBlankLines.func1"
 							}
-							caller := &md014PublicationStop{Context: context.Background(), gate: gate, reason: reason}
+							caller := &gateStopContext{Context: context.Background(), gate: gate, reason: reason}
 							var target context.Context = caller
 							if originating {
 								origin.gate = gate
@@ -56,7 +56,7 @@ func TestMD031ComparisonAndDistinctOuterFinalControls(t *testing.T) {
 							called = true
 							return out
 						}}})
-						in, e := engine.NewInput("literal.md", []byte(source), md031Settings(), engine.DocumentContext{})
+						in, e := engine.NewInput("literal.md", []byte(source), onlyMD031Settings(), engine.DocumentContext{})
 						if e != nil {
 							t.Fatal(e)
 						}
@@ -82,7 +82,7 @@ func TestMD031ComparisonAndOuterFinalStickyDiscard(t *testing.T) {
 						if outer {
 							gate = ".fencedBlockBlankLines.func1"
 						}
-						origin := &md014FinalQuota{Context: context.Background(), budget: budget, kind: kind, gate: gate}
+						origin := &gateQuotaContext{Context: context.Background(), budget: budget, kind: kind, gate: gate}
 						called := false
 						r := registry(t, []engine.Registration{{ID: "MD031", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 							items, e := c.FencedSpacing(ctx)
@@ -90,7 +90,7 @@ func TestMD031ComparisonAndOuterFinalStickyDiscard(t *testing.T) {
 							if e != nil || pre.Err != nil || len(pre.Findings) != 1 || pre.Findings[0].Span.Start() != 2 {
 								t.Fatal("positive precondition", pre, e)
 							}
-							caller := &md014FinalQuota{Context: context.Background(), budget: budget, kind: kind, gate: gate, armed: true}
+							caller := &gateQuotaContext{Context: context.Background(), budget: budget, kind: kind, gate: gate, armed: true}
 							var target context.Context = caller
 							if originating {
 								origin.armed = true
@@ -116,7 +116,7 @@ func TestMD031ComparisonAndOuterFinalStickyDiscard(t *testing.T) {
 							called = true
 							return out
 						}}})
-						in, e := engine.NewInput("literal.md", []byte("x\n```\n```"), md031Settings(), engine.DocumentContext{})
+						in, e := engine.NewInput("literal.md", []byte("x\n```\n```"), onlyMD031Settings(), engine.DocumentContext{})
 						if e != nil {
 							t.Fatal(e)
 						}
@@ -165,7 +165,7 @@ func TestMD031ComparisonRejectsLateInvalidPoints(t *testing.T) {
 				called = true
 				return out
 			}}})
-			analyzeHeadings(t, r, "é\r\n```\r\nx\r\n```\r\ny", md031Settings(), engine.DocumentContext{}, engine.RunOptions{})
+			analyzeHeadings(t, r, "é\r\n```\r\nx\r\n```\r\ny", onlyMD031Settings(), engine.DocumentContext{}, engine.RunOptions{})
 			if !called {
 				t.Fatal("callback missing")
 			}

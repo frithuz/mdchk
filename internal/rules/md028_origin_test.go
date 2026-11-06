@@ -14,7 +14,7 @@ func TestMD028OriginFinalPublication(t *testing.T) {
 	}{{"empty", "", 1}, {"clean", "clean\n", 1}, {"protected", "```\nx\n```", 1}, {"growth", "> A\n\n> B\n\n> C\n\n> D\n\n> E\n\n> F", 15}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+"/"+reason.Error(), func(t *testing.T) {
-				origin := &md018LateContext{Context: context.Background(), stop: 1 << 20, reason: reason}
+				origin := &lateStopContext{Context: context.Background(), stop: 1 << 20, reason: reason}
 				var observed engine.RuleOutcome
 				registry := registry(t, []engine.Registration{{ID: "MD028", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 					items, e := c.BlockquoteGaps(ctx)

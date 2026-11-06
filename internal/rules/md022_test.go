@@ -191,7 +191,7 @@ func TestMD022LateInterruptionRetainsReliableSides(t *testing.T) {
 		for _, source := range []string{"Text\n# H\nText", "Text\n# H\nText\n# J\nText"} {
 			calls := 0
 			baseline := registry(t, []engine.Registration{{ID: "MD022", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
-				check := &md018LateContext{Context: ctx, reason: reason}
+				check := &lateStopContext{Context: ctx, reason: reason}
 				out := headingBlankLines(check, c)
 				calls = check.calls
 				return out
@@ -208,7 +208,7 @@ func TestMD022LateInterruptionRetainsReliableSides(t *testing.T) {
 				var token parser.SourceToken
 				r := registry(t, []engine.Registration{{ID: "MD022", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 					token = c.Source().Token()
-					observed = headingBlankLines(&md018LateContext{Context: ctx, reason: reason, stop: stop}, c)
+					observed = headingBlankLines(&lateStopContext{Context: ctx, reason: reason, stop: stop}, c)
 					return observed
 				}}})
 				out := analyzeHeadings(t, r, source, md022Settings(), engine.DocumentContext{}, engine.RunOptions{})

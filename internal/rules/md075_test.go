@@ -87,7 +87,7 @@ func md075Literals(t *testing.T) []md075Literal {
 }
 
 func md075Settings() engine.Settings {
-	s := md056Settings()
+	s := onlyMD056Settings()
 	off, on := false, true
 	s["MD056"] = engine.RuleSetting{Enabled: &off}
 	s["MD075"] = engine.RuleSetting{Enabled: &on}

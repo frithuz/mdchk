@@ -12,7 +12,7 @@ import (
 )
 
 func md044Settings(names []string, code bool) engine.Settings {
-	s := md038Settings()
+	s := onlyDefaultMD038Settings()
 	off, on := false, true
 	s["MD038"] = engine.RuleSetting{Enabled: &off}
 	s["MD044"] = engine.RuleSetting{Enabled: &on, Options: engine.Options{"names": names, "code_blocks": code}}

@@ -343,11 +343,11 @@ func TestMD051RuleControls(t *testing.T) {
 			for _, originating := range []bool{false, true} {
 				for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 					t.Run(fmt.Sprintf("%s/%q/origin-%v/%v", flavor, source, originating, reason), func(t *testing.T) {
-						origin := &md014PublicationStop{Context: context.Background(), reason: reason}
+						origin := &gateStopContext{Context: context.Background(), reason: reason}
 						called := false
 						r := registry(t, []engine.Registration{{ID: "MD051", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 							gate := ".unresolvedFragmentTargets.func1"
-							caller := &md014PublicationStop{Context: context.Background(), gate: gate, reason: reason}
+							caller := &gateStopContext{Context: context.Background(), gate: gate, reason: reason}
 							var target context.Context = caller
 							if originating {
 								origin.gate = gate

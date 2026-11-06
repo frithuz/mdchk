@@ -15,7 +15,7 @@ import (
 )
 
 func md065Settings() engine.Settings {
-	s := md037Settings()
+	s := onlyDefaultMD037Settings()
 	off := false
 	s["MD037"] = engine.RuleSetting{Enabled: &off}
 	s["MD065"] = engine.RuleSetting{}

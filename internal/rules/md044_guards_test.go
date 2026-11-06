@@ -24,7 +24,7 @@ func TestMD044CallbackFinalPublication(t *testing.T) {
 					if err != nil {
 						t.Fatal(err)
 					}
-					late := &md018LateContext{Context: ctx, stop: tc.final, reason: reason}
+					late := &lateStopContext{Context: ctx, stop: tc.final, reason: reason}
 					observed = compareConfiguredNames(late, c, inventory)
 					return observed
 				}}})
@@ -43,7 +43,7 @@ func TestMD044CallbackOriginFinalPublication(t *testing.T) {
 		final        int
 	}{{"empty", "", 1}, {"clean", "a", 1}, {"protected", "```\nx\n```", 1}, {"findings", "github", 4}, {"growth", "github-github-github", 10}} {
 		t.Run(tc.name, func(t *testing.T) {
-			origin := &md018LateContext{Context: context.Background(), stop: 1 << 20, reason: context.Canceled}
+			origin := &lateStopContext{Context: context.Background(), stop: 1 << 20, reason: context.Canceled}
 			var observed engine.RuleOutcome
 			r := registry(t, []engine.Registration{{ID: "MD044", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 				inventory, err := c.ConfiguredNames(ctx)
