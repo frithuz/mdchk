@@ -119,7 +119,7 @@ func TestTrailingWhitespaceDetachedAndConcurrent(t *testing.T) {
 		t.Fatal(got, e)
 	}
 	first := got[0]
-	got[0] = Span{}
+	got[0] = TrailingSuffix{}
 	again, e := d.TrailingWhitespace(context.Background(), b, index, ParseOptions{}, 2, false, false)
 	if e != nil || again[0] != first {
 		t.Fatal("aliased facts", again, e)

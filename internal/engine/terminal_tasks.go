@@ -3,6 +3,7 @@ package engine
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/frithuz/mdchk/internal/parser"
 )
@@ -21,6 +22,19 @@ func TerminalTaskSourcesPreserved(ctx context.Context, before, after parser.Pars
 // which reports false for a fact it cannot carry unchanged. Spans are compared in
 // candidate coordinates, so an earlier edit does not look like a task change.
 func TerminalTaskSourcesPreservedMapped(ctx context.Context, before, after parser.ParseResult, budget *parser.OperationBudget, mapped func(parser.Span) (parser.Span, bool, error)) (bool, error) {
+	return terminalTaskSources(ctx, before, after, budget, mapped, false)
+}
+
+// TerminalTaskSourcesPreservedAroundLineEnds is the mapped comparison for rounds
+// where other rules' edits may rewrite line-end whitespace, which task paragraph
+// facts contain. A fact such an edit touches may differ only in that whitespace.
+// Those rules' checkers prove their own edits; this proves task classification,
+// syntax and visible text survive them.
+func TerminalTaskSourcesPreservedAroundLineEnds(ctx context.Context, before, after parser.ParseResult, budget *parser.OperationBudget, mapped func(parser.Span) (parser.Span, bool, error)) (bool, error) {
+	return terminalTaskSources(ctx, before, after, budget, mapped, true)
+}
+
+func terminalTaskSources(ctx context.Context, before, after parser.ParseResult, budget *parser.OperationBudget, mapped func(parser.Span) (parser.Span, bool, error), lineEnds bool) (bool, error) {
 	if ctx == nil || budget == nil {
 		return false, errors.New("nil terminal task context or budget")
 	}
@@ -52,8 +66,17 @@ func TerminalTaskSourcesPreservedMapped(ctx context.Context, before, after parse
 			return true, nil
 		}
 		carried, ok, e := mapped(x)
-		if e != nil || !ok {
+		if e != nil {
 			return false, e
+		}
+		if !ok {
+			if !lineEnds {
+				return false, nil
+			}
+			x, y = trimLineEnd(before.Source, x), trimLineEnd(after.Source, y)
+			if carried, ok, e = mapped(x); e != nil || !ok {
+				return false, e
+			}
 		}
 		if carried.Start() != y.Start() || carried.End() != y.End() {
 			return false, nil
@@ -98,7 +121,7 @@ func TerminalTaskSourcesPreservedMapped(ctx context.Context, before, after parse
 		}
 		for j, s := range x.Content {
 			t := y.Content[j]
-			if s.Transformation != t.Transformation || s.Semantic != t.Semantic {
+			if s.Transformation != t.Transformation || s.Semantic != t.Semantic && !(lineEnds && sameBeforeLineEnd(s.Semantic, t.Semantic)) {
 				return false, nil
 			}
 			if ok, e := sameSpan(s.Source, t.Source); e != nil || !ok {
@@ -110,6 +133,24 @@ func TerminalTaskSourcesPreservedMapped(ctx context.Context, before, after parse
 		return false, err
 	}
 	return true, budget.ChargeWork(0)
+}
+
+func sameBeforeLineEnd(a, b parser.Optional[string]) bool {
+	return a.Present == b.Present && strings.TrimRight(a.Value, " \t\r\n") == strings.TrimRight(b.Value, " \t\r\n")
+}
+
+// trimLineEnd drops the whitespace a line-end edit may rewrite from a fact's end. A
+// fact holding nothing else, such as a task separator, becomes a point at its start.
+func trimLineEnd(source parser.Source, span parser.Span) parser.Span {
+	text, err := source.Text(span)
+	if err != nil {
+		return span
+	}
+	trimmed, err := source.Span(span.Start(), span.Start()+len(strings.TrimRight(text, " \t\r\n")))
+	if err != nil {
+		return span
+	}
+	return trimmed
 }
 
 // A line ending can supply the required separator to an otherwise literal task

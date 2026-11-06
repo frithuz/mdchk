@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/frithuz/mdchk/internal/engine"
-	"github.com/frithuz/mdchk/internal/parser"
 )
 
 func trailingWhitespace(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
@@ -16,7 +15,7 @@ func trailingWhitespace(ctx context.Context, c engine.RuleContext) engine.RuleOu
 	return compareTrailingWhitespace(ctx, c, items)
 }
 
-func compareTrailingWhitespace(ctx context.Context, c engine.RuleContext, items []parser.Span) (out engine.RuleOutcome) {
+func compareTrailingWhitespace(ctx context.Context, c engine.RuleContext, items []engine.TrailingWhitespaceItem) (out engine.RuleOutcome) {
 	defer func() {
 		out.Err = errors.Join(out.Err, c.SectionCheckpoint(ctx, 0, 0))
 		if out.Err != nil {
@@ -43,7 +42,7 @@ func compareTrailingWhitespace(ctx context.Context, c engine.RuleContext, items 
 			return out
 		}
 		message := "Whitespace at line end."
-		out.Findings = append(out.Findings, engine.Finding{Span: item, Message: message})
+		out.Findings = append(out.Findings, engine.Finding{Span: item.Span, Message: message, FixEligible: item.FixEligible})
 	}
 	return out
 }

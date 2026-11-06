@@ -16,30 +16,62 @@ type editMapping struct {
 	before, after parser.Source
 	edits         []SharedEdit
 	meter         meter
+	deltas        []int // deltas[i] is the size change of edits[:i]
+}
+
+// newEditMapping indexes one round's sorted disjoint edits. Lookups then cost a
+// binary search, so per-node preservation checks do not walk the whole edit list.
+func newEditMapping(before, after parser.Source, edits []SharedEdit, m meter) (editMapping, error) {
+	if err := m.reserve(int64(len(edits))+1, int64(len(edits))+1); err != nil {
+		return editMapping{}, err
+	}
+	deltas := make([]int, len(edits)+1)
+	for i, e := range edits {
+		deltas[i+1] = deltas[i] + len(e.Edit.Replacement) - (e.Edit.Span.End() - e.Edit.Span.Start())
+	}
+	return editMapping{before, after, edits, m, deltas}, nil
+}
+
+// first returns the lowest edit index satisfying a predicate monotone over edits.
+func (m editMapping) first(satisfied func(parser.Span) bool) (int, error) {
+	lo, hi := 0, len(m.edits)
+	for lo < hi {
+		if err := m.meter.work(1); err != nil {
+			return 0, err
+		}
+		mid := lo + (hi-lo)/2
+		if satisfied(m.edits[mid].Edit.Span) {
+			hi = mid
+		} else {
+			lo = mid + 1
+		}
+	}
+	return lo, m.meter.work(1)
 }
 
 func (m editMapping) offset(at int, right bool) (int, bool, error) {
-	delta := 0
-	for _, e := range m.edits {
-		if err := m.meter.work(1); err != nil {
-			return 0, false, err
+	i, err := m.first(func(s parser.Span) bool { return s.Start() > at })
+	if err != nil {
+		return 0, false, err
+	}
+	if i == 0 {
+		return at, true, nil
+	}
+	// Edits are disjoint, so every earlier edit ends at or before the last one starts.
+	e := m.edits[i-1].Edit
+	a, b := e.Span.Start(), e.Span.End()
+	delta := m.deltas[i-1]
+	if a == b {
+		if at > a || right {
+			delta += len(e.Replacement)
 		}
-		a, b := e.Edit.Span.Start(), e.Edit.Span.End()
-		if at < a {
-			break
-		}
-		if a == b {
-			if at > a || right {
-				delta += len(e.Edit.Replacement)
-			}
-			continue
-		}
-		if at > a && at < b {
-			return 0, false, nil
-		}
-		if at >= b {
-			delta += len(e.Edit.Replacement) - (b - a)
-		}
+		return at + delta, true, nil
+	}
+	if at > a && at < b {
+		return 0, false, nil
+	}
+	if at >= b {
+		delta += len(e.Replacement) - (b - a)
 	}
 	return at + delta, true, nil
 }
@@ -50,13 +82,14 @@ func (m editMapping) span(s parser.Span) (parser.Span, bool, error) {
 	if _, err := m.before.Text(s); err != nil {
 		return parser.Span{}, false, nil
 	}
-	for _, e := range m.edits {
-		if err := m.meter.work(1); err != nil {
-			return parser.Span{}, false, err
-		}
-		if intersects(e.Edit.Span, s) {
-			return parser.Span{}, false, nil
-		}
+	// Only the first edit ending after the start can intersect: an earlier one lies
+	// wholly before the span, and a later one begins at or after this one's end.
+	i, err := m.first(func(e parser.Span) bool { return e.End() > s.Start() })
+	if err != nil {
+		return parser.Span{}, false, err
+	}
+	if i < len(m.edits) && intersects(m.edits[i].Edit.Span, s) {
+		return parser.Span{}, false, nil
 	}
 	a, ok, err := m.offset(s.Start(), true)
 	if err != nil || !ok {
@@ -73,12 +106,11 @@ func sameMapped(m editMapping, a, b parser.Span) (bool, error) {
 	s, ok, err := m.span(a)
 	return ok && s == b, err
 }
-func commonPreservation(ctx context.Context, before, after validationState, p StructuralPlan, m meter) (bool, error) {
+func commonPreservation(ctx context.Context, before, after validationState, mapping editMapping, m meter) (bool, error) {
 	old, new := before.trace.Parsed(), after.trace.Parsed()
 	if old.Status != parser.Complete || new.Status != parser.Complete || old.Document == nil || new.Document == nil || len(old.Uncertainty) > 0 || len(new.Uncertainty) > 0 || !before.trace.Directives().Complete() || !after.trace.Directives().Complete() {
 		return false, nil
 	}
-	mapping := editMapping{old.Source, new.Source, p.edits, m}
 	// Reserve defensive accessor collections and comparisons before constructing
 	// views. Actual byte scans and each mapping comparison are charged separately.
 	if err := m.reserve(int64(old.Source.Len()+new.Source.Len())*8+16, 0); err != nil {

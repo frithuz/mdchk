@@ -91,7 +91,7 @@ func TestRuleContextTrailingWhitespaceFinalPublication(t *testing.T) {
 	for _, tc := range []struct {
 		source       string
 		facts, final int
-	}{{"", 0, 7}, {"clean\n", 0, 14}, {"a \nb \nc \nd \ne \n", 5, 60}} {
+	}{{"", 0, 8}, {"clean\n", 0, 15}, {"a \nb \nc \nd \ne \n", 5, 61}} {
 		for _, origin := range []bool{false, true} {
 			c := listContext(t, tc.source, parser.DefaultLimits(), context.Background())
 			c.options = Options{"hard_break_spaces": 2, "strict": false, "code_blocks": false}

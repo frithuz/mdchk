@@ -126,6 +126,7 @@ type Target struct {
 // overlay. Source handles are immutable; parsed/analysis accessors return copies.
 type RoundContext struct {
 	path      string
+	plan      *engine.ExecutionPlan
 	current   parser.Source
 	trace     *engine.InspectionTrace
 	analysis  []byte
@@ -141,11 +142,29 @@ func (c RoundContext) TerminalEditEligible(ctx context.Context, id string, span 
 	return engine.TerminalEditEligible(ctx, c.Parsed(), c.Directives(), id, span, c.meter.budget)
 }
 
+// TrailingWhitespace returns MD009's suffix facts and resolved hard_break_spaces
+// for this round's own parse under the target's plan.
+func (c RoundContext) TrailingWhitespace(ctx context.Context) ([]parser.TrailingSuffix, int, error) {
+	return engine.TrailingWhitespaceSuffixes(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
 // TerminalTaskSourcesPreserved compares both actual round parses on the same
 // residual operation, through the round's edit mapping. Callers must separately
 // prove their exact suffix edit.
 func (c CheckContext) TerminalTaskSourcesPreserved(ctx context.Context) (bool, error) {
+	if len(c.edits) > 1 {
+		return engine.TerminalTaskSourcesPreservedAroundLineEnds(ctx, c.Before.Parsed(), c.After.Parsed(), c.Before.meter.budget, c.MapFact)
+	}
 	return engine.TerminalTaskSourcesPreservedMapped(ctx, c.Before.Parsed(), c.After.Parsed(), c.Before.meter.budget, c.MapFact)
+}
+
+// MeaningPreservedAcrossLineEndWhitespace compares both actual round parses.
+func (c CheckContext) MeaningPreservedAcrossLineEndWhitespace(ctx context.Context) (bool, error) {
+	before, after := c.Before.Parsed(), c.After.Parsed()
+	if before.Status != parser.Complete || after.Status != parser.Complete || before.Document == nil || after.Document == nil || len(before.Uncertainty) != 0 || len(after.Uncertainty) != 0 {
+		return false, nil
+	}
+	return before.Document.SameMeaningAcrossLineEndWhitespace(ctx, c.Before.meter.budget, after.Document)
 }
 
 // Headings projects this round's parser-confirmed heading facts, charged to the
@@ -209,6 +228,7 @@ type CheckContext struct {
 	Before, After RoundContext
 	group         Group
 	edits         []SharedEdit
+	mapping       editMapping
 	once          map[string]onceValue
 }
 
@@ -296,12 +316,11 @@ func (c CheckContext) OnlyEditsChanged(ctx context.Context) (bool, error) {
 // when an endpoint falls inside one. An envelope ending where an insertion lands
 // grows over it: a block owns its line ending once the document has one.
 func (c CheckContext) MapEndpoints(span parser.Span) (parser.Span, bool, error) {
-	mapping := editMapping{c.Before.current, c.After.current, c.edits, c.Before.meter}
-	start, ok, err := mapping.offset(span.Start(), true)
+	start, ok, err := c.mapping.offset(span.Start(), true)
 	if err != nil || !ok {
 		return parser.Span{}, false, err
 	}
-	end, ok, err := mapping.offset(span.End(), true)
+	end, ok, err := c.mapping.offset(span.End(), true)
 	if err != nil || !ok || end < start {
 		return parser.Span{}, false, err
 	}
@@ -316,7 +335,7 @@ func (c CheckContext) MapFact(span parser.Span) (parser.Span, bool, error) {
 	if span.Start() != span.End() {
 		return c.MapUnchanged(span)
 	}
-	at, ok, err := (editMapping{c.Before.current, c.After.current, c.edits, c.Before.meter}).offset(span.Start(), false)
+	at, ok, err := c.mapping.offset(span.Start(), false)
 	if err != nil || !ok {
 		return parser.Span{}, false, err
 	}
@@ -327,7 +346,7 @@ func (c CheckContext) MapFact(span parser.Span) (parser.Span, bool, error) {
 // MapUnchanged maps an original source-owned fact into the combined candidate.
 // A rewritten/intersected fact is explicitly unmappable, never guessed.
 func (c CheckContext) MapUnchanged(span parser.Span) (parser.Span, bool, error) {
-	return (editMapping{c.Before.current, c.After.current, c.edits, c.Before.meter}).span(span)
+	return c.mapping.span(span)
 }
 
 // Attempt anchors decisions to their actual round source, rather than relabeling
@@ -728,7 +747,7 @@ func reserveEncoded(m meter, raw []byte) error {
 	return m.reserve(0, nodes*2)
 }
 func (s validationState) context(m meter, overlay map[string]parser.Source) RoundContext {
-	return RoundContext{path: s.target.Path, current: s.source, trace: s.trace, analysis: s.analysis, overlay: overlay, meter: m, resources: s.resources}
+	return RoundContext{path: s.target.Path, plan: s.target.Plan, current: s.source, trace: s.trace, analysis: s.analysis, overlay: overlay, meter: m, resources: s.resources}
 }
 
 // ValidationOptions carries operator-owned overlay admission and the original
@@ -1153,7 +1172,11 @@ func (v *Validator) component(ctx context.Context, states []validationState, mem
 			if !ok {
 				continue
 			}
-			safe, err := commonPreservation(ctx, states[j], next[j], p, m)
+			mapping, err := newEditMapping(states[j].source, next[j].source, p.edits, m)
+			if err != nil {
+				return "", err
+			}
+			safe, err := commonPreservation(ctx, states[j], next[j], mapping, m)
 			if err != nil {
 				return "", err
 			}
@@ -1188,7 +1211,7 @@ func (v *Validator) component(ctx context.Context, states []validationState, mem
 				if err := m.reserve(copyWork, copyNodes); err != nil {
 					return "", err
 				}
-				checkContext := CheckContext{states[j].context(m, before), next[j].context(m, after), cloneGroup(d.Group), p.edits, once}
+				checkContext := CheckContext{states[j].context(m, before), next[j].context(m, after), cloneGroup(d.Group), p.edits, mapping, once}
 				proof, err := checker(ctx, checkContext)
 				if err != nil {
 					return "", err
