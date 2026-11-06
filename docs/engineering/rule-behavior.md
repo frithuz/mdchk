@@ -386,6 +386,11 @@ adjacent physical line is reported at any length, which the current parser
 never produces. The message is `Pipe rows are not part of a table.` Missing or
 inconsistent paragraph provenance atomically withholds all findings with
 `Paragraph pipe-row context is unavailable; the complete MD075 inventory is withheld.`
+An empty task item has no lines to check and does not withhold coverage: a task
+Paragraph with empty Content is known only when its separator lies inside the
+Paragraph envelope and nothing but spaces, tabs and line endings follows it up
+to the envelope end. A task marker alone does not prove the paragraph empty, so
+any other byte after the separator withholds the inventory.
 MD075 is permanently report-only. See the [MD075 contract](../rules/tables/md075.md).
 
 ### Corrections
