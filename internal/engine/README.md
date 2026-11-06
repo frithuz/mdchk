@@ -448,8 +448,10 @@ manual and this analysis produces no edits.
 
 MD032 borrows the completed original ListSpacing inventory under caller and origin
 controls. It emits zero-width manual points before first list markers or at the
-following non-list body start. Context precedes directive filtering; default
-enablement and PlannedFix metadata grant no edit authority. Finding capacity,
+following non-list body start. The inventory omits the gap before a list directly
+after a ListItem's first block when that block is a paragraph or heading. Context
+precedes directive filtering; default enablement and PlannedFix metadata grant no
+edit authority. Finding capacity,
 copies and logical records are reserved before construction, with final atomic
 withholding.
 

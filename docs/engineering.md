@@ -701,6 +701,9 @@ is compared directly, without work or storage proportional to its value.
 MD032 merges real body children and retained reference definitions in one bounded
 original-tree traversal. Parent-prefix rollback and terminal content floors
 distinguish list-owned separators from empty markers and opaque-child payload.
+A list directly after a ListItem's first participant is exempt when that
+participant is a paragraph or heading; a retained definition counts as first, and
+all other comparisons still run. The check is constant-time on traversal state.
 Its detached missing-side points remain manual, with no edit producer.
 
 MD069 projects actual list items once into maximal identical-bullet runs using
