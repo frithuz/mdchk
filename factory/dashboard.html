@@ -298,7 +298,7 @@ const LIVE = new Set(['intake', 'spec', 'build', 'gate', 'review', 'approve', 'm
 const SHORT = { code: 'code',
   'qa-review': 'qa', 'change-impact': 'impact', 'security-review': 'sec', 'fix-review': 'fix',
   'contract-review': 'contract', 'interface-review': 'iface', 'performance-review': 'perf',
-  'windows-review': 'win' }
+  'windows-review': 'win', 'macos-review': 'mac' }
 
 const $ = (id) => document.getElementById(id)
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
@@ -481,7 +481,7 @@ const ORDER = ['issue.md', 'intake.md', 'spec.md', 'build.md', 'decision.md', 'r
 const ROUND_ORDER = ['checks', 'review-code',
   'review-qa-review', 'review-change-impact', 'review-security-review', 'review-fix-review',
   'review-contract-review', 'review-interface-review', 'review-performance-review', 'review-windows-review',
-  'merge-checks']
+  'review-macos-review', 'merge-checks']
 
 function fileRank(path) {
   if (ORDER.includes(path)) return [0, ORDER.indexOf(path), path]

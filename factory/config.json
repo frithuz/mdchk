@@ -19,11 +19,13 @@
     "fix": { "fix-review": "sonnet" },
     "contract": { "contract-review": "sonnet", "change-impact": "sonnet" },
     "perf": { "performance-review": "sonnet" },
-    "windows": { "windows-review": "sonnet" }
+    "windows": { "windows-review": "sonnet" },
+    "macos": { "macos-review": "sonnet" }
   },
   "specialist_reviewers": [
     "change-impact", "contract-review", "fix-review", "interface-review",
-    "performance-review", "qa-review", "security-review", "windows-review"
+    "performance-review", "qa-review", "security-review", "windows-review",
+    "macos-review"
   ],
   "protected_paths": [
     "factory/checks.sh",

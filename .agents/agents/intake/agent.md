@@ -59,7 +59,10 @@ For ACCEPT, rate:
   rule execution or file I/O on a path that runs per document or per line,
   `windows` if it touches path or filename handling, file I/O or replacement,
   process, signal, console or argument handling, line endings or input bytes,
-  platform-specific code, or tests and CI jobs that run on Windows.
+  platform-specific code, or tests and CI jobs that run on Windows,
+  `macos` if it touches path or filename handling, file I/O or replacement, file
+  metadata, system calls, platform-specific code, shell tooling that developers
+  run, or tests and CI jobs that run on macOS.
   Any combination, or `none`.
 
 ## Write intake.md
@@ -67,7 +70,7 @@ For ACCEPT, rate:
 ```markdown
 DECISION: ACCEPT | NEEDS-INFO | REJECT
 RISK: low | medium | high
-SURFACES: comma-separated from ui, security, fix, contract, perf, windows | none
+SURFACES: comma-separated from ui, security, fix, contract, perf, windows, macos | none
 RESCOPED: yes | no
 
 ## Summary
