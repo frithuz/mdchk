@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "operation": "inspect",
+  "mode": "cli",
+  "status": "inspected",
+  "complete": false,
+  "checked_files": [
+    "bad.md"
+  ],
+  "skipped_files": [],
+  "files": [
+    {
+      "path": "bad.md",
+      "analysis": "failed",
+      "write_status": "not-requested",
+      "return_status": "not-requested",
+      "input_snapshot": {
+        "view": "original",
+        "sha256": "132369a3b7f24fa619785c4e2eee68855f5d46cbe0aaa19eadd0dbc2dd592c39",
+        "size_bytes": 5
+      },
+      "error_ids": [
+        "error-1",
+        "error-2"
+      ],
+      "coverage_ids": [
+        "coverage-1"
+      ],
+      "change_ids": []
+    }
+  ],
+  "diagnostics": [],
+  "coverage": [
+    {
+      "id": "coverage-1",
+      "reason": "decoding-failed",
+      "message": "Parsed inspection sections are unavailable.",
+      "path": "bad.md",
+      "cause_ids": [
+        "error-1",
+        "error-2"
+      ]
+    }
+  ],
+  "changes": [],
+  "deferred_fixes": [],
+  "errors": [
+    {
+      "id": "error-1",
+      "category": "io",
+      "code": "invalid-utf8",
+      "scope": "observation",
+      "message": "Invalid UTF-8 byte sequence 0xFF at byte offset 0.",
+      "path": "bad.md",
+      "byte_offset": 0,
+      "byte_range": {
+        "start": 0,
+        "end": 1
+      },
+      "range": {
+        "start": {
+          "line": 1,
+          "column": 1
+        },
+        "end": {
+          "line": 1,
+          "column": 1
+        }
+      },
+      "snapshot": {
+        "view": "original",
+        "sha256": "132369a3b7f24fa619785c4e2eee68855f5d46cbe0aaa19eadd0dbc2dd592c39",
+        "size_bytes": 5
+      },
+      "rule": "MD094"
+    },
+    {
+      "id": "error-2",
+      "category": "io",
+      "code": "invalid-utf8",
+      "scope": "observation",
+      "message": "Invalid UTF-8 byte sequence 0xFF at byte offset 1.",
+      "path": "bad.md",
+      "byte_offset": 1,
+      "byte_range": {
+        "start": 1,
+        "end": 2
+      },
+      "range": {
+        "start": {
+          "line": 1,
+          "column": 2
+        },
+        "end": {
+          "line": 1,
+          "column": 2
+        }
+      },
+      "snapshot": {
+        "view": "original",
+        "sha256": "132369a3b7f24fa619785c4e2eee68855f5d46cbe0aaa19eadd0dbc2dd592c39",
+        "size_bytes": 5
+      },
+      "rule": "MD094"
+    }
+  ],
+  "notes": [],
+  "interruptions": [],
+  "omissions": [
+    {
+      "section": "/errors",
+      "reason": "output-limit",
+      "message": "invalid UTF-8 records past the retention cap omitted",
+      "path": "bad.md",
+      "count": 3
+    }
+  ],
+  "documents": [],
+  "suppressed_diagnostics": [],
+  "effective_limits": [],
+  "inspection": {
+    "projection_version": 1,
+    "file": {
+      "resolved_path": "/example/bad.md",
+      "binary_version": "development",
+      "size_bytes": 5,
+      "size_display": "5 B (5 bytes)",
+      "sha1": "7dfcde1329ae3e3dd5653644f2ef1deeba8665f2",
+      "sha256": "132369a3b7f24fa619785c4e2eee68855f5d46cbe0aaa19eadd0dbc2dd592c39",
+      "normally_excluded": false
+    },
+    "configuration": {
+      "availability": "available",
+      "reasons": [],
+      "data": {
+        "effective": {
+          "version": 1,
+          "flavor": "gfm",
+          "directives": {
+            "enabled": true
+          },
+          "rules": {
+            "MD094": {
+              "enabled": true,
+              "allow_directives": true
+            }
+          }
+        },
+        "sources": [
+          {
+            "kind": "default"
+          }
+        ],
+        "provenance": []
+      }
+    },
+    "flavor": {
+      "availability": "available",
+      "reasons": [],
+      "data": "gfm"
+    },
+    "document_context": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    },
+    "ast": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    },
+    "rules": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    },
+    "rule_counts": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    },
+    "directives": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    },
+    "resources": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    },
+    "parsing_notes": {
+      "availability": "unavailable",
+      "reasons": [
+        "decoding-failed"
+      ]
+    }
+  }
+}

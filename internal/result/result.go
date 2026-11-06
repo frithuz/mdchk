@@ -6,6 +6,7 @@ package result
 import (
 	"encoding/json"
 	"fmt"
+	"slices"
 
 	"github.com/frithuz/mdchk/internal/parser"
 )
@@ -69,6 +70,7 @@ type Error struct {
 	Range      *Range        `json:"range,omitempty"`
 	Snapshot   *Snapshot     `json:"snapshot,omitempty"`
 	ByteOffset *int          `json:"byte_offset,omitempty"`
+	ByteRange  *ByteRange    `json:"byte_range,omitempty"`
 }
 
 // Coverage records unassessed work, never a successful empty check. The open
@@ -123,6 +125,20 @@ type Omission struct {
 	Message string `json:"message"`
 	Path    string `json:"path,omitempty"`
 	Count   *int   `json:"count,omitempty"`
+}
+
+// EncodingRetention reports the file-scoped omission that accounts for invalid
+// UTF-8 records past the fixed retention caps. It is the only path-scoped /errors
+// omission; reporting reductions under /errors have no path.
+func (o Omission) EncodingRetention() bool {
+	return o.Section == "/errors" && o.Reason == "output-limit" && o.Path != ""
+}
+
+// HasReportingOmission reports whether any omission other than EncodingRetention
+// is present. Such a loss makes an inspection incomplete; the retention cap alone
+// leaves it a completed observation that is still complete: false.
+func HasReportingOmission(omissions []Omission) bool {
+	return slices.ContainsFunc(omissions, func(o Omission) bool { return !o.EncodingRetention() })
 }
 
 type EffectiveLimit struct {

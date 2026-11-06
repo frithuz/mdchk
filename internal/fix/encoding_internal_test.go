@@ -7,6 +7,8 @@ import (
 	"errors"
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/result"
+	"slices"
 	"testing"
 )
 
@@ -133,5 +135,123 @@ func TestOriginalEncodingRecoveryPreservesLateCauses(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// encodingFailureState analyzes source to the recoverable original failure.
+func encodingFailureState(t *testing.T, source []byte) (validationState, meter, error) {
+	t.Helper()
+	r, err := engine.NewCatalogRegistry(nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	selection, err := r.SelectRules(engine.Settings{}, engine.ValidationProviders{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	plan, err := selection.Plan(engine.DocumentContext{Flavor: "commonmark"}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	b, _ := parser.NewOperationBudget(parser.DefaultLimits())
+	m := meter{context.Background(), b}
+	bad := parser.NewSource(source)
+	state, cause := analyze(context.Background(), Target{Path: "bad.md", Source: bad, Plan: plan}, bad, m)
+	if cause == nil {
+		t.Fatal("generic analysis must stay fatal")
+	}
+	return state, m, cause
+}
+
+func TestOriginalEncodingRecoveryAcceptsManyAndCapped(t *testing.T) {
+	for name, tc := range map[string]struct {
+		source  []byte
+		errors  int
+		omitted int
+	}{
+		"many":   {[]byte("a\xffb\xe2\x82c\xff\r\nd\n"), 3, 0},
+		"cap":    {bytes.Repeat([]byte{0xFF}, engine.MaxFileEncodingErrors), engine.MaxFileEncodingErrors, 0},
+		"capped": {bytes.Repeat([]byte{0xFF}, engine.MaxFileEncodingErrors+5), engine.MaxFileEncodingErrors, 5},
+	} {
+		t.Run(name, func(t *testing.T) {
+			state, m, cause := encodingFailureState(t, tc.source)
+			if len(state.retained.Errors) != tc.errors || len(state.retained.Omissions) != min(tc.omitted, 1) {
+				t.Fatal(len(state.retained.Errors), state.retained.Omissions)
+			}
+			if local, err := originalEncodingFailure(state, cause, m); err != nil || !local {
+				t.Fatal(local, err)
+			}
+		})
+	}
+}
+
+func TestOriginalEncodingRecoveryFailsClosed(t *testing.T) {
+	source := append([]byte("a\xffb\xe2\x82c"), bytes.Repeat([]byte{0xFF}, engine.MaxFileEncodingErrors)...)
+	state, m, cause := encodingFailureState(t, source)
+	if local, err := originalEncodingFailure(state, cause, m); err != nil || !local {
+		t.Fatal(local, err)
+	}
+	zero, wrongPath := 0, "other.md"
+	for name, mutate := range map[string]func(*validationState, *result.Result){
+		"another error code": func(_ *validationState, r *result.Result) { r.Errors[1].Code = "read-failed" },
+		"another category":   func(_ *validationState, r *result.Result) { r.Errors[1].Category = result.Internal },
+		"extra non-encoding error": func(_ *validationState, r *result.Result) {
+			r.Errors = append(r.Errors, result.Error{Category: result.Internal, Code: "rule-failure", Scope: "operation", Path: "bad.md"})
+		},
+		"too many errors": func(_ *validationState, r *result.Result) { r.Errors = append(r.Errors, r.Errors[len(r.Errors)-1]) },
+		"no errors":       func(_ *validationState, r *result.Result) { r.Errors = nil },
+		"non-errors omission": func(_ *validationState, r *result.Result) {
+			r.Omissions[0].Section = "/diagnostics"
+		},
+		"path-less errors omission": func(_ *validationState, r *result.Result) { r.Omissions[0].Path = "" },
+		"zero-count omission":       func(_ *validationState, r *result.Result) { r.Omissions[0].Count = &zero },
+		"count-less omission":       func(_ *validationState, r *result.Result) { r.Omissions[0].Count = nil },
+		"another file's omission":   func(_ *validationState, r *result.Result) { r.Omissions[0].Path = wrongPath },
+		"second omission": func(_ *validationState, r *result.Result) {
+			r.Omissions = append(r.Omissions, r.Omissions[0])
+		},
+		"interruption": func(_ *validationState, r *result.Result) {
+			r.Interruptions = []result.Interruption{{Reason: "limit-exceeded"}}
+		},
+		"diagnostic": func(_ *validationState, r *result.Result) { r.Diagnostics = []result.Diagnostic{{Path: "bad.md"}} },
+		"errors out of order": func(_ *validationState, r *result.Result) {
+			r.Errors[0], r.Errors[1] = r.Errors[1], r.Errors[0]
+		},
+		"missing byte range": func(_ *validationState, r *result.Result) { r.Errors[1].ByteRange = nil },
+		"byte range past source": func(_ *validationState, r *result.Result) {
+			r.Errors[1].ByteRange = &result.ByteRange{Start: *r.Errors[1].ByteOffset, End: len(source) + 1}
+		},
+		"generated candidate": func(s *validationState, _ *result.Result) {
+			s.target.Source = parser.NewSource([]byte("valid original"))
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			s := state
+			r := *state.retained
+			r.Errors = slices.Clone(r.Errors)
+			r.Omissions = slices.Clone(r.Omissions)
+			s.retained = &r
+			mutate(&s, &r)
+			if local, err := originalEncodingFailure(s, cause, m); err != nil || local {
+				t.Fatal("recovered", local, err)
+			}
+		})
+	}
+}
+
+func TestOriginalEncodingRecoveryChargesPerError(t *testing.T) {
+	state, _, cause := encodingFailureState(t, bytes.Repeat([]byte{0xFF}, engine.MaxFileEncodingErrors))
+	limits := parser.DefaultLimits()
+	limits.WorkUnits = 4*int64(len(state.target.Path)) + 512 + 32*engine.MaxFileEncodingErrors - 1
+	tight, _ := parser.NewOperationBudget(limits)
+	local, err := originalEncodingFailure(state, cause, meter{context.Background(), tight})
+	var stop *parser.LimitExceeded
+	if local || !errors.As(err, &stop) {
+		t.Fatal(local, err)
+	}
+	limits.WorkUnits++
+	enough, _ := parser.NewOperationBudget(limits)
+	if local, err := originalEncodingFailure(state, cause, meter{context.Background(), enough}); err != nil || !local {
+		t.Fatal(local, err)
 	}
 }

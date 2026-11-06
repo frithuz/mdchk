@@ -13,7 +13,7 @@ python3 -m venv /tmp/mdchk-contract-validation
 /tmp/mdchk-contract-validation/bin/python docs/contracts/results/validate.py
 ```
 
-Validation includes eighteen deliberately invalid mutations. It checks serialization
+Validation includes twenty-four deliberately invalid mutations. It checks serialization
 and representative semantic invariants; it does not execute mdchk or prove
 parser, fixer, transport, authentication, or platform conformance.
 

@@ -203,6 +203,11 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	}
 
 	acquired.Interruptions = append(acquired.Interruptions, acquisition.Interruptions...)
+	// Lint analyzes logical paths in order. Encoding retention is first come, first
+	// served, so fix must use the same order to retain the same records.
+	slices.SortFunc(acquired.Documents, func(a, b files.Document) int {
+		return strings.Compare(inv.logicalPath(a.Path), inv.logicalPath(b.Path))
+	})
 	targets := make([]fix.Target, 0, len(acquired.Documents))
 	if len(acquired.PreflightErrors) == 0 {
 		var fragments func(string, parser.Source) engine.FragmentResources
@@ -293,6 +298,10 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 				out.CheckedFiles = append(out.CheckedFiles, path)
 			}
 			for _, reason := range view.Reasons {
+				// The gate's own record already covers a failed file: one per file.
+				if savedAvailable && slices.ContainsFunc(analysis.Coverage, func(c result.Coverage) bool { return c.Reason == reason && reason == "decoding-failed" }) {
+					continue
+				}
 				out.Coverage = append(out.Coverage, result.Coverage{Path: path, Reason: reason, Message: "Correction computation withheld this component; retained content is reported."})
 			}
 			for _, obs := range view.Observations {
@@ -414,6 +423,11 @@ func mergeFixAnalysis(out *result.Result, in result.Result) {
 			}
 		}
 		out.Coverage = append(out.Coverage, c)
+	}
+	for _, o := range in.Omissions {
+		if o.EncodingRetention() {
+			out.Omissions = append(out.Omissions, o)
+		}
 	}
 	out.Diagnostics = append(out.Diagnostics, in.Diagnostics...)
 	out.Notes = append(out.Notes, in.Notes...)

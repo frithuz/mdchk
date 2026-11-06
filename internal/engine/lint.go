@@ -123,13 +123,22 @@ func (r *Registry) Lint(ctx context.Context, inputs []Input, options RunOptions)
 		if options.inspection != nil {
 			options.inspection.initialize(r)
 		}
-		validation := validateEncoding(in.path, in.source, settings[i]["MD094"].Enabled, snap)
+		validation, err := validateEncoding(in.path, in.source, settings[i]["MD094"].Enabled, snap, budget)
+		if err != nil {
+			stopped = recordInterruption(&out, in.path, "acquisition", err)
+			file.Analysis = "partial"
+			out.Files = append(out.Files, file)
+			continue
+		}
 		index := validation.Index
 		if options.inspection != nil {
-			options.inspection.encoding(validation.Error, in.source)
+			options.inspection.encoding(len(validation.Errors) != 0, in.source)
 		}
-		if validation.Error != nil {
-			out.Errors = append(out.Errors, *validation.Error)
+		if len(validation.Errors) != 0 {
+			out.Errors = append(out.Errors, validation.Errors...)
+			if validation.Omission != nil {
+				out.Omissions = append(out.Omissions, *validation.Omission)
+			}
 			out.Coverage = append(out.Coverage, result.Coverage{Reason: "decoding-failed", Path: in.path, Message: "Markdown validation is unavailable."})
 			file.Analysis = "failed"
 			out.Files = append(out.Files, file)

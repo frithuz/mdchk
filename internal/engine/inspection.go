@@ -126,6 +126,10 @@ func (t *InspectionTrace) Errors() []result.Error {
 			copy := *p
 			out[i].ByteOffset = &copy
 		}
+		if p := out[i].ByteRange; p != nil {
+			copy := *p
+			out[i].ByteRange = &copy
+		}
 	}
 	return out
 }
@@ -154,13 +158,13 @@ func (t *InspectionTrace) entry(id string) *Evaluation {
 	}
 	return nil
 }
-func (t *InspectionTrace) encoding(err *result.Error, source parser.Source) {
+func (t *InspectionTrace) encoding(failed bool, source parser.Source) {
 	if e := t.entry("MD094"); e != nil {
 		e.Active = "complete"
 		span, _ := source.Span(0, source.Len())
 		e.ActiveCoverage = []parser.Span{span}
 		e.Reasons = []string{}
-		if err != nil {
+		if failed {
 			e.Active = "failed"
 			e.ActiveCoverage = []parser.Span{}
 			e.Reasons = []string{"decoding-failed"}

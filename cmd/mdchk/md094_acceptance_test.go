@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
@@ -19,18 +20,34 @@ import (
 type md094Case struct {
 	Name     string
 	Source   []byte
-	Expected *struct {
-		ByteOffset int `json:"byte_offset"`
-		Line       int `json:"line"`
-		Column     int `json:"column"`
+	Expected []md094Expected
+}
+
+type md094Expected struct {
+	ByteOffset int    `json:"byte_offset"`
+	ByteEnd    int    `json:"byte_end"`
+	Line       int    `json:"line"`
+	Column     int    `json:"column"`
+	BytesHex   string `json:"bytes_hex"`
+}
+
+// md094Message spells the fixture's bytes the way the message must name them.
+func md094Message(want md094Expected) string {
+	raw, _ := hex.DecodeString(want.BytesHex)
+	var b strings.Builder
+	b.WriteString("Invalid UTF-8 byte sequence")
+	for _, c := range raw {
+		fmt.Fprintf(&b, " 0x%02X", c)
 	}
+	fmt.Fprintf(&b, " at byte offset %d.", want.ByteOffset)
+	return b.String()
 }
 
 // md094Cases reads the shared hex fixture, pinned by its SHA-256.
 func md094Cases(t *testing.T) map[string]md094Case {
 	t.Helper()
 	b, err := os.ReadFile("../../internal/rules/testdata/md094.json")
-	if err != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != "9d26032a205b45369f13f8eee941dab4293151b3da5d97fe7658df799f7bfefb" {
+	if err != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != "651f3353d42bbf33707fc1d227ecc7a1aba34375d60cf85fee3e924be07ae810" {
 		t.Fatal("root fixture identity", err)
 	}
 	var fixture struct {
@@ -40,7 +57,7 @@ func md094Cases(t *testing.T) map[string]md094Case {
 			Expected  json.RawMessage
 		}
 	}
-	if err = json.Unmarshal(b, &fixture); err != nil || len(fixture.Cases) != 28 {
+	if err = json.Unmarshal(b, &fixture); err != nil || len(fixture.Cases) != 42 {
 		t.Fatal(err, len(fixture.Cases))
 	}
 	out := map[string]md094Case{}
@@ -108,35 +125,36 @@ func md094Snapshot(view string, source []byte) result.Snapshot {
 	return result.Snapshot{View: view, SHA256: fmt.Sprintf("%x", sha256.Sum256(source)), SizeBytes: len(source)}
 }
 
-// md094CheckError checks the single invalid-utf8 error against the fixture.
-// Fix validates the candidate view, which for a failed file is the original
-// bytes.
+// md094CheckError checks every invalid-utf8 error against the fixture. Fix
+// validates the candidate view, which for a failed file is the original bytes.
 func md094CheckError(t *testing.T, errors []result.Error, path, rule, scope, view string, tc md094Case) {
 	t.Helper()
-	if len(errors) != 1 {
+	if len(errors) != len(tc.Expected) {
 		t.Fatal("errors", errors)
 	}
-	e := errors[0]
-	point := result.Position{Line: tc.Expected.Line, Column: tc.Expected.Column}
-	if e.Category != result.IO || e.Code != "invalid-utf8" || e.Scope != scope || e.Path != path || e.Rule != rule || e.Message != fmt.Sprintf("Invalid UTF-8 at byte offset %d.", tc.Expected.ByteOffset) {
-		t.Fatalf("error=%+v", e)
-	}
-	if e.ByteOffset == nil || *e.ByteOffset != tc.Expected.ByteOffset || e.Range == nil || e.Range.Start != point || e.Range.End != point {
-		t.Fatalf("location offset=%v range=%+v", e.ByteOffset, e.Range)
-	}
-	if e.Snapshot == nil || *e.Snapshot != md094Snapshot(view, tc.Source) {
-		t.Fatalf("snapshot=%+v", e.Snapshot)
+	for i, want := range tc.Expected {
+		e := errors[i]
+		point := result.Position{Line: want.Line, Column: want.Column}
+		if e.Category != result.IO || e.Code != "invalid-utf8" || e.Scope != scope || e.Path != path || e.Rule != rule || e.Message != md094Message(want) {
+			t.Fatalf("error=%+v", e)
+		}
+		if e.ByteOffset == nil || *e.ByteOffset != want.ByteOffset || e.ByteRange == nil || *e.ByteRange != (result.ByteRange{Start: want.ByteOffset, End: want.ByteEnd}) || e.Range == nil || e.Range.Start != point || e.Range.End != point {
+			t.Fatalf("location offset=%v span=%+v range=%+v", e.ByteOffset, e.ByteRange, e.Range)
+		}
+		if e.Snapshot == nil || *e.Snapshot != md094Snapshot(view, tc.Source) {
+			t.Fatalf("snapshot=%+v", e.Snapshot)
+		}
 	}
 }
 
 // md094CheckFailedFile checks one failed file: no findings, one decoding-failed
-// coverage entry caused by the error, and incomplete error status.
+// coverage entry caused by all of its errors, and incomplete error status.
 func md094CheckFailedFile(t *testing.T, out result.Result, path string) {
 	t.Helper()
-	var errorID string
+	var errorIDs []string
 	for _, e := range out.Errors {
 		if e.Path == path {
-			errorID = e.ID
+			errorIDs = append(errorIDs, e.ID)
 		}
 	}
 	for _, d := range out.Diagnostics {
@@ -150,14 +168,14 @@ func md094CheckFailedFile(t *testing.T, out result.Result, path string) {
 			decoding = append(decoding, c)
 		}
 	}
-	if len(decoding) != 1 || !reflect.DeepEqual(decoding[0].CauseIDs, []string{errorID}) {
+	if len(decoding) != 1 || !md094SameIDs(decoding[0].CauseIDs, errorIDs) {
 		t.Fatal("coverage", out.Coverage)
 	}
 	analysed := false
 	for _, f := range out.Files {
 		if f.Path == path {
 			analysed = true
-			if f.Analysis != "failed" || !reflect.DeepEqual(f.ErrorIDs, []string{errorID}) || len(f.ChangeIDs) != 0 {
+			if f.Analysis != "failed" || !reflect.DeepEqual(f.ErrorIDs, errorIDs) || len(f.ChangeIDs) != 0 {
 				t.Fatal("file", f)
 			}
 		}
@@ -165,6 +183,14 @@ func md094CheckFailedFile(t *testing.T, out result.Result, path string) {
 	if !analysed || out.Status != "error" || out.Complete || len(out.SuppressedDiagnostics) != 0 || len(out.Notes) != 0 {
 		t.Fatal("result", out.Status, out.Complete, out.Files, out.Notes)
 	}
+}
+
+// Coverage cause IDs are in canonical text order, not numeric record order.
+func md094SameIDs(a, b []string) bool {
+	a, b = slices.Clone(a), slices.Clone(b)
+	slices.Sort(a)
+	slices.Sort(b)
+	return slices.Equal(a, b)
 }
 
 // Every fixture runs through lint in JSON and text under default, enabled and
@@ -187,7 +213,7 @@ func TestCompiledMD094FixtureLint(t *testing.T) {
 				before := configurationBytes(t, root)
 				got := md014NativeRun(t, binary, root, "lint", "--format=json", "doc.md")
 				out := md094ResultJSON(t, got, root, "lint")
-				if tc.Expected == nil {
+				if len(tc.Expected) == 0 {
 					if got.Status != 0 || len(out.Errors) != 0 || !out.Complete {
 						t.Fatal(row.name, got.Status, got.Stdout)
 					}
@@ -204,14 +230,19 @@ func TestCompiledMD094FixtureLint(t *testing.T) {
 				gates[row.name] = out.Errors
 				if row.name == "default" {
 					text := md014NativeRun(t, binary, root, "lint", "doc.md")
-					if tc.Expected == nil {
+					if len(tc.Expected) == 0 {
 						if text.Status != 0 || strings.Contains(text.Stdout, "invalid-utf8") {
 							t.Fatal("text", text.Status, text.Stdout)
 						}
 					} else {
-						want := fmt.Sprintf("doc.md:%d:%d error invalid-utf8 (io): Invalid UTF-8 at byte offset %d.\n", tc.Expected.Line, tc.Expected.Column, tc.Expected.ByteOffset)
-						if text.Status != 13 || strings.Count(text.Stdout, "invalid-utf8") != 1 || !strings.Contains(text.Stdout, want) {
+						if text.Status != 13 || strings.Count(text.Stdout, "invalid-utf8") != len(tc.Expected) {
 							t.Fatal("text", text.Status, text.Stdout)
+						}
+						for _, expected := range tc.Expected {
+							want := fmt.Sprintf("doc.md:%d:%d error invalid-utf8 (io): %s\n", expected.Line, expected.Column, md094Message(expected))
+							if !strings.Contains(text.Stdout, want) {
+								t.Fatal("text", want, text.Stdout)
+							}
 						}
 					}
 				}

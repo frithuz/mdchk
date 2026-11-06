@@ -280,7 +280,10 @@ func inspectionOutcome(out *result.Result) {
 	if len(out.Errors) > 0 || len(out.Coverage) > 0 {
 		out.Complete = false
 	}
-	if len(out.Interruptions) > 0 || len(out.Omissions) > 0 {
+	if len(out.Omissions) > 0 {
+		out.Complete = false
+	}
+	if len(out.Interruptions) > 0 || result.HasReportingOmission(out.Omissions) {
 		out.Complete = false
 		out.Status = "incomplete"
 	}
@@ -293,7 +296,7 @@ func inspectionOutcome(out *result.Result) {
 }
 func inspectionExit(out result.Result) int {
 	status := 0
-	if len(out.Interruptions) > 0 || len(out.Omissions) > 0 {
+	if len(out.Interruptions) > 0 || result.HasReportingOmission(out.Omissions) {
 		status = exitIncomplete
 	}
 	for _, category := range []result.ErrorCategory{result.Usage, result.Configuration, result.IO, result.Internal} {

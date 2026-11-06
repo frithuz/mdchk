@@ -16,10 +16,12 @@ import (
 type md094FixtureCase struct {
 	Name      string `json:"name"`
 	SourceHex string `json:"source_hex"`
-	Expected  *struct {
-		ByteOffset int `json:"byte_offset"`
-		Line       int `json:"line"`
-		Column     int `json:"column"`
+	Expected  []struct {
+		ByteOffset int    `json:"byte_offset"`
+		ByteEnd    int    `json:"byte_end"`
+		Line       int    `json:"line"`
+		Column     int    `json:"column"`
+		BytesHex   string `json:"bytes_hex"`
 	} `json:"expected"`
 }
 
@@ -53,29 +55,28 @@ func TestMD094Fixtures(t *testing.T) {
 				if got.Snapshot.SizeBytes != len(raw) || got.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256(raw)) {
 					t.Fatalf("snapshot=%+v", got.Snapshot)
 				}
-				if tc.Expected == nil {
-					if got.Error != nil {
-						t.Fatalf("valid source rejected: %+v", got.Error)
-					}
-					return
-				}
-				e := got.Error
-				if e == nil {
-					t.Fatal("invalid encoding accepted")
+				if len(got.Errors) != len(tc.Expected) || got.Omission != nil {
+					t.Fatalf("errors=%+v omission=%+v", got.Errors, got.Omission)
 				}
 				wantRule := ""
 				if enabled {
 					wantRule = "MD094"
 				}
-				point := parser.Position{Line: tc.Expected.Line, Column: tc.Expected.Column}
-				if e.Category != result.IO || e.Code != "invalid-utf8" || e.Scope != "operation" || e.Path != "doc.md" || e.Rule != wantRule {
-					t.Fatalf("error=%+v", e)
-				}
-				if e.ByteOffset == nil || *e.ByteOffset != tc.Expected.ByteOffset || e.Range == nil || e.Range.Start != point || e.Range.End != point {
-					t.Fatalf("location offset=%v range=%+v", e.ByteOffset, e.Range)
-				}
-				if e.Snapshot == nil || *e.Snapshot != got.Snapshot {
-					t.Fatalf("error snapshot=%+v", e.Snapshot)
+				for i, want := range tc.Expected {
+					e := got.Errors[i]
+					point := parser.Position{Line: want.Line, Column: want.Column}
+					if e.Category != result.IO || e.Code != "invalid-utf8" || e.Scope != "operation" || e.Path != "doc.md" || e.Rule != wantRule {
+						t.Fatalf("error=%+v", e)
+					}
+					if e.ByteOffset == nil || *e.ByteOffset != want.ByteOffset || e.ByteRange == nil || *e.ByteRange != (result.ByteRange{Start: want.ByteOffset, End: want.ByteEnd}) || e.Range == nil || e.Range.Start != point || e.Range.End != point {
+						t.Fatalf("location offset=%v span=%+v range=%+v", e.ByteOffset, e.ByteRange, e.Range)
+					}
+					if hex.EncodeToString(raw[want.ByteOffset:want.ByteEnd]) != want.BytesHex {
+						t.Fatalf("fixture bytes %q at %d..%d", want.BytesHex, want.ByteOffset, want.ByteEnd)
+					}
+					if e.Snapshot == nil || *e.Snapshot != got.Snapshot {
+						t.Fatalf("error snapshot=%+v", e.Snapshot)
+					}
 				}
 			})
 		}

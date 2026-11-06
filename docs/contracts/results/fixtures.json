@@ -96,5 +96,20 @@
     "file": "metadata-inspection.json",
     "kind": "result",
     "expected_cli_exit": 0
+  },
+  {
+    "file": "invalid-utf8-multiple.json",
+    "kind": "result",
+    "expected_cli_exit": 13
+  },
+  {
+    "file": "invalid-utf8-truncated.json",
+    "kind": "result",
+    "expected_cli_exit": 13
+  },
+  {
+    "file": "inspection-invalid-utf8-truncated.json",
+    "kind": "result",
+    "expected_cli_exit": 0
   }
 ]
