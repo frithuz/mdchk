@@ -35,12 +35,17 @@ Options may appear before or after paths. Use -- for dash-prefixed paths.
   --help              Show this help
   --version           Print version
 
+A saved run applies --limit to each half, not the total: through the writes, then
+confirming saved content. One fix can spend up to twice work-units and total-nodes;
+the operation-time deadline does not restart. --dry-run has one allowance.
+
 Exit 0/10 describes saved content (candidate content for --dry-run).
 Incomplete analysis returns 15; apply works on Linux, macOS and Windows.
 Usage returns 11, configuration 12, I/O 13 and internal failures 14.
-MD047 corrects safe final-newline changes and MD009 corrects trailing whitespace:
-it removes a suffix, or normalizes a real hard break to hard_break_spaces. Ambiguous
-contexts stay manual and appear under deferred_fixes.
+MD047 corrects safe final-newline changes. MD009 corrects trailing whitespace: it
+removes a suffix, or normalizes a real hard break to hard_break_spaces. MD019 and
+MD021 remove excess spaces from heading delimiter gaps. Ambiguous contexts stay
+manual and appear under deferred_fixes.
 Text/JSON include preview diffs; editor formats report remaining findings only.
 VS Code unlocated errors and both editor formats' recovery outcomes use stderr.
 Run GitHub output from the checkout root; invocation CWD declares path authority.
