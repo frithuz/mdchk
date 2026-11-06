@@ -157,7 +157,7 @@ withholds the entire MD033 inventory with explicit coverage. No MD033 edits or p
 
 We target the implemented rule list from `rumdl` because it covers markdownlint's built-in rules and adds further checks. The individual rule specifications define mdchk's behavior internally. We may expand this ruleset with additional custom rules in the future.
 
-The mdchk ruleset contains 87 rules: MD001 through MD095, excluding MD002, MD006, MD008, MD015, MD016, MD017, MD078, and MD079. Preserve these reserved gaps; do not implement checks under those IDs.
+The mdchk ruleset contains 87 rules, of which 84 are active. MD066, MD067 and MD068 are inactive because neither CommonMark nor the GFM profile recognizes footnotes and Pandoc support has been canceled. The 87 rules are MD001 through MD095, excluding MD002, MD006, MD008, MD015, MD016, MD017, MD078, and MD079. Preserve these reserved gaps; do not implement checks under those IDs.
 
 MD047 analysis, configuration, safe previews and native application are implemented for
 CommonMark. Apply works on Linux, macOS and Windows; other operating systems
@@ -205,7 +205,7 @@ PlannedFix retains future correction scope. No MD088 edits or previews are emitt
 | [Code blocks](code-blocks/index.md) | 8 |
 | [Links and images](links-and-images/index.md) | 13 |
 | [Tables](tables/index.md) | 5 |
-| [Footnotes](footnotes/index.md) | 3 |
+| [Footnotes](footnotes/index.md) | 3 (inactive) |
 | [Frontmatter](frontmatter/index.md) | 2 |
 | [Content and navigation](content-and-navigation/index.md) | 3 |
 | [Encoding](encoding/index.md) | 3 |
