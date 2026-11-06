@@ -802,6 +802,155 @@
         "enabled": false
       },
       "findings": []
+    },
+    {
+      "name": "empty-task-checked",
+      "source": "- [x]\n",
+      "source_bytes": 6,
+      "source_sha256": "2d9e656a540c0b59e95c1bd87d8c7d0ac85ae95147d0d78f4be17b62138af7f8",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-task-unchecked",
+      "source": "- [ ]\n",
+      "source_bytes": 6,
+      "source_sha256": "ad02c1e3cfbfa43b4e04f4cebeffbe37b11a444f71a86686d68e9c574698ee0c",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-task-trailing-space",
+      "source": "- [x] \n",
+      "source_bytes": 7,
+      "source_sha256": "6e0e19a9843939bb55f10519dbcc483a7d91b476aeca2e65c080acc0f7ae9734",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-task-space-at-eof",
+      "source": "- [x] ",
+      "source_bytes": 6,
+      "source_sha256": "38b9c69d22d9e8766e91cb928ffda3357b062dd0baedb869b26dd3789f53db4b",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "crlf-empty-task",
+      "source": "- [x]\r\n",
+      "source_bytes": 7,
+      "source_sha256": "ea6d55d86450e7951f7f60e012f01fed157313df53c7544a3a92f1e41b0efb03",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-task-block-quote",
+      "source": "> - [x]\n",
+      "source_bytes": 8,
+      "source_sha256": "30430892ac06e5d6dff24e6077c0965879d6da027d8ac9445a796bd0d1cb882b",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-task-nested-list",
+      "source": "- a\n\n  - [ ]\n",
+      "source_bytes": 13,
+      "source_sha256": "1083b2672494d2fecb6cf1036443690e786938970f2c120421ae1ccf9cd1c024",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": []
+    },
+    {
+      "name": "empty-task-after-rows",
+      "source": "A | B\n1 | 2\n\n- [x]\n",
+      "source_bytes": 19,
+      "source_sha256": "f052fdee6702a908bc2457eddd798263c04f049539847b1a3ff3abf6b416854a",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            0,
+            11
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "end": [
+            2,
+            6
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
+    },
+    {
+      "name": "empty-task-before-rows",
+      "source": "- [x]\n\n  A | B\n  1 | 2\n",
+      "source_bytes": 23,
+      "source_sha256": "f8c2703f75c2034df859e5b11e4192a387605551987b7e699a83ccbb5cf4d4f2",
+      "flavors": [
+        "gfm"
+      ],
+      "options": {
+        "enabled": true
+      },
+      "findings": [
+        {
+          "bytes": [
+            9,
+            22
+          ],
+          "start": [
+            3,
+            3
+          ],
+          "end": [
+            4,
+            8
+          ],
+          "message": "Pipe rows are not part of a table."
+        }
+      ]
     }
   ],
   "invalid_configurations": [

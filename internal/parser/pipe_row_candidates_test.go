@@ -164,6 +164,101 @@ func TestPipeRowCandidatesUnknownAndMalformed(t *testing.T) {
 	}
 }
 
+func TestPipeRowCandidatesEmptyTask(t *testing.T) {
+	type row = PipeRowCandidate
+	for _, tc := range []struct {
+		source string
+		want   []PipeRowCandidate
+	}{
+		{"- [x]\n", nil},
+		{"- [ ]\n", nil},
+		{"- [x] \n", nil},
+		{"- [x] ", nil},
+		{"- [x]\t \t\n", nil},
+		{"- [x]\r\n", nil},
+		{"- [x]\f\n", nil},
+		{"- [x]\v\n", nil},
+		{"> - [x]\n", nil},
+		{"- a\n\n  - [ ]\n", nil},
+		{"- a\n\n  - [x]\n", nil},
+		{"# T\n\n- [x]\n", nil},
+		{"A | B\n1 | 2\n\n- [x]\n", []row{{0, 5, 0, 1, 2, false, false, false, false}, {6, 11, 0, 2, 2, false, false, false, false}}},
+		{"- [x]\n\n  a | b\n  1 | 2\n", []row{{9, 14, 1, 3, 2, false, false, false, false}, {17, 22, 1, 4, 2, false, false, false, false}}},
+	} {
+		t.Run(fmt.Sprintf("%q", tc.source), func(t *testing.T) {
+			d, b, i, o := md011Parse(t, tc.source, true)
+			got, e := d.PipeRowCandidates(context.Background(), b, i, o)
+			if e != nil || got.Availability != Available || !reflect.DeepEqual(got.Rows, tc.want) {
+				t.Fatal(got.Rows, got.Availability, e)
+			}
+		})
+	}
+}
+
+// A task marker alone never proves a Paragraph empty: losing Content, or the
+// proof that nothing but trailing whitespace follows the separator, withholds
+// the whole inventory.
+func TestPipeRowCandidatesEmptyTaskFaults(t *testing.T) {
+	separator := func(p *Node, s Span) {
+		task := *p.spec.Properties.Task
+		task.Separator = s
+		p.spec.Properties.Task = &task
+	}
+	for _, tc := range []struct {
+		name, source string
+		mutate       func(p *Node, i LineIndex)
+	}{
+		{"text-after-marker", "- [x] a | b\n", nil},
+		{"word-after-marker", "- [x] a\n", nil},
+		{"text-on-next-line", "- [x]\n  more | x\n  1 | 2\n", nil},
+		{"form-feed-after-separator", "- [x] \f\n", nil},
+		{"nbsp-after-separator", "- [x] \u00a0\n", nil},
+		{"foreign-separator", "- [x]\n", func(p *Node, i LineIndex) {
+			foreign := p.spec.Properties.Task.Separator
+			foreign.source = NewSource(i.source.Bytes())
+			separator(p, foreign)
+		}},
+		{"zero-separator", "- [x]\n", func(p *Node, _ LineIndex) { separator(p, Span{}) }},
+		{"task-nil", "- [x]\n", func(p *Node, _ LineIndex) { p.spec.Properties.Task = nil }},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			d, b, i, o := md011Parse(t, tc.source, true)
+			p := md070Nodes(d, Paragraph)[0]
+			if p.spec.Properties.Task == nil {
+				t.Fatal("task paragraph prerequisite")
+			}
+			if got, e := d.PipeRowCandidates(context.Background(), b, i, o); e != nil || got.Availability != Available {
+				t.Fatal("actual original positive prerequisite", got, e)
+			}
+			p.spec.Content = nil
+			if tc.mutate != nil {
+				tc.mutate(p, i)
+			}
+			got, e := d.PipeRowCandidates(context.Background(), b, i, o)
+			if e != nil || got.Availability != Unavailable || got.Rows != nil {
+				t.Fatal(got, e)
+			}
+		})
+	}
+}
+
+func TestPipeRowCandidatesEmptyTaskScanIsCharged(t *testing.T) {
+	const extra = 4096
+	cost := func(source string) int64 {
+		t.Helper()
+		d, b, i, o := md011Parse(t, source, true)
+		before := b.work
+		got, e := d.PipeRowCandidates(context.Background(), b, i, o)
+		if e != nil || got.Availability != Available {
+			t.Fatal(got, e)
+		}
+		return b.work - before
+	}
+	if short, long := cost("- [x] \n"), cost("- [x] "+strings.Repeat(" ", extra)+"\n"); long-short < extra {
+		t.Fatal("scan after the separator not charged per byte", short, long)
+	}
+}
+
 func TestPipeRowCandidatesRepeatedConcurrentDetachedObservation(t *testing.T) {
 	d, b, i, o := md011Parse(t, md075Example, true)
 	before, e := d.PipeRowCandidates(context.Background(), b, i, o)
