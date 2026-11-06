@@ -491,27 +491,27 @@ replacements as an unknown option under the shared strict schema.
 
 #### U+2018
 
-'
+`'`
 
 #### U+2019
 
-'
+`'`
 
 #### U+201c
 
-"
+`"`
 
 #### U+201d
 
-"
+`"`
 
 #### U+2013
 
--
+`-`
 
 #### U+2014
 
---
+`--`
 
 ### Scope
 
