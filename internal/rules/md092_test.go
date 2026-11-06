@@ -20,12 +20,6 @@ import (
 	"github.com/frithuz/mdchk/internal/result"
 )
 
-type md092Finding struct {
-	Rule, Message, Marker string
-	ByteRange             result.ByteRange `json:"byte_range"`
-	Range                 result.Range
-}
-
 type md092Literal struct {
 	Name, Source  string
 	Bytes         int    `json:"source_bytes"`
@@ -40,41 +34,18 @@ type md092Literal struct {
 	Expected struct {
 		Complete             bool
 		Evaluation           string `json:"md092_evaluation"`
-		Findings, Suppressed []md092Finding
-		MD087                []md092Finding       `json:"md087_findings"`
-		Decisions            []md092AuditDecision `json:"audit_decisions"`
-	}
-}
-
-// md092AuditDecision is only a test expectation for detached original facts.
-type md092AuditDecision struct {
-	Owner, Effect int
-	Rule, Reason  string
-	Token         result.ByteRange
-	Interval      struct {
-		Start, End int
-		EOF        bool `json:"includes_final_eof"`
+		Findings, Suppressed []oracleFinding
+		MD087                []oracleFinding `json:"md087_findings"`
+		Decisions            []auditDecision `json:"audit_decisions"`
 	}
 }
 
 type md092RawPresentation struct {
 	Name       string
-	SHA        string               `json:"source_sha256"`
-	Requested  []md092AuditDecision `json:"requested_md087_decisions"`
-	Additional []md092AuditDecision `json:"additional_nonrequested_presentation"`
-	Complete   []md092AuditDecision `json:"complete_raw_decisions"`
-}
-
-func md092EqualDecisions(a, b []md092AuditDecision) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
+	SHA        string          `json:"source_sha256"`
+	Requested  []auditDecision `json:"requested_md087_decisions"`
+	Additional []auditDecision `json:"additional_nonrequested_presentation"`
+	Complete   []auditDecision `json:"complete_raw_decisions"`
 }
 
 // This separate source-reasoned artifact was authored AFTER failed attempt01.
@@ -115,11 +86,11 @@ func md092RawPresentations(t *testing.T, cases []md092Literal) map[string]md092R
 			t.Fatal("presentation source join", tc.Name, row)
 		}
 		seen[tc.Name] = true
-		if !md092EqualDecisions(row.Requested, tc.Expected.Decisions) {
+		if !equalAuditDecisions(row.Requested, tc.Expected.Decisions) {
 			t.Fatal("requested oracle changed", tc.Name, row.Requested, tc.Expected.Decisions)
 		}
-		combined := append(append([]md092AuditDecision{}, row.Requested...), row.Additional...)
-		if !md092EqualDecisions(combined, row.Complete) {
+		combined := append(append([]auditDecision{}, row.Requested...), row.Additional...)
+		if !equalAuditDecisions(combined, row.Complete) {
 			t.Fatal("incomplete raw expectation", tc.Name, row)
 		}
 		for _, d := range row.Requested {
@@ -140,32 +111,9 @@ func md092RawPresentations(t *testing.T, cases []md092Literal) map[string]md092R
 	return out
 }
 
-// Every raw accessor row is checked before any named requested projection.
-func md092AssertRawDecisions(t *testing.T, source parser.Source, got []engine.SuppressionDecision, want []md092AuditDecision) []md092AuditDecision {
+func md092AssertRequestedDecisions(t *testing.T, validated []auditDecision, row md092RawPresentation, original []auditDecision) {
 	t.Helper()
-	if len(got) != len(want) {
-		t.Fatal("complete raw decision inventory", got, want)
-	}
-	out := make([]md092AuditDecision, 0, len(got))
-	for i, d := range got {
-		w := want[i]
-		if d.Owner != w.Owner || d.Effect != w.Effect || d.Rule != w.Rule || d.Reason != w.Reason || d.Token.SourceToken() != source.Token() || d.Token.Start() != w.Token.Start || d.Token.End() != w.Token.End || d.Token.Start() < 0 || d.Token.End() <= d.Token.Start() || d.Token.End() > source.Len() || d.Interval.Start != w.Interval.Start || d.Interval.End != w.Interval.End || d.Interval.Start < 0 || d.Interval.End < d.Interval.Start || d.Interval.End > source.Len() || d.Interval.Enabled || d.Interval.Owner != w.Owner || d.Interval.Token != d.Token || (d.Interval.End == source.Len()) != w.Interval.EOF {
-			t.Fatal("raw original decision", d, w)
-		}
-		text, err := source.Text(d.Token)
-		if err != nil || text != d.Rule {
-			t.Fatal("original decision token spelling", text, err, d)
-		}
-		actual := md092AuditDecision{Owner: d.Owner, Effect: d.Effect, Rule: d.Rule, Reason: d.Reason, Token: result.ByteRange{Start: d.Token.Start(), End: d.Token.End()}}
-		actual.Interval.Start, actual.Interval.End, actual.Interval.EOF = d.Interval.Start, d.Interval.End, d.Interval.End == source.Len()
-		out = append(out, actual)
-	}
-	return out
-}
-
-func md092AssertRequestedDecisions(t *testing.T, validated []md092AuditDecision, row md092RawPresentation, original []md092AuditDecision) {
-	t.Helper()
-	var requested, additional []md092AuditDecision
+	var requested, additional []auditDecision
 	for _, d := range validated {
 		switch d.Reason {
 		case "suppression-used", "suppression-unused", "suppression-uncertain":
@@ -176,7 +124,7 @@ func md092AssertRequestedDecisions(t *testing.T, validated []md092AuditDecision,
 			t.Fatal("unclassified already-validated raw record", d)
 		}
 	}
-	if !md092EqualDecisions(requested, original) || !md092EqualDecisions(requested, row.Requested) || !md092EqualDecisions(additional, row.Additional) {
+	if !equalAuditDecisions(requested, original) || !equalAuditDecisions(requested, row.Requested) || !equalAuditDecisions(additional, row.Additional) {
 		t.Fatal("requested/additional inventories", requested, additional, original, row)
 	}
 }
@@ -207,19 +155,9 @@ func md092AllLiterals(t *testing.T) []md092Literal {
 	return append(out, md092Fixture(t, "md092_unknown.json", "486afc71751f0ea8c3ffd8a94f7bdfb09dced1731cd36a9ded5e0ce801827aed", 3)...)
 }
 
-func md092Settings() engine.Settings {
-	s := engine.Settings{}
-	off, on := false, true
-	for _, m := range engine.Catalog() {
-		s[m.ID] = engine.RuleSetting{Enabled: &off}
-	}
-	s["MD092"] = engine.RuleSetting{Enabled: &on}
-	return s
-}
-
 func md092Plan(t *testing.T, r *engine.Registry, tc md092Literal, flavor string) *engine.ExecutionPlan {
 	t.Helper()
-	s := md092Settings()
+	s := onlyMD092Settings()
 	s["MD092"] = engine.RuleSetting{Enabled: &tc.Configuration.Enabled, AllowDirectives: &tc.Configuration.Allow}
 	if tc.Configuration.Omitted {
 		s["MD092"] = engine.RuleSetting{AllowDirectives: &tc.Configuration.Allow}
@@ -242,16 +180,6 @@ func md092Plan(t *testing.T, r *engine.Registry, tc md092Literal, flavor string)
 		t.Fatal(err)
 	}
 	return p
-}
-
-func md092AssertDiagnostic(t *testing.T, source string, got result.Diagnostic, want md092Finding) {
-	t.Helper()
-	if got.Rule != want.Rule || got.Severity != "error" || got.Message != want.Message || got.ByteRange != want.ByteRange || got.Range != want.Range || got.FixAvailable || got.Snapshot != (result.Snapshot{View: "original", SizeBytes: len(source), SHA256: fmt.Sprintf("%x", sha256.Sum256([]byte(source)))}) {
-		t.Fatal(got, want)
-	}
-	if want.ByteRange.Start < 0 || want.ByteRange.End > len(source) || want.ByteRange.End <= want.ByteRange.Start || source[want.ByteRange.Start:want.ByteRange.End] != want.Marker {
-		t.Fatal("invalid oracle range", want)
-	}
 }
 
 func TestMD092FrozenProductionOracle(t *testing.T) {
@@ -322,13 +250,13 @@ func md092CheckProductionLiterals(t *testing.T, cases []md092Literal, inspect bo
 						t.Fatal("MD092 evaluation absent")
 					}
 				}
-				want := append(append([]md092Finding{}, tc.Expected.Findings...), tc.Expected.MD087...)
+				want := append(append([]oracleFinding{}, tc.Expected.Findings...), tc.Expected.MD087...)
 				sort.Slice(want, func(i, j int) bool { return want[i].ByteRange.Start < want[j].ByteRange.Start })
 				if len(out.Diagnostics) != len(want) {
 					t.Fatal(out.Diagnostics, want)
 				}
 				for i, d := range out.Diagnostics {
-					md092AssertDiagnostic(t, tc.Source, d, want[i])
+					assertOracleDiagnostic(t, tc.Source, d, want[i])
 				}
 				var hidden []engine.DirectiveSuppression
 				var decisions []engine.SuppressionDecision
@@ -346,20 +274,20 @@ func md092CheckProductionLiterals(t *testing.T, cases []md092Literal, inspect bo
 					t.Fatal(hidden, decisions, tc.Expected)
 				}
 				for i, h := range hidden {
-					md092AssertDiagnostic(t, tc.Source, h.Diagnostic, tc.Expected.Suppressed[i])
+					assertOracleDiagnostic(t, tc.Source, h.Diagnostic, tc.Expected.Suppressed[i])
 					if h.Owner != 0 || h.Token.SourceToken() != token {
 						t.Fatal(h)
 					}
 				}
 				presentation := presentations[tc.Name]
-				validated := md092AssertRawDecisions(t, in.Source(), decisions, presentation.Complete)
+				validated := assertRawDecisions(t, in.Source(), decisions, presentation.Complete)
 				md092AssertRequestedDecisions(t, validated, presentation, tc.Expected.Decisions)
 				if inspect {
 					rows, e := trace.SuppressionDecisions(context.Background(), budget)
 					if e != nil {
 						t.Fatal(e)
 					}
-					observed := md092AssertRawDecisions(t, in.Source(), rows, presentation.Complete)
+					observed := assertRawDecisions(t, in.Source(), rows, presentation.Complete)
 					md092AssertRequestedDecisions(t, observed, presentation, tc.Expected.Decisions)
 				}
 				var wantCoverage []result.Coverage
@@ -414,7 +342,7 @@ func TestMD092OriginalStickyCallbackControls(t *testing.T) {
 						called = true
 						return out
 					}}})
-					analyzeHeadings(t, r, source, md092Settings(), engine.DocumentContext{}, engine.RunOptions{Budget: b})
+					analyzeHeadings(t, r, source, onlyMD092Settings(), engine.DocumentContext{}, engine.RunOptions{Budget: b})
 					if !called {
 						t.Fatal("callback absent")
 					}
@@ -498,7 +426,7 @@ func TestMD092ComparisonAndDistinctOuterFinalControls(t *testing.T) {
 							called = true
 							return out
 						}}})
-						in, e := engine.NewInput("literal.md", []byte(source), md092Settings(), engine.DocumentContext{})
+						in, e := engine.NewInput("literal.md", []byte(source), onlyMD092Settings(), engine.DocumentContext{})
 						if e != nil {
 							t.Fatal(e)
 						}
@@ -514,7 +442,7 @@ func TestMD092ComparisonAndDistinctOuterFinalControls(t *testing.T) {
 }
 
 func TestMD092InvalidUTF8Admission(t *testing.T) {
-	s := md092Settings()
+	s := onlyMD092Settings()
 	off := false
 	s["MD094"] = engine.RuleSetting{Enabled: &off}
 	calls := 0
@@ -553,7 +481,7 @@ func TestMD092AvailabilityAndStrictOptions(t *testing.T) {
 		}
 	}
 	for _, key := range []string{"unknown", "allowed_tags", "options", "style"} {
-		s := md092Settings()
+		s := onlyMD092Settings()
 		off := false
 		s["MD092"] = engine.RuleSetting{Enabled: &off, Options: engine.Options{key: nil}}
 		if _, err := r.ResolveSettings(s, engine.ValidationProviders{}); err == nil {
@@ -600,7 +528,7 @@ func TestMD092ComparisonRejectsLateFactsAtomically(t *testing.T) {
 				called = true
 				return out
 			}}})
-			analyzeHeadings(t, r, "<<<<<<<\n<<<<<<<< suffix", md092Settings(), engine.DocumentContext{}, engine.RunOptions{})
+			analyzeHeadings(t, r, "<<<<<<<\n<<<<<<<< suffix", onlyMD092Settings(), engine.DocumentContext{}, engine.RunOptions{})
 			if !called {
 				t.Fatal("callback absent")
 			}
@@ -646,7 +574,7 @@ func TestMD092SingleSharedCallbackAndFreshDocumentState(t *testing.T) {
 		}
 	}
 	r := registry(t, Registrations())
-	s := md092Settings()
+	s := onlyMD092Settings()
 	a, _ := engine.NewInput("a.md", []byte("<<<<<<<"), s, engine.DocumentContext{})
 	b, _ := engine.NewInput("b.md", []byte("======="), s, engine.DocumentContext{})
 	out, err := r.Lint(context.Background(), []engine.Input{a, b}, engine.RunOptions{})
@@ -773,7 +701,7 @@ func TestMD092DistinctOuterFinalStickyQuotaDiscard(t *testing.T) {
 						called = true
 						return out
 					}}})
-					in, err := engine.NewInput("literal.md", []byte(source), md092Settings(), engine.DocumentContext{})
+					in, err := engine.NewInput("literal.md", []byte(source), onlyMD092Settings(), engine.DocumentContext{})
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -802,7 +730,7 @@ func TestMD092MD087InterruptedSingleObservationRemainsUncertain(t *testing.T) {
 			}
 		}
 	}
-	s := md092Settings()
+	s := onlyMD092Settings()
 	on := true
 	s["MD087"] = engine.RuleSetting{Enabled: &on}
 	in, err := engine.NewInput("literal.md", []byte("<!-- mdchk:disable MD092 -->\n<<<<<<<\n"), s, engine.DocumentContext{})

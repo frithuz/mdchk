@@ -120,7 +120,7 @@ func TestMD065ComparisonAndWholeFinalCallerAndOrigin(t *testing.T) {
 			for _, originating := range []bool{false, true} {
 				for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 					t.Run(fmt.Sprintf("%s/whole-%t/origin-%t/%s", tc.name, whole, originating, reason), func(t *testing.T) {
-						origin := &md018LateContext{Context: context.Background(), stop: 1 << 30, reason: reason}
+						origin := &lateStopContext{Context: context.Background(), stop: 1 << 30, reason: reason}
 						r := registry(t, []engine.Registration{{ID: "MD065", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 							var items []parser.ThematicSpacingFact
 							if !whole {
@@ -134,7 +134,7 @@ func TestMD065ComparisonAndWholeFinalCallerAndOrigin(t *testing.T) {
 							if whole {
 								final += tc.pfinal + 4
 							}
-							stop := &md018LateContext{Context: context.Background(), stop: final, reason: reason}
+							stop := &lateStopContext{Context: context.Background(), stop: final, reason: reason}
 							var caller context.Context = stop
 							// Preserve the same originating context and its monotonically increasing
 							// count. Only the already-completed prefix is qualified at this boundary.

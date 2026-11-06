@@ -210,7 +210,7 @@ func TestMD086ComparisonAndOuterFinalCallerAndOrigin(t *testing.T) {
 			for _, originating := range []bool{false, true} {
 				for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 					t.Run(fmt.Sprintf("%s/whole-%v/origin-%v/%v", tc.name, whole, originating, reason), func(t *testing.T) {
-						origin := &md033StopAt{Context: context.Background(), stop: 1 << 30, reason: reason}
+						origin := &stopAtContext{Context: context.Background(), stop: 1 << 30, reason: reason}
 						observed := false
 						r := registry(t, []engine.Registration{{ID: "MD086", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 							var items parser.UnclosedHTMLComments
@@ -225,7 +225,7 @@ func TestMD086ComparisonAndOuterFinalCallerAndOrigin(t *testing.T) {
 							if whole {
 								final = tc.whole
 							}
-							caller := &md033StopAt{Context: context.Background(), stop: final, reason: reason}
+							caller := &stopAtContext{Context: context.Background(), stop: final, reason: reason}
 							var target context.Context = caller
 							if originating {
 								origin.stop = origin.calls + final

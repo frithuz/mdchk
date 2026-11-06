@@ -87,7 +87,7 @@ func md054Literals(t *testing.T) []md054Literal {
 }
 
 func md054Settings() engine.Settings {
-	s := md011Settings()
+	s := onlyMD011Settings()
 	off, on := false, true
 	s["MD011"] = engine.RuleSetting{Enabled: &off}
 	s["MD034"] = engine.RuleSetting{Enabled: &off}
@@ -278,7 +278,7 @@ func TestMD054SuppressionInactiveAndUnused(t *testing.T) {
 					t.Fatal(err)
 				}
 				// Observing the inactive MD057 needs the link targets to exist.
-				resources := md051Native(t, map[string]string{"docs/guide.md": "", "docs/u": ""}, flavor, "literal.md", in.Source())
+				resources := newNativeFragments(t, map[string]string{"docs/guide.md": "", "docs/u": ""}, flavor, "literal.md", in.Source())
 				out, trace, err := plan.Inspect(context.Background(), in, engine.RunOptions{Fragments: resources}, engine.InspectionOptions{ObserveInactive: mode == "inactive"})
 				if err != nil || !out.Complete || len(out.Errors)+len(out.Coverage)+len(out.Changes)+len(out.Documents)+len(out.DeferredFixes) != 0 {
 					t.Fatal(out, err)

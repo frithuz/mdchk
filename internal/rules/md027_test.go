@@ -96,7 +96,7 @@ func TestMD027FinalPublicationWithholdsAllFindings(t *testing.T) {
 					}
 					// Fixed independent counts: one check per item, optional
 					// finding growth/emission, then the final publication check.
-					late := &md018LateContext{Context: ctx, reason: reason, stop: tc.final}
+					late := &lateStopContext{Context: ctx, reason: reason, stop: tc.final}
 					observed = compareBlockquoteSpaces(late, c, items)
 					return observed
 				}}})

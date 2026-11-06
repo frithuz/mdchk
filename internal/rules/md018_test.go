@@ -172,22 +172,6 @@ func TestMD018AddedWorkInterruptions(t *testing.T) {
 	}
 }
 
-// Count the actual production callback's context checks so the stop follows a
-// completed inventory and the first emission, without fixing a parser work count.
-type md018LateContext struct {
-	context.Context
-	calls, stop int
-	reason      error
-}
-
-func (c *md018LateContext) Err() error {
-	c.calls++
-	if c.stop > 0 && c.calls >= c.stop {
-		return c.reason
-	}
-	return c.Context.Err()
-}
-
 func TestMD018LateInterruptionRetainsObservedFinding(t *testing.T) {
 	for _, tc := range []struct {
 		name, reason string
@@ -202,7 +186,7 @@ func TestMD018LateInterruptionRetainsObservedFinding(t *testing.T) {
 				var observed engine.RuleOutcome
 				var token parser.SourceToken
 				r := registry(t, []engine.Registration{{ID: "MD018", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
-					check := &md018LateContext{Context: ctx, reason: tc.err}
+					check := &lateStopContext{Context: ctx, reason: tc.err}
 					if late {
 						check.stop = calls
 					}

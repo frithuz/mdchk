@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"runtime"
-	"strings"
 	"testing"
 	"testing/synctest"
 	"time"
@@ -52,7 +50,7 @@ func TestMD014ComparisonRejectsLateOriginalFacts(t *testing.T) {
 				called = true
 				return out
 			}}})
-			analyzeHeadings(t, r, "```sh\n$ pwd\n$ whoami\n```\n", md014Settings(), engine.DocumentContext{}, engine.RunOptions{})
+			analyzeHeadings(t, r, "```sh\n$ pwd\n$ whoami\n```\n", onlyMD014Settings(), engine.DocumentContext{}, engine.RunOptions{})
 			if !called {
 				t.Fatal("callback absent")
 			}
@@ -86,7 +84,7 @@ func TestMD014OriginalStickyCallbackControls(t *testing.T) {
 						called = true
 						return out
 					}}})
-					analyzeHeadings(t, r, source, md014Settings(), engine.DocumentContext{}, engine.RunOptions{Budget: b})
+					analyzeHeadings(t, r, source, onlyMD014Settings(), engine.DocumentContext{}, engine.RunOptions{Budget: b})
 					if !called {
 						t.Fatal("callback absent")
 					}
@@ -96,42 +94,13 @@ func TestMD014OriginalStickyCallbackControls(t *testing.T) {
 	}
 }
 
-// Function identities come from held source, not sampled checkpoint counters.
-// The context interrupts only a named deferred publication gate; it also proves
-// that gate was reached after the actual positive comparison precondition.
-type md014PublicationStop struct {
-	context.Context
-	gate    string
-	reason  error
-	reached bool
-}
-
-func (c *md014PublicationStop) Err() error {
-	if c.gate == "" {
-		return c.Context.Err()
-	}
-	var pcs [32]uintptr
-	n := runtime.Callers(1, pcs[:])
-	frames := runtime.CallersFrames(pcs[:n])
-	for {
-		frame, more := frames.Next()
-		if strings.HasSuffix(frame.Function, c.gate) {
-			c.reached = true
-			return c.reason
-		}
-		if !more {
-			break
-		}
-	}
-	return c.Context.Err()
-}
 func TestMD014ComparisonAndDistinctOuterFinalControls(t *testing.T) {
 	for _, source := range []string{"", "clean", "`code`", "```sh\n$ pwd\nout\n```\n", "```sh\n$ pwd\n```\n", "```sh\n$ pwd\n```\n\n<div>\n<x a=\"\n\n```sh\n$ pwd\n```\n"} {
 		for _, whole := range []bool{false, true} {
 			for _, originating := range []bool{false, true} {
 				for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 					t.Run(fmt.Sprintf("%q/whole-%v/origin-%v/%v", source, whole, originating, reason), func(t *testing.T) {
-						origin := &md014PublicationStop{Context: context.Background(), reason: reason}
+						origin := &gateStopContext{Context: context.Background(), reason: reason}
 						called := false
 						r := registry(t, []engine.Registration{{ID: "MD014", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 							items, e := c.ShellPrompts(ctx)
@@ -148,7 +117,7 @@ func TestMD014ComparisonAndDistinctOuterFinalControls(t *testing.T) {
 							if whole {
 								gate = ".shellPrompts.func1"
 							}
-							caller := &md014PublicationStop{Context: context.Background(), gate: gate, reason: reason}
+							caller := &gateStopContext{Context: context.Background(), gate: gate, reason: reason}
 							var target context.Context = caller
 							if originating {
 								origin.gate = gate
@@ -170,7 +139,7 @@ func TestMD014ComparisonAndDistinctOuterFinalControls(t *testing.T) {
 							called = true
 							return out
 						}}})
-						in, e := engine.NewInput("literal.md", []byte(source), md014Settings(), engine.DocumentContext{})
+						in, e := engine.NewInput("literal.md", []byte(source), onlyMD014Settings(), engine.DocumentContext{})
 						if e != nil {
 							t.Fatal(e)
 						}
@@ -185,47 +154,6 @@ func TestMD014ComparisonAndDistinctOuterFinalControls(t *testing.T) {
 	}
 }
 
-// Exhaustion is injected at the actual deferred outer gate after production
-// evaluation. It uses the original allowance and no measured setup subtraction.
-type md014FinalQuota struct {
-	context.Context
-	budget         *parser.OperationBudget
-	kind           string
-	gate           string
-	armed, reached bool
-}
-
-func (c *md014FinalQuota) Err() error {
-	if c.armed {
-		var pcs [32]uintptr
-		n := runtime.Callers(1, pcs[:])
-		frames := runtime.CallersFrames(pcs[:n])
-		for {
-			f, more := frames.Next()
-			gate := c.gate
-			if gate == "" {
-				gate = ".shellPrompts.func1"
-			}
-			if strings.HasSuffix(f.Function, gate) {
-				c.reached = true
-				if c.kind == "elapsed" {
-					c.armed = false
-					time.Sleep(61 * time.Second)
-				} else if c.kind == "nodes" {
-					_ = c.budget.ChargeNodes(c.budget.Limits().TotalNodes)
-				} else {
-					_ = c.budget.ChargeWork(c.budget.Limits().WorkUnits)
-				}
-				break
-			}
-			if !more {
-				break
-			}
-		}
-	}
-	return c.Context.Err()
-}
-
 func TestMD014ComparisonAndOuterFinalStickyDiscard(t *testing.T) {
 	for _, kind := range []string{"work", "nodes", "elapsed"} {
 		for _, outer := range []bool{false, true} {
@@ -237,7 +165,7 @@ func TestMD014ComparisonAndOuterFinalStickyDiscard(t *testing.T) {
 						if outer {
 							gate = ".shellPrompts.func1"
 						}
-						origin := &md014FinalQuota{Context: context.Background(), budget: budget, kind: kind, gate: gate}
+						origin := &gateQuotaContext{Context: context.Background(), budget: budget, kind: kind, gate: gate}
 						called := false
 						r := registry(t, []engine.Registration{{ID: "MD014", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 							items, e := c.ShellPrompts(ctx)
@@ -245,7 +173,7 @@ func TestMD014ComparisonAndOuterFinalStickyDiscard(t *testing.T) {
 							if e != nil || pre.Err != nil || len(pre.Findings) != 1 || pre.Findings[0].Span.Start() != 6 {
 								t.Fatal("positive precondition", pre, e)
 							}
-							caller := &md014FinalQuota{Context: context.Background(), budget: budget, kind: kind, gate: gate, armed: true}
+							caller := &gateQuotaContext{Context: context.Background(), budget: budget, kind: kind, gate: gate, armed: true}
 							var target context.Context = caller
 							if originating {
 								origin.armed = true
@@ -271,7 +199,7 @@ func TestMD014ComparisonAndOuterFinalStickyDiscard(t *testing.T) {
 							called = true
 							return out
 						}}})
-						in, e := engine.NewInput("literal.md", []byte("```sh\n$ pwd\n```\n"), md014Settings(), engine.DocumentContext{})
+						in, e := engine.NewInput("literal.md", []byte("```sh\n$ pwd\n```\n"), onlyMD014Settings(), engine.DocumentContext{})
 						if e != nil {
 							t.Fatal(e)
 						}
@@ -292,7 +220,7 @@ func TestMD014DistinctOuterFinalStickyQuotaDiscard(t *testing.T) {
 			for _, originating := range []bool{false, true} {
 				t.Run(fmt.Sprintf("%q/%s/origin-%v", source, kind, originating), func(t *testing.T) {
 					b, _ := parser.NewOperationBudget(parser.DefaultLimits())
-					origin := &md014FinalQuota{Context: context.Background(), budget: b, kind: kind}
+					origin := &gateQuotaContext{Context: context.Background(), budget: b, kind: kind}
 					called := false
 					r := registry(t, []engine.Registration{{ID: "MD014", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 						pre := shellPrompts(ctx, c)
@@ -302,7 +230,7 @@ func TestMD014DistinctOuterFinalStickyQuotaDiscard(t *testing.T) {
 						if source == "```sh\n$ pwd\n```\n" && (len(pre.Findings) != 1 || pre.Findings[0].Span.Start() != 6 || pre.Findings[0].Span.End() != 7) {
 							t.Fatal("positive precondition", pre)
 						}
-						caller := &md014FinalQuota{Context: context.Background(), budget: b, kind: kind, armed: true}
+						caller := &gateQuotaContext{Context: context.Background(), budget: b, kind: kind, armed: true}
 						var target context.Context = caller
 						if originating {
 							origin.armed = true
@@ -320,7 +248,7 @@ func TestMD014DistinctOuterFinalStickyQuotaDiscard(t *testing.T) {
 						called = true
 						return out
 					}}})
-					in, err := engine.NewInput("literal.md", []byte(source), md014Settings(), engine.DocumentContext{})
+					in, err := engine.NewInput("literal.md", []byte(source), onlyMD014Settings(), engine.DocumentContext{})
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -349,7 +277,7 @@ func TestMD014MD087InterruptedSingleObservationRemainsUncertain(t *testing.T) {
 			}
 		}
 	}
-	s := md014Settings()
+	s := onlyMD014Settings()
 	on := true
 	s["MD087"] = engine.RuleSetting{Enabled: &on}
 	in, err := engine.NewInput("literal.md", []byte("<!-- mdchk:disable MD014 -->\n```sh\n$ pwd\n```\n"), s, engine.DocumentContext{})
@@ -376,7 +304,7 @@ func TestMD014MD087InterruptedSingleObservationRemainsUncertain(t *testing.T) {
 }
 
 func TestMD014InvalidUTF8Admission(t *testing.T) {
-	s := md014Settings()
+	s := onlyMD014Settings()
 	off := false
 	s["MD094"] = engine.RuleSetting{Enabled: &off}
 	calls := 0

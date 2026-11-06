@@ -21,35 +21,6 @@ func md001Settings(title bool) engine.Settings {
 	return s
 }
 
-func analyzeHeadings(t *testing.T, r *engine.Registry, source string, s engine.Settings, dc engine.DocumentContext, opts engine.RunOptions) result.Result {
-	t.Helper()
-	caller := []byte(source)
-	in, err := engine.NewInput("heading.md", caller, s, dc)
-	if err != nil {
-		t.Fatal(err)
-	}
-	token := in.Source().Token()
-	out, err := r.Lint(context.Background(), []engine.Input{in}, opts)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if string(caller) != source || string(in.Source().Bytes()) != source || in.Source().Token() != token || len(out.Changes) != 0 || len(out.Documents) != 0 || out.Files[0].WriteStatus != "not-requested" {
-		t.Fatal("analysis changed original or proposed edits", out)
-	}
-	for _, raw := range out.SuppressedDiagnostics {
-		var suppressed result.SuppressedDiagnostic
-		if err := json.Unmarshal(raw, &suppressed); err != nil || suppressed.Diagnostic.FixAvailable {
-			t.Fatal("suppressed heading grants fix", string(raw), err)
-		}
-	}
-	for _, d := range out.Diagnostics {
-		if d.FixAvailable && d.Rule != "MD009" && d.Rule != "MD019" && d.Rule != "MD021" {
-			t.Fatal("report-only heading grants fix", d)
-		}
-	}
-	return out
-}
-
 func TestMD001AnalysisFixtures(t *testing.T) {
 	data, err := os.ReadFile("testdata/md001.json")
 	if err != nil {

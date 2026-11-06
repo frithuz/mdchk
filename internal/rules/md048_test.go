@@ -45,14 +45,6 @@ func md048Literals(t *testing.T) []md048Literal {
 	return v.Cases
 }
 
-func md048Settings() engine.Settings {
-	s := md046Settings()
-	off, on := false, true
-	s["MD046"] = engine.RuleSetting{Enabled: &off}
-	s["MD048"] = engine.RuleSetting{Enabled: &on}
-	return s
-}
-
 func TestMD048FrozenProductionOracle(t *testing.T) {
 	for _, tc := range md048Literals(t) {
 		for _, flavor := range tc.Flavors {
@@ -61,7 +53,7 @@ func TestMD048FrozenProductionOracle(t *testing.T) {
 					if len(tc.Source) != tc.Bytes || fmt.Sprintf("%x", sha256.Sum256([]byte(tc.Source))) != tc.SHA {
 						t.Fatal("source identity")
 					}
-					s := md048Settings()
+					s := onlyMD048Settings()
 					setting := s["MD048"]
 					if tc.Options.Enabled != nil {
 						setting.Enabled = tc.Options.Enabled
@@ -189,7 +181,7 @@ func TestMD048DirectivesSharedObservationAndInactiveDemand(t *testing.T) {
 					regs[i].Check = func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome { calls++; return actual(ctx, c) }
 				}
 			}
-			s := md048Settings()
+			s := onlyMD048Settings()
 			on := true
 			s["MD048"] = engine.RuleSetting{Enabled: &tc.enabled, AllowDirectives: &tc.allow, Options: engine.Options{"style": "tilde"}}
 			s["MD087"] = engine.RuleSetting{Enabled: &on}
@@ -265,7 +257,7 @@ func TestMD048UnknownContextWithholdsObservation(t *testing.T) {
 	for _, audit := range []bool{false, true} {
 		t.Run(fmt.Sprintf("audit-%v", audit), func(t *testing.T) {
 			source := "x\n```\n```\n\n<div>\n<x title=\"\n\n```\nx\n```"
-			s := md048Settings()
+			s := onlyMD048Settings()
 			s["MD048"] = engine.RuleSetting{Options: engine.Options{"style": "tilde"}}
 			if audit {
 				source = "<!-- mdchk:disable MD048 -->\n" + source
@@ -290,7 +282,7 @@ func TestMD048UnknownContextWithholdsObservation(t *testing.T) {
 
 func TestMD048RepeatedDisableLastOwner(t *testing.T) {
 	source := "<!-- mdchk:disable MD048 -->\n<!-- mdchk:disable MD048 -->\n```\nx\n```"
-	s := md048Settings()
+	s := onlyMD048Settings()
 	s["MD048"] = engine.RuleSetting{Options: engine.Options{"style": "tilde"}}
 	on := true
 	s["MD087"] = engine.RuleSetting{Enabled: &on}
@@ -353,7 +345,7 @@ func TestMD048RepeatedDisableLastOwner(t *testing.T) {
 
 func TestMD048AdmittedStyleOwnership(t *testing.T) {
 	options := engine.Options{"style": "tilde"}
-	s := md048Settings()
+	s := onlyMD048Settings()
 	s["MD048"] = engine.RuleSetting{Options: options}
 	selected, e := registry(t, Registrations()).SelectRules(s, engine.ValidationProviders{})
 	if e != nil {
@@ -377,7 +369,7 @@ func TestMD048AdmittedStyleOwnership(t *testing.T) {
 func TestMD048SuppressedExemplarAndDocumentIsolation(t *testing.T) {
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
-			s := md048Settings()
+			s := onlyMD048Settings()
 			source := "<!-- mdchk:disable MD048 -->\n```\nx\n```\n<!-- mdchk:enable MD048 -->\n~~~\ny\n~~~"
 			out := analyzeHeadings(t, registry(t, Registrations()), source, s, engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
 			if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Message != "Fenced code block should use backtick delimiters." || out.Diagnostics[0].Range != (result.Range{Start: result.Position{Line: 6, Column: 1}, End: result.Position{Line: 6, Column: 4}}) {
@@ -409,7 +401,7 @@ func TestMD048ConfiguredOffEnableAndDenial(t *testing.T) {
 	for _, allow := range []bool{false, true} {
 		t.Run(fmt.Sprintf("allow-%v", allow), func(t *testing.T) {
 			enabled := false
-			s := md048Settings()
+			s := onlyMD048Settings()
 			s["MD048"] = engine.RuleSetting{Enabled: &enabled, AllowDirectives: &allow, Options: engine.Options{"style": "backtick"}}
 			out := analyzeHeadings(t, registry(t, Registrations()), "<!-- mdchk:enable MD048 -->\n~~~\nx\n~~~", s, engine.DocumentContext{}, engine.RunOptions{})
 			want := 0
@@ -428,7 +420,7 @@ func TestMD048ConfiguredOffEnableAndDenial(t *testing.T) {
 
 func TestMD048MixedConsistencyUnknownAfterPositive(t *testing.T) {
 	source := "```\nfirst\n```\n\n~~~\nsecond\n~~~\n\n<div>\n<x title=\"\n\n~~~\nlast\n~~~"
-	out := analyzeHeadings(t, registry(t, Registrations()), source, md048Settings(), engine.DocumentContext{}, engine.RunOptions{})
+	out := analyzeHeadings(t, registry(t, Registrations()), source, onlyMD048Settings(), engine.DocumentContext{}, engine.RunOptions{})
 	if out.Complete || len(out.Diagnostics)+len(out.Errors)+len(out.SuppressedDiagnostics) != 0 || len(out.Coverage) != 1 || out.Coverage[0].Rule != "MD048" || out.Coverage[0].Reason != result.ContextUnavailable {
 		t.Fatal(out)
 	}
@@ -443,7 +435,7 @@ func TestMD048LiteralSuppressionControls(t *testing.T) {
 					if matching {
 						source = "<!-- mdchk:disable MD048 -->\n```\nx\n```"
 					}
-					s := md048Settings()
+					s := onlyMD048Settings()
 					on := true
 					s["MD087"] = engine.RuleSetting{Enabled: &on}
 					s["MD048"] = engine.RuleSetting{AllowDirectives: &allow, Options: engine.Options{"style": "backtick"}}

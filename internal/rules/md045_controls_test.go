@@ -20,7 +20,7 @@ func TestMD045FinalControlsDiscardFindingsAndProblems(t *testing.T) {
 						if partial {
 							source += " <img alt=\"\" alt=x>"
 						}
-						origin := &md014PublicationStop{Context: context.Background(), reason: reason}
+						origin := &gateStopContext{Context: context.Background(), reason: reason}
 						called := false
 						r := registry(t, []engine.Registration{{ID: "MD045", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 							pre := imageAlternatives(ctx, c)
@@ -28,7 +28,7 @@ func TestMD045FinalControlsDiscardFindingsAndProblems(t *testing.T) {
 								t.Fatal("positive precondition", pre)
 							}
 							gate := ".imageAlternatives.func1"
-							caller := &md014PublicationStop{Context: context.Background(), gate: gate, reason: reason}
+							caller := &gateStopContext{Context: context.Background(), gate: gate, reason: reason}
 							var target context.Context = caller
 							if originating {
 								origin.gate = gate
@@ -64,14 +64,14 @@ func TestMD045FinalStickyLimitsDiscardAllPublication(t *testing.T) {
 					synctest.Test(t, func(t *testing.T) {
 						budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
 						gate := ".imageAlternatives.func1"
-						origin := &md014FinalQuota{Context: context.Background(), budget: budget, kind: kind, gate: gate}
+						origin := &gateQuotaContext{Context: context.Background(), budget: budget, kind: kind, gate: gate}
 						called := false
 						r := registry(t, []engine.Registration{{ID: "MD045", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 							pre := imageAlternatives(ctx, c)
 							if pre.Err != nil || len(pre.Findings) != 1 || len(pre.ParsingProblems) != 1 {
 								t.Fatal("positive partial precondition", pre)
 							}
-							caller := &md014FinalQuota{Context: context.Background(), budget: budget, kind: kind, gate: gate, armed: true}
+							caller := &gateQuotaContext{Context: context.Background(), budget: budget, kind: kind, gate: gate, armed: true}
 							var target context.Context = caller
 							if originating {
 								origin.armed = true

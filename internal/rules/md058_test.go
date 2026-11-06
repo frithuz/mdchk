@@ -86,7 +86,7 @@ func md058Literals(t *testing.T) []md058Literal {
 }
 
 func md058Settings() engine.Settings {
-	s := md055Settings()
+	s := onlyMD055Settings()
 	off, on := false, true
 	s["MD055"] = engine.RuleSetting{Enabled: &off}
 	s["MD058"] = engine.RuleSetting{Enabled: &on}
@@ -505,10 +505,10 @@ func TestMD058WithholdsTheWholeInventory(t *testing.T) {
 					if stop > 4096 {
 						t.Fatal("no sufficient stop found")
 					}
-					origin := &md018LateContext{Context: context.Background(), stop: 1 << 30, reason: reason}
+					origin := &lateStopContext{Context: context.Background(), stop: 1 << 30, reason: reason}
 					var out engine.RuleOutcome
 					r := registry(t, []engine.Registration{{ID: "MD058", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
-						var caller context.Context = &md018LateContext{Context: context.Background(), stop: stop, reason: reason}
+						var caller context.Context = &lateStopContext{Context: context.Background(), stop: stop, reason: reason}
 						if originating {
 							origin.stop = origin.calls + stop
 							caller = context.Background()

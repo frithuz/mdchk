@@ -155,7 +155,7 @@ func TestMD029FinalPublicationWithholdsAllFindings(t *testing.T) {
 					}
 					// Fixed independent counts: reservation, one check per item, optional
 					// finding growth/emission, then the final publication check.
-					late := &md018LateContext{Context: ctx, reason: reason, stop: tc.final}
+					late := &lateStopContext{Context: ctx, reason: reason, stop: tc.final}
 					observed = compareNumberedPrefixes(late, c, items, false)
 					if late.calls != tc.final {
 						t.Fatal(late.calls, tc.final)
@@ -258,7 +258,7 @@ func TestMD029ElapsedAndCallerControlsAfterInventory(t *testing.T) {
 			if kind == "elapsed" {
 				time.Sleep(250 * time.Millisecond)
 			} else {
-				ctx = &md018LateContext{Context: ctx, stop: 1, reason: context.Canceled}
+				ctx = &lateStopContext{Context: ctx, stop: 1, reason: context.Canceled}
 			}
 			observed = compareNumberedPrefixes(ctx, c, items, false)
 			return observed
@@ -425,7 +425,7 @@ func TestMD029OriginFinalPublication(t *testing.T) {
 	}{{"empty", "", 2}, {"aligned", "1. one\n2. two", 4}, {"violating", "1. one\n3. two", 6}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+reason.Error(), func(t *testing.T) {
-				origin := &md018LateContext{Context: context.Background(), stop: 1 << 20, reason: reason}
+				origin := &lateStopContext{Context: context.Background(), stop: 1 << 20, reason: reason}
 				var observed engine.RuleOutcome
 				r := registry(t, []engine.Registration{{ID: "MD029", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 					items, err := c.ListItems(ctx)

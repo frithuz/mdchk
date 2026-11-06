@@ -9,16 +9,6 @@ import (
 	"github.com/frithuz/mdchk/internal/result"
 )
 
-func md038Settings() engine.Settings {
-	s := engine.Settings{}
-	off := false
-	for _, m := range engine.Catalog() {
-		s[m.ID] = engine.RuleSetting{Enabled: &off}
-	}
-	delete(s, "MD038")
-	return s
-}
-
 func TestMD038DefaultsSettingsAndAvailability(t *testing.T) {
 	r := registry(t, Registrations())
 	executable := false
@@ -53,7 +43,7 @@ func TestMD038DefaultsSettingsAndAvailability(t *testing.T) {
 		}
 	}
 	for _, setting := range []engine.RuleSetting{{}, {Enabled: func() *bool { b := false; return &b }()}} {
-		s := md038Settings()
+		s := onlyDefaultMD038Settings()
 		s["MD038"] = setting
 		out := analyzeHeadings(t, r, "` x `", s, engine.DocumentContext{}, engine.RunOptions{})
 		expected := 2
@@ -87,12 +77,12 @@ func TestMD038DefaultsSettingsAndAvailability(t *testing.T) {
 func TestMD038OpaqueHeadersAndDirectives(t *testing.T) {
 	fm, _ := parser.NewFrontmatterOptions(true, nil)
 	for _, source := range []string{"\ufeff---\nx: '` x `'\n---\n` x `", "+++\nx = '` x `'\n+++\n` x `"} {
-		out := analyzeHeadings(t, registry(t, Registrations()), source, md038Settings(), engine.DocumentContext{Frontmatter: fm}, engine.RunOptions{})
+		out := analyzeHeadings(t, registry(t, Registrations()), source, onlyDefaultMD038Settings(), engine.DocumentContext{Frontmatter: fm}, engine.RunOptions{})
 		if !out.Complete || len(out.Diagnostics) != 2 {
 			t.Fatal(out)
 		}
 	}
-	out := analyzeHeadings(t, registry(t, Registrations()), "---\n` x `", md038Settings(), engine.DocumentContext{Frontmatter: fm}, engine.RunOptions{})
+	out := analyzeHeadings(t, registry(t, Registrations()), "---\n` x `", onlyDefaultMD038Settings(), engine.DocumentContext{Frontmatter: fm}, engine.RunOptions{})
 	if out.Complete || len(out.Diagnostics) != 0 {
 		t.Fatal(out)
 	}
@@ -106,7 +96,7 @@ func TestMD038OpaqueHeadersAndDirectives(t *testing.T) {
 		{"off-then-enable", "` x `\n<!-- mdchk:enable MD038 -->\n` y `", false, true, 2},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			s := md038Settings()
+			s := onlyDefaultMD038Settings()
 			enabled, allow := !tc.off, !tc.denied
 			s["MD038"] = engine.RuleSetting{Enabled: &enabled, AllowDirectives: &allow}
 			out := analyzeHeadings(t, registry(t, Registrations()), tc.source, s, engine.DocumentContext{}, engine.RunOptions{})
@@ -131,7 +121,7 @@ func TestMD038DisabledAndUnselectedHeaderOwnership(t *testing.T) {
 		}(), 4},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			out := analyzeHeadings(t, registry(t, Registrations()), source, md038Settings(), engine.DocumentContext{Frontmatter: tc.fm}, engine.RunOptions{})
+			out := analyzeHeadings(t, registry(t, Registrations()), source, onlyDefaultMD038Settings(), engine.DocumentContext{Frontmatter: tc.fm}, engine.RunOptions{})
 			if !out.Complete || len(out.Diagnostics) != tc.want {
 				t.Fatal(out)
 			}
@@ -153,7 +143,7 @@ func TestMD038RawLifetimesAndOriginalEdges(t *testing.T) {
 	} {
 		for _, flavor := range []string{"commonmark", "gfm"} {
 			t.Run(tc.name+"/"+flavor, func(t *testing.T) {
-				out := analyzeHeadings(t, registry(t, Registrations()), tc.source, md038Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
+				out := analyzeHeadings(t, registry(t, Registrations()), tc.source, onlyDefaultMD038Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
 				if !out.Complete || len(out.Diagnostics) != len(tc.ranges) || len(out.SuppressedDiagnostics) != 0 {
 					t.Fatal(out)
 				}

@@ -186,7 +186,7 @@ func TestMD019LateInterruptionRetainsObservedFinding(t *testing.T) {
 				var observed engine.RuleOutcome
 				var token parser.SourceToken
 				r := registry(t, []engine.Registration{{ID: "MD019", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
-					check := &md018LateContext{Context: ctx, reason: tc.err}
+					check := &lateStopContext{Context: ctx, reason: tc.err}
 					if late {
 						check.stop = calls
 					}

@@ -6,10 +6,8 @@ import (
 	"fmt"
 	"os"
 	"testing"
-	"unicode/utf8"
 
 	"github.com/frithuz/mdchk/internal/engine"
-	"github.com/frithuz/mdchk/internal/result"
 )
 
 func TestMD038FrozenAnalysisFixtures(t *testing.T) {
@@ -42,13 +40,13 @@ func TestMD038FrozenAnalysisFixtures(t *testing.T) {
 				if fmt.Sprintf("%x", sha256.Sum256([]byte(f.Source))) != f.SHA256 {
 					t.Fatal("source identity")
 				}
-				out := analyzeHeadings(t, registry(t, Registrations()), f.Source, md038Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
+				out := analyzeHeadings(t, registry(t, Registrations()), f.Source, onlyDefaultMD038Settings(), engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
 				if !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != len(f.Ranges) || len(out.Changes)+len(out.Documents)+len(out.DeferredFixes) != 0 {
 					t.Fatal(out)
 				}
 				for i, d := range out.Diagnostics {
 					w := f.Ranges[i]
-					if [2]int{d.ByteRange.Start, d.ByteRange.End} != w || d.Range.Start != md038OriginalPosition(f.Source, w[0]) || d.Range.End != md038OriginalPosition(f.Source, w[1]) || d.Rule != "MD038" || d.Message != "Whitespace within inline code delimiters." || d.FixAvailable || d.Snapshot.View != "original" || d.Snapshot.SHA256 != f.SHA256 || d.Snapshot.SizeBytes != len(f.Source) {
+					if [2]int{d.ByteRange.Start, d.ByteRange.End} != w || d.Range.Start != originalPosition(f.Source, w[0]) || d.Range.End != originalPosition(f.Source, w[1]) || d.Rule != "MD038" || d.Message != "Whitespace within inline code delimiters." || d.FixAvailable || d.Snapshot.View != "original" || d.Snapshot.SHA256 != f.SHA256 || d.Snapshot.SizeBytes != len(f.Source) {
 						t.Fatal(d, f)
 					}
 					for _, b := range []byte(f.Source[w[0]:w[1]]) {
@@ -63,31 +61,4 @@ func TestMD038FrozenAnalysisFixtures(t *testing.T) {
 	if ranges != 61 {
 		t.Fatal(ranges)
 	}
-}
-
-// Independent scalar/physical-ending count over original bytes, never parser
-// normalized Literal or the product's line-index conversion.
-func md038OriginalPosition(source string, at int) result.Position {
-	p := result.Position{Line: 1, Column: 1}
-	for i := 0; i < at; {
-		if source[i] == '\r' {
-			p.Line++
-			p.Column = 1
-			i++
-			if i < at && source[i] == '\n' {
-				i++
-			}
-			continue
-		}
-		if source[i] == '\n' {
-			p.Line++
-			p.Column = 1
-			i++
-			continue
-		}
-		_, w := utf8.DecodeRuneInString(source[i:])
-		i += w
-		p.Column++
-	}
-	return p
 }

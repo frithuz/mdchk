@@ -85,7 +85,7 @@ func TestMD061ProtectedAndNestedSource(t *testing.T) {
 			}
 			for i, d := range out.Diagnostics {
 				w := tc.ranges[i]
-				if [2]int{d.ByteRange.Start, d.ByteRange.End} != w || d.Range.Start != md038OriginalPosition(tc.source, w[0]) || d.Range.End != md038OriginalPosition(tc.source, w[1]) || d.Message != "Configured prohibited term." || d.FixAvailable {
+				if [2]int{d.ByteRange.Start, d.ByteRange.End} != w || d.Range.Start != originalPosition(tc.source, w[0]) || d.Range.End != originalPosition(tc.source, w[1]) || d.Message != "Configured prohibited term." || d.FixAvailable {
 					t.Fatal(d, w)
 				}
 			}

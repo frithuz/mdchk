@@ -112,7 +112,7 @@ func TestMD023LateInterruptionRetainsReliableMarkers(t *testing.T) {
 		for _, source := range []string{" # H\n\n # J", " # H\n\n # J\n\n # K"} {
 			calls := 0
 			baseline := registry(t, []engine.Registration{{ID: "MD023", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
-				check := &md018LateContext{Context: ctx, reason: reason}
+				check := &lateStopContext{Context: ctx, reason: reason}
 				out := indentedHeadings(check, c)
 				calls = check.calls
 				return out
@@ -129,7 +129,7 @@ func TestMD023LateInterruptionRetainsReliableMarkers(t *testing.T) {
 				var token parser.SourceToken
 				r := registry(t, []engine.Registration{{ID: "MD023", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 					token = c.Source().Token()
-					observed = indentedHeadings(&md018LateContext{Context: ctx, reason: reason, stop: stop}, c)
+					observed = indentedHeadings(&lateStopContext{Context: ctx, reason: reason, stop: stop}, c)
 					return observed
 				}}})
 				out := analyzeHeadings(t, r, source, md023Settings(), engine.DocumentContext{}, engine.RunOptions{})
