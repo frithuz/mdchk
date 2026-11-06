@@ -1010,7 +1010,8 @@ scan is one forward pass, linear in file size whatever the error count.
 Store these as operational io errors, not also as ordinary rule violations. One `decoding-failed`
 coverage record per file links to all of its retained errors. A file retains at most 1,000 errors and
 an operation at most 10,000, and every file keeps its first error; the
-[retention contract](limits.md#encoding-error-retention) gives the omission shape. Lint/fix/preview
+[retention contract](limits.md#encoding-error-retention) gives the omission shape and lint's
+last-resort minimal report. Lint/fix/preview
 become incomplete with error status and exit 13 unless an existing higher-precedence internal
 failure applies. Decoding-dependent coverage remains unavailable with the encoding cause attached.
 Ordinary Markdown findings cannot be produced from a partially decoded file. Exact error and

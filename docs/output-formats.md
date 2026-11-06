@@ -323,6 +323,12 @@ the result `complete: false`, but on its own a capped `inspect` still exits `0` 
 status `inspected`; path-less omissions and interruptions still give `15`. If a
 lint or fix text or JSON report still does not fit, those per-file omissions become
 one path-less `/errors` omission with their exact total.
+
+As a last resort, a lint text or JSON report whose essential records still do not
+fit becomes a minimal report, rather than an exit code with no output. Located
+errors become category summaries, so even a file's first error can be absent, and
+exact omissions record what was left out. JSON can also omit `checked_files` and
+file snapshots. Every file's path and outcome stay, and the exit code doesn't change.
 A failed output write,
 including a short write, returns `13` unless an established internal error
 requires `14`; a failed delivery can leave a partial report.

@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"slices"
 	"strings"
@@ -32,7 +33,7 @@ func encodingResult(operation string, sources map[string]int) result.Result {
 		}
 		r.Coverage = append(r.Coverage, result.Coverage{Path: path, Reason: "decoding-failed", Message: "Markdown validation is unavailable."})
 		r.CheckedFiles = append(r.CheckedFiles, path)
-		r.Files = append(r.Files, result.File{Path: path, Analysis: "failed", WriteStatus: "not-requested", ReturnStatus: "not-requested", ErrorIDs: []string{}, CoverageIDs: []string{}, ChangeIDs: []string{}})
+		r.Files = append(r.Files, result.File{Path: path, Analysis: "failed", WriteStatus: "not-requested", ReturnStatus: "not-requested", InputSnapshot: &v.Snapshot, ErrorIDs: []string{}, CoverageIDs: []string{}, ChangeIDs: []string{}})
 	}
 	engine.FinalizeLintResult(&r)
 	return r
@@ -230,6 +231,130 @@ func TestEncodingRetentionOmissionsCollapseBeforeReportFails(t *testing.T) {
 		if err != nil || len(deadline.data) == 0 || int64(len(deadline.data)) > bound {
 			t.Fatal(format, err, len(deadline.data), bound)
 		}
+	}
+}
+
+// encodingManyFiles gives each of n files more invalid bytes than the file cap.
+func encodingManyFiles(n int) map[string]int {
+	sources := map[string]int{}
+	for i := range n {
+		sources[fmt.Sprintf("f%04d.md", i)] = 1100
+	}
+	return sources
+}
+
+func TestMinimalLintReportWhenFirstErrorsDoNotFit(t *testing.T) {
+	const files = 300
+	r := encodingResult("lint", encodingManyFiles(files))
+	r.Diagnostics = append(r.Diagnostics, result.Diagnostic{Path: "ok.md", Rule: "MD047", Severity: "error", Message: "finding"})
+	sectionCount := func(out result.Result, section string) int {
+		total := 0
+		for _, o := range out.Omissions {
+			if o.Section == section && o.Path == "" {
+				total += *o.Count
+			}
+		}
+		return total
+	}
+	// The sizes of the JSON report at each step set the bounds that force the next.
+	minimalSize := func(bound int64) int64 {
+		got, err := minimalLintReport(context.Background(), r, "json", map[string]int64{"response-bytes": bound}, result.Interruption{Reason: "limit-exceeded", Phase: "reporting", Message: "essential detail records exceed response-bytes; whole records omitted"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return int64(len(got.data))
+	}
+	// The bound is printed in the report, so stay at five digits throughout.
+	full := minimalSize(99999)
+	withoutChecked := minimalSize(full - 1)
+	for _, tc := range []struct {
+		format    string
+		bound     int64
+		checked   bool
+		snapshots bool
+	}{
+		{"json", full, true, true},
+		{"json", full - 1, false, true},
+		{"json", withoutChecked - 1, false, false},
+		{"text", 12000, true, true},
+	} {
+		limits := map[string]int64{"response-bytes": tc.bound}
+		// Feasibility and the core builder still see the full essential report.
+		if _, err := buildReportCore(context.Background(), r, tc.format, limits); !errors.Is(err, errReportBudget) {
+			t.Fatal(tc, err)
+		}
+		got, err := buildReport(context.Background(), r, tc.format, limits)
+		if err != nil {
+			t.Fatal(tc, err)
+		}
+		if len(got.data) == 0 || int64(len(got.data)) > tc.bound {
+			t.Fatal(tc, len(got.data))
+		}
+		if tc.format == "json" {
+			validateEmitted(t, t.TempDir(), got.data)
+		}
+		out := got.out
+		if lintExit(out) != 13 || out.Complete || out.Status != "error" {
+			t.Fatal(tc, lintExit(out), out.Complete, out.Status)
+		}
+		if len(out.Errors) != 1 || out.Errors[0].Category != result.IO || out.Errors[0].Scope != "operation" || !strings.Contains(out.Errors[0].Message, fmt.Sprint(len(r.Errors))) {
+			t.Fatal(tc, out.Errors)
+		}
+		if len(out.Files) != files {
+			t.Fatal(tc, len(out.Files))
+		}
+		for i, f := range out.Files {
+			if f.Path != fmt.Sprintf("f%04d.md", i) || f.Analysis != "failed" || len(f.ErrorIDs) != 0 {
+				t.Fatal(tc, f)
+			}
+			if (f.InputSnapshot != nil) != tc.snapshots {
+				t.Fatal(tc, f)
+			}
+		}
+		if len(out.CheckedFiles) == files != tc.checked {
+			t.Fatal(tc, len(out.CheckedFiles))
+		}
+		if sectionCount(out, "/diagnostics") != 1 || sectionCount(out, "/coverage") != files || len(out.Diagnostics)+len(out.Coverage) != 0 {
+			t.Fatal(tc, out.Omissions)
+		}
+		// Located records replaced plus the combined past-cap total.
+		if sectionCount(out, "/errors") != len(r.Errors)+files*100 {
+			t.Fatal(tc, sectionCount(out, "/errors"))
+		}
+		if !tc.checked && sectionCount(out, "/checked_files") != files {
+			t.Fatal(tc, out.Omissions)
+		}
+		if !tc.snapshots && sectionCount(out, "/files") != files {
+			t.Fatal(tc, out.Omissions)
+		}
+	}
+}
+
+// Whole file records are never dropped: a bound below them still fails.
+func TestMinimalLintReportKeepsFileRecords(t *testing.T) {
+	r := encodingResult("lint", encodingManyFiles(600))
+	if _, err := buildReport(context.Background(), r, "json", map[string]int64{"response-bytes": 65536}); !errors.Is(err, errReportBudget) {
+		t.Fatal(err)
+	}
+}
+
+func TestMinimalReportIsLintOnly(t *testing.T) {
+	r := encodingResult("fix", encodingManyFiles(300))
+	if _, err := buildReport(context.Background(), r, "json", map[string]int64{"response-bytes": 66000}); !errors.Is(err, errReportBudget) {
+		t.Fatal(err)
+	}
+}
+
+func TestMinimalLintReportInDeadlineFallback(t *testing.T) {
+	r := encodingResult("lint", encodingManyFiles(300))
+	limits := map[string]int64{"response-bytes": 66000}
+	got, err := minimalLintReport(context.Background(), r, "json", limits, result.Interruption{Reason: "deadline-exceeded", Phase: "reporting", Message: "expired"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	validateEmitted(t, t.TempDir(), got.data)
+	if last := got.out.Interruptions[len(got.out.Interruptions)-1]; last.Reason != "deadline-exceeded" || lintExit(got.out) != 13 {
+		t.Fatal(last, lintExit(got.out))
 	}
 }
 
