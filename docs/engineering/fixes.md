@@ -323,7 +323,9 @@ An MD009 removal touching MD047's EOF insertion defers both groups with reason `
 MD009 sets `fix_available: false` for a suffix at EOF while MD047 is active there. MD047's
 flag is unchanged, so an MD047 finding can show `fix_available: true` and still be
 deferred. A manual MD047 finding is not held back when an MD009 suffix touches it, so
-the planner still defers that pair and the suffix isn't corrected alone.
+the planner still defers that pair and the suffix isn't corrected alone. A document
+opening with an unrecognized block is the exception: `Corrections` makes no MD009 group
+there, not even a deferral, so nothing touches MD047's insertion and it applies alone.
 
 ### Production rule integration
 
@@ -342,8 +344,17 @@ Interior edits use `engine.InteriorEditQuery`, or `RuleContext.InteriorEdits` in
 rule callback. It answers with the same protection sources as `fix.Plan` (literal
 spans, front matter and directive comment candidates) and `AllowsEdit`. It returns
 false for hidden observations, disabled anchors, unreliable syntax, incomplete
-parses and any parse uncertainty. A rule run builds its protected-span index at
-most once, on the first finding that needs it.
+parses, any parse uncertainty and a document opening with an unrecognized block. A
+rule run builds its protected-span index at most once, on the first finding that
+needs it.
+
+`parser.Document.UnrecognizedBlock` reports a complete `---` or `+++` block opening
+the source while recognition is off or the format is unselected. Such a block may be
+real metadata, or a pair of thematic breaks, and each round's own parse answers this
+once with the shared delimiter detection, so no fact is carried between rounds or
+from saved input. `InteriorEditQuery` and MD009's eligibility return false, and
+`Corrections` makes no MD009, MD019 or MD021 group. MD047 stays, because a line
+ending at EOF can't change a value inside the block.
 
 Combined rounds propose all of a document's eligible corrections together, so a
 document whose edits are all accepted finishes in one changing round plus the
@@ -369,8 +380,12 @@ Future corrections add rule producers, separately registered trusted checkers,
 implemented catalog metadata and affirmative per-finding eligibility. Compose
 producers at the existing `configuredCorrections` boundary; command parsing,
 selection, reporting and validation need no rule-ID dispatch. Producers cannot
-self-authorize preservation through requirement flags. Keep ambiguous rules
-report-only until independent proof and production acceptance exist. Retained
+self-authorize preservation through requirement flags. A new correction needs no
+code for an unrecognized leading block: `fix.Plan` defers, with reason
+`protected-syntax`, every edit in such a document except one line ending inserted at
+EOF or line endings deleted up to EOF. It decides by edit shape, not rule ID. The
+rule's eligibility should still use `InteriorEditQuery`, so `fix_available` stays
+accurate. Keep ambiguous rules report-only until independent proof and production acceptance exist. Retained
 compiled fixtures in `cmd/mdchk/testdata/md047_corrections.json` are available
 for later consumer acceptance; they do not claim filesystem apply or MCP support.
 `cmd/mdchk/testdata/heading_spacing_corrections.json` runs through preview and

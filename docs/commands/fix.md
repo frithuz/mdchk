@@ -19,7 +19,9 @@ run in one `fix` and converge across rounds. When an MD009 removal at physical E
 touches MD047's insertion, both are deferred with reason `conflict`. The MD009 finding
 then has `fix_available: false`, but the MD047 finding can still show
 `fix_available: true` and be deferred. Both stay unchanged, and you decide which edit
-to make. A manual MD047 finding doesn't block other corrections in the file.
+to make. A manual MD047 finding doesn't block other corrections in the file. A document
+opening with an unrecognized block has no such conflict, because MD009 proposes no edit
+there: MD047 adds its line ending and the suffix stays. See [Unrecognized leading blocks](#unrecognized-leading-blocks).
 
 
 Apply safe corrections to Markdown files and report problems that still need attention. Preview changes with `--dry-run` before saving them.
@@ -91,9 +93,19 @@ Other corrections remain planned. VS Code and GitHub describe findings remaining
 in proposed content for dry runs, without diffs or raw corrected Markdown. Use
 [lint](lint.md) when highlighted locations must match files currently on disk.
 
-Corrections preserve meaning and unrelated content. For example, fix can add a missing final newline while preserving intentional hard breaks. It leaves code examples, front matter, and ambiguous changes alone. A skipped heading level or missing code language needs a decision rather than a guessed correction.
+Corrections preserve meaning and unrelated content. For example, fix can add a missing final newline while preserving intentional hard breaks. It leaves code examples and ambiguous changes alone, and front matter is kept as described in [Unrecognized leading blocks](#unrecognized-leading-blocks). A skipped heading level or missing code language needs a decision rather than a guessed correction.
 
 After corrections, mdchk checks the resulting content and reports remaining findings at their new locations. Apply reports observed saved snapshots and confirmed written changes; dry-run reports candidate snapshots and proposed changes. Refused or unavailable saved observations are never replaced by predicted clean content.
+
+### Unrecognized leading blocks
+
+Recognized front matter stays byte-identical, and the body after it is still corrected. Recognition is off by default, though, and an unrecognized header would otherwise read as Markdown, so a correction could rewrite a value inside it.
+
+A document that opens with a complete `---` or `+++` block that isn't recognized, because `frontmatter.enabled` is false or the block's format isn't in `frontmatter.formats`, gets no MD009, MD019 or MD021 corrections anywhere. That covers the body as well as the block. Their findings are still reported, with `fix_available: false` and no `deferred_fixes` record.
+
+mdchk can't tell a real header from Markdown of the same shape, so a leading thematic break paired with a later one also triggers this. An opener with no closer doesn't. Set `frontmatter.enabled: true` to restore body corrections for documents with real headers.
+
+MD047 still applies: it adds a missing final line ending and removes excess ones. A trailing space at physical EOF therefore stays while the line ending is added, so `body<SPACE><EOF>` becomes `body<SPACE><NEWLINE>`.
 
 Production cross-file rule/resource consumers remain planned. Their accepted
 post-fix contract uses one candidate view containing all proposed target changes,

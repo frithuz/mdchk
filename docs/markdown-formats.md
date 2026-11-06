@@ -116,6 +116,15 @@ With recognition disabled, source follows ordinary flavor parsing. Selecting YAM
 configuration does not enable headers. Explicitly enabled but unavailable
 recognition is a configuration error, never a silent fallback.
 
+Parsing an unrecognized block as Markdown is not safe to correct. When a document
+opens with a complete `---` or `+++` block under the delimiter rules above, and
+recognition is disabled or the block's format is unselected, `fix` withholds MD009,
+MD019 and MD021 corrections for the whole document. Their findings stay reported
+with `fix_available: false`. A leading thematic break paired with a later one has
+the same shape and triggers this too; an opener with no closer doesn't. MD047 still
+applies. Setting `frontmatter.enabled: true` restores body corrections for real
+headers. See [`fix`](commands/fix.md#unrecognized-leading-blocks).
+
 ## Consistent interpretation
 
 Lint, fix, inspect, and both MCP modes must use the same selected flavor and frontmatter option. Format selection controls parsing; rule settings separately control which checks run.

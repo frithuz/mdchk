@@ -67,6 +67,15 @@ payload is an empty complete header. Invalid openers and unselected formats use
 ordinary Markdown interpretation. Disabled recognition does the same for both
 CommonMark and GFM. Selecting a flavor never enables recognition.
 
+Ordinary interpretation doesn't make the block safe to edit. When a complete block
+under the delimiter rules opens a document whose recognition is disabled or whose
+format is unselected, parsing, findings and inspection stay as above, but
+`Document.UnrecognizedBlock` withholds MD009, MD019 and MD021 corrections for the
+whole document, and `fix.Plan` defers any other edit except a line ending inserted
+at EOF or line endings deleted up to EOF. A leading thematic break paired with a
+later one has the same shape. An opener with no closer doesn't count. See
+[the correction contract](fixes.md#production-rule-integration).
+
 ### Boundary verification
 
 `internal/parser/testdata/frontmatter/boundaries.json` records original byte
