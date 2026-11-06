@@ -159,8 +159,7 @@ The Python validator is verification tooling, not an engine runtime dependency.
 
 `ProcessDirectives` consumes the completed parser handoff and the same operation
 budget. Configuration admission binds an immutable `DirectivePolicy` snapshot;
-the core imports no config decoder. The compatibility `internal/directives`
-facade invokes this same implementation. Direct `Registry.Lint` inputs use their
+the core imports no config decoder. Direct `Registry.Lint` inputs use their
 owned resolved rule settings and global permission enabled.
 
 Intervals control scheduling and missing-rule coverage before callback execution.
