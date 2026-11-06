@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/frithuz/mdchk/internal/fsroot"
 )
 
 // rootAccess holds no write-capable adapter. Directory handles pin checked
@@ -83,7 +85,7 @@ func (a *rootAccess) readRegular(path string) ([]byte, error) {
 	if !info.Mode().IsRegular() {
 		return nil, errors.New("configuration must be a nonsymlink regular file")
 	}
-	file, err := parent.OpenFile(name, os.O_RDONLY|configOpenFlags, 0)
+	file, err := parent.OpenFile(name, os.O_RDONLY|fsroot.ReadFlags, 0)
 	if err != nil {
 		return nil, err
 	}
