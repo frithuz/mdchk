@@ -49,7 +49,9 @@ complete accepted nontransitional UTS #46 profile. Production supplies the pinne
 fail resolution with `ErrHostnameValidationUnavailable`, including on disabled
 rules. Empty/default
 lists need no hostname processing. The catalog neither normalizes input nor
-substitutes a structural approximation for semantic validation.
+substitutes a structural approximation for semantic validation. During lint
+MD095 reads the validated entries in their written spelling through
+`RuleContext.AllowedHosts` and canonicalizes each once per run.
 
 An explicitly configured, effectively enabled unavailable implementation fails
 lint preflight. Unmentioned default-enabled unavailable rules produce coverage

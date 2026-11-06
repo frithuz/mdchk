@@ -253,3 +253,22 @@ input. Each case runs with MD094 attribution enabled and disabled. Tests pin the
 whole-file digest
 (`9d26032a205b45369f13f8eee941dab4293151b3da5d97fe7658df799f7bfefb`). Expected
 values were written by hand; never regenerate them from production output.
+
+`md095.json` is the hand-authored MD095 oracle (SHA-256
+`3b315677febef9fc832aceaefae9bb347553bc6e93f78d3e8c088ad08e932951`), read by
+`internal/rules/md095_fixtures_test.go` through production lint and inspect.
+Its 83 records give the original source with its size and SHA-256, the
+selected flavors and `options` with `enabled`, optional `allowed_hosts` and an
+optional frontmatter format. Expected `findings` and `problems` carry original
+byte ranges, one-based line/Unicode-scalar start and exclusive end positions
+and the message; `incomplete` gives the coverage message when the destination
+inventory is withheld. They cover the rule-page examples, every destination
+class, reference-definition ownership, `xn--`, percent-encoded, escaped,
+entity, uppercase and NFC-changed hosts, several and multi-letter flagged code
+points, unflagged scripts, compatibility, digit and punctuation mappings, user
+information, ports, root dots, IP literals, opaque and local destinations, the
+allowlist forms, each unreliable-input reason, protected content and
+frontmatter, containers and GFM table cells, and LF/CRLF twins. Its
+`invalid_configurations` rows, each with the expected setting path, are read by
+`internal/config/md095_test.go`. Expected results were written from the rule
+contract; never regenerate them from production output.
