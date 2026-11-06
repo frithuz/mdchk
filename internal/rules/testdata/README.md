@@ -234,25 +234,27 @@ destination bytes. LF and CRLF twins differ only in offsets. The expectations
 were authored from the sources, not from production output, and must never be
 regenerated from it.
 
-`md094.json` holds 28 hand-authored MD094 cases, read by
+`md094.json` holds 42 MD094 cases, read by
 `internal/engine/md094_fixtures_test.go` through `ValidateEncoding` and by the
 compiled binary in `cmd/mdchk/md094_acceptance_test.go`. Each case has `name`,
 `source_hex` (the lowercase hex of the exact source bytes, because JSON strings
-cannot hold invalid UTF-8) and `expected`. `expected` is `null` for valid
-UTF-8; otherwise it gives the zero-based `byte_offset` of the first byte that
-cannot start a valid scalar and the one-based `line` and Unicode-scalar
-`column` of that point. Malformed and truncated sequences are anchored at their
-leading byte. The cases cover an invalid lead byte, a lone continuation byte,
-truncated 2-, 3- and 4-byte sequences at EOF, a malformed continuation,
-overlong forms, an encoded surrogate, a value above U+10FFFF, bad bytes on line
-1, after multibyte text, after LF, CRLF and lone CR lines and as the final
-byte, bad bytes inside fenced code, a block quote, a nested list in a block
-quote, YAML front matter and an HTML comment, a directive before the bad byte,
-both rule-page examples, and valid empty, BOM, literal U+FFFD and mixed-ending
-input. Each case runs with MD094 attribution enabled and disabled. Tests pin the
-whole-file digest
-(`9d26032a205b45369f13f8eee941dab4293151b3da5d97fe7658df799f7bfefb`). Expected
-values were written by hand; never regenerate them from production output.
+cannot hold invalid UTF-8) and `expected`, a list with one entry per invalid
+maximal subpart in source order. Valid UTF-8 has an empty list. Each entry gives
+the zero-based `byte_offset` of the subpart's leading byte, its exclusive
+`byte_end`, the one-based `line` and `column` of that byte, and `bytes_hex`, the
+subpart's own bytes. A column counts each valid scalar and each earlier invalid
+subpart on the line as one. The cases cover an invalid lead byte, a lone
+continuation byte, truncated 2-, 3- and 4-byte sequences at EOF, a malformed
+continuation, overlong forms, an encoded surrogate, a value above U+10FFFF, bad
+bytes on line 1, after multibyte text, after LF, CRLF and lone CR lines and as
+the final byte, bad bytes inside fenced code, a block quote, a nested list in a
+block quote, YAML front matter and an HTML comment, a directive before the bad
+byte, both rule-page examples, the `boundary-*` subpart boundary and position
+table, and valid empty, BOM, literal U+FFFD and mixed-ending input. Each case
+runs with MD094 attribution enabled and disabled. Tests pin the whole-file digest
+(`651f3353d42bbf33707fc1d227ecc7a1aba34375d60cf85fee3e924be07ae810`). Expected
+subparts come from Python's strict UTF-8 decoder, which reports the same maximal
+subparts, not from mdchk; never regenerate them from production output.
 
 `md095.json` is the hand-authored MD095 oracle (SHA-256
 `20677564569fb578707dfca8c2d4b09a5ad5654acf42ef516892f5180b8d540f`), read by

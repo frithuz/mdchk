@@ -389,9 +389,12 @@ func Analyze(ctx context.Context, s *Snapshot, options AnalyzeOptions) (Analysis
 			p.Flavor = available(configured.Settings.Flavor)
 		}
 		validation := engine.ValidateEncoding(f.Path, s.source, enabled)
-		if validation.Error != nil {
-			validation.Error.Scope = "observation"
-			out.Errors = append(out.Errors, *validation.Error)
+		for _, e := range validation.Errors {
+			e.Scope = "observation"
+			out.Errors = append(out.Errors, e)
+		}
+		if validation.Omission != nil {
+			out.Omissions = append(out.Omissions, *validation.Omission)
 		}
 		out.Files[0].Analysis = "failed"
 		out.Coverage = append(out.Coverage, result.Coverage{Path: f.Path, Reason: "decoding-failed", Message: "Parsed inspection sections are unavailable."})

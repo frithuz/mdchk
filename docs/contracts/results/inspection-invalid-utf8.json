@@ -48,10 +48,14 @@
       "category": "io",
       "code": "invalid-utf8",
       "scope": "observation",
-      "message": "Invalid UTF-8 at byte offset 1.",
+      "message": "Invalid UTF-8 byte sequence 0xFF at byte offset 1.",
       "path": "bad.md",
       "rule": "MD094",
       "byte_offset": 1,
+      "byte_range": {
+        "start": 1,
+        "end": 2
+      },
       "range": {
         "start": {
           "line": 1,

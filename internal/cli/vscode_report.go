@@ -57,7 +57,7 @@ func renderVSCode(ctx context.Context, stdout, stderr io.Writer, r result.Result
 		}
 	}
 	for _, e := range r.Errors {
-		if e.Category == result.Configuration && e.Path != "" && e.Range != nil {
+		if (e.Category == result.Configuration || e.Code == "invalid-utf8") && e.Path != "" && e.Range != nil {
 			if err := line(e.Path, e.Range.Start, e.Code, e.Message); err != nil {
 				return err
 			}

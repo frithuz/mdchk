@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "operation": "lint",
+  "mode": "cli",
+  "status": "error",
+  "complete": false,
+  "checked_files": [
+    "bad.md"
+  ],
+  "skipped_files": [],
+  "files": [
+    {
+      "path": "bad.md",
+      "analysis": "failed",
+      "write_status": "not-requested",
+      "return_status": "not-requested",
+      "input_snapshot": {
+        "view": "original",
+        "sha256": "6a41aa64d09f8b9d229f286333dfc8eb0db6fb9a888b83b7b41db9b1f675a796",
+        "size_bytes": 11
+      },
+      "error_ids": [
+        "error-1",
+        "error-2",
+        "error-3"
+      ],
+      "coverage_ids": [
+        "coverage-1"
+      ],
+      "change_ids": []
+    }
+  ],
+  "diagnostics": [],
+  "coverage": [
+    {
+      "id": "coverage-1",
+      "reason": "decoding-failed",
+      "message": "Markdown parsing is unavailable.",
+      "path": "bad.md",
+      "cause_ids": [
+        "error-1",
+        "error-2",
+        "error-3"
+      ]
+    }
+  ],
+  "changes": [],
+  "deferred_fixes": [],
+  "errors": [
+    {
+      "id": "error-1",
+      "category": "io",
+      "code": "invalid-utf8",
+      "scope": "operation",
+      "message": "Invalid UTF-8 byte sequence 0xFF at byte offset 1.",
+      "path": "bad.md",
+      "byte_offset": 1,
+      "byte_range": {
+        "start": 1,
+        "end": 2
+      },
+      "range": {
+        "start": {
+          "line": 1,
+          "column": 2
+        },
+        "end": {
+          "line": 1,
+          "column": 2
+        }
+      },
+      "snapshot": {
+        "view": "original",
+        "sha256": "6a41aa64d09f8b9d229f286333dfc8eb0db6fb9a888b83b7b41db9b1f675a796",
+        "size_bytes": 11
+      },
+      "rule": "MD094"
+    },
+    {
+      "id": "error-2",
+      "category": "io",
+      "code": "invalid-utf8",
+      "scope": "operation",
+      "message": "Invalid UTF-8 byte sequence 0xE2 0x82 at byte offset 3.",
+      "path": "bad.md",
+      "byte_offset": 3,
+      "byte_range": {
+        "start": 3,
+        "end": 5
+      },
+      "range": {
+        "start": {
+          "line": 1,
+          "column": 4
+        },
+        "end": {
+          "line": 1,
+          "column": 4
+        }
+      },
+      "snapshot": {
+        "view": "original",
+        "sha256": "6a41aa64d09f8b9d229f286333dfc8eb0db6fb9a888b83b7b41db9b1f675a796",
+        "size_bytes": 11
+      },
+      "rule": "MD094"
+    },
+    {
+      "id": "error-3",
+      "category": "io",
+      "code": "invalid-utf8",
+      "scope": "operation",
+      "message": "Invalid UTF-8 byte sequence 0xFF at byte offset 6.",
+      "path": "bad.md",
+      "byte_offset": 6,
+      "byte_range": {
+        "start": 6,
+        "end": 7
+      },
+      "range": {
+        "start": {
+          "line": 1,
+          "column": 6
+        },
+        "end": {
+          "line": 1,
+          "column": 6
+        }
+      },
+      "snapshot": {
+        "view": "original",
+        "sha256": "6a41aa64d09f8b9d229f286333dfc8eb0db6fb9a888b83b7b41db9b1f675a796",
+        "size_bytes": 11
+      },
+      "rule": "MD094"
+    }
+  ],
+  "notes": [],
+  "interruptions": [],
+  "omissions": [],
+  "documents": [],
+  "suppressed_diagnostics": [],
+  "effective_limits": []
+}

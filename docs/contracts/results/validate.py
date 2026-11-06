@@ -69,6 +69,7 @@ def semantic(x):
             require((a['line'],a['column'])<=(b['line'],b['column']),'reversed source range')
         if 'byte_range' in item:
             require(0<=item['byte_range']['start']<=item['byte_range']['end']<=item['snapshot']['size_bytes'],'invalid byte range')
+    encoding_semantic(x)
     if x['status']=='inspected':require(not any(e['scope']=='operation' for e in x['errors']),'operational error reported as completed inspection')
     if x['mode']=='standalone':require(all(f['write_status']=='not-requested' for f in x['files']),'standalone write outcome')
     if x['operation']=='config validate' and 'config_validation' in x:
@@ -77,6 +78,19 @@ def semantic(x):
         inspection_semantic(x)
         r=x['inspection']['rule_counts']
         if r['availability']=='available':require(r['data']['active']+r['data']['inactive']==r['data']['known'],'catalog count mismatch')
+
+def encoding_semantic(x):
+    last={};retained={}
+    for e in x['errors']:
+        if e['code']!='invalid-utf8' or 'byte_offset' not in e:continue
+        span=e.get('byte_range')
+        require(span is not None and span['start']==e['byte_offset'] and span['end']>span['start'],'invalid-utf8 byte range differs from its offset')
+        require('range' in e and e['range']['start']==e['range']['end'],'invalid-utf8 range is not zero-width')
+        require(e['byte_offset']>last.get(e['path'],-1),'invalid-utf8 errors out of source order')
+        last[e['path']]=e['byte_offset']
+        retained.setdefault(e['path'],set()).add(e['id'])
+    for c in x['coverage']:
+        if c['reason']=='decoding-failed':require(retained.get(c.get('path'),set())<=set(c.get('cause_ids',[])),'decoding coverage omits a retained invalid-utf8 cause')
 
 def inspection_semantic(x):
     p=x['inspection'];ids={r['id'] for k in ['errors','interruptions','coverage'] for r in x[k]}
@@ -291,6 +305,9 @@ def inspection_semantic(x):
             require(cause.get('directive_id') in by_id,'suppressed diagnostic has dangling directive id')
             require(any(r['rule']==d['rule'] and any(not interval['enabled'] and interval.get('directive_id')==cause['directive_id'] and interval['byte_range']['start']<=d['byte_range']['start'] and (d['byte_range']['start']<interval['byte_range']['end'] or d['byte_range']['start']==interval['byte_range']['end']==size) for interval in r['intervals']) for r in rules),'suppressed diagnostic owner does not control anchor')
 
+def encoding_retention(o):
+    return o['section']=='/errors' and o['reason']=='output-limit' and bool(o.get('path'))
+
 def exit_code(x):
     errors=[e for e in x['errors'] if e['scope']=='operation']
     cats={e['category'] for e in errors}
@@ -298,7 +315,7 @@ def exit_code(x):
     if 'io' in cats:return 13
     if 'usage' in cats:return 11
     if 'configuration' in cats:return 12
-    if x['operation']=='inspect':return 15 if x['interruptions'] or x['omissions'] else 0
+    if x['operation']=='inspect':return 15 if x['interruptions'] or any(not encoding_retention(o) for o in x['omissions']) else 0
     if not x['complete']:return 15
     if x['operation']=='config validate':return 0
     return 10 if x['diagnostics'] else 0
@@ -336,5 +353,16 @@ b=copy.deepcopy(c);b['inspection']['metadata']['data']['ordering']['kind']='find
 b=copy.deepcopy(c);b['inspection']['metadata']['data']['ordering']['mappings'][0]['violation']=False;reject('metadata-offending-without-violation',b)
 b=copy.deepcopy(c);b['inspection']['metadata']['data']['state']='complete';reject('metadata-complete-with-problems',b)
 b=copy.deepcopy(c);b['inspection']['metadata']['data']['title']['text']=' \u00a0';reject('metadata-blank-found-title',b)
+c=json.loads((ROOT/'invalid-utf8-multiple.json').read_text())
+b=copy.deepcopy(c);del b['errors'][1]['byte_range'];reject('invalid-utf8-without-byte-range',b)
+b=copy.deepcopy(c);b['errors'][1]['byte_range']['start']=4;reject('invalid-utf8-range-start-differs',b)
+b=copy.deepcopy(c);b['errors'][1]['byte_range']['end']=3;reject('invalid-utf8-empty-byte-range',b)
+b=copy.deepcopy(c);b['errors'][1]['range']['end']['column']=5;reject('invalid-utf8-range-not-zero-width',b)
+b=copy.deepcopy(c);b['errors'][0],b['errors'][1]=b['errors'][1],b['errors'][0];reject('invalid-utf8-out-of-order',b)
+b=copy.deepcopy(c);b['coverage'][0]['cause_ids']=['error-1','error-2'];reject('decoding-coverage-omits-cause',b)
+b=json.loads((ROOT/'inspection-invalid-utf8-truncated.json').read_text())
+require(exit_code(b)==0,'capped inspection exit mismatch')
+del b['omissions'][0]['path']
+require(exit_code(b)==15,'reduced inspection exit mismatch')
 result={'schema_valid':True,'positive_fixtures':len(fixtures),'negative_fixtures_rejected':len(negative),'negative_cases':negative,'validator':'jsonschema 4.25.1, JSON Schema 2020-12','scope':'Validates accepted serialization, representative cross-record invariants and expected fixture exits; does not test an mdchk implementation.'}
 print(json.dumps(result,indent=2))

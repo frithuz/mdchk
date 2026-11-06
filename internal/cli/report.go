@@ -188,7 +188,13 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 			return encodedReport{}, sizeErr
 		}
 		out.Interruptions = append(out.Interruptions, result.Interruption{Reason: "limit-exceeded", Phase: "reporting", Message: "result details exceed response-bytes", Limit: &result.LimitObservation{Name: "response-bytes", Observed: observed, Allowed: bound, Unit: "bytes"}})
-		if out.Operation == "fix" {
+		out, err = reduceEncodingErrors(ctx, out, format, bound)
+		if err != nil {
+			return encodedReport{}, err
+		}
+		if fitsNow, e := fits(); e != nil {
+			return encodedReport{}, e
+		} else if !fitsNow && out.Operation == "fix" {
 			omitFixDiffs(&out)
 			engine.FinalizeLintResult(&out)
 		}
@@ -527,6 +533,70 @@ func summarizeErrors(out *result.Result) {
 	}
 }
 
+// reduceEncodingErrors keeps the largest prefix of a lint or fix result's excess
+// invalid-utf8 records that fits, and always keeps each file's first. Past that
+// first record they repeat one failure, so they go before any other detail. The
+// caller has established that the whole result does not fit. If nothing fits,
+// every excess record is omitted and the later reductions still apply.
+func reduceEncodingErrors(ctx context.Context, out result.Result, format string, bound int64) (result.Result, error) {
+	if out.Operation != "lint" && out.Operation != "fix" {
+		return out, nil
+	}
+	var excess []int
+	first := map[string]bool{}
+	for i, e := range out.Errors {
+		if e.Code == "invalid-utf8" {
+			if first[e.Path] {
+				excess = append(excess, i)
+			}
+			first[e.Path] = true
+		}
+	}
+	if len(excess) == 0 {
+		return out, nil
+	}
+	// Finalizing renumbers errors and rewrites links in place, so each attempt
+	// starts from its own copy of the same canonical records.
+	attempt := func(keep int) (result.Result, bool, error) {
+		r := cloneReport(out)
+		dropped := map[string]bool{}
+		for _, i := range excess[keep:] {
+			dropped[out.Errors[i].ID] = true
+		}
+		isDropped := func(id string) bool { return dropped[id] }
+		r.Errors = slices.DeleteFunc(r.Errors, func(e result.Error) bool { return dropped[e.ID] })
+		// An old ID left here could later alias a renumbered surviving error.
+		for i := range r.Coverage {
+			r.Coverage[i].CauseIDs = slices.DeleteFunc(r.Coverage[i].CauseIDs, isDropped)
+		}
+		for i := range r.DeferredFixes {
+			r.DeferredFixes[i].CauseIDs = slices.DeleteFunc(r.DeferredFixes[i].CauseIDs, isDropped)
+		}
+		count := len(excess) - keep
+		r.Omissions = append(r.Omissions, result.Omission{Section: "/errors", Reason: "output-limit", Message: "trailing invalid UTF-8 records omitted to satisfy response-bytes", Count: &count})
+		engine.FinalizeLintResult(&r)
+		n, err := reportSize(ctx, r, format)
+		return r, n <= bound, err
+	}
+	best, ok, err := attempt(0)
+	if err != nil || !ok {
+		return best, err
+	}
+	for lo, hi := 0, len(excess)-1; lo < hi; {
+		mid := lo + (hi-lo+1)/2
+		r, ok, err := attempt(mid)
+		if err != nil {
+			return out, err
+		}
+		if ok {
+			best, lo = r, mid
+		} else {
+			hi = mid - 1
+		}
+	}
+	return best, nil
+}
+
 func deadlineReport(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
 	if format == "github" {
 		return reservedEditorReport(ctx, original, limits, encodeGitHub)
@@ -568,6 +638,16 @@ func deadlineReport(ctx context.Context, original result.Result, format string, 
 	n, err := reportSize(ctx, out, format)
 	if err != nil {
 		return encodedReport{}, err
+	}
+	if n > reportLimit(limits, "response-bytes") {
+		out, err = reduceEncodingErrors(ctx, out, format, reportLimit(limits, "response-bytes"))
+		if err != nil {
+			return encodedReport{}, err
+		}
+		n, err = reportSize(ctx, out, format)
+		if err != nil {
+			return encodedReport{}, err
+		}
 	}
 	if n > reportLimit(limits, "response-bytes") {
 		summarizeErrors(&out)
@@ -663,6 +743,7 @@ func reduceConfigManifest(ctx context.Context, out *result.Result, format string
 			e.Range = nil
 			e.Snapshot = nil
 			e.ByteOffset = nil
+			e.ByteRange = nil
 			e.Code = "config-error-summary"
 			e.Message = fmt.Sprintf("%d encountered %s errors; located details omitted to satisfy response-bytes.", count, category)
 			out.Errors = append(out.Errors, e)

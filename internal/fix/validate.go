@@ -565,12 +565,31 @@ func originalEncodingFailure(s validationState, err error, m meter) (bool, error
 		return false, nil
 	}
 	r := s.retained
-	if len(r.Errors) != 1 || len(r.Interruptions) != 0 || len(r.Omissions) != 0 || len(r.Files) != 1 || len(r.CheckedFiles) != 1 || r.CheckedFiles[0] != s.target.Path || len(r.Diagnostics) != 0 {
+	if len(r.Errors) == 0 || len(r.Errors) > engine.MaxFileEncodingErrors || len(r.Interruptions) != 0 || len(r.Omissions) > 1 || len(r.Files) != 1 || len(r.CheckedFiles) != 1 || r.CheckedFiles[0] != s.target.Path || len(r.Diagnostics) != 0 {
 		return false, nil
 	}
-	e, f := r.Errors[0], r.Files[0]
-	if e.Category != result.IO || e.Code != "invalid-utf8" || e.Path != s.target.Path || e.Scope != "operation" || e.ByteOffset == nil || *e.ByteOffset < 0 || *e.ByteOffset >= s.source.Len() || e.Snapshot == nil || f.InputSnapshot == nil || *e.Snapshot != *f.InputSnapshot || e.Snapshot.SizeBytes != s.source.Len() || f.Path != s.target.Path || f.Analysis != "failed" {
+	for _, o := range r.Omissions {
+		if !o.EncodingRetention() || o.Path != s.target.Path || o.Count == nil || *o.Count <= 0 {
+			return false, nil
+		}
+	}
+	// Each record is checked from its retained fields, in constant work per error.
+	if reserveErr := m.work(32 * int64(len(r.Errors))); reserveErr != nil {
+		return false, errors.Join(err, reserveErr)
+	}
+	f := r.Files[0]
+	if f.InputSnapshot == nil || f.Path != s.target.Path || f.Analysis != "failed" {
 		return false, nil
+	}
+	end := 0
+	for _, e := range r.Errors {
+		if e.Category != result.IO || e.Code != "invalid-utf8" || e.Path != s.target.Path || e.Scope != "operation" || e.ByteOffset == nil || *e.ByteOffset < end || *e.ByteOffset >= s.source.Len() || e.Snapshot == nil || *e.Snapshot != *f.InputSnapshot || e.Snapshot.SizeBytes != s.source.Len() {
+			return false, nil
+		}
+		if e.ByteRange == nil || e.ByteRange.Start != *e.ByteOffset || e.ByteRange.End <= e.ByteRange.Start || e.ByteRange.End > s.source.Len() {
+			return false, nil
+		}
+		end = e.ByteRange.End
 	}
 	return true, nil
 }
