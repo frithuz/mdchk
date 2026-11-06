@@ -119,7 +119,7 @@ func TestEncodingReductionKeepsFirstOfEachFileAndLinks(t *testing.T) {
 func TestEncodingReductionKeepsLargestPrefix(t *testing.T) {
 	r := encodingResult("lint", map[string]int{"a.md": 1000})
 	kept := func(bound int64) int {
-		reduced, err := reduceEncodingErrors(context.Background(), r, "json", bound)
+		reduced, err := reduceEncodingErrors(context.Background(), r, "json", bound, true)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -134,7 +134,7 @@ func TestEncodingReductionKeepsLargestPrefix(t *testing.T) {
 // Dropping a.md's records renumbers b.md's. The old IDs must not alias them.
 func TestEncodingReductionLeavesNoStaleCause(t *testing.T) {
 	r := encodingResult("lint", map[string]int{"a.md": 500, "b.md": 500})
-	reduced, err := reduceEncodingErrors(context.Background(), r, "json", 65536)
+	reduced, err := reduceEncodingErrors(context.Background(), r, "json", 65536, true)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -358,6 +358,47 @@ func TestMinimalLintReportInDeadlineFallback(t *testing.T) {
 	}
 }
 
+// reporting-time expires before any timed report exists. The reserve was built
+// before the timer, so a report is always delivered, under any machine load.
+func TestLintReserveDeliversWhenReportingDeadlineExpires(t *testing.T) {
+	r := encodingResult("lint", encodingManyFiles(300))
+	for _, format := range []string{"json", "text"} {
+		for _, deadline := range []int64{1, 1000} {
+			var stdout, stderr bytes.Buffer
+			limits := map[string]int64{"reporting-time": deadline}
+			if status := reportResultStreams(r, format, &stdout, &stderr, limits); status != 13 {
+				t.Fatal(format, deadline, status)
+			}
+			if stdout.Len() == 0 || stderr.Len() != 0 {
+				t.Fatal(format, deadline, stdout.Len(), stderr.String())
+			}
+			if format == "json" {
+				got := validateEmitted(t, t.TempDir(), stdout.Bytes())
+				if len(got.Files) != 300 || got.Complete || len(got.Errors) == 0 {
+					t.Fatal(deadline, len(got.Files), got.Complete, len(got.Errors))
+				}
+			}
+		}
+	}
+}
+
+// The reserve runs for every lint report, so it must leave the result it borrows as is.
+func TestLintReserveBorrowsTheResult(t *testing.T) {
+	r := encodingResult("lint", encodingManyFiles(300))
+	original := cloneReport(r)
+	got, err := minimalLintReport(context.Background(), r, "json", nil, reportingDeadlineStop())
+	if err != nil {
+		t.Fatal(err)
+	}
+	validateEmitted(t, t.TempDir(), got.data)
+	if len(r.Errors) != len(original.Errors) || len(r.Omissions) != len(original.Omissions) || r.Files[0].InputSnapshot == nil || len(r.CheckedFiles) != 300 {
+		t.Fatal("reserve changed the borrowed result")
+	}
+	if len(got.out.Errors) != 1 || got.out.Interruptions[len(got.out.Interruptions)-1].Reason != "deadline-exceeded" {
+		t.Fatal(got.out.Errors, got.out.Interruptions)
+	}
+}
+
 // A report that fits keeps the omission for each file.
 func TestEncodingRetentionOmissionsSurviveWhenTheyFit(t *testing.T) {
 	r := encodingResult("lint", map[string]int{"a.md": 1100, "b.md": 1100})
@@ -377,10 +418,11 @@ func TestEncodingReductionInDeadlineReport(t *testing.T) {
 		if err != nil {
 			t.Fatal(format, err)
 		}
-		if int64(len(got.data)) > limits["response-bytes"] || len(got.out.Errors) == 0 || len(got.out.Errors) == 1000 {
+		// The fallback must be ready early, so it runs no search: it keeps the first.
+		if int64(len(got.data)) > limits["response-bytes"] || len(got.out.Errors) != 1 || *got.out.Errors[0].ByteOffset != 0 {
 			t.Fatal(format, len(got.data), len(got.out.Errors))
 		}
-		if count := encodingReductionOmission(t, got.out); count != 1000-len(got.out.Errors) {
+		if count := encodingReductionOmission(t, got.out); count != 999 {
 			t.Fatal(format, count)
 		}
 		if format == "json" {

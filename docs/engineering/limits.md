@@ -219,7 +219,10 @@ JSON report's essential records still exceed `response-bytes`, lint emits a
 [minimal report](results.md#shared-result-schema): located errors become category
 summaries with an exact `/errors` omission, and JSON can also omit `checked_files`
 and file snapshots. File paths and outcomes stay, which the pre-analysis manifest
-check reserves room for. A report that fits never reaches this step.
+check reserves room for. Lint encodes this report before the `reporting-time` timer
+starts, with no search over whole reports, so an expired deadline still delivers it.
+The timed deadline fallback likewise omits all excess `invalid-utf8` records in one
+step instead of searching for the largest prefix.
 
 The scan is one forward pass charged to `work-units`: at least one unit per source
 byte and a constant per retained record, in addition to the indexing reserve.

@@ -329,6 +329,10 @@ fit becomes a minimal report, rather than an exit code with no output. Located
 errors become category summaries, so even a file's first error can be absent, and
 exact omissions record what was left out. JSON can also omit `checked_files` and
 file snapshots. Every file's path and outcome stay, and the exit code doesn't change.
+Lint encodes this report before its reporting timer starts and delivers it if the
+deadline expires before a fuller report is ready. A deadline fallback that is ready
+keeps only each file's first `invalid-utf8` error rather than searching for the
+largest prefix that fits.
 A failed output write,
 including a short write, returns `13` unless an established internal error
 requires `14`; a failed delivery can leave a partial report.

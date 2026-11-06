@@ -46,15 +46,18 @@ func reportResultStreamsContext(parent context.Context, out result.Result, forma
 		reserve, reserveErr = emergencyConfigReport(out, format, limits)
 	} else if out.Operation == "fix" {
 		reserve, reserveErr = emergencyFixReport(out, format, limits)
+	} else if out.Operation == "lint" {
+		reserve, reserveErr = minimalLintReport(parent, out, format, limits, reportingDeadlineStop())
 	}
 	ctx, cancel := context.WithTimeout(parent, time.Duration(reportLimit(limits, "reporting-time")))
 	defer cancel()
 	encoded, err := buildReport(ctx, out, format, limits)
-	if err != nil && ctx.Err() != nil && (format == "github" || format == "vscode" || out.Operation == "config validate" || out.Operation == "fix") && reserveErr == nil {
+	reserved := format == "github" || format == "vscode" || out.Operation == "config validate" || out.Operation == "fix" || out.Operation == "lint"
+	if err != nil && ctx.Err() != nil && reserved && reserveErr == nil {
 		encoded, err = reserve, nil
 	}
 	status := 0
-	if (format == "github" || format == "vscode" || out.Operation == "config validate" || out.Operation == "fix") && reserveErr == nil {
+	if reserved && reserveErr == nil {
 		status = lintExit(reserve.out)
 	} else {
 		status = lintExit(out)
@@ -149,7 +152,7 @@ func buildReport(ctx context.Context, original result.Result, format string, lim
 	// this complete, already encoded envelope remains available for delivery.
 	fallback, fallbackErr := deadlineReport(ctx, original, format, limits)
 	if errors.Is(fallbackErr, errReportBudget) {
-		fallback, fallbackErr = minimalLintReport(ctx, original, format, limits, result.Interruption{Reason: "deadline-exceeded", Phase: "reporting", Message: "reporting-time exhausted while constructing result details"})
+		fallback, fallbackErr = minimalLintReport(ctx, original, format, limits, reportingDeadlineStop())
 	}
 	encoded, err := buildReportCore(ctx, original, format, limits)
 	if errors.Is(err, errReportBudget) {
@@ -161,12 +164,19 @@ func buildReport(ctx context.Context, original result.Result, format string, lim
 	return encoded, err
 }
 
+func reportingDeadlineStop() result.Interruption {
+	return result.Interruption{Reason: "deadline-exceeded", Phase: "reporting", Message: "reporting-time exhausted while constructing result details"}
+}
+
 // minimalLintReport is lint's last resort when each file's first error and outcome
-// do not fit, so an operator never gets an exit code with no explanation. Error
-// records become category summaries that keep exit precedence. JSON then gives up
-// checked_files, which files repeats, and file snapshots. File paths and outcomes
-// stay: the pre-analysis manifest check reserved room for those, so it is not a
-// builder for feasibility checks, which must still see the full essential report.
+// do not fit, and its reserve for the reporting deadline, so an operator never gets
+// an exit code with no explanation. It borrows the detail records and only counts
+// them, so its work is linear with a small constant and has no search; the reserve
+// is built before the reporting timer starts. Error records become category
+// summaries that keep exit precedence. JSON then gives up checked_files, which
+// files repeats, and file snapshots. File paths and outcomes stay: the pre-analysis
+// manifest check reserved room for those, so it is not a builder for feasibility
+// checks, which must still see the full essential report.
 func minimalLintReport(ctx context.Context, original result.Result, format string, limits map[string]int64, stop result.Interruption) (encodedReport, error) {
 	if original.Operation != "lint" {
 		return encodedReport{}, errReportBudget
@@ -175,25 +185,27 @@ func minimalLintReport(ctx context.Context, original result.Result, format strin
 		return encodedReport{}, err
 	}
 	bound := reportLimit(limits, "response-bytes")
-	out := cloneReport(original)
+	out := newReportOperation(original)
+	out.Files = slices.Clone(original.Files)
+	out.CheckedFiles = slices.Clone(original.CheckedFiles)
+	out.Omissions = slices.Clone(original.Omissions)
+	out.Interruptions = slices.Clone(original.Interruptions)
+	out.EffectiveLimits = slices.Clone(original.EffectiveLimits)
 	setReportLimits(&out, limits)
-	engine.FinalizeLintResult(&out)
 	omit := func(section, message string, count int) {
 		if count > 0 {
 			out.Omissions = append(out.Omissions, result.Omission{Section: section, Reason: "output-limit", Message: message, Count: &count})
 		}
 	}
-	const detail = "whole records omitted from the minimal report; the essential report exceeds response-bytes"
-	omit("/diagnostics", detail, len(out.Diagnostics))
-	omit("/suppressed_diagnostics", detail, len(out.SuppressedDiagnostics))
-	omit("/notes", detail, len(out.Notes))
-	omit("/coverage", detail, len(out.Coverage))
-	omit("/skipped_files", detail, len(out.SkippedFiles))
-	omit("/errors", "located error records replaced by category summaries; the essential report exceeds response-bytes", len(out.Errors))
+	const detail = "whole records omitted from the minimal report"
+	omit("/diagnostics", detail, len(original.Diagnostics))
+	omit("/suppressed_diagnostics", detail, len(original.SuppressedDiagnostics))
+	omit("/notes", detail, len(original.Notes))
+	omit("/coverage", detail, len(original.Coverage))
+	omit("/skipped_files", detail, len(original.SkippedFiles))
+	omit("/errors", "located error records replaced by category summaries", len(original.Errors))
 	collapseEncodingRetention(&out)
-	out.Diagnostics, out.Coverage, out.SkippedFiles = []result.Diagnostic{}, []result.Coverage{}, []result.SkippedFile{}
-	out.Notes, out.SuppressedDiagnostics = []json.RawMessage{}, []json.RawMessage{}
-	out.Errors = lintErrorSummaries(out.Errors)
+	out.Errors = lintErrorSummaries(original.Errors)
 	out.Interruptions = append(out.Interruptions, stop)
 	engine.FinalizeLintResult(&out)
 	n, err := reportSize(ctx, out, format)
@@ -256,7 +268,7 @@ func lintErrorSummaries(records []result.Error) []result.Error {
 	for _, category := range []result.ErrorCategory{result.Usage, result.Configuration, result.IO, result.Internal} {
 		for _, scope := range []string{"operation", "observation"} {
 			if count := counts[key{category, scope}]; count > 0 {
-				summaries = append(summaries, result.Error{Category: category, Scope: scope, Code: "lint-error-summary", Message: fmt.Sprintf("%d encountered %s errors; located details omitted to satisfy response-bytes.", count, category)})
+				summaries = append(summaries, result.Error{Category: category, Scope: scope, Code: "lint-error-summary", Message: fmt.Sprintf("%d encountered %s errors; located details omitted by bounded reporting.", count, category)})
 			}
 		}
 	}
@@ -296,7 +308,7 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 			return encodedReport{}, sizeErr
 		}
 		out.Interruptions = append(out.Interruptions, result.Interruption{Reason: "limit-exceeded", Phase: "reporting", Message: "result details exceed response-bytes", Limit: &result.LimitObservation{Name: "response-bytes", Observed: observed, Allowed: bound, Unit: "bytes"}})
-		out, err = reduceEncodingErrors(ctx, out, format, bound)
+		out, err = reduceEncodingErrors(ctx, out, format, bound, true)
 		if err != nil {
 			return encodedReport{}, err
 		}
@@ -648,12 +660,14 @@ func summarizeErrors(out *result.Result) {
 	}
 }
 
-// reduceEncodingErrors keeps the largest prefix of a lint or fix result's excess
-// invalid-utf8 records that fits, and always keeps each file's first. Past that
-// first record they repeat one failure, so they go before any other detail. The
-// caller has established that the whole result does not fit. If nothing fits,
-// every excess record is omitted and the later reductions still apply.
-func reduceEncodingErrors(ctx context.Context, out result.Result, format string, bound int64) (result.Result, error) {
+// reduceEncodingErrors omits a lint or fix result's excess invalid-utf8 records and
+// always keeps each file's first. Past that first record they repeat one failure,
+// so they go before any other detail. With search it keeps the largest prefix that
+// fits, by a logarithmic number of whole-report attempts. Without search it omits
+// them all in one attempt, for the deadline fallback, whose job is to be ready. The
+// caller has established that the whole result does not fit. If nothing fits, every
+// excess record is omitted and the later reductions still apply.
+func reduceEncodingErrors(ctx context.Context, out result.Result, format string, bound int64, search bool) (result.Result, error) {
 	if out.Operation != "lint" && out.Operation != "fix" {
 		return out, nil
 	}
@@ -694,7 +708,7 @@ func reduceEncodingErrors(ctx context.Context, out result.Result, format string,
 		return r, n <= bound, err
 	}
 	best, ok, err := attempt(0)
-	if err != nil || !ok {
+	if err != nil || !ok || !search {
 		return best, err
 	}
 	for lo, hi := 0, len(excess)-1; lo < hi; {
@@ -732,7 +746,7 @@ func collapseEncodingRetention(out *result.Result) bool {
 	if !found {
 		return false
 	}
-	out.Omissions = append(kept, result.Omission{Section: "/errors", Reason: "output-limit", Message: "invalid UTF-8 records past the retention cap omitted; per-file counts combined to satisfy response-bytes", Count: &total})
+	out.Omissions = append(kept, result.Omission{Section: "/errors", Reason: "output-limit", Message: "invalid UTF-8 records past the retention cap omitted; per-file counts combined by bounded reporting", Count: &total})
 	return true
 }
 
@@ -779,7 +793,7 @@ func deadlineReport(ctx context.Context, original result.Result, format string, 
 		return encodedReport{}, err
 	}
 	if n > reportLimit(limits, "response-bytes") {
-		out, err = reduceEncodingErrors(ctx, out, format, reportLimit(limits, "response-bytes"))
+		out, err = reduceEncodingErrors(ctx, out, format, reportLimit(limits, "response-bytes"), false)
 		if err != nil {
 			return encodedReport{}, err
 		}
