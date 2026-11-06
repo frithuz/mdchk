@@ -80,7 +80,7 @@ reporting interruption returns incomplete/15. See its [command guide](commands/i
 `fix --dry-run` uses the same selection/configuration and reports validated
 candidate outcomes in all four formats without writing files; only text/JSON
 include preview diffs. MD047 supplies the first production correction, with minimal terminal-newline
-changes and conservative protected-content deferrals. MD019 and MD021 remove excess spaces from heading delimiter gaps. Apply uses portable native replacement on Linux, macOS and Windows, without cgo, and reports actual saved content; other operating systems refuse writes. MCP remains planned and is rejected by this build.
+changes and conservative protected-content deferrals. MD009 corrects trailing whitespace, and MD019 and MD021 remove excess spaces from heading delimiter gaps. Apply uses portable native replacement on Linux, macOS and Windows, without cgo, and reports actual saved content; other operating systems refuse writes. MCP remains planned and is rejected by this build.
 
 ## Get started with this build
 

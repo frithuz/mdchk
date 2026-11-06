@@ -160,10 +160,10 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
+production correction, and MD009, MD019 and MD021 also correct; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
 analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation
 analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis,
-MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD009 trailing-whitespace analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD014 shell-prompt analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD065 horizontal-rule blank-line analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD018 missing opening-hash spacing, MD019 extra
+MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD014 shell-prompt analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD065 horizontal-rule blank-line analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD018 missing opening-hash spacing, MD019 extra
 opening-hash spacing, MD020 missing terminal-hash spacing, MD021 closed-heading
 delimiter spacing, MD022 heading blank-line analysis, MD023 heading indentation
 analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026
@@ -744,9 +744,11 @@ consumed quote columns from byte extents; nearest-item baselines retain all actu
 ancestor item obligations on lazy lines. No grammar, public AST schema, parse
 retention or correction capability is added.
 
-MD009 projects manual physical suffix violations from completed original private
+MD009 projects physical suffix violations from completed original private
 syntax, scalar options and the original operation. It does not clone public AST
-or source/configuration, reparse, retain new parser metadata or produce edits.
+or source/configuration or reparse. The same pass supplies per-suffix facts for
+`fix_available`, and a separate producer and checker make and prove its edits; see
+[MD009 corrections](engineering/fixes.md#md009-corrections).
 
 MD010 projects manual one-byte original TAB findings through completed private
 production ownership and the original operation. CodeSpan remains protected;

@@ -17,7 +17,7 @@ See the [contract index](contracts.md) for related specifications and issue owne
 
 Use one shared correction planner for CLI dry-run/apply, standalone corrected content and project
 MCP. Preserve the existing rule-specific correction limits; this does not authorize automatic fixes
-for report-only rules or broaden the initial MD047 implementation scope.
+for report-only rules or broaden the implemented correction scopes.
 
 ### Atomicity
 
@@ -128,10 +128,12 @@ invocations with Darwin `flock`; that required platform-specific code and is rem
 one portable implementation. Stale protection still detects concurrent changes to the source,
 its dependencies and the parent immediately before the rename, but it does not serialize writers,
 and a noncooperating writer can change a file between the last check and the rename. Reviewed
-when MD019 and MD021 corrections joined MD047: there is no new lock, in line with #261 and the
-rule that a full no-lost-update guarantee requires exclusive access during apply. Two concurrent
-runs with the same configuration compute identical output. Runs with different configurations
-can compute different output, and the last writer can overwrite the other's result. Do not imply that any editor or process honors a lock.
+when MD019, MD021 and MD009 corrections joined MD047: no lock is added, intentionally, because mdchk
+trusts one execution at a time, in line with #261. Stale protection is unchanged. Two concurrent
+runs with the same configuration compute identical output. Runs with different configurations,
+such as different MD009 settings, can compute different output, and a run can overwrite another
+run's result after its last check. Full no-lost-update protection requires exclusive or coordinated
+access. Do not imply that any editor or process honors a lock.
 
 ### Preconditions
 
@@ -209,6 +211,13 @@ stable snapshot is obtained. A stale refusal/write failure remains an io error a
 existing precedence even if the unsaved candidate was clean. Post-write checks describe observed
 saved content, not a promise that external writers cannot change it later.
 
+After a complete validation, a saved run confirms and analyzes its result on a fresh
+allowance of the same limits. Those bytes were already analyzed within the limits, so a
+spent budget can't report a successful write as incomplete. This doubles what one
+operation can spend at most. Status `15` can still accompany a `written` change if the
+operation is cancelled, if a limit stops the write itself or a later file, or if a
+resource lookup for the saved view exhausts the budget, which stays shared.
+
 ### Design status
 
 This decision sets product guarantees and accepted limitations. The #146/#147 native adapter was
@@ -278,9 +287,48 @@ An EOF probe may consume one unused construction reservation, without refunds.
 Only admitted entries reach deterministic ordering and later target selection.
 
 
+### MD009 corrections
+
+`internal/rules.Corrections` regenerates one atomic MD009 group per active finding from
+each round's own analysis and parse. Each group has a stable line-based ID, the
+diagnostic span as its anchor and the `Meaning`, `ProtectedSyntax` and
+`DirectiveStructure` requirements. `hard_break_spaces` comes from the target's resolved
+plan. The single `Document.TrailingWhitespace` pass returns per-suffix facts, so MD009's
+rule callback neither reparses nor scans protected nodes per finding. Literal code gets
+no group. A suffix known to carry meaning, or a hard break that would grow past
+`parser.MaxGrownHardBreakSpaces`, gets a zero-edit group with a `DeferReason`, which the
+planner reports without blocking other groups.
+
+The expansion limit is why `hard_break_spaces` can't grow a file arbitrarily. Growth is
+capped per suffix, so it stays a few bytes per line, and the check runs before any
+replacement is built, so a huge value allocates nothing. No shared growth limit exists:
+every other production fixer deletes bytes or adds one line ending.
+
+The independently registered checker recomputes the expected edits from the before parse
+and trusts neither producer data nor `fix_available`. Through `CheckContext.Once`, it
+proves `OnlyEditsChanged` and that both parses match in node kinds and order, break
+kinds and origins, heading, list, table, code, task and link properties, and all
+reference definitions. Text values may differ only in ASCII spaces and tabs directly
+before a break. Each group then checks its own span, original bytes and replacement. Any
+mismatch returns a non-`Preserved` proof, and the shared `commonPreservation` checks stay
+mandatory. No `ForbidNewFindings` is registered: changing line-end whitespace outside
+comments cannot create a directive finding.
+
+`editMapping` lookups binary-search cumulative deltas, so preservation checks don't walk
+the edit list per node. A lint target's projector charges each position's search and
+line-prefix cost rather than the whole source, so one finding per line doesn't exhaust
+the budget. Budget exhaustion and validation failure stay fail-closed, with no partial
+candidate.
+
+An MD009 removal touching MD047's EOF insertion defers both groups with reason `conflict`.
+MD009 sets `fix_available: false` for a suffix at EOF while MD047 is active there. MD047's
+flag is unchanged, so an MD047 finding can show `fix_available: true` and still be
+deferred. A manual MD047 finding is not held back when an MD009 suffix touches it, so
+the planner still defers that pair and the suffix isn't corrected alone.
+
 ### Production rule integration
 
-`internal/rules.Corrections` regenerates MD047, MD019 and MD021 groups from each
+`internal/rules.Corrections` regenerates MD047, MD009, MD019 and MD021 groups from each
 current round's actual shared analysis and source-owned diagnostic ranges. For
 MD047, the source's retained physical-line index supplies the same terminal facts
 as analysis; the shared `fix.InsertionEnding` chooses inserted spelling without
@@ -304,9 +352,10 @@ read-only final check. A failing checker still defers every group in the file fo
 that round, so a producer must not propose an edit its checker would reject. An
 MD047 finding without `fix_available` is therefore held back until no other
 correction remains, and is then proposed alone: it defers as it always did, without
-costing the heading corrections already retained. MD047's checker proves its own
+costing the corrections already retained. MD047's checker proves its own
 suffix edit and `CheckContext.OnlyEditsChanged`; task sources compare through the
-edit mapping rather than by absolute offset.
+edit mapping rather than by absolute offset. In a round with other edits, a task fact
+those edits touch may differ only in its line-end whitespace.
 
 A checker runs once per accepted group, and `BoundedViews`, `Edits` and
 `ForbidNewFindings` charge whole-round costs on every call. Proof that spans the

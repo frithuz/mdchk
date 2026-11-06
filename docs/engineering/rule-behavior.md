@@ -443,8 +443,8 @@ HTMLBlock tails remain protected, as do actual inline HTML/comment owner bytes
 and semantic raw-tag payload between actual tags, including Text/HardBreak bytes.
 Image-description tags cannot change enclosing raw state. Protection wins code
 opt-in. For example, `> <SPACE>` reports, `>` passes, and `a<TAB><SPACE><SPACE>`
-reports despite any smaller real break marker. These are manual analysis ranges;
-MD009 supplies no correction producer in this pass.
+reports despite any smaller real break marker. MD009 corrects these ranges through its
+producer and checker; see [MD009 corrections](fixes.md#md009-corrections).
 
 ### Blank lines
 
