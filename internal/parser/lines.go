@@ -110,6 +110,75 @@ func (index LineIndex) FailurePosition() (Position, error) {
 	return index.positionAt(index.invalid.Value)
 }
 
+// InvalidSubpart locates one invalid maximal subpart: the half-open byte span and
+// the one-based point of its leading byte. Each valid scalar and each earlier
+// invalid subpart on the physical line counts as one column.
+type InvalidSubpart struct {
+	Start, End int
+	Position   Position
+}
+
+// InvalidSubparts returns the first retain invalid maximal subparts in source
+// order and the exact number found. Boundaries follow Unicode U+FFFD substitution
+// of maximal subparts. It is one forward pass: O(N) time for N source bytes and
+// O(retain) storage, whatever the error count. Valid sources return nil, 0.
+func (index LineIndex) InvalidSubparts(retain int) ([]InvalidSubpart, int) {
+	meterWork(index.ctx, 1)
+	if !index.invalid.Present {
+		return nil, 0
+	}
+	text := index.source.content
+	meterWork(index.ctx, len(text))
+	var parts []InvalidSubpart
+	total := 0
+	for n, line := range index.lines {
+		column := 1
+		for offset := line.start; offset < line.end; column++ {
+			r, size := utf8.DecodeRuneInString(text[offset:line.end])
+			if r == utf8.RuneError && size == 1 {
+				// CR and LF are never continuation bytes, so a subpart cannot
+				// cross the physical line that holds its leading byte.
+				size = maximalSubpart(text[offset:line.end])
+				if total < retain {
+					parts = append(parts, InvalidSubpart{Start: offset, End: offset + size, Position: Position{Line: n + 1, Column: column}})
+				}
+				total++
+			}
+			offset += size
+		}
+	}
+	return parts, total
+}
+
+// maximalSubpart measures the longest prefix of a well-formed sequence at the
+// start of text, which must not begin with a valid scalar. The ranges are those
+// of Unicode table 3-7. C0, C1, F5..FF and lone continuation bytes stand alone.
+func maximalSubpart(text string) int {
+	need, low, high := 0, byte(0x80), byte(0xBF)
+	switch lead := text[0]; {
+	case lead >= 0xC2 && lead <= 0xDF:
+		need = 1
+	case lead == 0xE0:
+		need, low = 2, 0xA0
+	case lead == 0xED:
+		need, high = 2, 0x9F
+	case lead >= 0xE1 && lead <= 0xEF:
+		need = 2
+	case lead == 0xF0:
+		need, low = 3, 0x90
+	case lead == 0xF4:
+		need, high = 3, 0x8F
+	case lead >= 0xF1 && lead <= 0xF3:
+		need = 3
+	}
+	size := 1
+	for size <= need && size < len(text) && text[size] >= low && text[size] <= high {
+		size++
+		low, high = 0x80, 0xBF
+	}
+	return size
+}
+
 // Position converts a scalar boundary in a strict-valid UTF-8 source, rejecting
 // continuation-byte and CRLF interiors. Terminator start is the preceding line's
 // end; terminator end is next-line column 1, including virtual EOF after a final

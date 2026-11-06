@@ -61,6 +61,9 @@ type OperationBudget struct {
 	checkpoints int64
 	exceeded    *LimitExceeded
 	scale       contentScale
+	// encodingErrors counts invalid UTF-8 records retained by this operation. It
+	// is a retention allowance across per-target analyses, not a resource limit.
+	encodingErrors int64
 }
 
 // Per-byte allowances granted for acquired content when scaling is enabled.
@@ -233,6 +236,21 @@ func (b *OperationBudget) ChargeNodes(records int64) error {
 		return &copy
 	}
 	return nil
+}
+
+// EncodingErrorsRetained reports the invalid UTF-8 records this operation has
+// retained so far, across every analysis sharing the budget.
+func (b *OperationBudget) EncodingErrorsRetained() int64 {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.encodingErrors
+}
+
+// RetainEncodingErrors adds newly retained invalid UTF-8 records to the count.
+func (b *OperationBudget) RetainEncodingErrors(records int64) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.encodingErrors = addBounded(b.encodingErrors, records)
 }
 
 type budgetKey struct{}
