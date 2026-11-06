@@ -9,7 +9,10 @@ import (
 // BlankBodyLines returns the first excess body span of each maximal physical
 // blank run. It borrows completed original production syntax and its allowance.
 // Protected lines break runs; prefixes are only those actually retained on each
-// line. Detached findings convey no correction authority, including empty spans.
+// line. A line whose last retained prefix is an item-prefix is a marker line: it
+// is nonblank, so it breaks runs and is never selected. A line ending in a
+// quote-prefix stays blank. Detached findings convey no correction authority,
+// including empty spans.
 func (d *Document) BlankBodyLines(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, maximum int) ([]Span, error) {
 	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 1, 1); err != nil {
 		return nil, err
@@ -18,8 +21,8 @@ func (d *Document) BlankBodyLines(ctx context.Context, budget *OperationBudget, 
 		return nil, ErrModel
 	}
 	type lineState struct {
-		suffix, prefix int
-		protected      bool
+		suffix, prefix, item int
+		protected            bool
 	}
 	if err := headingFactCharge(ctx, budget, int64(len(index.lines))+1, int64(len(index.lines))); err != nil {
 		return nil, err
@@ -31,7 +34,7 @@ func (d *Document) BlankBodyLines(ctx context.Context, budget *OperationBudget, 
 			return nil, err
 		}
 		s := &lines[i]
-		s.suffix, s.prefix = l.end, l.start
+		s.suffix, s.prefix, s.item = l.end, l.start, -1
 		for s.suffix > l.start {
 			if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
 				return nil, err
@@ -142,7 +145,9 @@ func (d *Document) BlankBodyLines(ctx context.Context, budget *OperationBudget, 
 					return nil, ErrModel
 				}
 				lines[i].prefix = max(lines[i].prefix, m.Source.End())
-
+				if m.Role == "item-prefix" {
+					lines[i].item = max(lines[i].item, m.Source.End())
+				}
 			}
 		}
 		switch n.Kind() {
@@ -231,7 +236,7 @@ func (d *Document) BlankBodyLines(ctx context.Context, budget *OperationBudget, 
 		if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
 			return nil, err
 		}
-		if s.protected || s.suffix > s.prefix {
+		if s.protected || s.suffix > s.prefix || s.item == s.prefix {
 			run, reported = 0, false
 			continue
 		}

@@ -109,20 +109,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
-    "Expected": [
-      {
-        "Range": [
-          2,
-          2,
-          2,
-          1,
-          2,
-          1
-        ],
-        "Source": "",
-        "Message": "Too many consecutive blank body lines."
-      }
-    ]
+    "Expected": []
   },
   {
     "Name": "quote-transition",
@@ -201,20 +188,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
-    "Expected": [
-      {
-        "Range": [
-          5,
-          5,
-          2,
-          2,
-          2,
-          2
-        ],
-        "Source": "",
-        "Message": "Too many consecutive blank body lines."
-      }
-    ]
+    "Expected": []
   },
   {
     "Name": "nested-transitions",
@@ -1282,5 +1256,334 @@
     "Recognize": true,
     "Incomplete": true,
     "Expected": []
+  },
+  {
+    "Name": "empty-issue-example",
+    "Source": "a\n\n-\n\nb\n",
+    "SHA256": "7b42a9bb55347ac187c4f3bd020560db55a82e308d094c306ca577b2e1ceadd1",
+    "SizeBytes": 8,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty-star",
+    "Source": "*\n\n*\n",
+    "SHA256": "c8472f96b570b9ed44ec2ed24c9c20270679ed811cc88a60bf49dac88880e61f",
+    "SizeBytes": 5,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty-plus",
+    "Source": "+\n\n+\n",
+    "SHA256": "51dbef80562ea3b22b42a728d09feaf72241f1f46cfdacb7c0cd503c1191901b",
+    "SizeBytes": 5,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty-ordered-dot",
+    "Source": "1.\n\n2.\n",
+    "SHA256": "b366f4baf95459396ddddf05b4d3d0f010ed1aeb0a77ae6c0a7bac49c2f1609b",
+    "SizeBytes": 7,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty-ordered-paren",
+    "Source": "1)\n\n2)\n",
+    "SHA256": "83dd0db390d005b94ebc23304231976f7c4bcff320b064864a32b7f76387f47a",
+    "SizeBytes": 7,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty-trailing-whitespace",
+    "Source": "- \t \n\n-  \n",
+    "SHA256": "a314e3a9cf35201a6d605795e131a17f290c9bf4d5d87a93df09c6a7e0cbb0e6",
+    "SizeBytes": 10,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty-crlf",
+    "Source": "-\r\n\r\n-\r\n",
+    "SHA256": "46150896dd1777e14e871cf7553d1ade26da1687b051070dc75c862a007619a6",
+    "SizeBytes": 8,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "empty-quoted-ordered",
+    "Source": "> 1.\n>\n> 2)\n",
+    "SHA256": "7d62df9be5e689fd8a219228a42e81b762e5036b8e2e8c4bf0874a77d871969e",
+    "SizeBytes": 12,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "marker-runs",
+    "Source": "a\n\n\n-\n\n\nb\n",
+    "SHA256": "2dbd3d9548e63443d5bfce2f20d85fae314258a5cbe78202ce5a501fd10b9fd4",
+    "SizeBytes": 10,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          3,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          7,
+          7,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "ordered-marker-runs",
+    "Source": "a\n\n\n1.\n\n\nb\n",
+    "SHA256": "d06d26bf907c9722ded218cc9715b3c7f3a900819fae93d31ace764a4a4d03b9",
+    "SizeBytes": 11,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          3,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          8,
+          8,
+          6,
+          1,
+          6,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "quoted-marker-runs",
+    "Source": "> a\n>\n>\n> -\n>\n>\n> b\n",
+    "SHA256": "191d591e81c7f003e5be407d903c966572d8dddb53cdac9f13a6421ba87891d2",
+    "SizeBytes": 20,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          7,
+          7,
+          3,
+          2,
+          3,
+          2
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          15,
+          15,
+          6,
+          2,
+          6,
+          2
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "marker-then-run",
+    "Source": "-\n\n\n-\n",
+    "SHA256": "009406e149ec6e52bf76f4637a4f987121c684cabb7e527ab37e4aaf78ef603d",
+    "SizeBytes": 6,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          3,
+          3,
+          1,
+          3,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "marker-maximum-zero",
+    "Source": "a\n\n-\n\nb\n",
+    "SHA256": "7b42a9bb55347ac187c4f3bd020560db55a82e308d094c306ca577b2e1ceadd1",
+    "SizeBytes": 8,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          2,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      },
+      {
+        "Range": [
+          5,
+          5,
+          4,
+          1,
+          4,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "marker-only-zero",
+    "Source": "-\n",
+    "SHA256": "61d1954b9aba0c9aedb8d1338804e817c7262cfc36da94161dab8e3ed7a3a43a",
+    "SizeBytes": 2,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "marker-later-content",
+    "Source": "-\n  foo\n",
+    "SHA256": "3b1030026bce7023d8aef62986929474a95ad968c78f2d66d981c9b50c6d2fcb",
+    "SizeBytes": 8,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "nested-markers-zero",
+    "Source": "- -\n",
+    "SHA256": "8e07436666131322fc7f4fd67a506b25521eee966aacf39bd108cd01e2e94e46",
+    "SizeBytes": 4,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "quoted-marker-zero",
+    "Source": "> -\n",
+    "SHA256": "ae25b84b27798ce32b4b7c3edfcb2c2752e6e02fa5f9530d2196a52ad324c4af",
+    "SizeBytes": 4,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "quote-only-zero",
+    "Source": ">\n",
+    "SHA256": "60394cf8a46980d6199d0a3a71692ecb6689151f46a7085d31faab90b9d1f5d7",
+    "SizeBytes": 2,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          1,
+          1,
+          2,
+          1,
+          2
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "item-then-quote-zero",
+    "Source": "- >\n",
+    "SHA256": "bc21469c7ad2022ccb7eb45205d92096199f61d749c060ed296e002ef4882a63",
+    "SizeBytes": 4,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          3,
+          1,
+          4,
+          1,
+          4
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
   }
 ]
