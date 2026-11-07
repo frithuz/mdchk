@@ -17,6 +17,7 @@ import (
 	"github.com/frithuz/mdchk/internal/files"
 	inspection "github.com/frithuz/mdchk/internal/inspect"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
 )
@@ -47,7 +48,7 @@ func parseInspect(args []string) (inspectOptions, error) {
 	if err != nil {
 		return inspectOptions{}, err
 	}
-	if reportLimit(opts.limits, "document-bytes") > reportLimit(opts.limits, "total-content-bytes") {
+	if report.ReportLimit(opts.limits, "document-bytes") > report.ReportLimit(opts.limits, "total-content-bytes") {
 		return inspectOptions{}, errors.New("limit document-bytes must not exceed total-content-bytes")
 	}
 	for name := range opts.limits {
@@ -92,9 +93,9 @@ func runInspect(ctx context.Context, args []string, stdout io.Writer, version st
 	if opts.version {
 		return output(stdout, "mdchk "+version+"\n", 0)
 	}
-	profile := parser.Limits{DocumentBytes: reportLimit(opts.limits, "document-bytes"), SyntaxDepth: reportLimit(opts.limits, "syntax-depth"), DocumentNodes: reportLimit(opts.limits, "document-nodes"), TotalNodes: reportLimit(opts.limits, "total-nodes"), WorkUnits: reportLimit(opts.limits, "work-units"), OperationTime: time.Duration(reportLimit(opts.limits, "operation-time"))}
+	profile := parser.Limits{DocumentBytes: report.ReportLimit(opts.limits, "document-bytes"), SyntaxDepth: report.ReportLimit(opts.limits, "syntax-depth"), DocumentNodes: report.ReportLimit(opts.limits, "document-nodes"), TotalNodes: report.ReportLimit(opts.limits, "total-nodes"), WorkUnits: report.ReportLimit(opts.limits, "work-units"), OperationTime: time.Duration(report.ReportLimit(opts.limits, "operation-time"))}
 	budget, err := newOperationBudget(profile, opts.limits)
-	if err == nil && (reportLimit(opts.limits, "structured-input-depth") > 4096 || reportLimit(opts.limits, "total-config-bytes") > 1<<30) {
+	if err == nil && (report.ReportLimit(opts.limits, "structured-input-depth") > 4096 || report.ReportLimit(opts.limits, "total-config-bytes") > 1<<30) {
 		err = errors.New("unsupported configuration limits")
 	}
 	if err != nil {
@@ -112,14 +113,14 @@ func runInspect(ctx context.Context, args []string, stdout io.Writer, version st
 		return inspectFailure(err, "provider-initialization", result.Internal, opts.format, stdout, opts.limits)
 	}
 	out, p := executeInspect(ctx, opts, version, cwd, budget, registry, providers, caps)
-	return reportInspection(out, p, opts.format, stdout, opts.limits)
+	return report.ReportInspection(out, p, opts.format, stdout, opts.limits)
 }
 
 func executeInspect(ctx context.Context, opts inspectOptions, version, cwd string, budget *parser.OperationBudget, registry *engine.Registry, providers engine.ValidationProviders, caps config.Capabilities) (output result.Result, projected *inspection.Projection) {
 	defer func() { setInspectionLimits(&output, opts.limits) }()
 	ctx, cancel := context.WithTimeout(ctx, budget.Limits().OperationTime)
 	defer cancel()
-	snapshot, err := inspection.Acquire(ctx, opts.paths[0], inspection.Options{WorkingDirectory: cwd, ConfigPath: opts.config, Version: version, Budget: budget, TotalContentBytes: reportLimit(opts.limits, "total-content-bytes"), ConfigBytes: reportLimit(opts.limits, "config-bytes"), TotalConfigBytes: reportLimit(opts.limits, "total-config-bytes"), StructuredDepth: int(reportLimit(opts.limits, "structured-input-depth")), Registry: registry, Providers: providers, Capabilities: caps})
+	snapshot, err := inspection.Acquire(ctx, opts.paths[0], inspection.Options{WorkingDirectory: cwd, ConfigPath: opts.config, Version: version, Budget: budget, TotalContentBytes: report.ReportLimit(opts.limits, "total-content-bytes"), ConfigBytes: report.ReportLimit(opts.limits, "config-bytes"), TotalConfigBytes: report.ReportLimit(opts.limits, "total-config-bytes"), StructuredDepth: int(report.ReportLimit(opts.limits, "structured-input-depth")), Registry: registry, Providers: providers, Capabilities: caps})
 	if snapshot == nil {
 		out := newInspectResult()
 		if isInspectInterruption(err) {
@@ -147,7 +148,7 @@ func executeInspect(ctx context.Context, opts inspectOptions, version, cwd strin
 		manifest, projected := inspectionManifest(snapshot)
 		encoded, _ := json.Marshal(manifest)
 		empty, _ := json.Marshal(newInspectResult())
-		if int64(len(encoded)-len(empty))+reportLimit(opts.limits, "report-reserve-bytes") > reportLimit(opts.limits, "response-bytes") {
+		if int64(len(encoded)-len(empty))+report.ReportLimit(opts.limits, "report-reserve-bytes") > report.ReportLimit(opts.limits, "response-bytes") {
 			manifest.Interruptions = append(manifest.Interruptions, result.Interruption{ID: "manifest-interruption", Reason: "limit-exceeded", Phase: "acquisition", Message: "known target identity plus reporting reserve exceeds response-bytes; analysis did not start"})
 			if cause := snapshot.ConfigurationError(); cause != nil {
 				manifest.Errors = append(manifest.Errors, result.Error{Category: result.Configuration, Code: "configuration-invalid", Scope: "observation", Path: snapshot.File().Path, Message: cause.Error()})
@@ -205,7 +206,7 @@ func executeInspect(ctx context.Context, opts inspectOptions, version, cwd strin
 
 	// Existing package records are already canonical. Path rebasing preserves IDs
 	// and links; reporting must not run the lint outcome finalizer on these views.
-	inspectionOutcome(&out)
+	report.InspectionOutcome(&out)
 	out.Inspection, _ = json.Marshal(p)
 	// Observe the same elapsed meter after CLI path/projection publication, too;
 	// available completed data remains justified if that final stage expires.
@@ -216,7 +217,7 @@ func executeInspect(ctx context.Context, opts inspectOptions, version, cwd strin
 		}
 		if stop != nil {
 			out.Interruptions = append(out.Interruptions, inspectInterruption(stop, "presentation"))
-			inspectionOutcome(&out)
+			report.InspectionOutcome(&out)
 		}
 	}
 	return out, &p
@@ -227,7 +228,7 @@ func executeInspect(ctx context.Context, opts inspectOptions, version, cwd strin
 func inspectionManifest(snapshot *inspection.Snapshot) (result.Result, inspection.Projection) {
 	f := snapshot.File()
 	exclusion := snapshot.Exclusion()
-	p := inspection.Projection{ProjectionVersion: 1, File: inspection.InspectionFile{ResolvedPath: f.Path, BinaryVersion: f.Version, SizeBytes: f.SizeBytes, SizeDisplay: f.SizeDisplay, SHA1: f.SHA1, SHA256: f.SHA256, NormallyExcluded: exclusion.Excluded, NormallyExcludedKnown: exclusion.Known, PhysicalLineCount: snapshot.Lines().LineCount()}, Configuration: omittedSection[result.ConfigurationData](), Flavor: omittedSection[string](), AST: omittedSection[inspection.AST](), Rules: omittedSection[[]inspection.Rule](), RuleCounts: omittedSection[json.RawMessage](), Directives: omittedSection[[]inspection.Directive](), RawCandidates: omittedSection[[]inspection.RawCandidate](), ParsingNotes: omittedSection[[]result.Note](), Metadata: omittedSection[inspection.MetadataRecord](), DocumentContext: inspection.Section[json.RawMessage]{Availability: "not-requested", Reasons: []string{}}, Resources: inspection.Section[json.RawMessage]{Availability: "not-requested", Reasons: []string{}}}
+	p := inspection.Projection{ProjectionVersion: 1, File: inspection.InspectionFile{ResolvedPath: f.Path, BinaryVersion: f.Version, SizeBytes: f.SizeBytes, SizeDisplay: f.SizeDisplay, SHA1: f.SHA1, SHA256: f.SHA256, NormallyExcluded: exclusion.Excluded, NormallyExcludedKnown: exclusion.Known, PhysicalLineCount: snapshot.Lines().LineCount()}, Configuration: report.OmittedSection[result.ConfigurationData](), Flavor: report.OmittedSection[string](), AST: report.OmittedSection[inspection.AST](), Rules: report.OmittedSection[[]inspection.Rule](), RuleCounts: report.OmittedSection[json.RawMessage](), Directives: report.OmittedSection[[]inspection.Directive](), RawCandidates: report.OmittedSection[[]inspection.RawCandidate](), ParsingNotes: report.OmittedSection[[]result.Note](), Metadata: report.OmittedSection[inspection.MetadataRecord](), DocumentContext: inspection.Section[json.RawMessage]{Availability: "not-requested", Reasons: []string{}}, Resources: inspection.Section[json.RawMessage]{Availability: "not-requested", Reasons: []string{}}}
 	r := newInspectResult()
 	r.CheckedFiles = []string{f.Path}
 	identity := result.Snapshot{View: "original", SHA256: f.SHA256, SizeBytes: int(f.SizeBytes)}
@@ -250,7 +251,7 @@ func setInspectionLimits(out *result.Result, limits map[string]int64) {
 		if name == "response-bytes" || name == "report-reserve-bytes" {
 			unit = "bytes"
 		}
-		out.EffectiveLimits = append(out.EffectiveLimits, result.EffectiveLimit{Name: name, Value: reportLimit(limits, name), Unit: unit, Source: source})
+		out.EffectiveLimits = append(out.EffectiveLimits, result.EffectiveLimit{Name: name, Value: report.ReportLimit(limits, name), Unit: unit, Source: source})
 	}
 }
 
@@ -273,55 +274,15 @@ func inspectInterruption(err error, phase string) result.Interruption {
 	}
 	return stop
 }
-func finalizeInspection(out *result.Result) { engine.FinalizeLintResult(out); inspectionOutcome(out) }
-func inspectionOutcome(out *result.Result) {
-	out.Operation = "inspect"
-	out.Status = "inspected"
-	if len(out.Errors) > 0 || len(out.Coverage) > 0 {
-		out.Complete = false
-	}
-	if len(out.Omissions) > 0 {
-		out.Complete = false
-	}
-	if len(out.Interruptions) > 0 || result.HasReportingOmission(out.Omissions) {
-		out.Complete = false
-		out.Status = "incomplete"
-	}
-	for _, e := range out.Errors {
-		if e.Scope == "operation" {
-			out.Complete = false
-			out.Status = "error"
-		}
-	}
-}
-func inspectionExit(out result.Result) int {
-	status := 0
-	if len(out.Interruptions) > 0 || result.HasReportingOmission(out.Omissions) {
-		status = exitIncomplete
-	}
-	for _, category := range []result.ErrorCategory{result.Usage, result.Configuration, result.IO, result.Internal} {
-		for _, e := range out.Errors {
-			if e.Scope == "operation" && e.Category == category {
-				switch category {
-				case result.Usage:
-					status = exitUsage
-				case result.Configuration:
-					status = exitConfig
-				case result.IO:
-					status = exitIO
-				case result.Internal:
-					status = 14
-				}
-			}
-		}
-	}
-	return status
+func finalizeInspection(out *result.Result) {
+	engine.FinalizeLintResult(out)
+	report.InspectionOutcome(out)
 }
 func inspectFailure(err error, code string, category result.ErrorCategory, format string, w io.Writer, limits map[string]int64) int {
 	out := newInspectResult()
 	out.Errors = append(out.Errors, result.Error{Category: category, Code: code, Scope: "operation", Message: err.Error()})
 	finalizeInspection(&out)
-	return reportInspection(out, nil, format, w, limits)
+	return report.ReportInspection(out, nil, format, w, limits)
 }
 
 func rebaseInspection(out *result.Result, p *inspection.Projection, cwd string) {

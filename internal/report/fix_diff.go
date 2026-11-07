@@ -1,4 +1,4 @@
-package cli
+package report
 
 import (
 	"context"
@@ -10,11 +10,11 @@ import (
 type physicalDiffLine struct{ text, ending string }
 type linePair struct{ old, new int }
 
-// buildFixDiff uses unique-line patience anchors and common edges. Unmatched
+// BuildFixDiff uses unique-line patience anchors and common edges. Unmatched
 // regions are whole replacements; no quadratic edit-distance table or trace is
 // constructed. Sorting is O(n log n), storage O(n), and actual byte scans,
 // comparisons and records consume the same remaining operation meter.
-func buildFixDiff(ctx context.Context, budget *parser.OperationBudget, before, after parser.Source) (result.Diff, error) {
+func BuildFixDiff(ctx context.Context, budget *parser.OperationBudget, before, after parser.Source) (result.Diff, error) {
 	charge := func(n int64) error {
 		if err := ctx.Err(); err != nil {
 			return err

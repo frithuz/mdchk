@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/report"
 )
 
 func TestMD087BoundedOutputKeepsPrivateAudit(t *testing.T) {
@@ -33,26 +34,26 @@ func TestMD087BoundedOutputKeepsPrivateAudit(t *testing.T) {
 	original, _ := json.Marshal(out)
 	for _, format := range []string{"json", "text"} {
 		t.Run(format, func(t *testing.T) {
-			encoded, err := buildReport(context.Background(), out, format, map[string]int64{"response-bytes": 10000})
+			encoded, err := report.BuildReport(context.Background(), out, format, map[string]int64{"response-bytes": 10000})
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(encoded.data) > 10000 || encoded.out.Complete {
-				t.Fatal(encoded.out)
+			if len(encoded.Data) > 10000 || encoded.Out.Complete {
+				t.Fatal(encoded.Out)
 			}
 			omitted := 0
-			for _, o := range encoded.out.Omissions {
+			for _, o := range encoded.Out.Omissions {
 				if o.Section == "/diagnostics" && o.Count != nil {
 					omitted += *o.Count
 				}
 			}
-			if omitted == 0 || omitted+len(encoded.out.Diagnostics) != owners {
-				t.Fatal(encoded.out)
+			if omitted == 0 || omitted+len(encoded.Out.Diagnostics) != owners {
+				t.Fatal(encoded.Out)
 			}
 			if format == "json" {
-				validateEmitted(t, t.TempDir(), encoded.data)
+				validateEmitted(t, t.TempDir(), encoded.Data)
 			}
-			if strings.Contains(string(encoded.data), "SuppressionDecisions") || strings.Contains(string(encoded.data), "suppression-unused") {
+			if strings.Contains(string(encoded.Data), "SuppressionDecisions") || strings.Contains(string(encoded.Data), "suppression-unused") {
 				t.Fatal("private audit records leaked into lint")
 			}
 		})

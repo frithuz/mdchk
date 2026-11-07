@@ -1,4 +1,4 @@
-package cli
+package report
 
 import (
 	"bytes"
@@ -31,12 +31,12 @@ func omitFixDeferred(out *result.Result) {
 // fixed category summaries and collection lengths before timed detail work. It
 // never clones diff hunks, walks diagnostic strings, or marshals the full result.
 // The outcome/proposal manifest was admitted before acquisition.
-func emergencyFixReport(original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+func emergencyFixReport(original result.Result, format string, limits map[string]int64) (EncodedReport, error) {
 	if format == "github" {
-		return reservedEditorReport(context.Background(), original, limits, encodeGitHub)
+		return ReservedEditorReport(context.Background(), original, limits, EncodeGitHub)
 	}
 	if format == "vscode" {
-		return emergencyVSCodeReport(original, limits)
+		return EmergencyVSCodeReport(original, limits)
 	}
 	out := result.NewFix(original.DryRun != nil && *original.DryRun)
 	out.Files = slices.Clone(original.Files)
@@ -71,12 +71,12 @@ func emergencyFixReport(original result.Result, format string, limits map[string
 	out.Interruptions = append(out.Interruptions, result.Interruption{Reason: "deadline-exceeded", Phase: "reporting", Message: "reporting-time exhausted while constructing result details"})
 	setReportLimits(&out, limits)
 	engine.FinalizeLintResult(&out)
-	n, err := reportSize(context.Background(), out, format)
+	n, err := ReportSize(context.Background(), out, format)
 	if err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
-	if n > reportLimit(limits, "response-bytes") {
-		return encodedReport{}, errReportBudget
+	if n > ReportLimit(limits, "response-bytes") {
+		return EncodedReport{}, ErrReportBudget
 	}
 	var data []byte
 	if format == "json" {
@@ -84,10 +84,10 @@ func emergencyFixReport(original result.Result, format string, limits map[string
 		data = append(data, '\n')
 	} else {
 		var b bytes.Buffer
-		err = renderText(context.Background(), &b, out)
+		err = RenderText(context.Background(), &b, out)
 		data = b.Bytes()
 	}
-	return encodedReport{data: data, out: out}, err
+	return EncodedReport{Data: data, Out: out}, err
 }
 func renderFixText(ctx context.Context, w io.Writer, r result.Result) error {
 	line := func(format string, args ...any) error {
@@ -98,13 +98,13 @@ func renderFixText(ctx context.Context, w io.Writer, r result.Result) error {
 		return err
 	}
 	for _, c := range r.Changes {
-		if err := line("%s %s: %d validated edits (%s) %s -> %s\n", textField(c.Disposition), textField(c.Path), c.EditCount, textField(joinRules(c.Rules)), c.Before.SHA256, c.Candidate.SHA256); err != nil {
+		if err := line("%s %s: %d validated edits (%s) %s -> %s\n", TextField(c.Disposition), TextField(c.Path), c.EditCount, TextField(joinRules(c.Rules)), c.Before.SHA256, c.Candidate.SHA256); err != nil {
 			return err
 		}
 		if c.Diff == nil {
 			continue
 		}
-		if err := line("--- %s (original)\n+++ %s (candidate)\n", textField(c.Path), textField(c.Path)); err != nil {
+		if err := line("--- %s (original)\n+++ %s (candidate)\n", TextField(c.Path), TextField(c.Path)); err != nil {
 			return err
 		}
 		for _, h := range c.Diff.Hunks {
@@ -119,7 +119,7 @@ func renderFixText(ctx context.Context, w io.Writer, r result.Result) error {
 				if l.Kind == "remove" {
 					prefix = "-"
 				}
-				if err := line("%s%s [%s]\n", prefix, textField(l.Text), l.LineEnding); err != nil {
+				if err := line("%s%s [%s]\n", prefix, TextField(l.Text), l.LineEnding); err != nil {
 					return err
 				}
 				if l.LineEnding == "none" {
@@ -131,16 +131,16 @@ func renderFixText(ctx context.Context, w io.Writer, r result.Result) error {
 		}
 	}
 	for _, d := range r.DeferredFixes {
-		if err := line("deferred %s %s %s (%s): %s\n", textField(d.Path), textField(d.Rule), textField(d.GroupID), textField(d.Reason), textField(d.Message)); err != nil {
+		if err := line("deferred %s %s %s (%s): %s\n", TextField(d.Path), TextField(d.Rule), TextField(d.GroupID), TextField(d.Reason), TextField(d.Message)); err != nil {
 			return err
 		}
 	}
 	for _, f := range r.Files {
-		if err := line("outcome %s: %s\n", textField(f.Path), textField(f.WriteStatus)); err != nil {
+		if err := line("outcome %s: %s\n", TextField(f.Path), TextField(f.WriteStatus)); err != nil {
 			return err
 		}
 		for _, name := range f.Leftovers {
-			if err := line("owned staging leftover for %s: %s\n", textField(f.Path), textField(name)); err != nil {
+			if err := line("owned staging leftover for %s: %s\n", TextField(f.Path), TextField(name)); err != nil {
 				return err
 			}
 		}

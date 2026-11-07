@@ -172,6 +172,9 @@ production availability. See the
 [engine contracts](engineering.md#shared-engine-and-package-boundaries) for callback
 and coverage requirements.
 
+Code that two rules share goes in a small, specifically named package under
+`internal/rules/internal/`, never in another rule's file.
+
 ## Static analysis
 
 Run the same pinned gate as CI from the checkout root (POSIX shell, including

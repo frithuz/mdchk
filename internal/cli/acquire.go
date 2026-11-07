@@ -14,6 +14,7 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/files"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
 )
@@ -22,7 +23,7 @@ func (inv *lintInvocation) limit(name string) int64 {
 	if value, ok := inv.options.limits[name]; ok {
 		return value
 	}
-	return limitDefaults[name]
+	return report.LimitDefaults[name]
 }
 
 func acquireLint(inv *lintInvocation, _ io.Writer, stderr io.Writer) int {
@@ -99,7 +100,7 @@ func acquireLintContext(ctx context.Context, inv *lintInvocation, _ io.Writer) i
 	inv.mergeAcquisition(&out, selected, acquired)
 	engine.FinalizeLintResult(&out)
 	inv.result = &out
-	return lintExit(out)
+	return report.LintExit(out)
 }
 
 func (inv *lintInvocation) logicalPath(path string) string {
@@ -119,7 +120,7 @@ func (inv *lintInvocation) logicalPath(path string) string {
 // paths, exactly as the engine inputs do.
 func (inv *lintInvocation) mergeAcquisition(out *result.Result, selected *files.Selection, acquired *files.Acquisition) {
 	source := "default"
-	if inv.limit("total-content-bytes") != limitDefaults["total-content-bytes"] {
+	if inv.limit("total-content-bytes") != report.LimitDefaults["total-content-bytes"] {
 		source = "operator"
 	}
 	out.EffectiveLimits = append(out.EffectiveLimits, result.EffectiveLimit{Name: "total-content-bytes", Value: inv.limit("total-content-bytes"), Unit: "bytes", Source: source})
@@ -190,37 +191,6 @@ func (inv *lintInvocation) mergeAcquisition(out *result.Result, selected *files.
 	if selected.Empty() && len(out.Errors) == 0 && len(out.Interruptions) == 0 {
 		out.Errors = append(out.Errors, result.Error{Category: result.Usage, Code: "no-files", Scope: "operation", Message: "no files selected"})
 	}
-}
-
-func lintExit(out result.Result) int {
-	status := 0
-	if len(out.Diagnostics) > 0 {
-		status = 10
-	}
-	if !out.Complete {
-		status = exitIncomplete
-	}
-	// Usage errors here are preflight/empty selection only. Runtime failures
-	// retain semantic precedence, including IO over an empty selection.
-	for _, e := range out.Errors {
-		if e.Category == result.Configuration {
-			status = exitConfig
-		}
-		if e.Category == result.Usage {
-			status = exitUsage
-		}
-	}
-	for _, e := range out.Errors {
-		if e.Category == result.IO {
-			status = exitIO
-		}
-	}
-	for _, e := range out.Errors {
-		if e.Category == result.Internal {
-			status = 14
-		}
-	}
-	return status
 }
 
 // selectedConfig is the already resolved configuration filename, or empty.

@@ -13,6 +13,7 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/files"
 	"github.com/frithuz/mdchk/internal/fix"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -51,7 +52,7 @@ func TestGitHubActualPartialSavedPublication(t *testing.T) {
 	if len(out.Diagnostics) != 1 || out.Diagnostics[0].Snapshot.View != "saved" || out.Diagnostics[0].Range.Start.Line != 3 || out.Diagnostics[0].Range.Start.Column != 8 {
 		t.Fatal(out)
 	}
-	frozen := cloneReport(out)
+	frozen := report.CloneReport(out)
 	cwd, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
@@ -60,9 +61,9 @@ func TestGitHubActualPartialSavedPublication(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		flavor = "windows"
 	}
-	authority := withGitHubPaths(ctx, githubPaths{Root: cwd, CWD: cwd, Flavor: flavor})
+	authority := report.WithGitHubPaths(ctx, report.GithubPaths{Root: cwd, CWD: cwd, Flavor: flavor})
 	var stdout, stderr bytes.Buffer
-	if status := reportResultStreamsContext(authority, out, "github", &stdout, &stderr, nil); status != 13 {
+	if status := report.ReportResultStreamsContext(authority, out, "github", &stdout, &stderr, nil); status != 13 {
 		t.Fatal(status, stdout.String(), stderr.String())
 	}
 	if c := parseWorkflow(strings.Split(stdout.String(), "\n")[0]); c == nil || c.properties["file"] != "a.md" || c.properties["line"] != "3" || c.properties["title"] != "MD047" {
@@ -79,15 +80,15 @@ func TestGitHubActualPartialSavedPublication(t *testing.T) {
 	// The emergency branch must keep actual mixed outcomes and recovery names.
 	stdout.Reset()
 	stderr.Reset()
-	if status := reportResultStreamsContext(authority, out, "github", &stdout, &stderr, map[string]int64{"reporting-time": 1}); status != 13 {
+	if status := report.ReportResultStreamsContext(authority, out, "github", &stdout, &stderr, map[string]int64{"reporting-time": 1}); status != 13 {
 		t.Fatal(status)
 	}
 	if !strings.Contains(stderr.String(), "outcome b.md written") || !strings.Contains(stderr.String(), ".owned-recovery") {
 		t.Fatal(stdout.String(), stderr.String())
 	}
 
-	reserve, err := reservedEditorReport(authority, out, nil, encodeGitHub)
-	if err != nil || len(reserve.data) == 0 || lintExit(reserve.out) != 13 || !bytes.Contains(reserve.stderr, []byte(".owned-recovery")) || !bytes.Contains(reserve.stderr, []byte("outcome b.md written")) {
-		t.Fatal(err, string(reserve.data), string(reserve.stderr))
+	reserve, err := report.ReservedEditorReport(authority, out, nil, report.EncodeGitHub)
+	if err != nil || len(reserve.Data) == 0 || report.LintExit(reserve.Out) != 13 || !bytes.Contains(reserve.Stderr, []byte(".owned-recovery")) || !bytes.Contains(reserve.Stderr, []byte("outcome b.md written")) {
+		t.Fatal(err, string(reserve.Data), string(reserve.Stderr))
 	}
 }

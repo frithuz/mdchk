@@ -1,4 +1,4 @@
-package cli
+package report
 
 import (
 	"bytes"
@@ -15,10 +15,10 @@ import (
 	"github.com/frithuz/mdchk/internal/result"
 )
 
-// reportInspection reserves the single immutable identity/outcome before the
+// ReportInspection reserves the single immutable identity/outcome before the
 // independent reporting deadline. Its emergency image has a fixed number of
 // sections and uses O(1) collection lengths, never an AST walk or source scan.
-func reportInspection(original result.Result, p *inspection.Projection, format string, w io.Writer, limits map[string]int64) int {
+func ReportInspection(original result.Result, p *inspection.Projection, format string, w io.Writer, limits map[string]int64) int {
 	reserve := original
 	reserve.Files = slices.Clone(original.Files)
 	reserve.EffectiveLimits = slices.Clone(original.EffectiveLimits)
@@ -31,53 +31,53 @@ func reportInspection(original result.Result, p *inspection.Projection, format s
 	}
 	omitInspectionDetails(&reserve, reserveProjection, true)
 	reserve.Interruptions = append(reserve.Interruptions, result.Interruption{ID: "reporting-interruption", Reason: "deadline-exceeded", Phase: "reporting", Message: "reporting-time exhausted while constructing result details"})
-	inspectionOutcome(&reserve)
+	InspectionOutcome(&reserve)
 	setReportLimits(&reserve, limits)
-	emergency, emergencyErr := encodeInspection(context.Background(), reserve, reserveProjection, format, limits)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(reportLimit(limits, "reporting-time")))
+	emergency, emergencyErr := EncodeInspection(context.Background(), reserve, reserveProjection, format, limits)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(ReportLimit(limits, "reporting-time")))
 	defer cancel()
 	encoded, err := buildInspectionReport(ctx, original, p, format, limits)
 	if err != nil && ctx.Err() != nil && emergencyErr == nil {
 		encoded, err = emergency, nil
-	} else if errors.Is(err, errReportBudget) && emergencyErr == nil {
+	} else if errors.Is(err, ErrReportBudget) && emergencyErr == nil {
 		reserve.Interruptions[len(reserve.Interruptions)-1] = result.Interruption{ID: "reporting-interruption", Reason: "limit-exceeded", Phase: "reporting", Message: "essential detail records exceed response-bytes; whole records omitted"}
-		encoded, err = encodeInspection(context.Background(), reserve, reserveProjection, format, limits)
+		encoded, err = EncodeInspection(context.Background(), reserve, reserveProjection, format, limits)
 	}
-	status := inspectionExit(original)
+	status := InspectionExit(original)
 	if err != nil {
 		if status == 14 {
 			return status
 		}
-		return exitIO
+		return ExitIO
 	}
-	status = inspectionExit(encoded.out)
-	if n, err := w.Write(encoded.data); err != nil || n != len(encoded.data) {
+	status = InspectionExit(encoded.Out)
+	if n, err := w.Write(encoded.Data); err != nil || n != len(encoded.Data) {
 		if status == 14 {
 			return status
 		}
-		return exitIO
+		return ExitIO
 	}
 	return status
 }
 
-func buildInspectionReport(ctx context.Context, original result.Result, p *inspection.Projection, format string, limits map[string]int64) (encodedReport, error) {
-	out := cloneReport(original)
+func buildInspectionReport(ctx context.Context, original result.Result, p *inspection.Projection, format string, limits map[string]int64) (EncodedReport, error) {
+	out := CloneReport(original)
 	var projected *inspection.Projection
 	if p != nil {
 		copy := *p
 		projected = &copy
 	}
 	setReportLimits(&out, limits)
-	encode := func() (encodedReport, error) { return encodeInspection(ctx, out, projected, format, limits) }
+	encode := func() (EncodedReport, error) { return EncodeInspection(ctx, out, projected, format, limits) }
 	full, err := encode()
 	if err == nil {
 		return full, nil
 	}
 	if ctx.Err() != nil {
-		return encodedReport{}, ctx.Err()
+		return EncodedReport{}, ctx.Err()
 	}
-	if !errors.Is(err, errReportBudget) {
-		return encodedReport{}, err
+	if !errors.Is(err, ErrReportBudget) {
+		return EncodedReport{}, err
 	}
 	out.Interruptions = append(out.Interruptions, result.Interruption{ID: "reporting-interruption", Reason: "limit-exceeded", Phase: "reporting", Message: "result details exceed response-bytes; exact full size was not computed after admission failed"})
 	// The optional AST is always the first reduction. No projected owner/cause
@@ -85,26 +85,26 @@ func buildInspectionReport(ctx context.Context, original result.Result, p *inspe
 	if projected != nil && projected.AST.Data != nil {
 		count := 1
 		out.Omissions = append(out.Omissions, result.Omission{Section: "/inspection/ast", Reason: "output-limit", Message: "whole optional AST omitted to satisfy response-bytes", Count: &count})
-		projected.AST = omittedSection[inspection.AST]()
+		projected.AST = OmittedSection[inspection.AST]()
 	}
-	inspectionOutcome(&out)
+	InspectionOutcome(&out)
 	reduced, err := encode()
 	if err == nil {
 		return reduced, nil
 	}
 	if ctx.Err() != nil {
-		return encodedReport{}, ctx.Err()
+		return EncodedReport{}, ctx.Err()
 	}
-	if !errors.Is(err, errReportBudget) {
-		return encodedReport{}, err
+	if !errors.Is(err, ErrReportBudget) {
+		return EncodedReport{}, err
 	}
 	// Rules, directives, raw candidates and suppressed findings form a linked
 	// group. Drop complete dependent sections together instead of dangling IDs.
 	omitInspectionDetails(&out, projected, false)
-	inspectionOutcome(&out)
+	InspectionOutcome(&out)
 	return encode()
 }
-func omittedSection[T any]() inspection.Section[T] {
+func OmittedSection[T any]() inspection.Section[T] {
 	return inspection.Section[T]{Availability: "unavailable", Reasons: []string{"output-limit"}}
 }
 func omitInspectionDetails(out *result.Result, p *inspection.Projection, emergency bool) {
@@ -117,39 +117,39 @@ func omitInspectionDetails(out *result.Result, p *inspection.Projection, emergen
 	if p != nil {
 		if p.AST.Data != nil {
 			omit("/inspection/ast", 1)
-			p.AST = omittedSection[inspection.AST]()
+			p.AST = OmittedSection[inspection.AST]()
 		}
 		if p.DocumentContext.Data != nil {
 			omit("/inspection/document_context", 1)
-			p.DocumentContext = omittedSection[json.RawMessage]()
+			p.DocumentContext = OmittedSection[json.RawMessage]()
 		}
 		if p.Configuration.Data != nil {
 			omit("/inspection/configuration", 1)
-			p.Configuration = omittedSection[result.ConfigurationData]()
+			p.Configuration = OmittedSection[result.ConfigurationData]()
 		}
 		if p.Rules.Data != nil {
 			omit("/inspection/rules", len(*p.Rules.Data))
-			p.Rules = omittedSection[[]inspection.Rule]()
+			p.Rules = OmittedSection[[]inspection.Rule]()
 		}
 		if p.RuleCounts.Data != nil {
 			omit("/inspection/rule_counts", 1)
-			p.RuleCounts = omittedSection[json.RawMessage]()
+			p.RuleCounts = OmittedSection[json.RawMessage]()
 		}
 		if p.Directives.Data != nil {
 			omit("/inspection/directives", len(*p.Directives.Data))
-			p.Directives = omittedSection[[]inspection.Directive]()
+			p.Directives = OmittedSection[[]inspection.Directive]()
 		}
 		if p.RawCandidates.Data != nil {
 			omit("/inspection/raw_candidates", len(*p.RawCandidates.Data))
-			p.RawCandidates = omittedSection[[]inspection.RawCandidate]()
+			p.RawCandidates = OmittedSection[[]inspection.RawCandidate]()
 		}
 		if p.ParsingNotes.Data != nil {
 			omit("/inspection/parsing_notes", len(*p.ParsingNotes.Data))
-			p.ParsingNotes = omittedSection[[]result.Note]()
+			p.ParsingNotes = OmittedSection[[]result.Note]()
 		}
 		if p.Metadata.Data != nil {
 			omit("/inspection/metadata", 1)
-			p.Metadata = omittedSection[inspection.MetadataRecord]()
+			p.Metadata = OmittedSection[inspection.MetadataRecord]()
 		}
 	}
 	omit("/diagnostics", len(out.Diagnostics))
@@ -249,14 +249,14 @@ func retainInspectionCauses(p *inspection.Projection, out result.Result) {
 	p.Metadata.CauseIDs = keep(p.Metadata.CauseIDs)
 }
 
-// inspectionJSON overrides the embedded RawMessage with the already-owned typed
+// InspectionJSON overrides the embedded RawMessage with the already-owned typed
 // projection. Encoding is performed once, only after bounded size admission.
-type inspectionJSON struct {
+type InspectionJSON struct {
 	Inspection *inspection.Projection `json:"inspection,omitempty"`
 	result.Result
 }
 
-func inspectionJSONSize(ctx context.Context, out result.Result, p *inspection.Projection, bound int64) (int64, int64, error) {
+func InspectionJSONSize(ctx context.Context, out result.Result, p *inspection.Projection, bound int64) (int64, int64, error) {
 	out.Inspection = nil
 	remaining := bound - 1 // final newline
 	sizer := jsonSizer{ctx: ctx, remaining: &remaining}
@@ -278,40 +278,40 @@ func inspectionJSONSize(ctx context.Context, out result.Result, p *inspection.Pr
 	}
 	return n + 1, projectionBytes, nil
 }
-func renderTypedInspectionReport(ctx context.Context, w io.Writer, out result.Result, p *inspection.Projection) error {
+func RenderTypedInspectionReport(ctx context.Context, w io.Writer, out result.Result, p *inspection.Projection) error {
 	if p != nil {
 		if err := renderInspectionText(ctx, w, p); err != nil {
 			return err
 		}
 	}
 	out.Inspection = nil
-	return renderText(ctx, w, out)
+	return RenderText(ctx, w, out)
 }
-func encodeInspection(ctx context.Context, out result.Result, p *inspection.Projection, format string, limits map[string]int64) (encodedReport, error) {
+func EncodeInspection(ctx context.Context, out result.Result, p *inspection.Projection, format string, limits map[string]int64) (EncodedReport, error) {
 	if err := ctx.Err(); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
-	bound := reportLimit(limits, "response-bytes")
+	bound := ReportLimit(limits, "response-bytes")
 	out.Inspection = nil
 	var data []byte
 	if format == "json" {
-		size, projectionBytes, err := inspectionJSONSize(ctx, out, p, bound)
+		size, projectionBytes, err := InspectionJSONSize(ctx, out, p, bound)
 		if err != nil {
-			return encodedReport{out: out}, err
+			return EncodedReport{Out: out}, err
 		}
 		if size > bound {
-			return encodedReport{out: out}, errReportBudget
+			return EncodedReport{Out: out}, ErrReportBudget
 		}
 		if err := ctx.Err(); err != nil {
-			return encodedReport{}, err
+			return EncodedReport{}, err
 		}
-		data, err = json.Marshal(inspectionJSON{p, out})
+		data, err = json.Marshal(InspectionJSON{p, out})
 		if err != nil {
-			return encodedReport{}, err
+			return EncodedReport{}, err
 		}
 		data = append(data, '\n')
 		if int64(len(data)) != size {
-			return encodedReport{}, fmt.Errorf("inspection encoded size mismatch: got %d, expected %d", len(data), size)
+			return EncodedReport{}, fmt.Errorf("inspection encoded size mismatch: got %d, expected %d", len(data), size)
 		}
 		// The explicit projection is the first wire field. Retain its admitted byte
 		// view without a second serialization or allocation.
@@ -320,29 +320,29 @@ func encodeInspection(ctx context.Context, out result.Result, p *inspection.Proj
 			out.Inspection = data[len(prefix) : int64(len(prefix))+projectionBytes]
 		}
 	} else {
-		counter := &reportCounter{limit: bound}
-		if err := renderTypedInspectionReport(ctx, counter, out, p); err != nil {
-			return encodedReport{out: out}, err
+		counter := &ReportCounter{limit: bound}
+		if err := RenderTypedInspectionReport(ctx, counter, out, p); err != nil {
+			return EncodedReport{Out: out}, err
 		}
-		if counter.n > bound {
-			return encodedReport{out: out}, errReportBudget
+		if counter.N > bound {
+			return EncodedReport{Out: out}, ErrReportBudget
 		}
 		if err := ctx.Err(); err != nil {
-			return encodedReport{}, err
+			return EncodedReport{}, err
 		}
 		var b bytes.Buffer
-		if err := renderTypedInspectionReport(ctx, &b, out, p); err != nil {
-			return encodedReport{}, err
+		if err := RenderTypedInspectionReport(ctx, &b, out, p); err != nil {
+			return EncodedReport{}, err
 		}
 		data = b.Bytes()
 	}
 	if err := ctx.Err(); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
 	if int64(len(data)) > bound {
-		return encodedReport{out: out}, errReportBudget
+		return EncodedReport{Out: out}, ErrReportBudget
 	}
-	return encodedReport{data: data, out: out}, nil
+	return EncodedReport{Data: data, Out: out}, nil
 }
 
 // The generic renderer accepts wire-only callers. The inspection reporter uses
@@ -367,7 +367,7 @@ func renderInspectionText(ctx context.Context, w io.Writer, p *inspection.Projec
 		return err
 	}
 	f := p.File
-	if err := line("File identity\n  Resolved path: %s\n  Binary version: %s\n  Size: %s\n  SHA-1: %s\n  SHA-256: %s\n  Normally excluded: %t (known: %t)\n  Physical lines: %d\n", textField(f.ResolvedPath), textField(f.BinaryVersion), textField(f.SizeDisplay), f.SHA1, f.SHA256, f.NormallyExcluded, f.NormallyExcludedKnown, f.PhysicalLineCount); err != nil {
+	if err := line("File identity\n  Resolved path: %s\n  Binary version: %s\n  Size: %s\n  SHA-1: %s\n  SHA-256: %s\n  Normally excluded: %t (known: %t)\n  Physical lines: %d\n", TextField(f.ResolvedPath), TextField(f.BinaryVersion), TextField(f.SizeDisplay), f.SHA1, f.SHA256, f.NormallyExcluded, f.NormallyExcludedKnown, f.PhysicalLineCount); err != nil {
 		return err
 	}
 	selection := "whole file"
@@ -394,13 +394,13 @@ func renderInspectionText(ctx context.Context, w io.Writer, p *inspection.Projec
 			return err
 		}
 	}
-	if err := line("Abstract syntax tree: %s (reasons: %s)\n", textField(p.AST.Availability), textField(fmt.Sprint(p.AST.Reasons))); err != nil {
+	if err := line("Abstract syntax tree: %s (reasons: %s)\n", TextField(p.AST.Availability), TextField(fmt.Sprint(p.AST.Reasons))); err != nil {
 		return err
 	}
 	if p.AST.Data != nil {
 		var walk func(inspection.Node, int) error
 		walk = func(n inspection.Node, depth int) error {
-			if err := line("  %*s%s %s [%d:%d-%d:%d] bytes %d-%d context=%t extends_region=%t properties=", depth*2, "", textField(n.ID), textField(n.Kind), n.Range.Start.Line, n.Range.Start.Column, n.Range.End.Line, n.Range.End.Column, n.ByteRange.Start, n.ByteRange.End, n.ContextOnly, n.ExtendsRegion); err != nil {
+			if err := line("  %*s%s %s [%d:%d-%d:%d] bytes %d-%d context=%t extends_region=%t properties=", depth*2, "", TextField(n.ID), TextField(n.Kind), n.Range.Start.Line, n.Range.Start.Column, n.Range.End.Line, n.Range.End.Column, n.ByteRange.Start, n.ByteRange.End, n.ContextOnly, n.ExtendsRegion); err != nil {
 				return err
 			}
 			if err := writeInspectionJSON(ctx, w, n.Properties); err != nil {
@@ -430,7 +430,7 @@ func renderInspectionText(ctx context.Context, w io.Writer, p *inspection.Projec
 			}
 		}
 	}
-	if err := line("Rules run: %s (reasons: %s)\n", textField(p.Rules.Availability), textField(fmt.Sprint(p.Rules.Reasons))); err != nil {
+	if err := line("Rules run: %s (reasons: %s)\n", TextField(p.Rules.Availability), TextField(fmt.Sprint(p.Rules.Reasons))); err != nil {
 		return err
 	}
 	if p.Rules.Data != nil {
@@ -447,8 +447,8 @@ func writeInspectionJSON(ctx context.Context, w io.Writer, v any) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	if counter, ok := w.(*reportCounter); ok {
-		remaining := counter.limit - counter.n
+	if counter, ok := w.(*ReportCounter); ok {
+		remaining := counter.limit - counter.N
 		sizer := jsonSizer{ctx: ctx, terminalSafe: true}
 		if counter.limit > 0 {
 			sizer.remaining = &remaining
@@ -457,7 +457,7 @@ func writeInspectionJSON(ctx context.Context, w io.Writer, v any) error {
 		if err != nil {
 			return err
 		}
-		counter.n += n
+		counter.N += n
 		return ctx.Err()
 	}
 	raw, err := json.Marshal(v)
@@ -467,6 +467,6 @@ func writeInspectionJSON(ctx context.Context, w io.Writer, v any) error {
 	if err = ctx.Err(); err != nil {
 		return err
 	}
-	_, err = io.WriteString(w, textField(string(raw)))
+	_, err = io.WriteString(w, TextField(string(raw)))
 	return err
 }

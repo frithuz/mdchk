@@ -1,4 +1,7 @@
-package cli
+// Package report encodes mdchk results as text, JSON, VS Code problem matcher
+// output and GitHub annotations within their response bounds. It also owns the
+// exit statuses and the limit defaults those encodings report.
+package report
 
 import (
 	"bytes"
@@ -17,132 +20,133 @@ import (
 	"github.com/frithuz/mdchk/internal/result"
 )
 
-var errReportBudget = errors.New("essential result manifest exceeds response-bytes")
+var ErrReportBudget = errors.New("essential result manifest exceeds response-bytes")
 
-// reportResult owns presentation only. Its cleanup deadline starts after analysis;
+// ReportResult owns presentation only. Its cleanup deadline starts after analysis;
 // an expired analysis context cannot consume this independently reserved budget.
-func reportResult(out result.Result, format string, stdout io.Writer, limits map[string]int64) int {
-	return reportResultStreams(out, format, stdout, io.Discard, limits)
+func ReportResult(out result.Result, format string, stdout io.Writer, limits map[string]int64) int {
+	return ReportResultStreams(out, format, stdout, io.Discard, limits)
 }
 
-// reportResultStreams owns both presentation streams without path authority.
+// ReportResultStreams owns both presentation streams without path authority.
 // Commands use the context-bearing variant; legacy text/JSON remain stdout-only.
-func reportResultStreams(out result.Result, format string, stdout, stderr io.Writer, limits map[string]int64) int {
-	return reportResultStreamsContext(context.Background(), out, format, stdout, stderr, limits)
+func ReportResultStreams(out result.Result, format string, stdout, stderr io.Writer, limits map[string]int64) int {
+	return ReportResultStreamsContext(context.Background(), out, format, stdout, stderr, limits)
 }
 
-// The presentation context carries caller-supplied GitHub path authority.
-func reportResultStreamsContext(parent context.Context, out result.Result, format string, stdout, stderr io.Writer, limits map[string]int64) int {
+// ReportResultStreamsContext takes a presentation context that carries
+// caller-supplied GitHub path authority.
+func ReportResultStreamsContext(parent context.Context, out result.Result, format string, stdout, stderr io.Writer, limits map[string]int64) int {
 	// Encode a fixed-work emergency reserve before starting the operator's
 	// timed full-fallback/detail construction. It uses only precomputed counts
 	// and bounded categories, never walks the potentially large source manifest.
-	var reserve encodedReport
+	var reserve EncodedReport
 	var reserveErr error
 	if format == "github" {
-		reserve, reserveErr = reservedEditorReport(parent, out, limits, encodeGitHub)
+		reserve, reserveErr = ReservedEditorReport(parent, out, limits, EncodeGitHub)
 	} else if format == "vscode" {
-		reserve, reserveErr = emergencyVSCodeReport(out, limits)
+		reserve, reserveErr = EmergencyVSCodeReport(out, limits)
 	} else if out.Operation == "config validate" {
-		reserve, reserveErr = emergencyConfigReport(out, format, limits)
+		reserve, reserveErr = EmergencyConfigReport(out, format, limits)
 	} else if out.Operation == "fix" {
 		reserve, reserveErr = emergencyFixReport(out, format, limits)
 	} else if out.Operation == "lint" {
-		reserve, reserveErr = minimalLintReport(parent, out, format, limits, reportingDeadlineStop())
+		reserve, reserveErr = MinimalLintReport(parent, out, format, limits, ReportingDeadlineStop())
 	}
-	ctx, cancel := context.WithTimeout(parent, time.Duration(reportLimit(limits, "reporting-time")))
+	ctx, cancel := context.WithTimeout(parent, time.Duration(ReportLimit(limits, "reporting-time")))
 	defer cancel()
-	encoded, err := buildReport(ctx, out, format, limits)
+	encoded, err := BuildReport(ctx, out, format, limits)
 	reserved := format == "github" || format == "vscode" || out.Operation == "config validate" || out.Operation == "fix" || out.Operation == "lint"
 	if err != nil && ctx.Err() != nil && reserved && reserveErr == nil {
 		encoded, err = reserve, nil
 	}
 	status := 0
 	if reserved && reserveErr == nil {
-		status = lintExit(reserve.out)
+		status = LintExit(reserve.Out)
 	} else {
-		status = lintExit(out)
+		status = LintExit(out)
 	}
 	if err != nil {
 		if status == 14 {
 			return status
 		}
-		return exitIO
+		return ExitIO
 	}
-	status = lintExit(encoded.out)
+	status = LintExit(encoded.Out)
 	n, m := 0, 0
 	var stderrErr error
-	if len(encoded.data) > 0 {
-		n, err = stdout.Write(encoded.data)
+	if len(encoded.Data) > 0 {
+		n, err = stdout.Write(encoded.Data)
 	}
-	if len(encoded.stderr) > 0 {
-		m, stderrErr = stderr.Write(encoded.stderr)
+	if len(encoded.Stderr) > 0 {
+		m, stderrErr = stderr.Write(encoded.Stderr)
 	}
-	if err != nil || n != len(encoded.data) || stderrErr != nil || m != len(encoded.stderr) {
+	if err != nil || n != len(encoded.Data) || stderrErr != nil || m != len(encoded.Stderr) {
 		if status == 14 {
 			return status
 		}
-		return exitIO
+		return ExitIO
 	}
 	return status
 }
 
-type encodedReport struct {
-	data   []byte
-	stderr []byte
-	out    result.Result
+type EncodedReport struct {
+	Data   []byte
+	Stderr []byte
+	Out    result.Result
 }
 
-func reportLimit(limits map[string]int64, name string) int64 {
+func ReportLimit(limits map[string]int64, name string) int64 {
 	if v, ok := limits[name]; ok {
 		return v
 	}
-	return limitDefaults[name]
+	return LimitDefaults[name]
 }
 
 // reportFeasibility checks an already known manifest without discarding file or
 // error identities. A caller may use this before acquisition when those records
 // are known. Runtime failure is delivery IO, never a retroactive usage error.
 func reportFeasibility(out result.Result, format string, limits map[string]int64) error {
-	return reportFeasibilityContext(context.Background(), out, format, limits)
+	return ReportFeasibilityContext(context.Background(), out, format, limits)
 }
-func reportFeasibilityContext(presentation context.Context, out result.Result, format string, limits map[string]int64) error {
+func ReportFeasibilityContext(presentation context.Context, out result.Result, format string, limits map[string]int64) error {
 	if presentation == nil {
 		presentation = context.Background()
 	}
-	ctx, cancel := context.WithTimeout(presentation, time.Duration(reportLimit(limits, "reporting-time")))
+	ctx, cancel := context.WithTimeout(presentation, time.Duration(ReportLimit(limits, "reporting-time")))
 	defer cancel()
 	// Reserve the minimum envelope/interruption/omission capacity in addition
 	// to the entire known per-target identity/outcome manifest. The final fully
 	// encoded report can then use all response bytes; this is an admission check,
 	// not a permanent subtraction from successful presentation capacity.
 	manifest := newReportOperation(out)
-	owned := cloneReport(out)
+	owned := CloneReport(out)
 	manifest.Files, manifest.CheckedFiles = owned.Files, owned.CheckedFiles
 	setReportLimits(&manifest, limits)
 	engine.FinalizeLintResult(&manifest)
 	empty := newReportOperation(out)
 	setReportLimits(&empty, limits)
-	fullSize, err := reportSize(ctx, manifest, "json")
+	fullSize, err := ReportSize(ctx, manifest, "json")
 	if err != nil {
 		return err
 	}
-	emptySize, err := reportSize(ctx, empty, "json")
+	emptySize, err := ReportSize(ctx, empty, "json")
 	if err != nil {
 		return err
 	}
-	bound, reserve := reportLimit(limits, "response-bytes"), reportLimit(limits, "report-reserve-bytes")
+	bound, reserve := ReportLimit(limits, "response-bytes"), ReportLimit(limits, "report-reserve-bytes")
 	if bound < reserve || fullSize-emptySize > bound-reserve {
-		return errReportBudget
+		return ErrReportBudget
 	}
 	// Use the direct builder so a deadline fallback cannot count as proof that
 	// the complete known manifest admission check finished.
-	_, err = buildReportCore(ctx, out, format, limits)
+	_, err = BuildReportCore(ctx, out, format, limits)
 	return err
 }
 
-func buildReport(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+func BuildReport(ctx context.Context, original result.Result, format string, limits map[string]int64) (EncodedReport, error) {
 	if format == "github" {
-		return buildEditorReport(ctx, original, limits, encodeGitHub)
+		return buildEditorReport(ctx, original, limits, EncodeGitHub)
 	}
 	if format == "vscode" {
 		return buildVSCodeReport(ctx, original, limits)
@@ -150,13 +154,13 @@ func buildReport(ctx context.Context, original result.Result, format string, lim
 	// Construct the reserved partial envelope before spending the remaining time
 	// on optional detail counting. If counting/encoding reaches the deadline,
 	// this complete, already encoded envelope remains available for delivery.
-	fallback, fallbackErr := deadlineReport(ctx, original, format, limits)
-	if errors.Is(fallbackErr, errReportBudget) {
-		fallback, fallbackErr = minimalLintReport(ctx, original, format, limits, reportingDeadlineStop())
+	fallback, fallbackErr := DeadlineReport(ctx, original, format, limits)
+	if errors.Is(fallbackErr, ErrReportBudget) {
+		fallback, fallbackErr = MinimalLintReport(ctx, original, format, limits, ReportingDeadlineStop())
 	}
-	encoded, err := buildReportCore(ctx, original, format, limits)
-	if errors.Is(err, errReportBudget) {
-		encoded, err = minimalLintReport(ctx, original, format, limits, result.Interruption{Reason: "limit-exceeded", Phase: "reporting", Message: "essential detail records exceed response-bytes; whole records omitted"})
+	encoded, err := BuildReportCore(ctx, original, format, limits)
+	if errors.Is(err, ErrReportBudget) {
+		encoded, err = MinimalLintReport(ctx, original, format, limits, result.Interruption{Reason: "limit-exceeded", Phase: "reporting", Message: "essential detail records exceed response-bytes; whole records omitted"})
 	}
 	if err != nil && ctx.Err() != nil && fallbackErr == nil {
 		return fallback, nil
@@ -164,11 +168,11 @@ func buildReport(ctx context.Context, original result.Result, format string, lim
 	return encoded, err
 }
 
-func reportingDeadlineStop() result.Interruption {
+func ReportingDeadlineStop() result.Interruption {
 	return result.Interruption{Reason: "deadline-exceeded", Phase: "reporting", Message: "reporting-time exhausted while constructing result details"}
 }
 
-// minimalLintReport is lint's last resort when each file's first error and outcome
+// MinimalLintReport is lint's last resort when each file's first error and outcome
 // do not fit, and its reserve for the reporting deadline, so an operator never gets
 // an exit code with no explanation. It borrows the detail records and only counts
 // them, so its work is linear with a small constant and has no search; the reserve
@@ -177,14 +181,14 @@ func reportingDeadlineStop() result.Interruption {
 // files repeats, and file snapshots. File paths and outcomes stay: the pre-analysis
 // manifest check reserved room for those, so it is not a builder for feasibility
 // checks, which must still see the full essential report.
-func minimalLintReport(ctx context.Context, original result.Result, format string, limits map[string]int64, stop result.Interruption) (encodedReport, error) {
+func MinimalLintReport(ctx context.Context, original result.Result, format string, limits map[string]int64, stop result.Interruption) (EncodedReport, error) {
 	if original.Operation != "lint" {
-		return encodedReport{}, errReportBudget
+		return EncodedReport{}, ErrReportBudget
 	}
 	if err := ctx.Err(); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
-	bound := reportLimit(limits, "response-bytes")
+	bound := ReportLimit(limits, "response-bytes")
 	out := newReportOperation(original)
 	out.Files = slices.Clone(original.Files)
 	out.CheckedFiles = slices.Clone(original.CheckedFiles)
@@ -208,17 +212,17 @@ func minimalLintReport(ctx context.Context, original result.Result, format strin
 	out.Errors = lintErrorSummaries(original.Errors)
 	out.Interruptions = append(out.Interruptions, stop)
 	engine.FinalizeLintResult(&out)
-	n, err := reportSize(ctx, out, format)
+	n, err := ReportSize(ctx, out, format)
 	if err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
 	// Text prints neither field, and its summary line counts checked_files.
 	if n > bound && format == "json" {
 		omit("/checked_files", "checked paths omitted; files lists every target and its outcome", len(out.CheckedFiles))
 		out.CheckedFiles = []string{}
 		engine.FinalizeLintResult(&out)
-		if n, err = reportSize(ctx, out, format); err != nil {
-			return encodedReport{}, err
+		if n, err = ReportSize(ctx, out, format); err != nil {
+			return EncodedReport{}, err
 		}
 	}
 	if n > bound && format == "json" {
@@ -231,12 +235,12 @@ func minimalLintReport(ctx context.Context, original result.Result, format strin
 		}
 		omit("/files", "snapshot identities omitted from these file records; paths and outcomes remain", count)
 		engine.FinalizeLintResult(&out)
-		if n, err = reportSize(ctx, out, format); err != nil {
-			return encodedReport{}, err
+		if n, err = ReportSize(ctx, out, format); err != nil {
+			return EncodedReport{}, err
 		}
 	}
 	if n > bound {
-		return encodedReport{}, errReportBudget
+		return EncodedReport{}, ErrReportBudget
 	}
 	var data []byte
 	if format == "json" {
@@ -244,13 +248,13 @@ func minimalLintReport(ctx context.Context, original result.Result, format strin
 		data = append(data, '\n')
 	} else {
 		var b bytes.Buffer
-		err = renderText(ctx, &b, out)
+		err = RenderText(ctx, &b, out)
 		data = b.Bytes()
 	}
 	if err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
-	return encodedReport{data: data, out: out}, ctx.Err()
+	return EncodedReport{Data: data, Out: out}, ctx.Err()
 }
 
 // lintErrorSummaries keeps one record per encountered category and scope, so a
@@ -275,45 +279,45 @@ func lintErrorSummaries(records []result.Error) []result.Error {
 	return summaries
 }
 
-func buildReportCore(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+func BuildReportCore(ctx context.Context, original result.Result, format string, limits map[string]int64) (EncodedReport, error) {
 	if format == "github" {
-		return buildEditorReport(ctx, original, limits, encodeGitHub)
+		return buildEditorReport(ctx, original, limits, EncodeGitHub)
 	}
 	if format == "vscode" {
 		return buildVSCodeReport(ctx, original, limits)
 	}
 	if err := ctx.Err(); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
-	out := cloneReport(original)
+	out := CloneReport(original)
 	setReportLimits(&out, limits)
 	engine.FinalizeLintResult(&out)
-	bound := reportLimit(limits, "response-bytes")
+	bound := ReportLimit(limits, "response-bytes")
 	fits := func() (bool, error) {
 		if err := ctx.Err(); err != nil {
 			return false, err
 		}
-		n, err := reportSize(ctx, out, format)
+		n, err := ReportSize(ctx, out, format)
 		return n <= bound, err
 	}
 	ok, err := fits()
 	if err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
 	if !ok {
 		// Keep every actual error, interruption and target outcome. Reducing a
 		// coverage detail cannot turn missing analysis into successful coverage.
-		observed, sizeErr := reportSize(ctx, out, format)
+		observed, sizeErr := ReportSize(ctx, out, format)
 		if sizeErr != nil {
-			return encodedReport{}, sizeErr
+			return EncodedReport{}, sizeErr
 		}
 		out.Interruptions = append(out.Interruptions, result.Interruption{Reason: "limit-exceeded", Phase: "reporting", Message: "result details exceed response-bytes", Limit: &result.LimitObservation{Name: "response-bytes", Observed: observed, Allowed: bound, Unit: "bytes"}})
 		out, err = reduceEncodingErrors(ctx, out, format, bound, true)
 		if err != nil {
-			return encodedReport{}, err
+			return EncodedReport{}, err
 		}
 		if fitsNow, e := fits(); e != nil {
-			return encodedReport{}, e
+			return EncodedReport{}, e
 		} else if !fitsNow && out.Operation == "fix" {
 			omitFixDiffs(&out)
 			engine.FinalizeLintResult(&out)
@@ -334,7 +338,7 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 		}
 		for _, f := range families {
 			if fitsNow, e := fits(); e != nil {
-				return encodedReport{}, e
+				return EncodedReport{}, e
 			} else if fitsNow {
 				break
 			}
@@ -349,7 +353,7 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 			engine.FinalizeLintResult(&out)
 			ok, err = fits()
 			if err != nil {
-				return encodedReport{}, err
+				return EncodedReport{}, err
 			}
 			if !ok {
 				continue
@@ -362,7 +366,7 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 				engine.FinalizeLintResult(&out)
 				fitsNow, e := fits()
 				if e != nil {
-					return encodedReport{}, e
+					return EncodedReport{}, e
 				}
 				if fitsNow {
 					lo = mid
@@ -380,13 +384,13 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 		}
 		ok, err = fits()
 		if err != nil {
-			return encodedReport{}, err
+			return EncodedReport{}, err
 		}
 		if !ok && collapseEncodingRetention(&out) {
 			engine.FinalizeLintResult(&out)
 			ok, err = fits()
 			if err != nil {
-				return encodedReport{}, err
+				return EncodedReport{}, err
 			}
 		}
 		if !ok {
@@ -394,24 +398,24 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 			engine.FinalizeLintResult(&out)
 			ok, err = fits()
 			if err != nil {
-				return encodedReport{}, err
+				return EncodedReport{}, err
 			}
 			if !ok && out.Operation == "config validate" {
 				if err := reduceConfigManifest(ctx, &out, format, bound); err != nil {
-					return encodedReport{}, err
+					return EncodedReport{}, err
 				}
 				ok, err = fits()
 				if err != nil {
-					return encodedReport{}, err
+					return EncodedReport{}, err
 				}
 			}
 			if !ok {
-				return encodedReport{}, errReportBudget
+				return EncodedReport{}, ErrReportBudget
 			}
 		}
 	}
 	if err := ctx.Err(); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
 	var data []byte
 	if format == "json" {
@@ -419,22 +423,22 @@ func buildReportCore(ctx context.Context, original result.Result, format string,
 		data = append(data, '\n')
 	} else {
 		var b bytes.Buffer
-		err = renderText(ctx, &b, out)
+		err = RenderText(ctx, &b, out)
 		data = b.Bytes()
 	}
 	if err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
 	if int64(len(data)) > bound {
-		return encodedReport{}, errReportBudget
+		return EncodedReport{}, ErrReportBudget
 	}
 	if err := ctx.Err(); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
-	return encodedReport{data: data, out: out}, nil
+	return EncodedReport{Data: data, Out: out}, nil
 }
 
-func cloneReport(r result.Result) result.Result {
+func CloneReport(r result.Result) result.Result {
 	r.Changes = slices.Clone(r.Changes)
 	for i := range r.Changes {
 		r.Changes[i].Rules = slices.Clone(r.Changes[i].Rules)
@@ -479,7 +483,7 @@ func cloneReport(r result.Result) result.Result {
 	return r
 }
 
-func textField(s string) string {
+func TextField(s string) string {
 	var b strings.Builder
 	for _, r := range s {
 		switch r {
@@ -513,7 +517,7 @@ func terminalControl(r rune) bool {
 	return unicode.IsControl(r) || r == 0x2028 || r == 0x2029 || r >= 0x202a && r <= 0x202e || r >= 0x2066 && r <= 0x2069
 }
 
-func renderText(ctx context.Context, w io.Writer, r result.Result) error {
+func RenderText(ctx context.Context, w io.Writer, r result.Result) error {
 	if r.Operation == "fix" {
 		if err := renderFixText(ctx, w, r); err != nil {
 			return err
@@ -536,7 +540,7 @@ func renderText(ctx context.Context, w io.Writer, r result.Result) error {
 		if d.FixAvailable {
 			fix = "fixable"
 		}
-		if err := line("%s:%d:%d %s: %s [%s]\n", textField(d.Path), d.Range.Start.Line, d.Range.Start.Column, textField(d.Rule), textField(d.Message), fix); err != nil {
+		if err := line("%s:%d:%d %s: %s [%s]\n", TextField(d.Path), d.Range.Start.Line, d.Range.Start.Column, TextField(d.Rule), TextField(d.Message), fix); err != nil {
 			return err
 		}
 	}
@@ -545,11 +549,11 @@ func renderText(ctx context.Context, w io.Writer, r result.Result) error {
 		if err := json.Unmarshal(raw, &n); err != nil {
 			return err
 		}
-		location := textField(n.Path)
+		location := TextField(n.Path)
 		if n.Range != nil {
 			location += fmt.Sprintf(":%d:%d", n.Range.Start.Line, n.Range.Start.Column)
 		}
-		if err := line("%s note %s %s: %s\n", location, textField(n.Code), textField(n.Rule), textField(n.Message)); err != nil {
+		if err := line("%s note %s %s: %s\n", location, TextField(n.Code), TextField(n.Rule), TextField(n.Message)); err != nil {
 			return err
 		}
 	}
@@ -559,39 +563,39 @@ func renderText(ctx context.Context, w io.Writer, r result.Result) error {
 			return err
 		}
 		d := s.Diagnostic
-		if err := line("%s:%d:%d suppressed %s (%s): %s\n", textField(d.Path), d.Range.Start.Line, d.Range.Start.Column, textField(d.Rule), textField(s.SuppressedBy.Kind), textField(d.Message)); err != nil {
+		if err := line("%s:%d:%d suppressed %s (%s): %s\n", TextField(d.Path), d.Range.Start.Line, d.Range.Start.Column, TextField(d.Rule), TextField(s.SuppressedBy.Kind), TextField(d.Message)); err != nil {
 			return err
 		}
 	}
 	for _, e := range r.Errors {
 		location := ""
 		if e.Path != "" {
-			location = textField(e.Path)
+			location = TextField(e.Path)
 			if e.Range != nil {
 				location += fmt.Sprintf(":%d:%d", e.Range.Start.Line, e.Range.Start.Column)
 			}
 			location += " "
 		}
-		if err := line("%serror %s (%s): %s\n", location, textField(e.Code), textField(string(e.Category)), textField(e.Message)); err != nil {
+		if err := line("%serror %s (%s): %s\n", location, TextField(e.Code), TextField(string(e.Category)), TextField(e.Message)); err != nil {
 			return err
 		}
 	}
 	for _, c := range r.Coverage {
-		location := textField(c.Path)
+		location := TextField(c.Path)
 		if c.Path != "" && c.Range != nil {
 			location += fmt.Sprintf(":%d:%d", c.Range.Start.Line, c.Range.Start.Column)
 		}
-		if err := line("coverage %s %s %s: %s\n", location, textField(c.Rule), textField(c.Reason), textField(c.Message)); err != nil {
+		if err := line("coverage %s %s %s: %s\n", location, TextField(c.Rule), TextField(c.Reason), TextField(c.Message)); err != nil {
 			return err
 		}
 	}
 	for _, s := range r.SkippedFiles {
-		if err := line("skipped %s (%s): %s\n", textField(s.Path), textField(s.Reason), textField(s.Message)); err != nil {
+		if err := line("skipped %s (%s): %s\n", TextField(s.Path), TextField(s.Reason), TextField(s.Message)); err != nil {
 			return err
 		}
 	}
 	for _, s := range r.Interruptions {
-		if err := line("interrupted %s %s (%s): %s\n", textField(s.Phase), textField(s.Path), textField(s.Reason), textField(s.Message)); err != nil {
+		if err := line("interrupted %s %s (%s): %s\n", TextField(s.Phase), TextField(s.Path), TextField(s.Reason), TextField(s.Message)); err != nil {
 			return err
 		}
 	}
@@ -600,7 +604,7 @@ func renderText(ctx context.Context, w io.Writer, r result.Result) error {
 		if o.Count != nil {
 			count = fmt.Sprint(*o.Count)
 		}
-		if err := line("omitted %s %s %s (%s): %s\n", count, textField(o.Section), textField(o.Path), textField(o.Reason), textField(o.Message)); err != nil {
+		if err := line("omitted %s %s %s (%s): %s\n", count, TextField(o.Section), TextField(o.Path), TextField(o.Reason), TextField(o.Message)); err != nil {
 			return err
 		}
 	}
@@ -610,19 +614,19 @@ func renderText(ctx context.Context, w io.Writer, r result.Result) error {
 			if r.Operation == "config validate" {
 				kind = "definition"
 			}
-			if err := line("%s %s: analysis %s\n", kind, textField(f.Path), textField(f.Analysis)); err != nil {
+			if err := line("%s %s: analysis %s\n", kind, TextField(f.Path), TextField(f.Analysis)); err != nil {
 				return err
 			}
 		}
 	}
 	if r.Operation == "inspect" {
-		return line("Inspected %d files. %d findings, %d suppressed observations; %s (complete: %t).\n", len(r.CheckedFiles), len(r.Diagnostics), len(r.SuppressedDiagnostics), textField(r.Status), r.Complete)
+		return line("Inspected %d files. %d findings, %d suppressed observations; %s (complete: %t).\n", len(r.CheckedFiles), len(r.Diagnostics), len(r.SuppressedDiagnostics), TextField(r.Status), r.Complete)
 	}
 	if r.ConfigValidation != nil {
 		s := r.ConfigValidation
-		return line("Checked %d definitions: %d valid, %d invalid, %d known definitions skipped. %d skipped paths, %d errors; %s (scan complete: %t, complete: %t).\n", s.DefinitionsChecked, s.ValidDefinitions, s.InvalidDefinitions, s.SkippedDefinitions, len(r.SkippedFiles), len(r.Errors), textField(r.Status), s.ScanComplete, r.Complete)
+		return line("Checked %d definitions: %d valid, %d invalid, %d known definitions skipped. %d skipped paths, %d errors; %s (scan complete: %t, complete: %t).\n", s.DefinitionsChecked, s.ValidDefinitions, s.InvalidDefinitions, s.SkippedDefinitions, len(r.SkippedFiles), len(r.Errors), TextField(r.Status), s.ScanComplete, r.Complete)
 	}
-	return line("Checked %d files. Found %d violations. %d skipped, %d errors, %d coverage deficits; %s (complete: %t).\n", len(r.CheckedFiles), len(r.Diagnostics), len(r.SkippedFiles), len(r.Errors), len(r.Coverage), textField(r.Status), r.Complete)
+	return line("Checked %d files. Found %d violations. %d skipped, %d errors, %d coverage deficits; %s (complete: %t).\n", len(r.CheckedFiles), len(r.Diagnostics), len(r.SkippedFiles), len(r.Errors), len(r.Coverage), TextField(r.Status), r.Complete)
 }
 
 func setReportLimits(out *result.Result, limits map[string]int64) {
@@ -638,7 +642,7 @@ func setReportLimits(out *result.Result, limits map[string]int64) {
 		if _, ok := limits[name]; ok {
 			source = "operator"
 		}
-		out.EffectiveLimits = append(out.EffectiveLimits, result.EffectiveLimit{Name: name, Value: reportLimit(limits, name), Unit: unit, Source: source})
+		out.EffectiveLimits = append(out.EffectiveLimits, result.EffectiveLimit{Name: name, Value: ReportLimit(limits, name), Unit: unit, Source: source})
 	}
 	sort.Slice(out.EffectiveLimits, func(i, j int) bool { return out.EffectiveLimits[i].Name < out.EffectiveLimits[j].Name })
 }
@@ -687,7 +691,7 @@ func reduceEncodingErrors(ctx context.Context, out result.Result, format string,
 	// Finalizing renumbers errors and rewrites links in place, so each attempt
 	// starts from its own copy of the same canonical records.
 	attempt := func(keep int) (result.Result, bool, error) {
-		r := cloneReport(out)
+		r := CloneReport(out)
 		dropped := map[string]bool{}
 		for _, i := range excess[keep:] {
 			dropped[out.Errors[i].ID] = true
@@ -704,7 +708,7 @@ func reduceEncodingErrors(ctx context.Context, out result.Result, format string,
 		count := len(excess) - keep
 		r.Omissions = append(r.Omissions, result.Omission{Section: "/errors", Reason: "output-limit", Message: "trailing invalid UTF-8 records omitted to satisfy response-bytes", Count: &count})
 		engine.FinalizeLintResult(&r)
-		n, err := reportSize(ctx, r, format)
+		n, err := ReportSize(ctx, r, format)
 		return r, n <= bound, err
 	}
 	best, ok, err := attempt(0)
@@ -750,20 +754,20 @@ func collapseEncodingRetention(out *result.Result) bool {
 	return true
 }
 
-func deadlineReport(ctx context.Context, original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+func DeadlineReport(ctx context.Context, original result.Result, format string, limits map[string]int64) (EncodedReport, error) {
 	if format == "github" {
-		return reservedEditorReport(ctx, original, limits, encodeGitHub)
+		return ReservedEditorReport(ctx, original, limits, EncodeGitHub)
 	}
 	if format == "vscode" {
 		if err := ctx.Err(); err != nil {
-			return encodedReport{}, err
+			return EncodedReport{}, err
 		}
 		return reservedVSCodeReport(ctx, original, limits)
 	}
 	if err := ctx.Err(); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
-	out := cloneReport(original)
+	out := CloneReport(original)
 	setReportLimits(&out, limits)
 	engine.FinalizeLintResult(&out)
 	for _, family := range []struct {
@@ -788,46 +792,46 @@ func deadlineReport(ctx context.Context, original result.Result, format string, 
 	out.SkippedFiles = []result.SkippedFile{}
 	out.Interruptions = append(out.Interruptions, result.Interruption{Reason: "deadline-exceeded", Phase: "reporting", Message: "reporting-time exhausted while constructing result details"})
 	engine.FinalizeLintResult(&out)
-	n, err := reportSize(ctx, out, format)
+	n, err := ReportSize(ctx, out, format)
 	if err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
-	if n > reportLimit(limits, "response-bytes") {
-		out, err = reduceEncodingErrors(ctx, out, format, reportLimit(limits, "response-bytes"), false)
+	if n > ReportLimit(limits, "response-bytes") {
+		out, err = reduceEncodingErrors(ctx, out, format, ReportLimit(limits, "response-bytes"), false)
 		if err != nil {
-			return encodedReport{}, err
+			return EncodedReport{}, err
 		}
-		n, err = reportSize(ctx, out, format)
+		n, err = ReportSize(ctx, out, format)
 		if err != nil {
-			return encodedReport{}, err
+			return EncodedReport{}, err
 		}
 	}
-	if n > reportLimit(limits, "response-bytes") && collapseEncodingRetention(&out) {
+	if n > ReportLimit(limits, "response-bytes") && collapseEncodingRetention(&out) {
 		engine.FinalizeLintResult(&out)
-		n, err = reportSize(ctx, out, format)
+		n, err = ReportSize(ctx, out, format)
 		if err != nil {
-			return encodedReport{}, err
+			return EncodedReport{}, err
 		}
 	}
-	if n > reportLimit(limits, "response-bytes") {
+	if n > ReportLimit(limits, "response-bytes") {
 		summarizeErrors(&out)
 		engine.FinalizeLintResult(&out)
-		n, err = reportSize(ctx, out, format)
+		n, err = ReportSize(ctx, out, format)
 		if err != nil {
-			return encodedReport{}, err
+			return EncodedReport{}, err
 		}
 	}
-	if n > reportLimit(limits, "response-bytes") && out.Operation == "config validate" {
-		if err := reduceConfigManifest(ctx, &out, format, reportLimit(limits, "response-bytes")); err != nil {
-			return encodedReport{}, err
+	if n > ReportLimit(limits, "response-bytes") && out.Operation == "config validate" {
+		if err := reduceConfigManifest(ctx, &out, format, ReportLimit(limits, "response-bytes")); err != nil {
+			return EncodedReport{}, err
 		}
-		n, err = reportSize(ctx, out, format)
+		n, err = ReportSize(ctx, out, format)
 		if err != nil {
-			return encodedReport{}, err
+			return EncodedReport{}, err
 		}
 	}
-	if n > reportLimit(limits, "response-bytes") {
-		return encodedReport{}, errReportBudget
+	if n > ReportLimit(limits, "response-bytes") {
+		return EncodedReport{}, ErrReportBudget
 	}
 	var data []byte
 	if format == "json" {
@@ -835,16 +839,16 @@ func deadlineReport(ctx context.Context, original result.Result, format string, 
 		data = append(data, '\n')
 	} else {
 		var b bytes.Buffer
-		err = renderText(ctx, &b, out)
+		err = RenderText(ctx, &b, out)
 		data = b.Bytes()
 	}
 	if err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
 	if err := ctx.Err(); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
-	return encodedReport{data: data, out: out}, nil
+	return EncodedReport{Data: data, Out: out}, nil
 }
 
 func newReportOperation(out result.Result) result.Result {
@@ -878,7 +882,7 @@ func reduceConfigManifest(ctx context.Context, out *result.Result, format string
 	out.Files = []result.File{}
 	out.CheckedFiles = []string{}
 	engine.FinalizeLintResult(out)
-	n, err := reportSize(ctx, *out, format)
+	n, err := ReportSize(ctx, *out, format)
 	if err != nil || n <= bound {
 		return err
 	}
@@ -914,15 +918,15 @@ func reduceConfigManifest(ctx context.Context, out *result.Result, format string
 	return nil
 }
 
-// emergencyConfigReport has work and output bounded by a fixed record count.
+// EmergencyConfigReport has work and output bounded by a fixed record count.
 // Source identities and prose are replaced by exact omissions; actual scan and
 // validity counts and every encountered error category remain authoritative.
-func emergencyConfigReport(original result.Result, format string, limits map[string]int64) (encodedReport, error) {
+func EmergencyConfigReport(original result.Result, format string, limits map[string]int64) (EncodedReport, error) {
 	if format == "github" {
-		return reservedEditorReport(context.Background(), original, limits, encodeGitHub)
+		return ReservedEditorReport(context.Background(), original, limits, EncodeGitHub)
 	}
 	if format == "vscode" {
-		return emergencyVSCodeReport(original, limits)
+		return EmergencyVSCodeReport(original, limits)
 	}
 	out := newReportOperation(original)
 	out.Errors = original.ReportingErrorSummaries()
@@ -952,7 +956,7 @@ func emergencyConfigReport(original result.Result, format string, limits map[str
 	// Applicable limits have a fixed vocabulary in this adapter; copy only those
 	// records and rebuild reporting limits from the validated operator profile.
 	for _, limit := range original.EffectiveLimits {
-		if validationLimitApplicable(limit.Name) {
+		if ValidationLimitApplicable(limit.Name) {
 			out.EffectiveLimits = append(out.EffectiveLimits, limit)
 		}
 	}
@@ -965,14 +969,14 @@ func emergencyConfigReport(original result.Result, format string, limits map[str
 		data = append(data, '\n')
 	} else {
 		var b bytes.Buffer
-		err = renderText(context.Background(), &b, out)
+		err = RenderText(context.Background(), &b, out)
 		data = b.Bytes()
 	}
 	if err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
-	if int64(len(data)) > reportLimit(limits, "response-bytes") {
-		return encodedReport{}, errReportBudget
+	if int64(len(data)) > ReportLimit(limits, "response-bytes") {
+		return EncodedReport{}, ErrReportBudget
 	}
-	return encodedReport{data: data, out: out}, nil
+	return EncodedReport{Data: data, Out: out}, nil
 }

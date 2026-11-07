@@ -14,6 +14,7 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	inspection "github.com/frithuz/mdchk/internal/inspect"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -59,7 +60,7 @@ func TestMetadataTextEscapesControlsAndJSONKeepsThem(t *testing.T) {
 func TestMetadataReportTrimming(t *testing.T) {
 	root := metadataProject(t, "---\nz: 1\na: 2\n---\n\n"+strings.Repeat("paragraph\n\n", 200))
 	_, out, p := metadataInspection(t, root)
-	full, err := json.Marshal(inspectionJSON{&p, out})
+	full, err := json.Marshal(report.InspectionJSON{Inspection: &p, Result: out})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,7 +75,7 @@ func TestMetadataReportTrimming(t *testing.T) {
 	// Just over budget: dropping the AST is enough, and the record stays.
 	var reduced bytes.Buffer
 	typed := p
-	if status := reportInspection(out, &typed, "json", &reduced, map[string]int64{"response-bytes": int64(len(full)) - 1}); status != 15 {
+	if status := report.ReportInspection(out, &typed, "json", &reduced, map[string]int64{"response-bytes": int64(len(full)) - 1}); status != 15 {
 		t.Fatal(status)
 	}
 	got := validateEmitted(t, root, reduced.Bytes())
@@ -96,18 +97,6 @@ func TestMetadataReportTrimming(t *testing.T) {
 		return stdout.String()
 	}(); !strings.Contains(text, "Metadata\n") || !strings.Contains(text, "output-limit") {
 		t.Fatal(text)
-	}
-}
-
-func TestMetadataCauseLinksFollowReportTrimming(t *testing.T) {
-	p := inspection.Projection{Metadata: inspection.Section[inspection.MetadataRecord]{CauseIDs: []string{"interruption-1", "coverage-1"}}}
-	retainInspectionCauses(&p, result.Result{Interruptions: []result.Interruption{{ID: "interruption-1"}}})
-	if !reflect.DeepEqual(p.Metadata.CauseIDs, []string{"interruption-1"}) {
-		t.Fatal(p.Metadata.CauseIDs)
-	}
-	clearInspectionCauses(&p)
-	if p.Metadata.CauseIDs != nil {
-		t.Fatal(p.Metadata.CauseIDs)
 	}
 }
 

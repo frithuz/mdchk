@@ -10,6 +10,7 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/resource"
+	"github.com/frithuz/mdchk/internal/rules/internal/fragmentdest"
 )
 
 func unresolvedFragmentTargets(ctx context.Context, c engine.RuleContext) (out engine.RuleOutcome) {
@@ -48,9 +49,9 @@ func unresolvedFragmentTargets(ctx context.Context, c engine.RuleContext) (out e
 			return engine.RuleOutcome{Err: parser.ErrModel}
 		}
 		previous = s.End()
-		switch classifyFragmentDestination(l.Destination) {
-		case fragmentRemote:
-		case fragmentOtherDocument:
+		switch fragmentdest.Classify(l.Destination) {
+		case fragmentdest.Remote:
+		case fragmentdest.OtherDocument:
 			// An empty fragment addresses the other document itself: nothing to resolve.
 			if _, fragment, _ := strings.Cut(l.Destination, "#"); fragment == "" {
 				continue
@@ -72,7 +73,7 @@ func unresolvedFragmentTargets(ctx context.Context, c engine.RuleContext) (out e
 				return out
 			}
 			checks = append(checks, check{link: l, resolved: &resolved.Resolution})
-		case fragmentSameDocument:
+		case fragmentdest.SameDocument:
 			_, fragment, _ := strings.Cut(l.Destination, "#")
 			name, decodeErr := url.PathUnescape(fragment)
 			if decodeErr == nil && !utf8.ValidString(name) {
@@ -153,41 +154,4 @@ func unresolvedFragmentTargets(ctx context.Context, c engine.RuleContext) (out e
 	}
 	out.IncompleteReason = strings.Join(reasons, " ")
 	return out
-}
-
-type fragmentDestination int
-
-const (
-	fragmentSameDocument fragmentDestination = iota
-	fragmentOtherDocument
-	fragmentRemote
-)
-
-// classifyFragmentDestination inspects the raw destination only up to its first
-// fragment marker. Remote and protocol-relative references are never fetched. A
-// nonempty path is another document: without resource context a spelling that
-// might name this document cannot be proven to do so.
-func classifyFragmentDestination(destination string) fragmentDestination {
-	before, _, _ := strings.Cut(destination, "#")
-	if strings.HasPrefix(before, "//") {
-		return fragmentRemote
-	}
-	for i := 0; i < len(before); i++ {
-		b := before[i]
-		switch {
-		case b == ':':
-			if i > 1 {
-				return fragmentRemote
-			}
-			return fragmentOtherDocument
-		case b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || i > 0 && (b >= '0' && b <= '9' || b == '+' || b == '-' || b == '.'):
-		default:
-			i = len(before)
-		}
-	}
-	path, _, _ := strings.Cut(before, "?")
-	if path == "" {
-		return fragmentSameDocument
-	}
-	return fragmentOtherDocument
 }

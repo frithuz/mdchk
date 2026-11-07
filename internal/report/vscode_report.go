@@ -1,4 +1,4 @@
-package cli
+package report
 
 import (
 	"bytes"
@@ -138,7 +138,7 @@ func vscodeField(ctx context.Context, w io.Writer, s string, message bool) error
 		case vscodeBidiControl(r):
 			encoded = fmt.Sprintf(`\u%04x`, r)
 		case terminalControl(r):
-			encoded = textField(string(r))
+			encoded = TextField(string(r))
 		default:
 			encoded = string(r)
 		}
@@ -152,36 +152,36 @@ func vscodeField(ctx context.Context, w io.Writer, s string, message bool) error
 	return flush()
 }
 
-type editorEncoder func(context.Context, result.Result, int64) (encodedReport, error)
+type EditorEncoder func(context.Context, result.Result, int64) (EncodedReport, error)
 type editorRenderer func(context.Context, io.Writer, io.Writer, result.Result) error
 
-func encodeVSCode(ctx context.Context, out result.Result, bound int64) (encodedReport, error) {
+func encodeVSCode(ctx context.Context, out result.Result, bound int64) (EncodedReport, error) {
 	return encodeEditor(ctx, out, bound, renderVSCode)
 }
 
-func encodeEditor(ctx context.Context, out result.Result, bound int64, render editorRenderer) (encodedReport, error) {
+func encodeEditor(ctx context.Context, out result.Result, bound int64, render editorRenderer) (EncodedReport, error) {
 	if bound < 0 {
-		return encodedReport{}, errReportBudget
+		return EncodedReport{}, ErrReportBudget
 	}
-	counter := &reportCounter{limit: max(bound, 1)}
+	counter := &ReportCounter{limit: max(bound, 1)}
 	if err := render(ctx, counter, counter, out); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
 	if err := ctx.Err(); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
-	if counter.n > bound {
-		return encodedReport{}, errReportBudget
+	if counter.N > bound {
+		return EncodedReport{}, ErrReportBudget
 	}
 	var stdout, stderr bytes.Buffer
 	// The counting pass admits both streams before allocating either payload.
 	if err := render(ctx, &stdout, &stderr, out); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
 	if err := ctx.Err(); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
-	return encodedReport{data: stdout.Bytes(), stderr: stderr.Bytes(), out: out}, nil
+	return EncodedReport{Data: stdout.Bytes(), Stderr: stderr.Bytes(), Out: out}, nil
 }
 
 func vscodeOmit(out *result.Result, section string, count int) {
@@ -190,20 +190,20 @@ func vscodeOmit(out *result.Result, section string, count int) {
 	}
 }
 
-// The reserve is admitted before the independent reporting timer. Keep the
+// EmergencyVSCodeReport is admitted before the independent reporting timer. Keep the
 // canonical write manifest by immutable borrow; never clone or render diffs.
 // Category summaries avoid walking arbitrary error prose on this path.
-func emergencyVSCodeReport(original result.Result, limits map[string]int64) (encodedReport, error) {
+func EmergencyVSCodeReport(original result.Result, limits map[string]int64) (EncodedReport, error) {
 	return reservedVSCodeReport(context.Background(), original, limits)
 }
 
-func reservedVSCodeReport(ctx context.Context, original result.Result, limits map[string]int64) (encodedReport, error) {
-	return reservedEditorReport(ctx, original, limits, encodeVSCode)
+func reservedVSCodeReport(ctx context.Context, original result.Result, limits map[string]int64) (EncodedReport, error) {
+	return ReservedEditorReport(ctx, original, limits, encodeVSCode)
 }
 
-func reservedEditorReport(ctx context.Context, original result.Result, limits map[string]int64, encode editorEncoder) (encodedReport, error) {
+func ReservedEditorReport(ctx context.Context, original result.Result, limits map[string]int64, encode EditorEncoder) (EncodedReport, error) {
 	if err := ctx.Err(); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
 	out := original
 	out.Omissions = nil
@@ -238,31 +238,31 @@ func reservedEditorReport(ctx context.Context, original result.Result, limits ma
 	out.Interruptions = append(out.Interruptions, result.Interruption{Phase: "reporting", Reason: "deadline-exceeded", Message: "reporting-time exhausted while constructing result details"})
 	// Preserve canonical status/categories without re-finalizing borrowed data.
 	markVSCodeIncomplete(&out)
-	return encode(ctx, out, reportLimit(limits, "response-bytes"))
+	return encode(ctx, out, ReportLimit(limits, "response-bytes"))
 }
 
-func buildVSCodeReport(ctx context.Context, original result.Result, limits map[string]int64) (encodedReport, error) {
+func buildVSCodeReport(ctx context.Context, original result.Result, limits map[string]int64) (EncodedReport, error) {
 	return buildEditorReport(ctx, original, limits, encodeVSCode)
 }
 
-func buildEditorReport(ctx context.Context, original result.Result, limits map[string]int64, encode editorEncoder) (encodedReport, error) {
+func buildEditorReport(ctx context.Context, original result.Result, limits map[string]int64, encode EditorEncoder) (EncodedReport, error) {
 	if err := ctx.Err(); err != nil {
-		return encodedReport{}, err
+		return EncodedReport{}, err
 	}
 	out := original
 	out.Omissions = slices.Clone(original.Omissions)
 	out.Interruptions = slices.Clone(original.Interruptions)
 	out.EffectiveLimits = slices.Clone(original.EffectiveLimits)
 	setReportLimits(&out, limits)
-	bound := reportLimit(limits, "response-bytes")
+	bound := ReportLimit(limits, "response-bytes")
 	full, err := encode(ctx, out, bound)
 	if err == nil || ctx.Err() != nil {
 		return full, err
 	}
 	// All non-finding error and write evidence is essential. Omit whole ordered
 	// detail records, retaining the longest prefix that fits alongside notices.
-	if !errors.Is(err, errReportBudget) {
-		return encodedReport{}, err
+	if !errors.Is(err, ErrReportBudget) {
+		return EncodedReport{}, err
 	}
 	out.Interruptions = append(out.Interruptions, result.Interruption{Phase: "reporting", Reason: "limit-exceeded", Message: "result details exceed response-bytes"})
 	for _, section := range []string{"/diagnostics", "/coverage"} {
@@ -295,7 +295,7 @@ func buildEditorReport(ctx context.Context, original result.Result, limits map[s
 				if _, e = encode(ctx, out, bound); e == nil {
 					lo = mid
 				} else if ctx.Err() != nil {
-					return encodedReport{}, e
+					return EncodedReport{}, e
 				} else {
 					hi = mid - 1
 				}
@@ -306,7 +306,7 @@ func buildEditorReport(ctx context.Context, original result.Result, limits map[s
 			markVSCodeIncomplete(&out)
 			return encode(ctx, out, bound)
 		} else if ctx.Err() != nil {
-			return encodedReport{}, e
+			return EncodedReport{}, e
 		}
 	}
 	// Replace only detailed error prose with explicit category summaries. Essential
@@ -320,9 +320,9 @@ func buildEditorReport(ctx context.Context, original result.Result, limits map[s
 // Existing operational errors keep their operation-specific precedence. Reporting
 // loss cannot convert a configuration failure or an internal failure to clean.
 func markVSCodeIncomplete(out *result.Result) {
-	status := lintExit(*out)
+	status := LintExit(*out)
 	out.Complete = false
-	if status == 0 || status == 10 || status == exitIncomplete {
+	if status == 0 || status == 10 || status == ExitIncomplete {
 		out.Status = "incomplete"
 	}
 }
