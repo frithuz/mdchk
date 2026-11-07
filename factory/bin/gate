@@ -10,12 +10,19 @@ The gate runs the main checkout's factory/checks.sh inside the job's worktree,
 so a branch can't change the checks it is judged by. It also fails when the
 branch modifies or deletes a file matching config.json `protected_paths`
 (fnmatch patterns, where `*` also matches `/`). Adding new files is fine.
+
+The gate refuses to run, with exit 2 and no verdict, when a disk the checks
+write to has less than config.json `min_free_gb` free. A full disk says nothing
+about the branch, so it must not cost the job a round.
 """
 
 import fnmatch
 import json
+import os
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -52,6 +59,27 @@ def protected_changes(worktree):
     return hits
 
 
+def disk_problem(worktree):
+    """Why the disks the checks write to are too full to run them, or None."""
+    gocache = subprocess.run(["go", "env", "GOCACHE"], cwd=worktree, capture_output=True, text=True).stdout.strip()
+    disks = {}
+    for path in filter(None, (gocache, tempfile.gettempdir(), worktree)):
+        path = Path(path)
+        while not path.exists():
+            path = path.parent
+        disks.setdefault(os.stat(path).st_dev, path)
+    low = []
+    for path in disks.values():
+        free = shutil.disk_usage(path).free / 2**30
+        if free < CONFIG["min_free_gb"]:
+            low.append(f"{path} has {free:.1f} GB free")
+    if not low:
+        return None
+    return (f"{', '.join(low)}, below min_free_gb {CONFIG['min_free_gb']}, so the checks didn't run. "
+            "Other jobs share the Go cache, so free space only once none of them is running, "
+            "for example with `go clean -cache`.")
+
+
 def run_checks(worktree):
     start = time.monotonic()
     res = subprocess.run(["bash", str(CHECKS)], cwd=worktree, capture_output=True, text=True)
@@ -63,6 +91,9 @@ def gate(job_id, merge):
     worktree = job["worktree"]
     if job["round"] < 1:
         die(f"{job_id} hasn't started a build round")
+    problem = disk_problem(worktree)
+    if problem:
+        die(problem)
     round_dir = FACTORY / "jobs" / job_id / f"round-{job['round']}"
     commit = git(worktree, "rev-parse", "HEAD").strip()
     protected = protected_changes(worktree)
@@ -97,6 +128,10 @@ def hook():
     prompt = content if isinstance(content, str) else " ".join(b.get("text", "") for b in content)
     job_id = prompt.split("Job: ", 1)[1].split(".", 1)[0]
     job = json.loads((FACTORY / "jobs" / job_id / "job.json").read_text())
+    problem = disk_problem(job["worktree"])
+    if problem:
+        print(f"{problem} Don't free it yourself: write STATUS: BLOCKED in build.md.", file=sys.stderr)
+        sys.exit(2)
     code, log, _ = run_checks(job["worktree"])
     if code != 0:
         tail = "\n".join(log.rstrip().splitlines()[-40:])

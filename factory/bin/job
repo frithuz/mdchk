@@ -24,6 +24,7 @@ import fcntl
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -517,6 +518,8 @@ def advance(job, stage):
     if stage in TERMINAL and Path(job["worktree"]).exists():
         run(["git", "worktree", "remove", "--force", job["worktree"]])
         run(["git", "branch", "-D", job["branch"]], check=False)
+    if stage in TERMINAL:
+        shutil.rmtree(REPO / ".worktrees" / ".scratch" / job["id"], ignore_errors=True)
 
     if stage == "merged":
         update_base()
@@ -634,6 +637,8 @@ def cmd_merge(job):
         git(job, "merge", "--abort", check=False)
         return fail(f"The branch conflicts with {BASE}:\n\n```\n{merged.stdout.strip()}\n```")
     gate = subprocess.run([str(BIN / "gate"), job["id"], "--merge"], capture_output=True, text=True)
+    if gate.returncode == 2:  # no verdict: the job stays in merging, so run this again
+        die(gate.stderr.strip())
     if gate.returncode != 0:
         return fail(f"The gate failed after syncing with {BASE}. "
                     f"See round-{job['round']}/merge-checks.md.\n\n{gate.stdout.strip()}")

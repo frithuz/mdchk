@@ -1,6 +1,7 @@
 {
   "concurrency": 3,
   "max_rounds": 3,
+  "min_free_gb": 5,
   "base_branch": "main",
   "merge_method": "rebase",
   "labels": {

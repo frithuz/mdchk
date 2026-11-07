@@ -23,7 +23,7 @@ shell's working directory: start every Bash command with `cd <worktree> && `,
 and give Read, Edit, Write, Grep and Glob absolute paths under the worktree. The job
 folder is in the main checkout; `build.md` is the only file you write there.
 Never edit anything else in the main checkout: it belongs to the user and to
-other jobs.
+other jobs. Temp files go in the scratch folder, as `AGENTS.md` describes.
 
 ## Read first
 
@@ -129,6 +129,7 @@ detail goes in the sections below it.
 Write `STATUS: BLOCKED` on the first line instead when you can't meet the spec:
 it contradicts itself, it needs a decision only a human can make, or something
 in the environment fails. Explain exactly what blocks you under a `## Blocked`
-heading. Don't paper over a failure to reach READY.
+heading. Don't paper over a failure to reach READY. A full disk is one of these:
+`AGENTS.md` says what not to do about it.
 
 When you're done, reply with one line: the first line of build.md.

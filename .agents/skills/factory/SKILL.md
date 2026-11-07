@@ -58,6 +58,7 @@ through the scripts. `factory/jobs/` is gitignored runtime state.
 <repo>/factory/jobs/<job-id>/decision.md                APPROVE or ESCALATE
 <repo>/factory/jobs/<job-id>/feedback-<k>.md            the user's feedback on an escalated job
 <repo>/.worktrees/<job-id>/                    the job's worktree, on factory/<job-id>
+<repo>/.worktrees/.scratch/<job-id>/           the job's temp files; removed when the job ends
 ```
 
 Read `job.json` with `cat` when you need a field. Read agents' files only by
@@ -76,7 +77,7 @@ run, don't poll and don't wait: end your turn with a one-line status.
 Every prompt starts with the job's header, built from `job.json`:
 
 ```
-Job: <id>. Job folder: <repo>/factory/jobs/<id>/. Main checkout: <repo>. Worktree: <worktree>. Branch: <branch>. Base: origin/<base>. Issue: #<issue>.
+Job: <id>. Job folder: <repo>/factory/jobs/<id>/. Main checkout: <repo>. Worktree: <worktree>. Branch: <branch>. Base: origin/<base>. Issue: #<issue>. Scratch: <repo>/.worktrees/.scratch/<id>/.
 ```
 
 `<header>` below means that line. Keep `Job folder: <path>/` exactly as shown:
@@ -124,6 +125,9 @@ gate's `round-<N-1>/checks.md`, the reviews in `round-<N-1>/`, or
   resume the builder for the next round with
   `The gate failed: read round-<N-1>/checks.md and checks.log, fix it, push, and update build.md.`
   No reviewer runs on a failing build.
+- Neither line, exit 2: the gate refused to run, usually because the disk is
+  below `min_free_gb`. The job stays in `gate`. Stop it and tell the user what
+  the message says; it resumes once they've freed space.
 
 **review.** Spawn every reviewer in `job.json` `agents.reviewers` **in one
 message**, so they run in parallel: `subagent_type` `reviewer-<r>` (or `<r>` itself
@@ -145,7 +149,8 @@ has finished:
 
 - `APPROVE`: `factory/bin/job merge <id>`. It syncs the branch with the base,
   runs the gate again, pushes, and merges the PR, ending in `merged`. If any
-  of that fails it moves the job to `needs-human` and says why.
+  of that fails it moves the job to `needs-human` and says why. When the gate
+  refuses to run, the job stays in `merging`: stop it and tell the user.
 - `ESCALATE`: `factory/bin/job advance <id> needs-human`. It marks the PR ready,
   posts the decision on it and labels the issue `factory:needs-human`.
 

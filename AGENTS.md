@@ -51,3 +51,14 @@ http://localhost:8000/dashboard.html.
 Each job works in its own git worktree, a full checkout of the repo at
 `.worktrees/<job-id>` (gitignored). A tool run from the repo root that doesn't
 read `.gitignore` sees those copies too; exclude `.worktrees/` in its config.
+
+Jobs run at the same time and share one disk, one Go cache and the session
+scratchpad, so a factory agent must not disturb what it didn't create:
+
+- Keep temp files in `<Scratch>/<your agent name>/`, using the `Scratch` path from
+  your prompt, instead of the session scratchpad. It's removed when the job ends.
+- Delete and kill only what you created. Never use a name-wide `pkill`.
+- `factory/bin/gate` refuses to run when a disk has less than `min_free_gb` free
+  (`factory/config.json`). If you hit a full disk, report it. Don't delete the
+  shared Go cache, and don't point `GOCACHE` or `TMPDIR` into the repo: tests fail
+  with temp directories there.
