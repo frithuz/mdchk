@@ -1585,5 +1585,91 @@
         "Message": "Too many consecutive blank body lines."
       }
     ]
+  },
+  {
+    "Name": "nested-quote-marker-zero",
+    "Source": "> > -\n",
+    "SHA256": "544d4b2a582e95020a21b0eb652dd944fd5bf5c993ed7be441e9f1805fea6736",
+    "SizeBytes": 6,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "ordered-then-bullet-zero",
+    "Source": "1. -\n",
+    "SHA256": "122bb398270fa7b04f250e78bdcb9282f6c88d7522f5c95bb7c313f79308c5d7",
+    "SizeBytes": 5,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "bullet-then-ordered-zero",
+    "Source": "- 1.\n",
+    "SHA256": "dc6753206a28bb22f6a80213536aabaa573e4604e6c5a41a3ff6328ece146c3f",
+    "SizeBytes": 5,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
+  },
+  {
+    "Name": "quote-item-quote-zero",
+    "Source": "> - >\n",
+    "SHA256": "dbce5bebbeca8f2be5b7cfc4a6c8b57459115527082dc1b209c748d5f3991073",
+    "SizeBytes": 6,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          5,
+          1,
+          6,
+          1,
+          6
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "marker-tab-zero",
+    "Source": "-\t\n\n-\t\n",
+    "SHA256": "7b7cb56d3c69f7f15aef7ca9137d11059802e48577886ca4a6e75ba6b332c6b2",
+    "SizeBytes": 7,
+    "Maximum": 0,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          3,
+          2,
+          1,
+          2,
+          1
+        ],
+        "Source": "",
+        "Message": "Too many consecutive blank body lines."
+      }
+    ]
+  },
+  {
+    "Name": "marker-tab-one",
+    "Source": "-\t\n\n-\t\n",
+    "SHA256": "7b7cb56d3c69f7f15aef7ca9137d11059802e48577886ca4a6e75ba6b332c6b2",
+    "SizeBytes": 7,
+    "Maximum": 1,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": []
   }
 ]
