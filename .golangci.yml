@@ -85,6 +85,13 @@ linters:
           deny:
             - pkg: github.com/frithuz/mdchk/internal/conformance
               desc: the conformance renderer is test infrastructure
+        test-only-acceptance:
+          files:
+            - '!$test'
+            - '!${base-path}/internal/acceptance/**'
+          deny:
+            - pkg: github.com/frithuz/mdchk/internal/acceptance
+              desc: the acceptance helpers are test infrastructure
     forbidigo:
       analyze-types: true
       exclude-godoc-examples: false

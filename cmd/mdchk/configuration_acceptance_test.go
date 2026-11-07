@@ -1,196 +1,23 @@
 package main
 
 import (
-	"bytes"
-	"context"
 	"crypto/sha256"
-	"encoding/json"
-	"errors"
 	"fmt"
-	"io"
-	"io/fs"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"reflect"
-	"runtime"
 	"strings"
-	"sync"
 	"testing"
-	"time"
 
-	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/acceptance"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
-const availableConfiguration = "version: 1\nflavor: commonmark\ndirectives: {enabled: false}\n"
-
-type configurationRun struct {
-	Status int
-	Stdout string
-	Result result.Result
-}
-
-// sharedExecutables holds the unmodified mdchk builds that tests share. Every
-// build without an overlay produces the same executable for a given cgo
-// setting, and building dominates most compiled tests, so each setting builds
-// once per test process. Tests must not modify a shared executable.
-var sharedExecutables struct {
-	sync.Mutex
-	builds map[string]*sharedBuild
-}
-
-type sharedBuild struct {
-	once   sync.Once
-	dir    string
-	binary string
-	err    error
-}
-
-// TestMain removes the shared builds once every test has finished with them.
+// TestMain removes this process's private builds once every test has finished
+// with them.
 func TestMain(m *testing.M) {
 	m.Run()
-	for _, build := range sharedExecutables.builds {
-		if build.dir != "" {
-			_ = os.RemoveAll(build.dir)
-		}
-	}
-}
-
-// sharedExecutable returns the mdchk build for the environment's cgo setting.
-func sharedExecutable(t *testing.T) string {
-	t.Helper()
-	return sharedExecutableFor(t, "")
-}
-
-// sharedNoCGOExecutable returns the mdchk build with CGO_ENABLED=0.
-func sharedNoCGOExecutable(t *testing.T) string {
-	t.Helper()
-	return sharedExecutableFor(t, "0")
-}
-
-// sharedExecutableFor builds with cgo set to CGO_ENABLED, or with the
-// environment's setting when cgo is empty.
-func sharedExecutableFor(t *testing.T, cgo string) string {
-	t.Helper()
-	sharedExecutables.Lock()
-	if sharedExecutables.builds == nil {
-		sharedExecutables.builds = map[string]*sharedBuild{}
-	}
-	build := sharedExecutables.builds[cgo]
-	if build == nil {
-		build = &sharedBuild{}
-		sharedExecutables.builds[cgo] = build
-	}
-	sharedExecutables.Unlock()
-	build.once.Do(func() {
-		var env []string
-		if cgo != "" {
-			env = append(os.Environ(), "CGO_ENABLED="+cgo)
-		}
-		if build.dir, build.err = os.MkdirTemp("", "mdchk-executable-"); build.err != nil {
-			return
-		}
-		build.binary = filepath.Join(build.dir, executableName())
-		build.err = goBuildExecutable(build.binary, "", env)
-	})
-	if build.err != nil {
-		t.Fatalf("build shared executable: %v", build.err)
-	}
-	return build.binary
-}
-
-// buildConfigurationExecutable builds a private executable for an overlay.
-// Use sharedExecutable when the build has no overlay.
-func buildConfigurationExecutable(t *testing.T, overlay string) string {
-	t.Helper()
-	binary := filepath.Join(t.TempDir(), executableName())
-	if err := goBuildExecutable(binary, overlay, nil); err != nil {
-		t.Fatalf("build executable: %v", err)
-	}
-	return binary
-}
-
-func executableName() string {
-	if runtime.GOOS == "windows" {
-		return "mdchk.exe"
-	}
-	return "mdchk"
-}
-
-// goBuildExecutable builds this package to binary. A nil env inherits the
-// test process environment.
-func goBuildExecutable(binary, overlay string, env []string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-	args := []string{"build", "-o", binary}
-	if overlay != "" {
-		args = append(args, "-overlay", overlay)
-	}
-	args = append(args, ".")
-	//nolint:gosec // Fixed Go tool builds this package into a test-owned destination.
-	command := exec.CommandContext(ctx, "go", args...)
-	command.Env = env
-	if output, err := command.CombinedOutput(); err != nil {
-		return fmt.Errorf("%w\n%s", err, output)
-	}
-	return nil
-}
-
-func configurationProject(t *testing.T) string {
-	t.Helper()
-	root, err := filepath.EvalSymlinks(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Mkdir(filepath.Join(root, ".git"), 0700); err != nil {
-		t.Fatal(err)
-	}
-	return root
-}
-
-func putConfigurationFile(t *testing.T, root, name, contents string) {
-	t.Helper()
-	path := filepath.Join(root, filepath.FromSlash(name))
-	if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(path, []byte(contents), 0600); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func cleanConfiguration() string {
-	var b strings.Builder
-	b.WriteString(availableConfiguration + "rules:\n")
-	for _, rule := range engine.Catalog() {
-		fmt.Fprintf(&b, "  %s: {enabled: false}\n", rule.ID)
-	}
-	return b.String()
-}
-
-func configurationBytes(t *testing.T, root string) map[string][32]byte {
-	t.Helper()
-	snapshots := map[string][32]byte{}
-	err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if !entry.Type().IsRegular() {
-			return nil
-		}
-		//nolint:gosec // Paths originate in the test-owned fixture tree.
-		data, err := os.ReadFile(path)
-		if err != nil {
-			return err
-		}
-		snapshots[path] = sha256.Sum256(data)
-		return nil
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	return snapshots
+	acceptance.Cleanup()
 }
 
 func runConfiguration(t *testing.T, binary, cwd, snapshotRoot string, args ...string) configurationRun {
@@ -216,90 +43,9 @@ func runConfiguration(t *testing.T, binary, cwd, snapshotRoot string, args ...st
 	return out
 }
 
-// runConfigurationProcess runs the actual executable. Callers independently
-// guard fixture bytes; metadata and permission tests need different guards.
-func runConfigurationProcess(t *testing.T, binary, cwd string, args ...string) configurationRun {
-	t.Helper()
-	return runConfigurationProcessEnv(t, binary, cwd, nil, args...)
-}
-
-func runConfigurationProcessEnv(t *testing.T, binary, cwd string, env []string, args ...string) configurationRun {
-	t.Helper()
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	//nolint:gosec // Execute only our compiled binary with test-owned arguments and fixtures.
-	command := exec.CommandContext(ctx, binary, args...)
-	command.Dir = cwd
-	command.Env = env
-	var stdout, stderr bytes.Buffer
-	command.Stdout, command.Stderr = &stdout, &stderr
-	err := command.Run()
-	out := configurationRun{Stdout: stdout.String()}
-	if err != nil {
-		var exit *exec.ExitError
-		if !errors.As(err, &exit) {
-			t.Fatalf("run executable: %v", err)
-		}
-		out.Status = exit.ExitCode()
-	}
-	if ctx.Err() != nil {
-		t.Fatalf("executable deadline: %v", ctx.Err())
-	}
-	if stderr.Len() != 0 {
-		t.Fatalf("unexpected stderr: %q", &stderr)
-	}
-	return out
-}
-
 func validateConfigurationJSON(t *testing.T, data []byte) result.Result {
 	t.Helper()
 	return validateConfigurationOperationJSON(t, data, "lint")
-}
-
-func validateConfigurationOperationJSON(t *testing.T, data []byte, operation string) result.Result {
-	t.Helper()
-	dec := json.NewDecoder(bytes.NewReader(data))
-	var out result.Result
-	if err := dec.Decode(&out); err != nil {
-		t.Fatalf("JSON report: %v: %s", err, data)
-	}
-	var trailing any
-	if err := dec.Decode(&trailing); err != io.EOF {
-		t.Fatalf("report contains trailing JSON: %v", err)
-	}
-	if !bytes.HasSuffix(data, []byte("\n")) || out.SchemaVersion != 1 || out.Operation != operation {
-		t.Fatalf("invalid report envelope: %s", data)
-	}
-	var fields map[string]json.RawMessage
-	if err := json.Unmarshal(data, &fields); err != nil {
-		t.Fatal(err)
-	}
-	for _, name := range []string{"checked_files", "skipped_files", "files", "diagnostics", "coverage", "errors", "interruptions", "effective_limits", "changes", "deferred_fixes", "notes", "omissions", "documents", "suppressed_diagnostics"} {
-		if raw := bytes.TrimSpace(fields[name]); len(raw) == 0 || raw[0] != '[' {
-			t.Fatalf("mandatory %s is not an array: %s", name, data)
-		}
-	}
-	for _, name := range out.CheckedFiles {
-		if filepath.IsAbs(name) || (runtime.GOOS == "windows" && strings.Contains(name, "\\")) {
-			t.Fatalf("nonportable checked path %q", name)
-		}
-	}
-	if python := os.Getenv("MDCHK_RESULT_VALIDATOR_PYTHON"); python != "" {
-		fixture := filepath.Join(t.TempDir(), "actual-result.json")
-		if err := os.WriteFile(fixture, data, 0600); err != nil {
-			t.Fatal(err)
-		}
-		validator, err := filepath.Abs("../../docs/contracts/results/validate.py")
-		if err != nil {
-			t.Fatal(err)
-		}
-		script := "import json,runpy,sys; v=runpy.run_path(sys.argv[1]); x=json.load(open(sys.argv[2])); v['validator'].validate(x); v['semantic'](x)"
-		//nolint:gosec // Explicit test interpreter, checked-in validator and test-owned report.
-		if output, err := exec.Command(python, "-c", script, validator, fixture).CombinedOutput(); err != nil {
-			t.Fatalf("actual report schema/semantics: %v\n%s", err, output)
-		}
-	}
-	return out
 }
 
 func TestConfigurationAcceptance(t *testing.T) {
