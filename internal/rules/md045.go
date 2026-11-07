@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/rules/internal/findings"
 )
 
 func imageAlternatives(ctx context.Context, c engine.RuleContext) (out engine.RuleOutcome) {
@@ -25,7 +26,7 @@ func imageAlternatives(ctx context.Context, c engine.RuleContext) (out engine.Ru
 		if out.Err = c.SectionCheckpoint(ctx, 2, 1); out.Err != nil {
 			return out
 		}
-		out.Findings, out.Err = imageAlternativeAppend(ctx, c, out.Findings, engine.Finding{Span: span, Message: "Image alternative text is missing or blank."})
+		out.Findings, out.Err = findings.Append(ctx, c, out.Findings, engine.Finding{Span: span, Message: "Image alternative text is missing or blank."})
 		if out.Err != nil {
 			return out
 		}
@@ -34,7 +35,7 @@ func imageAlternatives(ctx context.Context, c engine.RuleContext) (out engine.Ru
 		if out.Err = c.SectionCheckpoint(ctx, 2, 1); out.Err != nil {
 			return out
 		}
-		out.ParsingProblems, out.Err = imageAlternativeAppend(ctx, c, out.ParsingProblems, engine.Finding{Span: span, Message: "Image alternative text or decorative attributes cannot be interpreted reliably."})
+		out.ParsingProblems, out.Err = findings.Append(ctx, c, out.ParsingProblems, engine.Finding{Span: span, Message: "Image alternative text or decorative attributes cannot be interpreted reliably."})
 		if out.Err != nil {
 			return out
 		}
@@ -43,20 +44,4 @@ func imageAlternatives(ctx context.Context, c engine.RuleContext) (out engine.Ru
 		out.IncompleteReason = "Image alternative context is unavailable."
 	}
 	return out
-}
-
-func imageAlternativeAppend(ctx context.Context, c engine.RuleContext, items []engine.Finding, f engine.Finding) ([]engine.Finding, error) {
-	if len(items) == cap(items) {
-		if cap(items) > int(^uint(0)>>1)/2 {
-			return nil, parser.ErrModel
-		}
-		capacity := max(1, cap(items)*2)
-		if err := c.SectionCheckpoint(ctx, int64(len(items))+int64(capacity)+1, int64(capacity)); err != nil {
-			return nil, err
-		}
-		next := make([]engine.Finding, len(items), capacity)
-		copy(next, items)
-		items = next
-	}
-	return append(items, f), nil
 }

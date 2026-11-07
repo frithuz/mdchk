@@ -11,6 +11,7 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/idna"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/rules/internal/findings"
 )
 
 // md095Authority is the result of splitting one semantic destination. Offsets
@@ -359,7 +360,7 @@ func lookalikeHostnames(ctx context.Context, c engine.RuleContext) (out engine.R
 		}
 		if result.problem != "" {
 			finding := engine.Finding{Span: span, Message: "Hostname cannot be checked for lookalike characters: " + result.problem + "."}
-			out.ParsingProblems, out.Err = imageAlternativeAppend(ctx, c, out.ParsingProblems, finding)
+			out.ParsingProblems, out.Err = findings.Append(ctx, c, out.ParsingProblems, finding)
 		} else {
 			host, err := c.Source().Span(result.hostFrom, result.hostTo)
 			if err != nil {
@@ -369,7 +370,7 @@ func lookalikeHostnames(ctx context.Context, c engine.RuleContext) (out engine.R
 			if err != nil {
 				return engine.RuleOutcome{Err: parser.ErrModel}
 			}
-			out.Findings, out.Err = imageAlternativeAppend(ctx, c, out.Findings, engine.Finding{Span: span, Message: md095Message(text, result.items)})
+			out.Findings, out.Err = findings.Append(ctx, c, out.Findings, engine.Finding{Span: span, Message: md095Message(text, result.items)})
 		}
 		if out.Err != nil {
 			return out
