@@ -63,3 +63,6 @@ scratchpad, so a factory agent must not disturb what it didn't create:
   shared Go cache, and don't point `GOCACHE` or `TMPDIR` into the repo: tests fail
   with temp directories there. Only the orchestrator empties the cache, with
   `factory/bin/job trim-cache` once a run has no job left running.
+- Acceptance binaries are shared in the user cache directory, are private to
+  their key, and expire by themselves; `factory/bin/job trim-cache` doesn't touch
+  them.

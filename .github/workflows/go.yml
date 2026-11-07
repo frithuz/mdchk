@@ -161,6 +161,10 @@ jobs:
         env:
           DEBUG: ${{ runner.debug }}
         run: go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryApply|TestCompiledApplyNoCGOApplies|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -parallel=${{ matrix.parallel }} -timeout=20m
+      - name: Verify shared acceptance builds and cache publishing
+        env:
+          DEBUG: ${{ runner.debug }}
+        run: go run ./tools/testrun ./internal/acceptance -count=1 -timeout=5m
       - name: Verify portable apply adapter without cgo
         env:
           CGO_ENABLED: "0"
