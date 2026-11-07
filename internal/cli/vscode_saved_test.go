@@ -12,6 +12,7 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/files"
 	"github.com/frithuz/mdchk/internal/fix"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -50,9 +51,9 @@ func TestVSCodeActualPartialSavedPublication(t *testing.T) {
 	if len(out.Diagnostics) != 1 || out.Diagnostics[0].Snapshot.View != "saved" || out.Diagnostics[0].Range.Start.Line != 3 || out.Diagnostics[0].Range.Start.Column != 8 {
 		t.Fatal(out)
 	}
-	frozen := cloneReport(out)
+	frozen := report.CloneReport(out)
 	var stdout, stderr bytes.Buffer
-	if status := reportResultStreams(out, "vscode", &stdout, &stderr, nil); status != 13 {
+	if status := report.ReportResultStreams(out, "vscode", &stdout, &stderr, nil); status != 13 {
 		t.Fatal(status, stdout.String(), stderr.String())
 	}
 	if !strings.HasPrefix(stdout.String(), "a.md:3:8: error: MD047: ") || strings.Count(stdout.String(), "\n") != 1 {
@@ -69,14 +70,14 @@ func TestVSCodeActualPartialSavedPublication(t *testing.T) {
 	// The emergency branch must keep actual mixed outcomes and recovery names.
 	stdout.Reset()
 	stderr.Reset()
-	if status := reportResultStreams(out, "vscode", &stdout, &stderr, map[string]int64{"reporting-time": 1}); status != 13 {
+	if status := report.ReportResultStreams(out, "vscode", &stdout, &stderr, map[string]int64{"reporting-time": 1}); status != 13 {
 		t.Fatal(status)
 	}
 	if (stdout.Len() > 0 && !strings.HasPrefix(stdout.String(), "a.md:3:8: error: MD047: ")) || !strings.Contains(stderr.String(), "outcome b.md written") || !strings.Contains(stderr.String(), ".owned-recovery") {
 		t.Fatal(stdout.String(), stderr.String())
 	}
-	reserve, err := emergencyVSCodeReport(out, nil)
-	if err != nil || len(reserve.data) != 0 || lintExit(reserve.out) != 13 || !bytes.Contains(reserve.stderr, []byte(".owned-recovery")) || !bytes.Contains(reserve.stderr, []byte("outcome b.md written")) {
-		t.Fatal(err, string(reserve.data), string(reserve.stderr))
+	reserve, err := report.EmergencyVSCodeReport(out, nil)
+	if err != nil || len(reserve.Data) != 0 || report.LintExit(reserve.Out) != 13 || !bytes.Contains(reserve.Stderr, []byte(".owned-recovery")) || !bytes.Contains(reserve.Stderr, []byte("outcome b.md written")) {
+		t.Fatal(err, string(reserve.Data), string(reserve.Stderr))
 	}
 }

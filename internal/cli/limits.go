@@ -8,19 +8,8 @@ import (
 	"time"
 
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/report"
 )
-
-// These defaults are the accepted application profile, not an execution engine.
-// Values are bytes, counts, or nanoseconds. Keep aligned with limits.json.
-var limitDefaults = map[string]int64{
-	"document-bytes": 1048576, "total-content-bytes": 8388608, "request-bytes": 16777216, "response-bytes": 8388608,
-	"target-files": 5000, "resource-identities": 25000, "resource-lookups": 25000, "directory-entries": 100000,
-	"path-bytes": 4096, "path-depth": 64, "config-bytes": 1048576, "total-config-bytes": 8388608,
-	"structured-input-depth": 64, "syntax-depth": 256, "document-nodes": 250000, "total-nodes": 2000000,
-	"work-units": 250000000, "snapshot-retries": 2, "operation-time": int64(60 * time.Second), "reporting-time": int64(2 * time.Second),
-	"report-reserve-bytes": 65536, "active-calls": 4, "queued-calls": 8, "queue-time": int64(10 * time.Second),
-	"project-fixes": 1, "workers-per-operation": 1, "fix-rounds": 10,
-}
 
 // newOperationBudget scales the work and node allowances with acquired content
 // so a large project is not refused by a fixed operation-wide allowance. The
@@ -47,7 +36,7 @@ func parseLimit(raw string) (string, int64, error) {
 	if !ok || value == "" {
 		return "", 0, fmt.Errorf("limit must be NAME=VALUE: %q", raw)
 	}
-	if _, ok := limitDefaults[name]; !ok {
+	if _, ok := report.LimitDefaults[name]; !ok {
 		return "", 0, fmt.Errorf("unknown limit %q", name)
 	}
 	var n int64
@@ -101,7 +90,7 @@ func validateLimits(overrides map[string]int64) error {
 		if n, ok := overrides[name]; ok {
 			return n
 		}
-		return limitDefaults[name]
+		return report.LimitDefaults[name]
 	}
 	for _, pair := range [][2]string{{"document-bytes", "total-content-bytes"}, {"config-bytes", "total-config-bytes"}, {"queue-time", "operation-time"}, {"report-reserve-bytes", "response-bytes"}} {
 		if effective(pair[0]) > effective(pair[1]) {

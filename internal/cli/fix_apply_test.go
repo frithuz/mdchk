@@ -14,6 +14,7 @@ import (
 	"github.com/frithuz/mdchk/internal/files"
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
 	"github.com/frithuz/mdchk/internal/rules"
 )
@@ -355,7 +356,7 @@ func TestApplyJoinedRuntimeAndIOPreserveBoth(t *testing.T) {
 		t.Fatal(states, out)
 	}
 	engine.FinalizeLintResult(&out)
-	if lintExit(out) != 13 {
+	if report.LintExit(out) != 13 {
 		t.Fatal(out)
 	}
 }
@@ -399,7 +400,7 @@ func TestApplyOwnedLeftoverSurvivesReportingDeadline(t *testing.T) {
 		for _, format := range []string{"json", "text"} {
 			for _, deadline := range []int64{1, 2000000000} {
 				var stdout strings.Builder
-				if code := reportResult(out, format, &stdout, map[string]int64{"reporting-time": deadline}); code != 13 {
+				if code := report.ReportResult(out, format, &stdout, map[string]int64{"reporting-time": deadline}); code != 13 {
 					t.Fatal(code, stdout.String())
 				}
 				if format == "json" {
@@ -408,7 +409,7 @@ func TestApplyOwnedLeftoverSurvivesReportingDeadline(t *testing.T) {
 						t.Fatal(got)
 					}
 				} else {
-					expected := "owned staging leftover for doc.md: " + textField(name) + "\n"
+					expected := "owned staging leftover for doc.md: " + report.TextField(name) + "\n"
 					if !strings.Contains(stdout.String(), expected) || strings.ContainsRune(stdout.String(), '\x1b') {
 						t.Fatal(stdout.String())
 					}
@@ -417,12 +418,12 @@ func TestApplyOwnedLeftoverSurvivesReportingDeadline(t *testing.T) {
 		}
 	}
 	out.Files[0].Leftovers = []string{strings.Repeat("s", 255)}
-	full, err := reportSize(context.Background(), out, "text")
+	full, err := report.ReportSize(context.Background(), out, "text")
 	if err != nil {
 		t.Fatal(err)
 	}
 	out.Files[0].Leftovers = nil
-	without, err := reportSize(context.Background(), out, "text")
+	without, err := report.ReportSize(context.Background(), out, "text")
 	if err != nil {
 		t.Fatal(err)
 	}

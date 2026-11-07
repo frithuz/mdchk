@@ -11,6 +11,7 @@ import (
 	"github.com/frithuz/mdchk/internal/files"
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
 )
@@ -44,7 +45,7 @@ func acquireFixWrite(ctx context.Context, inv *lintInvocation, selected *files.S
 	for _, target := range selected.Targets {
 		required[target.Path] = deps
 	}
-	native, acquired, resources, err := files.AcquireWrite(ctx, selected, files.WriteOptions{AcquireOptions: options, Resources: resourceSelection, ResourceDocumentBytes: reportLimit(inv.options.limits, "config-bytes"), Absences: absent, Required: required, Baselines: baselines})
+	native, acquired, resources, err := files.AcquireWrite(ctx, selected, files.WriteOptions{AcquireOptions: options, Resources: resourceSelection, ResourceDocumentBytes: report.ReportLimit(inv.options.limits, "config-bytes"), Absences: absent, Required: required, Baselines: baselines})
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -92,7 +93,7 @@ type fixPublisher func(context.Context, fix.Validated, *files.WriteSet, string, 
 
 func publishFixUsing(ctx context.Context, inv *lintInvocation, budget *parser.OperationBudget, native *files.WriteSet, acquired *files.Acquisition, validated fix.Validated, validationErr error, out *result.Result, publish fixPublisher) map[string]fixApplied {
 	states := map[string]fixApplied{}
-	content, ledgerErr := files.NewContentLedger(reportLimit(inv.options.limits, "total-content-bytes"))
+	content, ledgerErr := files.NewContentLedger(report.ReportLimit(inv.options.limits, "total-content-bytes"))
 	if ledgerErr != nil {
 		out.Errors = append(out.Errors, result.Error{Category: result.Internal, Code: "saved-content-ledger", Scope: "operation", Message: ledgerErr.Error()})
 		return states
@@ -190,7 +191,7 @@ func publishFixUsing(ctx context.Context, inv *lintInvocation, budget *parser.Op
 				}
 			}
 			if e == nil && selected != nil && len(selected.Errors) == 0 && len(selected.Targets) == 1 {
-				current, readErr := files.Acquire(ctx, selected, files.AcquireOptions{DocumentBytes: budget.Limits().DocumentBytes, TotalContentBytes: reportLimit(inv.options.limits, "total-content-bytes"), Budget: budget, ContentLedger: content})
+				current, readErr := files.Acquire(ctx, selected, files.AcquireOptions{DocumentBytes: budget.Limits().DocumentBytes, TotalContentBytes: report.ReportLimit(inv.options.limits, "total-content-bytes"), Budget: budget, ContentLedger: content})
 				e = readErr
 				if current != nil {
 					for _, failure := range current.Errors {

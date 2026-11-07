@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/report"
 )
 
 func TestBoundedReportsWithPopulatedDirectiveObservations(t *testing.T) {
@@ -43,29 +44,29 @@ func TestBoundedReportsWithPopulatedDirectiveObservations(t *testing.T) {
 	before, _ := json.Marshal(original)
 	for _, format := range []string{"json", "text"} {
 		t.Run(format, func(t *testing.T) {
-			encoded, err := buildReport(context.Background(), original, format, map[string]int64{"response-bytes": 5000})
+			encoded, err := report.BuildReport(context.Background(), original, format, map[string]int64{"response-bytes": 5000})
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(encoded.data) > 5000 || encoded.out.Complete || encoded.out.Status != "incomplete" {
-				t.Fatal(encoded.out)
+			if len(encoded.Data) > 5000 || encoded.Out.Complete || encoded.Out.Status != "incomplete" {
+				t.Fatal(encoded.Out)
 			}
 			omitted := map[string]int{}
-			for _, o := range encoded.out.Omissions {
+			for _, o := range encoded.Out.Omissions {
 				if o.Count != nil {
 					omitted[o.Section] += *o.Count
 				}
 			}
-			if omitted["/notes"]+len(encoded.out.Notes) != 50 || omitted["/suppressed_diagnostics"]+len(encoded.out.SuppressedDiagnostics) != 50 || omitted["/notes"] == 0 || omitted["/suppressed_diagnostics"] == 0 {
+			if omitted["/notes"]+len(encoded.Out.Notes) != 50 || omitted["/suppressed_diagnostics"]+len(encoded.Out.SuppressedDiagnostics) != 50 || omitted["/notes"] == 0 || omitted["/suppressed_diagnostics"] == 0 {
 				t.Fatal(omitted)
 			}
 			if format == "json" {
-				validateEmitted(t, t.TempDir(), encoded.data)
+				validateEmitted(t, t.TempDir(), encoded.Data)
 			}
-			if strings.Contains(string(encoded.data), "AnalysisRecords") || strings.Contains(string(encoded.data), "directive_id") {
+			if strings.Contains(string(encoded.Data), "AnalysisRecords") || strings.Contains(string(encoded.Data), "directive_id") {
 				t.Fatal("private/dangling analysis leaked")
 			}
-			a := encoded.out.AnalysisRecords()[0].(engine.DirectiveAnalysis)
+			a := encoded.Out.AnalysisRecords()[0].(engine.DirectiveAnalysis)
 			if len(a.Suppressed()) != 50 || len(a.State().Notes()) != 50 {
 				t.Fatal("wire omission destroyed analysis")
 			}

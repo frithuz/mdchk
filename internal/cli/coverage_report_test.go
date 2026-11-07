@@ -14,6 +14,7 @@ import (
 
 	"github.com/frithuz/mdchk/internal/config"
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -122,7 +123,7 @@ func TestReportGlobalAndLocatedCoverage(t *testing.T) {
 		}
 		for _, format := range []string{"json", "text"} {
 			var stdout bytes.Buffer
-			if status := reportResult(r, format, &stdout, nil); status != 15 {
+			if status := report.ReportResult(r, format, &stdout, nil); status != 15 {
 				t.Fatalf("%s exit=%d", format, status)
 			}
 			if format == "json" {

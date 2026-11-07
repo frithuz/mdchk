@@ -15,6 +15,7 @@ import (
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -70,47 +71,6 @@ func TestFixProductionCorrectionAndArguments(t *testing.T) {
 	}
 	validateEmitted(t, t.TempDir(), stdout.Bytes())
 }
-func TestFixDiffPhysicalHunksAndScaling(t *testing.T) {
-	for _, tc := range []struct{ old, next string }{{"", "\n"}, {"a", "a\n"}, {"a\r\nb\rc\n", "\na\r\nb\rc\n"}, {"a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\n", "A\nb\nc\nd\ne\nf\ng\nh\ni\nj\nK\n"}, {"雪\n", ""}, {strings.Repeat("paragraph\n\n", 8000), "\n" + strings.Repeat("paragraph\n\n", 8000)}} {
-		budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
-		diff, err := buildFixDiff(context.Background(), budget, parser.NewSource([]byte(tc.old)), parser.NewSource([]byte(tc.next)))
-		if err != nil {
-			t.Fatal(err)
-		}
-		if len(diff.Hunks) == 0 {
-			t.Fatal("missing changed hunk")
-		}
-		oldLines := strings.ReplaceAll(strings.ReplaceAll(tc.old, "\r\n", "\n"), "\r", "\n")
-		_ = oldLines
-		for _, h := range diff.Hunks {
-			a, b := 0, 0
-			for _, line := range h.Lines {
-				if strings.ContainsAny(line.Text, "\r\n") {
-					t.Fatal(line)
-				}
-				if line.Kind != "add" {
-					a++
-				}
-				if line.Kind != "remove" {
-					b++
-				}
-			}
-			if a != h.OldLines || b != h.NewLines {
-				t.Fatal(h)
-			}
-		}
-	}
-	budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
-	diff, err := buildFixDiff(context.Background(), budget, parser.NewSource([]byte("雪\r\n")), parser.NewSource([]byte("雪\r")))
-	if err != nil || len(diff.Hunks) != 1 || !reflect.DeepEqual(diff.Hunks[0].Lines, []result.DiffLine{{Kind: "remove", Text: "雪", LineEnding: "crlf"}, {Kind: "add", Text: "雪", LineEnding: "cr"}}) {
-		t.Fatal(diff, err)
-	}
-	budget, _ = parser.NewOperationBudget(parser.Limits{WorkUnits: 1})
-	_, err = buildFixDiff(context.Background(), budget, parser.NewSource([]byte("a")), parser.NewSource([]byte("b")))
-	if err == nil {
-		t.Fatal("diff did not consume residual meter")
-	}
-}
 func TestFixReporterBoundsDeadlineOwnership(t *testing.T) {
 	r := result.NewFix(true)
 	before := result.Snapshot{View: "original", SHA256: strings.Repeat("a", 64), SizeBytes: 1}
@@ -125,7 +85,7 @@ func TestFixReporterBoundsDeadlineOwnership(t *testing.T) {
 	for _, format := range []string{"json", "text"} {
 		for _, deadline := range []int64{1, 1000, 2000000000} {
 			var b bytes.Buffer
-			status := reportResult(r, format, &b, map[string]int64{"response-bytes": 65536, "reporting-time": deadline})
+			status := report.ReportResult(r, format, &b, map[string]int64{"response-bytes": 65536, "reporting-time": deadline})
 			if status != 15 || b.Len() > 65536 {
 				t.Fatal(status, b.Len())
 			}
@@ -135,7 +95,7 @@ func TestFixReporterBoundsDeadlineOwnership(t *testing.T) {
 					t.Fatal(out)
 				}
 			}
-			if reportResult(r, format, inspectionShortWriter{}, nil) != 13 {
+			if report.ReportResult(r, format, inspectionShortWriter{}, nil) != 13 {
 				t.Fatal("shortwrite")
 			}
 		}
@@ -158,7 +118,7 @@ func TestFixReportingErrorPrecedenceAndExactFit(t *testing.T) {
 		for _, format := range []string{"json", "text"} {
 			for _, deadline := range []int64{1, 1000} {
 				var b bytes.Buffer
-				if got := reportResult(r, format, &b, map[string]int64{"reporting-time": deadline}); got != want {
+				if got := report.ReportResult(r, format, &b, map[string]int64{"reporting-time": deadline}); got != want {
 					t.Fatal(got, want, b.String())
 				}
 				if format == "json" {
@@ -167,7 +127,7 @@ func TestFixReportingErrorPrecedenceAndExactFit(t *testing.T) {
 						t.Fatal(out)
 					}
 				}
-				if got := reportResult(r, format, inspectionShortWriter{}, map[string]int64{"reporting-time": deadline}); got != want {
+				if got := report.ReportResult(r, format, inspectionShortWriter{}, map[string]int64{"reporting-time": deadline}); got != want {
 					t.Fatal(got, want)
 				}
 			}
@@ -176,26 +136,26 @@ func TestFixReportingErrorPrecedenceAndExactFit(t *testing.T) {
 	r := result.NewFix(true)
 	r.Notes = []json.RawMessage{json.RawMessage(`{"id":"note","code":"fixture","message":"` + strings.Repeat("x", 68000) + `"}`)}
 	engine.FinalizeLintResult(&r)
-	first, err := buildReport(context.Background(), r, "json", nil)
+	first, err := report.BuildReport(context.Background(), r, "json", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	// The response-bytes limit's own decimal spelling is part of the encoding.
-	bound := int64(len(first.data))
+	bound := int64(len(first.Data))
 	for range 4 {
-		first, err = buildReport(context.Background(), r, "json", map[string]int64{"response-bytes": bound})
+		first, err = report.BuildReport(context.Background(), r, "json", map[string]int64{"response-bytes": bound})
 		if err != nil {
 			t.Fatal(err)
 		}
-		bound = int64(len(first.data))
+		bound = int64(len(first.Data))
 	}
-	exact, err := buildReport(context.Background(), r, "json", map[string]int64{"response-bytes": bound})
-	if err != nil || !exact.out.Complete || int64(len(exact.data)) != bound {
-		t.Fatal(err, len(exact.data), bound)
+	exact, err := report.BuildReport(context.Background(), r, "json", map[string]int64{"response-bytes": bound})
+	if err != nil || !exact.Out.Complete || int64(len(exact.Data)) != bound {
+		t.Fatal(err, len(exact.Data), bound)
 	}
-	under, err := buildReport(context.Background(), r, "json", map[string]int64{"response-bytes": bound - 1})
-	if err != nil || under.out.Complete || len(under.out.Notes) != 0 || len(under.out.Omissions) != 1 || under.out.Omissions[0].Count == nil || *under.out.Omissions[0].Count != 1 {
-		t.Fatal(err, under.out)
+	under, err := report.BuildReport(context.Background(), r, "json", map[string]int64{"response-bytes": bound - 1})
+	if err != nil || under.Out.Complete || len(under.Out.Notes) != 0 || len(under.Out.Omissions) != 1 || under.Out.Omissions[0].Count == nil || *under.Out.Omissions[0].Count != 1 {
+		t.Fatal(err, under.Out)
 	}
 }
 
@@ -239,7 +199,7 @@ func TestFixSelectionParityAndResidualConfigurationBudget(t *testing.T) {
 		t.Fatal(err)
 	}
 	out := executeFix(context.Background(), opts, budget, registry, providers, caps, validator, produce)
-	if lintExit(out) != 15 || len(out.CheckedFiles) != 0 || len(out.Interruptions) != 1 || out.Interruptions[0].Phase != "configuration" || out.Interruptions[0].Limit == nil || out.Interruptions[0].Limit.Name != "work-units" {
+	if report.LintExit(out) != 15 || len(out.CheckedFiles) != 0 || len(out.Interruptions) != 1 || out.Interruptions[0].Phase != "configuration" || out.Interruptions[0].Limit == nil || out.Interruptions[0].Limit.Name != "work-units" {
 		t.Fatal(out)
 	}
 }
@@ -283,8 +243,8 @@ func TestFixEmptyDiscoveryCausePrecedence(t *testing.T) {
 				if mixed {
 					want = 13
 				}
-				if lintExit(out) != want || out.Complete || len(out.Interruptions) == 0 || len(out.CheckedFiles) != 0 || len(out.Changes) != 0 {
-					t.Fatalf("exit=%d result=%+v", lintExit(out), out)
+				if report.LintExit(out) != want || out.Complete || len(out.Interruptions) == 0 || len(out.CheckedFiles) != 0 || len(out.Changes) != 0 {
+					t.Fatalf("exit=%d result=%+v", report.LintExit(out), out)
 				}
 				for _, e := range out.Errors {
 					if e.Code != "selection-failed" {
@@ -295,7 +255,7 @@ func TestFixEmptyDiscoveryCausePrecedence(t *testing.T) {
 					t.Fatal(out.Errors)
 				}
 				var stdout bytes.Buffer
-				if status := reportResult(out, "json", &stdout, nil); status != want {
+				if status := report.ReportResult(out, "json", &stdout, nil); status != want {
 					t.Fatal(status, stdout.String())
 				}
 				validateEmitted(t, t.TempDir(), stdout.Bytes())

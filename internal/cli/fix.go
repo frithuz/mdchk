@@ -19,6 +19,7 @@ import (
 	"github.com/frithuz/mdchk/internal/files"
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
 )
@@ -54,7 +55,7 @@ Run GitHub output from the checkout root; invocation CWD declares path authority
 func parseFix(args []string) (lintOptions, bool, error) {
 	opts, err := parseCommandOptionsWithFix(args, true, false, true)
 	dry := opts.dryRun
-	if err == nil && reportLimit(opts.limits, "document-bytes") > reportLimit(opts.limits, "total-content-bytes") {
+	if err == nil && report.ReportLimit(opts.limits, "document-bytes") > report.ReportLimit(opts.limits, "total-content-bytes") {
 		err = errors.New("document-bytes must not exceed total-content-bytes")
 	}
 	for name := range opts.limits {
@@ -69,7 +70,7 @@ func runFix(ctx context.Context, args []string, w, stderr io.Writer, presentatio
 		out := failureResult(err, code, category)
 		out.Operation = "fix"
 		out.DryRun = &dry
-		return reportResultStreamsContext(presentation, out, format, w, stderr, limits)
+		return report.ReportResultStreamsContext(presentation, out, format, w, stderr, limits)
 	}
 	opts, dry, err := parseFix(args)
 	if err != nil {
@@ -82,9 +83,9 @@ func runFix(ctx context.Context, args []string, w, stderr io.Writer, presentatio
 		return output(w, "mdchk "+version+"\n", 0)
 	}
 	opts.presentation = presentation
-	profile := parser.Limits{DocumentBytes: reportLimit(opts.limits, "document-bytes"), SyntaxDepth: reportLimit(opts.limits, "syntax-depth"), DocumentNodes: reportLimit(opts.limits, "document-nodes"), TotalNodes: reportLimit(opts.limits, "total-nodes"), WorkUnits: reportLimit(opts.limits, "work-units"), OperationTime: time.Duration(reportLimit(opts.limits, "operation-time"))}
+	profile := parser.Limits{DocumentBytes: report.ReportLimit(opts.limits, "document-bytes"), SyntaxDepth: report.ReportLimit(opts.limits, "syntax-depth"), DocumentNodes: report.ReportLimit(opts.limits, "document-nodes"), TotalNodes: report.ReportLimit(opts.limits, "total-nodes"), WorkUnits: report.ReportLimit(opts.limits, "work-units"), OperationTime: time.Duration(report.ReportLimit(opts.limits, "operation-time"))}
 	budget, err := newOperationBudget(profile, opts.limits)
-	if err == nil && (reportLimit(opts.limits, "structured-input-depth") > 4096 || reportLimit(opts.limits, "total-config-bytes") > 1<<30) {
+	if err == nil && (report.ReportLimit(opts.limits, "structured-input-depth") > 4096 || report.ReportLimit(opts.limits, "total-config-bytes") > 1<<30) {
 		err = errors.New("unsupported configuration limits")
 	}
 	if err != nil {
@@ -107,7 +108,7 @@ func runFix(ctx context.Context, args []string, w, stderr io.Writer, presentatio
 		return fail(err, "correction-initialization", result.Internal, dry, opts.format, opts.limits)
 	}
 	out := executeFix(ctx, opts, budget, registry, providers, caps, validator, produce)
-	return reportResultStreamsContext(presentation, out, opts.format, w, stderr, opts.limits)
+	return report.ReportResultStreamsContext(presentation, out, opts.format, w, stderr, opts.limits)
 }
 
 func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationBudget, registry *engine.Registry, providers engine.ValidationProviders, caps config.Capabilities, validator *fix.Validator, produce fix.Producer) (out result.Result) {
@@ -133,7 +134,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	if err != nil {
 		return fail(err, "working-directory", result.IO)
 	}
-	selectedConfig, err := config.ResolveValidatedBounded(config.SelectionOptions{WorkingDirectory: cwd, ExplicitPath: opts.config}, registry, providers, config.DiscoveryBudget{Context: ctx, Budget: budget, SourceBytes: reportLimit(opts.limits, "config-bytes"), TotalBytes: reportLimit(opts.limits, "total-config-bytes"), StructuredDepth: int(reportLimit(opts.limits, "structured-input-depth"))})
+	selectedConfig, err := config.ResolveValidatedBounded(config.SelectionOptions{WorkingDirectory: cwd, ExplicitPath: opts.config}, registry, providers, config.DiscoveryBudget{Context: ctx, Budget: budget, SourceBytes: report.ReportLimit(opts.limits, "config-bytes"), TotalBytes: report.ReportLimit(opts.limits, "total-config-bytes"), StructuredDepth: int(report.ReportLimit(opts.limits, "structured-input-depth"))})
 	if err != nil {
 		return fail(err, "config-definition", result.Configuration)
 	}
@@ -166,7 +167,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	inv.mergeAcquisition(&manifest, selection, acquisition)
 	engine.FinalizeLintResult(&manifest)
 	if err := fixFeasibilityContext(opts.presentation, reserveFixManifest(manifest), opts.format, opts.limits); err != nil && !errors.Is(err, context.DeadlineExceeded) {
-		if !errors.Is(err, errReportBudget) {
+		if !errors.Is(err, report.ErrReportBudget) {
 			return fail(err, "manifest-failed", result.Internal)
 		}
 		count := len(manifest.Files)
@@ -185,7 +186,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	var native *files.WriteSet
 	var acquired *files.Acquisition
 	var resources []fix.ResourceObservation
-	acquireOptions := files.AcquireOptions{DocumentBytes: budget.Limits().DocumentBytes, TotalContentBytes: reportLimit(opts.limits, "total-content-bytes"), Budget: budget}
+	acquireOptions := files.AcquireOptions{DocumentBytes: budget.Limits().DocumentBytes, TotalContentBytes: report.ReportLimit(opts.limits, "total-content-bytes"), Budget: budget}
 	if opts.dryRun {
 		acquired, err = files.Acquire(ctx, selection, acquireOptions)
 	} else {
@@ -234,7 +235,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 	}
 	var validated fix.Validated
 	if len(targets) > 0 {
-		validated, err = validator.Validate(ctx, targets, fix.ValidationOptions{Budget: budget, TotalContentBytes: reportLimit(opts.limits, "total-content-bytes"), Resources: resources})
+		validated, err = validator.Validate(ctx, targets, fix.ValidationOptions{Budget: budget, TotalContentBytes: report.ReportLimit(opts.limits, "total-content-bytes"), Resources: resources})
 	}
 	if err != nil {
 		if isInspectInterruption(err) {
@@ -348,7 +349,7 @@ func executeFix(ctx context.Context, opts lintOptions, budget *parser.OperationB
 				}
 				slices.Sort(change.Rules)
 				change.Rules = slices.Compact(change.Rules)
-				diff, diffErr := buildFixDiff(ctx, budget, doc.Source, view.Candidate)
+				diff, diffErr := report.BuildFixDiff(ctx, budget, doc.Source, view.Candidate)
 				if diffErr != nil {
 					out.Interruptions = append(out.Interruptions, inspectInterruption(diffErr, "planning"))
 					count := 1
@@ -553,11 +554,11 @@ func fixFeasibilityContext(presentation context.Context, out result.Result, form
 	for k, v := range limits {
 		admission[k] = v
 	}
-	admission["reporting-time"] = limitDefaults["reporting-time"]
-	return reportFeasibilityContext(presentation, out, format, admission)
+	admission["reporting-time"] = report.LimitDefaults["reporting-time"]
+	return report.ReportFeasibilityContext(presentation, out, format, admission)
 }
 func reserveFixManifest(out result.Result) result.Result {
-	out = cloneReport(out)
+	out = report.CloneReport(out)
 	rules := []string{}
 	for _, m := range engine.Catalog() {
 		rules = append(rules, m.ID)

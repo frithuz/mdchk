@@ -11,6 +11,7 @@ import (
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -80,17 +81,17 @@ func TestEncodingReductionKeepsFirstOfEachFileAndLinks(t *testing.T) {
 	for _, operation := range []string{"lint", "fix"} {
 		for _, format := range []string{"json", "text"} {
 			r := encodingResult(operation, map[string]int{"a.md": 1000, "b.md": 1000, "c.md": 1})
-			got, err := buildReportCore(context.Background(), r, format, limits)
+			got, err := report.BuildReportCore(context.Background(), r, format, limits)
 			if err != nil {
 				t.Fatal(operation, format, err)
 			}
-			if int64(len(got.data)) > limits["response-bytes"] {
-				t.Fatal(operation, format, len(got.data))
+			if int64(len(got.Data)) > limits["response-bytes"] {
+				t.Fatal(operation, format, len(got.Data))
 			}
 			if format == "json" {
-				validateEmitted(t, t.TempDir(), got.data)
+				validateEmitted(t, t.TempDir(), got.Data)
 			}
-			out := got.out
+			out := got.Out
 			seen := map[string]int{}
 			for _, e := range out.Errors {
 				if seen[e.Path] == 0 && *e.ByteOffset != 0 {
@@ -108,75 +109,10 @@ func TestEncodingReductionKeepsFirstOfEachFileAndLinks(t *testing.T) {
 				t.Fatal("coverage reduced", out.Coverage)
 			}
 			checkEncodingLinks(t, out)
-			if lintExit(out) != 13 || out.Complete {
-				t.Fatal(lintExit(out), out.Complete)
+			if report.LintExit(out) != 13 || out.Complete {
+				t.Fatal(report.LintExit(out), out.Complete)
 			}
 		}
-	}
-}
-
-// A larger bound by one record's size keeps more, so the prefix is the largest.
-func TestEncodingReductionKeepsLargestPrefix(t *testing.T) {
-	r := encodingResult("lint", map[string]int{"a.md": 1000})
-	kept := func(bound int64) int {
-		reduced, err := reduceEncodingErrors(context.Background(), r, "json", bound, true)
-		if err != nil {
-			t.Fatal(err)
-		}
-		return len(reduced.Errors)
-	}
-	base := kept(65536)
-	if base <= 1 || base >= 1000 || kept(65536+1024) <= base {
-		t.Fatal(base, kept(65536+1024))
-	}
-}
-
-// Dropping a.md's records renumbers b.md's. The old IDs must not alias them.
-func TestEncodingReductionLeavesNoStaleCause(t *testing.T) {
-	r := encodingResult("lint", map[string]int{"a.md": 500, "b.md": 500})
-	reduced, err := reduceEncodingErrors(context.Background(), r, "json", 65536, true)
-	if err != nil {
-		t.Fatal(err)
-	}
-	checkEncodingLinks(t, reduced)
-	for _, f := range reduced.Files {
-		if len(f.ErrorIDs) == 0 {
-			t.Fatal(f)
-		}
-	}
-}
-
-func TestEncodingReductionComesBeforeOptionalFamilies(t *testing.T) {
-	r := encodingResult("lint", map[string]int{"a.md": 1000})
-	r.Diagnostics = append(r.Diagnostics, result.Diagnostic{Path: "ok.md", Rule: "MD047", Severity: "error", Message: "finding"})
-	got, err := buildReportCore(context.Background(), r, "json", map[string]int64{"response-bytes": 65536})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(got.out.Diagnostics) != 1 || len(got.out.Coverage) != 1 {
-		t.Fatal(got.out.Diagnostics, got.out.Coverage)
-	}
-	for _, o := range got.out.Omissions {
-		if o.Section != "/errors" {
-			t.Fatal(o)
-		}
-	}
-}
-
-func TestEncodingReductionLaterReductionsStillApply(t *testing.T) {
-	r := encodingResult("lint", map[string]int{"a.md": 1000})
-	for range 1000 {
-		r.Diagnostics = append(r.Diagnostics, result.Diagnostic{Path: "ok.md", Rule: "MD047", Severity: "error", Message: strings.Repeat("x", 200)})
-	}
-	got, err := buildReportCore(context.Background(), r, "json", map[string]int64{"response-bytes": 65536})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(got.out.Errors) != 1 || len(got.out.Diagnostics) >= 1000 {
-		t.Fatal(len(got.out.Errors), len(got.out.Diagnostics))
-	}
-	if count := encodingReductionOmission(t, got.out); count != 999 {
-		t.Fatal(count)
 	}
 }
 
@@ -189,31 +125,31 @@ func TestEncodingRetentionOmissionsCollapseBeforeReportFails(t *testing.T) {
 	}
 	for _, format := range []string{"json", "text"} {
 		r := encodingResult("lint", sources)
-		firsts := cloneReport(r)
+		firsts := report.CloneReport(r)
 		firsts.Errors = slices.DeleteFunc(firsts.Errors, func(e result.Error) bool { return *e.ByteOffset != 0 })
 		firsts.Coverage = []result.Coverage{}
 		firsts.Omissions = []result.Omission{}
 		engine.FinalizeLintResult(&firsts)
-		essential, err := reportSize(context.Background(), firsts, format)
+		essential, err := report.ReportSize(context.Background(), firsts, format)
 		if err != nil {
 			t.Fatal(err)
 		}
 		// Room for the fixed notices, but not for 200 per-file omissions.
 		bound := essential + 2048
-		got, err := buildReportCore(context.Background(), r, format, map[string]int64{"response-bytes": bound})
+		got, err := report.BuildReportCore(context.Background(), r, format, map[string]int64{"response-bytes": bound})
 		if err != nil {
 			t.Fatal(format, err)
 		}
-		if len(got.data) == 0 || int64(len(got.data)) > bound || lintExit(got.out) != 13 {
-			t.Fatal(format, len(got.data), bound, lintExit(got.out))
+		if len(got.Data) == 0 || int64(len(got.Data)) > bound || report.LintExit(got.Out) != 13 {
+			t.Fatal(format, len(got.Data), bound, report.LintExit(got.Out))
 		}
 		retained, total := 0, 0
-		for _, e := range got.out.Errors {
+		for _, e := range got.Out.Errors {
 			if *e.ByteOffset == 0 {
 				retained++
 			}
 		}
-		for _, o := range got.out.Omissions {
+		for _, o := range got.Out.Omissions {
 			if o.EncodingRetention() {
 				t.Fatal(format, "file-scoped omission survived", o)
 			}
@@ -225,11 +161,11 @@ func TestEncodingRetentionOmissionsCollapseBeforeReportFails(t *testing.T) {
 			t.Fatal(format, retained, total)
 		}
 		if format == "json" {
-			validateEmitted(t, t.TempDir(), got.data)
+			validateEmitted(t, t.TempDir(), got.Data)
 		}
-		deadline, err := deadlineReport(context.Background(), r, format, map[string]int64{"response-bytes": bound})
-		if err != nil || len(deadline.data) == 0 || int64(len(deadline.data)) > bound {
-			t.Fatal(format, err, len(deadline.data), bound)
+		deadline, err := report.DeadlineReport(context.Background(), r, format, map[string]int64{"response-bytes": bound})
+		if err != nil || len(deadline.Data) == 0 || int64(len(deadline.Data)) > bound {
+			t.Fatal(format, err, len(deadline.Data), bound)
 		}
 	}
 }
@@ -258,11 +194,11 @@ func TestMinimalLintReportWhenFirstErrorsDoNotFit(t *testing.T) {
 	}
 	// The sizes of the JSON report at each step set the bounds that force the next.
 	minimalSize := func(bound int64) int64 {
-		got, err := minimalLintReport(context.Background(), r, "json", map[string]int64{"response-bytes": bound}, result.Interruption{Reason: "limit-exceeded", Phase: "reporting", Message: "essential detail records exceed response-bytes; whole records omitted"})
+		got, err := report.MinimalLintReport(context.Background(), r, "json", map[string]int64{"response-bytes": bound}, result.Interruption{Reason: "limit-exceeded", Phase: "reporting", Message: "essential detail records exceed response-bytes; whole records omitted"})
 		if err != nil {
 			t.Fatal(err)
 		}
-		return int64(len(got.data))
+		return int64(len(got.Data))
 	}
 	// The bound is printed in the report, so stay at five digits throughout.
 	full := minimalSize(99999)
@@ -280,22 +216,22 @@ func TestMinimalLintReportWhenFirstErrorsDoNotFit(t *testing.T) {
 	} {
 		limits := map[string]int64{"response-bytes": tc.bound}
 		// Feasibility and the core builder still see the full essential report.
-		if _, err := buildReportCore(context.Background(), r, tc.format, limits); !errors.Is(err, errReportBudget) {
+		if _, err := report.BuildReportCore(context.Background(), r, tc.format, limits); !errors.Is(err, report.ErrReportBudget) {
 			t.Fatal(tc, err)
 		}
-		got, err := buildReport(context.Background(), r, tc.format, limits)
+		got, err := report.BuildReport(context.Background(), r, tc.format, limits)
 		if err != nil {
 			t.Fatal(tc, err)
 		}
-		if len(got.data) == 0 || int64(len(got.data)) > tc.bound {
-			t.Fatal(tc, len(got.data))
+		if len(got.Data) == 0 || int64(len(got.Data)) > tc.bound {
+			t.Fatal(tc, len(got.Data))
 		}
 		if tc.format == "json" {
-			validateEmitted(t, t.TempDir(), got.data)
+			validateEmitted(t, t.TempDir(), got.Data)
 		}
-		out := got.out
-		if lintExit(out) != 13 || out.Complete || out.Status != "error" {
-			t.Fatal(tc, lintExit(out), out.Complete, out.Status)
+		out := got.Out
+		if report.LintExit(out) != 13 || out.Complete || out.Status != "error" {
+			t.Fatal(tc, report.LintExit(out), out.Complete, out.Status)
 		}
 		if len(out.Errors) != 1 || out.Errors[0].Category != result.IO || out.Errors[0].Scope != "operation" || !strings.Contains(out.Errors[0].Message, fmt.Sprint(len(r.Errors))) {
 			t.Fatal(tc, out.Errors)
@@ -330,31 +266,16 @@ func TestMinimalLintReportWhenFirstErrorsDoNotFit(t *testing.T) {
 	}
 }
 
-// Whole file records are never dropped: a bound below them still fails.
-func TestMinimalLintReportKeepsFileRecords(t *testing.T) {
-	r := encodingResult("lint", encodingManyFiles(600))
-	if _, err := buildReport(context.Background(), r, "json", map[string]int64{"response-bytes": 65536}); !errors.Is(err, errReportBudget) {
-		t.Fatal(err)
-	}
-}
-
-func TestMinimalReportIsLintOnly(t *testing.T) {
-	r := encodingResult("fix", encodingManyFiles(300))
-	if _, err := buildReport(context.Background(), r, "json", map[string]int64{"response-bytes": 66000}); !errors.Is(err, errReportBudget) {
-		t.Fatal(err)
-	}
-}
-
 func TestMinimalLintReportInDeadlineFallback(t *testing.T) {
 	r := encodingResult("lint", encodingManyFiles(300))
 	limits := map[string]int64{"response-bytes": 66000}
-	got, err := minimalLintReport(context.Background(), r, "json", limits, result.Interruption{Reason: "deadline-exceeded", Phase: "reporting", Message: "expired"})
+	got, err := report.MinimalLintReport(context.Background(), r, "json", limits, result.Interruption{Reason: "deadline-exceeded", Phase: "reporting", Message: "expired"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	validateEmitted(t, t.TempDir(), got.data)
-	if last := got.out.Interruptions[len(got.out.Interruptions)-1]; last.Reason != "deadline-exceeded" || lintExit(got.out) != 13 {
-		t.Fatal(last, lintExit(got.out))
+	validateEmitted(t, t.TempDir(), got.Data)
+	if last := got.Out.Interruptions[len(got.Out.Interruptions)-1]; last.Reason != "deadline-exceeded" || report.LintExit(got.Out) != 13 {
+		t.Fatal(last, report.LintExit(got.Out))
 	}
 }
 
@@ -366,7 +287,7 @@ func TestLintReserveDeliversWhenReportingDeadlineExpires(t *testing.T) {
 		for _, deadline := range []int64{1, 1000} {
 			var stdout, stderr bytes.Buffer
 			limits := map[string]int64{"reporting-time": deadline}
-			if status := reportResultStreams(r, format, &stdout, &stderr, limits); status != 13 {
+			if status := report.ReportResultStreams(r, format, &stdout, &stderr, limits); status != 13 {
 				t.Fatal(format, deadline, status)
 			}
 			if stdout.Len() == 0 || stderr.Len() != 0 {
@@ -385,76 +306,37 @@ func TestLintReserveDeliversWhenReportingDeadlineExpires(t *testing.T) {
 // The reserve runs for every lint report, so it must leave the result it borrows as is.
 func TestLintReserveBorrowsTheResult(t *testing.T) {
 	r := encodingResult("lint", encodingManyFiles(300))
-	original := cloneReport(r)
-	got, err := minimalLintReport(context.Background(), r, "json", nil, reportingDeadlineStop())
+	original := report.CloneReport(r)
+	got, err := report.MinimalLintReport(context.Background(), r, "json", nil, report.ReportingDeadlineStop())
 	if err != nil {
 		t.Fatal(err)
 	}
-	validateEmitted(t, t.TempDir(), got.data)
+	validateEmitted(t, t.TempDir(), got.Data)
 	if len(r.Errors) != len(original.Errors) || len(r.Omissions) != len(original.Omissions) || r.Files[0].InputSnapshot == nil || len(r.CheckedFiles) != 300 {
 		t.Fatal("reserve changed the borrowed result")
 	}
-	if len(got.out.Errors) != 1 || got.out.Interruptions[len(got.out.Interruptions)-1].Reason != "deadline-exceeded" {
-		t.Fatal(got.out.Errors, got.out.Interruptions)
-	}
-}
-
-// A report that fits keeps the omission for each file.
-func TestEncodingRetentionOmissionsSurviveWhenTheyFit(t *testing.T) {
-	r := encodingResult("lint", map[string]int{"a.md": 1100, "b.md": 1100})
-	got, err := buildReportCore(context.Background(), r, "json", map[string]int64{"response-bytes": 1 << 20})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(got.out.Omissions) != 2 || got.out.Omissions[0].Path != "a.md" || got.out.Omissions[1].Path != "b.md" {
-		t.Fatal(got.out.Omissions)
+	if len(got.Out.Errors) != 1 || got.Out.Interruptions[len(got.Out.Interruptions)-1].Reason != "deadline-exceeded" {
+		t.Fatal(got.Out.Errors, got.Out.Interruptions)
 	}
 }
 
 func TestEncodingReductionInDeadlineReport(t *testing.T) {
 	limits := map[string]int64{"response-bytes": 65536}
 	for _, format := range []string{"json", "text"} {
-		got, err := deadlineReport(context.Background(), encodingResult("lint", map[string]int{"a.md": 1000}), format, limits)
+		got, err := report.DeadlineReport(context.Background(), encodingResult("lint", map[string]int{"a.md": 1000}), format, limits)
 		if err != nil {
 			t.Fatal(format, err)
 		}
 		// The fallback must be ready early, so it runs no search: it keeps the first.
-		if int64(len(got.data)) > limits["response-bytes"] || len(got.out.Errors) != 1 || *got.out.Errors[0].ByteOffset != 0 {
-			t.Fatal(format, len(got.data), len(got.out.Errors))
+		if int64(len(got.Data)) > limits["response-bytes"] || len(got.Out.Errors) != 1 || *got.Out.Errors[0].ByteOffset != 0 {
+			t.Fatal(format, len(got.Data), len(got.Out.Errors))
 		}
-		if count := encodingReductionOmission(t, got.out); count != 999 {
+		if count := encodingReductionOmission(t, got.Out); count != 999 {
 			t.Fatal(format, count)
 		}
 		if format == "json" {
-			validateEmitted(t, t.TempDir(), got.data)
+			validateEmitted(t, t.TempDir(), got.Data)
 		}
-	}
-}
-
-func TestConfigManifestReductionClearsByteRange(t *testing.T) {
-	offset := 1
-	r := result.NewConfigValidation()
-	r.Errors = append(r.Errors, result.Error{Category: result.Configuration, Code: "config-definition", Scope: "operation", Message: "bad", ByteOffset: &offset, ByteRange: &result.ByteRange{Start: 1, End: 2}})
-	engine.FinalizeLintResult(&r)
-	if err := reduceConfigManifest(context.Background(), &r, "json", 1); err != nil {
-		t.Fatal(err)
-	}
-	if len(r.Errors) != 1 || r.Errors[0].ByteOffset != nil || r.Errors[0].ByteRange != nil {
-		t.Fatalf("%+v", r.Errors)
-	}
-}
-
-func TestVSCodeLocatesOnlyEncodingIOErrors(t *testing.T) {
-	r := encodingResult("lint", map[string]int{"bad.md": 2})
-	location := *r.Errors[0].Range
-	r.Errors = append(r.Errors, result.Error{Category: result.IO, Code: "read-failed", Scope: "operation", Path: "other.md", Message: "failed", Range: &location})
-	var stdout, stderr bytes.Buffer
-	if err := renderVSCode(context.Background(), &stdout, &stderr, r); err != nil {
-		t.Fatal(err)
-	}
-	want := "bad.md:1:1: error: invalid-utf8: Invalid UTF-8 byte sequence 0xFF at byte offset 0.\nbad.md:1:2: error: invalid-utf8: Invalid UTF-8 byte sequence 0xFF at byte offset 1.\n"
-	if stdout.String() != want || !strings.Contains(stderr.String(), "read-failed") || strings.Contains(stderr.String(), "invalid-utf8") {
-		t.Fatalf("stdout=%q stderr=%q", stdout.String(), stderr.String())
 	}
 }
 
@@ -471,21 +353,21 @@ func TestInspectionOutcomeIgnoresEncodingRetention(t *testing.T) {
 		{"capped", func(r *result.Result) { r.Omissions = []result.Omission{capped} }, "inspected", 0, false},
 		{"path-less reduction", func(r *result.Result) {
 			r.Omissions = []result.Omission{{Section: "/errors", Reason: "output-limit", Count: &count, Message: "reduced"}}
-		}, "incomplete", exitIncomplete, false},
+		}, "incomplete", report.ExitIncomplete, false},
 		{"capped and reduced", func(r *result.Result) {
 			r.Omissions = []result.Omission{capped, {Section: "/notes", Reason: "output-limit", Count: &count, Message: "reduced"}}
-		}, "incomplete", exitIncomplete, false},
+		}, "incomplete", report.ExitIncomplete, false},
 		{"capped and interrupted", func(r *result.Result) {
 			r.Omissions = []result.Omission{capped}
 			r.Interruptions = []result.Interruption{{ID: "stop", Reason: "limit-exceeded", Phase: "reporting", Message: "stopped"}}
-		}, "incomplete", exitIncomplete, false},
+		}, "incomplete", report.ExitIncomplete, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			r := newInspectResult()
 			tc.mutate(&r)
-			inspectionOutcome(&r)
-			if r.Status != tc.status || r.Complete != tc.complete || inspectionExit(r) != tc.exit {
-				t.Fatal(r.Status, r.Complete, inspectionExit(r))
+			report.InspectionOutcome(&r)
+			if r.Status != tc.status || r.Complete != tc.complete || report.InspectionExit(r) != tc.exit {
+				t.Fatal(r.Status, r.Complete, report.InspectionExit(r))
 			}
 		})
 	}

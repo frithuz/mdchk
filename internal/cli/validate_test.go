@@ -16,6 +16,7 @@ import (
 	"github.com/frithuz/mdchk/internal/config"
 	"github.com/frithuz/mdchk/internal/configscan"
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
 	"github.com/frithuz/mdchk/internal/testenv"
 )
@@ -156,7 +157,7 @@ func TestValidateFailureRolesAndReportReduction(t *testing.T) {
 	source := config.SourceSnapshot{Path: filepath.Join(root, ".mdchk.yaml"), SHA256: strings.Repeat("a", 64), SizeBytes: 2}
 	scanned := configscan.ValidationResult{Scan: configscan.Result{Complete: false, Errors: []configscan.Failure{{Path: source.Path, Role: configscan.DefinitionSource, Err: fmt.Errorf("unreadable")}, {Path: filepath.Join(root, "ignore/.mdchk.yaml"), Role: configscan.IgnoreSource, Err: fmt.Errorf("ignore unreadable")}}}}
 	r := validationResult(scanned)
-	if lintExit(r) != 13 || len(r.Files) != 1 || r.Files[0].InputSnapshot != nil || r.ConfigValidation.DefinitionsChecked != 0 {
+	if report.LintExit(r) != 13 || len(r.Files) != 1 || r.Files[0].InputSnapshot != nil || r.ConfigValidation.DefinitionsChecked != 0 {
 		t.Fatal(r)
 	}
 	scanned.Scan.Complete = true
@@ -165,28 +166,28 @@ func TestValidateFailureRolesAndReportReduction(t *testing.T) {
 	r = validationResult(scanned)
 	for _, format := range []string{"json", "text"} {
 		limits := map[string]int64{"response-bytes": 65536}
-		encoded, e := buildReport(context.Background(), r, format, limits)
+		encoded, e := report.BuildReport(context.Background(), r, format, limits)
 		if e != nil {
 			t.Fatal(e)
 		}
-		got := encoded.out
-		if len(encoded.data) > 65536 || lintExit(got) != 12 || got.Complete || !got.ConfigValidation.ScanComplete || got.ConfigValidation.InvalidDefinitions != 1 || got.Files[0].Analysis != "complete" || len(got.Omissions) == 0 {
+		got := encoded.Out
+		if len(encoded.Data) > 65536 || report.LintExit(got) != 12 || got.Complete || !got.ConfigValidation.ScanComplete || got.ConfigValidation.InvalidDefinitions != 1 || got.Files[0].Analysis != "complete" || len(got.Omissions) == 0 {
 			t.Fatalf("reduction %+v", got)
 		}
 		if format == "json" {
-			validateEmitted(t, t.TempDir(), encoded.data)
+			validateEmitted(t, t.TempDir(), encoded.Data)
 		}
-		fallback, e := deadlineReport(context.Background(), r, format, limits)
-		if e != nil || fallback.out.ConfigValidation.InvalidDefinitions != 1 || fallback.out.Files[0].Analysis != "complete" || lintExit(fallback.out) != 12 {
-			t.Fatalf("fallback %+v %v", fallback.out, e)
+		fallback, e := report.DeadlineReport(context.Background(), r, format, limits)
+		if e != nil || fallback.Out.ConfigValidation.InvalidDefinitions != 1 || fallback.Out.Files[0].Analysis != "complete" || report.LintExit(fallback.Out) != 12 {
+			t.Fatalf("fallback %+v %v", fallback.Out, e)
 		}
 	}
 	r.Interruptions = append(r.Interruptions, result.Interruption{Reason: "cancelled", Phase: "configuration", Message: "Cancelled"})
-	if lintExit(r) != 12 {
-		t.Fatalf("configuration must outrank cancellation: %d", lintExit(r))
+	if report.LintExit(r) != 12 {
+		t.Fatalf("configuration must outrank cancellation: %d", report.LintExit(r))
 	}
 	var short validationShortWriter
-	if status := reportResult(r, "json", short, nil); status != 13 {
+	if status := report.ReportResult(r, "json", short, nil); status != 13 {
 		t.Fatalf("delivery status %d", status)
 	}
 }
@@ -215,16 +216,16 @@ func TestValidateOversizedOutcomeManifestIsInterruption(t *testing.T) {
 		r.Files = append(r.Files, result.File{Path: path, Analysis: "complete", WriteStatus: "not-requested", ReturnStatus: "not-requested", InputSnapshot: &snapshot, ResultSnapshot: &snapshot, ErrorIDs: []string{}, CoverageIDs: []string{}, ChangeIDs: []string{}})
 	}
 	for _, format := range []string{"json", "text"} {
-		encoded, e := buildReport(context.Background(), r, format, map[string]int64{"response-bytes": 65536})
+		encoded, e := report.BuildReport(context.Background(), r, format, map[string]int64{"response-bytes": 65536})
 		if e != nil {
 			t.Fatal(e)
 		}
-		out := encoded.out
-		if len(encoded.data) > 65536 || lintExit(out) != 15 || out.Complete || !out.ConfigValidation.ScanComplete || out.ConfigValidation.ValidDefinitions != 200 || len(out.Files) != 0 || len(out.CheckedFiles) != 0 {
-			t.Fatalf("manifest reduction format=%s status=%d files=%d omissions=%d summary=%+v", format, lintExit(out), len(out.Files), len(out.Omissions), out.ConfigValidation)
+		out := encoded.Out
+		if len(encoded.Data) > 65536 || report.LintExit(out) != 15 || out.Complete || !out.ConfigValidation.ScanComplete || out.ConfigValidation.ValidDefinitions != 200 || len(out.Files) != 0 || len(out.CheckedFiles) != 0 {
+			t.Fatalf("manifest reduction format=%s status=%d files=%d omissions=%d summary=%+v", format, report.LintExit(out), len(out.Files), len(out.Omissions), out.ConfigValidation)
 		}
 		if format == "json" {
-			validateEmitted(t, t.TempDir(), encoded.data)
+			validateEmitted(t, t.TempDir(), encoded.Data)
 		}
 	}
 	for i := 0; i < 200; i++ {
@@ -234,16 +235,16 @@ func TestValidateOversizedOutcomeManifestIsInterruption(t *testing.T) {
 	r.ConfigValidation.ValidDefinitions = 0
 	r.ConfigValidation.InvalidDefinitions = 200
 	for _, format := range []string{"json", "text"} {
-		encoded, e := buildReport(context.Background(), r, format, map[string]int64{"response-bytes": 65536})
+		encoded, e := report.BuildReport(context.Background(), r, format, map[string]int64{"response-bytes": 65536})
 		if e != nil {
 			t.Fatal(e)
 		}
-		out := encoded.out
-		if lintExit(out) != 13 || len(out.Errors) != 2 || out.ConfigValidation.InvalidDefinitions != 200 || out.Complete || !out.ConfigValidation.ScanComplete {
+		out := encoded.Out
+		if report.LintExit(out) != 13 || len(out.Errors) != 2 || out.ConfigValidation.InvalidDefinitions != 200 || out.Complete || !out.ConfigValidation.ScanComplete {
 			t.Fatalf("category retention %+v", out)
 		}
 		if format == "json" {
-			validateEmitted(t, t.TempDir(), encoded.data)
+			validateEmitted(t, t.TempDir(), encoded.Data)
 		}
 	}
 }
@@ -376,7 +377,7 @@ func TestValidateActualTinyReportingDeadline(t *testing.T) {
 func assertTinyValidationJSON(t *testing.T, r result.Result, status int, invalid bool, source string) {
 	t.Helper()
 	want := result.ConfigValidation{ScanComplete: true, DefinitionsChecked: 1, ValidDefinitions: btoi(!invalid), InvalidDefinitions: btoi(invalid)}
-	if r.ConfigValidation == nil || *r.ConfigValidation != want || len(r.Coverage) != 0 || len(r.Errors) != btoi(invalid) || lintExit(r) != status {
+	if r.ConfigValidation == nil || *r.ConfigValidation != want || len(r.Coverage) != 0 || len(r.Errors) != btoi(invalid) || report.LintExit(r) != status {
 		t.Fatalf("lost decisions or precedence: summary=%+v status=%d errors=%+v", r.ConfigValidation, status, r.Errors)
 	}
 	for _, e := range r.Errors {
@@ -487,7 +488,7 @@ func TestValidateExpiredReportingContextPreservesActualCounts(t *testing.T) {
 		}
 		for _, format := range []string{"text", "json"} {
 			var out, logs bytes.Buffer
-			got := reportResultStreamsContext(ctx, r, format, &out, &logs, nil)
+			got := report.ReportResultStreamsContext(ctx, r, format, &out, &logs, nil)
 			want := 15
 			if invalid {
 				want = 12
@@ -534,7 +535,7 @@ func TestValidateEmergencyReportingRetainsCategoriesAndDelivery(t *testing.T) {
 	for _, format := range []string{"json", "text"} {
 		for _, duration := range []int64{1, 1000, 1000000} {
 			var out bytes.Buffer
-			if got := reportResult(r, format, &out, map[string]int64{"reporting-time": duration}); got != 12 || out.Len() == 0 {
+			if got := report.ReportResult(r, format, &out, map[string]int64{"reporting-time": duration}); got != 12 || out.Len() == 0 {
 				t.Fatalf("large deadline %s/%d status=%d", format, duration, got)
 			}
 			if format == "json" {
@@ -548,7 +549,7 @@ func TestValidateEmergencyReportingRetainsCategoriesAndDelivery(t *testing.T) {
 	r.Errors = append(r.Errors, result.Error{Category: result.IO, Scope: "operation", Code: "ignore-read", Message: "ignore source unavailable"})
 	engine.FinalizeLintResult(&r)
 	var out bytes.Buffer
-	if got := reportResult(r, "json", &out, map[string]int64{"reporting-time": 1}); got != 13 {
+	if got := report.ReportResult(r, "json", &out, map[string]int64{"reporting-time": 1}); got != 13 {
 		t.Fatalf("lost IO precedence %d", got)
 	}
 	got := validateEmitted(t, t.TempDir(), out.Bytes())
@@ -558,16 +559,16 @@ func TestValidateEmergencyReportingRetainsCategoriesAndDelivery(t *testing.T) {
 	r.Errors = append(r.Errors, result.Error{Category: result.Internal, Scope: "operation", Code: "internal", Message: "internal failure"})
 	engine.FinalizeLintResult(&r)
 	out.Reset()
-	if status := reportResult(r, "json", &out, map[string]int64{"reporting-time": 1}); status != 14 {
+	if status := report.ReportResult(r, "json", &out, map[string]int64{"reporting-time": 1}); status != 14 {
 		t.Fatalf("lost internal precedence %d", status)
 	}
 	validateEmitted(t, t.TempDir(), out.Bytes())
-	if status := reportResult(r, "json", validationShortWriter{}, map[string]int64{"reporting-time": 1}); status != 14 {
+	if status := report.ReportResult(r, "json", validationShortWriter{}, map[string]int64{"reporting-time": 1}); status != 14 {
 		t.Fatalf("delivery must retain internal 14: %d", status)
 	}
 	r.Errors = slices.DeleteFunc(r.Errors, func(e result.Error) bool { return e.Category == result.Internal })
 	engine.FinalizeLintResult(&r)
-	if status := reportResult(r, "json", validationShortWriter{}, map[string]int64{"reporting-time": 1}); status != 13 {
+	if status := report.ReportResult(r, "json", validationShortWriter{}, map[string]int64{"reporting-time": 1}); status != 13 {
 		t.Fatalf("actual failed delivery must return IO 13: %d", status)
 	}
 }
@@ -652,7 +653,7 @@ func TestValidateActualLargeReportingDeadline(t *testing.T) {
 func assertLargeValidationDeadlineJSON(t *testing.T, r result.Result, expected map[string]result.Snapshot, forced bool) {
 	t.Helper()
 	want := result.ConfigValidation{ScanComplete: true, DefinitionsChecked: 1001, ValidDefinitions: 1000, InvalidDefinitions: 1}
-	if r.ConfigValidation == nil || *r.ConfigValidation != want || r.Operation != "config validate" || r.Status != "error" || lintExit(r) != 12 || len(r.Errors) != 1 || r.Errors[0].Category != result.Configuration {
+	if r.ConfigValidation == nil || *r.ConfigValidation != want || r.Operation != "config validate" || r.Status != "error" || report.LintExit(r) != 12 || len(r.Errors) != 1 || r.Errors[0].Category != result.Configuration {
 		t.Fatalf("large actual command lost decisions: summary=%+v status=%s errors=%+v", r.ConfigValidation, r.Status, r.Errors)
 	}
 	// A positive interval may finish before timer delivery, as with the tiny

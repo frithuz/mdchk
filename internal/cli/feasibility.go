@@ -7,6 +7,7 @@ import (
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/files"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -15,7 +16,7 @@ import (
 // reserve actual target outcomes only after discovery establishes that list.
 func invocationFeasibility(options lintOptions) error {
 	out := result.NewLint("cli")
-	err := reportFeasibilityContext(options.presentation, out, options.format, options.limits)
+	err := report.ReportFeasibilityContext(options.presentation, out, options.format, options.limits)
 	if errors.Is(err, context.DeadlineExceeded) {
 		return nil
 	}
@@ -29,11 +30,11 @@ func (inv *lintInvocation) selectionFeasibility(selected *files.Selection) (int,
 	out := result.NewLint("cli")
 	inv.mergeAcquisition(&out, selected, &files.Acquisition{})
 	engine.FinalizeLintResult(&out)
-	err := reportFeasibilityContext(inv.options.presentation, out, inv.options.format, inv.options.limits)
+	err := report.ReportFeasibilityContext(inv.options.presentation, out, inv.options.format, inv.options.limits)
 	if err == nil || errors.Is(err, context.DeadlineExceeded) {
 		return 0, false
 	}
-	if !errors.Is(err, errReportBudget) {
+	if !errors.Is(err, report.ErrReportBudget) {
 		return inv.fail(err, "report-preparation-failed", result.Internal), true
 	}
 	count := 0
@@ -52,5 +53,5 @@ func (inv *lintInvocation) selectionFeasibility(selected *files.Selection) (int,
 	out.Interruptions = append(out.Interruptions, result.Interruption{Reason: "limit-exceeded", Phase: "discovery", Message: "mandatory discovered target manifest exceeds response-bytes"})
 	engine.FinalizeLintResult(&out)
 	inv.result = &out
-	return lintExit(out), true
+	return report.LintExit(out), true
 }
