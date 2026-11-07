@@ -32,7 +32,7 @@ func newFixtureModule(t *testing.T) fixtureModule {
 	if err != nil {
 		t.Fatal(err)
 	}
-	m := fixtureModule{root: root, env: fixtureEnv()}
+	m := fixtureModule{root: root, env: fixtureEnv(root)}
 	m.write(t, "go.mod", "module example.test/fixture\n\ngo 1.22\n")
 	m.write(t, "cmd/mdchk/data.txt", "embedded\n")
 	m.writeSource(t, "first")
@@ -43,14 +43,14 @@ func newFixtureModule(t *testing.T) fixtureModule {
 
 // fixtureEnv isolates a fixture's Git state from the repository under test. A
 // Git hook's GIT_DIR, in particular, would point these commands at that repository.
-func fixtureEnv() []string {
+func fixtureEnv(root string) []string {
 	var env []string
 	for _, entry := range os.Environ() {
 		if !strings.HasPrefix(strings.ToUpper(entry), "GIT_") {
 			env = append(env, entry)
 		}
 	}
-	return append(env, "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL="+os.DevNull, "GOFLAGS=", "GOWORK=off")
+	return append(env, "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL="+filepath.Join(root, ".git", "absent-gitconfig"), "GOFLAGS=", "GOWORK=off")
 }
 
 func (m fixtureModule) write(t *testing.T, name, contents string) {
