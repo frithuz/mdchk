@@ -260,14 +260,14 @@ Suggested boundaries:
 | Package | Responsibility |
 | --- | --- |
 | `cmd/mdchk` | Process entry point |
-| `internal/cli` | Arguments, command dispatch, output and exit codes |
+| `internal/cli` | Arguments and command dispatch |
 | `internal/config` | Discovery, validation and effective settings |
 | `internal/files` | File selection and bounded filesystem access |
 | `internal/parser` | Markdown structure, source spans and syntax context |
 | `internal/engine` | Parser coordination, rule execution and result aggregation |
 | `internal/rules` | Rule definitions and implementations |
 | `internal/fix` | Edit validation, application and writes |
-| `internal/report` | Text, JSON, VS Code problem matcher output and GitHub annotations |
+| `internal/report` | Result encoding and bounds for text, JSON, VS Code problem matcher output and GitHub annotations; exit statuses and limit defaults |
 | `internal/mcp` | MCP tool schemas and engine adaptation |
 
 Keep packages internal initially. A public Go API can be designed later if there is demand.
