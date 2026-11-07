@@ -1,4 +1,6 @@
-package rules
+// Package headingspacing produces and checks the MD019 and MD021 corrections of
+// excess heading delimiter spaces.
+package headingspacing
 
 import (
 	"context"
@@ -69,10 +71,10 @@ func correctableGaps(ctx context.Context, source parser.Source, headings []parse
 	return gaps, nil
 }
 
-// headingSpacingGroups regenerates one group for each eligible active finding.
+// Groups regenerates one group for each eligible active finding.
 // Identical edits from MD019 and MD021 stay separate groups so that Plan credits
 // both rules. The source of truth is the finding plus this round's heading facts.
-func headingSpacingGroups(ctx context.Context, c fix.RoundContext, findings []result.Diagnostic) ([]fix.Group, error) {
+func Groups(ctx context.Context, c fix.RoundContext, findings []result.Diagnostic) ([]fix.Group, error) {
 	if len(findings) == 0 {
 		return nil, nil
 	}
@@ -112,11 +114,11 @@ type headingSpacingRound struct {
 	preserved bool
 }
 
-// checkHeadingSpacing authorizes one group against the before parse, never against
+// Check authorizes one group against the before parse, never against
 // producer data. Whole-candidate proof runs once for the round. Directive structure
 // is compared by the validator's shared preservation, and deleting spaces outside
 // comments cannot create a directive finding, so no ForbidNewFindings is registered.
-func checkHeadingSpacing(ctx context.Context, c fix.CheckContext) (fix.Proof, error) {
+func Check(ctx context.Context, c fix.CheckContext) (fix.Proof, error) {
 	shared, err := c.Once("heading-spacing", func() (any, error) { return headingSpacingProof(ctx, c) })
 	if err != nil {
 		return fix.Unknown, err

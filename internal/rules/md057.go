@@ -8,6 +8,7 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/resource"
+	"github.com/frithuz/mdchk/internal/rules/internal/fragmentdest"
 )
 
 func missingLocalTargets(ctx context.Context, c engine.RuleContext) (out engine.RuleOutcome) {
@@ -47,7 +48,7 @@ func missingLocalTargets(ctx context.Context, c engine.RuleContext) (out engine.
 		}
 		// Remote, empty, fragment-only and query-only destinations name no
 		// other local resource. A fragment never affects the path check.
-		if classifyFragmentDestination(l.Destination) != fragmentOtherDocument {
+		if fragmentdest.Classify(l.Destination) != fragmentdest.OtherDocument {
 			continue
 		}
 		resolved, err := c.ResolveExistence(ctx, l.Destination, l.Span)

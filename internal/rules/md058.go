@@ -6,6 +6,7 @@ import (
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/rules/internal/blankpoints"
 )
 
 func tableBlankLines(ctx context.Context, c engine.RuleContext) (out engine.RuleOutcome) {
@@ -24,5 +25,5 @@ func tableBlankLines(ctx context.Context, c engine.RuleContext) (out engine.Rule
 }
 
 func compareTableBlankLines(ctx context.Context, c engine.RuleContext, items []parser.TableSpacingFact) engine.RuleOutcome {
-	return compareBlankLinePoints(ctx, c, items, "Table")
+	return blankpoints.Compare(ctx, c, items, "Table")
 }
