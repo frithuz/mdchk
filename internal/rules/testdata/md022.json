@@ -474,7 +474,20 @@
   {
     "name": "nested prefix blank",
     "source": "Text\n> -\n> - ## 雪\n>\nText",
-    "expected": [],
+    "expected": [
+      {
+        "range": [
+          9,
+          9,
+          3,
+          1,
+          3,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
     "options": {},
     "recognize": false,
     "incomplete": false
@@ -523,7 +536,32 @@
   {
     "name": "empty item blank",
     "source": "Text\n\n-\n# H\n-\n\nText",
-    "expected": [],
+    "expected": [
+      {
+        "range": [
+          8,
+          8,
+          4,
+          1,
+          4,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      },
+      {
+        "range": [
+          11,
+          11,
+          4,
+          4,
+          4,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
     "options": {},
     "recognize": false,
     "incomplete": false
@@ -942,6 +980,431 @@
         ],
         "source": "",
         "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "marker before heading at document start",
+    "source": "-\n# H\n",
+    "expected": [
+      {
+        "range": [
+          2,
+          2,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "marker after heading at document end",
+    "source": "# H\n-\n",
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "marker stops before count",
+    "source": "a\n\n-\n\n# H\n",
+    "expected": [
+      {
+        "range": [
+          6,
+          6,
+          5,
+          1,
+          5,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {
+      "before": 2
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "marker stops after count",
+    "source": "# H\n\n-\n\nb\n",
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {
+      "after": 2
+    },
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "marker trailing spaces",
+    "source": "-   \n# H\n",
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "marker trailing tab",
+    "source": "-\t\n# H\n",
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "ordered marker before",
+    "source": "1.\n# H\n",
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "ordered marker paren trailing space",
+    "source": "1) \n# H\n",
+    "expected": [
+      {
+        "range": [
+          4,
+          4,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "plus marker",
+    "source": "+\n# H\n",
+    "expected": [
+      {
+        "range": [
+          2,
+          2,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "ordered marker after",
+    "source": "# H\n1.\n",
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "nested item marker",
+    "source": "- -\n# H\n",
+    "expected": [
+      {
+        "range": [
+          4,
+          4,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "marker in quote",
+    "source": "> -\n# H\n",
+    "expected": [
+      {
+        "range": [
+          4,
+          4,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "sibling marker before heading item",
+    "source": "-\n- # H\n",
+    "expected": [
+      {
+        "range": [
+          2,
+          2,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "sibling marker after heading item",
+    "source": "- # H\n-\n",
+    "expected": [
+      {
+        "range": [
+          5,
+          5,
+          1,
+          6,
+          1,
+          6
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "marker crlf",
+    "source": "-\r\n# H\r\n",
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "marker cr",
+    "source": "# H\r-\r",
+    "expected": [
+      {
+        "range": [
+          3,
+          3,
+          1,
+          4,
+          1,
+          4
+        ],
+        "source": "",
+        "side": "after"
+      }
+    ],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "quote after marker before heading",
+    "source": "- >\n# H\n",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "quote after marker after heading",
+    "source": "# H\n- >\n",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "quote after marker extends run",
+    "source": "a\n\n- >\n# H\n\nb\n",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "quote line before heading",
+    "source": "a\n>\n# H\n",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "quote lines around heading",
+    "source": "Text\n>\n# H\n>\nText\n",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "item indentation around heading",
+    "source": "- a\n  \n  # H\n  \n  b\n",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "blank line separates marker",
+    "source": "a\n\n-\n\n# H\n",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "marker on heading line",
+    "source": "- # H\n",
+    "expected": [],
+    "options": {},
+    "recognize": false,
+    "incomplete": false
+  },
+  {
+    "name": "empty task item stays content",
+    "source": "- [ ]\n# H\n",
+    "expected": [
+      {
+        "range": [
+          6,
+          6,
+          2,
+          1,
+          2,
+          1
+        ],
+        "source": "",
+        "side": "before"
       }
     ],
     "options": {},

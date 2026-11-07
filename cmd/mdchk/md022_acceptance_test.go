@@ -19,7 +19,7 @@ func TestCompiledPlatformMD022ProductionAnalysis(t *testing.T) {
 	}{
 		{"published", "Text\n## Install\nText", "", []int{5, 15}, []result.Position{{Line: 2, Column: 1}, {Line: 2, Column: 11}}},
 		{"actual edges", "\n# H\n\n", ", before: 2, after: 2", nil, nil},
-		{"nested prefix blank", "Text\n> -\n> - ## 雪\n>\nText", "", nil, nil},
+		{"nested prefix blank", "Text\n> -\n> - ## 雪\n>\nText", "", []int{9}, []result.Position{{Line: 3, Column: 1}}},
 		{"multiline setext", "前\n\nAlpha\nBeta\n===\nTail", "", []int{19}, []result.Position{{Line: 5, Column: 4}}},
 		{"nondefault", "Text\n\n# H\n\nText", ", before: 0, after: 2", []int{9}, []result.Position{{Line: 3, Column: 4}}},
 		{"disabled sides", "Text\n# H\nText", ", before: 0, after: 0", nil, nil},

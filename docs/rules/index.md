@@ -234,7 +234,7 @@ rules:
     allow_directives: false
 ```
 
-Unless a page says otherwise, checks target the parsed Markdown body and exclude literal code, raw HTML, recognized metadata, escaped syntax, and comments. Rules that target those constructs explicitly inspect them. Container-relative spacing is measured after list and blockquote prefixes. A blank body line contains no non-whitespace body content, although container prefixes may remain.
+Unless a page says otherwise, checks target the parsed Markdown body and exclude literal code, raw HTML, recognized metadata, escaped syntax, and comments. Rules that target those constructs explicitly inspect them. Container-relative spacing is measured after list and blockquote prefixes. A blank body line contains no non-whitespace body content. A list marker is content, so only quote prefixes and whitespace, including item indentation, can leave a line blank.
 
 Findings identify the numeric rule ID, a concrete message, and the smallest relevant source range. Report offending delimiters or characters for token checks, markers for indentation checks, and complete heading or reference labels for structural checks. For missing material, use a zero-width position at the insertion point. A missing opening heading is reported at the first body block or end of an empty body. Use one-based line and Unicode code-point columns with exclusive range ends; retain byte offsets internally. MD094 is the decoding exception defined on its page.
 

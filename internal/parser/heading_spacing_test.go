@@ -16,7 +16,7 @@ func TestHeadingSpacingOwnershipAndCounts(t *testing.T) {
 		first, last   int
 	}{
 		{"Text\n>\n> - # H\n>\nTail", 1, 1, 7, 14},
-		{"Text\n\n-\n# H\n-\n\nTail", 2, 2, 8, 11},
+		{"Text\n\n-\n# H\n-\n\nTail", 0, 0, 8, 11},
 		{"Text\n2.\n# H\nTail", 0, 0, 8, 11},
 		{"Text\n\nAlpha\nBeta\n===\nTail", 1, 0, 6, 20},
 	} {

@@ -1682,7 +1682,9 @@ exclusive heading envelope end is not interpreted as a following heading line.
 One bounded traversal reuses only actual quote-prefix, item-prefix and item-indent
 markers. Per-line maximum prefix ends handle shared partial-tab bytes; residual
 tab columns are ASCII whitespace. Lazy prefixes and marker-looking prose are
-never synthesized. Each original body suffix is tested only for ASCII space/tab;
+never synthesized. A line whose largest prefix end is an item-prefix is nonblank,
+so a marker-only line stops a run; a line ending in a quote-prefix or item-indent
+is not. Each original body suffix is tested only for ASCII space/tab;
 NBSP and NUL are content. Finite forward/backward line passes compute adjacent
 runs across container transitions, independent of options. Opaque header/source
 lines remain physical neighbors. No source, parse, budget or public tree clone

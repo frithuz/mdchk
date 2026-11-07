@@ -16,15 +16,17 @@ type HeadingSpacingFact struct {
 }
 
 type headingBodyLine struct {
-	prefixEnd, before, after int
-	blank                    bool
+	prefixEnd, itemEnd, before, after int
+	blank                             bool
 }
 
 // HeadingSpacing uses only retained container markers from the completed parse
 // and the original physical index. Prefix ownership is local to each line;
-// lazy text has no synthesized prefix. Work is bounded by source bytes, tree
-// records and logarithmic line lookups, independently of configured minima.
-// Any failure withholds the entire inventory.
+// lazy text has no synthesized prefix. A line whose last retained prefix is an
+// item-prefix is a marker line: it is nonblank, so it stops a blank run in both
+// directions. A line ending in a quote-prefix or item-indent stays blank. Work is
+// bounded by source bytes, tree records and logarithmic line lookups,
+// independently of configured minima. Any failure withholds the entire inventory.
 func (d *Document) HeadingSpacing(ctx context.Context, budget *OperationBudget, index LineIndex) ([]HeadingSpacingFact, error) {
 	if ctx == nil || budget == nil || d == nil || !d.parsedComplete || d.commentOperation != budget.identity || index.source.Token() != d.Source().Token() {
 		return nil, errors.New("heading spacing requires the original completed parse and line index")
@@ -79,6 +81,9 @@ func (d *Document) HeadingSpacing(ctx context.Context, budget *OperationBudget, 
 				// Prefixes can share a partially consumed tab. Removing its source byte
 				// also removes only ASCII whitespace; any residual columns remain blank.
 				body[i].prefixEnd = max(body[i].prefixEnd, marker.Source.End())
+				if marker.Role == "item-prefix" {
+					body[i].itemEnd = max(body[i].itemEnd, marker.Source.End())
+				}
 			}
 		case Heading:
 			first, err := locate(n.spec.Envelope.Start())
@@ -118,7 +123,8 @@ func (d *Document) HeadingSpacing(ctx context.Context, budget *OperationBudget, 
 			return nil, err
 		}
 		body[i].before = run
-		body[i].blank = true
+		// An item-prefix has at least one byte, so a zero itemEnd means none retained.
+		body[i].blank = body[i].itemEnd == 0 || body[i].itemEnd != body[i].prefixEnd
 		start := max(line.start, body[i].prefixEnd)
 		for j := start; j < line.end; j++ {
 			if (j-start)&255 == 0 {
