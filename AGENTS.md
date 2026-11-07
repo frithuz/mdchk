@@ -61,4 +61,5 @@ scratchpad, so a factory agent must not disturb what it didn't create:
 - `factory/bin/gate` refuses to run when a disk has less than `min_free_gb` free
   (`factory/config.json`). If you hit a full disk, report it. Don't delete the
   shared Go cache, and don't point `GOCACHE` or `TMPDIR` into the repo: tests fail
-  with temp directories there.
+  with temp directories there. Only the orchestrator empties the cache, with
+  `factory/bin/job trim-cache` once a run has no job left running.

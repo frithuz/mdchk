@@ -179,10 +179,12 @@ then moves the job to `merged`; stop any agents still running for it.
    start it at **intake**.
 3. Each time a job finishes, run `factory/bin/job queue` again and start its
    `resume` lines you aren't already running and its `new` lines.
-4. When nothing is queued or running, print `factory/bin/job summary <ids>`
-   for the jobs this run touched, then list what waits on a human: PRs to
-   review (merge one to approve it, or give feedback with `/factory`) and
-   questions waiting on authors.
+4. When nothing is queued or running, run `factory/bin/job trim-cache`, then
+   print `factory/bin/job summary <ids>` for the jobs this run touched, then
+   list what waits on a human: PRs to review (merge one to approve it, or give
+   feedback with `/factory`) and questions waiting on authors. If `trim-cache`
+   refuses, a job is still in a running stage: tell the user which one and
+   leave the cache alone.
 
 **Resuming.** State lives in files, so a new session picks up where a dead one
 stopped. For a `resume` job, run its stage's step again: `intake` and `spec`
@@ -196,7 +198,8 @@ as `resume`: run `factory/bin/job advance <id> intake` and go to **intake**.
 ## /factory run <n>
 
 Run one issue with the same steps. If `factory/bin/job queue` shows a job for
-it, resume that job; otherwise `factory/bin/job create <n>`. Finish with the
+it, resume that job; otherwise `factory/bin/job create <n>`. When it finishes
+and nothing else is running, run `factory/bin/job trim-cache`. Finish with the
 summary line for that job.
 
 ## /factory <anything>
@@ -223,7 +226,8 @@ new feature, ask.
   It saves `feedback-<k>.md` and starts the next round with a fresh round
   budget. Go to **build** with
   `The user gave feedback: read feedback-<k>.md and address it, push, and update build.md for round <N>.`
-  and continue like any job.
+  and continue like any job. When the last running job finishes, run
+  `factory/bin/job trim-cache`.
 - **Rejecting or benching a `needs-info` or `needs-human` job**: pass their
   reason verbatim on stdin:
 
