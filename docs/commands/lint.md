@@ -148,7 +148,7 @@ adding one newline returns `0`. Preview returns `0` with a proposed change while
 the original bytes stay unchanged. To obtain a clean `0` for other valid UTF-8,
 disable unavailable ordinary rules and satisfy or disable the available checks. To isolate the decoding gate, disable every ordinary rule. The
 compiled production fixture in
-[`cleanConfiguration`](../../cmd/mdchk/configuration_acceptance_test.go)
+[`cleanConfiguration`](../../internal/acceptance/acceptance.go)
 generates that complete configuration from the actual catalog and verifies text/JSON
 reporters; use the [contributor workflow](../contributing.md#exercise-a-newly-registered-rule-through-the-cli)
 to run it or add a registered-rule fixture. It also describes the separate

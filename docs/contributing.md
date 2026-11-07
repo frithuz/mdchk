@@ -130,8 +130,12 @@ compiled-process acceptance tests with exact operating-system exit statuses:
 go run ./tools/testrun ./cmd/mdchk -run 'Test(Configuration|Lint)' -count=1
 ```
 
-`configuration_acceptance_test.go` supplies the bounded build/process helpers,
-full-catalog `cleanConfiguration` and before/after fixture byte checks.
+`internal/acceptance` supplies the bounded build/process helpers, full-catalog
+`CleanConfiguration` and before/after fixture byte checks; only tests import it.
+Builds without an overlay are shared between test processes from
+`mdchk-acceptance` in the user cache directory (`os.UserCacheDir`), in one entry
+per module root, source, build settings and Git state. An entry expires after 24
+hours idle, and deleting the directory is always safe when no tests are running.
 `workflow_acceptance_test.go` covers successful target forms, option placement,
 metadata bypass, validated callback options and a genuinely permission-denied
 input alongside a readable finding. The permission case probes the operating
