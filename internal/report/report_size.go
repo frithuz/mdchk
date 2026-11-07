@@ -1,4 +1,4 @@
-package cli
+package report
 
 import (
 	"context"
@@ -12,38 +12,38 @@ import (
 	"github.com/frithuz/mdchk/internal/result"
 )
 
-// Measure the exact standard-library JSON encoding before allocating it. Large
+// ReportSize measures the exact standard-library JSON encoding before allocating it. Large
 // scalar strings are walked with deadline checkpoints, including HTML and JSON
 // escaping. Only fixed-size custom marshalers (currently source Range) are
 // invoked here; raw JSON sections already carry their exact encoded spelling.
-func reportSize(ctx context.Context, r result.Result, format string) (int64, error) {
+func ReportSize(ctx context.Context, r result.Result, format string) (int64, error) {
 	if format == "json" {
 		n, err := jsonValueSize(ctx, reflect.ValueOf(r))
 		return n + 1, err
 	}
-	w := &reportCounter{}
+	w := &ReportCounter{}
 	if format == "github" {
 		err := renderGitHub(ctx, w, w, r)
-		return w.n, err
+		return w.N, err
 	}
 	if format == "vscode" {
 		err := renderVSCode(ctx, w, w, r)
-		return w.n, err
+		return w.N, err
 	}
-	err := renderText(ctx, w, r)
-	return w.n, err
+	err := RenderText(ctx, w, r)
+	return w.N, err
 }
 
-type reportCounter struct {
-	n     int64
+type ReportCounter struct {
+	N     int64
 	limit int64
 }
 
-func (w *reportCounter) Write(p []byte) (int, error) {
-	if w.limit > 0 && int64(len(p)) > w.limit-w.n {
-		return 0, errReportBudget
+func (w *ReportCounter) Write(p []byte) (int, error) {
+	if w.limit > 0 && int64(len(p)) > w.limit-w.N {
+		return 0, ErrReportBudget
 	}
-	w.n += int64(len(p))
+	w.N += int64(len(p))
 	return len(p), nil
 }
 
@@ -60,7 +60,7 @@ type jsonSizer struct {
 func (s *jsonSizer) charge(n int64) error {
 	if s.remaining != nil {
 		if n > *s.remaining {
-			return errReportBudget
+			return ErrReportBudget
 		}
 		*s.remaining -= n
 	}
@@ -302,7 +302,7 @@ func jsonRawSize(ctx context.Context, raw []byte, terminalSafe bool) (int64, err
 				continue
 			}
 			if terminalSafe && c == 0x7f {
-				n += 4 // textField renders raw JSON DEL as the four visible bytes \x7f.
+				n += 4 // TextField renders raw JSON DEL as the four visible bytes \x7f.
 				continue
 			}
 			if terminalSafe && c >= utf8.RuneSelf {

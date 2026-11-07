@@ -13,6 +13,7 @@ import (
 	"github.com/frithuz/mdchk/internal/configscan"
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -37,8 +38,6 @@ The --config and --dry-run options are unsupported.
 GitHub paths use invocation CWD as the declared checkout root.
 `
 
-var validationLimitNames = []string{"config-bytes", "total-config-bytes", "directory-entries", "path-bytes", "path-depth", "structured-input-depth", "syntax-depth", "document-nodes", "total-nodes", "work-units", "operation-time", "response-bytes", "reporting-time", "report-reserve-bytes"}
-
 func runConfig(ctx context.Context, args []string, stdout, stderr io.Writer, presentation context.Context, version string) int {
 	var globals []string
 	for len(args) > 0 && (args[0] == "--help" || args[0] == "--version") {
@@ -60,7 +59,7 @@ func runConfig(ctx context.Context, args []string, stdout, stderr io.Writer, pre
 		r := failureResult(err, code, category)
 		r.Operation = "config validate"
 		r.ConfigValidation = &result.ConfigValidation{}
-		return reportResultStreamsContext(presentation, r, format, stdout, stderr, limits)
+		return report.ReportResultStreamsContext(presentation, r, format, stdout, stderr, limits)
 	}
 	if args[0] != "validate" {
 		return fail(fmt.Errorf("unknown config subcommand %q", args[0]), "invalid-arguments", result.Usage, recoverFormat(args), nil)
@@ -74,7 +73,7 @@ func runConfig(ctx context.Context, args []string, stdout, stderr io.Writer, pre
 	}
 	if err == nil {
 		for name := range opts.limits {
-			if !validationLimitApplicable(name) {
+			if !report.ValidationLimitApplicable(name) {
 				err = fmt.Errorf("limit %q does not apply to config validate", name)
 				break
 			}
@@ -90,15 +89,15 @@ func runConfig(ctx context.Context, args []string, stdout, stderr io.Writer, pre
 		return output(stdout, "mdchk "+version+"\n", 0)
 	}
 	r := result.NewConfigValidation()
-	if err := reportFeasibilityContext(presentation, r, opts.format, opts.limits); err != nil && !errors.Is(err, context.DeadlineExceeded) {
+	if err := report.ReportFeasibilityContext(presentation, r, opts.format, opts.limits); err != nil && !errors.Is(err, context.DeadlineExceeded) {
 		return fail(err, "response-manifest-too-large", result.Usage, opts.format, opts.limits)
 	}
-	profile := parser.Limits{DocumentBytes: 1048576, SyntaxDepth: reportLimit(opts.limits, "syntax-depth"), DocumentNodes: reportLimit(opts.limits, "document-nodes"), TotalNodes: reportLimit(opts.limits, "total-nodes"), WorkUnits: reportLimit(opts.limits, "work-units"), OperationTime: time.Duration(reportLimit(opts.limits, "operation-time"))}
+	profile := parser.Limits{DocumentBytes: 1048576, SyntaxDepth: report.ReportLimit(opts.limits, "syntax-depth"), DocumentNodes: report.ReportLimit(opts.limits, "document-nodes"), TotalNodes: report.ReportLimit(opts.limits, "total-nodes"), WorkUnits: report.ReportLimit(opts.limits, "work-units"), OperationTime: time.Duration(report.ReportLimit(opts.limits, "operation-time"))}
 	budget, err := parser.NewOperationBudget(profile)
-	if err == nil && reportLimit(opts.limits, "structured-input-depth") > 4096 {
+	if err == nil && report.ReportLimit(opts.limits, "structured-input-depth") > 4096 {
 		err = errors.New("structured-input-depth cannot exceed 4096")
 	}
-	scanLimits := configscan.Limits{Entries: reportLimit(opts.limits, "directory-entries"), PathBytes: reportLimit(opts.limits, "path-bytes"), Depth: reportLimit(opts.limits, "path-depth"), SourceBytes: reportLimit(opts.limits, "config-bytes"), TotalSourceBytes: reportLimit(opts.limits, "total-config-bytes")}
+	scanLimits := configscan.Limits{Entries: report.ReportLimit(opts.limits, "directory-entries"), PathBytes: report.ReportLimit(opts.limits, "path-bytes"), Depth: report.ReportLimit(opts.limits, "path-depth"), SourceBytes: report.ReportLimit(opts.limits, "config-bytes"), TotalSourceBytes: report.ReportLimit(opts.limits, "total-config-bytes")}
 	if scanLimits.Entries > 1<<30 || scanLimits.PathBytes > 1<<20 || scanLimits.Depth > 4096 || scanLimits.TotalSourceBytes > 1<<30 {
 		err = errors.New("unsupported configuration scan limits")
 	}
@@ -125,9 +124,9 @@ func runConfig(ctx context.Context, args []string, stdout, stderr io.Writer, pre
 	}
 	ctx, cancel := context.WithTimeout(ctx, profile.OperationTime)
 	defer cancel()
-	scanned := configscan.Validate(ctx, configscan.Options{Root: root, Limits: scanLimits, Budget: budget, StructuredDepth: int(reportLimit(opts.limits, "structured-input-depth"))}, registry, providers, capabilities)
+	scanned := configscan.Validate(ctx, configscan.Options{Root: root, Limits: scanLimits, Budget: budget, StructuredDepth: int(report.ReportLimit(opts.limits, "structured-input-depth"))}, registry, providers, capabilities)
 	r = validationResult(scanned)
-	for _, name := range validationLimitNames {
+	for _, name := range report.ValidationLimitNames {
 		if name == "response-bytes" || name == "reporting-time" || name == "report-reserve-bytes" {
 			continue
 		}
@@ -136,19 +135,10 @@ func runConfig(ctx context.Context, args []string, stdout, stderr io.Writer, pre
 		if _, ok := opts.limits[name]; ok {
 			source = "operator"
 		}
-		r.EffectiveLimits = append(r.EffectiveLimits, result.EffectiveLimit{Name: name, Value: reportLimit(opts.limits, name), Unit: validationLimitUnit(name), Source: source})
+		r.EffectiveLimits = append(r.EffectiveLimits, result.EffectiveLimit{Name: name, Value: report.ReportLimit(opts.limits, name), Unit: validationLimitUnit(name), Source: source})
 	}
-	return reportResultStreamsContext(presentation, r, opts.format, stdout, stderr, opts.limits)
+	return report.ReportResultStreamsContext(presentation, r, opts.format, stdout, stderr, opts.limits)
 }
-func validationLimitApplicable(name string) bool {
-	for _, n := range validationLimitNames {
-		if name == n {
-			return true
-		}
-	}
-	return false
-}
-
 func validationResult(scanned configscan.ValidationResult) result.Result {
 	r := result.NewConfigValidation()
 	r.ConfigValidation.ScanComplete = scanned.Scan.Complete
@@ -240,11 +230,11 @@ func validationResult(scanned configscan.ValidationResult) result.Result {
 
 func validateConfigLimits(limits map[string]int64) error {
 	for _, pair := range [][2]string{{"config-bytes", "total-config-bytes"}, {"report-reserve-bytes", "response-bytes"}, {"document-nodes", "total-nodes"}} {
-		if reportLimit(limits, pair[0]) > reportLimit(limits, pair[1]) {
+		if report.ReportLimit(limits, pair[0]) > report.ReportLimit(limits, pair[1]) {
 			return fmt.Errorf("limit %s must not exceed %s", pair[0], pair[1])
 		}
 	}
-	if reportLimit(limits, "report-reserve-bytes") < 65536 {
+	if report.ReportLimit(limits, "report-reserve-bytes") < 65536 {
 		return fmt.Errorf("report-reserve-bytes must be at least 65536")
 	}
 	for name, n := range limits {

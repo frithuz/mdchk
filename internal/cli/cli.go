@@ -9,14 +9,8 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
-)
-
-const (
-	exitUsage      = 11
-	exitConfig     = 12
-	exitIO         = 13
-	exitIncomplete = 15
 )
 
 const generalHelp = `Usage: mdchk [global options] <command> [options] [paths...]
@@ -81,7 +75,7 @@ func runContext(ctx context.Context, args []string, stdout, stderr io.Writer, ve
 	}
 	presentation := commandPresentation()
 	fail := func(err error, code string, category result.ErrorCategory, format string, limits map[string]int64) int {
-		return reportResultStreamsContext(presentation, failureResult(err, code, category), format, stdout, stderr, limits)
+		return report.ReportResultStreamsContext(presentation, failureResult(err, code, category), format, stdout, stderr, limits)
 	}
 	var global []string
 	for len(args) > 0 && (args[0] == "--help" || args[0] == "--version") {
@@ -127,7 +121,7 @@ func runContext(ctx context.Context, args []string, stdout, stderr io.Writer, ve
 		}
 		status := execute(ctx, invocation, stdout, stderr)
 		if invocation.result != nil {
-			return reportResultStreamsContext(presentation, *invocation.result, opts.format, stdout, stderr, opts.limits)
+			return report.ReportResultStreamsContext(presentation, *invocation.result, opts.format, stdout, stderr, opts.limits)
 		}
 		return status
 	default:
@@ -137,7 +131,7 @@ func runContext(ctx context.Context, args []string, stdout, stderr io.Writer, ve
 
 func output(w io.Writer, message string, status int) int {
 	if n, err := io.WriteString(w, message); err != nil || n != len(message) {
-		return exitIO
+		return report.ExitIO
 	}
 	return status
 }
@@ -155,7 +149,7 @@ func commandPresentation() context.Context {
 	if runtime.GOOS == "windows" {
 		flavor = "windows"
 	}
-	return withGitHubPaths(ctx, githubPaths{Root: cwd, CWD: cwd, Flavor: flavor})
+	return report.WithGitHubPaths(ctx, report.GithubPaths{Root: cwd, CWD: cwd, Flavor: flavor})
 }
 
 type lintOptions struct {

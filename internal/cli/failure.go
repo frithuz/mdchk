@@ -8,6 +8,7 @@ import (
 
 	"github.com/frithuz/mdchk/internal/config"
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -78,10 +79,10 @@ func configurationFailure(err error, base result.Error, snapshots map[string]res
 	return out
 }
 func reportFailure(err error, code string, category result.ErrorCategory, format string, stdout io.Writer, limits map[string]int64) int {
-	return reportResult(failureResult(err, code, category), format, stdout, limits)
+	return report.ReportResult(failureResult(err, code, category), format, stdout, limits)
 }
 func (inv *lintInvocation) fail(err error, code string, category result.ErrorCategory) int {
 	out := failureResult(err, code, category)
 	inv.result = &out
-	return lintExit(out)
+	return report.LintExit(out)
 }

@@ -18,6 +18,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
 	"github.com/frithuz/mdchk/internal/testenv"
 )
@@ -433,7 +434,7 @@ func TestEditorRealCommandWriterFailuresAndBounds(t *testing.T) {
 			if status == 15 && !strings.Contains(stdout.String()+stderr.String(), "reporting") {
 				t.Fatal("unexplained reduction")
 			}
-			if stdout.Len()+stderr.Len() > int(limitDefaults["response-bytes"]) {
+			if stdout.Len()+stderr.Len() > int(report.LimitDefaults["response-bytes"]) {
 				t.Fatal("combined limit")
 			}
 		}

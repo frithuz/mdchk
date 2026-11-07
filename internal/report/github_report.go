@@ -1,4 +1,4 @@
-package cli
+package report
 
 import (
 	"context"
@@ -11,23 +11,23 @@ import (
 	"github.com/frithuz/mdchk/internal/result"
 )
 
-// githubPaths is trusted presentation authority, never inferred from findings.
+// GithubPaths is trusted presentation authority, never inferred from findings.
 // Root and CWD must be absolute in the explicitly selected flavor (unix/windows).
 // Mapping is lexical: callers establish repository identity; no files are opened.
 // The zero value deliberately renders all findings without a source location.
-type githubPaths struct{ Root, CWD, Flavor string }
+type GithubPaths struct{ Root, CWD, Flavor string }
 type githubPathsKey struct{}
 type githubBoundKey struct{}
 
-func withGitHubPaths(ctx context.Context, paths githubPaths) context.Context {
+func WithGitHubPaths(ctx context.Context, paths GithubPaths) context.Context {
 	return context.WithValue(ctx, githubPathsKey{}, paths)
 }
 
 func githubPath(ctx context.Context, name string) (string, error) {
-	authority, _ := ctx.Value(githubPathsKey{}).(githubPaths)
+	authority, _ := ctx.Value(githubPathsKey{}).(GithubPaths)
 	bound, ok := ctx.Value(githubBoundKey{}).(int64)
 	if !ok {
-		bound = limitDefaults["response-bytes"]
+		bound = LimitDefaults["response-bytes"]
 	}
 	// Refuse optional location detail before allocation. Scalars are scanned with
 	// cancellation checkpoints even when they cannot be mapped under the bound.
@@ -156,7 +156,7 @@ func githubField(ctx context.Context, w io.Writer, s string, property, human boo
 		case vscodeBidiControl(r):
 			encoded = fmt.Sprintf(`\u%04x`, r)
 		case terminalControl(r):
-			encoded = textField(string(r))
+			encoded = TextField(string(r))
 		default:
 			encoded = string(r)
 		}
@@ -302,6 +302,6 @@ func renderGitHub(ctx context.Context, stdout, stderr io.Writer, r result.Result
 	return ctx.Err()
 }
 
-func encodeGitHub(ctx context.Context, out result.Result, bound int64) (encodedReport, error) {
+func EncodeGitHub(ctx context.Context, out result.Result, bound int64) (EncodedReport, error) {
 	return encodeEditor(context.WithValue(ctx, githubBoundKey{}, bound), out, bound, renderGitHub)
 }

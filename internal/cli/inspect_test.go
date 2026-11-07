@@ -14,6 +14,7 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	inspection "github.com/frithuz/mdchk/internal/inspect"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -41,7 +42,7 @@ func TestInspectionCancellationDeliveryAndInternalPrecedence(t *testing.T) {
 					limits["reporting-time"] = 1
 				}
 				var delivered bytes.Buffer
-				status := reportInspection(r, nil, format, &delivered, limits)
+				status := report.ReportInspection(r, nil, format, &delivered, limits)
 				want := 13
 				if category == result.Internal {
 					want = 14
@@ -49,7 +50,7 @@ func TestInspectionCancellationDeliveryAndInternalPrecedence(t *testing.T) {
 				if status != want {
 					t.Fatal(status, want)
 				}
-				if status := reportInspection(r, nil, format, inspectionShortWriter{}, limits); status != want {
+				if status := report.ReportInspection(r, nil, format, inspectionShortWriter{}, limits); status != want {
 					t.Fatal("shortwrite precedence", status, want)
 				}
 				if format == "json" {
@@ -62,7 +63,7 @@ func TestInspectionCancellationDeliveryAndInternalPrecedence(t *testing.T) {
 	r := newInspectResult()
 	r.Errors = append(r.Errors, result.Error{Scope: "observation", Category: result.IO, Code: "invalid-utf8", Message: "decoding observation"})
 	finalizeInspection(&r)
-	if status := reportInspection(r, nil, "json", inspectionShortWriter{}, nil); status != 13 {
+	if status := report.ReportInspection(r, nil, "json", inspectionShortWriter{}, nil); status != 13 {
 		t.Fatal(status)
 	}
 }
@@ -82,7 +83,7 @@ func TestInspectionReporterOwnsViewsAndExactOmissions(t *testing.T) {
 	var typed inspection.Projection
 	_ = json.Unmarshal(r.Inspection, &typed)
 	typedBefore, _ := json.Marshal(typed)
-	if status := reportInspection(r, &typed, "json", &reduced, map[string]int64{"response-bytes": 65536}); status != 15 {
+	if status := report.ReportInspection(r, &typed, "json", &reduced, map[string]int64{"response-bytes": 65536}); status != 15 {
 		t.Fatal(status)
 	}
 	got := validateEmitted(t, t.TempDir(), reduced.Bytes())
@@ -153,7 +154,7 @@ func TestInspectionCrossingSuppressionAndSharedExecution(t *testing.T) {
 			}
 			budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
 			out, p := executeInspect(context.Background(), opts, "test", root, budget, registry, engine.ValidationProviders{}, config.Capabilities{CommonMark: true, DirectiveProcessing: true})
-			if called != 1 || inspectionExit(out) != 0 || p.File.SelectedLines.Start != 3 || p.RuleCounts.Availability != "available" {
+			if called != 1 || report.InspectionExit(out) != 0 || p.File.SelectedLines.Start != 3 || p.RuleCounts.Availability != "available" {
 				t.Fatal(called, out.Status, p)
 			}
 			if blocked {
@@ -171,7 +172,7 @@ func TestInspectionCrossingSuppressionAndSharedExecution(t *testing.T) {
 				}
 			}
 			var output bytes.Buffer
-			if status := reportInspection(out, p, "json", &output, nil); status != 0 {
+			if status := report.ReportInspection(out, p, "json", &output, nil); status != 0 {
 				t.Fatal(status)
 			}
 			validateEmitted(t, t.TempDir(), output.Bytes())
@@ -194,7 +195,7 @@ func TestInspectionTinyReportingDeadlineRetainsObservationSemantics(t *testing.T
 	for _, format := range []string{"text", "json"} {
 		for _, n := range []int64{1, 1000} {
 			var output bytes.Buffer
-			if status := reportInspection(r, &p, format, &output, map[string]int64{"reporting-time": n}); status != 15 && !(n == 1000 && status == 0) {
+			if status := report.ReportInspection(r, &p, format, &output, map[string]int64{"reporting-time": n}); status != 15 && !(n == 1000 && status == 0) {
 				t.Fatalf("deadline %d format %s status %d: %s", n, format, status, output.String())
 			}
 			if format == "json" {
@@ -222,11 +223,11 @@ func TestInspectionManifestAdmissionPrecedesCallbacks(t *testing.T) {
 	}
 	budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
 	out, p := executeInspect(context.Background(), opts, "test", root, budget, registry, engine.ValidationProviders{}, config.Capabilities{CommonMark: true, DirectiveProcessing: true})
-	if called != 0 || inspectionExit(out) != 15 || out.Files[0].Analysis != "not-started" || p.AST.Availability != "unavailable" || p.File.SHA256 == "" {
+	if called != 0 || report.InspectionExit(out) != 15 || out.Files[0].Analysis != "not-started" || p.AST.Availability != "unavailable" || p.File.SHA256 == "" {
 		t.Fatal(called, out, p)
 	}
 	var output bytes.Buffer
-	if status := reportInspection(out, p, "json", &output, opts.limits); status != 15 {
+	if status := report.ReportInspection(out, p, "json", &output, opts.limits); status != 15 {
 		t.Fatal(status)
 	}
 	validateEmitted(t, t.TempDir(), output.Bytes())
