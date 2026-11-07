@@ -2,10 +2,7 @@ package main
 
 import (
 	"crypto/sha256"
-	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -154,27 +151,6 @@ func TestConfigurationFixtureAcceptance(t *testing.T) {
 			}
 		}
 	})
-}
-
-// buildConfigurationFixtureExecutable isolates test registration at compile time.
-// Reuse it for compiled CLI checks without adding a production runtime switch.
-func buildConfigurationFixtureExecutable(t *testing.T) string {
-	t.Helper()
-	cwd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	overlayBytes, err := json.Marshal(struct{ Replace map[string]string }{map[string]string{
-		filepath.Join(cwd, "..", "..", "internal", "cli", "providers.go"): filepath.Join(cwd, "testdata", "configuration_providers.go"),
-	}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	overlay := filepath.Join(t.TempDir(), "overlay.json")
-	if err := os.WriteFile(overlay, overlayBytes, 0o600); err != nil {
-		t.Fatal(err)
-	}
-	return buildConfigurationExecutable(t, overlay)
 }
 
 func fixtureConfiguration(missing, finding, failure bool) string {

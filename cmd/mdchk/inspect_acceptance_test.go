@@ -5,41 +5,14 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
 
-	inspection "github.com/frithuz/mdchk/internal/inspect"
 	"github.com/frithuz/mdchk/internal/result"
 )
-
-func runInspection(t *testing.T, binary, cwd, snapshotRoot string, args ...string) (configurationRun, inspection.Projection) {
-	t.Helper()
-	before := configurationBytes(t, snapshotRoot)
-	beforeModes := inspectionModes(t, snapshotRoot)
-	defer func() {
-		if !reflect.DeepEqual(before, configurationBytes(t, snapshotRoot)) || !reflect.DeepEqual(beforeModes, inspectionModes(t, snapshotRoot)) {
-			t.Error("inspect changed source/configuration bytes or inventory")
-		}
-	}()
-	got := runConfigurationProcess(t, binary, cwd, args...)
-	p := inspection.Projection{}
-	for _, arg := range args {
-		if arg == "--format=json" {
-			got.Result = validateConfigurationOperationJSON(t, []byte(got.Stdout), "inspect")
-			if len(got.Result.Inspection) > 0 {
-				if err := json.Unmarshal(got.Result.Inspection, &p); err != nil {
-					t.Fatal(err)
-				}
-			}
-			break
-		}
-	}
-	return got, p
-}
 
 func TestCompiledInspectionWorkflow(t *testing.T) {
 	t.Parallel()
@@ -347,25 +320,6 @@ func TestCompiledInspectionSyntheticLintParity(t *testing.T) {
 			}
 		}
 	}
-}
-
-func inspectionModes(t *testing.T, root string) map[string]fs.FileMode {
-	t.Helper()
-	modes := map[string]fs.FileMode{}
-	if err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		info, err := entry.Info()
-		if err != nil {
-			return err
-		}
-		modes[path] = info.Mode()
-		return nil
-	}); err != nil {
-		t.Fatal(err)
-	}
-	return modes
 }
 
 func TestCompiledInspectionTerminalControlsAndOptionDiagnostics(t *testing.T) {

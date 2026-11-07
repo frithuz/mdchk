@@ -81,6 +81,7 @@ func Digest(data []byte) [16]byte { return md5.Sum(data) } // #nosec G401
 func Unexplained() { os.Chdir(".") }
 ''')
         write(root, "internal/conformance/helper.go", "// Package conformance supplies a test renderer.\npackage conformance\nfunc Helper() {}\n")
+        write(root, "internal/acceptance/helper.go", "// Package acceptance supplies test helpers.\npackage acceptance\nfunc Helper() {}\n")
         write(root, "internal/helper/helper.go", "// Package helper supplies a dependency probe.\npackage helper\nfunc Helper() {}\n")
         write(root, "internal/parser/probe.go", '''// Package parser owns core syntax.
 package parser
@@ -96,10 +97,11 @@ import (
  toml "github.com/pelletier/go-toml/v2"
  sdk "github.com/modelcontextprotocol/go-sdk/mcp"
  unapproved "example.invalid/unapproved"
+ "github.com/frithuz/mdchk/internal/acceptance"
  "github.com/frithuz/mdchk/internal/conformance"
  unix "golang.org/x/sys/unix"
 )
-func Dependencies() { toml.Helper(); yaml.Helper(); sdk.Helper(); unapproved.Helper(); conformance.Helper(); unix.Helper() }
+func Dependencies() { toml.Helper(); yaml.Helper(); sdk.Helper(); unapproved.Helper(); acceptance.Helper(); conformance.Helper(); unix.Helper() }
 ''')
         code, output = run(binary, root, "run", "--config", ".golangci.yml", "./...")
         if code != 1:
@@ -110,7 +112,7 @@ func Dependencies() { toml.Helper(); yaml.Helper(); sdk.Helper(); unapproved.Hel
             if f"({analyzer})" not in output:
                 raise AssertionError(f"missing {analyzer} detection:\n{output}")
         for boundary in ("parser-standard-library", "test-only-renderer",
-                         "configuration-adapter", "mcp-adapter", "approved-dependencies",
+                         "test-only-acceptance", "configuration-adapter", "mcp-adapter", "approved-dependencies",
                          "native-resource-adapter", "metadata-toml-adapter"):
             if boundary not in output:
                 raise AssertionError(f"missing {boundary} detection:\n{output}")

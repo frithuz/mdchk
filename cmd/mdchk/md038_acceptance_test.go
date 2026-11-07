@@ -371,25 +371,6 @@ func md038MixedEncodingIndependentCorrection(t *testing.T, binary string) {
 	}
 }
 
-// Native acquisition can terminate before any document enters validation.
-// md038NativeRefusal recognizes the explicit unsupported-host refusal. Hosts
-// outside linux, darwin and windows refuse apply before any analysis; every
-// supported host applies, so the callers that use this helper adapt to either.
-func md038NativeRefusal(t *testing.T, got configurationRun, out result.Result) bool {
-	t.Helper()
-	if len(out.Errors) != 1 || out.Errors[0].Code != "write-acquisition" {
-		return false
-	}
-	e := out.Errors[0]
-	if got.Status != 13 || out.Status != "error" || !out.Complete || e.Category != result.IO || e.Scope != "operation" || !strings.HasPrefix(e.Message, "native replacement is unsupported on ") {
-		t.Fatal(got)
-	}
-	if len(out.CheckedFiles)+len(out.Files)+len(out.Diagnostics)+len(out.SuppressedDiagnostics)+len(out.Coverage)+len(out.Changes)+len(out.DeferredFixes)+len(out.Documents)+len(out.Interruptions)+len(out.Omissions) != 0 {
-		t.Fatal("unsupported adapter invented analysis", got)
-	}
-	return true
-}
-
 // assertCGO0Apply verifies that a CGO_ENABLED=0 build applies like any other:
 // native replacement is not refused, the operation completes, and the tree
 // changes exactly when a file reports that it was written.
