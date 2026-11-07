@@ -5,6 +5,7 @@ import (
 
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/result"
+	"github.com/frithuz/mdchk/internal/rules/internal/headingspacing"
 )
 
 // Corrections regenerates every eligible production correction from each round's
@@ -45,7 +46,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 			}
 		}
 	}
-	groups, err := headingSpacingGroups(ctx, c, spacing)
+	groups, err := headingspacing.Groups(ctx, c, spacing)
 	if err != nil {
 		return nil, err
 	}
@@ -74,8 +75,8 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 func CorrectionCheckers() []fix.CheckerRegistration {
 	return []fix.CheckerRegistration{
 		{Rule: "MD047", Check: checkTerminalNewline, ForbidNewFindings: []string{"directive"}},
-		{Rule: "MD019", Check: checkHeadingSpacing},
-		{Rule: "MD021", Check: checkHeadingSpacing},
+		{Rule: "MD019", Check: headingspacing.Check},
+		{Rule: "MD021", Check: headingspacing.Check},
 		{Rule: "MD009", Check: checkTrailingWhitespace},
 	}
 }

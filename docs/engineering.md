@@ -266,6 +266,7 @@ Suggested boundaries:
 | `internal/parser` | Markdown structure, source spans and syntax context |
 | `internal/engine` | Parser coordination, rule execution and result aggregation |
 | `internal/rules` | Rule definitions and implementations |
+| `internal/rules/internal/*` | Code shared between rules, private to `internal/rules` |
 | `internal/fix` | Edit validation, application and writes |
 | `internal/report` | Result encoding and bounds for text, JSON, VS Code problem matcher output and GitHub annotations; exit statuses and limit defaults |
 | `internal/mcp` | MCP tool schemas and engine adaptation |
