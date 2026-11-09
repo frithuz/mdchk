@@ -366,10 +366,13 @@ when their structural padding differs or a residual code contribution shares the
 same byte. MD030 supplies no edits or previews; MD047 candidate reanalysis retains
 explicit spaces options and the candidate snapshot.
 
-MD032 emits one manual zero-width point per deficient list/non-list source gap.
+MD032 emits one zero-width point per deficient list/non-list source gap.
 Before points use the first list marker; after points use the following source
-block physical body start after parent prefixes. MD047 candidate reanalysis keeps
-these manual findings with the candidate snapshot. MD032 supplies no previews.
+block physical body start after parent prefixes. The points are diagnostic
+anchors, not edit spans. `fix_available` is true only for findings the
+[MD032 correction policy](rules/lists/md032.md#correction-policy) accepts, and
+their previews and writes follow the shared fix contract. Remaining findings are
+reported with the candidate snapshot.
 
 MD069 emits one manual finding per maximal identical-bullet subrun, spanning
 the first marker start through the last marker end, including original gaps.

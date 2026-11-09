@@ -1,6 +1,6 @@
 # mdchk fix
 
-Current implementation: `fix` applies validated MD047, MD009, MD019, MD021, MD003, MD022, MD023 and MD063 corrections on Linux,
+Current implementation: `fix` applies validated MD047, MD009, MD019, MD021, MD003, MD022, MD023, MD032 and MD063 corrections on Linux,
 macOS and Windows, from a build without cgo. Other operating systems refuse writes
 with I/O status 13. `fix --dry-run` supports all four formats and writes nothing. Text/JSON
 include proposed diffs; editor formats report only remaining candidate findings.
@@ -113,8 +113,8 @@ or after a list, repeating the enclosing quote markers and indentation without
 trailing whitespace, so `> Text` followed by `> - One` gets a `>` line between
 them. The line uses the previous line's ending. A finding whose blank line would
 make a tight list loose, whose container prefix holds a tab, or that follows an
-HTML block stays manual with `fix_available: false`. A reparse must show the same lists, items, contents and
-tightness, or the correction is deferred.
+HTML block stays manual with `fix_available: false`. A reparse must show the
+same lists, items, contents and tightness, or the correction is deferred.
 [MD063](../rules/headings/md063.md) corrections uppercase every required lowercase
 initial of a heading together, so `## installation guide` becomes
 `## Installation guide` under sentence style. A heading with any initial that is
