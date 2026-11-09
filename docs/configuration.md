@@ -504,7 +504,8 @@ MD076 is available and enabled by default. `style: consistent` adopts the exact
 first direct sibling separator count per actual list, including counts above one;
 `tight` requires zero and `loose` one. Shared directive restrictions apply before
 START-based filtering. Unknown options, wrong case, types and null fail even while
-disabled. PlannedFix metadata grants no MD076 edits or previews.
+disabled. `fix` corrects eligible separators as described on the
+[MD076 rule page](rules/lists/md076.md).
 
 
 MD077 is available and enabled by default, with no rule-specific options. An
