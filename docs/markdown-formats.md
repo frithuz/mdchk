@@ -54,7 +54,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction, and MD003, MD009, MD019, MD021, MD022, MD023, MD032 and MD063 also correct; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD014, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD034 and MD093 analysis are also available. MD065 horizontal-rule blank-line analysis is enabled by default and report-only, with corrections deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD087 and MD093 are available but disabled by default. MD034 is available and enabled by default for CommonMark and GFM, with manual
+production correction, and MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD032 and MD063 also correct; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD014, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD034 and MD093 analysis are also available. MD065 horizontal-rule blank-line analysis is enabled by default and report-only, with corrections deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD087 and MD093 are available but disabled by default. MD034 is available and enabled by default for CommonMark and GFM, with manual
 findings; URL corrections remain deferred. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 [MD088 ASCII-punctuation analysis](rules/formatting/md088.md) is available for CommonMark and GFM,
@@ -118,7 +118,7 @@ recognition is a configuration error, never a silent fallback.
 Parsing an unrecognized block as Markdown is not safe to correct. When a document
 opens with a complete `---` or `+++` block under the delimiter rules above, and
 recognition is disabled or the block's format is unselected, `fix` withholds MD003,
-MD009, MD019, MD021, MD022, MD023, MD032 and MD063 corrections for the whole document. Their findings stay reported
+MD005, MD009, MD019, MD021, MD022, MD023, MD032 and MD063 corrections for the whole document. Their findings stay reported
 with `fix_available: false`. A leading thematic break paired with a later one has
 the same shape and triggers this too; an opener with no closer doesn't. MD047 still
 applies. Setting `frontmatter.enabled: true` restores body corrections for real

@@ -51,8 +51,9 @@ MD047 terminating-newline analysis, safe previews and apply on Linux, macOS and 
 with `marker: consistent` or explicit `asterisk`, `plus` and `dash` choices.
 MD005 sibling-list alignment analysis is implemented for both flavors, enabled by
 default with no rule-specific options. It retains each actual group's first direct
-item baseline before directive filtering and emits exact marker-only manual
-findings; PlannedFix metadata grants no edits or previews.
+item baseline before directive filtering and emits exact marker-only findings.
+`fix` re-indents a misaligned marker when only its spaces-only indentation
+changes and the item has no later lines; other findings stay manual.
 MD003 heading-style analysis is also implemented for both flavors, with `style:
 consistent` by default and explicit `atx`, `atx_closed` and `setext` choices. MD018
 missing opening-hash spacing, MD019 extra opening-hash spacing, MD020 missing
@@ -82,7 +83,7 @@ rule-specific options; MD025 and MD041 accept integer `level` from 1 through 6 (
 minima, each defaulting to 1; MD072 accepts boolean `recursive` (default false) and
 `case_sensitive` (default true); MD073 accepts HTML comment strings `start_marker`
 (default `<!-- toc -->`) and `end_marker` (default `<!-- /toc -->`) and heading levels
-`min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077,
+`min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD007, MD029, MD030, MD032, MD069, MD076, MD077,
 MD018, MD020, MD022, MD024, MD025, MD026, MD036, MD041, MD043,
 MD061, MD072, MD073, MD080, MD083, MD084, MD082, MD081, MD088, MD033, MD086, MD087, MD093, MD095 and MD071 are report-only.
 Rules marked unavailable in the linked inventory remain pending. Every default-enabled

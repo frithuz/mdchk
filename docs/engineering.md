@@ -160,7 +160,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction, and MD003, MD009, MD019, MD021, MD022, MD023, MD032 and MD063 also correct; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
+production correction, and MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD032 and MD063 also correct; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
 analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation
 analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis,
 MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD014 shell-prompt analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD065 horizontal-rule blank-line analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD018 missing opening-hash spacing, MD019 extra
@@ -662,8 +662,15 @@ retain independent nested baselines without replacing an enclosing baseline.
 Ordered-width and post-marker padding changes do not move marker starts.
 Per-analysis baseline storage, comparisons and finding growth reserve original
 work and records before construction, including aligned groups. Final checks
-withhold interrupted output. Exact full item-marker spans produce manual
-findings; default-enabled PlannedFix metadata grants no correction authority.
+withhold interrupted output. Exact full item-marker spans produce findings that
+are fixable when only the item's spaces-only indentation, after its container
+prefix, needs replacing to reach a spaces-only baseline and the item has no
+later lines. The shared interior-edit query withholds directive-disabled,
+protected and leading front matter contexts. The correction checker reparses the
+combined candidate and requires every item to keep its group, parent, envelope,
+marker and content, with the edited marker at its group's baseline. MD005 groups
+wait for a round with no MD009 edit, because MD009's whole-parse proof does not
+allow moved markers.
 
 MD007 reuses the complete original list inventory and admitted scalar options.
 For each actual bullet item, local indentation is ContentIndent minus MarkerWidth
