@@ -139,8 +139,9 @@ MD029 compares full actual ordered groups before marker-start suppression. Hidde
 first items supply the start; hidden later mismatches consume direct ordinals.
 A later enable directive retains the original group counter and admitted style.
 
-MD030 inventories complete original list context before suppression. Each manual
+MD030 inventories complete original list context before suppression. Each
 finding uses its owned separator start, excluding marker and ancestor prefixes.
+Suppression applies before fix eligibility, so a disabled anchor gets no edit.
 Empty marker lines remain exempt; separately enabled nested items still run.
 
 MD032 evaluates complete source-body neighbors before chosen-start suppression.

@@ -362,11 +362,13 @@ Deferred cases (tab or short padding, more than nine digits, protected content,
 directives, front matter, parse changes) keep `fix_available: false`. MD047 candidate reanalysis retains the
 admitted MD029 style and candidate snapshot.
 
-MD030 emits manual findings over the entire parser-owned first-line separator,
+MD030 emits findings over the entire parser-owned first-line separator,
 excluding marker and payload. Physical tabs use one scalar diagnostic column even
 when their structural padding differs or a residual code contribution shares the
-same byte. MD030 supplies no edits or previews; MD047 candidate reanalysis retains
-explicit spaces options and the candidate snapshot.
+same byte. An eligible single-line, spaces-only separator carries an edit and
+preview that rewrite it to `spaces` spaces; every other finding stays manual with
+`fix_available: false`. Candidate reanalysis retains explicit spaces options and
+the candidate snapshot.
 
 MD032 emits one zero-width point per deficient list/non-list source gap.
 Before points use the first list marker; after points use the following source
