@@ -1,6 +1,6 @@
 # mdchk fix
 
-Current implementation: `fix` applies validated MD047, MD009, MD019 and MD021 corrections on Linux,
+Current implementation: `fix` applies validated MD047, MD009, MD019, MD021 and MD003 corrections on Linux,
 macOS and Windows, from a build without cgo. Other operating systems refuse writes
 with I/O status 13. `fix --dry-run` supports all four formats and writes nothing. Text/JSON
 include proposed diffs; editor formats report only remaining candidate findings.
@@ -71,7 +71,7 @@ mdchk fix docs/ --dry-run --format json
 ```
 
 Text and JSON previews include proposed diffs when a registered correction
-passes shared candidate validation. MD047 final-newline, MD009 trailing-whitespace, and MD019 and MD021 heading-spacing corrections are implemented. MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD020, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082 and MD093 remain report-only, with no edits or previews for their findings.
+passes shared candidate validation. MD047 final-newline, MD009 trailing-whitespace, MD019 and MD021 heading-spacing, and MD003 heading-style corrections are implemented. MD001, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD020, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082 and MD093 remain report-only, with no edits or previews for their findings.
 
 [MD019](../rules/headings/md019.md) and [MD021](../rules/headings/md021.md)
 corrections remove excess ASCII spaces from a heading delimiter gap: the second
@@ -84,6 +84,16 @@ rule separately, so if one ID is disabled the other can still correct a shared g
 A document's eligible corrections, including MD047's, are proposed
 together. If MD047 cannot be applied, the heading corrections still are, and MD047
 stays manual.
+
+[MD003](../rules/headings/md003.md) corrections change only heading delimiters
+to the expected style and keep the level and inline content: `# A` becomes
+`# A #` under `atx_closed`, `## A ##` becomes `## A` under `atx`, `# A` becomes
+`A` over a `===` underline under `setext`, and a single-line Setext heading
+becomes `## B`. Headings the policy can't rewrite safely, such as H3–H6 under
+`setext` or multiline Setext text, stay manual with `fix_available: false`.
+MD003 edits share heading lines with the other heading and whitespace
+corrections, so they wait for a round in which no other correction is proposed;
+one `fix` run still applies all of them.
 
 [MD081 paragraph-emphasis analysis](../rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.
@@ -100,7 +110,7 @@ After corrections, mdchk checks the resulting content and reports remaining find
 
 Recognized front matter stays byte-identical, and the body after it is still corrected. Recognition is off by default, though, and an unrecognized header would otherwise read as Markdown, so a correction could rewrite a value inside it.
 
-A document that opens with a complete `---` or `+++` block that isn't recognized, because `frontmatter.enabled` is false or the block's format isn't in `frontmatter.formats`, gets no MD009, MD019 or MD021 corrections anywhere. That covers the body as well as the block. Their findings are still reported, with `fix_available: false` and no `deferred_fixes` record.
+A document that opens with a complete `---` or `+++` block that isn't recognized, because `frontmatter.enabled` is false or the block's format isn't in `frontmatter.formats`, gets no MD003, MD009, MD019 or MD021 corrections anywhere. That covers the body as well as the block. Their findings are still reported, with `fix_available: false` and no `deferred_fixes` record.
 
 mdchk can't tell a real header from Markdown of the same shape, so a leading thematic break paired with a later one also triggers this. An opener with no closer doesn't. Set `frontmatter.enabled: true` to restore body corrections for documents with real headers.
 
