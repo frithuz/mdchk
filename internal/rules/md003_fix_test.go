@@ -242,3 +242,24 @@ func TestMD003CorrectionComposes(t *testing.T) {
 		t.Fatalf("second run changed %q", again.Candidate.Bytes())
 	}
 }
+
+// Analysis eligibility and the validated correction must agree: a fixable
+// finding saves a change, and a manual one leaves the bytes alone.
+func TestMD003EligibilityMatchesCorrection(t *testing.T) {
+	for _, content := range []string{"[foo]: /url", "[foo]", "a |", "Foo\\", "1. x", "<div>", "***", "`code`", "plain", "a \\#"} {
+		for _, style := range []string{"setext", "atx_closed"} {
+			source := "# " + content + "\n"
+			t.Run(style+"/"+content, func(t *testing.T) {
+				findings := md003Findings(t, source, style)
+				if len(findings) != 1 {
+					t.Fatal(findings)
+				}
+				view := md003Corrected(t, source, style, Corrections)
+				changed := string(view.Candidate.Bytes()) != source
+				if changed != findings[0].FixAvailable {
+					t.Fatalf("fix_available %v but changed %v: %q", findings[0].FixAvailable, changed, view.Candidate.Bytes())
+				}
+			})
+		}
+	}
+}

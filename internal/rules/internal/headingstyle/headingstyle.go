@@ -190,7 +190,7 @@ func closingHashes(content string) bool {
 // setextSafe rejects content that could open another block or read as an
 // underline once it stands alone on a line.
 func setextSafe(content string) bool {
-	if strings.ContainsAny(content[:1], "-+*>#=`~<|_") || content[0] >= '0' && content[0] <= '9' {
+	if strings.ContainsAny(content[:1], "-+*>#=`~<|_[") || content[0] >= '0' && content[0] <= '9' {
 		return false
 	}
 	return !closingHashes(content)
