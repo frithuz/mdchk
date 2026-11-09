@@ -481,7 +481,8 @@ MD029 numbered-list prefixes are enabled by default. Exact `style: ordered`
 (default) preserves each group's first direct numeric start and advances every
 direct item; `style: one` requires numeric 1 on every item. Leading zeros compare
 numerically. Unknown keys, null, wrong types and unsupported or differently cased
-styles fail even when disabled. MD029 findings remain manual.
+styles fail even when disabled. `fix` corrects eligible MD029 findings; deferred
+ones stay manual. See [MD029](rules/lists/md029.md#correction-policy).
 
 MD030 is enabled by default and accepts positive integer `spaces`, default 1.
 It compares parser-owned structural padding for nonempty first marker lines;

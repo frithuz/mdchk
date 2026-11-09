@@ -355,9 +355,11 @@ empty. Completed invalid definitions retain complete file analysis and located
 configuration errors; interrupted validation retains partial outcomes without
 claiming validity. See the [command guide](commands/config/validate.md).
 
-MD029 emits manual findings over the full original numeric marker (digits and
-delimiter), with scalar columns and byte offsets. `fix_available` remains false;
-MD029 contributes no edits or previews. MD047 candidate reanalysis retains the
+MD029 emits findings over the full original numeric marker (digits and
+delimiter), with scalar columns and byte offsets. `fix_available` is true for a
+finding whose renumbering is eligible; `fix` then edits and previews the digits.
+Deferred cases (tab or short padding, more than nine digits, protected content,
+directives, front matter, parse changes) keep `fix_available: false`. MD047 candidate reanalysis retains the
 admitted MD029 style and candidate snapshot.
 
 MD030 emits manual findings over the entire parser-owned first-line separator,
