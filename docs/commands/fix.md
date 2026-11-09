@@ -71,7 +71,7 @@ mdchk fix docs/ --dry-run --format json
 ```
 
 Text and JSON previews include proposed diffs when a registered correction
-passes shared candidate validation. MD047 final-newline, MD009 trailing-whitespace, MD019 and MD021 heading-spacing, MD003 heading-style, MD022 heading blank-line, MD023 heading-indentation, and MD063 heading-capitalization corrections are implemented. MD001, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD020, MD024, MD025, MD026, MD036, MD041, MD043, MD080, MD082 and MD093 remain report-only, with no edits or previews for their findings.
+passes shared candidate validation. MD047 final-newline, MD009 trailing-whitespace, MD019 and MD021 heading-spacing, MD003 heading-style, MD022 heading blank-line, MD023 heading-indentation, MD032 list blank-line, and MD063 heading-capitalization corrections are implemented. MD001, MD004, MD005, MD007, MD029, MD030, MD069, MD076, MD077, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD020, MD024, MD025, MD026, MD036, MD041, MD043, MD080, MD082 and MD093 remain report-only, with no edits or previews for their findings.
 
 [MD019](../rules/headings/md019.md) and [MD021](../rules/headings/md021.md)
 corrections remove excess ASCII spaces from a heading delimiter gap: the second
@@ -108,6 +108,13 @@ Setext heading's text, continuation and underline lines are corrected together o
 not at all. A heading with a partially consumed tab or a lazy line missing its
 container prefix stays a manual finding with `fix_available: false`, and so does
 one whose deletion lies in protected or directive-suppressed context.
+[MD032](../rules/lists/md032.md) corrections insert one blank body line before
+or after a list, repeating the enclosing quote markers and indentation without
+trailing whitespace, so `> Text` followed by `> - One` gets a `>` line between
+them. The line uses the previous line's ending. A finding whose blank line would
+make a tight list loose, whose container prefix holds a tab, or that follows an
+HTML block stays manual with `fix_available: false`. A reparse must show the same lists, items, contents and
+tightness, or the correction is deferred.
 [MD063](../rules/headings/md063.md) corrections uppercase every required lowercase
 initial of a heading together, so `## installation guide` becomes
 `## Installation guide` under sentence style. A heading with any initial that is
@@ -130,7 +137,7 @@ After corrections, mdchk checks the resulting content and reports remaining find
 
 Recognized front matter stays byte-identical, and the body after it is still corrected. Recognition is off by default, though, and an unrecognized header would otherwise read as Markdown, so a correction could rewrite a value inside it.
 
-A document that opens with a complete `---` or `+++` block that isn't recognized, because `frontmatter.enabled` is false or the block's format isn't in `frontmatter.formats`, gets no MD003, MD009, MD019, MD021, MD022, MD023 or MD063 corrections anywhere. That covers the body as well as the block. Their findings are still reported, with `fix_available: false` and no `deferred_fixes` record.
+A document that opens with a complete `---` or `+++` block that isn't recognized, because `frontmatter.enabled` is false or the block's format isn't in `frontmatter.formats`, gets no MD003, MD009, MD019, MD021, MD022, MD023, MD032 or MD063 corrections anywhere. That covers the body as well as the block. Their findings are still reported, with `fix_available: false` and no `deferred_fixes` record.
 
 mdchk can't tell a real header from Markdown of the same shape, so a leading thematic break paired with a later one also triggers this. An opener with no closer doesn't. Set `frontmatter.enabled: true` to restore body corrections for documents with real headers.
 
