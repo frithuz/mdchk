@@ -6,6 +6,7 @@ import (
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/result"
 	"github.com/frithuz/mdchk/internal/rules/internal/headingblanks"
+	"github.com/frithuz/mdchk/internal/rules/internal/headingcase"
 	"github.com/frithuz/mdchk/internal/rules/internal/headingindent"
 	"github.com/frithuz/mdchk/internal/rules/internal/headingspacing"
 	"github.com/frithuz/mdchk/internal/rules/internal/headingstyle"
@@ -20,11 +21,17 @@ import (
 // one an MD009 suffix touches: the planner defers that pair as a conflict before any
 // proof, and the suffix must not be corrected without it.
 //
+// MD063 waits for every MD009, MD019, MD021, MD022 and MD023 edit that can reach
+// proof: their
+// checkers prove that visible heading text is unchanged, which a capitalization
+// edit breaks. An MD009 suffix touching MD047 does not hold it back, since the
+// planner defers that pair as a conflict first. MD063 shares its round with MD047.
+//
 // A document opening with an unrecognized block gets no MD009 group at all, not even
 // a deferral. MD019, MD021, MD022 and MD023 are already withheld by their flags, and MD047 stays.
 //
 // MD003 groups wait for a round with no other group. Their edits touch the same
-// heading lines as MD009, MD019 and MD021, and their checker proves the round's
+// heading lines as MD009, MD019, MD021 and MD063, and their checker proves the round's
 // edits are exactly the style rewrites, so they share a round only with each other.
 // A withheld MD047 edit in turn waits for them.
 //
@@ -37,7 +44,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var spacing, blank, indentation, trailing, styles []result.Diagnostic
+	var spacing, blank, indentation, capitalization, trailing, styles []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -64,6 +71,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 			if d.FixAvailable {
 				indentation = append(indentation, d)
 			}
+		case "MD063":
+			if d.FixAvailable {
+				capitalization = append(capitalization, d)
+			}
 		case "MD009":
 			if !guarded {
 				trailing = append(trailing, d)
@@ -87,16 +98,26 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		groups = append(groups, indents...)
 	}
 	waiting := len(groups) > 0
-	touched := false
+	touched, blocking := false, waiting
 	suffixes, err := trailingWhitespaceGroups(ctx, c, trailing)
 	if err != nil {
 		return nil, err
 	}
 	for _, g := range suffixes {
+		final := terminal != nil && len(g.Edits) > 0 && g.Anchor.End() == terminal.ByteRange.Start
 		waiting = waiting || len(g.Edits) > 0
-		touched = touched || terminal != nil && len(g.Edits) > 0 && g.Anchor.End() == terminal.ByteRange.Start
+		touched = touched || final
+		blocking = blocking || len(g.Edits) > 0 && !final
 	}
 	groups = append(groups, suffixes...)
+	if !blocking {
+		cased, err := headingcase.Groups(ctx, c, capitalization)
+		if err != nil {
+			return nil, err
+		}
+		groups = append(groups, cased...)
+		waiting = waiting || len(cased) > 0
+	}
 	eligible := terminal != nil && (terminal.FixAvailable || touched)
 	if !waiting && !eligible {
 		style, err := headingstyle.Groups(ctx, c, styles)
@@ -126,5 +147,6 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		{Rule: "MD009", Check: checkTrailingWhitespace},
 		{Rule: "MD003", Check: headingstyle.Check},
 		{Rule: "MD022", Check: headingblanks.Check},
+		{Rule: "MD063", Check: headingcase.Check},
 	}
 }

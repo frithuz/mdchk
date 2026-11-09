@@ -3,11 +3,11 @@ package rules
 import (
 	"context"
 	"errors"
-	"unicode"
-	"unicode/utf8"
+	"strings"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/rules/internal/headingcase"
 )
 
 func headingCapitalization(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
@@ -20,6 +20,7 @@ func headingCapitalization(ctx context.Context, c engine.RuleContext) engine.Rul
 		return engine.RuleOutcome{Err: err}
 	}
 	out := engine.RuleOutcome{}
+	edits := c.InteriorEdits()
 	for _, scalars := range headings {
 		span, err := capitalizationFinding(ctx, c, style, names, scalars)
 		if err != nil {
@@ -37,14 +38,16 @@ func headingCapitalization(ctx context.Context, c engine.RuleContext) engine.Rul
 			out.Err = err
 			return out
 		}
-		out.Findings = append(out.Findings, engine.Finding{Span: span, Message: "Heading must follow the configured capitalization style."})
+		finding := engine.Finding{Span: span, Message: "Heading must follow the configured capitalization style."}
+		finding.FixEligible, err = capitalizationEligible(ctx, c, edits, style, names, scalars, span)
+		if err != nil {
+			out.Err = err
+			return out
+		}
+		out.Findings = append(out.Findings, finding)
 	}
 	out.Err = c.HeadingCapitalizationCheckpoint(ctx, 0, 0)
 	return out
-}
-
-func capitalizationWord(r rune) bool {
-	return unicode.IsLetter(r) || unicode.IsMark(r) || unicode.IsNumber(r) || unicode.Is(unicode.Pc, r)
 }
 
 func capitalizationFinding(ctx context.Context, c engine.RuleContext, style string, names []string, scalars []parser.HeadingScalar) (out parser.Span, err error) {
@@ -54,89 +57,47 @@ func capitalizationFinding(ctx context.Context, c engine.RuleContext, style stri
 			out = parser.Span{}
 		}
 	}()
-	protected, err := capitalizationNames(ctx, c, names, scalars)
+	checkpoint := func(work, nodes int64) error { return c.HeadingCapitalizationCheckpoint(ctx, work, nodes) }
+	protected, err := headingcase.Names(names, scalars, checkpoint)
 	if err != nil {
 		return parser.Span{}, err
 	}
-	seen := false
-	for i, s := range scalars {
-		if err := c.HeadingCapitalizationCheckpoint(ctx, 16, 0); err != nil {
-			return parser.Span{}, err
-		}
-		if style == "title" {
-			word := capitalizationWord(s.Scalar)
-			if (s.Scalar == '\'' || s.Scalar == '\u2019') && i > 0 && i+1 < len(scalars) {
-				word = capitalizationWord(scalars[i-1].Scalar) && capitalizationWord(scalars[i+1].Scalar)
-			}
-			if !word {
-				seen = false
-				continue
-			}
-		}
-		if !unicode.IsUpper(s.Scalar) && !unicode.IsLower(s.Scalar) && !unicode.IsTitle(s.Scalar) {
-			continue
-		}
-		if seen {
-			continue
-		}
-		seen = true
-		if !unicode.IsLower(s.Scalar) || s.Code || (len(protected) > 0 && protected[i]) {
-			continue
-		}
-		if !s.Token.Present() {
-			return parser.Span{}, parser.ErrModel
-		}
-		return s.Token, nil
-	}
-	return parser.Span{}, nil
+	err = headingcase.Targets(style, scalars, protected, checkpoint, func(i int) bool {
+		out = scalars[i].Token
+		return false
+	})
+	return out, err
 }
 
-// Name matches settle before initials are examined. Empty names are no-ops;
-// every repeated scalar comparison and protection write uses the original work.
-func capitalizationNames(ctx context.Context, c engine.RuleContext, names []string, scalars []parser.HeadingScalar) ([]bool, error) {
-	if len(names) == 0 {
-		return nil, nil
-	}
-	if err := c.HeadingCapitalizationCheckpoint(ctx, int64(len(scalars))+1, int64(len(scalars))); err != nil {
-		return nil, err
-	}
-	protected := make([]bool, len(scalars))
-	for _, name := range names {
-		if err := c.HeadingCapitalizationCheckpoint(ctx, 1, 0); err != nil {
-			return nil, err
+// capitalizationEligible reports whether every required initial of the heading
+// can be corrected together, each in an editable context under the finding. A
+// heading that no blank line separates from leading front matter stays manual.
+func capitalizationEligible(ctx context.Context, c engine.RuleContext, edits *engine.RuleInteriorEdits, style string, names []string, scalars []parser.HeadingScalar, anchor parser.Span) (bool, error) {
+	if header, present := c.Document().Frontmatter(); present && header.Span().End() > 0 && header.Span().End() <= anchor.Start() {
+		if err := c.HeadingCapitalizationCheckpoint(ctx, int64(anchor.Start()-header.Span().End())+1, 0); err != nil {
+			return false, err
 		}
-		if name == "" {
-			continue
+		gap, err := c.Source().Span(header.Span().End()-1, anchor.Start())
+		if err != nil {
+			return false, err
 		}
-		for start := range scalars {
-			if err := c.HeadingCapitalizationCheckpoint(ctx, 8, 0); err != nil {
-				return nil, err
-			}
-			if start > 0 && capitalizationWord(scalars[start-1].Scalar) {
-				continue
-			}
-			end, offset := start, 0
-			for offset < len(name) && end < len(scalars) {
-				if err := c.HeadingCapitalizationCheckpoint(ctx, 9, 0); err != nil {
-					return nil, err
-				}
-				r, width := utf8.DecodeRuneInString(name[offset:])
-				if r == utf8.RuneError && width == 1 || r != scalars[end].Scalar {
-					break
-				}
-				offset += width
-				end++
-			}
-			if offset != len(name) || (end < len(scalars) && capitalizationWord(scalars[end].Scalar)) {
-				continue
-			}
-			for i := start; i < end; i++ {
-				if err := c.HeadingCapitalizationCheckpoint(ctx, 1, 0); err != nil {
-					return nil, err
-				}
-				protected[i] = true
-			}
+		text, err := c.Source().Text(gap)
+		if err != nil {
+			return false, err
+		}
+		if strings.Count(text, "\n") < 2 {
+			return false, nil
 		}
 	}
-	return protected, nil
+	h, err := headingcase.Analyze(c.Source(), style, names, scalars, func(work, nodes int64) error { return c.HeadingCapitalizationCheckpoint(ctx, work, nodes) })
+	if err != nil || !h.Ready {
+		return false, err
+	}
+	for _, i := range h.Targets {
+		ok, err := edits.Eligible(ctx, "MD063", anchor, scalars[i].Token)
+		if err != nil || !ok {
+			return false, err
+		}
+	}
+	return true, nil
 }

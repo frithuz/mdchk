@@ -64,3 +64,24 @@ func (c RuleContext) HeadingCapitalizationCheckpoint(ctx context.Context, work, 
 	}
 	return c.document.HeadingCapitalizationCheckpoint(ruleOperation{ctx, c.operation}, c.budget, c.index, work, nodes)
 }
+
+// HeadingCapitalizationSettings returns MD063's admitted style and borrowed
+// proper names under plan, for correction producers and checkers.
+func HeadingCapitalizationSettings(plan *ExecutionPlan) (string, []string, error) {
+	if plan == nil {
+		return "", nil, parser.ErrModel
+	}
+	rule, ok := plan.rules["MD063"]
+	if !ok {
+		return "", nil, parser.ErrModel
+	}
+	style, ok := rule.Options["style"].(string)
+	if !ok || (style != "sentence" && style != "title") {
+		return "", nil, parser.ErrModel
+	}
+	names, ok := rule.Options["proper_names"].([]string)
+	if !ok {
+		return "", nil, parser.ErrModel
+	}
+	return style, names, nil
+}
