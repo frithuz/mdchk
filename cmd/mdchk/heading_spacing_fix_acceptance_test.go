@@ -254,7 +254,6 @@ func TestCompiledHeadingSpacingOtherRulesProduceNothing(t *testing.T) {
 		rule, options, source string
 	}{
 		{"MD001", "", "# a\n\n### b\n"},
-		{"MD003", "", "# a\n\nb\n===\n"},
 		{"MD018", "", "#a\n"},
 		{"MD020", "", "# a#\n"},
 		{"MD022", "", "# a\nb\n"},

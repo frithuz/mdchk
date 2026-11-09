@@ -6,6 +6,7 @@ import (
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/result"
 	"github.com/frithuz/mdchk/internal/rules/internal/headingspacing"
+	"github.com/frithuz/mdchk/internal/rules/internal/headingstyle"
 )
 
 // Corrections regenerates every eligible production correction from each round's
@@ -19,13 +20,18 @@ import (
 //
 // A document opening with an unrecognized block gets no MD009 group at all, not even
 // a deferral. MD019 and MD021 are already withheld by their flags, and MD047 stays.
+//
+// MD003 groups wait for a round with no other group. Their edits touch the same
+// heading lines as MD009, MD019 and MD021, and their checker proves the round's
+// edits are exactly the style rewrites, so they share a round only with each other.
+// A withheld MD047 edit in turn waits for them.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var spacing, trailing []result.Diagnostic
+	var spacing, trailing, styles []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -35,6 +41,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		case "MD047":
 			if terminal == nil {
 				terminal = &analysis.Diagnostics[i]
+			}
+		case "MD003":
+			if d.FixAvailable {
+				styles = append(styles, d)
 			}
 		case "MD019", "MD021":
 			if d.FixAvailable {
@@ -61,7 +71,16 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		touched = touched || terminal != nil && len(g.Edits) > 0 && g.Anchor.End() == terminal.ByteRange.Start
 	}
 	groups = append(groups, suffixes...)
-	if terminal != nil && (terminal.FixAvailable || touched || !waiting) {
+	eligible := terminal != nil && (terminal.FixAvailable || touched)
+	if !waiting && !eligible {
+		style, err := headingstyle.Groups(ctx, c, styles)
+		if err != nil {
+			return nil, err
+		}
+		waiting = len(style) > 0
+		groups = append(groups, style...)
+	}
+	if terminal != nil && (eligible || !waiting) {
 		group, err := terminalNewlineGroup(ctx, c, *terminal)
 		if err != nil {
 			return nil, err
@@ -78,5 +97,6 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		{Rule: "MD019", Check: headingspacing.Check},
 		{Rule: "MD021", Check: headingspacing.Check},
 		{Rule: "MD009", Check: checkTrailingWhitespace},
+		{Rule: "MD003", Check: headingstyle.Check},
 	}
 }

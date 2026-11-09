@@ -327,7 +327,7 @@ func TestMD009FixEligibility(t *testing.T) {
 
 func TestOnlyImplementedFixes(t *testing.T) {
 	for _, m := range engine.Catalog() {
-		if (m.Fix == engine.ImplementedFix) != (m.ID == "MD009" || m.ID == "MD019" || m.ID == "MD021" || m.ID == "MD047") {
+		if (m.Fix == engine.ImplementedFix) != (m.ID == "MD003" || m.ID == "MD009" || m.ID == "MD019" || m.ID == "MD021" || m.ID == "MD047") {
 			t.Errorf("%s fix = %s", m.ID, m.Fix)
 		}
 	}

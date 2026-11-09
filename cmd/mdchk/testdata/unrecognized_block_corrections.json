@@ -110,7 +110,7 @@
   {
     "name": "later-marker-not-first-line",
     "source": "a\n---\n\n##  x\n\n---\n",
-    "candidate": "a\n---\n\n## x\n\n---\n",
+    "candidate": "a\n---\n\nx\n---\n\n---\n",
     "config": "default",
     "guarded": false
   },

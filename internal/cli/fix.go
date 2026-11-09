@@ -45,7 +45,8 @@ Incomplete analysis returns 15; apply works on Linux, macOS and Windows.
 Usage returns 11, configuration 12, I/O 13 and internal failures 14.
 MD047 corrects safe final-newline changes. MD009 corrects trailing whitespace: it
 removes a suffix, or normalizes a real hard break to hard_break_spaces. MD019 and
-MD021 remove excess spaces from heading delimiter gaps. Ambiguous contexts stay
+MD021 remove excess spaces from heading delimiter gaps. MD003 rewrites heading
+delimiters to the expected style. Ambiguous contexts stay
 manual and appear under deferred_fixes.
 Text/JSON include preview diffs; editor formats report remaining findings only.
 VS Code unlocated errors and both editor formats' recovery outcomes use stderr.

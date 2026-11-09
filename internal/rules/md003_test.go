@@ -119,7 +119,7 @@ func TestMD003CatalogAndOptions(t *testing.T) {
 		t.Fatal("incorrect catalog availability")
 	}
 	for _, m := range r.Metadata() {
-		if m.ID == "MD003" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.PlannedFix || m.Options["style"].Default != "consistent") {
+		if m.ID == "MD003" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.ImplementedFix || m.Options["style"].Default != "consistent") {
 			t.Fatal(m)
 		}
 	}
