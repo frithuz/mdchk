@@ -112,7 +112,7 @@ one whose deletion lies in protected or directive-suppressed context.
 initial of a heading together, so `## installation guide` becomes
 `## Installation guide` under sentence style. A heading with any initial that is
 written as an entity or escape, has no single titlecase form, lies in protected
-context or could be part of a configured `proper_names` phrase stays a manual
+context or autolink text, or could be part of a configured `proper_names` phrase stays a manual
 finding with `fix_available: false`. Nothing is ever lowercased.
 
 [MD081 paragraph-emphasis analysis](../rules/formatting/md081.md) is available for CommonMark and

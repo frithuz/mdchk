@@ -16,6 +16,7 @@ type caseOptions struct {
 	names     []string
 	recognize bool
 	ids       []string
+	flavor    string
 }
 
 func caseSettings(o caseOptions) engine.Settings {
@@ -31,7 +32,11 @@ func caseSettings(o caseOptions) engine.Settings {
 
 func caseContext(o caseOptions) engine.DocumentContext {
 	fm, _ := parser.NewFrontmatterOptions(o.recognize, nil)
-	return engine.DocumentContext{Flavor: "commonmark", Frontmatter: fm}
+	flavor := o.flavor
+	if flavor == "" {
+		flavor = "commonmark"
+	}
+	return engine.DocumentContext{Flavor: flavor, Frontmatter: fm}
 }
 
 // caseCorrected runs production correction and records the first round's MD063 groups.
@@ -113,6 +118,7 @@ func TestMD063FixCorrects(t *testing.T) {
 		{"title", "# the quick-brown fox's den\n", "# The Quick-Brown Fox's Den\n", title, [][2]int{{2, 3}, {6, 7}, {12, 13}, {18, 19}, {24, 25}}},
 		{"code title", "# `x` guide\n", "# `x` Guide\n", title, [][2]int{{6, 7}}},
 		{"link text", "## [guide](lower)\n", "## [Guide](lower)\n", sentence, [][2]int{{4, 5}}},
+		{"after autolink", "## see <http://a.b/c>\n", "## See <http://a.b/c>\n", sentence, [][2]int{{3, 4}}},
 		{"name later", "## setup for iPhone\n", "## Setup for iPhone\n", caseOptions{style: "sentence", names: []string{"iPhone"}}, [][2]int{{3, 4}}},
 		{"multibyte", "## ébauche\n", "## Ébauche\n", sentence, [][2]int{{3, 5}}},
 		{"titlecase digraph", "## ǆungla\n", "## ǅungla\n", sentence, [][2]int{{3, 5}}},
@@ -161,6 +167,9 @@ func TestMD063FixDefers(t *testing.T) {
 		{"adjacent name", "# iPhone case\n", caseOptions{style: "title", names: iphone}},
 		{"no titlecase form", "# ßeta\n", caseOptions{style: "sentence"}},
 		{"partial heading", "# the &#97;bout\n", caseOptions{style: "title"}},
+		{"autolink title", "# and <http://a.b/c> w\n", caseOptions{style: "title"}},
+		{"gfm bare autolink", "# see www.example.com/docs\n", caseOptions{style: "title", flavor: "gfm"}},
+		{"autolink sentence", "## <https://example.com/docs/readme> now\n", caseOptions{style: "sentence"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			d, _ := caseLint(t, tc.source, tc.o)

@@ -133,7 +133,8 @@ type Heading struct {
 
 // Analyze selects every required initial of one heading and decides whether
 // the heading is correctable as a whole: each initial is a literal scalar with a
-// titlecase form, and none is near a proper name.
+// titlecase form, outside autolink text that doubles as a destination, and none
+// is near a proper name.
 func Analyze(source parser.Source, style string, names []string, scalars []parser.HeadingScalar, checkpoint Checkpoint) (Heading, error) {
 	out := Heading{Scalars: scalars}
 	protected, err := Names(names, scalars, checkpoint)
@@ -154,7 +155,7 @@ func Analyze(source parser.Source, style string, names []string, scalars []parse
 	}
 	for _, i := range out.Targets {
 		s := scalars[i]
-		if _, ok := Replacement(s.Scalar); !ok {
+		if _, ok := Replacement(s.Scalar); !ok || s.Autolink {
 			return out, nil
 		}
 		text, err := source.Text(s.Token)
@@ -453,7 +454,7 @@ func caseProof(ctx context.Context, c fix.CheckContext) (caseRound, error) {
 		}
 		changed := false
 		for j, s := range scalars {
-			if s.Code != next[j].Code {
+			if s.Code != next[j].Code || s.Autolink != next[j].Autolink {
 				return failed, nil
 			}
 			if s.Scalar == next[j].Scalar {
