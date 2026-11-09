@@ -329,7 +329,7 @@ there, not even a deferral, so nothing touches MD047's insertion and it applies 
 
 ### Production rule integration
 
-`internal/rules.Corrections` regenerates MD047, MD009, MD019, MD021, MD022 and MD023 groups from each
+`internal/rules.Corrections` regenerates MD047, MD009, MD019, MD021, MD022, MD023 and MD063 groups from each
 current round's actual shared analysis and source-owned diagnostic ranges. For
 MD047, the source's retained physical-line index supplies the same terminal facts
 as analysis; the shared `fix.InsertionEnding` chooses inserted spelling without
@@ -364,7 +364,7 @@ the source while recognition is off or the format is unselected. Such a block ma
 real metadata, or a pair of thematic breaks, and each round's own parse answers this
 once with the shared delimiter detection, so no fact is carried between rounds or
 from saved input. `InteriorEditQuery` and MD009's eligibility return false, and
-`Corrections` makes no MD009 group, and MD019, MD021, MD022 and MD023 are withheld by their flags. MD047 stays, because a line
+`Corrections` makes no MD009 group, and MD019, MD021, MD022, MD023 and MD063 are withheld by their flags. MD047 stays, because a line
 ending at EOF can't change a value inside the block.
 
 Combined rounds propose all of a document's eligible corrections together, so a
@@ -396,6 +396,19 @@ block tree is unchanged apart from line-end whitespace
 level, style, closed state, visible text and container kinds. Each group must then
 equal the before parse's deletions for a heading with no lazy line or partial
 tab, and the reparsed heading must no longer be indented.
+
+MD063 shares one selection of required initials between the rule and
+`internal/rules/internal/headingcase`. The rule sets `FixEligible` only when every
+initial of the heading is a literal scalar with a single titlecase form, is clear
+of proper-name ambiguity and passes `InteriorEdits`. The producer regenerates one
+group per heading from the round's heading scalars and options, with one edit per
+initial. Because MD009, MD019, MD021, MD022 and MD023 checkers prove visible text unchanged,
+MD063 waits until no such edit can reach proof; an MD009 suffix touching MD047 does
+not hold it back, since that pair defers as a conflict. Its checker compares heading
+count, level, style, closed state, raw label ends, containers and envelopes in
+`Once`, requires visible scalars to differ only at correctable initials of the before
+parse, and requires the candidate heading to report no MD063 finding. Each group then
+checks that its edits are exactly that heading's titlecase replacements.
 
 Future corrections add rule producers, separately registered trusted checkers,
 implemented catalog metadata and affirmative per-finding eligibility. Compose
