@@ -329,7 +329,7 @@ there, not even a deferral, so nothing touches MD047's insertion and it applies 
 
 ### Production rule integration
 
-`internal/rules.Corrections` regenerates MD047, MD009, MD019, MD021, MD022, MD023 and MD063 groups from each
+`internal/rules.Corrections` regenerates MD047, MD009, MD019, MD021, MD022, MD023, MD032 and MD063 groups from each
 current round's actual shared analysis and source-owned diagnostic ranges. For
 MD047, the source's retained physical-line index supplies the same terminal facts
 as analysis; the shared `fix.InsertionEnding` chooses inserted spelling without
@@ -364,7 +364,7 @@ the source while recognition is off or the format is unselected. Such a block ma
 real metadata, or a pair of thematic breaks, and each round's own parse answers this
 once with the shared delimiter detection, so no fact is carried between rounds or
 from saved input. `InteriorEditQuery` and MD009's eligibility return false, and
-`Corrections` makes no MD009 group, and MD019, MD021, MD022, MD023 and MD063 are withheld by their flags. MD047 stays, because a line
+`Corrections` makes no MD009 or MD032 group, and MD019, MD021, MD022, MD023 and MD063 are withheld by their flags. MD047 stays, because a line
 ending at EOF can't change a value inside the block.
 
 Combined rounds propose all of a document's eligible corrections together, so a
@@ -409,6 +409,17 @@ count, level, style, closed state, raw label ends, containers and envelopes in
 `Once`, requires visible scalars to differ only at correctable initials of the before
 parse, and requires the candidate heading to report no MD063 finding. Each group then
 checks that its edits are exactly that heading's titlecase replacements.
+
+MD032 inserts one blank body line per finding at the start of the later
+participant's line. `Document.ListSpacing` reports that line's active ancestor
+prefix, the previous line's ending and whether the line would separate two
+blocks of an item in a list not known to be loose. The analysis grants
+`fix_available` only when the prefix holds just spaces and `>` markers and the
+list stays tight or loose as it was; the inserted bytes are the prefix without
+trailing spaces plus that ending. Its checker proves `OnlyEditsChanged` and the
+same whole-document comparison as MD009 once per round, then recomputes each
+group's line from the before parse. A "before" and an "after" insertion at one
+offset, or one at another group's boundary, conflict in the planner.
 
 Future corrections add rule producers, separately registered trusted checkers,
 implemented catalog metadata and affirmative per-finding eligibility. Compose
