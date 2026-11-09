@@ -223,6 +223,11 @@ func (c RoundContext) ListItems(ctx context.Context) ([]parser.ListItemFact, err
 	return c.Parsed().Document.ListItems(ctx, c.meter.budget, c.Lines(), dc.ParseOptions())
 }
 
+// OrderedListStyle returns the target plan's admitted MD029 style; true is one.
+func (c RoundContext) OrderedListStyle() (bool, error) {
+	return engine.PlannedOrderedListStyle(c.plan)
+}
+
 // HeadingAnchors projects this round's heading anchors under the shared anchor
 // policy of the target's admitted document context.
 func (c RoundContext) HeadingAnchors(ctx context.Context) ([]resource.HeadingAnchor, resource.Availability, error) {

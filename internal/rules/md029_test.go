@@ -35,6 +35,7 @@ func TestMD029AnalysisFixtures(t *testing.T) {
 		Expected              []struct {
 			Range  []int
 			Source string
+			Fix    bool
 		}
 	}
 	if err := json.Unmarshal(data, &fixtures); err != nil {
@@ -74,7 +75,7 @@ func TestMD029AnalysisFixtures(t *testing.T) {
 				for i, w := range f.Expected {
 					d := out.Diagnostics[i]
 					got := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD029" || d.FixAvailable || d.Message != "Numbered list prefixes must follow the configured numeric sequence." {
+					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD029" || d.FixAvailable != w.Fix || d.Message != "Numbered list prefixes must follow the configured numeric sequence." {
 						t.Fatal(got, d, w)
 					}
 				}
@@ -93,7 +94,7 @@ func TestMD029CatalogOptionsAndDefaultActivation(t *testing.T) {
 		if m.DefaultEnabled {
 			enabledCount++
 		}
-		if m.ID == "MD029" && (!m.DefaultEnabled || m.Fix != engine.PlannedFix || !m.RequiresSyntax || m.UsesFrontmatter || len(m.Options) != 1) {
+		if m.ID == "MD029" && (!m.DefaultEnabled || m.Fix != engine.ImplementedFix || !m.RequiresSyntax || m.UsesFrontmatter || len(m.Options) != 1) {
 			t.Fatal(m)
 		}
 	}
@@ -122,7 +123,7 @@ func TestMD029CatalogOptionsAndDefaultActivation(t *testing.T) {
 		s := md029Settings()
 		delete(s, "MD029")
 		out := analyzeHeadings(t, r, "1. first\n3. second", s, engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
-		if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD029" || out.Diagnostics[0].FixAvailable {
+		if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD029" || !out.Diagnostics[0].FixAvailable {
 			t.Fatal(out)
 		}
 	}
@@ -144,7 +145,7 @@ func TestMD029FinalPublicationWithholdsAllFindings(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 2}, {"aligned", "1. one\n2. two", 4}, {"violation", "1. one\n3. two", 6}} {
+	}{{"empty", "", 2}, {"aligned", "1. one\n2. two", 4}, {"violation", "1. one\n3. two", 23}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+reason.Error(), func(t *testing.T) {
 				var observed engine.RuleOutcome
@@ -154,7 +155,8 @@ func TestMD029FinalPublicationWithholdsAllFindings(t *testing.T) {
 						t.Fatal(err)
 					}
 					// Fixed independent counts: reservation, one check per item, optional
-					// finding growth/emission, then the final publication check.
+					// finding growth/emission with its fix eligibility query, then the
+					// final publication check.
 					late := &lateStopContext{Context: ctx, reason: reason, stop: tc.final}
 					observed = compareNumberedPrefixes(late, c, items, false)
 					if late.calls != tc.final {
@@ -289,7 +291,7 @@ func TestMD029UTF8GatePrecedesRule(t *testing.T) {
 	}
 }
 
-func TestMD029OriginControlsAndManualFindings(t *testing.T) {
+func TestMD029OriginControlsAndEligibleFindings(t *testing.T) {
 	for _, cancelOrigin := range []bool{false, true} {
 		ctx, cancel := context.WithCancel(context.Background())
 		var observed engine.RuleOutcome
@@ -303,8 +305,8 @@ func TestMD029OriginControlsAndManualFindings(t *testing.T) {
 			}
 			observed = compareNumberedPrefixes(context.Background(), c, items, false)
 			for _, finding := range observed.Findings {
-				if finding.FixEligible {
-					t.Fatal("manual finding grants fix authority")
+				if !finding.FixEligible {
+					t.Fatal("eligible finding withholds fix authority")
 				}
 			}
 			return observed
@@ -422,7 +424,7 @@ func TestMD029OriginFinalPublication(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 2}, {"aligned", "1. one\n2. two", 4}, {"violating", "1. one\n3. two", 6}} {
+	}{{"empty", "", 2}, {"aligned", "1. one\n2. two", 4}, {"violating", "1. one\n3. two", 7}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+reason.Error(), func(t *testing.T) {
 				origin := &lateStopContext{Context: context.Background(), stop: 1 << 20, reason: reason}

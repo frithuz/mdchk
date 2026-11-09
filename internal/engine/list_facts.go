@@ -177,3 +177,21 @@ func (c RuleContext) ListContinuationIndentation(ctx context.Context) (out []par
 	}()
 	return c.document.ListContinuationIndentation(ruleOperation{ctx, c.operation}, c.budget, c.index, c.Context().ParseOptions())
 }
+
+// PlannedOrderedListStyle returns the admitted MD029 style of a resolved plan;
+// true selects numeric one. Correction producers and checkers read it so that
+// each round's expected values follow the same style the rule enforced.
+func PlannedOrderedListStyle(plan *ExecutionPlan) (bool, error) {
+	if plan == nil {
+		return false, errors.New("nil ordered list style plan")
+	}
+	rule, ok := plan.rules["MD029"]
+	if !ok {
+		return false, parser.ErrModel
+	}
+	value, ok := rule.Options["style"].(string)
+	if !ok || (value != "ordered" && value != "one") {
+		return false, parser.ErrModel
+	}
+	return value == "one", nil
+}
