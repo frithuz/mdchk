@@ -161,7 +161,8 @@ The mdchk ruleset contains 82 rules, all of which are active. The 82 rules are M
 
 MD047 analysis, configuration, safe previews and native application are implemented for
 CommonMark. Apply works on Linux, macOS and Windows; other operating systems
-refuse writes with `13`, and protected EOF contexts remain manual. MD001
+refuse writes with `13`, and protected EOF contexts remain manual. MD063 safe
+heading-capitalization corrections are implemented for CommonMark and GFM. MD001
 heading-increment analysis and configuration are implemented for CommonMark and GFM,
 including opt-in YAML/TOML title baselines. MD003 heading-style analysis,
 configuration and delimiter-style corrections are also implemented for both flavors. MD004 bullet-marker, MD005
@@ -178,7 +179,7 @@ analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis,
 MD094 invalid-UTF-8 analysis and configuration are implemented for both flavors. MD055 outer-table-pipe analysis,
 MD056 mismatched-cell-count analysis, MD058 blank-lines-around-tables analysis, MD075 pipe-rows-without-header analysis and their configuration are implemented for GFM only, enabled by default. MD060 table-column-layout analysis and configuration are implemented for GFM only, disabled by default. MD001, MD004, MD005, MD007,
 MD029, MD030, MD032, MD069, MD076, MD077, MD009, MD010, MD012, MD013, MD014, MD031, MD040, MD046, MD048, MD011, MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD062, MD054, MD057, MD059, MD055, MD056, MD058, MD060, MD075, MD070, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD044, MD061, MD083, MD084, MD049, MD050, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD020, MD024, MD025, MD026,
-MD036, MD041, MD043, MD080, MD082, MD093, MD094 and MD095 are report-only. MD063 corrects safe heading initials. MD013, MD026, MD036,
+MD036, MD041, MD043, MD080, MD082, MD093, MD094 and MD095 are report-only. MD013, MD026, MD036,
 MD040, MD043, MD044, MD061, MD083, MD084, MD063, MD070, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD054, MD060, MD087, MD093 and MD095 are available but disabled by default. Other
 ordinary rule callbacks remain planned. The mandatory UTF-8 gate is implemented
 independently; MD094 is enabled by default and controls attribution, not an ordinary production callback. Each
