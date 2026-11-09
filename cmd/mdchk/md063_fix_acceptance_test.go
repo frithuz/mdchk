@@ -62,6 +62,8 @@ func TestCompiledHeadingCaseFixWorkflow(t *testing.T) {
 			{"code span", "# `x` guide\n", "# `x` Guide\n", "title", nil, false, nil},
 			{"composition", "##  hello world  ##   \ntext", "## Hello world ##\ntext\n", "sentence", nil, false, composed},
 			{"entity", "## &#97;bout\n", "## &#97;bout\n", "sentence", nil, false, nil},
+			{"autolink", "# and <http://a.b/c> w\n", "# and <http://a.b/c> w\n", "title", nil, false, nil},
+			{"text before autolink", "## see <http://a.b/c>\n", "## See <http://a.b/c>\n", "sentence", nil, false, nil},
 			{"recognized front matter", "---\ntitle: a\n---\n# lower\n", "---\ntitle: a\n---\n# lower\n", "sentence", nil, true, nil},
 			{"unrecognized front matter", "---\ntitle: a\n---\n# lower\n", "---\ntitle: a\n---\n# lower\n", "sentence", nil, false, nil},
 			{"proper name", "## iphone setup\n", "## iphone setup\n", "sentence", []string{"iPhone"}, false, nil},

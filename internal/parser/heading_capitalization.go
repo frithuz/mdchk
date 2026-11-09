@@ -9,10 +9,12 @@ import (
 // HeadingScalar retains one scalar in the shared heading Visible sequence.
 // Code scalars and semantic breaks have no diagnostic Token. Exact prose maps
 // to one original scalar; transformed prose keeps its complete atomic token.
+// Autolink marks visible text that is also its link's destination.
 type HeadingScalar struct {
-	Scalar rune
-	Token  Span
-	Code   bool
+	Scalar   rune
+	Token    Span
+	Code     bool
+	Autolink bool
 }
 
 // HeadingCapitalizationCheckpoint binds derived capitalization work to the
@@ -51,6 +53,28 @@ func (d *Document) HeadingScalars(ctx context.Context, budget *OperationBudget) 
 			return nil
 		}
 		var scalars []HeadingScalar
+		autolinked := map[*Node]bool{}
+		var mark func(*Node, bool) error
+		mark = func(m *Node, inside bool) error {
+			if err := headingFactCharge(ctx, budget, int64(len(m.spec.Children))+1, 0); err != nil {
+				return err
+			}
+			if m.Kind() == Link && m.spec.Properties.Link != nil && (m.spec.Properties.Link.Origin == "autolink" || m.spec.Properties.Link.Origin == "bare-gfm") {
+				inside = true
+			}
+			if inside && m.Kind() == Text {
+				autolinked[m] = true
+			}
+			for _, child := range m.spec.Children {
+				if err := mark(child, inside); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+		if err := mark(n, false); err != nil {
+			return err
+		}
 		appendScalar := func(s HeadingScalar) error {
 			work := int64(1)
 			if len(scalars) == cap(scalars) {
@@ -107,7 +131,7 @@ func (d *Document) HeadingScalars(ctx context.Context, budget *OperationBudget) 
 						token.start += start
 						token.end = token.start + width
 					}
-					if err := appendScalar(HeadingScalar{Scalar: r, Token: token}); err != nil {
+					if err := appendScalar(HeadingScalar{Scalar: r, Token: token, Autolink: autolinked[owner]}); err != nil {
 						return err
 					}
 				}
