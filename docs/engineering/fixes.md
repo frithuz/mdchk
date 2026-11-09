@@ -329,7 +329,7 @@ there, not even a deferral, so nothing touches MD047's insertion and it applies 
 
 ### Production rule integration
 
-`internal/rules.Corrections` regenerates MD047, MD009, MD019, MD021, MD022, MD023, MD032 and MD063 groups from each
+`internal/rules.Corrections` regenerates MD047, MD009, MD005, MD019, MD021, MD022, MD023, MD032 and MD063 groups from each
 current round's actual shared analysis and source-owned diagnostic ranges. For
 MD047, the source's retained physical-line index supplies the same terminal facts
 as analysis; the shared `fix.InsertionEnding` chooses inserted spelling without
@@ -364,7 +364,7 @@ the source while recognition is off or the format is unselected. Such a block ma
 real metadata, or a pair of thematic breaks, and each round's own parse answers this
 once with the shared delimiter detection, so no fact is carried between rounds or
 from saved input. `InteriorEditQuery` and MD009's eligibility return false, and
-`Corrections` makes no MD009 or MD032 group, and MD019, MD021, MD022, MD023 and MD063 are withheld by their flags. MD047 stays, because a line
+`Corrections` makes no MD009 or MD032 group, and MD005, MD019, MD021, MD022, MD023 and MD063 are withheld by their flags. MD047 stays, because a line
 ending at EOF can't change a value inside the block.
 
 Combined rounds propose all of a document's eligible corrections together, so a
@@ -420,6 +420,16 @@ trailing spaces plus that ending. Its checker proves `OnlyEditsChanged` and the
 same whole-document comparison as MD009 once per round, then recomputes each
 group's line from the before parse. A "before" and an "after" insertion at one
 offset, or one at another group's boundary, conflict in the planner.
+
+MD005's checker compares the list item facts of both parses in `Once`: the same count and order,
+marker kind, width and padding, an unchanged marker, and group, item, parent and
+prefix spans that map through the round's edits. It also records which candidate
+items sit at their group's first-item indentation. Each group then checks its own
+edit: the spaces-only indentation of an eligible before item, replaced by the
+group baseline's spaces, with that item now aligned. MD009's checker compares
+whole parses across line-end whitespace, which a moved marker breaks, so
+`Corrections` proposes MD005 groups only in a round with no MD009 edit; they apply
+in a later round of the same run.
 
 Future corrections add rule producers, separately registered trusted checkers,
 implemented catalog metadata and affirmative per-finding eligibility. Compose
