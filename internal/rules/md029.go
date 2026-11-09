@@ -6,6 +6,7 @@ import (
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/rules/internal/orderedprefix"
 )
 
 func numberedListPrefixes(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
@@ -41,6 +42,7 @@ func compareNumberedPrefixes(ctx context.Context, c engine.RuleContext, items []
 	}
 	type sequence struct{ first, count int }
 	groups := make(map[groupKey]sequence, len(items))
+	edits := c.InteriorEdits()
 	for _, item := range items {
 		if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
 			out.Err = err
@@ -59,11 +61,11 @@ func compareNumberedPrefixes(ctx context.Context, c engine.RuleContext, items []
 		if !exists {
 			state.first = item.Start.Value
 		}
-		actual := item.Start.Value
-		matches := actual-state.first == state.count
+		actual, want := item.Start.Value, state.first+state.count
 		if one {
-			matches = actual == 1
+			want = 1
 		}
+		matches := actual == want
 		// count cannot exceed the finite inventory length: increment once per item.
 		state.count++
 		groups[group] = state
@@ -84,7 +86,21 @@ func compareNumberedPrefixes(ctx context.Context, c engine.RuleContext, items []
 			out.Err = err
 			return out
 		}
-		out.Findings = append(out.Findings, engine.Finding{Span: item.Marker, Message: "Numbered list prefixes must follow the configured numeric sequence."})
+		finding := engine.Finding{Span: item.Marker, Message: "Numbered list prefixes must follow the configured numeric sequence."}
+		// The proposal reads only the marker line; a deferred one stays manual.
+		edit, ok, err := orderedprefix.Propose(c.Source(), item, want)
+		if err != nil {
+			out.Err = err
+			return out
+		}
+		if ok {
+			finding.FixEligible, err = edits.Eligible(ctx, "MD029", item.Marker, edit.Span)
+			if err != nil {
+				out.Err = err
+				return out
+			}
+		}
+		out.Findings = append(out.Findings, finding)
 	}
 	return out
 }

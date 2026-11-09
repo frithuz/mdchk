@@ -10,6 +10,7 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/internal/headingindent"
 	"github.com/frithuz/mdchk/internal/rules/internal/headingspacing"
 	"github.com/frithuz/mdchk/internal/rules/internal/headingstyle"
+	"github.com/frithuz/mdchk/internal/rules/internal/orderedprefix"
 )
 
 // Corrections regenerates every eligible production correction from each round's
@@ -28,7 +29,7 @@ import (
 // planner defers that pair as a conflict first. MD063 shares its round with MD047.
 //
 // A document opening with an unrecognized block gets no MD009 or MD032 group at all,
-// not even a deferral. MD005, MD019, MD021, MD022 and MD023 are already withheld by their flags, and MD047 stays.
+// not even a deferral. MD005, MD019, MD021, MD022, MD023 and MD029 are already withheld by their flags, and MD047 stays.
 //
 // MD003 groups wait for a round with no other group. Their edits touch the same
 // heading lines as MD009, MD019, MD021 and MD063, and their checker proves the round's
@@ -44,13 +45,17 @@ import (
 // MD009, MD022, MD023 and MD032 prove their round by comparing whole parses across
 // line-end whitespace, which a moved list marker breaks, so MD005 groups wait for a
 // round with no edit from those rules.
+//
+// MD029 groups wait for a round with no MD022, MD023 or MD032 group. While any
+// remain, MD009 suffixes and MD005 groups wait too: their checkers compare list
+// items and require every list number to stay unchanged.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var spacing, blank, indentation, capitalization, trailing, styles, lists, alignment []result.Diagnostic
+	var spacing, blank, indentation, capitalization, trailing, styles, lists, alignment, numbering []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -85,6 +90,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 			if d.FixAvailable {
 				alignment = append(alignment, d)
 			}
+		case "MD029":
+			if d.FixAvailable {
+				numbering = append(numbering, d)
+			}
 		case "MD009":
 			if !guarded {
 				trailing = append(trailing, d)
@@ -117,6 +126,17 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 				return nil, err
 			}
 			groups = append(groups, indents...)
+		}
+	}
+	if len(groups) == spaced {
+		prefixes, err := orderedprefix.Groups(ctx, c, numbering)
+		if err != nil {
+			return nil, err
+		}
+		groups = append(groups, prefixes...)
+		// MD009 and MD005 proofs compare list numbers, so they wait for MD029.
+		if len(prefixes) > 0 {
+			trailing = nil
 		}
 	}
 	waiting := len(groups) > 0
@@ -175,6 +195,7 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		{Rule: "MD019", Check: headingspacing.Check},
 		{Rule: "MD021", Check: headingspacing.Check},
 		{Rule: "MD023", Check: headingindent.Check},
+		{Rule: "MD029", Check: orderedprefix.Check},
 		{Rule: "MD009", Check: checkTrailingWhitespace},
 		{Rule: "MD003", Check: headingstyle.Check},
 		{Rule: "MD022", Check: headingblanks.Check},
