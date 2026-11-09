@@ -185,6 +185,12 @@ func (c RoundContext) RuleOptions(id string) (engine.Options, bool) {
 	return rule.Options, ok
 }
 
+// IndentedHeadings projects this round's parser-confirmed indented headings and
+// their per-line leaf indentation, charged to the shared residual operation.
+func (c RoundContext) IndentedHeadings(ctx context.Context) ([]parser.IndentedHeading, error) {
+	return c.Parsed().Document.IndentedHeadings(ctx, c.meter.budget)
+}
+
 // HeadingAnchors projects this round's heading anchors under the shared anchor
 // policy of the target's admitted document context.
 func (c RoundContext) HeadingAnchors(ctx context.Context) ([]resource.HeadingAnchor, resource.Availability, error) {

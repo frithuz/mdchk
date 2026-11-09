@@ -91,6 +91,20 @@
     "fix_status": 10
   },
   {
+    "name": "body-indented-heading",
+    "source": "---\nt: y\n---\n\n ##  x  ##\n\n  Alpha\n ===\n\nb \n",
+    "candidate": "---\nt: y\n---\n\n ##  x  ##\n\n  Alpha\n ===\n\nb \n",
+    "config": "default",
+    "guarded": true,
+    "withheld": [
+      "MD009",
+      "MD019",
+      "MD021",
+      "MD023"
+    ],
+    "fix_status": 10
+  },
+  {
     "name": "leading-and-later-break",
     "source": "---\n\ntext\n\n---\n\n##  x\n",
     "candidate": "---\n\ntext\n\n---\n\n##  x\n",
@@ -217,6 +231,13 @@
     "name": "recognized",
     "source": "---\n#  x: y\n---\n\n##  Real\n",
     "candidate": "---\n#  x: y\n---\n\n## Real\n",
+    "config": "enabled",
+    "guarded": false
+  },
+  {
+    "name": "recognized-indented-heading",
+    "source": "---\nt: y\n---\n\n ##  Real\n",
+    "candidate": "---\nt: y\n---\n\n## Real\n",
     "config": "enabled",
     "guarded": false
   }

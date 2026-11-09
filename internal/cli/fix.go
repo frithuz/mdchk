@@ -47,7 +47,8 @@ MD047 corrects safe final-newline changes. MD009 corrects trailing whitespace: i
 removes a suffix, or normalizes a real hard break to hard_break_spaces. MD019 and
 MD021 remove excess spaces from heading delimiter gaps. MD003 rewrites heading
 delimiters to the expected style. MD022 inserts missing blank lines around
-headings. Ambiguous contexts stay manual and appear under deferred_fixes.
+headings. MD023 removes leaf indentation from heading lines. Ambiguous
+contexts stay manual and appear under deferred_fixes.
 Text/JSON include preview diffs; editor formats report remaining findings only.
 VS Code unlocated errors and both editor formats' recovery outcomes use stderr.
 Run GitHub output from the checkout root; invocation CWD declares path authority.

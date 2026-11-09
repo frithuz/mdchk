@@ -33,6 +33,7 @@ func TestMD023AnalysisFixtures(t *testing.T) {
 		Expected              []struct {
 			Range  []int
 			Source string
+			Fix    bool
 		}
 	}
 	if err := json.Unmarshal(data, &fixtures); err != nil {
@@ -68,7 +69,7 @@ func TestMD023AnalysisFixtures(t *testing.T) {
 				for i, want := range f.Expected {
 					d := out.Diagnostics[i]
 					got := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-					if !reflect.DeepEqual(got, want.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != want.Source || d.Rule != "MD023" || d.Message != "Heading must not be indented." {
+					if !reflect.DeepEqual(got, want.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != want.Source || d.Rule != "MD023" || d.Message != "Heading must not be indented." || d.FixAvailable != want.Fix {
 						t.Fatalf("got %v %+v, want %+v", got, d, want)
 					}
 				}
@@ -162,7 +163,7 @@ func TestMD023CatalogAndOptions(t *testing.T) {
 		t.Fatal("incorrect availability")
 	}
 	for _, m := range r.Metadata() {
-		if m.ID == "MD023" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.PlannedFix || len(m.Options) != 0) {
+		if m.ID == "MD023" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.ImplementedFix || len(m.Options) != 0) {
 			t.Fatal(m)
 		}
 	}

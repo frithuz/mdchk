@@ -35,8 +35,9 @@ type openBlock struct {
 	partial         bool // an unavailable suffix prevents final list interpretation
 	reference       *referenceParagraph
 	openingHashRuns []Span
-	indentedHeading bool   // actual paragraph contributions, reset after reference extraction
-	definitions     []Span // non-rendered direct definition boundaries (item-only)
+	indentedHeading bool         // actual paragraph contributions, reset after reference extraction
+	indents         []lineIndent // paragraph lines with leaf indentation or a lazy start
+	definitions     []Span       // non-rendered direct definition boundaries (item-only)
 }
 
 // Accumulation belongs exclusively to this parse. Freeze nodes once on closure;
@@ -55,7 +56,7 @@ type blockParser struct {
 	inlinePayload             bool
 	referenceSemanticsPending bool
 	referenceInterrupted      bool
-	indentedHeadings          []Span
+	indentedHeadings          []IndentedHeading
 	openingHashRuns           []Span
 	deferred                  bool
 }
@@ -294,8 +295,18 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 		}
 		// Promote marked, eligible paragraphs before thematic/list dispatch.
 		if setext != nil {
-			if line.indent > 0 || p.stack[len(p.stack)-1].indentedHeading {
-				p.indentedHeadings = meteredAppend(p.ctx, p.indentedHeadings, setext.spec.Markers[0].Source)
+			if paragraph := p.stack[len(p.stack)-1]; line.indent > 0 || paragraph.indentedHeading {
+				heading := IndentedHeading{Marker: setext.spec.Markers[0].Source}
+				for _, indent := range paragraph.indents {
+					meterWork(p.ctx, 1)
+					if indent.start >= paragraph.start {
+						heading = p.withIndent(heading, indent)
+					}
+				}
+				if indent, ok := p.lineIndent(line); ok {
+					heading = p.withIndent(heading, indent)
+				}
+				p.indentedHeadings = meteredAppend(p.ctx, p.indentedHeadings, heading)
 			}
 			p.stack = p.stack[:depth]
 			p.attach(setext)
@@ -322,8 +333,8 @@ func parseBlockLifecycle(ctx context.Context, document *Document, hooks []blockS
 			if err := p.closeTo(depth); err != nil {
 				return Pending, err
 			}
-			if line.indent > 0 {
-				p.indentedHeadings = meteredAppend(p.ctx, p.indentedHeadings, heading.spec.Markers[0].Source)
+			if indent, ok := p.lineIndent(line); ok && line.indent > 0 {
+				p.indentedHeadings = meteredAppend(p.ctx, p.indentedHeadings, p.withIndent(IndentedHeading{Marker: heading.spec.Markers[0].Source}, indent))
 			}
 			p.attach(heading)
 			if len(heading.spec.Content) != 0 {
@@ -597,11 +608,37 @@ func (p *blockParser) logicalLine(physical physicalLine, cursor Indentation) blo
 	return line
 }
 
+// lineIndent records a line's leaf indentation, from its post-matched-container
+// cursor to its first content byte, or its lazy start. Other lines record nothing.
+func (p *blockParser) lineIndent(line blockLine) (lineIndent, bool) {
+	meterWork(p.ctx, 1)
+	if line.contentStart == line.cursor.offset && !line.lazy {
+		return lineIndent{}, false
+	}
+	indent := lineIndent{start: line.start, lazy: line.lazy}
+	if line.contentStart != line.cursor.offset {
+		indent.line = HeadingIndentation{Span: p.index.span(line.cursor.offset, line.contentStart), PartialTab: line.cursor.tabRemaining != 0}
+	}
+	return indent, true
+}
+
+// withIndent adds one physical line's record to an indented heading.
+func (p *blockParser) withIndent(heading IndentedHeading, indent lineIndent) IndentedHeading {
+	heading.Lazy = heading.Lazy || indent.lazy
+	if indent.line.Span.Present() {
+		heading.Lines = meteredAppend(p.ctx, heading.Lines, indent.line)
+	}
+	return heading
+}
+
 func (p *blockParser) appendParagraph(line blockLine) {
 	meterWork(p.ctx, 1)
 	if !p.paragraphOpen() {
 		checkDepth(p.ctx, p.syntaxDepth()+1)
 		block := openBlock{kind: Paragraph, start: line.start, last: line, indentedHeading: line.indent > 0}
+		if indent, ok := p.lineIndent(line); ok {
+			block.indents = meteredAppend(p.ctx, block.indents, indent)
+		}
 		block.openingHashRuns = p.retainOpeningHashRun(block.openingHashRuns, line)
 		if line.first == '[' {
 			block.reference = &referenceParagraph{}
@@ -612,6 +649,9 @@ func (p *blockParser) appendParagraph(line blockLine) {
 	}
 	paragraph := &p.stack[len(p.stack)-1]
 	paragraph.indentedHeading = paragraph.indentedHeading || line.indent > 0
+	if indent, ok := p.lineIndent(line); ok {
+		paragraph.indents = meteredAppend(p.ctx, paragraph.indents, indent)
+	}
 	paragraph.openingHashRuns = p.retainOpeningHashRun(paragraph.openingHashRuns, line)
 	if paragraph.reference != nil {
 		paragraph.reference.append(p.index.source, line)

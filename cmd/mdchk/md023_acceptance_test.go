@@ -16,12 +16,13 @@ func TestCompiledPlatformMD023ProductionAnalysis(t *testing.T) {
 		name, source string
 		points       []result.ByteRange
 		positions    []result.Position
+		fixable      bool
 	}{
-		{"published", " ## Install", []result.ByteRange{{Start: 1, End: 3}}, []result.Position{{Line: 1, Column: 2}}},
-		{"nested content relative", "> - # H", nil, nil},
-		{"partial tab", ">\t# H", []result.ByteRange{{Start: 2, End: 3}}, []result.Position{{Line: 1, Column: 3}}},
-		{"Setext text trigger marker", "Alpha\n    Beta\n===", []result.ByteRange{{Start: 15, End: 18}}, []result.Position{{Line: 3, Column: 1}}},
-		{"valid", "# H", nil, nil},
+		{"published", " ## Install", []result.ByteRange{{Start: 1, End: 3}}, []result.Position{{Line: 1, Column: 2}}, true},
+		{"nested content relative", "> - # H", nil, nil, false},
+		{"partial tab", ">\t# H", []result.ByteRange{{Start: 2, End: 3}}, []result.Position{{Line: 1, Column: 3}}, false},
+		{"Setext text trigger marker", "Alpha\n    Beta\n===", []result.ByteRange{{Start: 15, End: 18}}, []result.Position{{Line: 3, Column: 1}}, true},
+		{"valid", "# H", nil, nil, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			configuration := strings.Replace(cleanConfiguration(), "MD023: {enabled: false}", "MD023: {enabled: true}", 1)
@@ -31,15 +32,19 @@ func TestCompiledPlatformMD023ProductionAnalysis(t *testing.T) {
 			for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
 				got := runConfigurationProcess(t, binary, root, args...)
 				out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
-				status := 0
+				status, points, changes := 0, tc.points, 0
 				if len(tc.points) > 0 {
 					status = 10
 				}
-				if got.Status != status || !out.Complete || len(out.Errors) != 0 || len(out.Coverage) != 0 || len(out.Diagnostics) != len(tc.points) || len(out.Changes) != 0 || len(out.Documents) != 0 {
+				// A fixable finding's preview corrects it, leaving nothing reported.
+				if args[0] == "fix" && tc.fixable {
+					status, points, changes = 0, nil, 1
+				}
+				if got.Status != status || !out.Complete || len(out.Errors) != 0 || len(out.Coverage) != 0 || len(out.Diagnostics) != len(points) || len(out.Changes) != changes || len(out.Documents) != 0 {
 					t.Fatal(got)
 				}
 				for i, d := range out.Diagnostics {
-					if d.Rule != "MD023" || d.FixAvailable || d.ByteRange != tc.points[i] || d.Range.Start != tc.positions[i] || d.Range.End != (result.Position{Line: tc.positions[i].Line, Column: tc.positions[i].Column + tc.points[i].End - tc.points[i].Start}) || d.Message != "Heading must not be indented." {
+					if d.Rule != "MD023" || d.FixAvailable != tc.fixable || d.ByteRange != tc.points[i] || d.Range.Start != tc.positions[i] || d.Range.End != (result.Position{Line: tc.positions[i].Line, Column: tc.positions[i].Column + tc.points[i].End - tc.points[i].Start}) || d.Message != "Heading must not be indented." {
 						t.Fatal(d)
 					}
 				}
