@@ -329,7 +329,7 @@ there, not even a deferral, so nothing touches MD047's insertion and it applies 
 
 ### Production rule integration
 
-`internal/rules.Corrections` regenerates MD047, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD032, MD063, MD007 and MD077 groups from each
+`internal/rules.Corrections` regenerates MD047, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007 and MD077 groups from each
 current round's actual shared analysis and source-owned diagnostic ranges. For
 MD047, the source's retained physical-line index supplies the same terminal facts
 as analysis; the shared `fix.InsertionEnding` chooses inserted spelling without
@@ -364,7 +364,7 @@ the source while recognition is off or the format is unselected. Such a block ma
 real metadata, or a pair of thematic breaks, and each round's own parse answers this
 once with the shared delimiter detection, so no fact is carried between rounds or
 from saved input. `InteriorEditQuery` and MD009's eligibility return false, and
-`Corrections` makes no MD009, MD032 or MD007 group, and MD005, MD019, MD021, MD022, MD023, MD029, MD063 and MD077 are withheld by their flags. MD047 stays, because a line
+`Corrections` makes no MD009, MD032 or MD007 group, and MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD063 and MD077 are withheld by their flags. MD047 stays, because a line
 ending at EOF can't change a value inside the block.
 
 Combined rounds propose all of a document's eligible corrections together, so a
@@ -472,6 +472,24 @@ Its checker recomputes those facts from the before parse, then in `Once` proves
 around the edits, so each line keeps its owning item and block kind. MD077 groups wait for a round
 with no MD009, MD022, MD023, MD029, MD032, MD005 or MD007 edit, and MD063 waits
 for them.
+
+MD030's producer, `listSeparatorGroups`, builds one group per `fix_available`
+finding from the round's `parser.ListSeparatorFact` inventory. The parser fact
+says whether the item is on one line with no nested item (`OneLine`), whether the
+code-indentation fallback applies (`CodeFallback`), the separator column, the
+column of the next nonblank line after the item and whether the item is quoted.
+Each edit replaces the separator with exactly `spaces` spaces. The checker,
+`checkListSeparator`, proves in `Once` that only the edits changed bytes, that the
+document means the same apart from list item content indentation
+(`CheckContext.MeaningPreservedAcrossIndentation`), and that list item count,
+order, kind, bullet or ordinal and delimiter, marker width, mapped marker, list
+and parent are unchanged. Each group then checks its edit against the before
+parse's correctable separators. MD009's checker uses the same meaning comparison,
+because a line-end edit never moves a content column and an MD030 edit sharing the
+round is proven by its own checker. `Corrections` proposes MD030 groups only in a
+round with no MD022, MD023, MD029 or MD032 group, whose checkers compare list items
+or whole parses that a separator edit moves, and MD005, MD007, MD077, MD063 and
+MD003 groups wait for a round without one.
 
 Future corrections add rule producers, separately registered trusted checkers,
 implemented catalog metadata and affirmative per-finding eligibility. Compose
