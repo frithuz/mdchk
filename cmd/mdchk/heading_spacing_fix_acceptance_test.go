@@ -270,7 +270,6 @@ func TestCompiledHeadingSpacingOtherRulesProduceNothing(t *testing.T) {
 		{"MD007", "", "- a\n   - b\n"},
 		{"MD029", "", "1. a\n3. b\n"},
 		{"MD030", "", "-  a\n"},
-		{"MD032", "", "a\n- b\n"},
 		{"MD069", "", "- - a\n"},
 		{"MD076", "", "- a\n\n- b\n- c\n"},
 		{"MD077", "", "- a\nb\n"},
