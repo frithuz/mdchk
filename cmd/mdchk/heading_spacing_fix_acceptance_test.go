@@ -262,7 +262,6 @@ func TestCompiledHeadingSpacingOtherRulesProduceNothing(t *testing.T) {
 		{"MD036", "", "**a**\n\nbody text\n"},
 		{"MD041", "", "a\n"},
 		{"MD043", ", headings: ['# x']", "# a\n"},
-		{"MD063", "", "# a\n"},
 		{"MD080", "", "# a b\n\n# a-b\n"},
 		{"MD082", "", "# a\n\n## b\n"},
 		{"MD093", "", "# *a*\n"},

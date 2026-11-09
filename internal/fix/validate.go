@@ -191,6 +191,18 @@ func (c RoundContext) IndentedHeadings(ctx context.Context) ([]parser.IndentedHe
 	return c.Parsed().Document.IndentedHeadings(ctx, c.meter.budget)
 }
 
+// HeadingScalars projects this round's heading scalar slices, charged to the
+// shared residual operation.
+func (c RoundContext) HeadingScalars(ctx context.Context) ([][]parser.HeadingScalar, error) {
+	return c.Parsed().Document.HeadingScalars(ctx, c.meter.budget)
+}
+
+// HeadingCapitalization returns MD063's style and proper names under the
+// target's plan.
+func (c RoundContext) HeadingCapitalization() (string, []string, error) {
+	return engine.HeadingCapitalizationSettings(c.plan)
+}
+
 // HeadingAnchors projects this round's heading anchors under the shared anchor
 // policy of the target's admitted document context.
 func (c RoundContext) HeadingAnchors(ctx context.Context) ([]resource.HeadingAnchor, resource.Availability, error) {

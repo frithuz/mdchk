@@ -63,19 +63,24 @@ func TestCompiledPlatformMD063ProductionAnalysis(t *testing.T) {
 					for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
 						got := runConfigurationProcess(t, binary, root, args...)
 						out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
-						status, want := 0, 0
+						// Correctable findings leave a clean candidate under --dry-run.
+						fixable := map[string]bool{"published": true, "title": true, "code_title": true, "nested": true, "raw_closer": true}[tc.name]
+						status, want, changes := 0, 0, 0
 						if tc.span != nil {
 							status, want = 10, 1
+						}
+						if fixable && args[0] == "fix" {
+							status, want, changes = 0, 0, 1
 						}
 						if tc.incomplete {
 							status = 15
 						}
-						if got.Status != status || out.Complete == tc.incomplete || len(out.Errors) != 0 || len(out.Diagnostics) != want || len(out.Changes) != 0 || len(out.Documents) != 0 {
+						if got.Status != status || out.Complete == tc.incomplete || len(out.Errors) != 0 || len(out.Diagnostics) != want || len(out.Changes) != changes || len(out.Documents) != 0 {
 							t.Fatal(got)
 						}
-						if tc.span != nil {
+						if want != 0 {
 							d := out.Diagnostics[0]
-							if d.Rule != "MD063" || d.FixAvailable || d.ByteRange != *tc.span || d.Range.Start != tc.start || d.Range.End != tc.end || d.Message != "Heading must follow the configured capitalization style." {
+							if d.Rule != "MD063" || d.FixAvailable != fixable || d.ByteRange != *tc.span || d.Range.Start != tc.start || d.Range.End != tc.end || d.Message != "Heading must follow the configured capitalization style." {
 								t.Fatal(d)
 							}
 						}

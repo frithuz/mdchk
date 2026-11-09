@@ -61,7 +61,7 @@ func Catalog() []Metadata {
 		{ID: "MD060", Name: "Table column layout", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, AppliesTo: pipeTablesApply, Options: OptionSchema{"style": choice("aligned", "compact", "tight")}},
 		{ID: "MD061", Name: "Configured prohibited vocabulary", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"terms": {Kind: Strings, Default: []string{}, Domain: ConfiguredNameUTF8}, "case_sensitive": boolean(false)}},
 		{ID: "MD062", Name: "Whitespace in destination URLs", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD063", Name: "Heading capitalization", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("sentence", "title"), "proper_names": list()}},
+		{ID: "MD063", Name: "Heading capitalization", DefaultEnabled: false, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("sentence", "title"), "proper_names": list()}},
 		{ID: "MD064", Name: "Repeated spaces in prose", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"maximum": integer(1, 1)}},
 		{ID: "MD065", Name: "Blank lines around horizontal rules", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD069", Name: "Repeated list markers", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
