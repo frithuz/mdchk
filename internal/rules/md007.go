@@ -41,6 +41,7 @@ func compareBulletIndentation(ctx context.Context, c engine.RuleContext, items [
 	}
 	key := func(s parser.Span) itemKey { return itemKey{s.SourceToken(), s.Start(), s.End(), s.Present()} }
 	parents := make(map[itemKey]parser.ListItemFact, len(items))
+	var shifts bulletEligibility
 	for _, item := range items {
 		if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
 			out.Err = err
@@ -69,16 +70,7 @@ func compareBulletIndentation(ctx context.Context, c engine.RuleContext, items [
 		if item.Ordered {
 			continue
 		}
-		actual := item.ContentIndent - item.MarkerWidth - item.Padding
-		expected := 0
-		if item.ParentItem.Present() {
-			if !parent.Ordered {
-				actual += parent.MarkerWidth + parent.Padding
-				expected = indent
-			}
-		} else if start {
-			expected = indent
-		}
+		actual, expected := bulletOffsets(item, parent, indent, start)
 		// No arithmetic depends on configured indent, even at the largest int.
 		if actual == expected {
 			continue
@@ -97,7 +89,65 @@ func compareBulletIndentation(ctx context.Context, c engine.RuleContext, items [
 			out.Err = err
 			return out
 		}
-		out.Findings = append(out.Findings, engine.Finding{Span: item.Marker, Message: "Bullet list item indentation must match its configured parent offset."})
+		finding := engine.Finding{Span: item.Marker, Message: "Bullet list item indentation must match its configured parent offset."}
+		finding.FixEligible, out.Err = shifts.eligible(ctx, c, item, expected-actual)
+		if out.Err != nil {
+			return out
+		}
+		out.Findings = append(out.Findings, finding)
 	}
 	return out
+}
+
+// bulletOffsets returns an unordered item's actual and expected local indentation.
+// Analysis and correction share it, so the target column cannot drift.
+func bulletOffsets(item, parent parser.ListItemFact, indent int, start bool) (actual, expected int) {
+	actual = item.ContentIndent - item.MarkerWidth - item.Padding
+	if item.ParentItem.Present() {
+		if !parent.Ordered {
+			actual += parent.MarkerWidth + parent.Padding
+			expected = indent
+		}
+	} else if start {
+		expected = indent
+	}
+	return actual, expected
+}
+
+// bulletEligibility answers MD007 fix eligibility for one rule run. The source
+// text and the interior edit query are built once, on the first finding.
+type bulletEligibility struct {
+	text  string
+	edits *engine.RuleInteriorEdits
+}
+
+// eligible reports whether the lines a shift would move are plainly
+// space-indented list content that the interior edit query allows editing.
+func (b *bulletEligibility) eligible(ctx context.Context, c engine.RuleContext, item parser.ListItemFact, delta int) (bool, error) {
+	if b.edits == nil {
+		source := c.Source()
+		if err := c.Checkpoint(ctx, int64(source.Len())+1); err != nil {
+			return false, err
+		}
+		all, err := source.Span(0, source.Len())
+		if err != nil {
+			return false, err
+		}
+		if b.text, err = source.Text(all); err != nil {
+			return false, err
+		}
+		b.edits = c.InteriorEdits()
+	}
+	if err := c.Checkpoint(ctx, int64(item.Item.End()-item.Item.Start())+1); err != nil {
+		return false, err
+	}
+	starts, ok := bulletShift(b.text, item, delta)
+	if !ok || len(starts) == 0 {
+		return false, nil
+	}
+	affected, err := c.Source().Span(starts[0], item.Item.End())
+	if err != nil {
+		return false, err
+	}
+	return b.edits.Eligible(ctx, "MD007", item.Marker, affected)
 }

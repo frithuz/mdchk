@@ -13,6 +13,17 @@ import (
 // directly before a break may differ, including a Text holding nothing else.
 // Source coordinates are never compared; callers map those separately.
 func (d *Document) SameMeaningAcrossLineEndWhitespace(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
+	return d.sameMeaning(ctx, budget, other, false)
+}
+
+// SameMeaningAcrossIndentation is SameMeaningAcrossLineEndWhitespace for sources
+// that also differ in the leading spaces of list item lines: list content columns
+// may differ, and every other node kind, order, property and text must match.
+func (d *Document) SameMeaningAcrossIndentation(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
+	return d.sameMeaning(ctx, budget, other, true)
+}
+
+func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, other *Document, indentation bool) (bool, error) {
 	if ctx == nil || budget == nil {
 		return false, errors.New("nil whitespace meaning context or budget")
 	}
@@ -40,7 +51,7 @@ func (d *Document) SameMeaningAcrossLineEndWhitespace(ctx context.Context, budge
 		if f.a.Kind() != f.b.Kind() || len(ac) != len(bc) || len(f.a.htmlTail) != len(f.b.htmlTail) {
 			return false, nil
 		}
-		ok, err := sameNodeProperties(ctx, budget, f.a, f.b, f.beforeBreak)
+		ok, err := sameNodeProperties(ctx, budget, f.a, f.b, f.beforeBreak, indentation)
 		if err != nil || !ok {
 			return false, err
 		}
@@ -68,7 +79,7 @@ func visibleChildren(children []*Node) []*Node {
 	return out
 }
 
-func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node, beforeBreak bool) (bool, error) {
+func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node, beforeBreak, indentation bool) (bool, error) {
 	p, q := a.spec.Properties, b.spec.Properties
 	if err := headingFactCharge(ctx, budget, int64(len(p.Literal.Value)+len(q.Literal.Value))+1, 0); err != nil {
 		return false, err
@@ -117,7 +128,7 @@ func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node
 	}
 	if p.List != nil {
 		s, t := p.List, q.List
-		if s.Ordered != t.Ordered || s.Start != t.Start || s.Delimiter != t.Delimiter || s.Bullet != t.Bullet || s.Tight != t.Tight || s.MarkerWidth != t.MarkerWidth || s.ContentIndent != t.ContentIndent {
+		if s.Ordered != t.Ordered || s.Start != t.Start || s.Delimiter != t.Delimiter || s.Bullet != t.Bullet || s.Tight != t.Tight || s.MarkerWidth != t.MarkerWidth || !indentation && s.ContentIndent != t.ContentIndent {
 			return false, nil
 		}
 	}

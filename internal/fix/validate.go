@@ -148,6 +148,12 @@ func (c RoundContext) TrailingWhitespace(ctx context.Context) ([]parser.Trailing
 	return engine.TrailingWhitespaceSuffixes(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
 }
 
+// BulletIndentation returns MD007's list item facts and resolved indent and
+// start_indented options for this round's own parse under the target's plan.
+func (c RoundContext) BulletIndentation(ctx context.Context) ([]parser.ListItemFact, int, bool, error) {
+	return engine.BulletIndentationItems(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
 // TerminalTaskSourcesPreserved compares both actual round parses on the same
 // residual operation, through the round's edit mapping. Callers must separately
 // prove their exact suffix edit.
@@ -165,6 +171,16 @@ func (c CheckContext) MeaningPreservedAcrossLineEndWhitespace(ctx context.Contex
 		return false, nil
 	}
 	return before.Document.SameMeaningAcrossLineEndWhitespace(ctx, c.Before.meter.budget, after.Document)
+}
+
+// MeaningPreservedAcrossIndentation compares both actual round parses, allowing
+// list item content columns to differ.
+func (c CheckContext) MeaningPreservedAcrossIndentation(ctx context.Context) (bool, error) {
+	before, after := c.Before.Parsed(), c.After.Parsed()
+	if before.Status != parser.Complete || after.Status != parser.Complete || before.Document == nil || after.Document == nil || len(before.Uncertainty) != 0 || len(after.Uncertainty) != 0 {
+		return false, nil
+	}
+	return before.Document.SameMeaningAcrossIndentation(ctx, c.Before.meter.budget, after.Document)
 }
 
 // Headings projects this round's parser-confirmed heading facts, charged to the

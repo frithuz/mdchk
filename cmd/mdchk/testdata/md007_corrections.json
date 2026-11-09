@@ -1,0 +1,134 @@
+[
+  {
+    "name": "nested-over-indented",
+    "source": "- a\n   - b\n     more\n",
+    "candidate": "- a\n  - b\n    more\n",
+    "rules": [
+      "MD007"
+    ],
+    "edit_count": 2,
+    "config": "",
+    "fixable": true,
+    "deferred": false
+  },
+  {
+    "name": "indent-four",
+    "source": "- a\n  - b\n",
+    "candidate": "- a\n    - b\n",
+    "rules": [
+      "MD007"
+    ],
+    "edit_count": 1,
+    "config": "indent4",
+    "fixable": true,
+    "deferred": false
+  },
+  {
+    "name": "start-indented",
+    "source": "- a\n",
+    "candidate": "  - a\n",
+    "rules": [
+      "MD007"
+    ],
+    "edit_count": 1,
+    "config": "start",
+    "fixable": true,
+    "deferred": false
+  },
+  {
+    "name": "ordered-parent",
+    "source": "1. a\n    - b\n",
+    "candidate": "1. a\n   - b\n",
+    "rules": [
+      "MD007"
+    ],
+    "edit_count": 1,
+    "config": "",
+    "fixable": true,
+    "deferred": false
+  },
+  {
+    "name": "crlf",
+    "source": "- a\r\n   - b\r\n     more\r\n",
+    "candidate": "- a\r\n  - b\r\n    more\r\n",
+    "rules": [
+      "MD007"
+    ],
+    "edit_count": 2,
+    "config": "",
+    "fixable": true,
+    "deferred": false
+  },
+  {
+    "name": "unicode",
+    "source": "- 雪\n   - é 👍🏽 文字\n     ｗｉｄｅ\n",
+    "candidate": "- 雪\n  - é 👍🏽 文字\n    ｗｉｄｅ\n",
+    "rules": [
+      "MD007"
+    ],
+    "edit_count": 2,
+    "config": "",
+    "fixable": true,
+    "deferred": false
+  },
+  {
+    "name": "tab-indentation",
+    "source": "- a\n \t - b\n",
+    "candidate": "- a\n \t - b\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "",
+    "fixable": false,
+    "deferred": false
+  },
+  {
+    "name": "blockquote",
+    "source": "> - a\n>    - b\n",
+    "candidate": "> - a\n>    - b\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "",
+    "fixable": false,
+    "deferred": false
+  },
+  {
+    "name": "fenced-code",
+    "source": "- a\n   - b\n\n     ```\n     x\n     ```\n",
+    "candidate": "- a\n   - b\n\n     ```\n     x\n     ```\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "",
+    "fixable": false,
+    "deferred": false
+  },
+  {
+    "name": "directive-disabled",
+    "source": "<!-- mdchk:disable MD007 -->\n- a\n   - b\n",
+    "candidate": "<!-- mdchk:disable MD007 -->\n- a\n   - b\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "",
+    "fixable": false,
+    "deferred": false
+  },
+  {
+    "name": "unrecognized-front-matter",
+    "source": "---\nx: 1\n---\n\n - body\n",
+    "candidate": "---\nx: 1\n---\n\n - body\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "",
+    "fixable": false,
+    "deferred": false
+  },
+  {
+    "name": "structure-change",
+    "source": "- a\n",
+    "candidate": "- a\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "start4",
+    "fixable": true,
+    "deferred": true
+  }
+]

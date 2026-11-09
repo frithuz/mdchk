@@ -36,6 +36,7 @@ func TestMD007AnalysisFixtures(t *testing.T) {
 		Expected              []struct {
 			Range  []int
 			Source string
+			Fix    bool
 		}
 	}
 	if err := json.Unmarshal(data, &fixtures); err != nil {
@@ -75,7 +76,7 @@ func TestMD007AnalysisFixtures(t *testing.T) {
 				for i, w := range f.Expected {
 					d := out.Diagnostics[i]
 					got := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD007" || d.FixAvailable || d.Message != "Bullet list item indentation must match its configured parent offset." {
+					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD007" || d.FixAvailable != w.Fix || d.Message != "Bullet list item indentation must match its configured parent offset." {
 						t.Fatal(got, d, w)
 					}
 				}
@@ -94,7 +95,7 @@ func TestMD007CatalogOptionsAndDefaultActivation(t *testing.T) {
 		if m.DefaultEnabled {
 			enabledCount++
 		}
-		if m.ID == "MD007" && (!m.DefaultEnabled || m.Fix != engine.PlannedFix || !m.RequiresSyntax || m.UsesFrontmatter || len(m.Options) != 2) {
+		if m.ID == "MD007" && (!m.DefaultEnabled || m.Fix != engine.ImplementedFix || !m.RequiresSyntax || m.UsesFrontmatter || len(m.Options) != 2) {
 			t.Fatal(m)
 		}
 	}
@@ -123,7 +124,7 @@ func TestMD007CatalogOptionsAndDefaultActivation(t *testing.T) {
 		s := md007Settings()
 		delete(s, "MD007")
 		out := analyzeHeadings(t, r, "- first\n - second", s, engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
-		if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD007" || out.Diagnostics[0].FixAvailable {
+		if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD007" || !out.Diagnostics[0].FixAvailable {
 			t.Fatal(out)
 		}
 	}
@@ -145,7 +146,7 @@ func TestMD007FinalPublicationWithholdsAllFindings(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 2}, {"aligned", "- one\n- two", 4}, {"violation", "- one\n - two", 6}} {
+	}{{"empty", "", 2}, {"aligned", "- one\n- two", 4}, {"violation", "- one\n - two", 25}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+reason.Error(), func(t *testing.T) {
 				var observed engine.RuleOutcome
@@ -155,7 +156,8 @@ func TestMD007FinalPublicationWithholdsAllFindings(t *testing.T) {
 						t.Fatal(err)
 					}
 					// Fixed independent counts: reservation, one check per item, optional
-					// finding growth/emission, then the final publication check.
+					// finding growth/emission with its fix eligibility proof, then the final
+					// publication check.
 					late := &lateStopContext{Context: ctx, reason: reason, stop: tc.final}
 					observed = compareBulletIndentation(late, c, items, 2, false)
 					if late.calls != tc.final {
@@ -290,7 +292,7 @@ func TestMD007UTF8GatePrecedesRule(t *testing.T) {
 	}
 }
 
-func TestMD007OriginControlsAndManualFindings(t *testing.T) {
+func TestMD007OriginControlsAndEligibleFindings(t *testing.T) {
 	for _, cancelOrigin := range []bool{false, true} {
 		ctx, cancel := context.WithCancel(context.Background())
 		var observed engine.RuleOutcome
@@ -304,8 +306,8 @@ func TestMD007OriginControlsAndManualFindings(t *testing.T) {
 			}
 			observed = compareBulletIndentation(context.Background(), c, items, 2, false)
 			for _, finding := range observed.Findings {
-				if finding.FixEligible {
-					t.Fatal("manual finding grants fix authority")
+				if !finding.FixEligible {
+					t.Fatal("space-indented finding lacks fix authority")
 				}
 			}
 			return observed
