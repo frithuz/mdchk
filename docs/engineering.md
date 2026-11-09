@@ -160,7 +160,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction, and MD003, MD009, MD019, MD021 and MD022 also correct; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
+production correction, and MD003, MD009, MD019, MD021, MD022 and MD023 also correct; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
 analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation
 analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis,
 MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD014 shell-prompt analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD065 horizontal-rule blank-line analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD018 missing opening-hash spacing, MD019 extra
@@ -234,8 +234,9 @@ MD023 retains a private positive leaf-indentation aggregate while the block pars
 still owns each line's actual post-matched-container cursor, including partial
 tabs, lazy prefixes and deep Setext continuations. Leading reference extraction
 recomputes the aggregate from surviving retained paragraph parts. Only actual
-heading dispatch retains one original opening/underline marker; paragraph and
-table ownership publishes none. Existing HeadingFact and MD022 facts are unchanged.
+heading dispatch retains one original opening/underline marker, with each physical
+heading line's leaf-indentation span, partial-tab state and lazy state; paragraph
+and table ownership publishes none. Existing HeadingFact and MD022 facts are unchanged.
 
 Private aggregate updates use the existing metered line visits; retained markers
 use metered append reservations. The narrow IndentedHeadings projection requires
@@ -245,7 +246,7 @@ on failure. RuleContext joins caller and originating controls; the callback
 charges each finding and retains reliable prior findings with a later error.
 There is no new parse, source, allowance, whole-document rescan or public-tree copy.
 This is finite application-work accounting, not a process memory or throughput
-guarantee. No correction provider or write authority is added. See [MD023 policy](rules/headings/md023.md).
+guarantee. The MD023 correction deletes those line spans; see [MD023 policy](rules/headings/md023.md).
 
 For GFM, retain original table cell counts before semantic padding or truncation, task-marker spans and spelling, strikethrough delimiter spans, and bare versus angle-delimited autolink origins. Keep filtered raw HTML protected and preserve its source. The [extension source contract](engineering/gfm-compatibility.md#extension-source-contract) defines the information shared by lint, fix, inspect, and MCP.
 
