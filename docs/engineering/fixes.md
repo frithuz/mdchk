@@ -128,7 +128,7 @@ invocations with Darwin `flock`; that required platform-specific code and is rem
 one portable implementation. Stale protection still detects concurrent changes to the source,
 its dependencies and the parent immediately before the rename, but it does not serialize writers,
 and a noncooperating writer can change a file between the last check and the rename. Reviewed
-when MD019, MD021 and MD009 corrections joined MD047: no lock is added, intentionally, because mdchk
+when MD019, MD021, MD023 and MD009 corrections joined MD047: no lock is added, intentionally, because mdchk
 trusts one execution at a time, in line with #261. Stale protection is unchanged. Two concurrent
 runs with the same configuration compute identical output. Runs with different configurations,
 such as different MD009 settings, can compute different output, and a run can overwrite another
@@ -329,7 +329,7 @@ there, not even a deferral, so nothing touches MD047's insertion and it applies 
 
 ### Production rule integration
 
-`internal/rules.Corrections` regenerates MD047, MD009, MD019, MD021 and MD022 groups from each
+`internal/rules.Corrections` regenerates MD047, MD009, MD019, MD021, MD022 and MD023 groups from each
 current round's actual shared analysis and source-owned diagnostic ranges. For
 MD047, the source's retained physical-line index supplies the same terminal facts
 as analysis; the shared `fix.InsertionEnding` chooses inserted spelling without
@@ -364,7 +364,7 @@ the source while recognition is off or the format is unselected. Such a block ma
 real metadata, or a pair of thematic breaks, and each round's own parse answers this
 once with the shared delimiter detection, so no fact is carried between rounds or
 from saved input. `InteriorEditQuery` and MD009's eligibility return false, and
-`Corrections` makes no MD009 group, and MD019, MD021 and MD022 are withheld by their flags. MD047 stays, because a line
+`Corrections` makes no MD009 group, and MD019, MD021, MD022 and MD023 are withheld by their flags. MD047 stays, because a line
 ending at EOF can't change a value inside the block.
 
 Combined rounds propose all of a document's eligible corrections together, so a
@@ -385,7 +385,17 @@ round. MD019 and MD021 compare heading count and order, level, style, closed sta
 visible text, raw labels, containers, mapped envelopes and anchor bases there. Each
 group then only checks its own edit against the before parse: one deletion of the
 second through last space of a parser-confirmed spaces-only gap that belongs to the
-group's rule.
+group's rule. A Setext label is mapped by its endpoints, because an MD023 deletion
+in the same round can lie inside it.
+
+MD023 groups hold every leaf-indentation deletion of one heading, taken from
+`parser.IndentedHeading` line spans, and are anchored on the heading's marker. Its
+checker proves once per round that only the round's edits changed bytes, that the
+block tree is unchanged apart from line-end whitespace
+(`MeaningPreservedAcrossLineEndWhitespace`), and that every heading keeps its
+level, style, closed state, visible text and container kinds. Each group must then
+equal the before parse's deletions for a heading with no lazy line or partial
+tab, and the reparsed heading must no longer be indented.
 
 Future corrections add rule producers, separately registered trusted checkers,
 implemented catalog metadata and affirmative per-finding eligibility. Compose

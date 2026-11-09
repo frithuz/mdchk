@@ -144,7 +144,7 @@ operation. Published content is never blindly rolled back over newer content.
   not serialize writers, and a noncooperating writer can still change a file
   between the last check and the rename. A deterministic native test changes the
   target after the final check and demonstrates the newer bytes being
-  overwritten. Reviewed when MD019, MD021 and MD009 corrections joined MD047: no
+  overwritten. Reviewed when MD019, MD021, MD023 and MD009 corrections joined MD047: no
   lock is added, intentionally, because mdchk trusts one execution at a time, in line
   with #261. Stale protection is unchanged. Two concurrent runs with the same
   configuration compute identical output. Runs with different configurations, such

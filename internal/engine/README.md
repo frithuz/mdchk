@@ -222,8 +222,9 @@ MD023 retains a private positive leaf-indentation aggregate while the block pars
 still owns each line's actual post-matched-container cursor, including partial
 tabs, lazy prefixes and deep Setext continuations. Leading reference extraction
 recomputes the aggregate from surviving retained paragraph parts. Only actual
-heading dispatch retains one original opening/underline marker; paragraph and
-table ownership publishes none. Existing HeadingFact and MD022 facts are unchanged.
+heading dispatch retains one original opening/underline marker, with each physical
+heading line's leaf-indentation span, partial-tab state and lazy state; paragraph
+and table ownership publishes none. Existing HeadingFact and MD022 facts are unchanged.
 
 Private aggregate updates use the existing metered line visits; retained markers
 use metered append reservations. The narrow IndentedHeadings projection requires
@@ -233,7 +234,7 @@ on failure. RuleContext joins caller and originating controls; the callback
 charges each finding and retains reliable prior findings with a later error.
 There is no new parse, source, allowance, whole-document rescan or public-tree copy.
 This is finite application-work accounting, not a process memory or throughput
-guarantee. No correction provider or write authority is added. See [MD023 policy](../../docs/rules/headings/md023.md).
+guarantee. The MD023 correction deletes those line spans; see [MD023 policy](../../docs/rules/headings/md023.md).
 
 MD024 adds a raw Label span to HeadingFact without changing existing fields.
 First/last original Content source bounds preserve NUL mappings and multiline
