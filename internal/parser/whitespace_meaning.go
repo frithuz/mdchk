@@ -13,17 +13,29 @@ import (
 // directly before a break may differ, including a Text holding nothing else.
 // Source coordinates are never compared; callers map those separately.
 func (d *Document) SameMeaningAcrossLineEndWhitespace(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
-	return d.sameMeaning(ctx, budget, other, false)
+	return d.sameMeaning(ctx, budget, other, true, false, nil)
 }
 
 // SameMeaningAcrossIndentation is SameMeaningAcrossLineEndWhitespace for sources
 // that also differ in the leading spaces of list item lines: list content columns
 // may differ, and every other node kind, order, property and text must match.
 func (d *Document) SameMeaningAcrossIndentation(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
-	return d.sameMeaning(ctx, budget, other, true)
+	return d.sameMeaning(ctx, budget, other, true, true, nil)
 }
 
-func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, other *Document, indentation bool) (bool, error) {
+// SameMeaningAcrossListSeparators compares two completed parses from this
+// operation whose sources differ only in blank lines between sibling list items.
+// It is SameMeaningAcrossLineEndWhitespace with every Text value compared exactly,
+// except that a list owning a direct item whose item-marker starts at one of the
+// original offsets in markers may change tightness: that is the intended effect.
+func (d *Document) SameMeaningAcrossListSeparators(ctx context.Context, budget *OperationBudget, other *Document, markers map[int]bool) (bool, error) {
+	if ctx == nil || budget == nil {
+		return false, errors.New("nil list separator meaning context or budget")
+	}
+	return d.sameMeaning(ctx, budget, other, false, false, markers)
+}
+
+func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, other *Document, breaks, indentation bool, markers map[int]bool) (bool, error) {
 	if ctx == nil || budget == nil {
 		return false, errors.New("nil whitespace meaning context or budget")
 	}
@@ -43,7 +55,10 @@ func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, oth
 		}
 		f := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
-		ac, bc := visibleChildren(f.a.spec.Children), visibleChildren(f.b.spec.Children)
+		ac, bc := f.a.spec.Children, f.b.spec.Children
+		if breaks {
+			ac, bc = visibleChildren(ac), visibleChildren(bc)
+		}
 		records := int64(len(f.a.spec.Children) + len(f.b.spec.Children) + len(f.a.htmlTail) + 1)
 		if err := headingFactCharge(ctx, budget, records*2, records); err != nil {
 			return false, err
@@ -51,7 +66,20 @@ func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, oth
 		if f.a.Kind() != f.b.Kind() || len(ac) != len(bc) || len(f.a.htmlTail) != len(f.b.htmlTail) {
 			return false, nil
 		}
-		ok, err := sameNodeProperties(ctx, budget, f.a, f.b, f.beforeBreak, indentation)
+		retight := false
+		if f.a.Kind() == List && len(markers) != 0 {
+			for _, item := range f.a.spec.Children {
+				if err := headingFactCharge(ctx, budget, int64(len(item.spec.Markers))+1, 0); err != nil {
+					return false, err
+				}
+				for _, marker := range item.spec.Markers {
+					if marker.Role == "item-marker" && markers[marker.Source.Start()] {
+						retight = true
+					}
+				}
+			}
+		}
+		ok, err := sameNodeProperties(ctx, budget, f.a, f.b, breaks && f.beforeBreak, indentation, retight)
 		if err != nil || !ok {
 			return false, err
 		}
@@ -79,7 +107,7 @@ func visibleChildren(children []*Node) []*Node {
 	return out
 }
 
-func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node, beforeBreak, indentation bool) (bool, error) {
+func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node, beforeBreak, indentation, retight bool) (bool, error) {
 	p, q := a.spec.Properties, b.spec.Properties
 	if err := headingFactCharge(ctx, budget, int64(len(p.Literal.Value)+len(q.Literal.Value))+1, 0); err != nil {
 		return false, err
@@ -128,7 +156,7 @@ func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node
 	}
 	if p.List != nil {
 		s, t := p.List, q.List
-		if s.Ordered != t.Ordered || s.Start != t.Start || s.Delimiter != t.Delimiter || s.Bullet != t.Bullet || s.Tight != t.Tight || s.MarkerWidth != t.MarkerWidth || !indentation && s.ContentIndent != t.ContentIndent {
+		if s.Ordered != t.Ordered || s.Start != t.Start || s.Delimiter != t.Delimiter || s.Bullet != t.Bullet || !retight && s.Tight != t.Tight || s.MarkerWidth != t.MarkerWidth || !indentation && s.ContentIndent != t.ContentIndent {
 			return false, nil
 		}
 	}

@@ -329,7 +329,7 @@ there, not even a deferral, so nothing touches MD047's insertion and it applies 
 
 ### Production rule integration
 
-`internal/rules.Corrections` regenerates MD047, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007 and MD077 groups from each
+`internal/rules.Corrections` regenerates MD047, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077 and MD076 groups from each
 current round's actual shared analysis and source-owned diagnostic ranges. For
 MD047, the source's retained physical-line index supplies the same terminal facts
 as analysis; the shared `fix.InsertionEnding` chooses inserted spelling without
@@ -364,12 +364,12 @@ the source while recognition is off or the format is unselected. Such a block ma
 real metadata, or a pair of thematic breaks, and each round's own parse answers this
 once with the shared delimiter detection, so no fact is carried between rounds or
 from saved input. `InteriorEditQuery` and MD009's eligibility return false, and
-`Corrections` makes no MD009, MD032 or MD007 group, and MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD063 and MD077 are withheld by their flags. MD047 stays, because a line
+`Corrections` makes no MD009, MD032, MD007 or MD076 group, and MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD063 and MD077 are withheld by their flags. MD047 stays, because a line
 ending at EOF can't change a value inside the block.
 
 Combined rounds propose all of a document's eligible corrections together, so a
 document whose edits are all accepted finishes in one changing round plus the
-read-only final check. A failing checker still defers every group in the file for
+read-only final check, or two when MD076 edits come first. A failing checker still defers every group in the file for
 that round, so a producer must not propose an edit its checker would reject. An
 MD047 finding without `fix_available` is therefore held back until no other
 correction remains, and is then proposed alone: it defers as it always did, without
@@ -490,6 +490,19 @@ round is proven by its own checker. `Corrections` proposes MD030 groups only in 
 round with no MD022, MD023, MD029 or MD032 group, whose checkers compare list items
 or whole parses that a separator edit moves, and MD005, MD007, MD077, MD063 and
 MD003 groups wait for a round without one.
+
+MD076 groups come from `internal/rules/internal/listspacing`, which derives each
+separator edit from the round's `RoundContext.ListItemSpacing` facts and source
+alone: an insertion of prefix-only blank lines at the next sibling's marker line, or
+a deletion of whole surplus lines. The rule's eligibility uses the same derivation
+and `InteriorEditQuery`. Its checker recomputes every edit from the before parse in
+`CheckContext.Once`, proves `OnlyEditsChanged` and compares both parses with
+`CheckContext.MeaningPreservedAcrossListSeparators`, where only a list owning a
+corrected separator may change tightness. That tightness change fails MD009's
+line-end whitespace proof and the other list and whole-parse proofs, so while any
+MD076 group exists `Corrections` proposes no other group; they follow in later
+rounds. MD047 still joins the first round when
+its finding is eligible.
 
 Future corrections add rule producers, separately registered trusted checkers,
 implemented catalog metadata and affirmative per-finding eligibility. Compose

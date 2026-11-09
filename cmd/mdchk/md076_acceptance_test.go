@@ -50,7 +50,8 @@ func TestCompiledPlatformMD076ProductionAnalysis(t *testing.T) {
 					putConfigurationFile(t, root, ".mdchk.yaml", conf)
 					putConfigurationFile(t, root, "doc.md", f.Source)
 					before := configurationBytes(t, root)
-					for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
+					// Corrections are covered by TestCompiledListSpacingFixWorkflow.
+					for _, args := range [][]string{{"lint", "doc.md", "--format=json"}} {
 						got := runConfigurationProcess(t, binary, root, args...)
 						out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
 						status := 0
@@ -66,7 +67,7 @@ func TestCompiledPlatformMD076ProductionAnalysis(t *testing.T) {
 						for i, w := range f.Expected {
 							d := out.Diagnostics[i]
 							actual := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD076" || d.FixAvailable || d.Message != fmt.Sprintf("List item separator has %d blank body lines; expected %d.", w.Actual, w.Expected) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
+							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD076" || d.Message != fmt.Sprintf("List item separator has %d blank body lines; expected %d.", w.Actual, w.Expected) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
 								t.Fatal(d, w)
 							}
 						}
@@ -120,7 +121,7 @@ func TestCompiledPlatformMD076ConfigurationAndComposition(t *testing.T) {
 			putConfigurationFile(t, root, "doc.md", "- A\n\n- B\n- C\n")
 			got := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=json")
 			out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "lint")
-			if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD076" || out.Diagnostics[0].FixAvailable {
+			if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD076" || !out.Diagnostics[0].FixAvailable {
 				t.Fatal(got)
 			}
 			inspected, p := runInspection(t, binary, root, root, "inspect", "doc.md", "--format=json")
@@ -141,44 +142,30 @@ func TestCompiledPlatformMD076ConfigurationAndComposition(t *testing.T) {
 				t.Run(flavor+"/"+mode+"/"+ending.name, func(t *testing.T) {
 					root := configurationProject(t)
 					conf := strings.Replace(md076Configuration(flavor), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
-
-					putConfigurationFile(t, root, ".mdchk.yaml", conf)
-					original := "- é" + ending.text + ending.text + "- B" + ending.text + "- C"
+					e := ending.text
+					original, candidate := "- é"+e+e+"- B"+e+"- C", "- é"+e+e+"- B"+e+e+"- C"+e
 					if mode == "surplus" {
-						original = "- é" + ending.text + ending.text + ending.text + "- B"
+						original, candidate = "- é"+e+e+e+"- B", "- é"+e+e+"- B"+e
 						conf = strings.Replace(conf, "MD076: {enabled: true}", "MD076: {enabled: true, style: loose}", 1)
-						putConfigurationFile(t, root, ".mdchk.yaml", conf)
 					}
-					candidate := original + ending.text
+					putConfigurationFile(t, root, ".mdchk.yaml", conf)
 					digest := fmt.Sprintf("%x", sha256.Sum256([]byte(candidate)))
-					start, end, line, endline := 7+3*len(ending.text), 7+3*len(ending.text), 4, 4
-					if mode == "surplus" {
-						start = 4 + 2*len(ending.text)
-						end = start + len(ending.text)
-						line = 3
-						endline = 4
-					}
 
 					for pass, source := range []string{original, candidate} {
 						putConfigurationFile(t, root, "doc.md", source)
 						before := configurationBytes(t, root)
 						got := runConfigurationProcess(t, binary, root, "fix", "--dry-run", "doc.md", "--format=json")
 						out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "fix")
-						if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || len(out.Changes) != 1-pass || len(out.Documents) != 0 || len(out.Files) != 1 {
+						if got.Status != 0 || !out.Complete || len(out.Diagnostics) != 0 || len(out.DeferredFixes) != 0 || len(out.Changes) != 1-pass || len(out.Documents) != 0 || len(out.Files) != 1 {
 							t.Fatal(got)
 						}
 						snap := out.Files[0].ResultSnapshot
 						if snap == nil || snap.SHA256 != digest || snap.SizeBytes != len(candidate) {
 							t.Fatal(out.Files)
 						}
-						d := out.Diagnostics[0]
-						if d.Rule != "MD076" || d.FixAvailable || d.ByteRange != (result.ByteRange{Start: start, End: end}) || d.Range.Start != (result.Position{Line: line, Column: 1}) || d.Range.End != (result.Position{Line: endline, Column: 1}) || d.Snapshot != *snap {
-							t.Fatal(d)
-						}
-
 						if pass == 0 {
 							c := out.Changes[0]
-							if !reflect.DeepEqual(c.Rules, []string{"MD047"}) || c.EditCount != 1 || c.Candidate != *snap {
+							if !reflect.DeepEqual(c.Rules, []string{"MD047", "MD076"}) || c.EditCount != 2 || c.Candidate != *snap {
 								t.Fatal(c)
 							}
 						}
@@ -212,7 +199,7 @@ func TestCompiledPlatformMD076DirectivesAndValidation(t *testing.T) {
 				if validated.Status != 0 {
 					t.Fatal(validated)
 				}
-				for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
+				for _, args := range [][]string{{"lint", "doc.md", "--format=json"}} {
 					got := runConfigurationProcess(t, binary, root, args...)
 					out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
 					status := 0

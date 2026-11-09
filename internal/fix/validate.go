@@ -189,6 +189,23 @@ func (c CheckContext) MeaningPreservedAcrossIndentation(ctx context.Context) (bo
 	return before.Document.SameMeaningAcrossIndentation(ctx, c.Before.meter.budget, after.Document)
 }
 
+// MeaningPreservedAcrossListSeparators compares both actual round parses. Only a
+// list owning a direct item whose marker starts at an original offset in markers
+// may change tightness.
+func (c CheckContext) MeaningPreservedAcrossListSeparators(ctx context.Context, markers map[int]bool) (bool, error) {
+	before, after := c.Before.Parsed(), c.After.Parsed()
+	if before.Status != parser.Complete || after.Status != parser.Complete || before.Document == nil || after.Document == nil || len(before.Uncertainty) != 0 || len(after.Uncertainty) != 0 {
+		return false, nil
+	}
+	return before.Document.SameMeaningAcrossListSeparators(ctx, c.Before.meter.budget, after.Document, markers)
+}
+
+// ListItemSpacing returns MD076's separator facts for this round's own parse
+// under the target's plan.
+func (c RoundContext) ListItemSpacing(ctx context.Context) ([]parser.ListItemSpacingFact, error) {
+	return engine.ListItemSpacingFacts(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
 // Headings projects this round's parser-confirmed heading facts, charged to the
 // shared residual operation. Producers and checkers call it at most once a round.
 func (c RoundContext) Headings(ctx context.Context) ([]parser.HeadingFact, error) {

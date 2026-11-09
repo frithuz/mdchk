@@ -121,3 +121,41 @@ func TestTrailingSuffixFacts(t *testing.T) {
 		})
 	}
 }
+
+func TestSameMeaningAcrossListSeparators(t *testing.T) {
+	for _, tc := range []struct {
+		name, a, b string
+		markers    []int
+		want       bool
+	}{
+		{"owning list retightens", "- a\n- b\n", "- a\n\n- b\n", []int{4}, true},
+		{"unlisted list retightens", "- a\n- b\n", "- a\n\n- b\n", nil, false},
+		{"other list retightens", "- a\n- b\n\n* c\n* d\n", "- a\n- b\n\n* c\n\n* d\n", []int{4}, false},
+		{"nested owner only", "- a\n  - x\n  - y\n", "- a\n  - x\n\n  - y\n", []int{12}, true},
+		{"text changes", "- a\n- b\n", "- a\n- c\n", []int{4}, false},
+		{"trailing break whitespace is exact", "a  \nb\n", "a\nb\n", nil, false},
+		{"item count changes", "- a\n- b\n", "- a\n- b\n- c\n", []int{4}, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			budget, err := NewOperationBudget(DefaultLimits())
+			if err != nil {
+				t.Fatal(err)
+			}
+			parse := func(text string) *Document {
+				r := ParseWithOptions(context.Background(), NewSource([]byte(text)), budget, ParseOptions{})
+				if r.Document == nil || r.Status != Complete {
+					t.Fatal(text, r.Status)
+				}
+				return r.Document
+			}
+			markers := map[int]bool{}
+			for _, m := range tc.markers {
+				markers[m] = true
+			}
+			got, err := parse(tc.a).SameMeaningAcrossListSeparators(context.Background(), budget, parse(tc.b), markers)
+			if err != nil || got != tc.want {
+				t.Fatal(got, err)
+			}
+		})
+	}
+}
