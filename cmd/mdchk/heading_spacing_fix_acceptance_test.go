@@ -269,7 +269,6 @@ func TestCompiledHeadingSpacingOtherRulesProduceNothing(t *testing.T) {
 		{"MD005", "", "- a\n - b\n   c\n"}, // continuation lines keep MD005 manual
 		{"MD030", "", "-  a\n   b\n"},
 		{"MD069", "", "- - a\n"},
-		{"MD076", "", "- a\n\n- b\n- c\n"},
 	} {
 		t.Run(tc.rule, func(t *testing.T) {
 			root := configurationProject(t)

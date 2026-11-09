@@ -11,5 +11,5 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD030](md030.md) | Whitespace after list markers | Analysis and correction implemented |
 | [MD032](md032.md) | Blank lines around lists | Analysis and correction implemented |
 | [MD069](md069.md) | Repeated list markers | Analysis implemented; report-only |
-| [MD076](md076.md) | Consistent spacing between list items | Analysis implemented; manual |
+| [MD076](md076.md) | Consistent spacing between list items | Analysis and correction implemented |
 | [MD077](md077.md) | Indentation of list continuation content | Analysis and correction implemented |

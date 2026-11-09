@@ -10,6 +10,7 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/internal/headingindent"
 	"github.com/frithuz/mdchk/internal/rules/internal/headingspacing"
 	"github.com/frithuz/mdchk/internal/rules/internal/headingstyle"
+	"github.com/frithuz/mdchk/internal/rules/internal/listspacing"
 	"github.com/frithuz/mdchk/internal/rules/internal/orderedprefix"
 )
 
@@ -61,13 +62,18 @@ import (
 // checkers compare list items or whole parses that a separator edit moves. While
 // any remain, MD005, MD007, MD077, MD063 and MD003 wait in turn. MD009 shares the
 // round: its proof tolerates list content indentation, which only MD030 moves.
+//
+// MD076 groups go first and every other group waits for a round without them: a
+// separator edit changes list tightness, which the other list and whole-parse
+// proofs reject. Only an MD047 edit that analysis already offers shares the round.
+// A document opening with an unrecognized block gets no MD076 group either.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var spacing, blank, indentation, capitalization, trailing, styles, lists, alignment, numbering, bullets, continuation, separators []result.Diagnostic
+	var spacing, blank, indentation, capitalization, trailing, styles, lists, alignment, numbering, bullets, continuation, separators, gaps []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -126,7 +132,25 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 			if d.FixAvailable && !guarded {
 				bullets = append(bullets, d)
 			}
+		case "MD076":
+			if !guarded && d.FixAvailable {
+				gaps = append(gaps, d)
+			}
 		}
+	}
+	gapped, err := listspacing.Groups(ctx, c, gaps)
+	if err != nil {
+		return nil, err
+	}
+	if len(gapped) > 0 {
+		if terminal != nil && terminal.FixAvailable {
+			group, err := terminalNewlineGroup(ctx, c, *terminal)
+			if err != nil {
+				return nil, err
+			}
+			gapped = append(gapped, group)
+		}
+		return gapped, c.Checkpoint(ctx, 0)
 	}
 	groups, err := headingspacing.Groups(ctx, c, spacing)
 	if err != nil {
@@ -254,5 +278,6 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		{Rule: "MD007", Check: checkBulletIndentation},
 		{Rule: "MD077", Check: checkListContinuation},
 		{Rule: "MD030", Check: checkListSeparator},
+		{Rule: "MD076", Check: listspacing.Check},
 	}
 }

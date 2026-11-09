@@ -72,7 +72,7 @@ func TestMD076AnalysisFixtures(t *testing.T) {
 				for i, w := range f.Expected {
 					d := out.Diagnostics[i]
 					got := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD076" || d.FixAvailable || d.Message != fmt.Sprintf("List item separator has %d blank body lines; expected %d.", w.Actual, w.Expected) {
+					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD076" || d.Message != fmt.Sprintf("List item separator has %d blank body lines; expected %d.", w.Actual, w.Expected) {
 						t.Fatal(got, d, w)
 					}
 				}
@@ -91,7 +91,7 @@ func TestMD076CatalogOptionsAndDefaultActivation(t *testing.T) {
 		if m.DefaultEnabled {
 			enabledCount++
 		}
-		if m.ID == "MD076" && (!m.DefaultEnabled || m.Fix != engine.PlannedFix || !m.RequiresSyntax || m.UsesFrontmatter || len(m.Options) != 1) {
+		if m.ID == "MD076" && (!m.DefaultEnabled || m.Fix != engine.ImplementedFix || !m.RequiresSyntax || m.UsesFrontmatter || len(m.Options) != 1) {
 			t.Fatal(m)
 		}
 	}
@@ -120,7 +120,7 @@ func TestMD076CatalogOptionsAndDefaultActivation(t *testing.T) {
 		s := md076Settings()
 		delete(s, "MD076")
 		out := analyzeHeadings(t, r, "- One\n\n- Two\n- Three", s, engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
-		if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD076" || out.Diagnostics[0].FixAvailable {
+		if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD076" || !out.Diagnostics[0].FixAvailable {
 			t.Fatal(out)
 		}
 	}
@@ -129,7 +129,7 @@ func TestMD076FinalPublicationWithholdsAllFindings(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 1}, {"aligned", "- one\n- two", 1}, {"violation", "- one\n\n- two\n- three\n- four", 7}} {
+	}{{"empty", "", 1}, {"aligned", "- one\n- two", 1}, {"violation", "- one\n\n- two\n- three\n- four", 61}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+reason.Error(), func(t *testing.T) {
 				var observed engine.RuleOutcome
@@ -139,7 +139,8 @@ func TestMD076FinalPublicationWithholdsAllFindings(t *testing.T) {
 						t.Fatal(err)
 					}
 					// Fixed independent counts: one check per item, optional
-					// finding growth/emission, then the final publication check.
+					// finding growth/emission and correction eligibility, then the final
+					// publication check.
 					late := &lateStopContext{Context: ctx, reason: reason, stop: tc.final}
 					observed = compareListItemSpacing(late, c, items)
 					if late.calls != tc.final {
@@ -268,7 +269,7 @@ func TestMD076UTF8GatePrecedesRule(t *testing.T) {
 	}
 }
 
-func TestMD076OriginControlsAndManualFindings(t *testing.T) {
+func TestMD076OriginControlsAndFixEligibility(t *testing.T) {
 	for _, cancelOrigin := range []bool{false, true} {
 		ctx, cancel := context.WithCancel(context.Background())
 		var observed engine.RuleOutcome
@@ -282,8 +283,8 @@ func TestMD076OriginControlsAndManualFindings(t *testing.T) {
 			}
 			observed = compareListItemSpacing(context.Background(), c, items)
 			for _, finding := range observed.Findings {
-				if finding.FixEligible {
-					t.Fatal("manual finding grants fix authority")
+				if !finding.FixEligible {
+					t.Fatal("reproducible separator withheld fix authority")
 				}
 			}
 			return observed
@@ -324,7 +325,7 @@ func TestMD076OriginFinalPublication(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 1}, {"aligned", "- one\n- two", 1}, {"violating", "- one\n\n- two\n- three\n- four", 7}} {
+	}{{"empty", "", 1}, {"aligned", "- one\n- two", 1}, {"violating", "- one\n\n- two\n- three\n- four", 9}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+reason.Error(), func(t *testing.T) {
 				origin := &lateStopContext{Context: context.Background(), stop: 1 << 20, reason: reason}

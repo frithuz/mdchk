@@ -213,3 +213,21 @@ func ListMarkerSeparators(ctx context.Context, parsed parser.ParseResult, index 
 	items, err := parsed.Document.ListSeparators(ctx, budget, index, plan.Context().ParseOptions())
 	return items, spaces, err
 }
+
+// ListItemSpacingFacts returns the MD076 separator facts of a completed parse
+// from this operation for a resolved MD076 plan. The correction producer and
+// checker use it on each round's own parse, independently of any fix flag.
+func ListItemSpacingFacts(ctx context.Context, parsed parser.ParseResult, index parser.LineIndex, plan *ExecutionPlan, budget *parser.OperationBudget) ([]parser.ListItemSpacingFact, error) {
+	if ctx == nil || plan == nil || budget == nil || parsed.Document == nil {
+		return nil, errors.New("nil list item spacing context")
+	}
+	rule, ok := plan.rules["MD076"]
+	if !ok {
+		return nil, parser.ErrModel
+	}
+	style, ok := rule.Options["style"].(string)
+	if !ok {
+		return nil, parser.ErrModel
+	}
+	return parsed.Document.ListItemSpacing(ctx, budget, index, plan.Context().ParseOptions(), style)
+}

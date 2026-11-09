@@ -1,0 +1,230 @@
+[
+  {
+    "name": "loose-deficit",
+    "style": "loose",
+    "source": "- A\n- B\n",
+    "candidate": "- A\n\n- B\n",
+    "rules": [
+      "MD076"
+    ],
+    "edit_count": 1,
+    "config": "",
+    "reported": 0
+  },
+  {
+    "name": "tight-surplus",
+    "style": "tight",
+    "source": "- A\n\n\n- B\n",
+    "candidate": "- A\n- B\n",
+    "rules": [
+      "MD076"
+    ],
+    "edit_count": 1,
+    "config": "",
+    "reported": 0
+  },
+  {
+    "name": "loose-surplus",
+    "style": "loose",
+    "source": "- A\n\n\n- B\n",
+    "candidate": "- A\n\n- B\n",
+    "rules": [
+      "MD076"
+    ],
+    "edit_count": 1,
+    "config": "",
+    "reported": 0
+  },
+  {
+    "name": "consistent-baseline",
+    "style": "consistent",
+    "source": "- A\n\n- B\n- C\n",
+    "candidate": "- A\n\n- B\n\n- C\n",
+    "rules": [
+      "MD076"
+    ],
+    "edit_count": 1,
+    "config": "",
+    "reported": 0
+  },
+  {
+    "name": "blockquote-prefix",
+    "style": "loose",
+    "source": "> - A\n> - B\n",
+    "candidate": "> - A\n>\n> - B\n",
+    "rules": [
+      "MD076"
+    ],
+    "edit_count": 1,
+    "config": "",
+    "reported": 0
+  },
+  {
+    "name": "crlf-deficit",
+    "style": "loose",
+    "source": "- A\r\n- B\r\n",
+    "candidate": "- A\r\n\r\n- B\r\n",
+    "rules": [
+      "MD076"
+    ],
+    "edit_count": 1,
+    "config": "",
+    "reported": 0
+  },
+  {
+    "name": "crlf-surplus",
+    "style": "tight",
+    "source": "- A\r\n\r\n\r\n- B\r\n",
+    "candidate": "- A\r\n- B\r\n",
+    "rules": [
+      "MD076"
+    ],
+    "edit_count": 1,
+    "config": "",
+    "reported": 0
+  },
+  {
+    "name": "cr-deficit",
+    "style": "loose",
+    "source": "- A\r- B\r",
+    "candidate": "- A\r\r- B\r",
+    "rules": [
+      "MD076"
+    ],
+    "edit_count": 1,
+    "config": "",
+    "reported": 0
+  },
+  {
+    "name": "cr-surplus",
+    "style": "tight",
+    "source": "- A\r\r\r- B\r",
+    "candidate": "- A\r- B\r",
+    "rules": [
+      "MD076"
+    ],
+    "edit_count": 1,
+    "config": "",
+    "reported": 0
+  },
+  {
+    "name": "unicode-nested",
+    "style": "loose",
+    "source": "- é\n  - 日本\n  - 🙂\n- ü\n",
+    "candidate": "- é\n  - 日本\n\n  - 🙂\n\n- ü\n",
+    "rules": [
+      "MD076"
+    ],
+    "edit_count": 2,
+    "config": "",
+    "reported": 0
+  },
+  {
+    "name": "body-after-recognized-frontmatter",
+    "style": "loose",
+    "source": "---\n- A\n- B\n---\n- C\n- D\n",
+    "candidate": "---\n- A\n- B\n---\n- C\n\n- D\n",
+    "rules": [
+      "MD076"
+    ],
+    "edit_count": 1,
+    "config": "frontmatter",
+    "reported": 0
+  },
+  {
+    "name": "lazy-continuation",
+    "style": "loose",
+    "source": "> - A\nlazy\n> - B\n",
+    "candidate": "> - A\nlazy\n> - B\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "",
+    "reported": 1
+  },
+  {
+    "name": "mismatched-quote-prefix",
+    "style": "loose",
+    "source": ">- A\n> - B\n",
+    "candidate": ">- A\n> - B\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "",
+    "reported": 1
+  },
+  {
+    "name": "tab-in-prefix",
+    "style": "loose",
+    "source": ">\t- A\n>\t- B\n",
+    "candidate": ">\t- A\n>\t- B\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "",
+    "reported": 1
+  },
+  {
+    "name": "unclosed-fence-would-change-rendering",
+    "style": "loose",
+    "source": "- a\n  ```\n- b\n",
+    "candidate": "- a\n  ```\n- b\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "",
+    "reported": 1
+  },
+  {
+    "name": "html-block",
+    "style": "loose",
+    "source": "- a\n  <div>\n- b\n",
+    "candidate": "- a\n  <div>\n- b\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "",
+    "reported": 1
+  },
+  {
+    "name": "unrecognized-frontmatter",
+    "style": "loose",
+    "source": "---\n- A\n- B\n---\n",
+    "candidate": "---\n- A\n- B\n---\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "",
+    "reported": 1
+  },
+  {
+    "name": "recognized-frontmatter",
+    "style": "loose",
+    "source": "---\n- A\n- B\n---\n",
+    "candidate": "---\n- A\n- B\n---\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "frontmatter",
+    "reported": 0
+  },
+  {
+    "name": "directive-disabled",
+    "style": "loose",
+    "source": "<!-- mdchk:disable MD076 -->\n- A\n- B\n",
+    "candidate": "<!-- mdchk:disable MD076 -->\n- A\n- B\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "",
+    "reported": 0
+  },
+  {
+    "name": "composition",
+    "style": "loose",
+    "source": "#  Title\n\n- A   \n- B\n\n## Sub  ##\n\n> - q\n> - r\n\n- x\n\n\n- y",
+    "candidate": "# Title\n\n- A\n\n- B\n\n## Sub ##\n\n> - q\n>\n> - r\n\n- x\n\n- y\n",
+    "rules": [
+      "MD009",
+      "MD019",
+      "MD021",
+      "MD047",
+      "MD076"
+    ],
+    "edit_count": 7,
+    "config": "all",
+    "reported": 0
+  }
+]
