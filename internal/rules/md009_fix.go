@@ -159,7 +159,9 @@ func trailingWhitespaceProof(ctx context.Context, c fix.CheckContext) (trailingR
 	if unchanged, err := c.OnlyEditsChanged(ctx); err != nil || !unchanged {
 		return failed, err
 	}
-	if same, err := c.MeaningPreservedAcrossLineEndWhitespace(ctx); err != nil || !same {
+	// Content indentation may differ only through MD030 separator edits sharing
+	// the round, which its own checker proves; line-end edits never move it.
+	if same, err := c.MeaningPreservedAcrossIndentation(ctx); err != nil || !same {
 		return failed, err
 	}
 	round.preserved = true

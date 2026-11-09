@@ -36,6 +36,7 @@ func TestMD030AnalysisFixtures(t *testing.T) {
 		Expected              []struct {
 			Range  []int
 			Source string
+			Fix    bool
 		}
 	}
 	if err := json.Unmarshal(data, &fixtures); err != nil {
@@ -75,7 +76,7 @@ func TestMD030AnalysisFixtures(t *testing.T) {
 				for i, w := range f.Expected {
 					d := out.Diagnostics[i]
 					got := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD030" || d.FixAvailable || d.Message != "List marker separators must use the configured structural spacing." {
+					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD030" || d.FixAvailable != w.Fix || d.Message != "List marker separators must use the configured structural spacing." {
 						t.Fatal(got, d, w)
 					}
 				}
@@ -94,7 +95,7 @@ func TestMD030CatalogOptionsAndDefaultActivation(t *testing.T) {
 		if m.DefaultEnabled {
 			enabledCount++
 		}
-		if m.ID == "MD030" && (!m.DefaultEnabled || m.Fix != engine.PlannedFix || !m.RequiresSyntax || m.UsesFrontmatter || len(m.Options) != 1) {
+		if m.ID == "MD030" && (!m.DefaultEnabled || m.Fix != engine.ImplementedFix || !m.RequiresSyntax || m.UsesFrontmatter || len(m.Options) != 1) {
 			t.Fatal(m)
 		}
 	}
@@ -123,7 +124,7 @@ func TestMD030CatalogOptionsAndDefaultActivation(t *testing.T) {
 		s := md030Settings()
 		delete(s, "MD030")
 		out := analyzeHeadings(t, r, "-  One", s, engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
-		if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD030" || out.Diagnostics[0].FixAvailable {
+		if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD030" || !out.Diagnostics[0].FixAvailable {
 			t.Fatal(out)
 		}
 	}
@@ -133,7 +134,7 @@ func TestMD030FinalPublicationWithholdsAllFindings(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 1}, {"aligned", "- one\n- two", 3}, {"violation", "-  one\n-  two", 7}} {
+	}{{"empty", "", 1}, {"aligned", "- one\n- two", 3}, {"violation", "-  one\n-  two", 33}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+reason.Error(), func(t *testing.T) {
 				var observed engine.RuleOutcome
@@ -143,7 +144,8 @@ func TestMD030FinalPublicationWithholdsAllFindings(t *testing.T) {
 						t.Fatal(err)
 					}
 					// Fixed independent counts: one check per item, optional
-					// finding growth/emission, then the final publication check.
+					// finding growth/emission and fix eligibility, then the final
+					// publication check.
 					late := &lateStopContext{Context: ctx, reason: reason, stop: tc.final}
 					observed = compareListMarkerSpacing(late, c, items, 1)
 					if late.calls != tc.final {
@@ -286,8 +288,8 @@ func TestMD030OriginControlsAndManualFindings(t *testing.T) {
 			}
 			observed = compareListMarkerSpacing(context.Background(), c, items, 1)
 			for _, finding := range observed.Findings {
-				if finding.FixEligible {
-					t.Fatal("manual finding grants fix authority")
+				if !finding.FixEligible {
+					t.Fatal("single-line spaces-only finding withholds fix authority")
 				}
 			}
 			return observed
@@ -328,7 +330,7 @@ func TestMD030OriginFinalPublication(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 1}, {"aligned", "- one\n- two", 3}, {"violating", "-  one\n-  two", 7}} {
+	}{{"empty", "", 1}, {"aligned", "- one\n- two", 3}, {"violating", "-  one\n-  two", 9}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+reason.Error(), func(t *testing.T) {
 				origin := &lateStopContext{Context: context.Background(), stop: 1 << 20, reason: reason}

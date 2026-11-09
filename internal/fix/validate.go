@@ -154,6 +154,12 @@ func (c RoundContext) BulletIndentation(ctx context.Context) ([]parser.ListItemF
 	return engine.BulletIndentationItems(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
 }
 
+// ListSeparators returns MD030's separator facts and resolved spaces for this
+// round's own parse under the target's plan.
+func (c RoundContext) ListSeparators(ctx context.Context) ([]parser.ListSeparatorFact, int, error) {
+	return engine.ListMarkerSeparators(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
 // TerminalTaskSourcesPreserved compares both actual round parses on the same
 // residual operation, through the round's edit mapping. Callers must separately
 // prove their exact suffix edit.

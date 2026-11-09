@@ -149,14 +149,14 @@ func TestRuleContextListMarkerSpacesOriginalAuthority(t *testing.T) {
 }
 
 // Counts are fixed from the original production path: facade entry, complete
-// ListItems, separator reservation/lookup/records, parser final, facade final.
+// ListItems, separator reservation/lookup/line scans/records, parser final, facade final.
 // Recalibrating inside the test would hide a removed final observation.
 func TestRuleContextListSeparatorsFinalPublicationAllShapes(t *testing.T) {
 	for _, tc := range []struct {
 		source       string
 		facts, final int
 	}{
-		{"", 0, 7}, {"- one\n- two", 2, 29}, {"-  one\n-  two", 2, 29},
+		{"", 0, 7}, {"- one\n- two", 2, 32}, {"-  one\n-  two", 2, 32},
 	} {
 		for _, origin := range []bool{false, true} {
 			c := listContext(t, tc.source, parser.DefaultLimits(), context.Background())

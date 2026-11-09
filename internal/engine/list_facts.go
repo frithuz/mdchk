@@ -195,3 +195,21 @@ func PlannedOrderedListStyle(plan *ExecutionPlan) (bool, error) {
 	}
 	return value == "one", nil
 }
+
+// ListMarkerSeparators returns MD030's separator facts and resolved spaces for
+// a completed parse under plan, for correction producers and checkers.
+func ListMarkerSeparators(ctx context.Context, parsed parser.ParseResult, index parser.LineIndex, plan *ExecutionPlan, budget *parser.OperationBudget) ([]parser.ListSeparatorFact, int, error) {
+	if ctx == nil || plan == nil || budget == nil || parsed.Document == nil {
+		return nil, 0, errors.New("nil list separator context")
+	}
+	rule, ok := plan.rules["MD030"]
+	if !ok {
+		return nil, 0, parser.ErrModel
+	}
+	spaces, ok := rule.Options["spaces"].(int)
+	if !ok || spaces <= 0 {
+		return nil, 0, parser.ErrModel
+	}
+	items, err := parsed.Document.ListSeparators(ctx, budget, index, plan.Context().ParseOptions())
+	return items, spaces, err
+}

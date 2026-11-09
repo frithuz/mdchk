@@ -28,7 +28,7 @@ func Catalog() []Metadata {
 		{ID: "MD027", Name: "Whitespace after blockquote markers", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD028", Name: "Empty lines separating blockquotes", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD029", Name: "Numbered list prefixes", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("ordered", "one")}},
-		{ID: "MD030", Name: "Whitespace after list markers", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"spaces": integer(1, 1)}},
+		{ID: "MD030", Name: "Whitespace after list markers", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"spaces": integer(1, 1)}},
 		{ID: "MD031", Name: "Blank lines around fenced blocks", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD032", Name: "Blank lines around lists", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD033", Name: "Embedded HTML", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"allowed_tags": list()}},

@@ -51,8 +51,9 @@ headings. MD023 removes leaf indentation from heading lines. MD032 inserts a
 blank line before or after a list. MD063 capitalizes required lowercase heading
 initials. MD005 re-indents a misaligned sibling list marker to its group's first
 item. MD007 shifts a misindented bullet item and its content to the expected
-column. MD029 renumbers ordered list markers. MD077 adds or removes space-only list
-continuation indentation. Ambiguous contexts stay manual and
+column. MD029 renumbers ordered list markers. MD030 rewrites the separator of a
+single-line list item to the configured spaces. MD077 adds or removes space-only
+list continuation indentation. Ambiguous contexts stay manual and
 appear under deferred_fixes.
 Text/JSON include preview diffs; editor formats report remaining findings only.
 VS Code unlocated errors and both editor formats' recovery outcomes use stderr.
