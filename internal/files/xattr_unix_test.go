@@ -149,6 +149,10 @@ func TestCopyXattrsRemovesAttributesTheTargetLacks(t *testing.T) {
 		t.Fatal(err)
 	}
 	got, err := readXattrs(f)
+	// macOS attaches com.apple.provenance to files created by some processes and
+	// keeps it even when removexattr succeeds, so it is not the replacement's to
+	// control.
+	delete(got, "com.apple.provenance")
 	if err != nil || !equalXattrs(got, want) {
 		t.Fatalf("attributes %v %v want %v", got, err, want)
 	}
