@@ -12,7 +12,8 @@
           1,
           4
         ],
-        "Source": "##"
+        "Source": "##",
+        "Fix": true
       }
     ]
   },
@@ -34,7 +35,8 @@
           1,
           6
         ],
-        "Source": "###"
+        "Source": "###",
+        "Fix": true
       }
     ]
   },
@@ -51,7 +53,8 @@
           1,
           10
         ],
-        "Source": "######"
+        "Source": "######",
+        "Fix": true
       }
     ]
   },
@@ -73,7 +76,8 @@
           1,
           5
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": true
       }
     ]
   },
@@ -100,7 +104,8 @@
           1,
           4
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": false
       }
     ]
   },
@@ -117,7 +122,8 @@
           2,
           3
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": false
       }
     ]
   },
@@ -139,7 +145,8 @@
           2,
           5
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": true
       }
     ]
   },
@@ -156,7 +163,8 @@
           3,
           4
         ],
-        "Source": "==="
+        "Source": "===",
+        "Fix": true
       }
     ]
   },
@@ -173,7 +181,8 @@
           3,
           4
         ],
-        "Source": "==="
+        "Source": "===",
+        "Fix": true
       }
     ]
   },
@@ -190,7 +199,8 @@
           3,
           4
         ],
-        "Source": "==="
+        "Source": "===",
+        "Fix": true
       }
     ]
   },
@@ -207,7 +217,8 @@
           2,
           5
         ],
-        "Source": "==="
+        "Source": "===",
+        "Fix": true
       }
     ]
   },
@@ -224,7 +235,8 @@
           3,
           6
         ],
-        "Source": "==="
+        "Source": "===",
+        "Fix": true
       }
     ]
   },
@@ -246,7 +258,8 @@
           3,
           6
         ],
-        "Source": "==="
+        "Source": "===",
+        "Fix": false
       }
     ]
   },
@@ -273,7 +286,8 @@
           3,
           4
         ],
-        "Source": "==="
+        "Source": "===",
+        "Fix": true
       }
     ]
   },
@@ -300,7 +314,8 @@
           1,
           3
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": true
       }
     ]
   },
@@ -317,7 +332,8 @@
           1,
           4
         ],
-        "Source": "##"
+        "Source": "##",
+        "Fix": true
       }
     ]
   },
@@ -334,7 +350,8 @@
           1,
           3
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": true
       }
     ]
   },
@@ -351,7 +368,8 @@
           1,
           3
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": true
       }
     ]
   },
@@ -368,13 +386,14 @@
           1,
           3
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": true
       }
     ]
   },
   {
     "Name": "unicode",
-    "Source": " >  ## 雪é",
+    "Source": " >  ## \u96eae\u0301",
     "Expected": [
       {
         "Range": [
@@ -385,7 +404,8 @@
           1,
           7
         ],
-        "Source": "##"
+        "Source": "##",
+        "Fix": true
       }
     ]
   },
@@ -402,7 +422,8 @@
           3,
           4
         ],
-        "Source": "==="
+        "Source": "===",
+        "Fix": true
       }
     ]
   },
@@ -419,7 +440,8 @@
           3,
           4
         ],
-        "Source": "==="
+        "Source": "===",
+        "Fix": true
       }
     ]
   },
@@ -451,7 +473,8 @@
           5,
           3
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": true
       }
     ]
   },
@@ -468,13 +491,14 @@
           5,
           3
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": true
       }
     ]
   },
   {
     "Name": "nbsp",
-    "Source": " # H",
+    "Source": "\u00a0# H",
     "Expected": []
   },
   {
@@ -495,7 +519,8 @@
           1,
           6
         ],
-        "Source": "####"
+        "Source": "####",
+        "Fix": true
       }
     ]
   },
@@ -512,7 +537,8 @@
           1,
           7
         ],
-        "Source": "#####"
+        "Source": "#####",
+        "Fix": true
       }
     ]
   },
@@ -530,7 +556,8 @@
           5,
           3
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": true
       }
     ]
   },
@@ -554,7 +581,8 @@
           2,
           3
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": false
       },
       {
         "Range": [
@@ -565,7 +593,8 @@
           5,
           3
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": false
       }
     ]
   },
@@ -583,7 +612,8 @@
           5,
           3
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": true
       }
     ]
   },
@@ -600,7 +630,8 @@
           1,
           3
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": true
       }
     ]
   },
@@ -617,7 +648,8 @@
           3,
           8
         ],
-        "Source": "==="
+        "Source": "===",
+        "Fix": false
       }
     ]
   },
@@ -639,7 +671,8 @@
           5,
           3
         ],
-        "Source": "#"
+        "Source": "#",
+        "Fix": true
       }
     ]
   }

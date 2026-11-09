@@ -94,8 +94,8 @@ type Document struct {
 	commentOperation *operationIdentity
 	parsedProfile    parserProfile
 	parsedOptions    ParseOptions
-	indentedHeadings []Span // one actual opening/underline marker per indented heading
-	openingHashRuns  []Span // eligible physical lines with final Paragraph ownership
+	indentedHeadings []IndentedHeading // one actual opening/underline marker per indented heading
+	openingHashRuns  []Span            // eligible physical lines with final Paragraph ownership
 }
 
 // NewDocument binds a complete source envelope to records. It validates supplied

@@ -534,7 +534,7 @@ func TestRuleContextIndentedHeadingsOriginalAllowance(t *testing.T) {
 func TestRuleContextIndentedHeadingsAuthority(t *testing.T) {
 	c := headingContext(t, " ## bad##", parser.DefaultLimits(), context.Background())
 	points, err := c.IndentedHeadings(context.Background())
-	if err != nil || len(points) != 1 || points[0].Start() != 1 || points[0].SourceToken() != c.Source().Token() {
+	if err != nil || len(points) != 1 || points[0].Marker.Start() != 1 || points[0].Marker.SourceToken() != c.Source().Token() || len(points[0].Lines) != 1 || points[0].Lines[0].Span.Start() != 0 || points[0].Lines[0].Span.End() != 1 {
 		t.Fatal(points, err)
 	}
 	for _, invalidate := range []func(*RuleContext){func(c *RuleContext) { c.syntaxReliable = false }, func(c *RuleContext) { c.operation = nil }, func(c *RuleContext) { c.document = nil }} {

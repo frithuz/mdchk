@@ -1,0 +1,280 @@
+[
+  {
+    "name": "published",
+    "source": " ## Install\n",
+    "candidate": "## Install\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "three-spaces",
+    "source": "   ###### H\n",
+    "candidate": "###### H\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "closed-empty",
+    "source": " ## ##\n",
+    "candidate": "## ##\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "quote-leaf",
+    "source": ">  # H\n",
+    "candidate": "> # H\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "quote-leading-kept",
+    "source": "  >  # H\n",
+    "candidate": "  > # H\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "list-continuation",
+    "source": "- Text\n   # H\n",
+    "candidate": "- Text\n  # H\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "nested-quote-list",
+    "source": "> - a\n>\n>    ## Deep\n",
+    "candidate": "> - a\n>\n>   ## Deep\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "setext-every-line",
+    "source": "  Alpha\n Beta\n ===\n",
+    "candidate": "Alpha\nBeta\n===\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 3,
+    "config": ""
+  },
+  {
+    "name": "setext-underline",
+    "source": "Alpha\n ===\n",
+    "candidate": "Alpha\n===\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "setext-deep-continuation",
+    "source": "Alpha\n    Beta\n===\n",
+    "candidate": "Alpha\nBeta\n===\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "setext-full-tab",
+    "source": "Alpha\n\tBeta\n===\n",
+    "candidate": "Alpha\nBeta\n===\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "setext-quote",
+    "source": "> Alpha\n>   Beta\n>  ---\n",
+    "candidate": "> Alpha\n> Beta\n> ---\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 2,
+    "config": ""
+  },
+  {
+    "name": "crlf",
+    "source": " Alpha\r\n  Beta\r\n ===\r\n",
+    "candidate": "Alpha\r\nBeta\r\n===\r\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 3,
+    "config": ""
+  },
+  {
+    "name": "unicode",
+    "source": " >  ## 雪é\n",
+    "candidate": " > ## 雪é\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "visible-empty-comment",
+    "source": " # <!-- raw -->\n",
+    "candidate": "# <!-- raw -->\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "fence-protected",
+    "source": "```\n # fake\n```\n\n # real\n",
+    "candidate": "```\n # fake\n```\n\n# real\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "html-protected",
+    "source": "<div>\n # fake\n</div>\n\n # real\n",
+    "candidate": "<div>\n # fake\n</div>\n\n# real\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "comment-protected",
+    "source": "<!--\n # fake\n-->\n\n # real\n",
+    "candidate": "<!--\n # fake\n-->\n\n# real\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "partial-tab-quote",
+    "source": ">\t# H\n",
+    "candidate": ">\t# H\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "partial-tab-list",
+    "source": "- Text\n\t# H\n",
+    "candidate": "- Text\n\t# H\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "lazy",
+    "source": "> Alpha\n  Beta\n> ===\n",
+    "candidate": "> Alpha\n  Beta\n> ===\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "nested-lazy",
+    "source": "> > Alpha\n>  Beta\n> > ===\n",
+    "candidate": "> > Alpha\n>  Beta\n> > ===\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "directive-suppressed",
+    "source": "<!-- mdchk:disable MD023 -->\n # H\n<!-- mdchk:enable MD023 -->\n",
+    "candidate": "<!-- mdchk:disable MD023 -->\n # H\n<!-- mdchk:enable MD023 -->\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "directive-interval",
+    "source": "<!-- mdchk:disable MD023 -->\n # H\n<!-- mdchk:enable MD023 -->\n # J\n",
+    "candidate": "<!-- mdchk:disable MD023 -->\n # H\n<!-- mdchk:enable MD023 -->\n# J\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "frontmatter-recognized",
+    "source": "---\nt: y\n---\n # H\n",
+    "candidate": "---\nt: y\n---\n# H\n",
+    "rules": [
+      "MD023"
+    ],
+    "edit_count": 1,
+    "config": "frontmatter"
+  },
+  {
+    "name": "compose-all",
+    "source": " ##  Title  ##\n\ntext   \nmore\n\n  Alpha\n Beta\n ===\n\nend",
+    "candidate": "## Title ##\n\ntext  \nmore\n\nAlpha\nBeta\n===\n\nend\n",
+    "rules": [
+      "MD009",
+      "MD019",
+      "MD021",
+      "MD023",
+      "MD047"
+    ],
+    "edit_count": 8,
+    "config": "compose"
+  },
+  {
+    "name": "compose-crlf-unicode",
+    "source": ">  ##  雪  ##\r\n\r\n été ω\r\n===\r\nx \r\n",
+    "candidate": "> ## 雪 ##\r\n\r\nété ω\r\n===\r\nx\r\n",
+    "rules": [
+      "MD009",
+      "MD019",
+      "MD021",
+      "MD023"
+    ],
+    "edit_count": 5,
+    "config": "compose"
+  },
+  {
+    "name": "compose-terminal",
+    "source": " # H",
+    "candidate": "# H\n",
+    "rules": [
+      "MD023",
+      "MD047"
+    ],
+    "edit_count": 2,
+    "config": "compose"
+  }
+]

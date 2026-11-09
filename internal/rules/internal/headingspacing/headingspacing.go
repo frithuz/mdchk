@@ -177,7 +177,13 @@ func headingSpacingProof(ctx context.Context, c fix.CheckContext) (headingSpacin
 		if b.Level != a.Level || b.Style != a.Style || b.Closed != a.Closed || b.HasRawContent != a.HasRawContent || b.Visible != a.Visible || len(b.Containers) != len(a.Containers) {
 			return failed, nil
 		}
-		label, ok, err := c.MapFact(b.Label)
+		// A Setext label can span an MD023 continuation-line deletion in the same
+		// round; its unchanged visible text is compared above.
+		mapLabel := c.MapFact
+		if b.Style == "setext" {
+			mapLabel = c.MapEndpoints
+		}
+		label, ok, err := mapLabel(b.Label)
 		if err != nil || !ok || label != a.Label {
 			return failed, err
 		}

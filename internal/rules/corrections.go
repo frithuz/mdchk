@@ -6,6 +6,7 @@ import (
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/result"
 	"github.com/frithuz/mdchk/internal/rules/internal/headingblanks"
+	"github.com/frithuz/mdchk/internal/rules/internal/headingindent"
 	"github.com/frithuz/mdchk/internal/rules/internal/headingspacing"
 	"github.com/frithuz/mdchk/internal/rules/internal/headingstyle"
 )
@@ -20,7 +21,7 @@ import (
 // proof, and the suffix must not be corrected without it.
 //
 // A document opening with an unrecognized block gets no MD009 group at all, not even
-// a deferral. MD019, MD021 and MD022 are already withheld by their flags, and MD047 stays.
+// a deferral. MD019, MD021, MD022 and MD023 are already withheld by their flags, and MD047 stays.
 //
 // MD003 groups wait for a round with no other group. Their edits touch the same
 // heading lines as MD009, MD019 and MD021, and their checker proves the round's
@@ -32,7 +33,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var spacing, blank, trailing, styles []result.Diagnostic
+	var spacing, blank, indentation, trailing, styles []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -55,6 +56,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 			if d.FixAvailable {
 				blank = append(blank, d)
 			}
+		case "MD023":
+			if d.FixAvailable {
+				indentation = append(indentation, d)
+			}
 		case "MD009":
 			if !guarded {
 				trailing = append(trailing, d)
@@ -70,6 +75,11 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		return nil, err
 	}
 	groups = append(groups, insertions...)
+	indents, err := headingindent.Groups(ctx, c, indentation)
+	if err != nil {
+		return nil, err
+	}
+	groups = append(groups, indents...)
 	waiting := len(groups) > 0
 	touched := false
 	suffixes, err := trailingWhitespaceGroups(ctx, c, trailing)
@@ -106,6 +116,7 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		{Rule: "MD047", Check: checkTerminalNewline, ForbidNewFindings: []string{"directive"}},
 		{Rule: "MD019", Check: headingspacing.Check},
 		{Rule: "MD021", Check: headingspacing.Check},
+		{Rule: "MD023", Check: headingindent.Check},
 		{Rule: "MD009", Check: checkTrailingWhitespace},
 		{Rule: "MD003", Check: headingstyle.Check},
 		{Rule: "MD022", Check: headingblanks.Check},
