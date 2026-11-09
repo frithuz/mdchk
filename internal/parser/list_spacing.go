@@ -8,9 +8,15 @@ import (
 
 // ListSpacingFact identifies one missing source-body separator. Points are
 // detached original spans; they confer no edit or mutable syntax authority.
+// Prefix runs from the start of the line holding the later participant through
+// its active ancestor container prefixes, and Ending is the previous line's
+// terminator. Loosens reports that a blank line there would separate two blocks
+// of a list item whose list is not known to be loose.
 type ListSpacingFact struct {
-	Point  Span
-	Before bool
+	Point          Span
+	Before         bool
+	Prefix, Ending Span
+	Loosens        bool
 }
 
 // ListSpacing compares immediate source participants in real body containers.
@@ -133,7 +139,17 @@ func (d *Document) ListSpacing(ctx context.Context, budget *OperationBudget, ind
 					return err
 				}
 				span := Span{source: index.source, start: point, end: point, present: true}
-				out = append(out, ListSpacingFact{Point: span, Before: current.list})
+				fact := ListSpacingFact{Point: span, Before: current.list}
+				if first > 0 {
+					line, previous := index.lines[first], index.lines[first-1]
+					fact.Prefix = Span{source: index.source, start: line.start, end: max(line.start, lines[first].prefix), present: true}
+					fact.Ending = Span{source: index.source, start: previous.end, end: previous.next, present: true}
+				}
+				if f.node.Kind() == ListItem {
+					parent := stack[len(stack)-2].node.spec.Properties.List
+					fact.Loosens = parent == nil || !parent.Tight.Present || parent.Tight.Value
+				}
+				out = append(out, fact)
 			}
 		}
 		f.leading = current.text && !previous.span.Present()

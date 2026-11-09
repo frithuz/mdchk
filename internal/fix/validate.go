@@ -203,6 +203,16 @@ func (c RoundContext) HeadingCapitalization() (string, []string, error) {
 	return engine.HeadingCapitalizationSettings(c.plan)
 }
 
+// ListSpacing projects MD032's list boundary facts for this round's own parse,
+// charged to the shared residual operation.
+func (c RoundContext) ListSpacing(ctx context.Context) ([]parser.ListSpacingFact, error) {
+	dc, known := c.trace.DocumentContext()
+	if !known {
+		return nil, errors.New("unknown document context")
+	}
+	return c.Parsed().Document.ListSpacing(ctx, c.meter.budget, c.Lines(), dc.ParseOptions())
+}
+
 // HeadingAnchors projects this round's heading anchors under the shared anchor
 // policy of the target's admitted document context.
 func (c RoundContext) HeadingAnchors(ctx context.Context) ([]resource.HeadingAnchor, resource.Availability, error) {

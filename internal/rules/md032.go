@@ -3,6 +3,7 @@ package rules
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
@@ -23,6 +24,7 @@ func compareListBlankLines(ctx context.Context, c engine.RuleContext, items []pa
 			out.Findings = nil
 		}
 	}()
+	edits := c.InteriorEdits()
 	for _, item := range items {
 		if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
 			out.Err = err
@@ -46,7 +48,40 @@ func compareListBlankLines(ctx context.Context, c engine.RuleContext, items []pa
 		if item.Before {
 			message = "List requires a blank body line before it."
 		}
-		out.Findings = append(out.Findings, engine.Finding{Span: item.Point, Message: message})
+		finding := engine.Finding{Span: item.Point, Message: message}
+		if _, ok, err := listBlankLine(c.Source(), item); err != nil {
+			out.Err = err
+			return out
+		} else if ok && !item.Loosens {
+			finding.FixEligible, err = edits.Eligible(ctx, "MD032", item.Point, item.Ending)
+			if err != nil {
+				out.Err = err
+				return out
+			}
+		}
+		out.Findings = append(out.Findings, finding)
 	}
 	return out
+}
+
+// listBlankLine derives the blank body line an MD032 correction inserts at the
+// start of the fact's line: its ancestor container prefix without trailing
+// whitespace, then the previous line's ending. A prefix holding anything but
+// spaces and quote markers, such as a tab, is not classified and gets no line.
+func listBlankLine(source parser.Source, item parser.ListSpacingFact) ([]byte, bool, error) {
+	if !item.Prefix.Present() || !item.Ending.Present() || item.Ending.Start() == item.Ending.End() {
+		return nil, false, nil
+	}
+	prefix, err := source.Text(item.Prefix)
+	if err != nil {
+		return nil, false, err
+	}
+	ending, err := source.Text(item.Ending)
+	if err != nil {
+		return nil, false, err
+	}
+	if strings.Trim(prefix, " >") != "" {
+		return nil, false, nil
+	}
+	return []byte(strings.TrimRight(prefix, " ") + ending), true, nil
 }

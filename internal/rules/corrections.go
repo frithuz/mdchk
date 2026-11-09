@@ -27,24 +27,26 @@ import (
 // edit breaks. An MD009 suffix touching MD047 does not hold it back, since the
 // planner defers that pair as a conflict first. MD063 shares its round with MD047.
 //
-// A document opening with an unrecognized block gets no MD009 group at all, not even
-// a deferral. MD019, MD021, MD022 and MD023 are already withheld by their flags, and MD047 stays.
+// A document opening with an unrecognized block gets no MD009 or MD032 group at all,
+// not even a deferral. MD019, MD021, MD022 and MD023 are already withheld by their flags, and MD047 stays.
 //
 // MD003 groups wait for a round with no other group. Their edits touch the same
 // heading lines as MD009, MD019, MD021 and MD063, and their checker proves the round's
 // edits are exactly the style rewrites, so they share a round only with each other.
 // A withheld MD047 edit in turn waits for them.
 //
-// MD023 groups wait for a round with no MD022 group. A blank inserted before an
-// indented heading starts at the same offset as the indentation deletion, so the
-// planner would defer both as a conflict in every round.
+// MD032 groups wait for a round with no MD022 group, and MD023 groups for a round
+// with neither. A blank inserted before an indented heading, by MD022 or by MD032
+// after a list, starts at the same offset as the indentation deletion, and both
+// insertions land at the same offset between a list and a heading, so the planner
+// would defer each pair as a conflict in every round.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var spacing, blank, indentation, capitalization, trailing, styles []result.Diagnostic
+	var spacing, blank, indentation, capitalization, trailing, styles, lists []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -79,6 +81,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 			if !guarded {
 				trailing = append(trailing, d)
 			}
+		case "MD032":
+			if !guarded && d.FixAvailable {
+				lists = append(lists, d)
+			}
 		}
 	}
 	groups, err := headingspacing.Groups(ctx, c, spacing)
@@ -91,11 +97,18 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	}
 	groups = append(groups, insertions...)
 	if len(insertions) == 0 {
-		indents, err := headingindent.Groups(ctx, c, indentation)
+		blanks, err := listBlankLineGroups(ctx, c, lists)
 		if err != nil {
 			return nil, err
 		}
-		groups = append(groups, indents...)
+		groups = append(groups, blanks...)
+		if len(blanks) == 0 {
+			indents, err := headingindent.Groups(ctx, c, indentation)
+			if err != nil {
+				return nil, err
+			}
+			groups = append(groups, indents...)
+		}
 	}
 	waiting := len(groups) > 0
 	touched, blocking := false, waiting
@@ -148,5 +161,6 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		{Rule: "MD003", Check: headingstyle.Check},
 		{Rule: "MD022", Check: headingblanks.Check},
 		{Rule: "MD063", Check: headingcase.Check},
+		{Rule: "MD032", Check: checkListBlankLine},
 	}
 }
