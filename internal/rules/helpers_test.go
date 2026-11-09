@@ -62,7 +62,7 @@ func analyzeHeadings(t *testing.T, r *engine.Registry, source string, s engine.S
 		}
 	}
 	for _, d := range out.Diagnostics {
-		if d.FixAvailable && d.Rule != "MD003" && d.Rule != "MD005" && d.Rule != "MD009" && d.Rule != "MD019" && d.Rule != "MD021" && d.Rule != "MD022" && d.Rule != "MD023" && d.Rule != "MD029" && d.Rule != "MD032" && d.Rule != "MD063" {
+		if d.FixAvailable && d.Rule != "MD003" && d.Rule != "MD005" && d.Rule != "MD007" && d.Rule != "MD009" && d.Rule != "MD019" && d.Rule != "MD021" && d.Rule != "MD022" && d.Rule != "MD023" && d.Rule != "MD029" && d.Rule != "MD032" && d.Rule != "MD063" {
 			t.Fatal("report-only heading grants fix", d)
 		}
 	}

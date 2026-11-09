@@ -28,7 +28,7 @@ import (
 // edit breaks. An MD009 suffix touching MD047 does not hold it back, since the
 // planner defers that pair as a conflict first. MD063 shares its round with MD047.
 //
-// A document opening with an unrecognized block gets no MD009 or MD032 group at all,
+// A document opening with an unrecognized block gets no MD007, MD009 or MD032 group at all,
 // not even a deferral. MD005, MD019, MD021, MD022, MD023 and MD029 are already withheld by their flags, and MD047 stays.
 //
 // MD003 groups wait for a round with no other group. Their edits touch the same
@@ -49,13 +49,17 @@ import (
 // MD029 groups wait for a round with no MD022, MD023 or MD032 group. While any
 // remain, MD009 suffixes and MD005 groups wait too: their checkers compare list
 // items and require every list number to stay unchanged.
+//
+// MD007 shifts wait for a round with no MD009, MD022, MD023, MD029, MD032 or MD005
+// edit: those checkers compare list items or columns that a shift moves. MD063
+// waits for MD007 in turn, since the MD007 checker compares whole parses.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var spacing, blank, indentation, capitalization, trailing, styles, lists, alignment, numbering []result.Diagnostic
+	var spacing, blank, indentation, capitalization, trailing, styles, lists, alignment, numbering, bullets []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -101,6 +105,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		case "MD032":
 			if !guarded && d.FixAvailable {
 				lists = append(lists, d)
+			}
+		case "MD007":
+			if d.FixAvailable && !guarded {
+				bullets = append(bullets, d)
 			}
 		}
 	}
@@ -159,6 +167,15 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		}
 		groups = append(groups, aligned...)
 		waiting = waiting || len(aligned) > 0
+		if len(aligned) == 0 {
+			shifts, err := bulletIndentationGroups(ctx, c, bullets)
+			if err != nil {
+				return nil, err
+			}
+			groups = append(groups, shifts...)
+			waiting = waiting || len(shifts) > 0
+			blocking = blocking || len(shifts) > 0
+		}
 	}
 	groups = append(groups, suffixes...)
 	if !blocking {
@@ -202,5 +219,6 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		{Rule: "MD063", Check: headingcase.Check},
 		{Rule: "MD032", Check: checkListBlankLine},
 		{Rule: "MD005", Check: checkListAlignment},
+		{Rule: "MD007", Check: checkBulletIndentation},
 	}
 }

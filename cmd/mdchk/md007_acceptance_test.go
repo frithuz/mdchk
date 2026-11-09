@@ -30,6 +30,7 @@ func TestCompiledPlatformMD007ProductionAnalysis(t *testing.T) {
 		Expected              []struct {
 			Range  []int
 			Source string
+			Fix    bool
 		}
 	}
 	if err := json.Unmarshal(data, &fixtures); err != nil {
@@ -55,9 +56,22 @@ func TestCompiledPlatformMD007ProductionAnalysis(t *testing.T) {
 					putConfigurationFile(t, root, ".mdchk.yaml", conf)
 					putConfigurationFile(t, root, "doc.md", f.Source)
 					before := configurationBytes(t, root)
+					fixable := false
+					for _, w := range f.Expected {
+						fixable = fixable || w.Fix
+					}
 					for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
 						got := runConfigurationProcess(t, binary, root, args...)
 						out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
+						// A correctable finding's preview proposes a change, or defers
+						// it when the reparse changes structure; md007_fix acceptance
+						// covers both.
+						if args[0] == "fix" && fixable {
+							if !out.Complete || len(out.Errors) != 0 || len(out.Changes)+len(out.DeferredFixes) == 0 || len(out.Documents) != 0 {
+								t.Fatal(got)
+							}
+							continue
+						}
 						status := 0
 						if len(f.Expected) > 0 {
 							status = 10
@@ -71,7 +85,7 @@ func TestCompiledPlatformMD007ProductionAnalysis(t *testing.T) {
 						for i, w := range f.Expected {
 							d := out.Diagnostics[i]
 							actual := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD007" || d.FixAvailable || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
+							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD007" || d.FixAvailable != w.Fix || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
 								t.Fatal(d, w)
 							}
 						}
@@ -126,7 +140,7 @@ func TestCompiledPlatformMD007ConfigurationAndComposition(t *testing.T) {
 			putConfigurationFile(t, root, "doc.md", "- first\n - second\n")
 			got := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=json")
 			out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "lint")
-			if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD007" || out.Diagnostics[0].FixAvailable {
+			if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD007" || !out.Diagnostics[0].FixAvailable {
 				t.Fatal(got)
 			}
 			inspected, p := runInspection(t, binary, root, root, "inspect", "doc.md", "--format=json")
@@ -149,7 +163,8 @@ func TestCompiledPlatformMD007ConfigurationAndComposition(t *testing.T) {
 					conf := strings.Replace(md007Configuration(flavor), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
 
 					putConfigurationFile(t, root, ".mdchk.yaml", conf)
-					original := "é" + ending.text + ending.text + "9. first" + ending.text + "    - last"
+					// The tab keeps the MD007 finding manual, so only MD047 corrects.
+					original := "é" + ending.text + ending.text + "9. first" + ending.text + "    - la\tst"
 					candidate := original + ending.text
 					digest := fmt.Sprintf("%x", sha256.Sum256([]byte(candidate)))
 					start, line := 14+3*len(ending.text), 4
@@ -212,6 +227,19 @@ func TestCompiledPlatformMD007DirectivesAndValidation(t *testing.T) {
 					if tc.active > 0 {
 						status = 10
 					}
+					// The preview corrects every active finding and leaves the
+					// directive-disabled item untouched.
+					if args[0] == "fix" {
+						candidate := strings.Replace(source, "\n - three", "\n- three", 1)
+						if tc.active == 2 {
+							candidate = strings.Replace(candidate, "\n - one", "\n- one", 1)
+						}
+						changes := min(tc.active, 1)
+						if got.Status != 0 || !out.Complete || len(out.Diagnostics) != 0 || len(out.SuppressedDiagnostics) != tc.hidden || len(out.Changes) != changes || len(out.Documents) != 0 || out.Files[0].ResultSnapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(candidate))) && changes == 1 {
+							t.Fatal(got)
+						}
+						continue
+					}
 					if got.Status != status || !out.Complete || len(out.Diagnostics) != tc.active || len(out.SuppressedDiagnostics) != tc.hidden || len(out.Changes) != 0 || len(out.Documents) != 0 {
 						t.Fatal(got)
 					}
@@ -252,7 +280,9 @@ func TestCompiledPlatformMD007LiteralOptions(t *testing.T) {
 						}
 						if count == 1 {
 							d := out.Diagnostics[0]
-							if d.Rule != "MD007" || d.FixAvailable || d.ByteRange != (result.ByteRange{Start: local, End: local + 1}) {
+							// Shifts right by more than 16 columns stay manual.
+							fixable := !start || indent-local <= 16
+							if d.Rule != "MD007" || d.FixAvailable != fixable || d.ByteRange != (result.ByteRange{Start: local, End: local + 1}) {
 								t.Fatal(d)
 							}
 						}

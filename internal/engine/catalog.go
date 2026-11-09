@@ -9,7 +9,7 @@ func Catalog() []Metadata {
 		{ID: "MD003", Name: "Heading syntax style", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "atx", "atx_closed", "setext")}},
 		{ID: "MD004", Name: "Bullet marker style", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"marker": choice("consistent", "asterisk", "plus", "dash")}},
 		{ID: "MD005", Name: "Alignment of sibling list items", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD007", Name: "Bullet list nesting indentation", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"indent": integer(2, 1), "start_indented": boolean(false)}},
+		{ID: "MD007", Name: "Bullet list nesting indentation", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"indent": integer(2, 1), "start_indented": boolean(false)}},
 		{ID: "MD009", Name: "Whitespace at line ends", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"hard_break_spaces": integer(2, 2), "strict": boolean(false), "code_blocks": boolean(false)}},
 		{ID: "MD010", Name: "Tab characters", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"code_blocks": boolean(false), "spaces_per_tab": integer(4, 1)}},
 		{ID: "MD011", Name: "Swapped link delimiters", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
