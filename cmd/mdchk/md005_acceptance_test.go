@@ -28,6 +28,7 @@ func TestCompiledPlatformMD005ProductionAnalysis(t *testing.T) {
 		Expected              []struct {
 			Range  []int
 			Source string
+			Fix    bool
 		}
 	}
 	if err := json.Unmarshal(data, &fixtures); err != nil {
@@ -48,23 +49,37 @@ func TestCompiledPlatformMD005ProductionAnalysis(t *testing.T) {
 					putConfigurationFile(t, root, ".mdchk.yaml", conf)
 					putConfigurationFile(t, root, "doc.md", f.Source)
 					before := configurationBytes(t, root)
+					manual := 0
+					for _, w := range f.Expected {
+						if !w.Fix {
+							manual++
+						}
+					}
 					for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
 						got := runConfigurationProcess(t, binary, root, args...)
 						out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
+						// A preview corrects every fixable finding and reports the rest.
+						want, changes := len(f.Expected), 0
+						if args[0] == "fix" && manual != want {
+							want, changes = manual, 1
+						}
 						status := 0
-						if len(f.Expected) > 0 {
+						if want > 0 {
 							status = 10
 						}
 						if f.Incomplete {
 							status = 15
 						}
-						if got.Status != status || out.Complete == f.Incomplete || len(out.Errors) != 0 || len(out.Diagnostics) != len(f.Expected) || len(out.Changes) != 0 || len(out.Documents) != 0 {
+						if got.Status != status || out.Complete == f.Incomplete || len(out.Errors) != 0 || len(out.Diagnostics) != want || len(out.Changes) != changes || len(out.Documents) != 0 {
 							t.Fatal(got)
+						}
+						if changes != 0 {
+							continue
 						}
 						for i, w := range f.Expected {
 							d := out.Diagnostics[i]
 							actual := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD005" || d.FixAvailable || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
+							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD005" || d.FixAvailable != w.Fix || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
 								t.Fatal(d, w)
 							}
 						}
@@ -119,7 +134,7 @@ func TestCompiledPlatformMD005ConfigurationAndComposition(t *testing.T) {
 			putConfigurationFile(t, root, "doc.md", "- first\n - second\n")
 			got := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=json")
 			out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "lint")
-			if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD005" || out.Diagnostics[0].FixAvailable {
+			if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD005" || !out.Diagnostics[0].FixAvailable {
 				t.Fatal(got)
 			}
 			inspected, p := runInspection(t, binary, root, root, "inspect", "doc.md", "--format=json")
@@ -142,7 +157,8 @@ func TestCompiledPlatformMD005ConfigurationAndComposition(t *testing.T) {
 					conf := strings.Replace(md005Configuration(flavor), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
 
 					putConfigurationFile(t, root, ".mdchk.yaml", conf)
-					original := "é" + ending.text + ending.text + "9. first" + ending.text + " 10. last"
+					// Aligning the unindented item would insert spaces, so MD005 stays manual.
+					original := "é" + ending.text + ending.text + " 9. first" + ending.text + "10. last"
 					candidate := original + ending.text
 					digest := fmt.Sprintf("%x", sha256.Sum256([]byte(candidate)))
 					start, line := 11+3*len(ending.text), 4
@@ -159,7 +175,7 @@ func TestCompiledPlatformMD005ConfigurationAndComposition(t *testing.T) {
 							t.Fatal(out.Files)
 						}
 						d := out.Diagnostics[0]
-						if d.Rule != "MD005" || d.FixAvailable || d.ByteRange != (result.ByteRange{Start: start, End: start + 3}) || d.Range.Start != (result.Position{Line: line, Column: 2}) || d.Range.End != (result.Position{Line: line, Column: 5}) || d.Snapshot != *snap {
+						if d.Rule != "MD005" || d.FixAvailable || d.ByteRange != (result.ByteRange{Start: start, End: start + 3}) || d.Range.Start != (result.Position{Line: line, Column: 1}) || d.Range.End != (result.Position{Line: line, Column: 4}) || d.Snapshot != *snap {
 							t.Fatal(d)
 						}
 						if pass == 0 {

@@ -28,7 +28,7 @@ import (
 // planner defers that pair as a conflict first. MD063 shares its round with MD047.
 //
 // A document opening with an unrecognized block gets no MD009 or MD032 group at all,
-// not even a deferral. MD019, MD021, MD022 and MD023 are already withheld by their flags, and MD047 stays.
+// not even a deferral. MD005, MD019, MD021, MD022 and MD023 are already withheld by their flags, and MD047 stays.
 //
 // MD003 groups wait for a round with no other group. Their edits touch the same
 // heading lines as MD009, MD019, MD021 and MD063, and their checker proves the round's
@@ -40,13 +40,16 @@ import (
 // after a list, starts at the same offset as the indentation deletion, and both
 // insertions land at the same offset between a list and a heading, so the planner
 // would defer each pair as a conflict in every round.
+//
+// MD009 proves its round by comparing whole parses across line-end whitespace, which
+// a moved list marker breaks, so MD005 groups wait for a round with no MD009 edit.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var spacing, blank, indentation, capitalization, trailing, styles, lists []result.Diagnostic
+	var spacing, blank, indentation, capitalization, trailing, styles, lists, alignment []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -76,6 +79,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		case "MD063":
 			if d.FixAvailable {
 				capitalization = append(capitalization, d)
+			}
+		case "MD005":
+			if d.FixAvailable {
+				alignment = append(alignment, d)
 			}
 		case "MD009":
 			if !guarded {
@@ -111,7 +118,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		}
 	}
 	waiting := len(groups) > 0
-	touched, blocking := false, waiting
+	touched, blocking, suffixed := false, waiting, false
 	suffixes, err := trailingWhitespaceGroups(ctx, c, trailing)
 	if err != nil {
 		return nil, err
@@ -121,6 +128,15 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		waiting = waiting || len(g.Edits) > 0
 		touched = touched || final
 		blocking = blocking || len(g.Edits) > 0 && !final
+		suffixed = suffixed || len(g.Edits) > 0
+	}
+	if !suffixed {
+		aligned, err := listAlignmentGroups(ctx, c, alignment)
+		if err != nil {
+			return nil, err
+		}
+		groups = append(groups, aligned...)
+		waiting = waiting || len(aligned) > 0
 	}
 	groups = append(groups, suffixes...)
 	if !blocking {
@@ -162,5 +178,6 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		{Rule: "MD022", Check: headingblanks.Check},
 		{Rule: "MD063", Check: headingcase.Check},
 		{Rule: "MD032", Check: checkListBlankLine},
+		{Rule: "MD005", Check: checkListAlignment},
 	}
 }

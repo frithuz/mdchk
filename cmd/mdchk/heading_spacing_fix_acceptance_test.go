@@ -266,7 +266,7 @@ func TestCompiledHeadingSpacingOtherRulesProduceNothing(t *testing.T) {
 		{"MD082", "", "# a\n\n## b\n"},
 		{"MD093", "", "# *a*\n"},
 		{"MD004", "", "- a\n* b\n"},
-		{"MD005", "", "- a\n - b\n"},
+		{"MD005", "", "- a\n - b\n   c\n"}, // continuation lines keep MD005 manual
 		{"MD007", "", "- a\n   - b\n"},
 		{"MD029", "", "1. a\n3. b\n"},
 		{"MD030", "", "-  a\n"},

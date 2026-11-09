@@ -213,6 +213,16 @@ func (c RoundContext) ListSpacing(ctx context.Context) ([]parser.ListSpacingFact
 	return c.Parsed().Document.ListSpacing(ctx, c.meter.budget, c.Lines(), dc.ParseOptions())
 }
 
+// ListItems projects this round's parser-confirmed list item facts under the
+// target's parse options, charged to the shared residual operation.
+func (c RoundContext) ListItems(ctx context.Context) ([]parser.ListItemFact, error) {
+	dc, known := c.trace.DocumentContext()
+	if !known {
+		return nil, errors.New("unknown document context")
+	}
+	return c.Parsed().Document.ListItems(ctx, c.meter.budget, c.Lines(), dc.ParseOptions())
+}
+
 // HeadingAnchors projects this round's heading anchors under the shared anchor
 // policy of the target's admitted document context.
 func (c RoundContext) HeadingAnchors(ctx context.Context) ([]resource.HeadingAnchor, resource.Availability, error) {

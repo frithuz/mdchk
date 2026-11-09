@@ -37,7 +37,13 @@ func compareListAlignment(ctx context.Context, c engine.RuleContext, items []par
 		start, end int
 		present    bool
 	}
-	baselines := make(map[groupKey]int, len(items))
+	type baseline struct {
+		indent int
+		spaces bool
+	}
+	baselines := make(map[groupKey]baseline, len(items))
+	edits := c.InteriorEdits()
+	checkpoint := func(ctx context.Context, work int64) error { return c.SectionCheckpoint(ctx, work, 0) }
 	for _, item := range items {
 		if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
 			out.Err = err
@@ -48,10 +54,16 @@ func compareListAlignment(ctx context.Context, c engine.RuleContext, items []par
 		group := groupKey{item.Group.SourceToken(), item.Group.Start(), item.Group.End(), item.Group.Present()}
 		expected, exists := baselines[group]
 		if !exists {
-			baselines[group] = indent
+			// A tab in the baseline's indentation leaves its siblings' columns ambiguous.
+			lead, err := listItemIndentation(ctx, c.Source(), item, checkpoint)
+			if err != nil {
+				out.Err = err
+				return out
+			}
+			baselines[group] = baseline{indent, lead.spaces}
 			continue
 		}
-		if indent == expected {
+		if indent == expected.indent {
 			continue
 		}
 		if len(out.Findings) == cap(out.Findings) {
@@ -68,7 +80,23 @@ func compareListAlignment(ctx context.Context, c engine.RuleContext, items []par
 			out.Err = err
 			return out
 		}
-		out.Findings = append(out.Findings, engine.Finding{Span: item.Marker, Message: "Sibling list item markers must align with the first item."})
+		finding := engine.Finding{Span: item.Marker, Message: "Sibling list item markers must align with the first item."}
+		// Only a spaces-only item whose later lines need not move stays correctable.
+		if expected.spaces {
+			lead, err := listItemIndentation(ctx, c.Source(), item, checkpoint)
+			if err != nil {
+				out.Err = err
+				return out
+			}
+			if lead.spaces && lead.single {
+				finding.FixEligible, err = edits.Eligible(ctx, "MD005", item.Marker, lead.span)
+				if err != nil {
+					out.Err = err
+					return out
+				}
+			}
+		}
+		out.Findings = append(out.Findings, finding)
 	}
 	return out
 }

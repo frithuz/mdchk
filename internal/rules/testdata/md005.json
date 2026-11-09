@@ -17,7 +17,8 @@
           2,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -67,7 +68,8 @@
           3,
           5
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       },
       {
         "Range": [
@@ -78,7 +80,8 @@
           4,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -95,7 +98,8 @@
           3,
           5
         ],
-        "Source": "11."
+        "Source": "11.",
+        "Fix": true
       }
     ]
   },
@@ -112,7 +116,8 @@
           3,
           5
         ],
-        "Source": "11)"
+        "Source": "11)",
+        "Fix": true
       }
     ]
   },
@@ -129,7 +134,8 @@
           2,
           6
         ],
-        "Source": "002."
+        "Source": "002.",
+        "Fix": true
       }
     ]
   },
@@ -171,7 +177,8 @@
           2,
           5
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -188,7 +195,8 @@
           2,
           7
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -221,7 +229,8 @@
           4,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -255,7 +264,8 @@
           2,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -272,7 +282,8 @@
           2,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -289,7 +300,8 @@
           2,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -306,7 +318,8 @@
           2,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -323,7 +336,8 @@
           2,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -340,7 +354,8 @@
           2,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -357,7 +372,8 @@
           2,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -374,7 +390,8 @@
           7,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -391,7 +408,8 @@
           5,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -408,7 +426,8 @@
           7,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -425,7 +444,8 @@
           6,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -442,7 +462,8 @@
           5,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -459,7 +480,8 @@
           4,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -476,7 +498,8 @@
           7,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -493,7 +516,8 @@
           3,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   },
@@ -510,7 +534,8 @@
           6,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ],
     "Recognize": true
@@ -528,7 +553,8 @@
           6,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ],
     "Recognize": true
@@ -586,7 +612,8 @@
           2,
           5
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       },
       {
         "Range": [
@@ -597,7 +624,8 @@
           3,
           3
         ],
-        "Source": "-"
+        "Source": "-",
+        "Fix": true
       }
     ]
   }
