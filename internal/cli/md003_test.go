@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bytes"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -40,5 +41,67 @@ func TestMD003InheritedDirectiveDenials(t *testing.T) {
 				t.Fatal(out)
 			}
 		})
+	}
+}
+
+func TestMD003FixPreviewAndApply(t *testing.T) {
+	root := project(t)
+	put(t, filepath.Join(root, ".mdchk.yaml"), styleConfiguration())
+	path := filepath.Join(root, "doc.md")
+	source := "# A\n\nB\n-\n"
+	put(t, path, source)
+	t.Chdir(root)
+	var stdout, stderr bytes.Buffer
+	if status := Run([]string{"fix", "--dry-run", "doc.md", "--format=json"}, &stdout, &stderr, "test"); status != 0 || stderr.Len() != 0 {
+		t.Fatal(status, stdout.String(), stderr.String())
+	}
+	out := validateEmitted(t, root, stdout.Bytes())
+	if out.DryRun == nil || !*out.DryRun || len(out.Changes) != 1 || len(out.Diagnostics) != 0 || out.Files[0].WriteStatus != "proposed" {
+		t.Fatal(out)
+	}
+	//nolint:gosec // Read only the test-owned temporary source fixture.
+	if data, err := os.ReadFile(path); err != nil || string(data) != source {
+		t.Fatal("preview changed the file", err, string(data))
+	}
+	for pass, wantChanges := range []int{1, 0} {
+		stdout.Reset()
+		if status := Run([]string{"fix", "doc.md", "--format=json"}, &stdout, &stderr, "test"); status != 0 || stderr.Len() != 0 {
+			t.Fatal(pass, status, stdout.String(), stderr.String())
+		}
+		out := validateEmitted(t, root, stdout.Bytes())
+		if len(out.Changes) != wantChanges || !out.Complete || len(out.Diagnostics) != 0 {
+			t.Fatal(pass, out)
+		}
+		//nolint:gosec // Read only the test-owned temporary source fixture.
+		if data, err := os.ReadFile(path); err != nil || string(data) != "# A\n\n## B\n" {
+			t.Fatal(pass, err, string(data))
+		}
+	}
+}
+
+func TestMD003FixComposesWithOtherCorrections(t *testing.T) {
+	root := project(t)
+	config := styleConfiguration()
+	for _, id := range []string{"MD009", "MD019", "MD021"} {
+		config = strings.Replace(config, id+": {enabled: false}", id+": {enabled: true}", 1)
+	}
+	config = strings.Replace(config, "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
+	put(t, filepath.Join(root, ".mdchk.yaml"), config)
+	path := filepath.Join(root, "doc.md")
+	put(t, path, "# Title\r\n\r\n##  Spaced\r\n\r\n### Closed   ###\r\n\r\nText   \r\n\r\nSub\r\n---\r\n\r\nend")
+	t.Chdir(root)
+	for pass, wantChanges := range []int{1, 0} {
+		var stdout, stderr bytes.Buffer
+		if status := Run([]string{"fix", "doc.md", "--format=json"}, &stdout, &stderr, "test"); status != 0 || stderr.Len() != 0 {
+			t.Fatal(pass, status, stdout.String(), stderr.String())
+		}
+		out := validateEmitted(t, root, stdout.Bytes())
+		if len(out.Changes) != wantChanges || !out.Complete || len(out.Diagnostics) != 0 || len(out.DeferredFixes) != 0 {
+			t.Fatal(pass, out)
+		}
+		//nolint:gosec // Read only the test-owned temporary source fixture.
+		if data, err := os.ReadFile(path); err != nil || string(data) != "# Title\r\n\r\n## Spaced\r\n\r\n### Closed\r\n\r\nText\r\n\r\n## Sub\r\n\r\nend\r\n" {
+			t.Fatalf("%d %v %q", pass, err, data)
+		}
 	}
 }
