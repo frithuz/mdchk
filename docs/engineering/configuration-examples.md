@@ -448,7 +448,8 @@ and `start_indented: false` is a strict boolean. Root bullet indentation must
 equal zero, or exactly indent with start_indented. Bullet children use the
 actual parent marker width and padding; numbered parents target the content
 column without additional indent. Quotes retain ancestry after stripping their
-prefix. MD007 findings are manual, and PlannedFix describes future work.
+prefix. Eligible MD007 findings are corrected; tab, blockquote, protected-content
+and directive-disabled ones stay manual.
 
 
 ## ASCII punctuation

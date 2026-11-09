@@ -144,7 +144,9 @@ tab, a blockquote prefix, a lazy continuation or protected content stay manual w
 under `deferred_fixes` with reason `meaning-not-preserved`. MD007 shifts wait for a
 round with no MD009, MD022, MD023, MD029, MD032 or MD005
 edit, MD063 waits for them, and a nested finding is regenerated after its ancestor
-moves, so both converge within one `fix` run.
+moves. A single `fix` run still reaches the fully corrected result across its
+rounds. A shift that would add more than 16 columns stays manual, so a large
+`indent` can't multiply a file's size.
 
 [MD081 paragraph-emphasis analysis](../rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.
