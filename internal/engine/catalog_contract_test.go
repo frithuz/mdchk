@@ -140,7 +140,7 @@ func TestCatalogDocumentedContracts(t *testing.T) {
 		if slices.Contains(planned, m.ID) {
 			fix = engine.PlannedFix
 		}
-		if m.ID == "MD003" || m.ID == "MD009" || m.ID == "MD019" || m.ID == "MD021" || m.ID == "MD047" {
+		if m.ID == "MD003" || m.ID == "MD009" || m.ID == "MD019" || m.ID == "MD021" || m.ID == "MD022" || m.ID == "MD047" {
 			fix = engine.ImplementedFix
 		}
 		if m.Fix != fix {

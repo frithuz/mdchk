@@ -1,0 +1,207 @@
+[
+  {
+    "name": "published",
+    "source": "Text\n## Install\nText\n",
+    "candidate": "Text\n\n## Install\n\nText\n",
+    "config": "",
+    "rules": [
+      "MD022"
+    ]
+  },
+  {
+    "name": "crlf",
+    "source": "Text\r\n## Install\r\nText\r\n",
+    "candidate": "Text\r\n\r\n## Install\r\n\r\nText\r\n",
+    "config": "",
+    "rules": [
+      "MD022"
+    ]
+  },
+  {
+    "name": "consecutive",
+    "source": "# A\n# B\n",
+    "candidate": "# A\n\n# B\n",
+    "config": "",
+    "rules": [
+      "MD022"
+    ]
+  },
+  {
+    "name": "atx-closed",
+    "source": "Text\n## H ##\nText\n",
+    "candidate": "Text\n\n## H ##\n\nText\n",
+    "config": "",
+    "rules": [
+      "MD022"
+    ]
+  },
+  {
+    "name": "multiline-setext",
+    "source": "前\nAlpha\nBeta\n===\nTail\n",
+    "candidate": "前\nAlpha\nBeta\n===\n\nTail\n",
+    "config": "",
+    "rules": [
+      "MD022"
+    ]
+  },
+  {
+    "name": "setext-crlf",
+    "source": "Text\r\n\r\nH\r\n---\r\nTail\r\n",
+    "candidate": "Text\r\n\r\nH\r\n---\r\n\r\nTail\r\n",
+    "config": "",
+    "rules": [
+      "MD022"
+    ]
+  },
+  {
+    "name": "quote",
+    "source": "> Text\n> ## H\n> Text\n",
+    "candidate": "> Text\n>\n> ## H\n>\n> Text\n",
+    "config": "",
+    "rules": [
+      "MD022"
+    ]
+  },
+  {
+    "name": "nested-quote-unicode",
+    "source": "> > 雪\n> > # Ünï 雪\n> > 本\n",
+    "candidate": "> > 雪\n> >\n> > # Ünï 雪\n> >\n> > 本\n",
+    "config": "",
+    "rules": [
+      "MD022"
+    ]
+  },
+  {
+    "name": "list-item",
+    "source": "- a\n  # H\n  b\n",
+    "candidate": "- a\n  # H\n  b\n",
+    "config": "",
+    "rules": []
+  },
+  {
+    "name": "lazy",
+    "source": "> Text\nlazy\n> ## H\n",
+    "candidate": "> Text\nlazy\n> ## H\n",
+    "config": "",
+    "rules": []
+  },
+  {
+    "name": "two-sides-short",
+    "source": "Text\n# H\nText\n",
+    "candidate": "Text\n\n\n# H\n\n\nText\n",
+    "config": "two",
+    "rules": [
+      "MD022"
+    ]
+  },
+  {
+    "name": "two-before-edge",
+    "source": "\n# H\n\nText\n",
+    "candidate": "\n# H\n\n\nText\n",
+    "config": "two",
+    "rules": [
+      "MD022"
+    ]
+  },
+  {
+    "name": "before-zero",
+    "source": "Text\n# H\nText\n",
+    "candidate": "Text\n# H\n\nText\n",
+    "config": "before-zero",
+    "rules": [
+      "MD022"
+    ]
+  },
+  {
+    "name": "after-zero",
+    "source": "Text\n# H\nText\n",
+    "candidate": "Text\n\n# H\nText\n",
+    "config": "after-zero",
+    "rules": [
+      "MD022"
+    ]
+  },
+  {
+    "name": "adjacent-fence",
+    "source": "Text\n\n```\nx\n```\n# H\n",
+    "candidate": "Text\n\n```\nx\n```\n# H\n",
+    "config": "",
+    "rules": []
+  },
+  {
+    "name": "adjacent-indented",
+    "source": "Text\n\n    code\n# H\n",
+    "candidate": "Text\n\n    code\n# H\n",
+    "config": "",
+    "rules": []
+  },
+  {
+    "name": "adjacent-html",
+    "source": "# H\n<div>\nx\n</div>\n",
+    "candidate": "# H\n<div>\nx\n</div>\n",
+    "config": "",
+    "rules": []
+  },
+  {
+    "name": "adjacent-comment",
+    "source": "<!-- c -->\n# H\n",
+    "candidate": "<!-- c -->\n# H\n",
+    "config": "",
+    "rules": []
+  },
+  {
+    "name": "adjacent-frontmatter",
+    "source": "---\nt: y\n---\n# H\n",
+    "candidate": "---\nt: y\n---\n# H\n",
+    "config": "frontmatter",
+    "rules": []
+  },
+  {
+    "name": "unrecognized-frontmatter",
+    "source": "---\nt: y\n---\nText\n# H\n",
+    "candidate": "---\nt: y\n---\nText\n# H\n",
+    "config": "",
+    "rules": []
+  },
+  {
+    "name": "frontmatter-body",
+    "source": "---\nt: y\n---\n\nText\n# H\n",
+    "candidate": "---\nt: y\n---\n\nText\n\n# H\n",
+    "config": "frontmatter",
+    "rules": [
+      "MD022"
+    ]
+  },
+  {
+    "name": "directive",
+    "source": "Text\n<!-- mdchk:disable MD022 -->\n# H\nText\n",
+    "candidate": "Text\n<!-- mdchk:disable MD022 -->\n# H\nText\n",
+    "config": "",
+    "rules": []
+  },
+  {
+    "name": "with-other-fixers",
+    "source": "Text \n#  A  #\n# B\nend",
+    "candidate": "Text\n\n# A #\n\n# B\n\nend\n",
+    "config": "all",
+    "rules": [
+      "MD009",
+      "MD019",
+      "MD021",
+      "MD022",
+      "MD047"
+    ]
+  },
+  {
+    "name": "with-other-fixers-crlf",
+    "source": "Text \r\n##  A\r\nend",
+    "candidate": "Text\r\n\r\n## A\r\n\r\nend\r\n",
+    "config": "all",
+    "rules": [
+      "MD009",
+      "MD019",
+      "MD022",
+      "MD047"
+    ]
+  }
+]

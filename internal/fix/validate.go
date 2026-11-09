@@ -173,6 +173,18 @@ func (c RoundContext) Headings(ctx context.Context) ([]parser.HeadingFact, error
 	return c.Parsed().Document.Headings(ctx, c.meter.budget)
 }
 
+// HeadingSpacing projects this round's physical heading endpoints and adjacent
+// blank body lines, charged to the shared residual operation.
+func (c RoundContext) HeadingSpacing(ctx context.Context) ([]parser.HeadingSpacingFact, error) {
+	return c.Parsed().Document.HeadingSpacing(ctx, c.meter.budget, c.Lines())
+}
+
+// RuleOptions returns a copy of one rule's admitted options under the target's plan.
+func (c RoundContext) RuleOptions(id string) (engine.Options, bool) {
+	rule, ok := c.plan.Rules()[id]
+	return rule.Options, ok
+}
+
 // HeadingAnchors projects this round's heading anchors under the shared anchor
 // policy of the target's admitted document context.
 func (c RoundContext) HeadingAnchors(ctx context.Context) ([]resource.HeadingAnchor, resource.Availability, error) {
@@ -326,6 +338,26 @@ func (c CheckContext) MapEndpoints(span parser.Span) (parser.Span, bool, error) 
 	}
 	mapped, err := c.After.current.Span(start, end)
 	return mapped, err == nil, nil
+}
+
+// SameEnvelope reports whether after is before's envelope in the candidate.
+// MapEndpoints grows an envelope over an insertion at its end, which a block
+// does gain at EOF. An insertion of whole lines at a block's start or after its
+// ending leaves the block outside them instead, so either mapping is accepted.
+func (c CheckContext) SameEnvelope(before, after parser.Span) (bool, error) {
+	grown, ok, err := c.MapEndpoints(before)
+	if err != nil || ok && grown == after {
+		return err == nil, err
+	}
+	start, ok, err := c.mapping.offset(before.Start(), true)
+	if err != nil || !ok {
+		return false, err
+	}
+	end, ok, err := c.mapping.offset(before.End(), false)
+	if err != nil || !ok || end < start {
+		return false, err
+	}
+	return start == after.Start() && end == after.End(), nil
 }
 
 // MapFact is MapUnchanged for facts that may be points. A point stays on the

@@ -121,7 +121,7 @@ func TestMD022CatalogOptionsDefaults(t *testing.T) {
 		t.Fatal("availability/catalog changed")
 	}
 	for _, m := range r.Metadata() {
-		if m.ID == "MD022" && (!m.DefaultEnabled || !m.RequiresSyntax || m.Fix != engine.PlannedFix || len(m.Options) != 2) {
+		if m.ID == "MD022" && (!m.DefaultEnabled || !m.RequiresSyntax || m.Fix != engine.ImplementedFix || len(m.Options) != 2) {
 			t.Fatal(m)
 		}
 	}

@@ -20,7 +20,7 @@ func Catalog() []Metadata {
 		{ID: "MD019", Name: "Extra spaces after opening hashes", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD020", Name: "Missing spaces within closed headings", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD021", Name: "Extra spaces within closed headings", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD022", Name: "Blank lines around headings", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"before": integer(1, 0), "after": integer(1, 0)}},
+		{ID: "MD022", Name: "Blank lines around headings", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"before": integer(1, 0), "after": integer(1, 0)}},
 		{ID: "MD023", Name: "Indented headings", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD024", Name: "Repeated heading text", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"siblings_only": boolean(false)}},
 		{ID: "MD025", Name: "Multiple document titles", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"level": headingLevel(1), "frontmatter_title": boolean(false)}},

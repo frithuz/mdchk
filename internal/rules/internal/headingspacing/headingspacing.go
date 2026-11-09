@@ -181,13 +181,12 @@ func headingSpacingProof(ctx context.Context, c fix.CheckContext) (headingSpacin
 		if err != nil || !ok || label != a.Label {
 			return failed, err
 		}
-		envelope, ok, err := c.MapEndpoints(b.Envelope)
-		if err != nil || !ok || envelope != a.Envelope {
+		if same, err := c.SameEnvelope(b.Envelope, a.Envelope); err != nil || !same {
 			return failed, err
 		}
 		for j, container := range b.Containers {
-			mapped, ok, err := c.MapEndpoints(container.Envelope)
-			if err != nil || !ok || container.Kind != a.Containers[j].Kind || mapped != a.Containers[j].Envelope {
+			same, err := c.SameEnvelope(container.Envelope, a.Containers[j].Envelope)
+			if err != nil || !same || container.Kind != a.Containers[j].Kind {
 				return failed, err
 			}
 		}
