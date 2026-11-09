@@ -12,7 +12,7 @@ mdchk is under active development. This build provides:
 - **Rules.** All 82 [active rules](docs/rules/index.md) are implemented for both formats; the table rules MD055, MD056, MD058, MD060 and MD075 apply to GFM only.
 
   - Disabled by default: MD013, MD026, MD033, MD036, MD040, MD043, MD044, MD054, MD060, MD061, MD063, MD070, MD072, MD073, MD080, MD081, MD082, MD083, MD084, MD085, MD087, MD088, MD089, MD091, MD093 and MD095.
-- **Corrections.** Automatic corrections cover MD047 (a missing final newline), MD009 (whitespace at line ends), MD019 and MD021 (excess spaces in heading delimiter gaps), MD022 (missing blank lines around headings), MD023 (indented headings), MD032 (missing blank lines around lists), and MD063 (required lowercase heading initials). Every other rule reports findings for a person or agent to resolve.
+- **Corrections.** Automatic corrections cover MD047 (a missing final newline), MD009 (whitespace at line ends), MD019 and MD021 (excess spaces in heading delimiter gaps), MD022 (missing blank lines around headings), MD023 (indented headings), MD029 (numbered list prefixes), MD032 (missing blank lines around lists), and MD063 (required lowercase heading initials). Every other rule reports findings for a person or agent to resolve.
 - **Commands.** `lint`, `fix`, `inspect` and `config validate` are available. The [MCP server](#use-with-ai-agents) is planned.
 
 ## Check Markdown

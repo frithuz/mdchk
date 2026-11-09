@@ -160,7 +160,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction, and MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD032 and MD063 also correct; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
+production correction, and MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD032 and MD063 also correct; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
 analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation
 analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis,
 MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD014 shell-prompt analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD065 horizontal-rule blank-line analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD018 missing opening-hash spacing, MD019 extra
