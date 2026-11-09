@@ -84,7 +84,7 @@ minima, each defaulting to 1; MD072 accepts boolean `recursive` (default false) 
 (default `<!-- toc -->`) and `end_marker` (default `<!-- /toc -->`) and heading levels
 `min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077,
 MD018, MD020, MD022, MD024, MD025, MD026, MD036, MD041, MD043,
-MD061, MD063, MD072, MD073, MD080, MD083, MD084, MD082, MD081, MD088, MD033, MD086, MD087, MD093, MD095 and MD071 are report-only.
+MD061, MD072, MD073, MD080, MD083, MD084, MD082, MD081, MD088, MD033, MD086, MD087, MD093, MD095 and MD071 are report-only.
 Rules marked unavailable in the linked inventory remain pending. Every default-enabled
 rule is available for CommonMark and GFM; an enabled rule without an implementation
 would produce a coverage deficit rather than a clean result. Valid UTF-8 with all
