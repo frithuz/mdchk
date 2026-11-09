@@ -1918,7 +1918,13 @@ when Prefix.End is less than that line's content end. Definitions, tasks and
 later descendants do not replace this physical first-line test. Empty virtual
 padding has no fabricated separator bytes. Capacity, logical records and lookup
 work are reserved under the original allowance before construction; final
-caller/origin checks withhold interrupted inventories.
+caller/origin checks withhold interrupted inventories. For a nonempty first line
+it also derives OneLine (every child block ends on the marker line and no list
+item nests inside, even on that line, using ListItems Content and the next item's
+ParentItem), CodeFallback (whitespace remains after Prefix.End), the tab-expanded
+separator Column, the Following column of the first nonblank physical line after
+the item span, and Quoted (a '>' before Prefix.Start on the marker line). These
+scans are charged before reading. MD030 corrections consume them.
 
 The internal lint-only ListSpacing projection merges actual immediate source
 participants in Document, BlockQuote and ListItem containers. It consumes retained

@@ -3,6 +3,7 @@ package rules
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
@@ -27,6 +28,7 @@ func compareListMarkerSpacing(ctx context.Context, c engine.RuleContext, items [
 			out.Findings = nil
 		}
 	}()
+	edits := c.InteriorEdits()
 	for _, item := range items {
 		if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
 			out.Err = err
@@ -49,7 +51,40 @@ func compareListMarkerSpacing(ctx context.Context, c engine.RuleContext, items [
 			out.Err = err
 			return out
 		}
-		out.Findings = append(out.Findings, engine.Finding{Span: item.Separator, Message: "List marker separators must use the configured structural spacing."})
+		finding := engine.Finding{Span: item.Separator, Message: "List marker separators must use the configured structural spacing."}
+		if listSeparatorShape(item, spaces) {
+			if err := c.Checkpoint(ctx, int64(item.Separator.End()-item.Separator.Start())+1); err != nil {
+				out.Err = err
+				return out
+			}
+			text, err := c.Source().Text(item.Separator)
+			if err != nil {
+				out.Err = err
+				return out
+			}
+			if strings.Trim(text, " ") == "" {
+				finding.FixEligible, err = edits.Eligible(ctx, "MD030", item.Separator, item.Separator)
+				if err != nil {
+					out.Err = err
+					return out
+				}
+			}
+		}
+		out.Findings = append(out.Findings, finding)
 	}
 	return out
+}
+
+// listSeparatorShape reports whether rewriting a mismatched separator to spaces
+// spaces moves nothing but the item's own single-line content: no continuation,
+// child, nested item, code fallback, or following line the new column would
+// absorb. Callers still require the separator bytes to be spaces only.
+func listSeparatorShape(item parser.ListSeparatorFact, spaces int) bool {
+	if spaces < 1 || spaces > 4 || !item.FirstLineNonempty || !item.OneLine || item.CodeFallback || item.Padding == spaces {
+		return false
+	}
+	if item.Following < 0 {
+		return true
+	}
+	return !item.Quoted && item.Following < item.Column+spaces && item.Following < item.Column+item.Padding
 }

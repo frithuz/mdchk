@@ -9,13 +9,15 @@ import (
 // ListItemFact retains actual group/item ancestry and first-line source facts.
 // Values contain no mutable syntax handles. ParentItem is absent at the root.
 // Ordered items retain their own ordinal and delimiter, not the group's start.
+// Content runs from the first child block's start to the last one's end and is
+// absent for an item without children.
 type ListItemFact struct {
-	Group, Item, ParentItem, Marker, Prefix Span
-	Ordered                                 bool
-	Bullet                                  Optional[byte]
-	Start                                   Optional[int]
-	Delimiter                               Optional[byte]
-	MarkerWidth, Padding, ContentIndent     int
+	Group, Item, ParentItem, Marker, Prefix, Content Span
+	Ordered                                          bool
+	Bullet                                           Optional[byte]
+	Start                                            Optional[int]
+	Delimiter                                        Optional[byte]
+	MarkerWidth, Padding, ContentIndent              int
 }
 
 // ListItems borrows complete production syntax and its original allowance.
@@ -69,13 +71,21 @@ func (d *Document) ListItems(ctx context.Context, budget *OperationBudget, index
 			if !marker.Present() || !prefix.Present() {
 				return nil, ErrModel
 			}
+			var content Span
+			if children := n.spec.Children; len(children) != 0 {
+				first, last := children[0].Span(), children[len(children)-1].Span()
+				if !first.Present() || !last.Present() || first.Start() > last.End() {
+					return nil, ErrModel
+				}
+				content = Span{source: first.source, start: first.Start(), end: last.End(), present: true}
+			}
 			if err := openingHashGrowth(ctx, budget, len(out), cap(out)); err != nil {
 				return nil, err
 			}
 			if err := headingFactCharge(ctx, budget, 1, 1); err != nil {
 				return nil, err
 			}
-			out = append(out, ListItemFact{Group: group, Item: n.Span(), ParentItem: parent, Marker: marker, Prefix: prefix, Ordered: p.Ordered, Bullet: p.Bullet, Start: p.Start, Delimiter: p.Delimiter, MarkerWidth: p.MarkerWidth.Value, Padding: p.Padding.Value, ContentIndent: p.ContentIndent.Value})
+			out = append(out, ListItemFact{Group: group, Item: n.Span(), ParentItem: parent, Marker: marker, Prefix: prefix, Content: content, Ordered: p.Ordered, Bullet: p.Bullet, Start: p.Start, Delimiter: p.Delimiter, MarkerWidth: p.MarkerWidth.Value, Padding: p.Padding.Value, ContentIndent: p.ContentIndent.Value})
 			parent = n.Span()
 		}
 		if len(n.spec.Children) != 0 && (n.Kind() == BlockQuote || n.Kind() == List || n.Kind() == ListItem) {
@@ -103,10 +113,18 @@ func (d *Document) ListItems(ctx context.Context, budget *OperationBudget, index
 // ListSeparatorFact describes the original owned first-line separator. Nonempty
 // refers to source syntax on that physical line, independently of descendants.
 // Values are detached from mutable syntax and never confer edit ownership.
+//
+// OneLine reports that every child block ends on the marker's physical line and
+// that no list item nests inside this one, not even on that line. CodeFallback
+// reports whitespace left after the separator: the content starts as indented
+// code. Column is the tab-expanded column of the separator start. Following is the
+// column of the first non-whitespace byte on the first nonblank physical line
+// after the item, or -1 when there is none. Quoted reports a '>' before the item
+// prefix on the marker line, where Following can't see container prefixes.
 type ListSeparatorFact struct {
-	Marker, Separator Span
-	Padding           int
-	FirstLineNonempty bool
+	Marker, Separator                                Span
+	Padding, Column, Following                       int
+	FirstLineNonempty, OneLine, CodeFallback, Quoted bool
 }
 
 // ListSeparators derives facts from the actual ListItems inventory exactly once,
@@ -123,7 +141,8 @@ func (d *Document) ListSeparators(ctx context.Context, budget *OperationBudget, 
 	}
 	out := make([]ListSeparatorFact, 0, len(items))
 	previous := -1
-	for _, item := range items {
+	text := index.source.content
+	for i, item := range items {
 		// Search performs at most bits.Len(len(lines)) comparisons. Reserve them
 		// before touching the original index; no Unicode prefix scan is necessary.
 		if err := headingFactCharge(ctx, budget, int64(bits.Len(uint(len(index.lines))))+1, 0); err != nil {
@@ -146,11 +165,56 @@ func (d *Document) ListSeparators(ctx context.Context, budget *OperationBudget, 
 			return nil, err
 		}
 		separator := Span{source: index.source, start: marker.End(), end: prefix.End(), present: true}
-		out = append(out, ListSeparatorFact{Marker: marker, Separator: separator, Padding: item.Padding, FirstLineNonempty: nonempty})
+		fact := ListSeparatorFact{Marker: marker, Separator: separator, Padding: item.Padding, FirstLineNonempty: nonempty, Following: -1}
+		if nonempty {
+			// The marker line, the item's later lines and the first line after it
+			// are each scanned once; reserve them before reading.
+			if err := headingFactCharge(ctx, budget, int64(item.Item.End()-index.lines[line].start)+2, 0); err != nil {
+				return nil, err
+			}
+			child := i+1 < len(items) && items[i+1].ParentItem == item.Item
+			fact.OneLine = !child && (!item.Content.Present() || item.Content.End() <= index.lines[line].next)
+			fact.CodeFallback = text[prefix.End()] == ' ' || text[prefix.End()] == '\t'
+			fact.Column = sourceColumn(text, index.lines[line].start, marker.End())
+			for at := index.lines[line].start; at < prefix.Start(); at++ {
+				fact.Quoted = fact.Quoted || text[at] == '>'
+			}
+			for next := line + 1; next < len(index.lines); next++ {
+				l := index.lines[next]
+				if l.start < item.Item.End() {
+					continue
+				}
+				if err := headingFactCharge(ctx, budget, int64(l.end-l.start)+1, 0); err != nil {
+					return nil, err
+				}
+				at := l.start
+				for at < l.end && (text[at] == ' ' || text[at] == '\t') {
+					at++
+				}
+				if at < l.end {
+					fact.Following = sourceColumn(text, l.start, at)
+					break
+				}
+			}
+		}
+		out = append(out, fact)
 		previous = marker.End()
 	}
 	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 0, 0); err != nil {
 		return nil, err
 	}
 	return out, nil
+}
+
+// sourceColumn expands tabs to four-column stops from the physical line start.
+func sourceColumn(text string, start, at int) int {
+	column := 0
+	for i := start; i < at; i++ {
+		if text[i] == '\t' {
+			column += 4 - column%4
+		} else {
+			column++
+		}
+	}
+	return column
 }

@@ -28,6 +28,7 @@ func TestCompiledPlatformMD030ProductionAnalysis(t *testing.T) {
 		Expected              []struct {
 			Range  []int
 			Source string
+			Fix    bool
 		}
 	}
 	if err := json.Unmarshal(data, &fixtures); err != nil {
@@ -56,20 +57,35 @@ func TestCompiledPlatformMD030ProductionAnalysis(t *testing.T) {
 					for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
 						got := runConfigurationProcess(t, binary, root, args...)
 						out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
+						// A preview corrects every eligible finding and reports the rest
+						// against the candidate.
+						preview := args[0] == "fix"
+						remaining, changes := len(f.Expected), 0
+						for _, w := range f.Expected {
+							if w.Fix && preview {
+								remaining, changes = remaining-1, 1
+							}
+						}
 						status := 0
-						if len(f.Expected) > 0 {
+						if remaining > 0 {
 							status = 10
 						}
 						if f.Incomplete {
 							status = 15
 						}
-						if got.Status != status || out.Complete == f.Incomplete || len(out.Errors) != 0 || len(out.Diagnostics) != len(f.Expected) || len(out.Changes) != 0 || len(out.Documents) != 0 {
+						if got.Status != status || out.Complete == f.Incomplete || len(out.Errors) != 0 || len(out.Diagnostics) != remaining || len(out.Changes) != changes || len(out.Documents) != 0 {
 							t.Fatal(got)
 						}
 						for i, w := range f.Expected {
+							if preview {
+								if i < remaining && (out.Diagnostics[i].Rule != "MD030" || out.Diagnostics[i].FixAvailable) {
+									t.Fatal(out.Diagnostics[i])
+								}
+								continue
+							}
 							d := out.Diagnostics[i]
 							actual := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD030" || d.FixAvailable || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
+							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD030" || d.FixAvailable != w.Fix || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
 								t.Fatal(d, w)
 							}
 						}
@@ -124,7 +140,7 @@ func TestCompiledPlatformMD030ConfigurationAndComposition(t *testing.T) {
 			putConfigurationFile(t, root, "doc.md", "-  One\n")
 			got := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=json")
 			out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "lint")
-			if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD030" || out.Diagnostics[0].FixAvailable {
+			if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD030" || !out.Diagnostics[0].FixAvailable {
 				t.Fatal(got)
 			}
 			inspected, p := runInspection(t, binary, root, root, "inspect", "doc.md", "--format=json")
@@ -149,28 +165,23 @@ func TestCompiledPlatformMD030ConfigurationAndComposition(t *testing.T) {
 
 					putConfigurationFile(t, root, ".mdchk.yaml", conf)
 					original := "é" + ending.text + ending.text + "-  first" + ending.text + "- last"
-					candidate := original + ending.text
+					candidate := "é" + ending.text + ending.text + "-  first" + ending.text + "-  last" + ending.text
 					digest := fmt.Sprintf("%x", sha256.Sum256([]byte(candidate)))
-					start, line := 11+3*len(ending.text), 4
 					for pass, source := range []string{original, candidate} {
 						putConfigurationFile(t, root, "doc.md", source)
 						before := configurationBytes(t, root)
 						got := runConfigurationProcess(t, binary, root, "fix", "--dry-run", "doc.md", "--format=json")
 						out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "fix")
-						if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || len(out.Changes) != 1-pass || len(out.Documents) != 0 || len(out.Files) != 1 {
+						if got.Status != 0 || !out.Complete || len(out.Diagnostics) != 0 || len(out.Changes) != 1-pass || len(out.Documents) != 0 || len(out.Files) != 1 {
 							t.Fatal(got)
 						}
 						snap := out.Files[0].ResultSnapshot
 						if snap == nil || snap.SHA256 != digest || snap.SizeBytes != len(candidate) {
 							t.Fatal(out.Files)
 						}
-						d := out.Diagnostics[0]
-						if d.Rule != "MD030" || d.FixAvailable || d.ByteRange != (result.ByteRange{Start: start, End: start + 1}) || d.Range.Start != (result.Position{Line: line, Column: 2}) || d.Range.End != (result.Position{Line: line, Column: 3}) || d.Snapshot != *snap {
-							t.Fatal(d)
-						}
 						if pass == 0 {
 							c := out.Changes[0]
-							if !reflect.DeepEqual(c.Rules, []string{"MD047"}) || c.EditCount != 1 || c.Candidate != *snap {
+							if !reflect.DeepEqual(c.Rules, []string{"MD030", "MD047"}) || c.EditCount != 2 || c.Candidate != *snap {
 								t.Fatal(c)
 							}
 						}
@@ -207,15 +218,26 @@ func TestCompiledPlatformMD030DirectivesAndValidation(t *testing.T) {
 				for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
 					got := runConfigurationProcess(t, binary, root, args...)
 					out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
+					// The preview corrects the active final item. The comment line
+					// after "-  b" would join that item, so its finding stays manual.
+					active, changes := tc.active, 0
+					if args[0] == "fix" && tc.active > 0 {
+						active, changes = tc.active-1, 1
+					}
 					status := 0
-					if tc.active > 0 {
+					if active > 0 {
 						status = 10
 					}
-					if got.Status != status || !out.Complete || len(out.Diagnostics) != tc.active || len(out.SuppressedDiagnostics) != tc.hidden || len(out.Changes) != 0 || len(out.Documents) != 0 {
+					if got.Status != status || !out.Complete || len(out.Diagnostics) != active || len(out.SuppressedDiagnostics) != tc.hidden || len(out.Changes) != changes || len(out.Documents) != 0 {
 						t.Fatal(got)
 					}
-					if tc.active == 1 && out.Diagnostics[0].ByteRange != (result.ByteRange{Start: 73, End: 75}) {
+					if active == 1 && args[0] == "lint" && out.Diagnostics[0].ByteRange != (result.ByteRange{Start: 73, End: 75}) {
 						t.Fatal(out.Diagnostics)
+					}
+					for _, d := range out.Diagnostics {
+						if d.FixAvailable != (args[0] == "lint" && d.ByteRange.Start == 73) {
+							t.Fatal(d)
+						}
 					}
 				}
 				if !reflect.DeepEqual(before, configurationBytes(t, root)) {
