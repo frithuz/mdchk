@@ -329,7 +329,7 @@ there, not even a deferral, so nothing touches MD047's insertion and it applies 
 
 ### Production rule integration
 
-`internal/rules.Corrections` regenerates MD047, MD009, MD019 and MD021 groups from each
+`internal/rules.Corrections` regenerates MD047, MD009, MD019, MD021 and MD022 groups from each
 current round's actual shared analysis and source-owned diagnostic ranges. For
 MD047, the source's retained physical-line index supplies the same terminal facts
 as analysis; the shared `fix.InsertionEnding` chooses inserted spelling without
@@ -348,12 +348,23 @@ parses, any parse uncertainty and a document opening with an unrecognized block.
 rule run builds its protected-span index at most once, on the first finding that
 needs it.
 
+MD022 insertions use `RuleInteriorEdits.InsertionEligible`, which adds a check that
+the neighbouring physical line touches no code or HTML block envelope, delimiter
+lines included. `internal/rules/internal/headingblanks` derives each deficient
+side's insertion boundary, shortfall and quote prefix from `HeadingSpacing` and
+`Headings` facts, for the rule, the producer and the checker alike. Sides sharing a
+boundary insert the larger shortfall, as identical edits that the planner applies
+once. The trusted checker proves once per round that only the round's edits
+changed bytes, every heading keeps its level, style, text and containers
+(`CheckContext.SameEnvelope`) and the document keeps its meaning, then requires
+each group to be the exact insertion Before's facts require.
+
 `parser.Document.UnrecognizedBlock` reports a complete `---` or `+++` block opening
 the source while recognition is off or the format is unselected. Such a block may be
 real metadata, or a pair of thematic breaks, and each round's own parse answers this
 once with the shared delimiter detection, so no fact is carried between rounds or
 from saved input. `InteriorEditQuery` and MD009's eligibility return false, and
-`Corrections` makes no MD009, MD019 or MD021 group. MD047 stays, because a line
+`Corrections` makes no MD009 group, and MD019, MD021 and MD022 are withheld by their flags. MD047 stays, because a line
 ending at EOF can't change a value inside the block.
 
 Combined rounds propose all of a document's eligible corrections together, so a
