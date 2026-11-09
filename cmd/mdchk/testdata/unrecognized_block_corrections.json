@@ -117,35 +117,35 @@
   {
     "name": "blank-first-line",
     "source": "\n---\n#  x\n---\n",
-    "candidate": "\n---\n# x\n---\n",
+    "candidate": "\n---\n\n# x\n\n---\n",
     "config": "default",
     "guarded": false
   },
   {
     "name": "other-format-closer",
     "source": "---\n#  x\n+++\n",
-    "candidate": "---\n# x\n+++\n",
+    "candidate": "---\n\n# x\n\n+++\n",
     "config": "default",
     "guarded": false
   },
   {
     "name": "dots-cannot-open",
     "source": "...\n#  x\n...\n",
-    "candidate": "...\n# x\n...\n",
+    "candidate": "...\n\n# x\n\n...\n",
     "config": "default",
     "guarded": false
   },
   {
     "name": "extra-marker-character",
     "source": "----\n#  x\n----\n",
-    "candidate": "----\n# x\n----\n",
+    "candidate": "----\n\n# x\n\n----\n",
     "config": "default",
     "guarded": false
   },
   {
     "name": "indented-closer",
     "source": "---\n#  x\n ---\n",
-    "candidate": "---\n# x\n ---\n",
+    "candidate": "---\n\n# x\n\n ---\n",
     "config": "default",
     "guarded": false
   },

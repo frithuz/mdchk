@@ -126,6 +126,8 @@ func (q *InteriorEditQuery) index(ctx context.Context) error {
 type RuleInteriorEdits struct {
 	context RuleContext
 	query   *InteriorEditQuery
+	blocks  []parser.Span
+	indexed bool
 }
 
 // InteriorEdits returns the eligibility query for this rule run.
@@ -159,4 +161,51 @@ func (r *RuleInteriorEdits) Eligible(ctx context.Context, id string, anchor, spa
 		return false, c.Checkpoint(ctx, 1)
 	}
 	return r.query.Eligible(ctx, id, anchor, span)
+}
+
+// InsertionEligible reports whether lines inserted at a physical line boundary
+// can reach a correction. neighbour is the whole nonempty line on the far side
+// of the boundary, with its ending. Eligible's guards apply to it, and so does a
+// code or HTML block envelope that it touches, delimiter lines included.
+func (r *RuleInteriorEdits) InsertionEligible(ctx context.Context, id string, anchor, neighbour parser.Span) (bool, error) {
+	eligible, err := r.Eligible(ctx, id, anchor, neighbour)
+	if err != nil || !eligible {
+		return false, err
+	}
+	if !r.indexed {
+		nodes, err := r.context.document.ProtectedNodes(ctx, r.context.budget)
+		if err != nil {
+			return false, err
+		}
+		n := int64(len(nodes))
+		if err := r.context.budget.ChargeWork(n*int64(bits.Len64(uint64(n))) + n + 1); err != nil {
+			return false, err
+		}
+		for _, node := range nodes {
+			if node.Kind() == parser.CodeBlock || node.Kind() == parser.HTMLBlock {
+				r.blocks = append(r.blocks, node.Span())
+			}
+		}
+		slices.SortFunc(r.blocks, func(a, b parser.Span) int { return cmp.Compare(a.Start(), b.Start()) })
+		out := r.blocks[:0]
+		for _, s := range r.blocks {
+			if len(out) == 0 || s.End() > out[len(out)-1].End() {
+				out = append(out, s)
+			}
+		}
+		r.blocks, r.indexed = out, true
+	}
+	lo, hi := 0, len(r.blocks)
+	for lo < hi {
+		if err := r.context.budget.ChargeWork(1); err != nil {
+			return false, err
+		}
+		mid := lo + (hi-lo)/2
+		if r.blocks[mid].End() < neighbour.Start() {
+			lo = mid + 1
+		} else {
+			hi = mid
+		}
+	}
+	return lo == len(r.blocks) || r.blocks[lo].Start() > neighbour.End(), ctx.Err()
 }

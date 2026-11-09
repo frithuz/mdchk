@@ -62,7 +62,7 @@ func analyzeHeadings(t *testing.T, r *engine.Registry, source string, s engine.S
 		}
 	}
 	for _, d := range out.Diagnostics {
-		if d.FixAvailable && d.Rule != "MD003" && d.Rule != "MD009" && d.Rule != "MD019" && d.Rule != "MD021" {
+		if d.FixAvailable && d.Rule != "MD003" && d.Rule != "MD009" && d.Rule != "MD019" && d.Rule != "MD021" && d.Rule != "MD022" {
 			t.Fatal("report-only heading grants fix", d)
 		}
 	}

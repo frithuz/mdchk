@@ -5,6 +5,7 @@ import (
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/rules/internal/headingblanks"
 )
 
 func headingBlankLines(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
@@ -12,12 +13,19 @@ func headingBlankLines(ctx context.Context, c engine.RuleContext) engine.RuleOut
 	if err != nil {
 		return engine.RuleOutcome{Err: err}
 	}
-	options := c.Options()
-	before, _ := options["before"].(int)
-	after, _ := options["after"].(int)
+	facts, err := c.Headings(ctx)
+	if err != nil {
+		return engine.RuleOutcome{Err: err}
+	}
+	before, after := headingblanks.Minimums(c.Options())
+	sides, err := headingblanks.Sides(ctx, c.Source(), c.Lines(), facts, headings, before, after, c.Checkpoint)
+	if err != nil {
+		return engine.RuleOutcome{Err: err}
+	}
+	edits := c.InteriorEdits()
 	out := engine.RuleOutcome{}
-	for _, h := range headings {
-		for _, side := range [...]struct {
+	for i, h := range headings {
+		for s, side := range [...]struct {
 			point          parser.Span
 			count, minimum int
 			edge           bool
@@ -36,7 +44,16 @@ func headingBlankLines(ctx context.Context, c engine.RuleContext) engine.RuleOut
 				return out
 			}
 			if !side.edge && side.count < side.minimum {
-				out.Findings = append(out.Findings, engine.Finding{Span: side.point, Message: side.message})
+				finding := engine.Finding{Span: side.point, Message: side.message}
+				// The neighbour line touches the insertion, so its protection defers it.
+				if plan := sides[i][s]; plan.Known {
+					finding.FixEligible, err = edits.InsertionEligible(ctx, "MD022", side.point, plan.Neighbour)
+					if err != nil {
+						out.Err = err
+						return out
+					}
+				}
+				out.Findings = append(out.Findings, finding)
 			}
 		}
 	}

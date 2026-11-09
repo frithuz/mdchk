@@ -121,6 +121,8 @@ func md058NativeFindings(t *testing.T, out result.Result) []result.Diagnostic {
 
 // The spec acceptance inputs run with only version and flavor configured, so
 // MD058 is enabled by its default and other default rules run alongside it.
+// MD022 alone is disabled: its blank-line insertions would resolve the table
+// findings these examples keep.
 func TestCompiledPlatformMD058SpecExamplesWithDefaults(t *testing.T) {
 	t.Parallel()
 	binary := sharedExecutable(t)
@@ -151,7 +153,7 @@ func TestCompiledPlatformMD058SpecExamplesWithDefaults(t *testing.T) {
 	} {
 		t.Run(fmt.Sprintf("%s/%q", tc.flavor, tc.source), func(t *testing.T) {
 			root := configurationProject(t)
-			putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\nflavor: "+tc.flavor+"\n")
+			putConfigurationFile(t, root, ".mdchk.yaml", "version: 1\nflavor: "+tc.flavor+"\nrules:\n  MD022: {enabled: false}\n")
 			putConfigurationFile(t, root, "doc.md", tc.source)
 			before := readinessState(t, root)
 			for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"inspect", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {

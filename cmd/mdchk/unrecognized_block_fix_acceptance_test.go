@@ -35,7 +35,7 @@ func checkWithheld(t *testing.T, label string, diagnostics []result.Diagnostic, 
 	seen := map[string]bool{}
 	for _, d := range diagnostics {
 		seen[d.Rule] = true
-		if (d.Rule == "MD009" || d.Rule == "MD019" || d.Rule == "MD021") && d.FixAvailable {
+		if (d.Rule == "MD009" || d.Rule == "MD019" || d.Rule == "MD021" || d.Rule == "MD022") && d.FixAvailable {
 			t.Fatalf("%s advertised a withheld correction: %+v", label, d)
 		}
 	}
