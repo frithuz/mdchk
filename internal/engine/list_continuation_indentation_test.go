@@ -90,7 +90,7 @@ func TestRuleContextListContinuationIndentationFixedFinalPublication(t *testing.
 	for _, tc := range []struct {
 		source       string
 		facts, final int
-	}{{"", 0, 6}, {"- One\n  Text\n", 0, 43}, {"- One\n Text\n", 1, 42}} {
+	}{{"", 0, 6}, {"- One\n  Text\n", 0, 43}, {"- One\n Text\n", 1, 43}} {
 		for _, origin := range []bool{false, true} {
 			c := listContext(t, tc.source, parser.DefaultLimits(), context.Background())
 			c.options = Options{}

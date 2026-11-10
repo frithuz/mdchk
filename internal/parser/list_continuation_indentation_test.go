@@ -122,9 +122,9 @@ func TestListContinuationProjectionOriginalReservations(t *testing.T) {
 		final       int
 	}{
 		{"", 0, 1, 3, 4}, {"plain\nplain", 0, 13, 34, 26},
-		{"- One\n  Text\n", 0, 23, 57, 41}, {"- One\n Text\n", 1, 25, 54, 40},
+		{"- One\n  Text\n", 0, 23, 57, 41}, {"- One\n Text\n", 1, 25, 55, 41},
 		{"> - One\n>\n>\t Text\n", 1, 27, 97, 68},
-		{"- A\n X\n Y\n Z\n W\n", 4, 43, 101, 78},
+		{"- A\n X\n Y\n Z\n W\n", 4, 43, 105, 82},
 	} {
 		for _, kind := range []string{"nodes", "work", "final"} {
 			d, b, index := sectionParse(t, tc.source)

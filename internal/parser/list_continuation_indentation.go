@@ -9,9 +9,13 @@ import (
 // ListContinuationFact is detached original indentation evidence. Actual and
 // Expected count item columns; consumed ancestor quote columns are neutral.
 // A tab is indivisible evidence, including when shared with a required prefix.
+// SpaceOnly reports that the line's indentation through Span is ASCII spaces
+// alone and that no quote prefix is present on the line or lazily absent through
+// the owner's quote ancestry, so columns and bytes change together.
 type ListContinuationFact struct {
 	Span             Span
 	Actual, Expected int
+	SpaceOnly        bool
 }
 
 // listContinuationCursor is the scalar portion of an original Indentation view.
@@ -39,6 +43,7 @@ func (d *Document) ListContinuationIndentation(ctx context.Context, budget *Oper
 		quotes                   int
 		facing                   facing
 		exempt, eligible, opaque bool
+		quoted, shifts           bool
 		owner                    *Node
 		expected                 int
 	}
@@ -100,6 +105,7 @@ func (d *Document) ListContinuationIndentation(ctx context.Context, budget *Oper
 		node, owner    *Node
 		expected, next int
 		entered        bool
+		quoted         bool
 	}
 	stack := make([]frame, 1)
 	stack[0].node = d.root
@@ -116,7 +122,7 @@ func (d *Document) ListContinuationIndentation(ctx context.Context, budget *Oper
 		}
 		return capacity, nil
 	}
-	mark := func(span Span, owner *Node, expected int, all bool) error {
+	mark := func(span Span, owner *Node, expected int, quoted, all bool) error {
 		first, err := locate(span.Start())
 		if err != nil {
 			return err
@@ -136,6 +142,7 @@ func (d *Document) ListContinuationIndentation(ctx context.Context, budget *Oper
 				lines[i].eligible = true
 				lines[i].owner = owner
 				lines[i].expected = expected
+				lines[i].quoted = lines[i].quoted || quoted
 			}
 		}
 		return nil
@@ -155,6 +162,9 @@ func (d *Document) ListContinuationIndentation(ctx context.Context, budget *Oper
 				}
 				f.expected += p.ContentIndent.Value
 				f.owner = f.node
+			}
+			if f.node.Kind() == BlockQuote {
+				f.quoted = true
 			}
 			for _, m := range f.node.spec.Markers {
 				if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
@@ -184,6 +194,7 @@ func (d *Document) ListContinuationIndentation(ctx context.Context, budget *Oper
 						return nil, err
 					}
 				} else {
+					s.quoted = true
 					before := c
 					if err := consume(&c, 3); err != nil {
 						return nil, err
@@ -219,11 +230,11 @@ func (d *Document) ListContinuationIndentation(ctx context.Context, budget *Oper
 			}
 			switch f.node.Kind() {
 			case Paragraph:
-				if err := mark(f.node.spec.Envelope, f.owner, f.expected, true); err != nil {
+				if err := mark(f.node.spec.Envelope, f.owner, f.expected, f.quoted, true); err != nil {
 					return nil, err
 				}
 			case Heading, ThematicBreak, TableRow:
-				if err := mark(f.node.spec.Envelope, f.owner, f.expected, false); err != nil {
+				if err := mark(f.node.spec.Envelope, f.owner, f.expected, f.quoted, false); err != nil {
 					return nil, err
 				}
 			case CodeSpan, InlineHTML:
@@ -256,7 +267,7 @@ func (d *Document) ListContinuationIndentation(ctx context.Context, budget *Oper
 					return nil, err
 				}
 				if c.offset == c.end {
-					if err := mark(f.node.spec.Envelope, f.owner, f.expected, false); err != nil {
+					if err := mark(f.node.spec.Envelope, f.owner, f.expected, f.quoted, false); err != nil {
 						return nil, err
 					}
 				}
@@ -269,9 +280,36 @@ func (d *Document) ListContinuationIndentation(ctx context.Context, budget *Oper
 							return nil, err
 						}
 						if m.Role == "opening" || m.Role == "closing" {
-							if err := mark(m.Source, f.owner, f.expected, false); err != nil {
+							if err := mark(m.Source, f.owner, f.expected, f.quoted, false); err != nil {
 								return nil, err
 							}
+						}
+						if m.Role != "opening" {
+							continue
+						}
+						// The opening indentation is stripped from every payload line, so
+						// moving it would change any payload that lost bytes to it.
+						open, err := locate(m.Source.Start())
+						if err != nil {
+							return nil, err
+						}
+						last := open
+						for _, p := range f.node.spec.Content {
+							if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
+								return nil, err
+							}
+							if !p.Source.Present() {
+								continue
+							}
+							i, err := locate(p.Source.Start())
+							if err != nil {
+								return nil, err
+							}
+							// Only a line's first segment follows its stripped indentation.
+							if i != last && lines[i].cursor.offset != p.Source.Start() {
+								lines[open].shifts = true
+							}
+							last = i
 						}
 					}
 				}
@@ -294,7 +332,7 @@ func (d *Document) ListContinuationIndentation(ctx context.Context, budget *Oper
 				if (f.node.Kind() != DocumentKind && f.node.Kind() != BlockQuote && f.node.Kind() != ListItem) || span.Start() < f.node.spec.Envelope.Start() || span.End() > f.node.spec.Envelope.End() {
 					return nil, ErrModel
 				}
-				if err := mark(span, f.owner, f.expected, false); err != nil {
+				if err := mark(span, f.owner, f.expected, f.quoted, false); err != nil {
 					return nil, err
 				}
 				reference++
@@ -306,7 +344,7 @@ func (d *Document) ListContinuationIndentation(ctx context.Context, budget *Oper
 			// Inline children supply only final literal/raw protection, never owners.
 			// Table cells cannot introduce multiline physical contributions.
 			if f.node.Kind() == DocumentKind || f.node.Kind() == BlockQuote || f.node.Kind() == List || f.node.Kind() == ListItem || f.node.Kind() == Table || f.node.Kind() == Paragraph || f.node.Kind() == Heading || f.node.Kind() == Emphasis || f.node.Kind() == Strong || f.node.Kind() == Strike || f.node.Kind() == Link || f.node.Kind() == Image {
-				next := frame{node: child, owner: f.owner, expected: f.expected}
+				next := frame{node: child, owner: f.owner, expected: f.expected, quoted: f.quoted}
 				capacity, err := grow(len(stack), cap(stack))
 				if err != nil {
 					return nil, err
@@ -329,7 +367,7 @@ func (d *Document) ListContinuationIndentation(ctx context.Context, budget *Oper
 		return nil, ErrModel
 	}
 	var out []ListContinuationFact
-	for _, s := range lines {
+	for i, s := range lines {
 		if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
 			return nil, err
 		}
@@ -380,7 +418,14 @@ func (d *Document) ListContinuationIndentation(ctx context.Context, budget *Oper
 		if err := headingFactCharge(ctx, budget, 1, 1); err != nil {
 			return nil, err
 		}
-		out = append(out, ListContinuationFact{Span: Span{source: index.source, start: start, end: c.offset, present: true}, Actual: actual, Expected: s.expected})
+		spaceOnly := !s.quoted && !s.shifts
+		for j := index.lines[i].start; spaceOnly && j < c.offset; j++ {
+			if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
+				return nil, err
+			}
+			spaceOnly = index.source.content[j] == ' '
+		}
+		out = append(out, ListContinuationFact{Span: Span{source: index.source, start: start, end: c.offset, present: true}, Actual: actual, Expected: s.expected, SpaceOnly: spaceOnly})
 	}
 	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 0, 0); err != nil {
 		return nil, err
