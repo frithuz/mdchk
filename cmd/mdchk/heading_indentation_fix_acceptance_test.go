@@ -146,3 +146,38 @@ func TestCompiledHeadingIndentationPreviewText(t *testing.T) {
 		t.Fatal("preview wrote the file")
 	}
 }
+
+// Issue #377: MD022's blank line and MD023's indentation deletion start at the
+// same offset. MD022 wins the conflict by catalog order, and MD023's deletion
+// waits for the next round instead of being dropped.
+func TestCompiledHeadingIndentationAndBlankLinesConflict(t *testing.T) {
+	t.Parallel()
+	binary := sharedExecutable(t)
+	const source, want = "Text\n ## Install\nText\n", "Text\n\n## Install\n\nText\n"
+	for _, flavor := range []string{"commonmark", "gfm"} {
+		root := configurationProject(t)
+		putConfigurationFile(t, root, ".mdchk.yaml", headingIndentationConfiguration(flavor, "blanks"))
+		putConfigurationFile(t, root, "doc.md", source)
+		path := filepath.Join(root, "doc.md")
+		first := runAppliedFix(t, binary, root, "fix", "doc.md", "--format=json")
+		//nolint:gosec // Access only synthetic test fixtures.
+		saved, err := os.ReadFile(path)
+		if err != nil || string(saved) != want || first.Status != 0 || len(first.Result.Changes) != 1 || !reflect.DeepEqual(first.Result.Changes[0].Rules, []string{"MD022", "MD023"}) {
+			t.Fatalf("saved %q want %q: %v %s", saved, want, err, first.Stdout)
+		}
+		for _, d := range first.Result.Diagnostics {
+			if d.Rule == "MD022" || d.Rule == "MD023" {
+				t.Fatalf("finding left: %+v", d)
+			}
+		}
+		if len(first.Result.DeferredFixes) != 0 {
+			t.Fatalf("deferred: %+v", first.Result.DeferredFixes)
+		}
+		second := runAppliedFix(t, binary, root, "fix", "doc.md", "--format=json")
+		//nolint:gosec // Access only synthetic test fixtures.
+		again, err := os.ReadFile(path)
+		if err != nil || string(again) != want || second.Status != 0 || len(second.Result.Changes) != 0 {
+			t.Fatalf("second run %q: %v %s", again, err, second.Stdout)
+		}
+	}
+}

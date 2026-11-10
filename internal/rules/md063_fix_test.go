@@ -242,8 +242,8 @@ func TestMD063FixComposesWithSpacingAndWhitespace(t *testing.T) {
 	}{
 		{"same heading line", "##  hello world  ##   \ntext", "## Hello world ##\ntext\n", nil},
 		{"two headings", "##  hello\n\n# world \n\nend", "## Hello\n\n# World\n\nend\n", nil},
-		// A final line's suffix and a missing newline still conflict without MD063.
-		{"unterminated suffix", "##  hello world  ##   ", "## Hello world ##   ", []string{"MD009", "MD047"}},
+		// A final line's suffix wins its conflict with MD047, whose newline follows.
+		{"unterminated suffix", "##  hello world  ##   ", "## Hello world ##\n", nil},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			view, out, _ := caseCorrected(t, tc.source, o, Corrections)

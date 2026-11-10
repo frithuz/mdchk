@@ -81,27 +81,17 @@ func (c RuleContext) TrailingWhitespace(ctx context.Context) (out []TrailingWhit
 // trailingFixEligible resolves one suffix from retained facts and directive
 // intervals only. Hidden and observational findings are never eligible, and
 // neither is any suffix in a document opening with an unrecognized block. A suffix
-// at physical EOF conflicts with an MD047 obligation active there.
+// at physical EOF wins its conflict with MD047, whose final newline follows later.
 func (c RuleContext) trailingFixEligible(ctx context.Context, item parser.TrailingSuffix) (bool, error) {
 	if c.observational || !c.syntaxReliable || !c.directives.complete || c.document.UnrecognizedBlock() || item.Literal || item.Withheld || item.Oversized {
 		return false, nil
 	}
-	if err := c.auditCharge(ctx, directiveLookupWork(len(c.directives.intervals["MD009"]))+directiveLookupWork(len(c.directives.intervals["MD047"]))+1, 0); err != nil {
+	if err := c.auditCharge(ctx, directiveLookupWork(len(c.directives.intervals["MD009"]))+1, 0); err != nil {
 		return false, err
 	}
 	state, err := c.directives.anchorState("MD009", item.Start())
 	if err != nil {
 		return false, err
 	}
-	if !state.Enabled {
-		return false, nil
-	}
-	if !item.EOF || len(c.directives.intervals["MD047"]) == 0 {
-		return true, nil
-	}
-	terminal, err := c.directives.anchorState("MD047", item.End())
-	if err != nil {
-		return false, err
-	}
-	return !terminal.Enabled, nil
+	return state.Enabled, nil
 }

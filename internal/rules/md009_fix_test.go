@@ -266,7 +266,7 @@ func TestMD009FixEligibility(t *testing.T) {
 		md047, want          bool
 	}{
 		{"ordinary", "commonmark", "a \n", false, true},
-		{"eof with md047", "commonmark", "a ", true, false},
+		{"eof with md047", "commonmark", "a ", true, true},
 		{"eof without md047", "commonmark", "a ", false, true},
 		{"line with md047", "commonmark", "a \nb\n", true, true},
 		{"odd backslash", "commonmark", "a\\ \nb\n", false, false},

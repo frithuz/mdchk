@@ -45,7 +45,6 @@ func (tc md009FixCase) configuration(flavor string) string {
 }
 
 func md009FixCases() []md009FixCase {
-	conflict := []string{"conflict", "conflict"}
 	unproven := []string{"meaning-not-proven"}
 	both := []string{"MD009", "MD047"}
 	return []md009FixCase{
@@ -112,11 +111,11 @@ func md009FixCases() []md009FixCase {
 		{name: "eof literal task", flavor: "commonmark", source: "- [x] ", want: "- [x]"},
 		{name: "task continuation", flavor: "gfm", source: "b \n\n- [ ] \n  a\n", want: "b\n\n- [ ] \n  a\n", manual: []int{8}, deferred: unproven},
 		{name: "literal task continuation", flavor: "commonmark", source: "- [ ] \n  a\n", want: "- [ ]\n  a\n"},
-		// Criterion 16: MD047 conflict.
-		{name: "conflict", source: "foo   ", want: "foo   ", md047: true, manual: []int{3}, deferred: conflict},
-		{name: "conflict blank line", source: "foo\n  ", want: "foo\n  ", md047: true, manual: []int{4}, deferred: conflict},
-		{name: "conflict beside correction", source: "a \nfoo ", want: "a\nfoo ", md047: true, manual: []int{5}, deferred: conflict, rules: []string{"MD009"}},
-		{name: "conflict strict", source: "foo  ", want: "foo  ", md047: true, option: "{strict: true}", manual: []int{3}, deferred: conflict},
+		// Criterion 16: MD009 wins its EOF conflict with MD047, whose newline follows.
+		{name: "conflict", source: "foo   ", want: "foo\n", md047: true, rules: both},
+		{name: "conflict blank line", source: "foo\n  ", want: "foo\n", md047: true},
+		{name: "conflict beside correction", source: "a \nfoo ", want: "a\nfoo\n", md047: true, rules: both},
+		{name: "conflict strict", source: "foo  ", want: "foo\n", md047: true, option: "{strict: true}", rules: both},
 		{name: "no conflict exact", source: "foo  ", want: "foo  \n", md047: true, rules: []string{"MD047"}},
 		// Criterion 17: both fixers together.
 		{name: "both", source: "a \nb", want: "a\nb\n", md047: true, rules: both},
@@ -243,8 +242,8 @@ func TestCompiledMD009FixCorrections(t *testing.T) {
 	}
 }
 
-// Criterion 16: the MD009 removal and MD047's insertion touch at EOF, so neither wins
-// and both findings stay.
+// Criterion 16: the MD009 removal and MD047's insertion touch at EOF. MD009 wins the
+// conflict and MD047's final newline follows in the next round, so nothing is left.
 func TestCompiledMD009MD047ConflictPinned(t *testing.T) {
 	t.Parallel()
 	binary := sharedExecutable(t)
@@ -257,22 +256,11 @@ func TestCompiledMD009MD047ConflictPinned(t *testing.T) {
 			got := runAppliedFix(t, binary, root, "fix", "doc.md", "--format=json")
 			//nolint:gosec // Access only synthetic test fixtures.
 			saved, err := os.ReadFile(filepath.Join(root, "doc.md"))
-			if err != nil || string(saved) != source || got.Status != 10 || len(got.Result.Changes) != 0 {
+			if err != nil || string(saved) != "foo\n" || got.Status != 0 || len(got.Result.Changes) != 1 {
 				t.Fatalf("saved %q: %v %s", saved, err, got.Stdout)
 			}
-			findings, deferred := map[string]bool{}, map[string]string{}
-			for _, d := range got.Result.Diagnostics {
-				findings[d.Rule] = d.FixAvailable
-			}
-			for _, r := range got.Result.DeferredFixes {
-				deferred[r.Rule] = r.Reason
-			}
-			md009Available, md009Found := findings["MD009"]
-			if _, md047Found := findings["MD047"]; !md009Found || !md047Found || md009Available {
-				t.Fatal("findings", got.Stdout)
-			}
-			if !reflect.DeepEqual(deferred, map[string]string{"MD009": "conflict", "MD047": "conflict"}) {
-				t.Fatal("deferred", got.Stdout)
+			if len(got.Result.Diagnostics) != 0 || len(got.Result.DeferredFixes) != 0 {
+				t.Fatal("left", got.Stdout)
 			}
 		}
 	}

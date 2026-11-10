@@ -20,14 +20,13 @@ import (
 // A failing checker defers the whole round, so an MD047 edit that analysis already
 // withheld waits until no other edit remains. It is then proposed alone, and its
 // deferral costs nothing but itself. An eligible one shares the first round. So does
-// one an MD009 suffix touches: the planner defers that pair as a conflict before any
-// proof, and the suffix must not be corrected without it.
+// one an MD009 suffix touches: the planner accepts the suffix and the final newline
+// waits for the next round, since MD047 loses every conflict.
 //
 // MD063 waits for every MD009, MD019, MD021, MD022 and MD023 edit that can reach
 // proof: their
 // checkers prove that visible heading text is unchanged, which a capitalization
-// edit breaks. An MD009 suffix touching MD047 does not hold it back, since the
-// planner defers that pair as a conflict first. MD063 shares its round with MD047.
+// edit breaks. MD063 shares its round with MD047.
 //
 // A document opening with an unrecognized block gets no MD007, MD009 or MD032 group at all,
 // not even a deferral. MD004, MD005, MD019, MD021, MD022, MD023, MD029, MD030 and MD077 are already withheld by their flags, and MD047 stays.
@@ -40,8 +39,8 @@ import (
 // MD032 groups wait for a round with no MD022 group, and MD023 groups for a round
 // with neither. A blank inserted before an indented heading, by MD022 or by MD032
 // after a list, starts at the same offset as the indentation deletion, and both
-// insertions land at the same offset between a list and a heading, so the planner
-// would defer each pair as a conflict in every round.
+// insertions land at the same offset between a list and a heading, so each pair
+// would conflict and one edit of it wait for a later round.
 //
 // MD009, MD022, MD023 and MD032 prove their round by comparing whole parses across
 // line-end whitespace, which a moved list marker breaks, so MD005 groups wait for a
