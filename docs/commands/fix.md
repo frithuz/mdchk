@@ -1,6 +1,6 @@
 # mdchk fix
 
-Current implementation: `fix` applies validated MD047, MD009, MD005, MD019, MD021, MD003, MD022, MD023, MD032, MD029, MD063 and MD007 corrections on Linux,
+Current implementation: `fix` applies validated MD047, MD009, MD005, MD019, MD021, MD003, MD022, MD023, MD032, MD029, MD063, MD007 and MD077 corrections on Linux,
 macOS and Windows, from a build without cgo. Other operating systems refuse writes
 with I/O status 13. `fix --dry-run` supports all four formats and writes nothing. Text/JSON
 include proposed diffs; editor formats report only remaining candidate findings.
@@ -71,7 +71,7 @@ mdchk fix docs/ --dry-run --format json
 ```
 
 Text and JSON previews include proposed diffs when a registered correction
-passes shared candidate validation. MD047 final-newline, MD009 trailing-whitespace, MD005 sibling-list alignment, MD019 and MD021 heading-spacing, MD003 heading-style, MD022 heading blank-line, MD023 heading-indentation, MD032 list blank-line, MD029 numbered-list prefix, MD063 heading-capitalization, and MD007 bullet-indentation corrections are implemented. MD001, MD004, MD030, MD069, MD076, MD077, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD020, MD024, MD025, MD026, MD036, MD041, MD043, MD080, MD082 and MD093 remain report-only, with no edits or previews for their findings.
+passes shared candidate validation. MD047 final-newline, MD009 trailing-whitespace, MD005 sibling-list alignment, MD019 and MD021 heading-spacing, MD003 heading-style, MD022 heading blank-line, MD023 heading-indentation, MD032 list blank-line, MD029 numbered-list prefix, MD063 heading-capitalization, and MD007 bullet-indentation, and MD077 list continuation indentation corrections are implemented. MD001, MD004, MD030, MD069, MD076, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD020, MD024, MD025, MD026, MD036, MD041, MD043, MD080, MD082 and MD093 remain report-only, with no edits or previews for their findings.
 
 [MD019](../rules/headings/md019.md) and [MD021](../rules/headings/md021.md)
 corrections remove excess ASCII spaces from a heading delimiter gap: the second
@@ -147,6 +147,17 @@ edit, MD063 waits for them, and a nested finding is regenerated after its ancest
 moves. A single `fix` run still reaches the fully corrected result across its
 rounds. A shift that would add more than 16 columns stays manual, so a large
 `indent` can't multiply a file's size.
+[MD077](../rules/lists/md077.md) corrections fix list continuation indentation
+made only of ASCII spaces: a surplus deletes the reported extra spaces and a
+deficit inserts the missing ones, so `- One\n\n   Text\n` becomes
+`- One\n\n  Text\n` and `- - One\nText\n` becomes `- - One\n    Text\n`.
+Indentation with a tab, a line with a quote prefix (present or lazily absent),
+protected content, a line a directive governs and any document opening with a
+front matter block stay manual with `fix_available: false`. An edit that conflicts
+with another proposal, or whose reparse would move the line to another item or
+block, is deferred and the finding stays reported. MD077 corrections wait for a
+round with no MD009, MD022, MD023, MD029, MD032, MD005 or MD007 edit, and MD063
+waits for them; all apply in the same run.
 
 [MD081 paragraph-emphasis analysis](../rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.
@@ -163,7 +174,7 @@ After corrections, mdchk checks the resulting content and reports remaining find
 
 Recognized front matter stays byte-identical, and the body after it is still corrected. Recognition is off by default, though, and an unrecognized header would otherwise read as Markdown, so a correction could rewrite a value inside it.
 
-A document that opens with a complete `---` or `+++` block that isn't recognized, because `frontmatter.enabled` is false or the block's format isn't in `frontmatter.formats`, gets no MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD032, MD063 or MD007 corrections anywhere. That covers the body as well as the block. Their findings are still reported, with `fix_available: false` and no `deferred_fixes` record.
+A document that opens with a complete `---` or `+++` block that isn't recognized, because `frontmatter.enabled` is false or the block's format isn't in `frontmatter.formats`, gets no MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD032, MD063, MD007 or MD077 corrections anywhere. That covers the body as well as the block. Their findings are still reported, with `fix_available: false` and no `deferred_fixes` record.
 
 mdchk can't tell a real header from Markdown of the same shape, so a leading thematic break paired with a later one also triggers this. An opener with no closer doesn't. Set `frontmatter.enabled: true` to restore body corrections for documents with real headers.
 

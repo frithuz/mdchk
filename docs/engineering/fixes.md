@@ -329,7 +329,7 @@ there, not even a deferral, so nothing touches MD047's insertion and it applies 
 
 ### Production rule integration
 
-`internal/rules.Corrections` regenerates MD047, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD032, MD063 and MD007 groups from each
+`internal/rules.Corrections` regenerates MD047, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD032, MD063, MD007 and MD077 groups from each
 current round's actual shared analysis and source-owned diagnostic ranges. For
 MD047, the source's retained physical-line index supplies the same terminal facts
 as analysis; the shared `fix.InsertionEnding` chooses inserted spelling without
@@ -364,7 +364,7 @@ the source while recognition is off or the format is unselected. Such a block ma
 real metadata, or a pair of thematic breaks, and each round's own parse answers this
 once with the shared delimiter detection, so no fact is carried between rounds or
 from saved input. `InteriorEditQuery` and MD009's eligibility return false, and
-`Corrections` makes no MD009, MD032 or MD007 group, and MD005, MD019, MD021, MD022, MD023, MD029 and MD063 are withheld by their flags. MD047 stays, because a line
+`Corrections` makes no MD009, MD032 or MD007 group, and MD005, MD019, MD021, MD022, MD023, MD029, MD063 and MD077 are withheld by their flags. MD047 stays, because a line
 ending at EOF can't change a value inside the block.
 
 Combined rounds propose all of a document's eligible corrections together, so a
@@ -459,6 +459,19 @@ content columns allowed to differ), and that every list item keeps its order,
 parent, list membership, kind, bullet, ordered start and delimiter, marker width and
 padding. Each group then recomputes its exact line-start edits from the before parse
 and requires the candidate's corresponding item to match MD007's expected offset.
+
+MD077 groups come from `parser.ListContinuationFact`, whose `SpaceOnly` marks a
+line with ASCII-space indentation through the span, no quote prefix or quote
+ancestry, and no fence opening whose indentation strips payload bytes. Analysis
+asks `InteriorEditQuery` about the deleted span, or for a deficit the first byte
+after its insertion point, and withholds every edit after any leading front matter
+block. The producer regenerates each edit from the round's own facts: a deletion
+of the surplus span, or `Expected - Actual` spaces inserted at the deficit point.
+Its checker recomputes those facts from the before parse, then in `Once` proves
+`OnlyEditsChanged`, meaning across both parses and every block envelope mapped
+around the edits, so each line keeps its owning item and block kind. MD077 groups wait for a round
+with no MD009, MD022, MD023, MD029, MD032, MD005 or MD007 edit, and MD063 waits
+for them.
 
 Future corrections add rule producers, separately registered trusted checkers,
 implemented catalog metadata and affirmative per-finding eligibility. Compose
