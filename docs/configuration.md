@@ -83,7 +83,7 @@ rule-specific options; MD025 and MD041 accept integer `level` from 1 through 6 (
 minima, each defaulting to 1; MD072 accepts boolean `recursive` (default false) and
 `case_sensitive` (default true); MD073 accepts HTML comment strings `start_marker`
 (default `<!-- toc -->`) and `end_marker` (default `<!-- /toc -->`) and heading levels
-`min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD007, MD029, MD030, MD032, MD069, MD076,
+`min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD007, MD029, MD032, MD069, MD076,
 MD018, MD020, MD022, MD024, MD025, MD026, MD036, MD041, MD043,
 MD061, MD072, MD073, MD080, MD083, MD084, MD082, MD081, MD088, MD033, MD086, MD087, MD093, MD095 and MD071 are report-only.
 Rules marked unavailable in the linked inventory remain pending. Every default-enabled
@@ -488,7 +488,9 @@ MD030 is enabled by default and accepts positive integer `spaces`, default 1.
 It compares parser-owned structural padding for nonempty first marker lines;
 empty first lines remain exempt even with later content. Physical tab phase and
 code-fallback ownership apply as described on the [rule page](rules/lists/md030.md).
-Unknown or invalid settings fail even while disabled; findings remain manual.
+Unknown or invalid settings fail even while disabled. `fix` corrects the
+separator of a single-line list item when `spaces` is 1 to 4, except for the
+deferrals in [its correction policy](rules/lists/md030.md#correction-policy).
 
 MD032 is enabled by default, with no rule-specific options. Shared enabled and
 allow_directives settings apply; unknown options and invalid shared fields fail

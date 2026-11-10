@@ -118,7 +118,7 @@ recognition is a configuration error, never a silent fallback.
 Parsing an unrecognized block as Markdown is not safe to correct. When a document
 opens with a complete `---` or `+++` block under the delimiter rules above, and
 recognition is disabled or the block's format is unselected, `fix` withholds MD003,
-MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD032 and MD063 corrections for the whole document. Their findings stay reported
+MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD030, MD032 and MD063 corrections for the whole document. Their findings stay reported
 with `fix_available: false`. A leading thematic break paired with a later one has
 the same shape and triggers this too; an opener with no closer doesn't. MD047 still
 applies. Setting `frontmatter.enabled: true` restores body corrections for real
