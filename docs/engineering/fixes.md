@@ -426,10 +426,10 @@ marker kind, width and padding, an unchanged marker, and group, item, parent and
 prefix spans that map through the round's edits. It also records which candidate
 items sit at their group's first-item indentation. Each group then checks its own
 edit: the spaces-only indentation of an eligible before item, replaced by the
-group baseline's spaces, with that item now aligned. MD009's checker compares
-whole parses across line-end whitespace, which a moved marker breaks, so
-`Corrections` proposes MD005 groups only in a round with no MD009 edit; they apply
-in a later round of the same run.
+group baseline's spaces, with that item now aligned. The MD009, MD022, MD023 and
+MD032 checkers compare whole parses across line-end whitespace, which a moved
+marker breaks, so `Corrections` proposes MD005 groups only in a round with no edit
+from those rules; they apply in a later round of the same run.
 
 Future corrections add rule producers, separately registered trusted checkers,
 implemented catalog metadata and affirmative per-finding eligibility. Compose

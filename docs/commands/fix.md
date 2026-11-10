@@ -126,7 +126,8 @@ marker to match the first item of its group, so `- One` followed by ` - Two`
 becomes `- One` followed by `- Two`. Only the spaces before the marker change.
 Tabs, items with continuation, lazy or child lines, and items that would need
 spaces inserted stay manual with `fix_available: false`. MD005 corrections wait
-for a round with no MD009 edit and apply later in the same run.
+for a round with no MD009, MD022, MD023 or MD032 edit and apply later in the
+same run.
 
 [MD081 paragraph-emphasis analysis](../rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.
