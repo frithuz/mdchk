@@ -211,6 +211,56 @@ func validatorPath() (string, error) {
 	return filepath.Join(root, "docs", "contracts", "results", "validate.py"), nil
 }
 
+// RunFix runs the executable in root and, for --format=json, decodes and
+// checks the fix report.
+func RunFix(t *testing.T, binary, root string, args ...string) Run {
+	t.Helper()
+	got := RunProcess(t, binary, root, args...)
+	for _, arg := range args {
+		if arg == "--format=json" {
+			got.Result = ValidateOperationJSON(t, []byte(got.Stdout), "fix")
+		}
+	}
+	return got
+}
+
+// RunFixDryRun is RunFix for a run that must leave every file under root
+// unchanged.
+func RunFixDryRun(t *testing.T, binary, root string, args ...string) Run {
+	t.Helper()
+	before := ConfigurationBytes(t, root)
+	out := RunProcess(t, binary, root, args...)
+	after := ConfigurationBytes(t, root)
+	if !reflect.DeepEqual(before, after) {
+		t.Fatal("dry-run changed directory inventory or bytes")
+	}
+	for _, arg := range args {
+		if arg == "--format=json" {
+			out.Result = ValidateOperationJSON(t, []byte(out.Stdout), "fix")
+		}
+	}
+	return out
+}
+
+// ValidationEnvironment returns the test process environment without Git,
+// home and PATH settings, pointing HOME, XDG_CONFIG_HOME and the Git global
+// configuration at a fresh temporary directory and PATH at a missing one.
+func ValidationEnvironment(t *testing.T) []string {
+	t.Helper()
+	var env []string
+	for _, v := range os.Environ() {
+		key, _, _ := strings.Cut(v, "=")
+		if !strings.HasPrefix(key, "GIT_") && key != "HOME" && key != "XDG_CONFIG_HOME" && key != "PATH" {
+			env = append(env, v)
+		}
+	}
+	home, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	return append(env, "PATH="+filepath.Join(home, "no-runtime-programs"), "HOME="+home, "XDG_CONFIG_HOME="+filepath.Join(home, "xdg"), "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL="+filepath.Join(home, "gitconfig"), "GIT_TERMINAL_PROMPT=0")
+}
+
 // RunInspection runs inspect, requires that it leaves snapshotRoot unchanged and
 // decodes the projection from a JSON report.
 func RunInspection(t *testing.T, binary, cwd, snapshotRoot string, args ...string) (Run, inspection.Projection) {

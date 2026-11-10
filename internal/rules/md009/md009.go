@@ -1,0 +1,54 @@
+// Package md009 checks MD009, which reports whitespace at the end of a line.
+package md009
+
+import (
+	"context"
+	"errors"
+
+	"github.com/frithuz/mdchk/internal/engine"
+)
+
+// Registration returns the MD009 rule ID and its check.
+func Registration() engine.Registration {
+	return engine.Registration{ID: "MD009", Check: check}
+}
+
+func check(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
+	items, err := c.TrailingWhitespace(ctx)
+	if err != nil {
+		return engine.RuleOutcome{Err: err}
+	}
+	return compareTrailingWhitespace(ctx, c, items)
+}
+
+func compareTrailingWhitespace(ctx context.Context, c engine.RuleContext, items []engine.TrailingWhitespaceItem) (out engine.RuleOutcome) {
+	defer func() {
+		out.Err = errors.Join(out.Err, c.SectionCheckpoint(ctx, 0, 0))
+		if out.Err != nil {
+			out.Findings = nil
+		}
+	}()
+	for _, item := range items {
+		if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
+			out.Err = err
+			return out
+		}
+		if len(out.Findings) == cap(out.Findings) {
+			capacity := min(len(items), max(1, len(out.Findings)*2))
+			if err := c.SectionCheckpoint(ctx, int64(len(out.Findings))+1, int64(capacity)); err != nil {
+				out.Err = err
+				return out
+			}
+			next := make([]engine.Finding, len(out.Findings), capacity)
+			copy(next, out.Findings)
+			out.Findings = next
+		}
+		if err := c.SectionCheckpoint(ctx, 1, 1); err != nil {
+			out.Err = err
+			return out
+		}
+		message := "Whitespace at line end."
+		out.Findings = append(out.Findings, engine.Finding{Span: item.Span, Message: message, FixEligible: item.FixEligible})
+	}
+	return out
+}

@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/frithuz/mdchk/internal/acceptance"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -397,18 +398,7 @@ func TestConfigurationValidationWorkflow(t *testing.T) {
 
 func validationEnvironment(t *testing.T) []string {
 	t.Helper()
-	var env []string
-	for _, v := range os.Environ() {
-		key, _, _ := strings.Cut(v, "=")
-		if !strings.HasPrefix(key, "GIT_") && key != "HOME" && key != "XDG_CONFIG_HOME" && key != "PATH" {
-			env = append(env, v)
-		}
-	}
-	home, err := filepath.EvalSymlinks(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-	return append(env, "PATH="+filepath.Join(home, "no-runtime-programs"), "HOME="+home, "XDG_CONFIG_HOME="+filepath.Join(home, "xdg"), "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL="+filepath.Join(home, "gitconfig"), "GIT_TERMINAL_PROMPT=0")
+	return acceptance.ValidationEnvironment(t)
 }
 
 func assertValidationOnly(t *testing.T, r result.Result) {

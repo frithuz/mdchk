@@ -9,6 +9,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/frithuz/mdchk/internal/acceptance"
 )
 
 func TestCompiledApplyAdmissionAndReporting(t *testing.T) {
@@ -56,13 +58,7 @@ func TestCompiledApplyAdmissionAndReporting(t *testing.T) {
 
 func runAppliedFix(t *testing.T, binary, root string, args ...string) configurationRun {
 	t.Helper()
-	got := runConfigurationProcess(t, binary, root, args...)
-	for _, arg := range args {
-		if arg == "--format=json" {
-			got.Result = validateConfigurationOperationJSON(t, []byte(got.Stdout), "fix")
-		}
-	}
-	return got
+	return acceptance.RunFix(t, binary, root, args...)
 }
 
 func buildApplyBoundaryFixture(t *testing.T, body string) string {

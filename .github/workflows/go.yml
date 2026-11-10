@@ -160,7 +160,9 @@ jobs:
         # Keep room for the complete inventory and later native integration gates.
         env:
           DEBUG: ${{ runner.debug }}
-        run: go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryApply|TestCompiledApplyNoCGOApplies|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -parallel=${{ matrix.parallel }} -timeout=20m
+        run: |
+          go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryApply|TestCompiledApplyNoCGOApplies|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -parallel=${{ matrix.parallel }} -timeout=20m
+          go run ./tools/testrun ./internal/rules/md009 ./internal/rules/md010 ./internal/rules/md012 ./internal/rules/md013 ./internal/rules/md027 ./internal/rules/md028 ./internal/rules/md064 ./internal/rules/md085 ./internal/rules/md089 -run "^TestCompiledPlatform.*$" -count=1 -parallel=${{ matrix.parallel }} -timeout=20m
       - name: Verify shared acceptance builds and cache publishing
         env:
           DEBUG: ${{ runner.debug }}
