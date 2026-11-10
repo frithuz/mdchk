@@ -9,12 +9,18 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/internal/listspacing"
 	"github.com/frithuz/mdchk/internal/rules/internal/orderedprefix"
 	"github.com/frithuz/mdchk/internal/rules/md003"
+	"github.com/frithuz/mdchk/internal/rules/md004"
+	"github.com/frithuz/mdchk/internal/rules/md005"
+	"github.com/frithuz/mdchk/internal/rules/md007"
 	"github.com/frithuz/mdchk/internal/rules/md009"
 	"github.com/frithuz/mdchk/internal/rules/md019"
 	"github.com/frithuz/mdchk/internal/rules/md021"
 	"github.com/frithuz/mdchk/internal/rules/md022"
 	"github.com/frithuz/mdchk/internal/rules/md023"
+	"github.com/frithuz/mdchk/internal/rules/md030"
+	"github.com/frithuz/mdchk/internal/rules/md032"
 	"github.com/frithuz/mdchk/internal/rules/md047"
+	"github.com/frithuz/mdchk/internal/rules/md077"
 )
 
 // Corrections regenerates every eligible production correction from each round's
@@ -162,7 +168,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		}
 		return gapped, c.Checkpoint(ctx, 0)
 	}
-	groups, err := bulletMarkerGroups(ctx, c, markers)
+	groups, err := md004.Correction(ctx, c, markers)
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +188,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	}
 	groups = append(groups, insertions...)
 	if len(insertions) == 0 {
-		blanks, err := listBlankLineGroups(ctx, c, lists)
+		blanks, err := md032.Correction(ctx, c, lists)
 		if err != nil {
 			return nil, err
 		}
@@ -207,7 +213,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		}
 	}
 	if len(groups) == spaced {
-		markers, err := listSeparatorGroups(ctx, c, separators)
+		markers, err := md030.Correction(ctx, c, separators)
 		if err != nil {
 			return nil, err
 		}
@@ -227,14 +233,14 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		compared = compared || len(g.Edits) > 0
 	}
 	if !compared {
-		aligned, err := listAlignmentGroups(ctx, c, alignment)
+		aligned, err := md005.Correction(ctx, c, alignment)
 		if err != nil {
 			return nil, err
 		}
 		groups = append(groups, aligned...)
 		waiting = waiting || len(aligned) > 0
 		if len(aligned) == 0 {
-			shifts, err := bulletIndentationGroups(ctx, c, bullets)
+			shifts, err := md007.Correction(ctx, c, bullets)
 			if err != nil {
 				return nil, err
 			}
@@ -242,7 +248,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 			waiting = waiting || len(shifts) > 0
 			blocking = blocking || len(shifts) > 0
 			if len(shifts) == 0 {
-				continued, err := listContinuationGroups(ctx, c, continuation)
+				continued, err := md077.Correction(ctx, c, continuation)
 				if err != nil {
 					return nil, err
 				}
@@ -292,12 +298,12 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		md003.Checker(),
 		md022.Checker(),
 		{Rule: "MD063", Check: headingcase.Check},
-		{Rule: "MD032", Check: checkListBlankLine},
-		{Rule: "MD005", Check: checkListAlignment},
-		{Rule: "MD007", Check: checkBulletIndentation},
-		{Rule: "MD077", Check: checkListContinuation},
-		{Rule: "MD030", Check: checkListSeparator},
+		md032.Checker(),
+		md005.Checker(),
+		md007.Checker(),
+		md077.Checker(),
+		md030.Checker(),
 		{Rule: "MD076", Check: listspacing.Check},
-		{Rule: "MD004", Check: checkBulletMarker},
+		md004.Checker(),
 	}
 }

@@ -539,7 +539,7 @@ accurate. Keep ambiguous rules report-only until independent proof and productio
 compiled fixtures in `internal/rules/md047/testdata/md047_corrections.json` are available
 for later consumer acceptance; they do not claim filesystem apply or MCP support.
 `internal/rules/md019/testdata/heading_spacing_corrections.json` and
-`cmd/mdchk/testdata/md007_corrections.json` run through preview and saved modes.
+`internal/rules/md007/testdata/md007_corrections.json` run through preview and saved modes.
 
 Original selected-file UTF-8 failures remain local observations during correction
 validation. They withhold their correction component and selected-target proof
