@@ -178,7 +178,8 @@ Code that two rules share goes in a small, specifically named package under
 ### Rule packages
 
 Rules are moving into one package each under `internal/rules/`, such as
-`internal/rules/md047` and the whitespace rules. A rule package has this layout:
+`internal/rules/md047`, the whitespace rules and the formatting rules. A rule
+package has this layout:
 
 ```text
 internal/rules/md047/

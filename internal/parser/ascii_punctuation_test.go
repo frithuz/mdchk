@@ -15,7 +15,7 @@ import (
 )
 
 func TestASCIIPunctuationFrozenGeometry(t *testing.T) {
-	data, e := os.ReadFile("../rules/testdata/md088.json")
+	data, e := os.ReadFile("../rules/md088/testdata/md088.json")
 	if e != nil {
 		t.Fatal(e)
 	}

@@ -1,48 +1,5 @@
 # Reusable rule analysis fixtures
 
-`md044.json` preserves the 67 independent source-authored preimplementation MD044
-literals unchanged, including format-specific URL ownership and exact byte/scalar
-ranges. The fixture test verifies the frozen digest and original snapshot hashes.
-Additional table/header/raw/control and option boundary cases live in md044_test.go.
-
-`md049.json` is the frozen root source-authored 64-case MD049 oracle, adopted
-before implementation or parser probes (SHA-256
-`5faab73b3e65c2dbd6c967058e7aa8666a8f12ed5d787007c666514cf9fef1b6`).
-Its 123 selected flavor executions reuse 64 independent literals and 62 authored
-opening ranges. Batch/reverse/concurrent cases are additional isolation checks,
-not independent oracle counts. Expected output must not be regenerated from
-production results.
-
-`md050.json` is the exact independent root MD050 V2 oracle: 68 records, 62
-distinct source-byte strings, 49 two-byte Opening ranges and 129 selected
-CommonMark/GFM executions. V2 explicitly corrects two original semantic
-expectations after preserved first failures, following independent pinned-grammar
-review, and adds three source-authored positive controls before their execution.
-The original oracle and failure evidence remain preserved in local working notes. Tests
-verify the complete file digest, original source digests and byte/scalar geometry,
-manual analysis and immutable source. It is independent of production output.
-
-`md065.json` is the exact frozen independent root-authored issue-77 oracle (SHA256
-c337a9cb0d793790beecea345baf60c90a72016a10f10c45bd12858f77b10dfa), authored
-before engineering or product/parser/helper probes. All 80 records retain original
-source size/SHA, selected settings/flavors, independent side/line/prefix witnesses
-and exact zero-width byte/scalar/message expectations. They represent 76 distinct
-source byte strings, 75 authored ranges and 159 flavor repetitions. The fixture
-test asserts the whole-file digest and original snapshot/manual/no-edit evidence;
-supplementary tests cover ownership floors, raw tails, strict configuration,
-suppression owners, incomplete syntax, isolation and original-operation controls.
-
-
-`md081.json` is the byte-exact independent root-authored issue-78 oracle, SHA-256
-501e217a9bb3657c605c47964b988ffdcb8cf50e916f5d721af8e9da58410ed5,
-frozen before engineering or probes. All 107 records retain 88 distinct original
-sources, 108 literal paragraph count witnesses, 66 full Content-hull ranges and
-206 flavor repetitions. Tests assert the whole-file digest, source digests,
-scalar witness arithmetic, original byte/scalar geometry, messages, settings and
-manual/no-edit/source-immutable results. JSON floating decoding does not replace
-separate trusted API and actual YAML/JSON numeric-type admission checks. Expected
-results must never be regenerated from production output.
-
 MD092 has three separate immutable root-authored literal fixture sets:
 
 | Fixture | Cases | SHA256 |

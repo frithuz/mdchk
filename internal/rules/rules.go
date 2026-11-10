@@ -27,10 +27,16 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md030"
 	"github.com/frithuz/mdchk/internal/rules/md032"
 	"github.com/frithuz/mdchk/internal/rules/md034"
+	"github.com/frithuz/mdchk/internal/rules/md035"
+	"github.com/frithuz/mdchk/internal/rules/md037"
+	"github.com/frithuz/mdchk/internal/rules/md038"
 	"github.com/frithuz/mdchk/internal/rules/md039"
 	"github.com/frithuz/mdchk/internal/rules/md042"
+	"github.com/frithuz/mdchk/internal/rules/md044"
 	"github.com/frithuz/mdchk/internal/rules/md045"
 	"github.com/frithuz/mdchk/internal/rules/md047"
+	"github.com/frithuz/mdchk/internal/rules/md049"
+	"github.com/frithuz/mdchk/internal/rules/md050"
 	"github.com/frithuz/mdchk/internal/rules/md051"
 	"github.com/frithuz/mdchk/internal/rules/md052"
 	"github.com/frithuz/mdchk/internal/rules/md053"
@@ -39,10 +45,13 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md059"
 	"github.com/frithuz/mdchk/internal/rules/md062"
 	"github.com/frithuz/mdchk/internal/rules/md064"
+	"github.com/frithuz/mdchk/internal/rules/md065"
 	"github.com/frithuz/mdchk/internal/rules/md069"
 	"github.com/frithuz/mdchk/internal/rules/md076"
 	"github.com/frithuz/mdchk/internal/rules/md077"
+	"github.com/frithuz/mdchk/internal/rules/md081"
 	"github.com/frithuz/mdchk/internal/rules/md085"
+	"github.com/frithuz/mdchk/internal/rules/md088"
 	"github.com/frithuz/mdchk/internal/rules/md089"
 )
 
@@ -76,22 +85,22 @@ func Registrations() []engine.Registration {
 		md032.Registration(),
 		{ID: "MD033", Check: embeddedHTML},
 		md034.Registration(),
-		{ID: "MD035", Check: horizontalRuleStyle},
+		md035.Registration(),
 		{ID: "MD036", Check: emphasisUsedAsHeading},
-		{ID: "MD037", Check: emphasisWhitespace},
-		{ID: "MD038", Check: codeSpanWhitespace},
+		md037.Registration(),
+		md038.Registration(),
 		md039.Registration(),
 		{ID: "MD040", Check: fencedBlockLanguages},
 		{ID: "MD041", Check: openingDocumentHeading},
 		md042.Registration(),
 		{ID: "MD043", Check: requiredHeadingOutline},
-		{ID: "MD044", Check: configuredNameCapitalization},
+		md044.Registration(),
 		md045.Registration(),
 		{ID: "MD046", Check: codeBlockStyles},
 		md047.Registration(),
 		{ID: "MD048", Check: fencedBlockStyles},
-		{ID: "MD049", Check: italicDelimiterStyle},
-		{ID: "MD050", Check: boldDelimiterStyle},
+		md049.Registration(),
+		md050.Registration(),
 		md051.Registration(),
 		md052.Registration(),
 		md053.Registration(),
@@ -106,7 +115,7 @@ func Registrations() []engine.Registration {
 		md062.Registration(),
 		{ID: "MD063", Check: headingCapitalization},
 		md064.Registration(),
-		{ID: "MD065", Check: horizontalRuleBlankLines},
+		md065.Registration(),
 		md069.Registration(),
 		{ID: "MD070", Check: nestedMarkdownExamples},
 		{ID: "MD071", Check: metadataBlankLine, Applies: metadataBlankLineApplies},
@@ -116,14 +125,14 @@ func Registrations() []engine.Registration {
 		md076.Registration(),
 		md077.Registration(),
 		{ID: "MD080", Check: collidingHeadingAnchors},
-		{ID: "MD081", Check: excessiveParagraphEmphasis},
+		md081.Registration(),
 		{ID: "MD082", Check: sectionsWithoutContent},
 		{ID: "MD083", Check: suspiciousSequences},
 		{ID: "MD084", Check: hiddenCharacters},
 		md085.Registration(),
 		{ID: "MD086", Check: unclosedHTMLComments},
 		{ID: "MD087", Check: engine.CheckUnusedSuppressions},
-		{ID: "MD088", Check: asciiPunctuation},
+		md088.Registration(),
 		md089.Registration(),
 		{ID: "MD091", Check: markdownInsideHTML},
 		{ID: "MD092", Check: conflictMarkers},
