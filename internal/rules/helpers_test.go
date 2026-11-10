@@ -19,26 +19,16 @@ import (
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
+	"github.com/frithuz/mdchk/internal/rules/ruletest"
 )
 
 func registry(t testing.TB, registrations []engine.Registration) *engine.Registry {
 	t.Helper()
-	r, err := engine.NewCatalogRegistry(registrations)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return r
+	return ruletest.Registry(t, registrations)
 }
 
 // settings enables only MD047 and disables every other catalog rule.
-func settings() engine.Settings {
-	out := engine.Settings{}
-	for _, m := range engine.Catalog() {
-		v := m.ID == "MD047"
-		out[m.ID] = engine.RuleSetting{Enabled: &v}
-	}
-	return out
-}
+func settings() engine.Settings { return ruletest.Settings("MD047") }
 
 func analyzeHeadings(t *testing.T, r *engine.Registry, source string, s engine.Settings, dc engine.DocumentContext, opts engine.RunOptions) result.Result {
 	t.Helper()

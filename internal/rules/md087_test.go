@@ -13,6 +13,7 @@ import (
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/rules/md047"
 )
 
 func md087Settings(targets ...string) engine.Settings {
@@ -366,7 +367,7 @@ func TestMD087ActualMD047HiddenAndInactiveEligibility(t *testing.T) {
 				called := false
 				regs := []engine.Registration{{ID: "MD087", Check: engine.CheckUnusedSuppressions}, {ID: "MD047", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 					called = true
-					out := terminatingNewline(ctx, c)
+					out := md047.Registration().Check(ctx, c)
 					if out.Err != nil || len(out.Findings) != 1 || out.Findings[0].FixEligible {
 						t.Fatal(out)
 					}

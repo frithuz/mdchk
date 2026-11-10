@@ -1,4 +1,4 @@
-package rules
+package md047_test
 
 import (
 	"context"
@@ -6,28 +6,45 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/result"
+	"github.com/frithuz/mdchk/internal/rules"
+	"github.com/frithuz/mdchk/internal/rules/md047"
+	"github.com/frithuz/mdchk/internal/rules/ruletest"
 	"os"
 	"reflect"
 	"strings"
 	"testing"
 )
 
+func registry(t testing.TB, registrations []engine.Registration) *engine.Registry {
+	t.Helper()
+	return ruletest.Registry(t, registrations)
+}
+
+// settings enables only MD047 and disables every other catalog rule.
+func settings() engine.Settings { return ruletest.Settings("MD047") }
+
 func analyze(t *testing.T, r *engine.Registry, text string, s engine.Settings, opts engine.RunOptions) result.Result {
 	t.Helper()
-	caller := []byte(text)
-	in, err := engine.NewInput("doc.md", caller, s, engine.DocumentContext{Flavor: "commonmark"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	out, err := r.Lint(context.Background(), []engine.Input{in}, opts)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if string(caller) != text || string(in.Source().Bytes()) != text || len(out.Changes) != 0 || len(out.Documents) != 0 || out.Files[0].WriteStatus != "not-requested" {
-		t.Fatal("analysis changed source or requested edits", out)
-	}
-	return out
+	return ruletest.Analyze(t, r, text, s, opts)
 }
+
+// The callback gets the engine's real immutable context and residual budget.
+// Interrupt after it has entered the suffix traversal, rather than cancelling
+// before acquisition and accidentally testing only the engine's early gate.
+type traversalContext struct {
+	context.Context
+	calls int
+	err   error
+}
+
+func (c *traversalContext) Err() error {
+	c.calls++
+	if c.calls >= 4 {
+		return c.err
+	}
+	return nil
+}
+
 func TestMD047AnalysisFixtures(t *testing.T) {
 	data, err := os.ReadFile("testdata/md047.json")
 	if err != nil {
@@ -40,7 +57,7 @@ func TestMD047AnalysisFixtures(t *testing.T) {
 	if err = json.Unmarshal(data, &fixtures); err != nil {
 		t.Fatal(err)
 	}
-	r := registry(t, Registrations())
+	r := registry(t, rules.Registrations())
 	for _, f := range fixtures {
 		t.Run(f.Name, func(t *testing.T) {
 			out := analyze(t, r, f.Source, settings(), engine.RunOptions{})
@@ -79,7 +96,7 @@ func TestMD047ProtectedContainersAndRetainedSourceConsumers(t *testing.T) {
 	prefixes := []string{"```\ncode", "```\ncode\n```", "    code", "<div>raw", "<!-- comment -->", "<!-- unclosed", "> - nested\n>   text", "[ref]: /url"}
 	for _, name := range []string{"mixed", "references"} {
 		//nolint:gosec // Fixed retained parser fixtures in this repository.
-		data, err := os.ReadFile("../parser/testdata/source_consumers/" + name + ".json")
+		data, err := os.ReadFile("../../parser/testdata/source_consumers/" + name + ".json")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -89,7 +106,7 @@ func TestMD047ProtectedContainersAndRetainedSourceConsumers(t *testing.T) {
 		}
 		prefixes = append(prefixes, fixture.Source)
 	}
-	r := registry(t, Registrations())
+	r := registry(t, rules.Registrations())
 	for _, prefix := range prefixes {
 		for _, ending := range []string{"\n", "\r\n", "\r"} {
 			for count := 0; count < 4; count++ {
@@ -119,7 +136,7 @@ func TestMD047ProtectedContainersAndRetainedSourceConsumers(t *testing.T) {
 	}
 }
 func TestMD047SharedConfigurationAndOwnership(t *testing.T) {
-	r := registry(t, Registrations())
+	r := registry(t, rules.Registrations())
 	if !r.Available("MD047") || !r.Available("MD001") {
 		t.Fatal("incorrect availability")
 	}
@@ -185,7 +202,7 @@ func TestMD047SharedConfigurationAndOwnership(t *testing.T) {
 func TestMD047SharedInterruptionsAndUTF8(t *testing.T) {
 	for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 		r := registry(t, []engine.Registration{{ID: "MD047", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
-			return terminatingNewline(&traversalContext{Context: ctx, err: reason}, c)
+			return md047.Registration().Check(&traversalContext{Context: ctx, err: reason}, c)
 		}}})
 		out := analyze(t, r, strings.Repeat("\r\n", 64), settings(), engine.RunOptions{})
 		if out.Complete || len(out.Interruptions) != 1 || out.Interruptions[0].Phase != "analysis" || len(out.Diagnostics) != 0 {
@@ -195,20 +212,20 @@ func TestMD047SharedInterruptionsAndUTF8(t *testing.T) {
 	budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
 	r := registry(t, []engine.Registration{{ID: "MD047", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 		_ = budget.ChargeWork(budget.Limits().WorkUnits)
-		return terminatingNewline(ctx, c)
+		return md047.Registration().Check(ctx, c)
 	}}})
 	out := analyze(t, r, "x\n\n", settings(), engine.RunOptions{Budget: budget})
 	if out.Complete || len(out.Interruptions) != 1 || out.Interruptions[0].Limit == nil || out.Interruptions[0].Limit.Name != "work-units" || len(out.Diagnostics) != 0 {
 		t.Fatal(out)
 	}
-	out = analyze(t, registry(t, Registrations()), string([]byte{'x', 0xff}), settings(), engine.RunOptions{})
+	out = analyze(t, registry(t, rules.Registrations()), string([]byte{'x', 0xff}), settings(), engine.RunOptions{})
 	if len(out.Errors) != 1 || out.Errors[0].Code != "invalid-utf8" || len(out.Diagnostics) != 0 || out.Complete {
 		t.Fatal(out)
 	}
 }
 
 func TestMD047InactiveObservationUsesRealCallback(t *testing.T) {
-	r := registry(t, Registrations())
+	r := registry(t, rules.Registrations())
 	s := settings()
 	off := false
 	s["MD047"] = engine.RuleSetting{Enabled: &off}

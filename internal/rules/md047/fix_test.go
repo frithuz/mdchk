@@ -1,4 +1,4 @@
-package rules
+package md047_test
 
 import (
 	"context"
@@ -6,40 +6,20 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/rules"
+	"github.com/frithuz/mdchk/internal/rules/ruletest"
 	"strings"
 	"testing"
 )
 
 func correctionSetup(t *testing.T) (*fix.Validator, *engine.ExecutionPlan) {
 	t.Helper()
-	r := registry(t, Registrations())
-	selection, err := r.SelectRules(settings(), engine.ValidationProviders{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	plan, err := selection.Plan(engine.DocumentContext{Flavor: "commonmark"}, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	validator, err := fix.NewValidator(r, CorrectionCheckers())
-	if err != nil {
-		t.Fatal(err)
-	}
-	return validator, plan
+	return ruletest.CorrectionSetup(t, rules.Registrations(), rules.CorrectionCheckers(), settings())
 }
 func corrected(t *testing.T, text string, producer fix.Producer) (fix.FileView, fix.Validated) {
 	t.Helper()
 	v, p := correctionSetup(t)
-	budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
-	out, err := v.Validate(context.Background(), []fix.Target{{Path: "doc.md", Source: parser.NewSource([]byte(text)), Plan: p, Produce: producer}}, fix.ValidationOptions{Budget: budget})
-	if err != nil {
-		t.Fatal(err)
-	}
-	view, ok := out.File("doc.md")
-	if !ok {
-		t.Fatal("missing file")
-	}
-	return view, out
+	return ruletest.Corrected(t, v, p, text, producer)
 }
 func TestMD047ProductionCorrectionProofAndIdempotence(t *testing.T) {
 	for _, tc := range []struct {
@@ -56,13 +36,13 @@ func TestMD047ProductionCorrectionProofAndIdempotence(t *testing.T) {
 		{"<!-- mdchk:disable MD047 --><!-- mdchk:enable MD047 -->\ntext", "<!-- mdchk:disable MD047 --><!-- mdchk:enable MD047 -->\ntext\n", true},
 	} {
 		t.Run(tc.source, func(t *testing.T) {
-			original := analyze(t, registry(t, Registrations()), tc.source, settings(), engine.RunOptions{})
+			original := analyze(t, registry(t, rules.Registrations()), tc.source, settings(), engine.RunOptions{})
 			for _, d := range original.Diagnostics {
 				if d.Rule == "MD047" && d.FixAvailable != tc.eligible {
 					t.Fatalf("eligibility %v want %v: %+v", d.FixAvailable, tc.eligible, d)
 				}
 			}
-			view, out := corrected(t, tc.source, Corrections)
+			view, out := corrected(t, tc.source, rules.Corrections)
 			if !out.Complete() || string(view.Candidate.Bytes()) != tc.want {
 				t.Fatalf("got %q want %q complete %v reasons %+v attempts %+v", view.Candidate.Bytes(), tc.want, out.Complete(), view.Reasons, view.Attempts)
 			}
@@ -73,7 +53,7 @@ func TestMD047ProductionCorrectionProofAndIdempotence(t *testing.T) {
 					}
 				}
 			}
-			second, again := corrected(t, string(view.Candidate.Bytes()), Corrections)
+			second, again := corrected(t, string(view.Candidate.Bytes()), rules.Corrections)
 			if !again.Complete() || string(second.Candidate.Bytes()) != tc.want {
 				t.Fatal("not idempotent", second)
 			}
@@ -106,7 +86,7 @@ func TestMD047IndependentCheckerRejectsForgedChanges(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			producer := func(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
-				groups, err := Corrections(ctx, c)
+				groups, err := rules.Corrections(ctx, c)
 				if len(groups) > 0 {
 					tc.alter(&groups[0], c)
 				}
@@ -124,16 +104,16 @@ func TestMD047CorrectionResidualAndLateCancellation(t *testing.T) {
 	for _, stage := range []string{"producer", "checker"} {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
-		producer := Corrections
+		producer := rules.Corrections
 		validator := v
 		if stage == "producer" {
 			producer = func(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
-				groups, err := Corrections(ctx, c)
+				groups, err := rules.Corrections(ctx, c)
 				cancel()
 				return groups, err
 			}
 		} else {
-			checks := CorrectionCheckers()
+			checks := rules.CorrectionCheckers()
 			real := checks[0].Check
 			checks[0].Check = func(ctx context.Context, c fix.CheckContext) (fix.Proof, error) {
 				proof, err := real(ctx, c)
@@ -141,7 +121,7 @@ func TestMD047CorrectionResidualAndLateCancellation(t *testing.T) {
 				return proof, err
 			}
 			// The plan and registry must share identity.
-			r := registry(t, Registrations())
+			r := registry(t, rules.Registrations())
 			selection, err := r.SelectRules(settings(), engine.ValidationProviders{})
 			if err != nil {
 				t.Fatal(err)
@@ -166,7 +146,7 @@ func TestMD047CorrectionResidualAndLateCancellation(t *testing.T) {
 		}
 	}
 	for _, text := range []string{strings.Repeat("p\n\n", 8000) + "last", strings.Repeat("x", 100000), "text\n" + strings.Repeat("\r\n", 8000)} {
-		view, out := corrected(t, text, Corrections)
+		view, out := corrected(t, text, rules.Corrections)
 		if !out.Complete() || len(view.Analysis.Diagnostics) != 0 {
 			t.Fatal("default scaling", len(text), view.Reasons)
 		}
@@ -174,7 +154,7 @@ func TestMD047CorrectionResidualAndLateCancellation(t *testing.T) {
 }
 
 func TestMD047SourceOnlyFindingCannotPromiseCorrection(t *testing.T) {
-	r := registry(t, Registrations())
+	r := registry(t, rules.Registrations())
 	input, err := engine.NewInput("doc.md", []byte("hello"), settings(), engine.DocumentContext{Flavor: "unavailable"})
 	if err != nil {
 		t.Fatal(err)
@@ -191,7 +171,7 @@ func TestMD047SourceOnlyFindingCannotPromiseCorrection(t *testing.T) {
 func TestMD047ProductionProofSharedWorkLimit(t *testing.T) {
 	for _, stage := range []string{"producer", "checker"} {
 		t.Run(stage, func(t *testing.T) {
-			r := registry(t, Registrations())
+			r := registry(t, rules.Registrations())
 			selection, err := r.SelectRules(settings(), engine.ValidationProviders{})
 			if err != nil {
 				t.Fatal(err)
@@ -200,12 +180,12 @@ func TestMD047ProductionProofSharedWorkLimit(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			checks := CorrectionCheckers()
-			producer := Corrections
+			checks := rules.CorrectionCheckers()
+			producer := rules.Corrections
 			entered := false
 			if stage == "producer" {
 				producer = func(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
-					groups, err := Corrections(ctx, c)
+					groups, err := rules.Corrections(ctx, c)
 					if err != nil {
 						return nil, err
 					}

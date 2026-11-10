@@ -12,6 +12,7 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/internal/headingstyle"
 	"github.com/frithuz/mdchk/internal/rules/internal/listspacing"
 	"github.com/frithuz/mdchk/internal/rules/internal/orderedprefix"
+	"github.com/frithuz/mdchk/internal/rules/md047"
 )
 
 // Corrections regenerates every eligible production correction from each round's
@@ -151,7 +152,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	}
 	if len(gapped) > 0 {
 		if terminal != nil && terminal.FixAvailable {
-			group, err := terminalNewlineGroup(ctx, c, *terminal)
+			group, err := md047.Correction(ctx, c, *terminal)
 			if err != nil {
 				return nil, err
 			}
@@ -268,7 +269,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		groups = append(groups, style...)
 	}
 	if terminal != nil && (eligible || !waiting) {
-		group, err := terminalNewlineGroup(ctx, c, *terminal)
+		group, err := md047.Correction(ctx, c, *terminal)
 		if err != nil {
 			return nil, err
 		}
@@ -280,7 +281,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 // CorrectionCheckers registers trusted proof separately from producer data.
 func CorrectionCheckers() []fix.CheckerRegistration {
 	return []fix.CheckerRegistration{
-		{Rule: "MD047", Check: checkTerminalNewline, ForbidNewFindings: []string{"directive"}},
+		md047.Checker(),
 		{Rule: "MD019", Check: headingspacing.Check},
 		{Rule: "MD021", Check: headingspacing.Check},
 		{Rule: "MD023", Check: headingindent.Check},

@@ -176,7 +176,9 @@ jobs:
         env:
           CGO_ENABLED: "0"
           DEBUG: ${{ runner.debug }}
-        run: go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledProductionMD047ApplySavedWorkflow|TestCompiledApply.*|TestCompiledEditorPartialNativePublication|TestCompiledProductionMD051ResourceFragmentsApplySavedView|TestCompiledGFMNativeSavedBytes)$" -count=1 -timeout=15m
+        run: |
+          go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledApply.*|TestCompiledEditorPartialNativePublication|TestCompiledProductionMD051ResourceFragmentsApplySavedView|TestCompiledGFMNativeSavedBytes)$" -count=1 -timeout=15m
+          go run ./tools/testrun ./internal/rules/md047 -run "^TestCompiledProductionMD047ApplySavedWorkflow$" -count=1 -timeout=15m
       - name: Verify compiled GFM selection, consumers and native publication
         env:
           DEBUG: ${{ runner.debug }}

@@ -1,4 +1,6 @@
-package rules
+// Package md047 checks and corrects MD047, which requires a file to end with
+// exactly one line-ending sequence.
+package md047
 
 import (
 	"context"
@@ -7,11 +9,16 @@ import (
 	"github.com/frithuz/mdchk/internal/parser"
 )
 
-// terminatingNewline examines physical boundaries already owned by the engine.
+// Registration returns the MD047 rule ID and its check.
+func Registration() engine.Registration {
+	return engine.Registration{ID: "MD047", Check: check}
+}
+
+// check examines physical boundaries already owned by the engine.
 // Every ending, including CRLF, is indivisible. Empty content on trailing lines
 // denotes adjacent endings; whitespace content breaks that run. The earliest
 // ending in the run is retained, and only its excess suffix is offending.
-func terminatingNewline(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
+func check(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 	span, err := TerminalNewline(ctx, c.Source(), c.Lines(), c.Checkpoint)
 	if err != nil {
 		return engine.RuleOutcome{Err: err}

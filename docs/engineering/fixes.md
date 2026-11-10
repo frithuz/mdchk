@@ -536,7 +536,7 @@ code for an unrecognized leading block: `fix.Plan` defers, with reason
 EOF or line endings deleted up to EOF. It decides by edit shape, not rule ID. The
 rule's eligibility should still use `InteriorEditQuery`, so `fix_available` stays
 accurate. Keep ambiguous rules report-only until independent proof and production acceptance exist. Retained
-compiled fixtures in `cmd/mdchk/testdata/md047_corrections.json` are available
+compiled fixtures in `internal/rules/md047/testdata/md047_corrections.json` are available
 for later consumer acceptance; they do not claim filesystem apply or MCP support.
 `cmd/mdchk/testdata/heading_spacing_corrections.json` and
 `cmd/mdchk/testdata/md007_corrections.json` run through preview and saved modes.

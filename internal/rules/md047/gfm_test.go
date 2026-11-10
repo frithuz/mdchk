@@ -1,4 +1,4 @@
-package rules
+package md047_test
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/rules"
 )
 
 // These are production MD047 registrations, producer and checker, with actual
@@ -20,7 +21,7 @@ func TestMD047GFMTaskEOFPreservation(t *testing.T) {
 				t.Run(flavor+"/"+strings.ReplaceAll(ending, "\r", "CR")+"/"+tail, func(t *testing.T) {
 					text := "prefix" + ending + ending + strings.ReplaceAll(tail, "\n", ending)
 					unsafe := flavor == "gfm" && strings.HasSuffix(tail, "]")
-					r := registry(t, Registrations())
+					r := registry(t, rules.Registrations())
 					selection, err := r.SelectRules(settings(), engine.ValidationProviders{})
 					if err != nil {
 						t.Fatal(err)
@@ -29,7 +30,7 @@ func TestMD047GFMTaskEOFPreservation(t *testing.T) {
 					if err != nil {
 						t.Fatal(err)
 					}
-					checks := CorrectionCheckers()
+					checks := rules.CorrectionCheckers()
 					real := checks[0].Check
 					checked := false
 					checks[0].Check = func(ctx context.Context, c fix.CheckContext) (fix.Proof, error) {
@@ -85,7 +86,7 @@ func TestMD047GFMTaskEOFPreservation(t *testing.T) {
 					run := func(content string) (fix.FileView, fix.Validated) {
 						t.Helper()
 						budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
-						out, err := validator.Validate(context.Background(), []fix.Target{{Path: "doc.md", Source: parser.NewSource([]byte(content)), Plan: plan, Produce: Corrections}}, fix.ValidationOptions{Budget: budget})
+						out, err := validator.Validate(context.Background(), []fix.Target{{Path: "doc.md", Source: parser.NewSource([]byte(content)), Plan: plan, Produce: rules.Corrections}}, fix.ValidationOptions{Budget: budget})
 						if err != nil {
 							t.Fatal(err)
 						}
@@ -126,7 +127,7 @@ func TestMD047GFMTaskEOFPreservation(t *testing.T) {
 // Deliberately lie in the production finding after running the real rule. This
 // proves the independent candidate checker cannot inherit eligibility authority.
 func TestMD047GFMIndependentCheckerRejectsForcedEligibility(t *testing.T) {
-	registrations := Registrations()
+	registrations := rules.Registrations()
 	wrapped := false
 	for i := range registrations {
 		if registrations[i].ID == "MD047" {
@@ -153,7 +154,7 @@ func TestMD047GFMIndependentCheckerRejectsForcedEligibility(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	checks := CorrectionCheckers()
+	checks := rules.CorrectionCheckers()
 	realCheck := checks[0].Check
 	entered := false
 	checks[0].Check = func(ctx context.Context, c fix.CheckContext) (fix.Proof, error) {
@@ -169,7 +170,7 @@ func TestMD047GFMIndependentCheckerRejectsForcedEligibility(t *testing.T) {
 		t.Fatal(err)
 	}
 	budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
-	out, err := validator.Validate(context.Background(), []fix.Target{{Path: "doc.md", Source: parser.NewSource([]byte("- [x]")), Plan: plan, Produce: Corrections}}, fix.ValidationOptions{Budget: budget})
+	out, err := validator.Validate(context.Background(), []fix.Target{{Path: "doc.md", Source: parser.NewSource([]byte("- [x]")), Plan: plan, Produce: rules.Corrections}}, fix.ValidationOptions{Budget: budget})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,4 +1,4 @@
-package rules
+package md047
 
 import (
 	"bytes"
@@ -8,8 +8,8 @@ import (
 	"github.com/frithuz/mdchk/internal/result"
 )
 
-// terminalNewlineGroup regenerates the MD047 group from the round's actual finding.
-func terminalNewlineGroup(ctx context.Context, c fix.RoundContext, d result.Diagnostic) (fix.Group, error) {
+// Correction regenerates the MD047 group from the round's actual finding.
+func Correction(ctx context.Context, c fix.RoundContext, d result.Diagnostic) (fix.Group, error) {
 	span, err := c.Current().Span(d.ByteRange.Start, d.ByteRange.End)
 	if err != nil {
 		return fix.Group{}, err
@@ -28,13 +28,19 @@ func terminalNewlineGroup(ctx context.Context, c fix.RoundContext, d result.Diag
 	return fix.Group{ID: fmt.Sprintf("MD047-terminal-%d", span.Start()), Rule: "MD047", Provenance: "MD047 physical terminal obligation", Anchor: span, Edits: []fix.Edit{{Span: span, Expected: []byte(expected), Replacement: replacement}}, Requirements: []fix.Requirement{{Kind: fix.Meaning}, {Kind: fix.ProtectedSyntax}, {Kind: fix.DirectiveStructure}}}, nil
 }
 
-// checkTerminalNewline proves an exact minimal suffix transformation, preserving
+// Checker returns the MD047 candidate checker. A new directive finding is never
+// accepted from an MD047 edit.
+func Checker() fix.CheckerRegistration {
+	return fix.CheckerRegistration{Rule: "MD047", Check: checkTerminal, ForbidNewFindings: []string{"directive"}}
+}
+
+// checkTerminal proves an exact minimal suffix transformation, preserving
 // all body bytes, every earlier ending, spaces and hard-break markers. Bytes other
 // edits in the round change are their own checkers' proof; this one proves that
 // nothing else changed. Complete shared protection/binding/directive comparisons
 // are additionally mandatory in Validator; a matching AST shape or disappearance
 // of MD047 is never this proof.
-func checkTerminalNewline(ctx context.Context, c fix.CheckContext) (fix.Proof, error) {
+func checkTerminal(ctx context.Context, c fix.CheckContext) (fix.Proof, error) {
 	span, err := TerminalNewline(ctx, c.Before.Current(), c.Before.Lines(), c.Before.Checkpoint)
 	if err != nil {
 		return fix.Unknown, err
