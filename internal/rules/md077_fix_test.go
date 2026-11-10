@@ -56,7 +56,8 @@ func TestMD077FixturesReparseIdentically(t *testing.T) {
 				if before, after := md077Shape(t, tc.Source, flavor), md077Shape(t, tc.Candidate, flavor); before != after {
 					t.Fatalf("structure changed:\n%s\nbecame\n%s", before, after)
 				}
-				if tc.Source != tc.Candidate && view.ChangingRounds != 1 {
+				// MD077 waits for MD009, so the composition fixture takes two rounds.
+				if rounds := 1 + strings.Count(tc.Name, "composition"); tc.Source != tc.Candidate && view.ChangingRounds != rounds {
 					t.Fatal("rounds", view.ChangingRounds)
 				}
 				for _, d := range view.Analysis.Diagnostics {
@@ -143,14 +144,14 @@ func TestMD077FrontmatterWithholdsEdits(t *testing.T) {
 	}
 }
 
-func TestMD077ComposesInOneRound(t *testing.T) {
+func TestMD077ComposesInOneRun(t *testing.T) {
 	text := "#  Title\n\n## Closed  ##\n\n- One\n\n   Text \n\n- Two\n Lazy"
 	want := "# Title\n\n## Closed ##\n\n- One\n\n  Text\n\n- Two\n  Lazy\n"
 	view, out := spacingCorrected(t, text, "commonmark", Corrections, "MD009", "MD019", "MD021", "MD047", "MD077")
-	if !out.Complete() || string(view.Candidate.Bytes()) != want || view.ChangingRounds != 1 || len(view.Attempts) != 2 {
+	if !out.Complete() || string(view.Candidate.Bytes()) != want || view.ChangingRounds != 2 || len(view.Attempts) != 3 {
 		t.Fatalf("%q complete %v rounds %d attempts %+v", view.Candidate.Bytes(), out.Complete(), view.ChangingRounds, view.Attempts)
 	}
-	if decisions := view.Attempts[1].Decisions; len(decisions) != 0 {
+	if decisions := view.Attempts[2].Decisions; len(decisions) != 0 {
 		t.Fatal("final check proposed", decisions)
 	}
 	again, _ := spacingCorrected(t, want, "commonmark", Corrections, "MD009", "MD019", "MD021", "MD047", "MD077")
