@@ -5,7 +5,16 @@ package rules
 
 import (
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/rules/md009"
+	"github.com/frithuz/mdchk/internal/rules/md010"
+	"github.com/frithuz/mdchk/internal/rules/md012"
+	"github.com/frithuz/mdchk/internal/rules/md013"
+	"github.com/frithuz/mdchk/internal/rules/md027"
+	"github.com/frithuz/mdchk/internal/rules/md028"
 	"github.com/frithuz/mdchk/internal/rules/md047"
+	"github.com/frithuz/mdchk/internal/rules/md064"
+	"github.com/frithuz/mdchk/internal/rules/md085"
+	"github.com/frithuz/mdchk/internal/rules/md089"
 )
 
 func Registrations() []engine.Registration {
@@ -15,11 +24,11 @@ func Registrations() []engine.Registration {
 		{ID: "MD004", Check: bulletMarkerStyle},
 		{ID: "MD005", Check: siblingListAlignment},
 		{ID: "MD007", Check: bulletNestingIndentation},
-		{ID: "MD009", Check: trailingWhitespace},
-		{ID: "MD010", Check: tabCharacters},
+		md009.Registration(),
+		md010.Registration(),
 		{ID: "MD011", Check: swappedLinkDelimiters},
-		{ID: "MD012", Check: blankBodyLines},
-		{ID: "MD013", Check: maximumLineWidth},
+		md012.Registration(),
+		md013.Registration(),
 		{ID: "MD014", Check: shellPrompts},
 		{ID: "MD018", Check: openingHashSpacing},
 		{ID: "MD019", Check: extraOpeningHashSpaces},
@@ -30,8 +39,8 @@ func Registrations() []engine.Registration {
 		{ID: "MD024", Check: repeatedHeadingText},
 		{ID: "MD025", Check: multipleDocumentTitles},
 		{ID: "MD026", Check: headingEndPunctuation},
-		{ID: "MD027", Check: blockquoteSpaces},
-		{ID: "MD028", Check: blockquoteGaps},
+		md027.Registration(),
+		md028.Registration(),
 		{ID: "MD029", Check: numberedListPrefixes},
 		{ID: "MD030", Check: listMarkerSpacing},
 		{ID: "MD031", Check: fencedBlockBlankLines},
@@ -67,7 +76,7 @@ func Registrations() []engine.Registration {
 		{ID: "MD061", Check: prohibitedVocabulary},
 		{ID: "MD062", Check: destinationWhitespace},
 		{ID: "MD063", Check: headingCapitalization},
-		{ID: "MD064", Check: repeatedProseSpaces},
+		md064.Registration(),
 		{ID: "MD065", Check: horizontalRuleBlankLines},
 		{ID: "MD069", Check: repeatedListMarkers},
 		{ID: "MD070", Check: nestedMarkdownExamples},
@@ -82,11 +91,11 @@ func Registrations() []engine.Registration {
 		{ID: "MD082", Check: sectionsWithoutContent},
 		{ID: "MD083", Check: suspiciousSequences},
 		{ID: "MD084", Check: hiddenCharacters},
-		{ID: "MD085", Check: paragraphIndentation},
+		md085.Registration(),
 		{ID: "MD086", Check: unclosedHTMLComments},
 		{ID: "MD087", Check: engine.CheckUnusedSuppressions},
 		{ID: "MD088", Check: asciiPunctuation},
-		{ID: "MD089", Check: cjkSpacing},
+		md089.Registration(),
 		{ID: "MD091", Check: markdownInsideHTML},
 		{ID: "MD092", Check: conflictMarkers},
 		{ID: "MD093", Check: inlineFormattingInHeadings},

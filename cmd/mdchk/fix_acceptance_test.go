@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/frithuz/mdchk/internal/acceptance"
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/testenv"
 )
@@ -185,18 +186,7 @@ func assertFixSuppressionRejectsIdentity(t *testing.T, python string, data []byt
 
 func runFixConfiguration(t *testing.T, binary, root string, args ...string) configurationRun {
 	t.Helper()
-	before := configurationBytes(t, root)
-	out := runConfigurationProcess(t, binary, root, args...)
-	after := configurationBytes(t, root)
-	if !reflect.DeepEqual(before, after) {
-		t.Fatal("dry-run changed directory inventory or bytes")
-	}
-	for _, arg := range args {
-		if arg == "--format=json" {
-			out.Result = validateConfigurationOperationJSON(t, []byte(out.Stdout), "fix")
-		}
-	}
-	return out
+	return acceptance.RunFixDryRun(t, binary, root, args...)
 }
 
 func TestCompiledProductionFixBoundaryAndNoWrites(t *testing.T) {
@@ -491,5 +481,92 @@ func TestCompiledFixIndependentDeferralsKeepTheirActualCauses(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// A run that validated completely has the budget to describe what it wrote, so the
+// exit code a preview promises holds for the saved run.
+func TestCompiledFixWriteIsNotReportedIncomplete(t *testing.T) {
+	t.Parallel()
+	binary := sharedExecutable(t)
+	source := strings.Repeat("# T\n\nbody text here\n\n", 50) + "end"
+	want := source + "\n"
+	conf := strings.Replace(cleanConfiguration(), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
+	run := func(limit int) (configurationRun, string) {
+		root := configurationProject(t)
+		putConfigurationFile(t, root, ".mdchk.yaml", conf)
+		putConfigurationFile(t, root, "doc.md", source)
+		got := runAppliedFix(t, binary, root, "fix", "doc.md", "--format=json", "--limit", fmt.Sprintf("work-units=%d", limit))
+		//nolint:gosec // Access only synthetic test fixtures.
+		saved, err := os.ReadFile(filepath.Join(root, "doc.md"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return got, string(saved)
+	}
+	// Find the smallest budget that writes.
+	low, high := 1000, 250000000
+	for high-low > 1 {
+		middle := (low + high) / 2
+		if _, saved := run(middle); saved == want {
+			high = middle
+		} else {
+			low = middle
+		}
+	}
+	// A stop in the write's own last steps stays visible, so start just above them.
+	for _, extra := range []int{1000, 5000, 20000, 50000} {
+		got, saved := run(high + extra)
+		if saved != want || got.Status != 0 || !got.Result.Complete {
+			t.Fatalf("limit %d: status %d saved %q: %s", high+extra, got.Status, saved, got.Stdout)
+		}
+	}
+}
+
+// Criterion 19: rules outside this slice stay report-only through fix.
+func TestCompiledReportOnlyRulesProduceNoEdits(t *testing.T) {
+	t.Parallel()
+	binary := sharedExecutable(t)
+	for _, tc := range []struct{ rule, setting, source string }{
+		{"MD013", "{enabled: true, length: 5}", "abcdefghij klmn\n"},
+		{"MD028", "{enabled: true}", "> a\n\n> b\n"},
+		{"MD037", "{enabled: true}", "a * b * c\n"},
+		{"MD081", "{enabled: true}", "**aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa**\n"},
+		{"MD010", "{enabled: true}", "a\tb\n"},
+		{"MD012", "{enabled: true}", "a\n\n\nb\n"},
+		{"MD027", "{enabled: true}", ">  a\n"},
+		{"MD064", "{enabled: true}", "a  b\n"},
+		{"MD085", "{enabled: true}", "a\n  b\n"},
+		{"MD089", "{enabled: true}", "中a\n"},
+		{"MD035", "{enabled: true}", "---\n\n***\n"},
+		{"MD038", "{enabled: true}", "` a `\n"},
+		{"MD044", "{enabled: true, names: [JavaScript]}", "javascript\n"},
+		{"MD049", "{enabled: true}", "*a* _b_\n"},
+		{"MD050", "{enabled: true}", "**a** __b__\n"},
+		{"MD065", "{enabled: true}", "a\n\n---\nb\n"},
+		{"MD088", "{enabled: true}", "a — b\n"},
+	} {
+		for _, flavor := range []string{"commonmark", "gfm"} {
+			t.Run(tc.rule+"/"+flavor, func(t *testing.T) {
+				t.Parallel()
+				root := configurationProject(t)
+				conf := strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1)
+				putConfigurationFile(t, root, ".mdchk.yaml", strings.Replace(conf, tc.rule+": {enabled: false}", tc.rule+": "+tc.setting, 1))
+				putConfigurationFile(t, root, "doc.md", tc.source)
+				before := configurationBytes(t, root)
+				got := runAppliedFix(t, binary, root, "fix", "doc.md", "--format=json")
+				if got.Status != 10 || len(got.Result.Diagnostics) == 0 || len(got.Result.Changes) != 0 || len(got.Result.DeferredFixes) != 0 {
+					t.Fatal(got)
+				}
+				for _, d := range got.Result.Diagnostics {
+					if d.Rule != tc.rule || d.FixAvailable {
+						t.Fatal(d)
+					}
+				}
+				if !reflect.DeepEqual(before, configurationBytes(t, root)) {
+					t.Fatal("report-only rule changed bytes")
+				}
+			})
+		}
 	}
 }

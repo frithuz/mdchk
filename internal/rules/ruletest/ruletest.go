@@ -8,6 +8,7 @@ package ruletest
 
 import (
 	"context"
+	"encoding/json"
 	"slices"
 	"testing"
 
@@ -90,4 +91,53 @@ func Corrected(t *testing.T, v *fix.Validator, plan *engine.ExecutionPlan, text 
 		t.Fatal("missing file")
 	}
 	return view, out
+}
+
+// AnalyzeDocument lints source as heading.md in dc. It fails if analysis
+// changed the source or proposed edits, or if a suppressed finding or a
+// report-only rule's finding grants a fix.
+func AnalyzeDocument(t *testing.T, r *engine.Registry, source string, s engine.Settings, dc engine.DocumentContext, opts engine.RunOptions) result.Result {
+	t.Helper()
+	caller := []byte(source)
+	in, err := engine.NewInput("heading.md", caller, s, dc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	token := in.Source().Token()
+	out, err := r.Lint(context.Background(), []engine.Input{in}, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(caller) != source || string(in.Source().Bytes()) != source || in.Source().Token() != token || len(out.Changes) != 0 || len(out.Documents) != 0 || out.Files[0].WriteStatus != "not-requested" {
+		t.Fatal("analysis changed original or proposed edits", out)
+	}
+	for _, raw := range out.SuppressedDiagnostics {
+		var suppressed result.SuppressedDiagnostic
+		if err := json.Unmarshal(raw, &suppressed); err != nil || suppressed.Diagnostic.FixAvailable {
+			t.Fatal("suppressed heading grants fix", string(raw), err)
+		}
+	}
+	for _, d := range out.Diagnostics {
+		if d.FixAvailable && d.Rule != "MD003" && d.Rule != "MD004" && d.Rule != "MD005" && d.Rule != "MD007" && d.Rule != "MD009" && d.Rule != "MD019" && d.Rule != "MD021" && d.Rule != "MD022" && d.Rule != "MD023" && d.Rule != "MD029" && d.Rule != "MD030" && d.Rule != "MD032" && d.Rule != "MD063" && d.Rule != "MD076" && d.Rule != "MD077" {
+			t.Fatal("report-only heading grants fix", d)
+		}
+	}
+	return out
+}
+
+// LateStopContext counts the production callback's context checks so a test
+// can stop after a completed inventory and the first emission, without fixing
+// a parser work count. From the Stop-th call on, Err returns Reason.
+type LateStopContext struct {
+	context.Context
+	Calls, Stop int
+	Reason      error
+}
+
+func (c *LateStopContext) Err() error {
+	c.Calls++
+	if c.Stop > 0 && c.Calls >= c.Stop {
+		return c.Reason
+	}
+	return c.Context.Err()
 }

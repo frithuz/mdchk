@@ -177,8 +177,8 @@ Code that two rules share goes in a small, specifically named package under
 
 ### Rule packages
 
-Rules are moving into one package each under `internal/rules/`, starting with
-`internal/rules/md047`. A rule package has this layout:
+Rules are moving into one package each under `internal/rules/`, such as
+`internal/rules/md047` and the whitespace rules. A rule package has this layout:
 
 ```text
 internal/rules/md047/
@@ -193,8 +193,10 @@ internal/rules/md047/
 Every rule package exports `Registration() engine.Registration`, which returns
 the rule ID and its check. A rule with a fixer also exports
 `Correction(ctx, fix.RoundContext, result.Diagnostic) (fix.Group, error)` and
-`Checker() fix.CheckerRegistration`. Helpers that other packages already call,
-such as `md047.TerminalNewline`, stay exported; everything else is unexported.
+`Checker() fix.CheckerRegistration`. MD009 builds every group of a round in one
+pass, so its `Correction` takes and returns slices. Helpers that other packages
+already call, such as `md047.TerminalNewline`, stay exported; everything else is
+unexported.
 
 Tests use the external package `mdNNN_test`, which may import
 `internal/rules` to run the rule with every production registration and

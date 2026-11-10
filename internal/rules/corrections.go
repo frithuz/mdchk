@@ -12,6 +12,7 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/internal/headingstyle"
 	"github.com/frithuz/mdchk/internal/rules/internal/listspacing"
 	"github.com/frithuz/mdchk/internal/rules/internal/orderedprefix"
+	"github.com/frithuz/mdchk/internal/rules/md009"
 	"github.com/frithuz/mdchk/internal/rules/md047"
 )
 
@@ -213,7 +214,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	}
 	waiting := len(groups) > 0
 	touched, blocking, compared := false, waiting, len(groups) > spaced
-	suffixes, err := trailingWhitespaceGroups(ctx, c, trailing)
+	suffixes, err := md009.Correction(ctx, c, trailing)
 	if err != nil {
 		return nil, err
 	}
@@ -286,7 +287,7 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		{Rule: "MD021", Check: headingspacing.Check},
 		{Rule: "MD023", Check: headingindent.Check},
 		{Rule: "MD029", Check: orderedprefix.Check},
-		{Rule: "MD009", Check: checkTrailingWhitespace},
+		md009.Checker(),
 		{Rule: "MD003", Check: headingstyle.Check},
 		{Rule: "MD022", Check: headingblanks.Check},
 		{Rule: "MD063", Check: headingcase.Check},
