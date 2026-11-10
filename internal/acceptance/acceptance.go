@@ -74,6 +74,23 @@ func CleanConfiguration() string {
 	return b.String()
 }
 
+// MD047Configuration returns CleanConfiguration with directives enabled and
+// MD047 set to enabled and allow_directives as given.
+func MD047Configuration(enabled, permission bool) string {
+	config := strings.ReplaceAll(CleanConfiguration(), "directives: {enabled: false}", "directives: {enabled: true}")
+	return strings.Replace(config, "MD047: {enabled: false}", fmt.Sprintf("MD047: {enabled: %t, allow_directives: %t}", enabled, permission), 1)
+}
+
+// StableStat returns the file information of an open handle to path.
+func StableStat(path string) (os.FileInfo, error) {
+	f, err := os.Open(path) //nolint:gosec // Test-owned synthetic fixture path.
+	if err != nil {
+		return nil, err
+	}
+	info, err := f.Stat()
+	return info, errors.Join(err, f.Close())
+}
+
 // ConfigurationBytes returns a digest of every regular file under root.
 func ConfigurationBytes(t *testing.T, root string) map[string][32]byte {
 	t.Helper()

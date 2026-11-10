@@ -3,7 +3,10 @@
 // concerns. Registrations returns a fresh slice, with no mutable global registry.
 package rules
 
-import "github.com/frithuz/mdchk/internal/engine"
+import (
+	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/rules/md047"
+)
 
 func Registrations() []engine.Registration {
 	return []engine.Registration{
@@ -47,7 +50,7 @@ func Registrations() []engine.Registration {
 		{ID: "MD044", Check: configuredNameCapitalization},
 		{ID: "MD045", Check: imageAlternatives},
 		{ID: "MD046", Check: codeBlockStyles},
-		{ID: "MD047", Check: terminatingNewline},
+		md047.Registration(),
 		{ID: "MD048", Check: fencedBlockStyles},
 		{ID: "MD049", Check: italicDelimiterStyle},
 		{ID: "MD050", Check: boldDelimiterStyle},

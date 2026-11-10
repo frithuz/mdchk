@@ -6,20 +6,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/frithuz/mdchk/internal/acceptance"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
 func md047Configuration(enabled, permission bool) string {
-	config := strings.ReplaceAll(cleanConfiguration(), "directives: {enabled: false}", "directives: {enabled: true}")
-	value := "false"
-	if enabled {
-		value = "true"
-	}
-	allowed := "false"
-	if permission {
-		allowed = "true"
-	}
-	return strings.Replace(config, "MD047: {enabled: false}", "MD047: {enabled: "+value+", allow_directives: "+allowed+"}", 1)
+	return acceptance.MD047Configuration(enabled, permission)
 }
 func TestCompiledMD047ProductionAnalysis(t *testing.T) {
 	t.Parallel()

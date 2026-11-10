@@ -17,7 +17,7 @@ import (
 func TestCompiledProductionMD047FixWorkflow(t *testing.T) {
 	t.Parallel()
 	binary := sharedExecutable(t)
-	data, err := os.ReadFile("testdata/md047_corrections.json")
+	data, err := os.ReadFile("../../internal/rules/md047/testdata/md047_corrections.json")
 	if err != nil {
 		t.Fatal(err)
 	}

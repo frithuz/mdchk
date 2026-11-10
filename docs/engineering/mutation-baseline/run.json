@@ -21,9 +21,9 @@
         "--output",
         "/private/tmp/issue210-baseline-final/rules.json",
         "--exclude-files",
-        "(^|/)md047\\.go$",
+        "(^|/)md047/md047\\.go$",
         "--exclude-files",
-        "(^|/)md047_fix\\.go$",
+        "(^|/)md047/fix\\.go$",
         "--exclude-files",
         "(^|/)rules\\.go$"
       ],
