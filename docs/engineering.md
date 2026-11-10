@@ -160,7 +160,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction, and MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077 and MD076 also correct; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
+production correction, and MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077, MD076 and MD004 also correct; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
 analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation
 analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis,
 MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD014 shell-prompt analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD065 horizontal-rule blank-line analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD018 missing opening-hash spacing, MD019 extra
@@ -652,8 +652,10 @@ Stack/fact storage and copied prefixes reserve original records/work before
 construction. Caller and originating controls, sticky work/node/time stops and
 final publication checks withhold unfinished inventories. MD004 selects one
 per-document first-bullet baseline before directive filtering, or an admitted
-explicit marker, and emits marker-only manual findings. It remains enabled by
-default with PlannedFix metadata; this analysis produces no edits.
+explicit marker, and emits marker-only findings. It is enabled by default with
+ImplementedFix metadata. A finding is fixable only when its whole list is: every
+item passes the interior edit query, no sibling bullet list sits beside it and no
+item's first line would read as a thematic break.
 
 MD005 reuses the same detached list facts. It compares structural marker
 indentation (`ContentIndent - MarkerWidth - Padding`) against each actual group's

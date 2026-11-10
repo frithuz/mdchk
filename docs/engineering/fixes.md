@@ -128,7 +128,7 @@ invocations with Darwin `flock`; that required platform-specific code and is rem
 one portable implementation. Stale protection still detects concurrent changes to the source,
 its dependencies and the parent immediately before the rename, but it does not serialize writers,
 and a noncooperating writer can change a file between the last check and the rename. Reviewed
-when MD019, MD021, MD023, MD029 and MD009 corrections joined MD047: no lock is added, intentionally, because mdchk
+when MD019, MD021, MD023, MD029, MD009 and MD004 corrections joined MD047: no lock is added, intentionally, because mdchk
 trusts one execution at a time, in line with #261. Stale protection is unchanged. Two concurrent
 runs with the same configuration compute identical output. Runs with different configurations,
 such as different MD009 settings, can compute different output, and a run can overwrite another
@@ -329,7 +329,7 @@ there, not even a deferral, so nothing touches MD047's insertion and it applies 
 
 ### Production rule integration
 
-`internal/rules.Corrections` regenerates MD047, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077 and MD076 groups from each
+`internal/rules.Corrections` regenerates MD047, MD004, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077 and MD076 groups from each
 current round's actual shared analysis and source-owned diagnostic ranges. For
 MD047, the source's retained physical-line index supplies the same terminal facts
 as analysis; the shared `fix.InsertionEnding` chooses inserted spelling without
@@ -364,7 +364,7 @@ the source while recognition is off or the format is unselected. Such a block ma
 real metadata, or a pair of thematic breaks, and each round's own parse answers this
 once with the shared delimiter detection, so no fact is carried between rounds or
 from saved input. `InteriorEditQuery` and MD009's eligibility return false, and
-`Corrections` makes no MD009, MD032, MD007 or MD076 group, and MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD063 and MD077 are withheld by their flags. MD047 stays, because a line
+`Corrections` makes no MD009, MD032, MD007 or MD076 group, and MD004, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD063 and MD077 are withheld by their flags. MD047 stays, because a line
 ending at EOF can't change a value inside the block.
 
 Combined rounds propose all of a document's eligible corrections together, so a
@@ -503,6 +503,19 @@ line-end whitespace proof and the other list and whole-parse proofs, so while an
 MD076 group exists `Corrections` proposes no other group; they follow in later
 rounds. MD047 still joins the first round when
 its finding is eligible.
+
+MD004 proposes one group per fixable finding, replacing the bullet byte with the
+expected marker. Analysis grants eligibility to a whole list or none of it, so a
+round never splits a list, and withholds a list beside another bullet list, which
+would merge with it, or one whose item would read as a thematic break. Its checker
+compares, once per round, the mapped block tree of both parses: block kinds, order
+and envelopes, and the ordered state, start, delimiter, tight state and widths of
+every list and item. Each group then checks its own edit against the before parse's
+list items and baseline, and that the candidate item carries the expected bullet.
+MD004 groups come right after MD076 and share their round only with MD009, MD019,
+MD021 and MD047; every other group waits for a round without them. MD004 edits
+count as waiting edits for MD047, as heading edits do. MD009's line-end meaning
+comparison ignores bullets, which only an MD004 edit can change.
 
 Future corrections add rule producers, separately registered trusted checkers,
 implemented catalog metadata and affirmative per-finding eligibility. Compose
