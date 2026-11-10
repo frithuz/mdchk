@@ -490,8 +490,10 @@ Stack/fact storage and copied prefixes reserve original records/work before
 construction. Caller and originating controls, sticky work/node/time stops and
 final publication checks withhold unfinished inventories. MD004 selects one
 per-document first-bullet baseline before directive filtering, or an admitted
-explicit marker, and emits marker-only manual findings. It remains enabled by
-default with PlannedFix metadata; this analysis produces no edits.
+explicit marker, and emits marker-only findings. It is enabled by default with
+ImplementedFix metadata. A finding is fixable only when its whole list is: every
+item passes the interior edit query, no sibling bullet list sits beside it and no
+item's first line would read as a thematic break.
 
 MD005 consumes the same original list facts with per-analysis baseline storage.
 It reserves records and work before constructing baseline and finding storage,

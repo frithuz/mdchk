@@ -70,7 +70,7 @@ CommonMark and GFM. Selecting a flavor never enables recognition.
 Ordinary interpretation doesn't make the block safe to edit. When a complete block
 under the delimiter rules opens a document whose recognition is disabled or whose
 format is unselected, parsing, findings and inspection stay as above, but
-`Document.UnrecognizedBlock` withholds MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077 and MD076 corrections for the
+`Document.UnrecognizedBlock` withholds MD003, MD004, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077 and MD076 corrections for the
 whole document, and `fix.Plan` defers any other edit except a line ending inserted
 at EOF or line endings deleted up to EOF. A leading thematic break paired with a
 later one has the same shape. An opener with no closer doesn't count. See
