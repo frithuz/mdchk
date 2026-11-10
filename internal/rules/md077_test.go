@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -24,6 +25,14 @@ func md077Settings() engine.Settings {
 	s["MD077"] = engine.RuleSetting{Enabled: &on, Options: engine.Options{}}
 	return s
 }
+
+// md077SpaceOnly is the source-level precondition of an advertised MD077 edit:
+// the line through end is ASCII spaces, with no front matter block to withhold it.
+func md077SpaceOnly(source string, end int) bool {
+	start := strings.LastIndexAny(source[:end], "\r\n") + 1
+	return strings.Trim(source[start:end], " ") == "" && !strings.HasPrefix(source, "---") && !strings.HasPrefix(source, "+++")
+}
+
 func TestMD077AnalysisFixtures(t *testing.T) {
 	data, err := os.ReadFile("testdata/md077.json")
 	if err != nil {
@@ -72,7 +81,7 @@ func TestMD077AnalysisFixtures(t *testing.T) {
 				for i, w := range f.Expected {
 					d := out.Diagnostics[i]
 					got := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD077" || d.FixAvailable || d.Message != fmt.Sprintf("List continuation has %d indentation columns; expected %d.", w.Actual, w.Expected) {
+					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD077" || d.FixAvailable && !md077SpaceOnly(f.Source, d.ByteRange.End) || d.Message != fmt.Sprintf("List continuation has %d indentation columns; expected %d.", w.Actual, w.Expected) {
 						t.Fatal(got, d, w)
 					}
 				}
@@ -84,7 +93,7 @@ func TestMD077FinalPublicationWithholdsAllFindings(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 1}, {"aligned", "- one\n- two", 1}, {"violation", "- one\n Text\n More", 7}} {
+	}{{"empty", "", 1}, {"aligned", "- one\n- two", 1}, {"violation", "- one\n Text\n More", 32}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+reason.Error(), func(t *testing.T) {
 				var observed engine.RuleOutcome
@@ -243,7 +252,7 @@ func TestMD077OriginControlsAndManualFindings(t *testing.T) {
 			}
 			return observed
 		}}})
-		in, _ := engine.NewInput("doc.md", []byte("- one\n Text\n More"), md077Settings(), engine.DocumentContext{})
+		in, _ := engine.NewInput("doc.md", []byte("- one\n\tText\n\tMore"), md077Settings(), engine.DocumentContext{})
 		out, err := r.Lint(ctx, []engine.Input{in}, engine.RunOptions{})
 		cancel()
 		if err != nil {
@@ -279,7 +288,7 @@ func TestMD077OriginFinalPublication(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 1}, {"aligned", "- one\n- two", 1}, {"violating", "- one\n Text\n More", 7}} {
+	}{{"empty", "", 1}, {"aligned", "- one\n- two", 1}, {"violating", "- one\n Text\n More", 9}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+reason.Error(), func(t *testing.T) {
 				origin := &lateStopContext{Context: context.Background(), stop: 1 << 20, reason: reason}
@@ -354,7 +363,7 @@ func TestMD077CatalogOptionsAndDefaultActivation(t *testing.T) {
 		if m.DefaultEnabled {
 			enabled++
 		}
-		if m.ID == "MD077" && (!m.DefaultEnabled || m.Fix != engine.PlannedFix || !m.RequiresSyntax || m.UsesFrontmatter || len(m.Options) != 0) {
+		if m.ID == "MD077" && (!m.DefaultEnabled || m.Fix != engine.ImplementedFix || !m.RequiresSyntax || m.UsesFrontmatter || len(m.Options) != 0) {
 			t.Fatal(m)
 		}
 	}
@@ -374,7 +383,7 @@ func TestMD077CatalogOptionsAndDefaultActivation(t *testing.T) {
 		s := md077Settings()
 		delete(s, "MD077")
 		out := analyzeHeadings(t, r, "- One\n Text\n", s, engine.DocumentContext{Flavor: flavor}, engine.RunOptions{})
-		if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD077" || out.Diagnostics[0].FixAvailable {
+		if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD077" || !out.Diagnostics[0].FixAvailable {
 			t.Fatal(out)
 		}
 	}

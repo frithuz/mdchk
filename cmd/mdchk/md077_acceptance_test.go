@@ -50,7 +50,17 @@ func TestCompiledPlatformMD077ProductionAnalysis(t *testing.T) {
 					putConfigurationFile(t, root, ".mdchk.yaml", conf)
 					putConfigurationFile(t, root, "doc.md", f.Source)
 					before := configurationBytes(t, root)
-					for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
+					// A preview corrects eligible findings; none it leaves may advertise one.
+					preview := runFixConfiguration(t, binary, root, "fix", "--dry-run", "doc.md", "--format=json").Result
+					if preview.Complete == f.Incomplete || len(preview.Errors) != 0 {
+						t.Fatal(preview)
+					}
+					for _, d := range preview.Diagnostics {
+						if d.Rule == "MD077" && d.FixAvailable {
+							t.Fatal("remaining finding advertised", d)
+						}
+					}
+					for _, args := range [][]string{{"lint", "doc.md", "--format=json"}} {
 						got := runConfigurationProcess(t, binary, root, args...)
 						out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
 						status := 0
@@ -66,7 +76,7 @@ func TestCompiledPlatformMD077ProductionAnalysis(t *testing.T) {
 						for i, w := range f.Expected {
 							d := out.Diagnostics[i]
 							actual := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD077" || d.FixAvailable || d.Message != fmt.Sprintf("List continuation has %d indentation columns; expected %d.", w.Actual, w.Expected) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
+							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD077" || d.FixAvailable && !md077SpaceOnly(f.Source, d.ByteRange.End) || d.Message != fmt.Sprintf("List continuation has %d indentation columns; expected %d.", w.Actual, w.Expected) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
 								t.Fatal(d, w)
 							}
 						}
@@ -120,7 +130,7 @@ func TestCompiledPlatformMD077ConfigurationAndComposition(t *testing.T) {
 			putConfigurationFile(t, root, "doc.md", "- A\n Text\n")
 			got := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=json")
 			out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "lint")
-			if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD077" || out.Diagnostics[0].FixAvailable {
+			if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD077" || !out.Diagnostics[0].FixAvailable {
 				t.Fatal(got)
 			}
 			inspected, p := runInspection(t, binary, root, root, "inspect", "doc.md", "--format=json")
@@ -142,8 +152,9 @@ func TestCompiledPlatformMD077ConfigurationAndComposition(t *testing.T) {
 					root := configurationProject(t)
 					conf := strings.Replace(md077Configuration(flavor), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
 					putConfigurationFile(t, root, ".mdchk.yaml", conf)
-					original := "- é" + ending.text + " Text"
-					start, end, column, endcolumn, actual, line := 5+len(ending.text), 5+len(ending.text), 2, 2, 1, 2
+					// A lazily absent quote keeps the deficit manual.
+					original := "> - é" + ending.text + " Text"
+					start, end, column, endcolumn, actual, line := 7+len(ending.text), 7+len(ending.text), 2, 2, 1, 2
 					if mode == "atomic surplus" {
 						original = "- é" + ending.text + ending.text + "\tText"
 						start = 4 + 2*len(ending.text)
@@ -207,7 +218,7 @@ func TestCompiledPlatformMD077DirectivesAndValidation(t *testing.T) {
 				if validated.Status != 0 {
 					t.Fatal(validated)
 				}
-				for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
+				for _, args := range [][]string{{"lint", "doc.md", "--format=json"}} {
 					got := runConfigurationProcess(t, binary, root, args...)
 					out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
 					status := 0
@@ -219,6 +230,24 @@ func TestCompiledPlatformMD077DirectivesAndValidation(t *testing.T) {
 					}
 					if tc.active == 1 && out.Diagnostics[0].ByteRange != (result.ByteRange{Start: len(source) - 4, End: len(source) - 4}) {
 						t.Fatal(out.Diagnostics)
+					}
+				}
+				// Only active findings are corrected; a suppressed line keeps its bytes.
+				candidate := source
+				if tc.active > 0 {
+					candidate = strings.Replace(source, "\n More", "\n  More", 1)
+				}
+				if tc.active == 2 {
+					candidate = strings.Replace(candidate, "\n Text", "\n  Text", 1)
+				}
+				preview := runFixConfiguration(t, binary, root, "fix", "--dry-run", "doc.md", "--format=json").Result
+				if !preview.Complete || len(preview.Changes) > 0 != (candidate != source) || preview.Files[0].ResultSnapshot.SHA256 != spacingDigest(candidate+"\n") && preview.Files[0].ResultSnapshot.SHA256 != spacingDigest(candidate) {
+					t.Fatalf("preview: %+v", preview)
+				}
+				for _, raw := range preview.SuppressedDiagnostics {
+					var suppressed result.SuppressedDiagnostic
+					if err := json.Unmarshal(raw, &suppressed); err != nil || suppressed.Diagnostic.FixAvailable {
+						t.Fatal("suppressed finding advertised", string(raw), err)
 					}
 				}
 				if !reflect.DeepEqual(before, configurationBytes(t, root)) {
@@ -276,7 +305,7 @@ func TestCompiledPlatformMD077InspectionRetainsHiddenParent(t *testing.T) {
 				t.Fatal(got, p)
 			}
 			d := got.Result.Diagnostics[0]
-			if d.Rule != "MD077" || d.Message != "List continuation has 1 indentation columns; expected 5." || d.ByteRange.Start != len(source)-5 || d.ByteRange.End != len(source)-5 || d.FixAvailable {
+			if d.Rule != "MD077" || d.Message != "List continuation has 1 indentation columns; expected 5." || d.ByteRange.Start != len(source)-5 || d.ByteRange.End != len(source)-5 || !d.FixAvailable {
 				t.Fatal(d)
 			}
 			if !reflect.DeepEqual(before, configurationBytes(t, root)) {

@@ -1,0 +1,182 @@
+[
+  {
+    "name": "surplus",
+    "source": "- One\n\n   Text\n",
+    "candidate": "- One\n\n  Text\n",
+    "rules": [
+      "MD077"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "deficit-nested",
+    "source": "- - One\n Text\n",
+    "candidate": "- - One\n    Text\n",
+    "rules": [
+      "MD077"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "deficit-lazy",
+    "source": "- - One\nText\n",
+    "candidate": "- - One\n    Text\n",
+    "rules": [
+      "MD077"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "nested-item",
+    "source": "- One\n  - Two\n\n     Text\n",
+    "candidate": "- One\n  - Two\n\n    Text\n",
+    "rules": [
+      "MD077"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "fence-markers",
+    "source": "- One\n\n   ```\n  code\n   ```\n",
+    "candidate": "- One\n\n  ```\n  code\n  ```\n",
+    "rules": [
+      "MD077"
+    ],
+    "edit_count": 2,
+    "config": ""
+  },
+  {
+    "name": "table-rows",
+    "source": "- One\n\n   | a | b |\n   | - | - |\n   | c | d |\n",
+    "candidate": "- One\n\n  | a | b |\n  | - | - |\n  | c | d |\n",
+    "rules": [
+      "MD077"
+    ],
+    "edit_count": 3,
+    "config": ""
+  },
+  {
+    "name": "heading",
+    "source": "- One\n\n   # Head\n",
+    "candidate": "- One\n\n  # Head\n",
+    "rules": [
+      "MD077"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "reference-definition",
+    "source": "- One\n\n   [x]: /u\n\n  [x]\n",
+    "candidate": "- One\n\n  [x]: /u\n\n  [x]\n",
+    "rules": [
+      "MD077"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "crlf",
+    "source": "- One\r\n\r\n   Text\r\n",
+    "candidate": "- One\r\n\r\n  Text\r\n",
+    "rules": [
+      "MD077"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "cr",
+    "source": "- One\r\r   Text\r",
+    "candidate": "- One\r\r  Text\r",
+    "rules": [
+      "MD077"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "unicode",
+    "source": "- One\n\n   Ünïcødé 😀\n",
+    "candidate": "- One\n\n  Ünïcødé 😀\n",
+    "rules": [
+      "MD077"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "tab",
+    "source": "- One\n\n\tText\n",
+    "candidate": "- One\n\n\tText\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "present-quote",
+    "source": "> - One\n> Text\n",
+    "candidate": "> - One\n> Text\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "lazy-quote",
+    "source": "> - - One\n Text\n",
+    "candidate": "> - - One\n Text\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "protected-inline-html",
+    "source": "- - One\n<b>Text</b>\n",
+    "candidate": "- - One\n<b>Text</b>\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "directive",
+    "source": "<!-- mdchk:disable MD077 -->\n- One\n\n   Text\n",
+    "candidate": "<!-- mdchk:disable MD077 -->\n- One\n\n   Text\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "frontmatter-recognized",
+    "source": "---\na: 1\n---\n- One\n\n   Text\n",
+    "candidate": "---\na: 1\n---\n- One\n\n   Text\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "frontmatter"
+  },
+  {
+    "name": "frontmatter-unrecognized",
+    "source": "---\na: 1\n---\n- One\n\n   Text\n",
+    "candidate": "---\na: 1\n---\n- One\n\n   Text\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "composition",
+    "source": "#  Title\n\n## Closed  ##\n\n- One\n\n   Text \n\n- Two\n Lazy",
+    "candidate": "# Title\n\n## Closed ##\n\n- One\n\n  Text\n\n- Two\n  Lazy\n",
+    "rules": [
+      "MD009",
+      "MD019",
+      "MD021",
+      "MD047",
+      "MD077"
+    ],
+    "edit_count": 6,
+    "config": ""
+  }
+]

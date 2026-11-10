@@ -29,7 +29,7 @@ import (
 // planner defers that pair as a conflict first. MD063 shares its round with MD047.
 //
 // A document opening with an unrecognized block gets no MD007, MD009 or MD032 group at all,
-// not even a deferral. MD005, MD019, MD021, MD022, MD023 and MD029 are already withheld by their flags, and MD047 stays.
+// not even a deferral. MD005, MD019, MD021, MD022, MD023, MD029 and MD077 are already withheld by their flags, and MD047 stays.
 //
 // MD003 groups wait for a round with no other group. Their edits touch the same
 // heading lines as MD009, MD019, MD021 and MD063, and their checker proves the round's
@@ -53,13 +53,16 @@ import (
 // MD007 shifts wait for a round with no MD009, MD022, MD023, MD029, MD032 or MD005
 // edit: those checkers compare list items or columns that a shift moves. MD063
 // waits for MD007 in turn, since the MD007 checker compares whole parses.
+//
+// MD077 groups wait for a round with no MD007 shift either, since their checker
+// compares whole parses and columns those edits move. MD063 waits for MD077 in turn.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var spacing, blank, indentation, capitalization, trailing, styles, lists, alignment, numbering, bullets []result.Diagnostic
+	var spacing, blank, indentation, capitalization, trailing, styles, lists, alignment, numbering, bullets, continuation []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -97,6 +100,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		case "MD029":
 			if d.FixAvailable {
 				numbering = append(numbering, d)
+			}
+		case "MD077":
+			if d.FixAvailable {
+				continuation = append(continuation, d)
 			}
 		case "MD009":
 			if !guarded {
@@ -175,6 +182,15 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 			groups = append(groups, shifts...)
 			waiting = waiting || len(shifts) > 0
 			blocking = blocking || len(shifts) > 0
+			if len(shifts) == 0 {
+				continued, err := listContinuationGroups(ctx, c, continuation)
+				if err != nil {
+					return nil, err
+				}
+				groups = append(groups, continued...)
+				waiting = waiting || len(continued) > 0
+				blocking = blocking || len(continued) > 0
+			}
 		}
 	}
 	groups = append(groups, suffixes...)
@@ -220,5 +236,6 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		{Rule: "MD032", Check: checkListBlankLine},
 		{Rule: "MD005", Check: checkListAlignment},
 		{Rule: "MD007", Check: checkBulletIndentation},
+		{Rule: "MD077", Check: checkListContinuation},
 	}
 }
