@@ -160,6 +160,22 @@ func (c RoundContext) ListSeparators(ctx context.Context) ([]parser.ListSeparato
 	return engine.ListMarkerSeparators(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
 }
 
+// BulletMarkers returns MD004's list items, unordered lists and resolved marker for
+// this round's own parse under the target's plan. A zero marker means document-first.
+func (c RoundContext) BulletMarkers(ctx context.Context) ([]parser.ListItemFact, []parser.BulletListFact, byte, error) {
+	return engine.BulletMarkerFacts(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
+// SameStructureAcrossBullets compares the block structure of both actual round
+// parses through the round's edit mapping.
+func (c CheckContext) SameStructureAcrossBullets(ctx context.Context) (bool, error) {
+	before, after := c.Before.Parsed(), c.After.Parsed()
+	if before.Status != parser.Complete || after.Status != parser.Complete || before.Document == nil || after.Document == nil || len(before.Uncertainty) != 0 || len(after.Uncertainty) != 0 {
+		return false, nil
+	}
+	return before.Document.SameStructureAcrossBullets(ctx, c.Before.meter.budget, after.Document, c.MapEndpoints)
+}
+
 // TerminalTaskSourcesPreserved compares both actual round parses on the same
 // residual operation, through the round's edit mapping. Callers must separately
 // prove their exact suffix edit.

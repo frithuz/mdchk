@@ -33,6 +33,10 @@ func (c RuleContext) BulletMarker(ctx context.Context) (byte, error) {
 	if err := c.SectionCheckpoint(ctx, int64(len(value))+1, 0); err != nil {
 		return 0, err
 	}
+	return bulletMarkerValue(value)
+}
+
+func bulletMarkerValue(value string) (byte, error) {
 	switch value {
 	case "consistent":
 		return 0, nil
@@ -45,6 +49,47 @@ func (c RuleContext) BulletMarker(ctx context.Context) (byte, error) {
 	default:
 		return 0, parser.ErrModel
 	}
+}
+
+// BulletLists exposes detached original unordered list facts under both controls.
+func (c RuleContext) BulletLists(ctx context.Context) (out []parser.BulletListFact, err error) {
+	if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
+		return nil, err
+	}
+	defer func() {
+		err = errors.Join(err, c.SectionCheckpoint(ctx, 0, 0))
+		if err != nil {
+			out = nil
+		}
+	}()
+	return c.document.BulletLists(ruleOperation{ctx, c.operation}, c.budget)
+}
+
+// BulletMarkerFacts returns the list items, unordered lists and resolved MD004
+// marker of a completed parse from this operation. The correction producer and
+// checker use it on each round's own parse; a zero marker means document-first.
+func BulletMarkerFacts(ctx context.Context, parsed parser.ParseResult, index parser.LineIndex, plan *ExecutionPlan, budget *parser.OperationBudget) ([]parser.ListItemFact, []parser.BulletListFact, byte, error) {
+	if ctx == nil || plan == nil || budget == nil || parsed.Document == nil {
+		return nil, nil, 0, errors.New("nil bullet marker context")
+	}
+	rule, ok := plan.rules["MD004"]
+	if !ok {
+		return nil, nil, 0, parser.ErrModel
+	}
+	value, ok := rule.Options["marker"].(string)
+	if !ok {
+		return nil, nil, 0, parser.ErrModel
+	}
+	marker, err := bulletMarkerValue(value)
+	if err != nil {
+		return nil, nil, 0, err
+	}
+	items, err := parsed.Document.ListItems(ctx, budget, index, plan.Context().ParseOptions())
+	if err != nil {
+		return nil, nil, 0, err
+	}
+	lists, err := parsed.Document.BulletLists(ctx, budget)
+	return items, lists, marker, err
 }
 
 // BulletIndentation borrows admitted immutable MD007 scalars under the original

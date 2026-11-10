@@ -11,7 +11,9 @@ import (
 // order, break origins, heading/list/table/code/task/link properties and every
 // reference definition. Text values must match, except that spaces and tabs
 // directly before a break may differ, including a Text holding nothing else.
-// Source coordinates are never compared; callers map those separately.
+// Source coordinates are never compared; callers map those separately. Bullets
+// are not compared either: only an MD004 edit in the same round can change one,
+// and its own checker proves it.
 func (d *Document) SameMeaningAcrossLineEndWhitespace(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
 	return d.sameMeaning(ctx, budget, other, true, false, nil)
 }
@@ -156,7 +158,7 @@ func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node
 	}
 	if p.List != nil {
 		s, t := p.List, q.List
-		if s.Ordered != t.Ordered || s.Start != t.Start || s.Delimiter != t.Delimiter || s.Bullet != t.Bullet || !retight && s.Tight != t.Tight || s.MarkerWidth != t.MarkerWidth || !indentation && s.ContentIndent != t.ContentIndent {
+		if s.Ordered != t.Ordered || s.Start != t.Start || s.Delimiter != t.Delimiter || !retight && s.Tight != t.Tight || s.MarkerWidth != t.MarkerWidth || !indentation && s.ContentIndent != t.ContentIndent {
 			return false, nil
 		}
 	}

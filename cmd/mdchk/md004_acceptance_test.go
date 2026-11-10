@@ -27,8 +27,9 @@ func TestCompiledPlatformMD004ProductionAnalysis(t *testing.T) {
 		Marker                string
 		Recognize, Incomplete bool
 		Expected              []struct {
-			Range  []int
-			Source string
+			Range   []int
+			Source  string
+			Fixable bool
 		}
 	}
 	if err := json.Unmarshal(data, &fixtures); err != nil {
@@ -58,20 +59,32 @@ func TestCompiledPlatformMD004ProductionAnalysis(t *testing.T) {
 					for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
 						got := runConfigurationProcess(t, binary, root, args...)
 						out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
+						// A preview corrects every fixable bullet in place, so only the
+						// manual findings remain, at unchanged coordinates.
+						expected, fixable := f.Expected, false
+						if args[0] == "fix" {
+							expected = expected[:0:0]
+							for _, w := range f.Expected {
+								fixable = fixable || w.Fixable
+								if !w.Fixable {
+									expected = append(expected, w)
+								}
+							}
+						}
 						status := 0
-						if len(f.Expected) > 0 {
+						if len(expected) > 0 {
 							status = 10
 						}
 						if f.Incomplete {
 							status = 15
 						}
-						if got.Status != status || out.Complete == f.Incomplete || len(out.Errors) != 0 || len(out.Diagnostics) != len(f.Expected) || len(out.Changes) != 0 || len(out.Documents) != 0 {
+						if got.Status != status || out.Complete == f.Incomplete || len(out.Errors) != 0 || len(out.Diagnostics) != len(expected) || len(out.Changes) > 0 != fixable || len(out.Documents) != 0 {
 							t.Fatal(got)
 						}
-						for i, w := range f.Expected {
+						for i, w := range expected {
 							d := out.Diagnostics[i]
 							actual := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD004" || d.FixAvailable || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
+							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD004" || d.FixAvailable != w.Fixable || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
 								t.Fatal(d, w)
 							}
 						}

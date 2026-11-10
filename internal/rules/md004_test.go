@@ -34,6 +34,7 @@ func TestMD004AnalysisFixtures(t *testing.T) {
 			Range   []int
 			Source  string
 			Message string
+			Fixable bool
 		}
 	}
 	if err := json.Unmarshal(data, &fixtures); err != nil {
@@ -56,7 +57,7 @@ func TestMD004AnalysisFixtures(t *testing.T) {
 				for i, w := range f.Expected {
 					d := out.Diagnostics[i]
 					got := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD004" || d.FixAvailable || d.Message != w.Message {
+					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD004" || d.FixAvailable != w.Fixable || d.Message != w.Message {
 						t.Fatal(got, d, w)
 					}
 				}
@@ -71,7 +72,7 @@ func TestMD004CatalogOptionsAndDefaultActivation(t *testing.T) {
 		t.Fatal("availability")
 	}
 	for _, m := range r.Metadata() {
-		if m.ID == "MD004" && (!m.DefaultEnabled || m.Fix != engine.PlannedFix || !m.RequiresSyntax || m.UsesFrontmatter || len(m.Options) != 1) {
+		if m.ID == "MD004" && (!m.DefaultEnabled || m.Fix != engine.ImplementedFix || !m.RequiresSyntax || m.UsesFrontmatter || len(m.Options) != 1) {
 			t.Fatal(m)
 		}
 	}

@@ -30,7 +30,7 @@ import (
 // planner defers that pair as a conflict first. MD063 shares its round with MD047.
 //
 // A document opening with an unrecognized block gets no MD007, MD009 or MD032 group at all,
-// not even a deferral. MD005, MD019, MD021, MD022, MD023, MD029, MD030 and MD077 are already withheld by their flags, and MD047 stays.
+// not even a deferral. MD004, MD005, MD019, MD021, MD022, MD023, MD029, MD030 and MD077 are already withheld by their flags, and MD047 stays.
 //
 // MD003 groups wait for a round with no other group. Their edits touch the same
 // heading lines as MD009, MD019, MD021 and MD063, and their checker proves the round's
@@ -67,13 +67,17 @@ import (
 // separator edit changes list tightness, which the other list and whole-parse
 // proofs reject. Only an MD047 edit that analysis already offers shares the round.
 // A document opening with an unrecognized block gets no MD076 group either.
+//
+// MD004 groups come next and share their round only with MD009, MD019, MD021 and
+// MD047; every other group waits for a round without them. MD004 is already
+// withheld by its flags in a document opening with an unrecognized block.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var spacing, blank, indentation, capitalization, trailing, styles, lists, alignment, numbering, bullets, continuation, separators, gaps []result.Diagnostic
+	var markers, spacing, blank, indentation, capitalization, trailing, styles, lists, alignment, numbering, bullets, continuation, separators, gaps []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -83,6 +87,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		case "MD047":
 			if terminal == nil {
 				terminal = &analysis.Diagnostics[i]
+			}
+		case "MD004":
+			if d.FixAvailable {
+				markers = append(markers, d)
 			}
 		case "MD003":
 			if d.FixAvailable {
@@ -152,10 +160,19 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		}
 		return gapped, c.Checkpoint(ctx, 0)
 	}
-	groups, err := headingspacing.Groups(ctx, c, spacing)
+	groups, err := bulletMarkerGroups(ctx, c, markers)
 	if err != nil {
 		return nil, err
 	}
+	// Other list and whole-parse proofs compare what MD004 edits, so they wait.
+	if len(groups) > 0 {
+		styles, blank, indentation, capitalization, lists, alignment, numbering, bullets, continuation, separators = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+	}
+	headings, err := headingspacing.Groups(ctx, c, spacing)
+	if err != nil {
+		return nil, err
+	}
+	groups = append(groups, headings...)
 	spaced := len(groups)
 	insertions, err := headingblanks.Groups(ctx, c, blank)
 	if err != nil {
@@ -279,5 +296,6 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		{Rule: "MD077", Check: checkListContinuation},
 		{Rule: "MD030", Check: checkListSeparator},
 		{Rule: "MD076", Check: listspacing.Check},
+		{Rule: "MD004", Check: checkBulletMarker},
 	}
 }
