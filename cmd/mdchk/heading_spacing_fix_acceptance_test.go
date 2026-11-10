@@ -270,7 +270,6 @@ func TestCompiledHeadingSpacingOtherRulesProduceNothing(t *testing.T) {
 		{"MD030", "", "-  a\n"},
 		{"MD069", "", "- - a\n"},
 		{"MD076", "", "- a\n\n- b\n- c\n"},
-		{"MD077", "", "- a\nb\n"},
 	} {
 		t.Run(tc.rule, func(t *testing.T) {
 			root := configurationProject(t)

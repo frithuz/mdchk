@@ -71,7 +71,7 @@ func Catalog() []Metadata {
 		{ID: "MD073", Name: "Table of contents versus headings", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"start_marker": {Kind: String, Default: "<!-- toc -->", Domain: HTMLComment}, "end_marker": {Kind: String, Default: "<!-- /toc -->", Domain: HTMLComment}, "min_level": headingLevel(1), "max_level": headingLevel(6)}},
 		{ID: "MD075", Name: "Pipe rows without a table header", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, AppliesTo: pipeTablesApply, Options: OptionSchema{}},
 		{ID: "MD076", Name: "Consistent spacing between list items", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "tight", "loose")}},
-		{ID: "MD077", Name: "Indentation of list continuation content", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
+		{ID: "MD077", Name: "Indentation of list continuation content", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD080", Name: "Colliding heading anchors", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD081", Name: "Overuse of bold and italic text", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"maximum_ratio": {Kind: Number, Default: 0.5, Minimum: bound(0), Maximum: bound(1)}, "minimum_characters": integer(20, 1)}},
 		{ID: "MD082", Name: "Sections without content", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"allow_final_section": boolean(false)}},

@@ -24,6 +24,8 @@ func compareListContinuationIndentation(ctx context.Context, c engine.RuleContex
 			out.Findings = nil
 		}
 	}()
+	edits := c.InteriorEdits()
+	_, header := c.Document().Frontmatter()
 	for _, item := range items {
 		if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
 			out.Err = err
@@ -44,7 +46,31 @@ func compareListContinuationIndentation(ctx context.Context, c engine.RuleContex
 			return out
 		}
 		message := fmt.Sprintf("List continuation has %d indentation columns; expected %d.", item.Actual, item.Expected)
-		out.Findings = append(out.Findings, engine.Finding{Span: item.Span, Message: message})
+		finding := engine.Finding{Span: item.Span, Message: message}
+		// Tabs, quotes and any leading front matter block stay manual.
+		if item.SpaceOnly && !header {
+			span, err := listContinuationProbe(c.Source(), item.Span)
+			if err != nil {
+				out.Err = err
+				return out
+			}
+			finding.FixEligible, err = edits.Eligible(ctx, "MD077", item.Span, span)
+			if err != nil {
+				out.Err = err
+				return out
+			}
+		}
+		out.Findings = append(out.Findings, finding)
 	}
 	return out
+}
+
+// listContinuationProbe is the nonempty span whose context decides an MD077 edit.
+// A surplus deletes its own span. The shared query withholds insertions, so a
+// deficit is judged by the first content byte its spaces land before.
+func listContinuationProbe(source parser.Source, span parser.Span) (parser.Span, error) {
+	if span.Start() != span.End() {
+		return span, nil
+	}
+	return source.Span(span.Start(), span.Start()+1)
 }
