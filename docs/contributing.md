@@ -175,6 +175,57 @@ and coverage requirements.
 Code that two rules share goes in a small, specifically named package under
 `internal/rules/internal/`, never in another rule's file.
 
+### Rule packages
+
+Rules are moving into one package each under `internal/rules/`, starting with
+`internal/rules/md047`. A rule package has this layout:
+
+```text
+internal/rules/md047/
+  md047.go           check
+  fix.go             correction producer and checker
+  md047_test.go
+  fix_test.go
+  acceptance_test.go compiled-binary tests
+  testdata/          the rule's fixtures and their README
+```
+
+Every rule package exports `Registration() engine.Registration`, which returns
+the rule ID and its check. A rule with a fixer also exports
+`Correction(ctx, fix.RoundContext, result.Diagnostic) (fix.Group, error)` and
+`Checker() fix.CheckerRegistration`. Helpers that other packages already call,
+such as `md047.TerminalNewline`, stay exported; everything else is unexported.
+
+Tests use the external package `mdNNN_test`, which may import
+`internal/rules` to run the rule with every production registration and
+corrector. Add an `export_test.go` only for an unexported name the tests really
+need. Helpers shared by rule tests (registries, settings, analysis and
+correction runs) live in `internal/rules/ruletest`, a non-test package that
+must not import `internal/rules`. Tests left in `internal/rules` call it
+directly or through thin local wrappers.
+
+To add a rule:
+
+1. Create `internal/rules/mdNNN/` with `mdNNN.go`, its tests and `testdata/`,
+   and export `Registration()`.
+2. Add one `mdNNN.Registration(),` line to `Registrations` in
+   `internal/rules/rules.go`.
+3. For a fixer, add `fix.go` with `Correction` and `Checker()`, call
+   `mdNNN.Correction` from `Corrections` in `internal/rules/corrections.go` at
+   the rule's place in the correction order, and add `mdNNN.Checker()` to
+   `CorrectionCheckers`.
+
+A rule's fixtures live in its own `testdata/`. Tests in `cmd/mdchk`,
+`internal/config`, `internal/parser` and `internal/engine` that read a moved
+fixture use a relative path into `internal/rules/mdNNN/testdata/` until those
+tests move too.
+
+CI picks some tests by name with `-run`. When such a test moves to a rule
+package, take its name out of the old pattern and add a `-run` command for the
+new package in the same workflow step, with the same env, `-count=1` and a
+timeout. `factory/checks.sh` is protected: a needed change there goes to a
+person.
+
 ## Static analysis
 
 Run the same pinned gate as CI from the checkout root (POSIX shell, including
