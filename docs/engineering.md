@@ -290,7 +290,7 @@ Start with one violation severity and no warning threshold controls. Add severit
 
 `lint` never modifies source or configuration. Only fix apply may write.
 The [correction contract](engineering/fixes.md) defines atomic multi-edit groups,
-all-conflicting-group deferral, candidate reparse/preservation, ten changing rounds
+conflict winner selection with the losers retried next round, candidate reparse/preservation, ten changing rounds
 plus a read-only convergence check, and rollback of nonconvergent candidate components.
 Stable output must be idempotent; remaining manual findings need not be clean.
 

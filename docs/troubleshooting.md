@@ -58,8 +58,8 @@ Malformed directives change no rule state. An enable directive explicitly enable
 ## Fix leaves findings or a preview exits successfully
 
 Fix applies only safe corrections. Current MD047 leaves protected EOF contexts
-manual. MD009 leaves literal code, some title, backslash and task suffixes, and a
-suffix that conflicts with MD047 at EOF manual; see
+manual. MD009 leaves literal code and some title, backslash and task suffixes
+manual; see
 [its correction policy](rules/whitespace/md009.md#correction-policy). Remaining
 findings return `10`. Heading jumps and missing fenced-code
 languages are examples of future report-only checks, not currently implemented
