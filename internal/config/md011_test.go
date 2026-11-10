@@ -12,7 +12,7 @@ import (
 )
 
 func TestMD011FrozenInvalidConfigurations(t *testing.T) {
-	b, e := os.ReadFile("../rules/testdata/md011.json")
+	b, e := os.ReadFile("../rules/md011/testdata/md011.json")
 	if e != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != "b6e3e408b33fea1ec53de36b79ed6058ac45590c28526854261632685d3dcd29" {
 		t.Fatal(e)
 	}

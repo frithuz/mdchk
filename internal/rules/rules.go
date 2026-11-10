@@ -12,6 +12,7 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md007"
 	"github.com/frithuz/mdchk/internal/rules/md009"
 	"github.com/frithuz/mdchk/internal/rules/md010"
+	"github.com/frithuz/mdchk/internal/rules/md011"
 	"github.com/frithuz/mdchk/internal/rules/md012"
 	"github.com/frithuz/mdchk/internal/rules/md013"
 	"github.com/frithuz/mdchk/internal/rules/md018"
@@ -25,7 +26,18 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md029"
 	"github.com/frithuz/mdchk/internal/rules/md030"
 	"github.com/frithuz/mdchk/internal/rules/md032"
+	"github.com/frithuz/mdchk/internal/rules/md034"
+	"github.com/frithuz/mdchk/internal/rules/md039"
+	"github.com/frithuz/mdchk/internal/rules/md042"
+	"github.com/frithuz/mdchk/internal/rules/md045"
 	"github.com/frithuz/mdchk/internal/rules/md047"
+	"github.com/frithuz/mdchk/internal/rules/md051"
+	"github.com/frithuz/mdchk/internal/rules/md052"
+	"github.com/frithuz/mdchk/internal/rules/md053"
+	"github.com/frithuz/mdchk/internal/rules/md054"
+	"github.com/frithuz/mdchk/internal/rules/md057"
+	"github.com/frithuz/mdchk/internal/rules/md059"
+	"github.com/frithuz/mdchk/internal/rules/md062"
 	"github.com/frithuz/mdchk/internal/rules/md064"
 	"github.com/frithuz/mdchk/internal/rules/md069"
 	"github.com/frithuz/mdchk/internal/rules/md076"
@@ -43,7 +55,7 @@ func Registrations() []engine.Registration {
 		md007.Registration(),
 		md009.Registration(),
 		md010.Registration(),
-		{ID: "MD011", Check: swappedLinkDelimiters},
+		md011.Registration(),
 		md012.Registration(),
 		md013.Registration(),
 		{ID: "MD014", Check: shellPrompts},
@@ -63,35 +75,35 @@ func Registrations() []engine.Registration {
 		{ID: "MD031", Check: fencedBlockBlankLines},
 		md032.Registration(),
 		{ID: "MD033", Check: embeddedHTML},
-		{ID: "MD034", Check: bareURLs},
+		md034.Registration(),
 		{ID: "MD035", Check: horizontalRuleStyle},
 		{ID: "MD036", Check: emphasisUsedAsHeading},
 		{ID: "MD037", Check: emphasisWhitespace},
 		{ID: "MD038", Check: codeSpanWhitespace},
-		{ID: "MD039", Check: linkLabelWhitespace},
+		md039.Registration(),
 		{ID: "MD040", Check: fencedBlockLanguages},
 		{ID: "MD041", Check: openingDocumentHeading},
-		{ID: "MD042", Check: emptyLinkDestinations},
+		md042.Registration(),
 		{ID: "MD043", Check: requiredHeadingOutline},
 		{ID: "MD044", Check: configuredNameCapitalization},
-		{ID: "MD045", Check: imageAlternatives},
+		md045.Registration(),
 		{ID: "MD046", Check: codeBlockStyles},
 		md047.Registration(),
 		{ID: "MD048", Check: fencedBlockStyles},
 		{ID: "MD049", Check: italicDelimiterStyle},
 		{ID: "MD050", Check: boldDelimiterStyle},
-		{ID: "MD051", Check: unresolvedFragmentTargets},
-		{ID: "MD052", Check: undefinedReferences},
-		{ID: "MD053", Check: unneededDefinitions},
-		{ID: "MD054", Check: linkRepresentationStyle},
+		md051.Registration(),
+		md052.Registration(),
+		md053.Registration(),
+		md054.Registration(),
 		{ID: "MD055", Check: outerTablePipes},
 		{ID: "MD056", Check: mismatchedTableCells},
-		{ID: "MD057", Check: missingLocalTargets},
+		md057.Registration(),
 		{ID: "MD058", Check: tableBlankLines},
-		{ID: "MD059", Check: uninformativeLinkLabels},
+		md059.Registration(),
 		{ID: "MD060", Check: tableColumnLayout},
 		{ID: "MD061", Check: prohibitedVocabulary},
-		{ID: "MD062", Check: destinationWhitespace},
+		md062.Registration(),
 		{ID: "MD063", Check: headingCapitalization},
 		md064.Registration(),
 		{ID: "MD065", Check: horizontalRuleBlankLines},

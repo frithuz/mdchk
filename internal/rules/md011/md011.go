@@ -1,0 +1,96 @@
+// Package md011 checks MD011, which reports links whose label and destination delimiters are swapped.
+package md011
+
+import (
+	"context"
+	"errors"
+	"unicode/utf8"
+
+	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/parser"
+)
+
+// Registration returns the MD011 rule ID and its check.
+func Registration() engine.Registration {
+	return engine.Registration{ID: "MD011", Check: swappedLinkDelimiters}
+}
+
+func swappedLinkDelimiters(ctx context.Context, c engine.RuleContext) (out engine.RuleOutcome) {
+	defer func() {
+		out.Err = errors.Join(out.Err, c.SectionCheckpoint(ctx, 1, 0))
+		if out.Err != nil {
+			out.Findings = nil
+			out.IncompleteReason = ""
+		}
+	}()
+	items, err := c.SwappedLinks(ctx)
+	if err != nil {
+		return engine.RuleOutcome{Err: err}
+	}
+	switch items.Availability {
+	case parser.Available:
+		return compareSwappedLinks(ctx, c, items.Spans)
+	case parser.Unavailable:
+		return engine.RuleOutcome{IncompleteReason: "Link-candidate context is unavailable; the complete MD011 inventory is withheld."}
+	default:
+		return engine.RuleOutcome{Err: parser.ErrModel}
+	}
+}
+
+func compareSwappedLinks(ctx context.Context, c engine.RuleContext, items []parser.Span) (out engine.RuleOutcome) {
+	defer func() {
+		out.Err = errors.Join(out.Err, c.SectionCheckpoint(ctx, 1, 0))
+		if out.Err != nil {
+			out.Findings = nil
+		}
+	}()
+	previous := 0
+	for i := 0; ; i++ {
+		if out.Err = c.SectionCheckpoint(ctx, 1, 0); out.Err != nil {
+			return out
+		}
+		if i == len(items) {
+			break
+		}
+		s := items[i]
+		if out.Err = c.SectionCheckpoint(ctx, 18, 0); out.Err != nil {
+			return out
+		}
+		if !s.Present() || s.SourceToken() != c.Source().Token() || s.Start() < previous || s.End() <= s.Start() || s.End() > c.Source().Len() {
+			return engine.RuleOutcome{Err: parser.ErrModel}
+		}
+		message := "Link label and destination delimiters are swapped."
+		for _, point := range [2]int{s.Start(), s.End()} {
+			if out.Err = c.SectionCheckpoint(ctx, 9, 0); out.Err != nil {
+				return out
+			}
+			window, err := c.Source().Span(max(0, point-1), min(c.Source().Len(), point+1))
+			if err != nil {
+				return engine.RuleOutcome{Err: parser.ErrModel}
+			}
+			text, err := c.Source().Text(window)
+			at := point - window.Start()
+			if err != nil || point < c.Source().Len() && !utf8.RuneStart(text[at]) || point > 0 && point < c.Source().Len() && text[at-1] == '\r' && text[at] == '\n' {
+				return engine.RuleOutcome{Err: parser.ErrModel}
+			}
+		}
+		previous = s.End()
+		if len(out.Findings) == cap(out.Findings) {
+			capacity := len(items)
+			if cap(out.Findings) <= len(items)/2 {
+				capacity = max(1, cap(out.Findings)*2)
+			}
+			if out.Err = c.SectionCheckpoint(ctx, int64(len(out.Findings))+int64(capacity)+1, int64(capacity)); out.Err != nil {
+				return out
+			}
+			next := make([]engine.Finding, len(out.Findings), capacity)
+			copy(next, out.Findings)
+			out.Findings = next
+		}
+		if out.Err = c.SectionCheckpoint(ctx, 1, 1); out.Err != nil {
+			return out
+		}
+		out.Findings = append(out.Findings, engine.Finding{Span: s, Message: message})
+	}
+	return out
+}

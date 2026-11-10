@@ -102,3 +102,42 @@ func md038NativeRefusal(t *testing.T, got configurationRun, out result.Result) b
 	t.Helper()
 	return acceptance.MD038NativeRefusal(t, got, out)
 }
+
+func readinessAssertParentAfterSave(t *testing.T, before, after readinessEntry) {
+	t.Helper()
+	acceptance.ReadinessAssertParentAfterSave(t, before, after)
+}
+
+func assertCGO0Apply(t *testing.T, got configurationRun, out result.Result, before, after map[string]readinessEntry) {
+	t.Helper()
+	acceptance.AssertCGO0Apply(t, got, out, before, after)
+}
+
+func md014NativeEnvironment(t *testing.T, cwd string) []string {
+	t.Helper()
+	return acceptance.MD014NativeEnvironment(t, cwd)
+}
+
+func md014NativeRun(t *testing.T, binary, cwd string, args ...string) configurationRun {
+	t.Helper()
+	return acceptance.MD014NativeRun(t, binary, cwd, args...)
+}
+
+func md014NativeRunEnv(t *testing.T, binary, cwd string, env []string, args ...string) configurationRun {
+	t.Helper()
+	return acceptance.MD014NativeRunEnv(t, binary, cwd, env, args...)
+}
+
+func md014SchemaCheck(schema, root, data any) error {
+	return acceptance.MD014SchemaCheck(schema, root, data)
+}
+
+func md014NativeJSON(t *testing.T, data []byte, operation string) result.Result {
+	t.Helper()
+	return acceptance.MD014NativeJSON(t, data, operation)
+}
+
+func md014ResultJSON(t *testing.T, data []byte, operation string) result.Result {
+	t.Helper()
+	return acceptance.MD014ResultJSON(t, data, operation)
+}

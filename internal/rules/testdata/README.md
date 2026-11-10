@@ -43,16 +43,6 @@ manual/no-edit/source-immutable results. JSON floating decoding does not replace
 separate trusted API and actual YAML/JSON numeric-type admission checks. Expected
 results must never be regenerated from production output.
 
-`md062.json` is the independent issue-104 MD062 oracle (SHA-256
-`fb015ce6170104d19665a9e5ddfe96738fd8b67f4982dd7b3eebf36c6f796f6b`): 78
-records with original source size/SHA, selected flavors and settings, and
-authored candidate byte/scalar ranges with the constant
-`Whitespace in link destination.` message. They cover the page examples, image
-and tab candidates, every grammar exclusion, protected code, raw HTML and
-frontmatter, containers, emphasis, GFM table cells, multibyte columns and
-LF/CRLF endings. Its `invalid_configurations` rows are read by the config test.
-Expected results must never be regenerated from production output.
-
 MD092 has three separate immutable root-authored literal fixture sets:
 
 | Fixture | Cases | SHA256 |
@@ -69,21 +59,6 @@ supplement preserves incoming versus owned raw transitions and actual form-1
 ANY4 boundaries. The unknown supplement distinguishes atomic withholding from
 known opaque remainder protection. These are fixed expectations; fixture presence
 and planned row counts are not evidence of execution. Never fit them to output.
-
-`md053.json` holds 36 hand-authored MD053 cases, each run under CommonMark and
-GFM through both production lint and inspection, and by the compiled binary in
-`cmd/mdchk/md053_acceptance_test.go`. Each case has `name`, `source`,
-`source_bytes`, `source_sha256`, `flavors`, an `options` object with `enabled`
-and an optional `ignored_labels` list, and `findings` with original `bytes`,
-1-based `start`/`end` line and Unicode-scalar column pairs, `expected`
-(`unused` or `shadowed`) and the exact `message`. The cases cover the rule-page
-examples, unused and shadowed definitions, case, whitespace and full-folding
-label variants, full, collapsed, shortcut and image uses, block-quote and
-nested-list definitions, brackets in code spans, fenced and indented code and
-HTML blocks, normalized and empty `ignored_labels` entries, LF and CRLF
-documents, non-ASCII and multi-line labels. Tests pin the whole-file digest
-(`fe652ecb027e06779a25cb37dcfcf65b1bb63396e7580b25d51aff406f39c58f`). Expected
-values were written by hand; never regenerate them from production output.
 
 `md055.json` holds 38 hand-authored MD055 cases, run through production lint
 and inspection for their listed flavors and by the compiled binary in
@@ -183,19 +158,6 @@ nested list, and before and after real rows. Its eight
 `invalid_configurations` rows are read by the config test. Tests pin the whole-file digest
 (`ab1f0cdd6c5e51fea5e3d7a9ea02bc4417c9d1ca264b2a5e26cbed3afa12b497`). Expected
 values were written by hand; never regenerate them from production output.
-
-`md057.json` records 21 independent issue-102 MD057 cases, each run for both
-CommonMark and GFM. Every case gives the original source with its size and
-SHA-256, the `check_images` option, an optional `resources.index_file`, an
-optional frontmatter format and a native layout of files, directories and
-symbolic links created around the selected `docs/self.md`. Expected findings
-carry original byte ranges, one-based line/Unicode-scalar start and exclusive
-end positions, the literal source slice and the message; expected coverage
-carries the same located range for context-unavailable records. Reference
-origins report the whole Link or Image envelope; inline origins report the
-destination bytes. LF and CRLF twins differ only in offsets. The expectations
-were authored from the sources, not from production output, and must never be
-regenerated from it.
 
 `md094.json` holds 42 MD094 cases, read by
 `internal/engine/md094_fixtures_test.go` through `ValidateEncoding` and by the

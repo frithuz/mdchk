@@ -371,30 +371,6 @@ func md038MixedEncodingIndependentCorrection(t *testing.T, binary string) {
 	}
 }
 
-// assertCGO0Apply verifies that a CGO_ENABLED=0 build applies like any other:
-// native replacement is not refused, the operation completes, and the tree
-// changes exactly when a file reports that it was written.
-func assertCGO0Apply(t *testing.T, got configurationRun, out result.Result, before, after map[string]readinessEntry) {
-	t.Helper()
-	for _, e := range out.Errors {
-		if e.Code == "write-acquisition" {
-			t.Fatal("CGO_ENABLED=0 build refused native replacement", got)
-		}
-	}
-	if got.Status == 13 || !out.Complete {
-		t.Fatal(got)
-	}
-	written := false
-	for _, f := range out.Files {
-		if f.WriteStatus == "written" {
-			written = true
-		}
-	}
-	if changed := len(readinessDifferences(before, after)) != 0; written != changed {
-		t.Fatalf("write status and fixture disagree: written=%t changed=%t\n%v", written, changed, got)
-	}
-}
-
 func TestCompiledPlatformMD038ProtectedEOFCompositionManual(t *testing.T) {
 	t.Parallel()
 	binary := sharedExecutable(t)

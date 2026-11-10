@@ -162,7 +162,7 @@ jobs:
           DEBUG: ${{ runner.debug }}
         run: |
           go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledPlatform.*|TestCompiledCLIReadinessJourney|TestCLIReadinessStateOracle|TestExecutableStatuses|TestExecutableClosedOutputPipe|TestCompiledOrdinaryApply|TestCompiledApplyNoCGOApplies|TestCompiledFixHelpWithoutProject|TestCompiledMetadataPolicy|TestCompiledArgumentOrderingAndLiteralMetadataPaths|TestCompiledBuildVersionPropagation|TestCompiledInspectionWorkflow|TestConfigurationValidationWorkflow)$" -count=1 -parallel=${{ matrix.parallel }} -timeout=20m
-          go run ./tools/testrun ./internal/rules/md003 ./internal/rules/md004 ./internal/rules/md005 ./internal/rules/md007 ./internal/rules/md009 ./internal/rules/md010 ./internal/rules/md012 ./internal/rules/md013 ./internal/rules/md018 ./internal/rules/md019 ./internal/rules/md020 ./internal/rules/md021 ./internal/rules/md022 ./internal/rules/md023 ./internal/rules/md027 ./internal/rules/md028 ./internal/rules/md029 ./internal/rules/md030 ./internal/rules/md032 ./internal/rules/md064 ./internal/rules/md069 ./internal/rules/md076 ./internal/rules/md077 ./internal/rules/md085 ./internal/rules/md089 -run "^TestCompiledPlatform.*$" -count=1 -parallel=${{ matrix.parallel }} -timeout=20m
+          go run ./tools/testrun ./internal/rules/md003 ./internal/rules/md004 ./internal/rules/md005 ./internal/rules/md007 ./internal/rules/md009 ./internal/rules/md010 ./internal/rules/md011 ./internal/rules/md012 ./internal/rules/md013 ./internal/rules/md018 ./internal/rules/md019 ./internal/rules/md020 ./internal/rules/md021 ./internal/rules/md022 ./internal/rules/md023 ./internal/rules/md027 ./internal/rules/md028 ./internal/rules/md029 ./internal/rules/md030 ./internal/rules/md032 ./internal/rules/md034 ./internal/rules/md039 ./internal/rules/md042 ./internal/rules/md045 ./internal/rules/md051 ./internal/rules/md052 ./internal/rules/md053 ./internal/rules/md054 ./internal/rules/md057 ./internal/rules/md059 ./internal/rules/md064 ./internal/rules/md069 ./internal/rules/md076 ./internal/rules/md077 ./internal/rules/md085 ./internal/rules/md089 -run "^TestCompiledPlatform.*$" -count=1 -parallel=${{ matrix.parallel }} -timeout=20m
       - name: Verify shared acceptance builds and cache publishing
         env:
           DEBUG: ${{ runner.debug }}
@@ -179,8 +179,9 @@ jobs:
           CGO_ENABLED: "0"
           DEBUG: ${{ runner.debug }}
         run: |
-          go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledApply.*|TestCompiledEditorPartialNativePublication|TestCompiledProductionMD051ResourceFragmentsApplySavedView|TestCompiledGFMNativeSavedBytes)$" -count=1 -timeout=15m
+          go run ./tools/testrun ./cmd/mdchk -run "^(TestCompiledApply.*|TestCompiledEditorPartialNativePublication|TestCompiledGFMNativeSavedBytes)$" -count=1 -timeout=15m
           go run ./tools/testrun ./internal/rules/md047 -run "^TestCompiledProductionMD047ApplySavedWorkflow$" -count=1 -timeout=15m
+          go run ./tools/testrun ./internal/rules/md051 -run "^TestCompiledProductionMD051ResourceFragmentsApplySavedView$" -count=1 -timeout=15m
       - name: Verify compiled GFM selection, consumers and native publication
         env:
           DEBUG: ${{ runner.debug }}
