@@ -100,7 +100,7 @@ func TestMD014ComparisonAndDistinctOuterFinalControls(t *testing.T) {
 			for _, originating := range []bool{false, true} {
 				for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 					t.Run(fmt.Sprintf("%q/whole-%v/origin-%v/%v", source, whole, originating, reason), func(t *testing.T) {
-						origin := &gateStopContext{Context: context.Background(), reason: reason}
+						origin := &gateStopContext{Context: context.Background(), Reason: reason}
 						called := false
 						r := registry(t, []engine.Registration{{ID: "MD014", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 							items, e := c.ShellPrompts(ctx)
@@ -117,10 +117,10 @@ func TestMD014ComparisonAndDistinctOuterFinalControls(t *testing.T) {
 							if whole {
 								gate = ".shellPrompts.func1"
 							}
-							caller := &gateStopContext{Context: context.Background(), gate: gate, reason: reason}
+							caller := &gateStopContext{Context: context.Background(), Gate: gate, Reason: reason}
 							var target context.Context = caller
 							if originating {
-								origin.gate = gate
+								origin.Gate = gate
 								target = context.Background()
 							}
 							var out engine.RuleOutcome
@@ -129,9 +129,9 @@ func TestMD014ComparisonAndDistinctOuterFinalControls(t *testing.T) {
 							} else {
 								out = compareShellPrompts(target, c, items.Dollars)
 							}
-							reached := caller.reached
+							reached := caller.Reached
 							if originating {
-								reached = origin.reached
+								reached = origin.Reached
 							}
 							if !reached || !errors.Is(out.Err, reason) || out.Findings != nil || out.IncompleteReason != "" {
 								t.Fatal(out, reached)
@@ -165,7 +165,7 @@ func TestMD014ComparisonAndOuterFinalStickyDiscard(t *testing.T) {
 						if outer {
 							gate = ".shellPrompts.func1"
 						}
-						origin := &gateQuotaContext{Context: context.Background(), budget: budget, kind: kind, gate: gate}
+						origin := &gateQuotaContext{Context: context.Background(), Budget: budget, Kind: kind, Gate: gate}
 						called := false
 						r := registry(t, []engine.Registration{{ID: "MD014", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 							items, e := c.ShellPrompts(ctx)
@@ -173,10 +173,10 @@ func TestMD014ComparisonAndOuterFinalStickyDiscard(t *testing.T) {
 							if e != nil || pre.Err != nil || len(pre.Findings) != 1 || pre.Findings[0].Span.Start() != 6 {
 								t.Fatal("positive precondition", pre, e)
 							}
-							caller := &gateQuotaContext{Context: context.Background(), budget: budget, kind: kind, gate: gate, armed: true}
+							caller := &gateQuotaContext{Context: context.Background(), Budget: budget, Kind: kind, Gate: gate, Armed: true}
 							var target context.Context = caller
 							if originating {
-								origin.armed = true
+								origin.Armed = true
 								target = context.Background()
 							}
 							var out engine.RuleOutcome
@@ -193,8 +193,8 @@ func TestMD014ComparisonAndOuterFinalStickyDiscard(t *testing.T) {
 							if kind == "elapsed" {
 								want = "operation-time"
 							}
-							if !errors.As(out.Err, &stop) || stop.Name != want || out.Findings != nil || !caller.reached && !origin.reached {
-								t.Fatal(out, caller.reached, origin.reached)
+							if !errors.As(out.Err, &stop) || stop.Name != want || out.Findings != nil || !caller.Reached && !origin.Reached {
+								t.Fatal(out, caller.Reached, origin.Reached)
 							}
 							called = true
 							return out
@@ -220,7 +220,7 @@ func TestMD014DistinctOuterFinalStickyQuotaDiscard(t *testing.T) {
 			for _, originating := range []bool{false, true} {
 				t.Run(fmt.Sprintf("%q/%s/origin-%v", source, kind, originating), func(t *testing.T) {
 					b, _ := parser.NewOperationBudget(parser.DefaultLimits())
-					origin := &gateQuotaContext{Context: context.Background(), budget: b, kind: kind}
+					origin := &gateQuotaContext{Context: context.Background(), Budget: b, Kind: kind}
 					called := false
 					r := registry(t, []engine.Registration{{ID: "MD014", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 						pre := shellPrompts(ctx, c)
@@ -230,17 +230,17 @@ func TestMD014DistinctOuterFinalStickyQuotaDiscard(t *testing.T) {
 						if source == "```sh\n$ pwd\n```\n" && (len(pre.Findings) != 1 || pre.Findings[0].Span.Start() != 6 || pre.Findings[0].Span.End() != 7) {
 							t.Fatal("positive precondition", pre)
 						}
-						caller := &gateQuotaContext{Context: context.Background(), budget: b, kind: kind, armed: true}
+						caller := &gateQuotaContext{Context: context.Background(), Budget: b, Kind: kind, Armed: true}
 						var target context.Context = caller
 						if originating {
-							origin.armed = true
+							origin.Armed = true
 							target = context.Background()
 						}
 						out := shellPrompts(target, c)
 						var stop *parser.LimitExceeded
-						reached := caller.reached
+						reached := caller.Reached
 						if originating {
-							reached = origin.reached
+							reached = origin.Reached
 						}
 						if !reached || !errors.As(out.Err, &stop) || out.Findings != nil || out.IncompleteReason != "" {
 							t.Fatal(out, reached)

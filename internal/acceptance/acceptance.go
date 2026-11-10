@@ -340,3 +340,27 @@ func MD038NativeRefusal(t *testing.T, got Run, out result.Result) bool {
 	}
 	return true
 }
+
+// AssertCGO0Apply verifies that a CGO_ENABLED=0 build applies like any other:
+// native replacement is not refused, the operation completes, and the tree
+// changes exactly when a file reports that it was written.
+func AssertCGO0Apply(t *testing.T, got Run, out result.Result, before, after map[string]ReadinessEntry) {
+	t.Helper()
+	for _, e := range out.Errors {
+		if e.Code == "write-acquisition" {
+			t.Fatal("CGO_ENABLED=0 build refused native replacement", got)
+		}
+	}
+	if got.Status == 13 || !out.Complete {
+		t.Fatal(got)
+	}
+	written := false
+	for _, f := range out.Files {
+		if f.WriteStatus == "written" {
+			written = true
+		}
+	}
+	if changed := len(ReadinessDifferences(before, after)) != 0; written != changed {
+		t.Fatalf("write status and fixture disagree: written=%t changed=%t\n%v", written, changed, got)
+	}
+}

@@ -4,19 +4,12 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
-	"maps"
-	"os"
-	"path/filepath"
-	"runtime"
 	"slices"
-	"strings"
 	"testing"
-	"time"
 	"unicode/utf8"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
-	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
 	"github.com/frithuz/mdchk/internal/rules/ruletest"
 )
@@ -36,6 +29,11 @@ func analyzeHeadings(t *testing.T, r *engine.Registry, source string, s engine.S
 
 // spacingSettings enables only the named rules.
 func spacingSettings(ids ...string) engine.Settings { return ruletest.Settings(ids...) }
+
+type (
+	gateStopContext  = ruletest.GateStopContext
+	gateQuotaContext = ruletest.GateQuotaContext
+)
 
 // registrationsWithout keeps implicit unavailable-rule coverage testable after
 // the named rules gained production implementations.
@@ -98,14 +96,6 @@ func onlyMD011Settings() engine.Settings {
 	off, on := false, true
 	s["MD048"] = engine.RuleSetting{Enabled: &off}
 	s["MD011"] = engine.RuleSetting{Enabled: &on}
-	return s
-}
-
-func onlyMD052Settings() engine.Settings {
-	s := onlyMD011Settings()
-	off, on := false, true
-	s["MD011"] = engine.RuleSetting{Enabled: &off}
-	s["MD052"] = engine.RuleSetting{Enabled: &on}
 	return s
 }
 
@@ -201,77 +191,6 @@ func (c *stopAtContext) Err() error {
 	return c.Context.Err()
 }
 
-// Function identities come from held source, not sampled checkpoint counters.
-// The context interrupts only a named deferred publication gate; it also proves
-// that gate was reached after the actual positive comparison precondition.
-type gateStopContext struct {
-	context.Context
-	gate    string
-	reason  error
-	reached bool
-}
-
-func (c *gateStopContext) Err() error {
-	if c.gate == "" {
-		return c.Context.Err()
-	}
-	var pcs [32]uintptr
-	n := runtime.Callers(1, pcs[:])
-	frames := runtime.CallersFrames(pcs[:n])
-	for {
-		frame, more := frames.Next()
-		if strings.HasSuffix(frame.Function, c.gate) {
-			c.reached = true
-			return c.reason
-		}
-		if !more {
-			break
-		}
-	}
-	return c.Context.Err()
-}
-
-// Exhaustion is injected at the actual deferred outer gate after production
-// evaluation. It uses the original allowance and no measured setup subtraction.
-type gateQuotaContext struct {
-	context.Context
-	budget         *parser.OperationBudget
-	kind           string
-	gate           string
-	armed, reached bool
-}
-
-func (c *gateQuotaContext) Err() error {
-	if c.armed {
-		var pcs [32]uintptr
-		n := runtime.Callers(1, pcs[:])
-		frames := runtime.CallersFrames(pcs[:n])
-		for {
-			f, more := frames.Next()
-			gate := c.gate
-			if gate == "" {
-				gate = ".shellPrompts.func1"
-			}
-			if strings.HasSuffix(f.Function, gate) {
-				c.reached = true
-				if c.kind == "elapsed" {
-					c.armed = false
-					time.Sleep(61 * time.Second)
-				} else if c.kind == "nodes" {
-					_ = c.budget.ChargeNodes(c.budget.Limits().TotalNodes)
-				} else {
-					_ = c.budget.ChargeWork(c.budget.Limits().WorkUnits)
-				}
-				break
-			}
-			if !more {
-				break
-			}
-		}
-	}
-	return c.Context.Err()
-}
-
 // Independent scalar/physical-ending count over original bytes, never parser
 // normalized Literal or the product's line-index conversion.
 func originalPosition(source string, at int) result.Position {
@@ -297,75 +216,6 @@ func originalPosition(source string, at int) result.Position {
 		p.Column++
 	}
 	return p
-}
-
-// nativeFragments is a minimal native provider over a temporary root, so
-// rule-level tests exercise the real shared resolver rather than a stand-in.
-type nativeFragments struct {
-	resolver *resource.FragmentResolver
-	view     resource.View
-	service  *resource.Service
-	root     *resource.FilesystemRoot
-}
-
-func (r *nativeFragments) Fragments(context.Context) (*resource.FragmentResolver, resource.View, error) {
-	return r.resolver, r.view, nil
-}
-
-func newNativeFragments(t *testing.T, files map[string]string, flavor string, targetID string, source parser.Source) *nativeFragments {
-	t.Helper()
-	files = maps.Clone(files)
-	files["docs/self.md"] = string(source.Bytes())
-	dir, err := filepath.EvalSymlinks(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-	for name, content := range files {
-		path := filepath.Join(dir, filepath.FromSlash(name))
-		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
-			t.Fatal(err)
-		}
-	}
-	budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
-	ctx := context.Background()
-	root, err := resource.OpenFilesystemRoot(ctx, budget, dir, resource.DefaultFilesystemLimits())
-	if err != nil {
-		t.Fatal(err)
-	}
-	receipt, err := root.BindTarget(filepath.Join(dir, "docs", "self.md"), targetID, source)
-	if err != nil {
-		t.Fatal(err)
-	}
-	settings, _ := resource.NewSettings(parser.ParseOptions{GFM: flavor == "gfm"}, "index.md", "github", "test-1")
-	operation, err := resource.NewOperation(ctx, budget, root.Root(), settings, []resource.Target{receipt.Target()})
-	if err != nil {
-		t.Fatal(err)
-	}
-	reader, err := root.Reader(operation, receipt)
-	if err != nil {
-		t.Fatal(err)
-	}
-	service, err := resource.NewFilesystemService(reader, resource.DefaultServiceLimits())
-	if err != nil {
-		t.Fatal(err)
-	}
-	view, err := operation.NewView(resource.Original, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	normalizer, err := resource.NewNormalizer(view, resource.DefaultPathLimits(), resource.NativeNamePolicy)
-	if err != nil {
-		t.Fatal(err)
-	}
-	resolver, err := resource.NewFragmentResolver(service, normalizer)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { _ = service.Close(); _ = root.Close() })
-	return &nativeFragments{resolver, view, service, root}
 }
 
 type oracleFinding struct {

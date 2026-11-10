@@ -9,9 +9,14 @@ package ruletest
 import (
 	"context"
 	"encoding/json"
+	"maps"
+	"os"
+	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/fix"
@@ -198,4 +203,151 @@ func HeadingFactsOf(t *testing.T, text, flavor string) []HeadingFacts {
 		out[i] = HeadingFacts{h.Level, h.Style, h.Visible, label, strings.Join(kinds, ","), anchors[i].Base.Value, h.Closed}
 	}
 	return out
+}
+
+// GateStopContext stops at a named function.
+//
+// Function identities come from held source, not sampled checkpoint counters.
+// The context interrupts only a named deferred publication gate; it also proves
+// that gate was reached after the actual positive comparison precondition.
+type GateStopContext struct {
+	context.Context
+	Gate    string
+	Reason  error
+	Reached bool
+}
+
+func (c *GateStopContext) Err() error {
+	if c.Gate == "" {
+		return c.Context.Err()
+	}
+	var pcs [32]uintptr
+	n := runtime.Callers(1, pcs[:])
+	frames := runtime.CallersFrames(pcs[:n])
+	for {
+		frame, more := frames.Next()
+		if strings.HasSuffix(frame.Function, c.Gate) {
+			c.Reached = true
+			return c.Reason
+		}
+		if !more {
+			break
+		}
+	}
+	return c.Context.Err()
+}
+
+// GateQuotaContext exhausts a budget at a named function.
+//
+// Exhaustion is injected at the actual deferred outer gate after production
+// evaluation. It uses the original allowance and no measured setup subtraction.
+type GateQuotaContext struct {
+	context.Context
+	Budget         *parser.OperationBudget
+	Kind           string
+	Gate           string
+	Armed, Reached bool
+}
+
+func (c *GateQuotaContext) Err() error {
+	if c.Armed {
+		var pcs [32]uintptr
+		n := runtime.Callers(1, pcs[:])
+		frames := runtime.CallersFrames(pcs[:n])
+		for {
+			f, more := frames.Next()
+			gate := c.Gate
+			if gate == "" {
+				gate = ".shellPrompts.func1"
+			}
+			if strings.HasSuffix(f.Function, gate) {
+				c.Reached = true
+				if c.Kind == "elapsed" {
+					c.Armed = false
+					time.Sleep(61 * time.Second)
+				} else if c.Kind == "nodes" {
+					_ = c.Budget.ChargeNodes(c.Budget.Limits().TotalNodes)
+				} else {
+					_ = c.Budget.ChargeWork(c.Budget.Limits().WorkUnits)
+				}
+				break
+			}
+			if !more {
+				break
+			}
+		}
+	}
+	return c.Context.Err()
+}
+
+// NativeFragments is a minimal native provider over a temporary root, so
+// rule-level tests exercise the real shared resolver rather than a stand-in.
+type NativeFragments struct {
+	resolver *resource.FragmentResolver
+	view     resource.View
+	service  *resource.Service
+	root     *resource.FilesystemRoot
+}
+
+// Fragments returns the resolver and its original view.
+func (r *NativeFragments) Fragments(context.Context) (*resource.FragmentResolver, resource.View, error) {
+	return r.resolver, r.view, nil
+}
+
+// NewNativeFragments writes files and source as docs/self.md under a temporary
+// root and returns a provider for flavor bound to targetID.
+func NewNativeFragments(t *testing.T, files map[string]string, flavor string, targetID string, source parser.Source) *NativeFragments {
+	t.Helper()
+	files = maps.Clone(files)
+	files["docs/self.md"] = string(source.Bytes())
+	dir, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, content := range files {
+		path := filepath.Join(dir, filepath.FromSlash(name))
+		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
+	ctx := context.Background()
+	root, err := resource.OpenFilesystemRoot(ctx, budget, dir, resource.DefaultFilesystemLimits())
+	if err != nil {
+		t.Fatal(err)
+	}
+	receipt, err := root.BindTarget(filepath.Join(dir, "docs", "self.md"), targetID, source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	settings, _ := resource.NewSettings(parser.ParseOptions{GFM: flavor == "gfm"}, "index.md", "github", "test-1")
+	operation, err := resource.NewOperation(ctx, budget, root.Root(), settings, []resource.Target{receipt.Target()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	reader, err := root.Reader(operation, receipt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	service, err := resource.NewFilesystemService(reader, resource.DefaultServiceLimits())
+	if err != nil {
+		t.Fatal(err)
+	}
+	view, err := operation.NewView(resource.Original, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	normalizer, err := resource.NewNormalizer(view, resource.DefaultPathLimits(), resource.NativeNamePolicy)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resolver, err := resource.NewFragmentResolver(service, normalizer)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = service.Close(); _ = root.Close() })
+	return &NativeFragments{resolver, view, service, root}
 }

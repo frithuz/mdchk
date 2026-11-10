@@ -287,16 +287,3 @@ func readinessDirective(t *testing.T, r result.Result, permission, state string)
 		t.Fatal(d)
 	}
 }
-
-func readinessAssertParentAfterSave(t *testing.T, before, after readinessEntry) {
-	t.Helper()
-	if before.Info == nil || after.Info == nil {
-		t.Fatal("apply parent: missing captured metadata")
-	}
-	if !os.SameFile(before.Info, after.Info) {
-		t.Fatal("apply parent: native identity changed")
-	}
-	if before.Info.Mode() != after.Info.Mode() {
-		t.Fatalf("apply parent: type/mode before=%s after=%s", before.Info.Mode(), after.Info.Mode())
-	}
-}
