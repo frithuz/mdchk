@@ -22,6 +22,9 @@ func headingIndentationConfiguration(flavor, variant string) string {
 			config = strings.Replace(config, id+": {enabled: false}", id+": {enabled: true}", 1)
 		}
 	}
+	if variant == "blanks" {
+		config = strings.Replace(config, "MD022: {enabled: false}", "MD022: {enabled: true}", 1)
+	}
 	if variant == "frontmatter" {
 		config = strings.Replace(config, "rules:\n", "frontmatter: {enabled: true}\nrules:\n", 1)
 	}
