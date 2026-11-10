@@ -54,7 +54,8 @@ item. MD007 shifts a misindented bullet item and its content to the expected
 column. MD029 renumbers ordered list markers. MD030 rewrites the separator of a
 single-line list item to the configured spaces. MD077 adds or removes space-only
 list continuation indentation. MD076 inserts or deletes blank lines between
-sibling list items. Ambiguous contexts stay manual and appear under
+sibling list items. MD004 replaces a bullet with the expected marker when the
+list structure stays the same. Ambiguous contexts stay manual and appear under
 deferred_fixes.
 Text/JSON include preview diffs; editor formats report remaining findings only.
 VS Code unlocated errors and both editor formats' recovery outcomes use stderr.

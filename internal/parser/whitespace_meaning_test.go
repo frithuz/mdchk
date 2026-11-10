@@ -22,7 +22,6 @@ func TestSameMeaningAcrossLineEndWhitespace(t *testing.T) {
 		{name: "kinds", a: "a\n", b: "# a\n"},
 		{name: "heading level", a: "# a\n", b: "## a\n"},
 		{name: "list tightness", a: "- a\n- b\n", b: "- a\n\n- b\n"},
-		{name: "list marker", a: "- a\n", b: "* a\n"},
 		{name: "code info", a: "```x\n```\n", b: "```y\n```\n"},
 		{name: "link destination", a: "[a](b)\n", b: "[a](c)\n"},
 		{name: "link title", a: "[a](b \"t \nu\")\n", b: "[a](b \"t\nu\")\n"},
@@ -35,6 +34,8 @@ func TestSameMeaningAcrossLineEndWhitespace(t *testing.T) {
 		{name: "task checked", gfm: true, a: "- [ ] a\n", b: "- [x] a\n"},
 		{name: "task lost", gfm: true, a: "- [ ] a\n", b: "- [ a\n"},
 		{name: "task separator", gfm: true, a: "- [ ] \n", b: "- [ ]\n", want: true},
+		// Bullets are proven by the MD004 checker, the only edit that changes one.
+		{name: "list marker", a: "- a\n", b: "* a\n", want: true},
 		{name: "table alignment", gfm: true, a: "|a|\n|-|\n", b: "|a|\n|:-|\n"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

@@ -1,0 +1,188 @@
+[
+  {
+    "name": "separated-by-paragraph",
+    "source": "- a\n\ntext\n\n* c\n",
+    "candidate": "- a\n\ntext\n\n- c\n",
+    "rules": [
+      "MD004"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "adjacent-lists-merge",
+    "source": "- a\n* b\n",
+    "candidate": "- a\n* b\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "blank-separated-lists-merge",
+    "source": "- a\n- b\n\n* c\n",
+    "candidate": "- a\n- b\n\n* c\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "asterisk",
+    "source": "- a\n\ntext\n\n+ b\n\n1. one\n",
+    "candidate": "* a\n\ntext\n\n* b\n\n1. one\n",
+    "rules": [
+      "MD004"
+    ],
+    "edit_count": 2,
+    "config": "asterisk"
+  },
+  {
+    "name": "plus",
+    "source": "- a\n- b\n\ntext\n\n* c\n\n2) two\n",
+    "candidate": "+ a\n+ b\n\ntext\n\n+ c\n\n2) two\n",
+    "rules": [
+      "MD004"
+    ],
+    "edit_count": 3,
+    "config": "plus"
+  },
+  {
+    "name": "dash",
+    "source": "* a\n\ntext\n\n+ b\n",
+    "candidate": "- a\n\ntext\n\n- b\n",
+    "rules": [
+      "MD004"
+    ],
+    "edit_count": 2,
+    "config": "dash"
+  },
+  {
+    "name": "dash-already",
+    "source": "- a\n",
+    "candidate": "- a\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": "dash"
+  },
+  {
+    "name": "crlf-unicode",
+    "source": "- 雪\r\n\r\ntext é\r\n\r\n* ü 🎉\r\n",
+    "candidate": "- 雪\r\n\r\ntext é\r\n\r\n- ü 🎉\r\n",
+    "rules": [
+      "MD004"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "crlf-plus",
+    "source": "- 雪\r\n\r\ntext\r\n\r\n* ü\r\n",
+    "candidate": "+ 雪\r\n\r\ntext\r\n\r\n+ ü\r\n",
+    "rules": [
+      "MD004"
+    ],
+    "edit_count": 2,
+    "config": "plus"
+  },
+  {
+    "name": "blockquote",
+    "source": "> - a\n>\n> text\n>\n> * b\n",
+    "candidate": "> - a\n>\n> text\n>\n> - b\n",
+    "rules": [
+      "MD004"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "nested",
+    "source": "- a\n  * b\n    + c\n",
+    "candidate": "- a\n  - b\n    - c\n",
+    "rules": [
+      "MD004"
+    ],
+    "edit_count": 2,
+    "config": ""
+  },
+  {
+    "name": "nested-in-blockquote",
+    "source": "> * a\n>   - b\n",
+    "candidate": "> * a\n>   * b\n",
+    "rules": [
+      "MD004"
+    ],
+    "edit_count": 1,
+    "config": ""
+  },
+  {
+    "name": "thematic-break",
+    "source": "- x\n\ntext\n\n* - -\n",
+    "candidate": "- x\n\ntext\n\n* - -\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "fenced-code",
+    "source": "- a\n\n```\n* b\n```\n",
+    "candidate": "- a\n\n```\n* b\n```\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "html-block",
+    "source": "- a\n\n<div>\n* b\n</div>\n",
+    "candidate": "- a\n\n<div>\n* b\n</div>\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "html-comment",
+    "source": "- a\n\n<!--\n* b\n-->\n",
+    "candidate": "- a\n\n<!--\n* b\n-->\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "frontmatter-recognized",
+    "source": "---\nx: y\n---\n- a\n\ntext\n\n* c\n",
+    "candidate": "---\nx: y\n---\n- a\n\ntext\n\n- c\n",
+    "rules": [
+      "MD004"
+    ],
+    "edit_count": 1,
+    "config": "frontmatter"
+  },
+  {
+    "name": "frontmatter-unrecognized",
+    "source": "---\nx: y\n---\n\n- a\n\ntext\n\n* c\n",
+    "candidate": "---\nx: y\n---\n\n- a\n\ntext\n\n* c\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "directive-disabled",
+    "source": "- a\n\ntext\n\n<!-- mdchk:disable MD004 -->\n\n* c\n",
+    "candidate": "- a\n\ntext\n\n<!-- mdchk:disable MD004 -->\n\n* c\n",
+    "rules": [],
+    "edit_count": 0,
+    "config": ""
+  },
+  {
+    "name": "compose-all",
+    "source": "##  Title  ##\n\n- a   \n\ntext\n\n* c",
+    "candidate": "## Title ##\n\n- a\n\ntext\n\n- c\n",
+    "rules": [
+      "MD004",
+      "MD009",
+      "MD019",
+      "MD021",
+      "MD047"
+    ],
+    "edit_count": 5,
+    "config": "all"
+  }
+]
