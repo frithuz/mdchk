@@ -37,7 +37,7 @@ func TestListRepetitionsProjectionRejectsForeignAuthority(t *testing.T) {
 }
 
 func TestListRepetitionsProjectionActualMembership(t *testing.T) {
-	data, e := os.ReadFile("../rules/testdata/md069.json")
+	data, e := os.ReadFile("../rules/md069/testdata/md069.json")
 	if e != nil {
 		t.Fatal(e)
 	}

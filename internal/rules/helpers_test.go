@@ -15,7 +15,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/frithuz/mdchk/internal/engine"
-	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
@@ -37,11 +36,6 @@ func analyzeHeadings(t *testing.T, r *engine.Registry, source string, s engine.S
 
 // spacingSettings enables only the named rules.
 func spacingSettings(ids ...string) engine.Settings { return ruletest.Settings(ids...) }
-
-func spacingCorrected(t *testing.T, text, flavor string, producer fix.Producer, ids ...string) (fix.FileView, fix.Validated) {
-	t.Helper()
-	return ruletest.CorrectedFlavor(t, Registrations(), CorrectionCheckers(), text, flavor, producer, ids...)
-}
 
 // registrationsWithout keeps implicit unavailable-rule coverage testable after
 // the named rules gained production implementations.
