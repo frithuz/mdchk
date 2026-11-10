@@ -669,8 +669,8 @@ later lines. The shared interior-edit query withholds directive-disabled,
 protected and leading front matter contexts. The correction checker reparses the
 combined candidate and requires every item to keep its group, parent, envelope,
 marker and content, with the edited marker at its group's baseline. MD005 groups
-wait for a round with no MD009 edit, because MD009's whole-parse proof does not
-allow moved markers.
+wait for a round with no MD009, MD022, MD023 or MD032 edit, because those rules'
+whole-parse proofs do not allow moved markers.
 
 MD007 reuses the complete original list inventory and admitted scalar options.
 For each actual bullet item, local indentation is ContentIndent minus MarkerWidth

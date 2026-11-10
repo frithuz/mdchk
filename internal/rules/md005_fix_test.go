@@ -150,6 +150,27 @@ func TestMD005FixComposesWithOtherCorrections(t *testing.T) {
 	}
 }
 
+// MD022, MD023 and MD032 compare whole parses across line-end whitespace like
+// MD009, so MD005 must wait for their edits instead of failing their round.
+func TestMD005FixWaitsForWholeParseCorrections(t *testing.T) {
+	for _, tc := range []struct{ rule, text, want string }{
+		{"MD022", "# Title\n- One\n - Two\n", "# Title\n\n- One\n- Two\n"},
+		{"MD023", " # Title\n\n- One\n - Two\n", "# Title\n\n- One\n- Two\n"},
+		{"MD032", "Text\n- One\n - Two\n", "Text\n\n- One\n- Two\n"},
+	} {
+		t.Run(tc.rule, func(t *testing.T) {
+			view, out := alignmentCorrected(t, tc.text, engine.DocumentContext{Flavor: "commonmark"}, "MD005", tc.rule)
+			if !out.Complete() || string(view.Candidate.Bytes()) != tc.want {
+				t.Fatalf("%q complete %v attempts %+v", view.Candidate.Bytes(), out.Complete(), view.Attempts)
+			}
+			second, _ := alignmentCorrected(t, tc.want, engine.DocumentContext{Flavor: "commonmark"}, "MD005", tc.rule)
+			if string(second.Candidate.Bytes()) != tc.want || second.ChangingRounds != 0 {
+				t.Fatalf("second run %q rounds %d", second.Candidate.Bytes(), second.ChangingRounds)
+			}
+		})
+	}
+}
+
 func TestMD005CheckerRejectsForgedChanges(t *testing.T) {
 	text := "- One\n - Two\n"
 	for name, forge := range map[string]func(*fix.Group){

@@ -41,8 +41,9 @@ import (
 // insertions land at the same offset between a list and a heading, so the planner
 // would defer each pair as a conflict in every round.
 //
-// MD009 proves its round by comparing whole parses across line-end whitespace, which
-// a moved list marker breaks, so MD005 groups wait for a round with no MD009 edit.
+// MD009, MD022, MD023 and MD032 prove their round by comparing whole parses across
+// line-end whitespace, which a moved list marker breaks, so MD005 groups wait for a
+// round with no edit from those rules.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
@@ -98,6 +99,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	if err != nil {
 		return nil, err
 	}
+	spaced := len(groups)
 	insertions, err := headingblanks.Groups(ctx, c, blank)
 	if err != nil {
 		return nil, err
@@ -118,7 +120,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		}
 	}
 	waiting := len(groups) > 0
-	touched, blocking, suffixed := false, waiting, false
+	touched, blocking, compared := false, waiting, len(groups) > spaced
 	suffixes, err := trailingWhitespaceGroups(ctx, c, trailing)
 	if err != nil {
 		return nil, err
@@ -128,9 +130,9 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		waiting = waiting || len(g.Edits) > 0
 		touched = touched || final
 		blocking = blocking || len(g.Edits) > 0 && !final
-		suffixed = suffixed || len(g.Edits) > 0
+		compared = compared || len(g.Edits) > 0
 	}
-	if !suffixed {
+	if !compared {
 		aligned, err := listAlignmentGroups(ctx, c, alignment)
 		if err != nil {
 			return nil, err
