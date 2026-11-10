@@ -45,7 +45,7 @@ func setup(t *testing.T, text string, settings engine.Settings, global bool) fix
 }
 func setupLimits(t *testing.T, text string, settings engine.Settings, global bool, limits parser.Limits) fixture {
 	t.Helper()
-	r, err := engine.NewRegistry([]engine.Metadata{{ID: "MD001", Name: "test", DefaultEnabled: true, Fix: engine.PlannedFix}, {ID: "MD003", Name: "other", DefaultEnabled: true, Fix: engine.PlannedFix}, {ID: "MD004", Name: "report only", DefaultEnabled: true, Fix: engine.NoFix}}, nil)
+	r, err := engine.NewRegistry([]engine.Metadata{{ID: "MD001", Name: "test", DefaultEnabled: true, Fix: engine.PlannedFix}, {ID: "MD003", Name: "other", DefaultEnabled: true, Fix: engine.PlannedFix}, {ID: "MD004", Name: "report only", DefaultEnabled: true, Fix: engine.NoFix}, {ID: "MD047", Name: "final newline", DefaultEnabled: true, Fix: engine.PlannedFix}, {ID: "MD048", Name: "late", DefaultEnabled: true, Fix: engine.PlannedFix}}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -241,7 +241,7 @@ func TestConflictGraphAndEndpoints(t *testing.T) {
 				t.Fatal("order changes result")
 			}
 			if tc.conflict {
-				if !reflect.DeepEqual(accepted(p), []string{"D"}) || !reason(p, "A", "conflict") || !reason(p, "B", "conflict") {
+				if !reflect.DeepEqual(accepted(p), []string{"A", "D"}) || !waiting(p, "B", "A") || len(p.Decisions()[0].Reasons) != 0 {
 					t.Fatal(p.Decisions())
 				}
 			} else if len(accepted(p)) != 3 {
@@ -251,9 +251,51 @@ func TestConflictGraphAndEndpoints(t *testing.T) {
 	}
 	f := setup(t, "abcdefghij", nil, true)
 	p := plan(t, f, group(t, f, "A", edit(t, f, 0, 4, "A")), group(t, f, "B", edit(t, f, 3, 7, "B")), group(t, f, "C", edit(t, f, 6, 9, "C")), group(t, f, "D", edit(t, f, 9, 10, "D")))
-	if !reflect.DeepEqual(accepted(p), []string{"D"}) {
-		t.Fatal(p.Decisions())
+	// A chained component accepts its single winner; the rest wait for it.
+	if !reflect.DeepEqual(accepted(p), []string{"A", "D"}) || !waiting(p, "B", "A") || !waiting(p, "C", "A") || string(p.ProvisionalBytes()) != "AefghiD" {
+		t.Fatal(p.Decisions(), string(p.ProvisionalBytes()))
 	}
+	// Catalog rule order picks the winner before proposal ID does.
+	a := group(t, f, "A", edit(t, f, 0, 4, "A"))
+	a.Rule = "MD003"
+	b := group(t, f, "B", edit(t, f, 3, 7, "B"))
+	for _, gs := range [][]fix.Group{{a, b}, {b, a}} {
+		p = plan(t, f, gs...)
+		if !reflect.DeepEqual(accepted(p), []string{"B"}) || !waiting(p, "A", "B") || string(p.ProvisionalBytes()) != "abcBhij" {
+			t.Fatal(p.Decisions(), string(p.ProvisionalBytes()))
+		}
+	}
+	// The final newline loses conflicts even to rules later in the catalog.
+	eof := group(t, f, "A", edit(t, f, 10, 10, "\n"))
+	eof.Rule = "MD047"
+	late := group(t, f, "B", edit(t, f, 9, 10, ""))
+	late.Rule = "MD048"
+	for _, gs := range [][]fix.Group{{eof, late}, {late, eof}} {
+		p = plan(t, f, gs...)
+		if !reflect.DeepEqual(accepted(p), []string{"B"}) || !waiting(p, "A", "B") || string(p.ProvisionalBytes()) != "abcdefghi" {
+			t.Fatal(p.Decisions(), string(p.ProvisionalBytes()))
+		}
+	}
+}
+func TestInvalidUnitDoesNotBlockConflictingValidUnit(t *testing.T) {
+	f := setup(t, "abcdefghij", nil, true)
+	a := group(t, f, "A", edit(t, f, 1, 4, "A"))
+	a.Edits[0].Expected = []byte("wrong")
+	b := group(t, f, "B", edit(t, f, 3, 5, "B"))
+	for _, gs := range [][]fix.Group{{a, b}, {b, a}} {
+		p := plan(t, f, gs...)
+		if !reflect.DeepEqual(accepted(p), []string{"B"}) || !reason(p, "A", "precondition-mismatch") || reason(p, "A", "conflict-waiting") || string(p.ProvisionalBytes()) != "abcBfghij" {
+			t.Fatal(p.Decisions(), string(p.ProvisionalBytes()))
+		}
+	}
+}
+func waiting(p fix.StructuralPlan, id, winner string) bool {
+	for _, d := range p.Decisions() {
+		if d.Group.ID == id {
+			return !d.Accepted && len(d.Reasons) == 1 && d.Reasons[0].Code == "conflict-waiting" && slices.Equal(d.Reasons[0].Related, []string{winner})
+		}
+	}
+	return false
 }
 func TestPermissionsWholeSpanAnchorAndEOF(t *testing.T) {
 	text := "a<!-- mdchk:disable MD001 -->b<!-- mdchk:enable MD001 -->c"
@@ -450,8 +492,8 @@ func TestDenseConflictSweepIsBounded(t *testing.T) {
 		gs[i] = group(t, f, fmt.Sprintf("group-%04d", i), edit(t, f, 1, 1, fmt.Sprintf("insert-%04d", i)))
 	}
 	p := plan(t, f, gs...)
-	if len(accepted(p)) != 0 || string(p.ProvisionalBytes()) != "abc" {
-		t.Fatal("dense conflicts selected a winner")
+	if !reflect.DeepEqual(accepted(p), []string{"group-0000"}) || string(p.ProvisionalBytes()) != "ainsert-0000bc" || !waiting(p, "group-2999", "group-0000") {
+		t.Fatal("dense conflicts did not select one winner")
 	}
 }
 func TestCancellationAtApplicationAndFinalCheckpoint(t *testing.T) {

@@ -448,6 +448,18 @@ func Plan(ctx context.Context, parsed parser.ParseResult, state engine.Directive
 		return StructuralPlan{}, err
 	}
 
+	// Units already invalid take no part in conflicts: they are never applied,
+	// so they must not make a valid unit wait.
+	invalid := map[int]string{}
+	for i := range groups {
+		if err := m.reserve(2, 1); err != nil {
+			return StructuralPlan{}, err
+		}
+		root := u.root(i)
+		if len(decisions[i].Reasons) > 0 && invalid[root] == "" {
+			invalid[root] = groups[i].ID
+		}
+	}
 	conflict := newUnion(len(groups))
 	touched := make([]bool, len(groups))
 	connect := func(a, b int) {
@@ -461,6 +473,9 @@ func Plan(ctx context.Context, parsed parser.ParseResult, state engine.Directive
 	for i, e := range entries {
 		if err := m.work(1); err != nil {
 			return StructuralPlan{}, err
+		}
+		if invalid[u.root(e.groups[0])] != "" {
+			continue
 		}
 		s := e.edit.Span
 		if s.Start() == s.End() {
@@ -484,22 +499,21 @@ func Plan(ctx context.Context, parsed parser.ParseResult, state engine.Directive
 		}
 	}
 	// Duplicate-dependent members link to a failing group in their atomic unit.
-	// Conflict members share a canonical component cause without quadratic output.
-	invalid := map[int]string{}
-	causes := map[int]string{}
+	// Each conflict component accepts one winner: the unit holding the group that
+	// sorts first by weight, rule, then proposal ID. Registry IDs are kept sorted,
+	// so rule ID order is the catalog order. The rest wait for the next round.
+	winners := map[int]int{}
 	for i := range groups {
-		if err := m.reserve(3, 2); err != nil {
+		if err := m.reserve(int64(len(groups[i].Rule)+len(groups[i].ID)+2), 1); err != nil {
 			return StructuralPlan{}, err
 		}
 		root := u.root(i)
-		if len(decisions[i].Reasons) > 0 && invalid[root] == "" {
-			invalid[root] = groups[i].ID
+		if !touched[root] {
+			continue
 		}
-		if touched[root] {
-			c := conflict.root(root)
-			if causes[c] == "" {
-				causes[c] = groups[i].ID
-			}
+		c := conflict.root(root)
+		if w, ok := winners[c]; !ok || cmp.Or(cmp.Compare(conflictWeight(groups[i].Rule), conflictWeight(groups[w].Rule)), cmp.Compare(groups[i].Rule, groups[w].Rule), cmp.Compare(groups[i].ID, groups[w].ID)) < 0 {
+			winners[c] = i
 		}
 	}
 	for i := range groups {
@@ -513,13 +527,18 @@ func Plan(ctx context.Context, parsed parser.ParseResult, state engine.Directive
 			}
 			decisions[i].Reasons = append(decisions[i].Reasons, Reason{Code: "atomic-dependency", Related: []string{cause}, Owner: -1})
 		}
+		waiting := false
 		if touched[root] {
-			if err := m.reserve(2, 1); err != nil {
-				return StructuralPlan{}, err
+			w := winners[conflict.root(root)]
+			if u.root(w) != root {
+				waiting = true
+				if err := m.reserve(2, 1); err != nil {
+					return StructuralPlan{}, err
+				}
+				decisions[i].Reasons = append(decisions[i].Reasons, Reason{Code: "conflict-waiting", Related: []string{groups[w].ID}, Owner: -1})
 			}
-			decisions[i].Reasons = append(decisions[i].Reasons, Reason{Code: "conflict", Related: []string{causes[conflict.root(root)]}, Owner: -1})
 		}
-		decisions[i].Accepted = invalid[root] == "" && !touched[root]
+		decisions[i].Accepted = invalid[root] == "" && !waiting
 	}
 	accepted := []SharedEdit{}
 	size := int64(source.Len())
@@ -575,6 +594,16 @@ func Plan(ctx context.Context, parsed parser.ParseResult, state engine.Directive
 		return StructuralPlan{}, err
 	}
 	return StructuralPlan{source, true, decisions, accepted, candidate}, nil
+}
+
+// conflictWeight orders rules before catalog order when picking a conflict
+// winner. The final newline (MD047) loses every conflict, so it is applied
+// last, once the other corrections near the end of the file have settled.
+func conflictWeight(rule string) int {
+	if rule == "MD047" {
+		return 1
+	}
+	return 0
 }
 
 // terminalEdit recognizes the edit shapes that cannot change a value inside a

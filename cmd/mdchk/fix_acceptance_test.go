@@ -51,7 +51,7 @@ func TestCompiledFixDryRunCandidatesAndFailures(t *testing.T) {
 		name, source string
 		status       int
 		changed      bool
-	}{{"clean-prediction", "text\n", 0, true}, {"two-rounds", "two-round-fixture\n", 0, true}, {"shared-duplicate", "duplicate-fixture\n", 0, true}, {"default-scaling", strings.Repeat("p\n\n", 8000), 0, true}, {"remaining-Unicode", "text 雪\n", 10, true}, {"CRLF", "text\r\n", 0, true}, {"lone-CR", "text\r", 0, true}, {"missing-ending", "text", 0, true}, {"empty", "", 0, true}, {"conflict", "conflict-fixture\n", 10, false}, {"unsafe", "unsafe-fixture\n", 10, false}, {"unsafe-observations", "unsafe-fixture 雪\n", 10, false}, {"cycle", "cycle-fixture\n", 15, false}, {"cancel", "cancel-fixture\n", 15, false}, {"internal", "internal-fixture\n", 14, false}} {
+	}{{"clean-prediction", "text\n", 0, true}, {"two-rounds", "two-round-fixture\n", 0, true}, {"shared-duplicate", "duplicate-fixture\n", 0, true}, {"default-scaling", strings.Repeat("p\n\n", 8000), 0, true}, {"remaining-Unicode", "text 雪\n", 10, true}, {"CRLF", "text\r\n", 0, true}, {"lone-CR", "text\r", 0, true}, {"missing-ending", "text", 0, true}, {"empty", "", 0, true}, {"conflict", "conflict-fixture\n", 0, true}, {"unsafe", "unsafe-fixture\n", 10, false}, {"unsafe-observations", "unsafe-fixture 雪\n", 10, false}, {"cycle", "cycle-fixture\n", 15, false}, {"cancel", "cancel-fixture\n", 15, false}, {"internal", "internal-fixture\n", 14, false}} {
 		t.Run(tc.name, func(t *testing.T) {
 			root := configurationProject(t)
 			putConfigurationFile(t, root, ".mdchk.yaml", fixFixtureConfiguration())
@@ -105,7 +105,7 @@ func TestCompiledFixDryRunCandidatesAndFailures(t *testing.T) {
 					if r.Files[0].WriteStatus != "not-needed" {
 						t.Fatal(r.Files)
 					}
-					if (tc.name == "conflict" || tc.name == "unsafe") && len(r.DeferredFixes) == 0 {
+					if tc.name == "unsafe" && len(r.DeferredFixes) == 0 {
 						t.Fatal("missing deferral", r)
 					}
 				}
@@ -426,7 +426,9 @@ func TestCompiledFixIndependentDeferralsKeepTheirActualCauses(t *testing.T) {
 				t.Fatal(out.Status, out.Stdout)
 			}
 			r := out.Result
-			if len(r.Changes) != 1 || r.Changes[0].Path != "d-safe.md" || r.Changes[0].Disposition != "proposed" {
+			// The conflict winner is applied and the losing group waits, so the
+			// conflict file converges to a proposed change like the safe file.
+			if len(r.Changes) != 2 || r.Changes[0].Path != "a-conflict.md" || r.Changes[1].Path != "d-safe.md" || r.Changes[0].Disposition != "proposed" || r.Changes[1].Disposition != "proposed" {
 				t.Fatal("independent safe proposal changed disposition", r.Changes)
 			}
 			counts := map[string]int{}
@@ -457,10 +459,6 @@ func TestCompiledFixIndependentDeferralsKeepTheirActualCauses(t *testing.T) {
 					t.Fatal("deferral lost exact attempted source or anchor", d)
 				}
 				switch d.Path {
-				case "a-conflict.md":
-					if d.Reason != "conflict" || len(d.ConflictGroupIDs) == 0 || len(d.CauseIDs) != 0 {
-						t.Fatal("intrinsic conflict inherited unrelated runtime cause", d)
-					}
 				case "b-unsafe.md":
 					if d.Reason != "meaning-not-preserved" || len(d.CauseIDs) != 0 {
 						t.Fatal("intrinsic unsafe decision inherited unrelated runtime cause", d)
@@ -477,14 +475,14 @@ func TestCompiledFixIndependentDeferralsKeepTheirActualCauses(t *testing.T) {
 					t.Fatal("independent retained proposal became a deferral", d)
 				}
 			}
-			if counts["a-conflict.md"] != 2 || counts["b-unsafe.md"] != 1 || counts["c-cycle.md"] != 2 || counts["z-runtime.md"] != 1 {
+			if counts["a-conflict.md"] != 0 || counts["b-unsafe.md"] != 1 || counts["c-cycle.md"] != 2 || counts["z-runtime.md"] != 1 {
 				t.Fatal("known groups or exact decisions disappeared", counts, r)
 			}
 			if len(r.Omissions) != 0 {
 				t.Fatal("unexpected known-record omission", r.Omissions)
 			}
 			for _, file := range r.Files {
-				if file.Path == "d-safe.md" {
+				if file.Path == "a-conflict.md" || file.Path == "d-safe.md" {
 					if file.WriteStatus != "proposed" {
 						t.Fatal(file)
 					}

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -487,8 +488,9 @@ func TestCandidateInvalidOriginalAndForeignAuthority(t *testing.T) {
 }
 func TestCandidateConflictsAndAtomicDeferral(t *testing.T) {
 	f := semanticSetup(t, nil, nil)
+	// Only the original source proposes work; later rounds are stable.
 	producer := func(_ context.Context, c fix.RoundContext) ([]fix.Group, error) {
-		if bytes.HasPrefix(c.Current().Bytes(), []byte("\n")) {
+		if bytes.HasSuffix(c.Current().Bytes(), []byte("\n")) {
 			return nil, nil
 		}
 		a := syntheticGroup(t, c, 0, 1, "X")
@@ -502,30 +504,21 @@ func TestCandidateConflictsAndAtomicDeferral(t *testing.T) {
 		if err := c.Before.Checkpoint(ctx, int64(c.Before.Current().Len()+c.After.Current().Len())); err != nil {
 			return fix.Unknown, err
 		}
-		if bytes.Equal(bytes.TrimRight(c.Before.Current().Bytes(), "\n"), bytes.TrimRight(c.After.Current().Bytes(), "\n")) {
-			return fix.Preserved, nil
-		}
-		return fix.Unsafe, nil
+		return fix.Preserved, nil
 	}
-	// The remaining conflict groups continue to be reported, without forcing a
-	// lint-clean candidate or rejecting unrelated safe work.
-	p := producer
-	producer = func(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
-		if bytes.HasSuffix(c.Current().Bytes(), []byte("\n")) {
-			return nil, nil
-		}
-		return p(ctx, c)
-	}
+	// The conflict winner and unrelated safe work are applied together; the
+	// losing group waits for the next round without blocking either.
 	out, err := validateSynthetic(t, f, "hello", producer, proof)
 	if err != nil {
 		t.Fatal(err)
 	}
 	file, _ := out.File("a.md")
-	if !out.Complete() || string(file.Candidate.Bytes()) != "hello\n" {
-		t.Fatalf("conflict discarded independent change: %v", file.Reasons)
+	if !out.Complete() || string(file.Candidate.Bytes()) != "Xello\n" {
+		t.Fatalf("conflict discarded independent change: %q %v", file.Candidate.Bytes(), file.Reasons)
 	}
-	if file.Attempts[0].Decisions[0].Accepted || file.Attempts[0].Decisions[1].Accepted || !file.Attempts[0].Decisions[2].Accepted {
-		t.Fatal("wrong atomic/conflict decisions")
+	d := file.Attempts[0].Decisions
+	if !d[0].Accepted || d[1].Accepted || !d[2].Accepted || len(d[1].Reasons) != 1 || d[1].Reasons[0].Code != "conflict-waiting" || !slices.Equal(d[1].Reasons[0].Related, []string{"fixture"}) {
+		t.Fatalf("wrong atomic/conflict decisions: %+v", d)
 	}
 }
 
