@@ -23,19 +23,27 @@ for report-only rules or broaden the implemented correction scopes.
 
 A correction proposal is an atomic group of one or more edits. All component edits must pass source
 preconditions, directive permissions and preservation checks before any are eligible. If any
-required component is invalid, unsafe, blocked or conflicting, defer the entire group. Paired
+required component is invalid, unsafe, blocked or waiting on a conflict, defer the entire group. Paired
 fences, list-wide indentation and similar coordinated corrections must declare their grouping
 explicitly.
 
 ### Duplicates and conflicts
 
 Deduplicate byte-identical edits while retaining all provenance and group dependencies. Proposals
-sharing an identical edit form one planning unit for all-or-none validation. Defer every planning
-unit involved in a genuine conflict rather than choosing a winner by rule order. A distinct
+sharing an identical edit form one planning unit for all-or-none validation. A distinct
 insertion at the same offset conflicts; insertion at or inside another proposal replacement boundary
 is also a conflict. Adjacent nonempty replacement spans can coexist. A producer needing ordered
 same-position insertions must consolidate them within its single atomic proposal. Independent
 nonconflicting planning units remain eligible.
+
+Only units that are otherwise valid take part in a conflict; a unit already deferred for
+another reason keeps that reason and can't block a valid one. Each connected group of
+conflicting units accepts exactly one winner: the unit holding the group that sorts first by
+weight, then catalog rule order, then proposal ID. Every rule has weight 0 except MD047, the
+final newline, which has weight 1 and so loses every conflict and is applied last. Each other
+unit in the component gets reason `conflict-waiting`, with the winner's group ID in `Related`
+(reported as `conflict_group_ids`), and none of its edits apply that round. The result doesn't
+depend on proposal order.
 
 ### Application
 
@@ -50,7 +58,9 @@ unverified partial correction.
 ### Repeated passes
 
 After each validated changing round, reanalyze and regenerate proposals from the updated candidate.
-Do not reuse stale offsets. Require a final planner/validation check with no further accepted
+Do not reuse stale offsets. A unit that waited on a conflict is not carried over: its producer
+proposes it again against the new candidate, if it still applies, and it competes afresh. A unit
+that keeps waiting until the round limit falls under the failure-to-stabilize rules below. Require a final planner/validation check with no further accepted
 changes under the same inputs. Allow at most 10 changing rounds, followed by a read-only convergence
 check. Record repeated candidate content to detect cycles early. The bound is initially fixed;
 shared operation budgets can terminate work earlier and cannot be bypassed by repeated passes.
@@ -76,7 +86,7 @@ resource-only files.
 
 ### Remaining findings
 
-Intentional deferral for conflicting or unsafe corrections does not by itself make completed lint
+Intentional deferral for unsafe corrections does not by itself make completed lint
 analysis incomplete: retain the underlying violations and explicit deferral reasons. Report-only
 rules and deferred fixes can remain after a stable correction result. Distinguish these from failure
 to complete requested fix computation, missing prerequisites or operational failures. Idempotence
@@ -319,11 +329,10 @@ line-prefix cost rather than the whole source, so one finding per line doesn't e
 the budget. Budget exhaustion and validation failure stay fail-closed, with no partial
 candidate.
 
-An MD009 removal touching MD047's EOF insertion defers both groups with reason `conflict`.
-MD009 sets `fix_available: false` for a suffix at EOF while MD047 is active there. MD047's
-flag is unchanged, so an MD047 finding can show `fix_available: true` and still be
-deferred. A manual MD047 finding is not held back when an MD009 suffix touches it, so
-the planner still defers that pair and the suffix isn't corrected alone. A document
+An MD009 removal touching MD047's EOF insertion conflicts with it. MD047 loses by weight, so
+the removal applies first and MD047's insertion, proposed again on the next round's candidate,
+adds the final newline: `foo<SPACE><SPACE><SPACE><EOF>` becomes `foo<NEWLINE>`. MD009
+therefore sets `fix_available` for a suffix at EOF as for any other suffix. A document
 opening with an unrecognized block is the exception: `Corrections` makes no MD009 group
 there, not even a deferral, so nothing touches MD047's insertion and it applies alone.
 
@@ -403,8 +412,7 @@ initial of the heading is a literal scalar with a single titlecase form, is clea
 of proper-name ambiguity and passes `InteriorEdits`. The producer regenerates one
 group per heading from the round's heading scalars and options, with one edit per
 initial. Because MD009, MD019, MD021, MD022 and MD023 checkers prove visible text unchanged,
-MD063 waits until no such edit can reach proof; an MD009 suffix touching MD047 does
-not hold it back, since that pair defers as a conflict. Its checker compares heading
+MD063 waits until no such edit can reach proof. Its checker compares heading
 count, level, style, closed state, raw label ends, containers and envelopes in
 `Once`, requires visible scalars to differ only at correctable initials of the before
 parse, and requires the candidate heading to report no MD063 finding. Each group then
@@ -419,7 +427,8 @@ list stays tight or loose as it was; the inserted bytes are the prefix without
 trailing spaces plus that ending. Its checker proves `OnlyEditsChanged` and the
 same whole-document comparison as MD009 once per round, then recomputes each
 group's line from the before parse. A "before" and an "after" insertion at one
-offset, or one at another group's boundary, conflict in the planner.
+offset, or one at another group's boundary, conflict in the planner, and the loser waits
+for the next round.
 
 MD005's checker compares the list item facts of both parses in `Once`: the same count and order,
 marker kind, width and padding, an unchanged marker, and group, item, parent and

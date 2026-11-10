@@ -16,10 +16,10 @@ could change meaning or grow the file too far are deferred with reason
 `meaning-not-proven` or `expansion-limit`; see
 [its correction policy](../rules/whitespace/md009.md#correction-policy). All fixers
 run in one `fix` and converge across rounds. When an MD009 removal at physical EOF
-touches MD047's insertion, both are deferred with reason `conflict`. The MD009 finding
-then has `fix_available: false`, but the MD047 finding can still show
-`fix_available: true` and be deferred. Both stay unchanged, and you decide which edit
-to make. A manual MD047 finding doesn't block other corrections in the file. A document
+touches MD047's insertion, the removal applies first and MD047 adds the final
+newline in the next round, so `foo<SPACE><EOF>` becomes `foo<NEWLINE>`. When two
+corrections conflict, one wins by catalog rule order, with MD047 always last, and the
+other waits with reason `conflict-waiting` until the next round proposes it again. A manual MD047 finding doesn't block other corrections in the file. A document
 opening with an unrecognized block has no such conflict, because MD009 proposes no edit
 there: MD047 adds its line ending and the suffix stays. See [Unrecognized leading blocks](#unrecognized-leading-blocks).
 
@@ -153,9 +153,9 @@ deficit inserts the missing ones, so `- One\n\n   Text\n` becomes
 `- One\n\n  Text\n` and `- - One\nText\n` becomes `- - One\n    Text\n`.
 Indentation with a tab, a line with a quote prefix (present or lazily absent),
 protected content, a line a directive governs and any document opening with a
-front matter block stay manual with `fix_available: false`. An edit that conflicts
-with another proposal, or whose reparse would move the line to another item or
-block, is deferred and the finding stays reported. MD077 corrections wait for a
+front matter block stay manual with `fix_available: false`. An edit whose reparse
+would move the line to another item or block is deferred and the finding stays
+reported; one that conflicts with another proposal waits for a later round. MD077 corrections wait for a
 round with no MD009, MD022, MD023, MD029, MD032, MD005 or MD007 edit, and MD063
 waits for them; all apply in the same run.
 [MD030](../rules/lists/md030.md) corrections replace the separator after a list
