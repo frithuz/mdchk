@@ -27,6 +27,10 @@ import (
 // heading lines as MD009, MD019 and MD021, and their checker proves the round's
 // edits are exactly the style rewrites, so they share a round only with each other.
 // A withheld MD047 edit in turn waits for them.
+//
+// MD023 groups wait for a round with no MD022 group. A blank inserted before an
+// indented heading starts at the same offset as the indentation deletion, so the
+// planner would defer both as a conflict in every round.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
@@ -75,11 +79,13 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		return nil, err
 	}
 	groups = append(groups, insertions...)
-	indents, err := headingindent.Groups(ctx, c, indentation)
-	if err != nil {
-		return nil, err
+	if len(insertions) == 0 {
+		indents, err := headingindent.Groups(ctx, c, indentation)
+		if err != nil {
+			return nil, err
+		}
+		groups = append(groups, indents...)
 	}
-	groups = append(groups, indents...)
 	waiting := len(groups) > 0
 	touched := false
 	suffixes, err := trailingWhitespaceGroups(ctx, c, trailing)

@@ -276,5 +276,27 @@
     ],
     "edit_count": 2,
     "config": "compose"
+  },
+  {
+    "name": "compose-blank-before",
+    "source": "x\n  # T\n\ny\n",
+    "candidate": "x\n\n# T\n\ny\n",
+    "rules": [
+      "MD022",
+      "MD023"
+    ],
+    "edit_count": 2,
+    "config": "blanks"
+  },
+  {
+    "name": "compose-blank-around",
+    "source": "text\n  # T\ntext\n",
+    "candidate": "text\n\n# T\n\ntext\n",
+    "rules": [
+      "MD022",
+      "MD023"
+    ],
+    "edit_count": 3,
+    "config": "blanks"
   }
 ]
