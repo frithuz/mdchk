@@ -1065,7 +1065,8 @@ openings, real fence boundaries, definition first lines and actual GFM source
 rows against the cumulative final item chain. Actual quote columns are neutral
 only when consumed; descendant quotes select their first item-facing marker.
 Postquote body indent, raw/comment regions and literal payload stay protected.
-It is analysis-only and returns manual original-source evidence.
+It returns original-source evidence; `fix` corrects space-only continuation
+lines (see `docs/engineering/fixes.md`).
 
 ## Original TAB bytes (MD010)
 

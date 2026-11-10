@@ -389,8 +389,8 @@ Findings are manual with `fix_available: false`, despite PlannedFix metadata.
 
 MD077 reports normalized actual/expected item indentation columns once per
 eligible physical line. Surplus is original whitespace evidence (whole atomic
-tabs when shared); deficit is zero-width at the actual token start. Findings are
-manual with `fix_available: false`, without edits or returned content.
+tabs when shared); deficit is zero-width at the actual token start. `fix` corrects space-only
+continuation lines; other findings stay manual with `fix_available: false`.
 
 MD009 reports one full physical ASCII-space/TAB suffix with Unicode code-point
 columns and exclusive ends. Its message is “Whitespace at line end.” and

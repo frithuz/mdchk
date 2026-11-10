@@ -83,7 +83,7 @@ rule-specific options; MD025 and MD041 accept integer `level` from 1 through 6 (
 minima, each defaulting to 1; MD072 accepts boolean `recursive` (default false) and
 `case_sensitive` (default true); MD073 accepts HTML comment strings `start_marker`
 (default `<!-- toc -->`) and `end_marker` (default `<!-- /toc -->`) and heading levels
-`min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD007, MD029, MD030, MD032, MD069, MD076, MD077,
+`min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD007, MD029, MD030, MD032, MD069, MD076,
 MD018, MD020, MD022, MD024, MD025, MD026, MD036, MD041, MD043,
 MD061, MD072, MD073, MD080, MD083, MD084, MD082, MD081, MD088, MD033, MD086, MD087, MD093, MD095 and MD071 are report-only.
 Rules marked unavailable in the linked inventory remain pending. Every default-enabled
@@ -508,7 +508,8 @@ disabled. PlannedFix metadata grants no MD076 edits or previews.
 MD077 is available and enabled by default, with no rule-specific options. An
 empty mapping retains defaults. Shared booleans and inherited directive denials
 apply; invalid types/null and unknown options are rejected even while disabled.
-Its PlannedFix metadata grants no executable correction authority.
+`fix` corrects space-only MD077 continuation indentation, except for the
+deferrals in [its correction policy](rules/lists/md077.md#correction-policy).
 
 MD009 is available and enabled by default for CommonMark/GFM. It accepts exact
 integer `hard_break_spaces >= 2` (default 2), boolean `strict` (false), and boolean
