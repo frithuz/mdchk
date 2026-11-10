@@ -17,6 +17,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"unicode/utf8"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/fix"
@@ -350,4 +351,51 @@ func NewNativeFragments(t *testing.T, files map[string]string, flavor string, ta
 	}
 	t.Cleanup(func() { _ = service.Close(); _ = root.Close() })
 	return &NativeFragments{resolver, view, service, root}
+}
+
+// Without returns registrations without the named rules, which keeps implicit
+// unavailable-rule coverage testable after those rules gained production
+// implementations.
+func Without(registrations []engine.Registration, ids ...string) []engine.Registration {
+	return slices.DeleteFunc(registrations, func(g engine.Registration) bool { return slices.Contains(ids, g.ID) })
+}
+
+// OnlyDefault disables every catalog rule except id, which keeps its default
+// setting.
+func OnlyDefault(id string) engine.Settings {
+	s := engine.Settings{}
+	off := false
+	for _, m := range engine.Catalog() {
+		s[m.ID] = engine.RuleSetting{Enabled: &off}
+	}
+	delete(s, id)
+	return s
+}
+
+// OriginalPosition is an independent scalar/physical-ending count over
+// original bytes, never parser normalized Literal or the product's line-index
+// conversion.
+func OriginalPosition(source string, at int) result.Position {
+	p := result.Position{Line: 1, Column: 1}
+	for i := 0; i < at; {
+		if source[i] == '\r' {
+			p.Line++
+			p.Column = 1
+			i++
+			if i < at && source[i] == '\n' {
+				i++
+			}
+			continue
+		}
+		if source[i] == '\n' {
+			p.Line++
+			p.Column = 1
+			i++
+			continue
+		}
+		_, w := utf8.DecodeRuneInString(source[i:])
+		i += w
+		p.Column++
+	}
+	return p
 }

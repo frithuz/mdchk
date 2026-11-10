@@ -4,9 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
-	"slices"
 	"testing"
-	"unicode/utf8"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
@@ -38,7 +36,7 @@ type (
 // registrationsWithout keeps implicit unavailable-rule coverage testable after
 // the named rules gained production implementations.
 func registrationsWithout(ids ...string) []engine.Registration {
-	return slices.DeleteFunc(Registrations(), func(g engine.Registration) bool { return slices.Contains(ids, g.ID) })
+	return ruletest.Without(Registrations(), ids...)
 }
 
 func onlyMD092Settings() engine.Settings {
@@ -124,25 +122,7 @@ func onlyMD056Settings() engine.Settings {
 	return s
 }
 
-func onlyDefaultMD037Settings() engine.Settings {
-	s := engine.Settings{}
-	off := false
-	for _, m := range engine.Catalog() {
-		s[m.ID] = engine.RuleSetting{Enabled: &off}
-	}
-	delete(s, "MD037")
-	return s
-}
-
-func onlyDefaultMD038Settings() engine.Settings {
-	s := engine.Settings{}
-	off := false
-	for _, m := range engine.Catalog() {
-		s[m.ID] = engine.RuleSetting{Enabled: &off}
-	}
-	delete(s, "MD038")
-	return s
-}
+func onlyDefaultMD038Settings() engine.Settings { return ruletest.OnlyDefault("MD038") }
 
 // The callback gets the engine's real immutable context and residual budget.
 // Interrupt after it has entered the suffix traversal, rather than cancelling
@@ -191,32 +171,7 @@ func (c *stopAtContext) Err() error {
 	return c.Context.Err()
 }
 
-// Independent scalar/physical-ending count over original bytes, never parser
-// normalized Literal or the product's line-index conversion.
-func originalPosition(source string, at int) result.Position {
-	p := result.Position{Line: 1, Column: 1}
-	for i := 0; i < at; {
-		if source[i] == '\r' {
-			p.Line++
-			p.Column = 1
-			i++
-			if i < at && source[i] == '\n' {
-				i++
-			}
-			continue
-		}
-		if source[i] == '\n' {
-			p.Line++
-			p.Column = 1
-			i++
-			continue
-		}
-		_, w := utf8.DecodeRuneInString(source[i:])
-		i += w
-		p.Column++
-	}
-	return p
-}
+func originalPosition(source string, at int) result.Position { return ruletest.OriginalPosition(source, at) }
 
 type oracleFinding struct {
 	Rule, Message, Marker string

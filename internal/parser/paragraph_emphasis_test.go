@@ -15,7 +15,7 @@ import (
 )
 
 func TestParagraphEmphasisFrozenCountsAndGeometry(t *testing.T) {
-	data, e := os.ReadFile("../rules/testdata/md081.json")
+	data, e := os.ReadFile("../rules/md081/testdata/md081.json")
 	if e != nil {
 		t.Fatal(e)
 	}
