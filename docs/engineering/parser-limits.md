@@ -611,13 +611,18 @@ one baseline; all container descendants are excluded. Ordinary semantic Text
 witnesses prose separately from protected multiline physical prefixes. Actual raw
 state crosses Paragraph boundaries and HTML tails, with isolated image labels.
 Actual unprotected HardBreaks exempt only their physical successors. Original
-ASCII SPACE/TAB surplus spans remain detached and manual. Physical-line state,
+ASCII SPACE/TAB surplus spans remain detached. Physical-line state,
 failed byte probes, semantic/provenance associations, bounded lookups, raw state,
 traversal frames, growth capacity, copied prefixes and logical spans/findings are
 reserved before work. Empty/clean/protected input retains caller and originating
 controls, sticky finite work/nodes/elapsed and atomic producer/facade/callback
-publication. No reparse, source/index/tree clone, renderer, decoder, new allowance
-or correction authority is introduced. This analysis produces no edits.
+publication. No source/index/tree clone, renderer, decoder or new allowance is
+introduced. For fix eligibility, each enabled finding also runs
+ParagraphIndentationPreserved: two bounded local reparses of its line and the
+previous line, with and without the span, charged to the same operation budget
+in lint, check, inspect and fix alike. A finding may then be fix-available;
+analysis still produces no edits, and fix charges its own round facts and
+checker proof to the fix allowance. See MD085 corrections in fixes.md.
 
 
 MD089 shares the original completed production source/index/options/profile and
