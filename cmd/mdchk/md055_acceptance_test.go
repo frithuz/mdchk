@@ -29,7 +29,7 @@ type md055NativeLiteral struct {
 
 func md055NativeLiterals(t *testing.T) []md055NativeLiteral {
 	t.Helper()
-	b, e := os.ReadFile("../../internal/rules/testdata/md055.json")
+	b, e := os.ReadFile("../../internal/rules/md055/testdata/md055.json")
 	if e != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != "5439144ca04395f31749913a620651b8c6c82ca67d33b4f729533df89b1dbefa" {
 		t.Fatal("oracle identity", e)
 	}

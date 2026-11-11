@@ -18,7 +18,7 @@ func md093Configuration(flavor string) string {
 func TestCompiledPlatformMD093ProductionAnalysis(t *testing.T) {
 	t.Parallel()
 	binary := sharedExecutable(t)
-	data, err := os.ReadFile("../../internal/rules/testdata/md093.json")
+	data, err := os.ReadFile("../../internal/rules/md093/testdata/md093.json")
 	if err != nil {
 		t.Fatal(err)
 	}

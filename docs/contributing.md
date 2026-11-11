@@ -177,10 +177,12 @@ Code that two rules share goes in a small, specifically named package under
 
 ### Rule packages
 
-Rules are moving into one package each under `internal/rules/`, such as
-`internal/rules/md047`, the whitespace rules, the formatting rules and the
-frontmatter and encoding rules MD071, MD072, MD083 and MD084. A rule package
-has this layout:
+Every rule has its own package under `internal/rules/`, named by rule ID,
+such as `internal/rules/md047`. `internal/rules` itself holds only
+`rules.go`, `corrections.go` and `testdata/md094.json`, the fixture for MD094,
+which the engine checks. MD087 is checked by the engine too, so
+`internal/rules/md087` only registers `engine.CheckUnusedSuppressions` and
+holds its tests. A rule package has this layout:
 
 ```text
 internal/rules/md047/
@@ -208,8 +210,10 @@ Tests use the external package `mdNNN_test`, which may import
 corrector. Add an `export_test.go` only for an unexported name the tests really
 need. Helpers shared by rule tests (registries, settings, analysis and
 correction runs) live in `internal/rules/ruletest`, a non-test package that
-must not import `internal/rules`. Tests left in `internal/rules` call it
-directly or through thin local wrappers.
+must not import `internal/rules`. A package's `helpers_test.go` holds the thin
+local wrappers its tests call. A test file that needs many unexported names
+and doesn't import `internal/rules`, such as MD095's authority tests, may stay
+in the internal package `mdNNN`.
 
 To add a rule:
 
@@ -223,9 +227,8 @@ To add a rule:
    `CorrectionCheckers`.
 
 A rule's fixtures live in its own `testdata/`. Tests in `cmd/mdchk`,
-`internal/config`, `internal/parser` and `internal/engine` that read a moved
-fixture use a relative path into `internal/rules/mdNNN/testdata/` until those
-tests move too.
+`internal/config`, `internal/parser` and `internal/engine` that read a rule's
+fixture use a relative path into `internal/rules/mdNNN/testdata/`.
 
 CI picks some tests by name with `-run`. When such a test moves to a rule
 package, take its name out of the old pattern and add a `-run` command for the

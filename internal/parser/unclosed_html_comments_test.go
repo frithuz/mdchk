@@ -17,7 +17,7 @@ import (
 )
 
 func TestUnclosedHTMLCommentsFrozenGeometry(t *testing.T) {
-	data, e := os.ReadFile("../rules/testdata/md086.json")
+	data, e := os.ReadFile("../rules/md086/testdata/md086.json")
 	if e != nil {
 		t.Fatal(e)
 	}

@@ -22,19 +22,26 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md021"
 	"github.com/frithuz/mdchk/internal/rules/md022"
 	"github.com/frithuz/mdchk/internal/rules/md023"
+	"github.com/frithuz/mdchk/internal/rules/md024"
+	"github.com/frithuz/mdchk/internal/rules/md025"
+	"github.com/frithuz/mdchk/internal/rules/md026"
 	"github.com/frithuz/mdchk/internal/rules/md027"
 	"github.com/frithuz/mdchk/internal/rules/md028"
 	"github.com/frithuz/mdchk/internal/rules/md029"
 	"github.com/frithuz/mdchk/internal/rules/md030"
 	"github.com/frithuz/mdchk/internal/rules/md031"
 	"github.com/frithuz/mdchk/internal/rules/md032"
+	"github.com/frithuz/mdchk/internal/rules/md033"
 	"github.com/frithuz/mdchk/internal/rules/md034"
 	"github.com/frithuz/mdchk/internal/rules/md035"
+	"github.com/frithuz/mdchk/internal/rules/md036"
 	"github.com/frithuz/mdchk/internal/rules/md037"
 	"github.com/frithuz/mdchk/internal/rules/md038"
 	"github.com/frithuz/mdchk/internal/rules/md039"
 	"github.com/frithuz/mdchk/internal/rules/md040"
+	"github.com/frithuz/mdchk/internal/rules/md041"
 	"github.com/frithuz/mdchk/internal/rules/md042"
+	"github.com/frithuz/mdchk/internal/rules/md043"
 	"github.com/frithuz/mdchk/internal/rules/md044"
 	"github.com/frithuz/mdchk/internal/rules/md045"
 	"github.com/frithuz/mdchk/internal/rules/md046"
@@ -46,23 +53,39 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md052"
 	"github.com/frithuz/mdchk/internal/rules/md053"
 	"github.com/frithuz/mdchk/internal/rules/md054"
+	"github.com/frithuz/mdchk/internal/rules/md055"
+	"github.com/frithuz/mdchk/internal/rules/md056"
 	"github.com/frithuz/mdchk/internal/rules/md057"
+	"github.com/frithuz/mdchk/internal/rules/md058"
 	"github.com/frithuz/mdchk/internal/rules/md059"
+	"github.com/frithuz/mdchk/internal/rules/md060"
+	"github.com/frithuz/mdchk/internal/rules/md061"
 	"github.com/frithuz/mdchk/internal/rules/md062"
+	"github.com/frithuz/mdchk/internal/rules/md063"
 	"github.com/frithuz/mdchk/internal/rules/md064"
 	"github.com/frithuz/mdchk/internal/rules/md065"
 	"github.com/frithuz/mdchk/internal/rules/md069"
 	"github.com/frithuz/mdchk/internal/rules/md070"
 	"github.com/frithuz/mdchk/internal/rules/md071"
 	"github.com/frithuz/mdchk/internal/rules/md072"
+	"github.com/frithuz/mdchk/internal/rules/md073"
+	"github.com/frithuz/mdchk/internal/rules/md075"
 	"github.com/frithuz/mdchk/internal/rules/md076"
 	"github.com/frithuz/mdchk/internal/rules/md077"
+	"github.com/frithuz/mdchk/internal/rules/md080"
 	"github.com/frithuz/mdchk/internal/rules/md081"
+	"github.com/frithuz/mdchk/internal/rules/md082"
 	"github.com/frithuz/mdchk/internal/rules/md083"
 	"github.com/frithuz/mdchk/internal/rules/md084"
 	"github.com/frithuz/mdchk/internal/rules/md085"
+	"github.com/frithuz/mdchk/internal/rules/md086"
+	"github.com/frithuz/mdchk/internal/rules/md087"
 	"github.com/frithuz/mdchk/internal/rules/md088"
 	"github.com/frithuz/mdchk/internal/rules/md089"
+	"github.com/frithuz/mdchk/internal/rules/md091"
+	"github.com/frithuz/mdchk/internal/rules/md092"
+	"github.com/frithuz/mdchk/internal/rules/md093"
+	"github.com/frithuz/mdchk/internal/rules/md095"
 )
 
 func Registrations() []engine.Registration {
@@ -84,26 +107,26 @@ func Registrations() []engine.Registration {
 		md021.Registration(),
 		md022.Registration(),
 		md023.Registration(),
-		{ID: "MD024", Check: repeatedHeadingText},
-		{ID: "MD025", Check: multipleDocumentTitles},
-		{ID: "MD026", Check: headingEndPunctuation},
+		md024.Registration(),
+		md025.Registration(),
+		md026.Registration(),
 		md027.Registration(),
 		md028.Registration(),
 		md029.Registration(),
 		md030.Registration(),
 		md031.Registration(),
 		md032.Registration(),
-		{ID: "MD033", Check: embeddedHTML},
+		md033.Registration(),
 		md034.Registration(),
 		md035.Registration(),
-		{ID: "MD036", Check: emphasisUsedAsHeading},
+		md036.Registration(),
 		md037.Registration(),
 		md038.Registration(),
 		md039.Registration(),
 		md040.Registration(),
-		{ID: "MD041", Check: openingDocumentHeading},
+		md041.Registration(),
 		md042.Registration(),
-		{ID: "MD043", Check: requiredHeadingOutline},
+		md043.Registration(),
 		md044.Registration(),
 		md045.Registration(),
 		md046.Registration(),
@@ -115,38 +138,38 @@ func Registrations() []engine.Registration {
 		md052.Registration(),
 		md053.Registration(),
 		md054.Registration(),
-		{ID: "MD055", Check: outerTablePipes},
-		{ID: "MD056", Check: mismatchedTableCells},
+		md055.Registration(),
+		md056.Registration(),
 		md057.Registration(),
-		{ID: "MD058", Check: tableBlankLines},
+		md058.Registration(),
 		md059.Registration(),
-		{ID: "MD060", Check: tableColumnLayout},
-		{ID: "MD061", Check: prohibitedVocabulary},
+		md060.Registration(),
+		md061.Registration(),
 		md062.Registration(),
-		{ID: "MD063", Check: headingCapitalization},
+		md063.Registration(),
 		md064.Registration(),
 		md065.Registration(),
 		md069.Registration(),
 		md070.Registration(),
 		md071.Registration(),
 		md072.Registration(),
-		{ID: "MD073", Check: tableOfContents},
-		{ID: "MD075", Check: headerlessPipeRows},
+		md073.Registration(),
+		md075.Registration(),
 		md076.Registration(),
 		md077.Registration(),
-		{ID: "MD080", Check: collidingHeadingAnchors},
+		md080.Registration(),
 		md081.Registration(),
-		{ID: "MD082", Check: sectionsWithoutContent},
+		md082.Registration(),
 		md083.Registration(),
 		md084.Registration(),
 		md085.Registration(),
-		{ID: "MD086", Check: unclosedHTMLComments},
-		{ID: "MD087", Check: engine.CheckUnusedSuppressions},
+		md086.Registration(),
+		md087.Registration(),
 		md088.Registration(),
 		md089.Registration(),
-		{ID: "MD091", Check: markdownInsideHTML},
-		{ID: "MD092", Check: conflictMarkers},
-		{ID: "MD093", Check: inlineFormattingInHeadings},
-		{ID: "MD095", Check: lookalikeHostnames},
+		md091.Registration(),
+		md092.Registration(),
+		md093.Registration(),
+		md095.Registration(),
 	}
 }

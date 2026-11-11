@@ -45,9 +45,9 @@ func md092NativeLiterals(t *testing.T) map[string]md092NativeLiteral {
 		path, hash string
 		count      int
 	}{
-		{"../../internal/rules/testdata/md092.json", "1a60725172f8b8e5038604145766f2c9cd9c9ce00b3acb16d8b3ca078477bb25", 81},
-		{"../../internal/rules/testdata/md092_raw_lifetime.json", "1d5ab8daa2ce6d3315e7439f36311d22a24881aac59b9d3f3831f81a2131df32", 6},
-		{"../../internal/rules/testdata/md092_unknown.json", "486afc71751f0ea8c3ffd8a94f7bdfb09dced1731cd36a9ded5e0ce801827aed", 3},
+		{"../../internal/rules/md092/testdata/md092.json", "1a60725172f8b8e5038604145766f2c9cd9c9ce00b3acb16d8b3ca078477bb25", 81},
+		{"../../internal/rules/md092/testdata/md092_raw_lifetime.json", "1d5ab8daa2ce6d3315e7439f36311d22a24881aac59b9d3f3831f81a2131df32", 6},
+		{"../../internal/rules/md092/testdata/md092_unknown.json", "486afc71751f0ea8c3ffd8a94f7bdfb09dced1731cd36a9ded5e0ce801827aed", 3},
 	} {
 		b, err := os.ReadFile(fixture.path)
 		if err != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != fixture.hash {

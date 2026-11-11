@@ -26,7 +26,7 @@ type md087Literal struct {
 
 func md087Literals(t *testing.T) map[string]md087Literal {
 	t.Helper()
-	raw, err := os.ReadFile("../../internal/rules/testdata/md087.json")
+	raw, err := os.ReadFile("../../internal/rules/md087/testdata/md087.json")
 	if err != nil {
 		t.Fatal(err)
 	}

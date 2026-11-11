@@ -16,7 +16,7 @@ import (
 )
 
 func TestEmbeddedHTMLFrozenGeometry(t *testing.T) {
-	data, e := os.ReadFile("../rules/testdata/md033.json")
+	data, e := os.ReadFile("../rules/md033/testdata/md033.json")
 	if e != nil {
 		t.Fatal(e)
 	}
