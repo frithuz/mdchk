@@ -33,9 +33,9 @@ func TestCompiledPlatformMD035ProductionAnalysis(t *testing.T) {
 		t.Fatal(err)
 	}
 	var fixtures []struct {
-		Name, Source, Style, SHA256, Flavor string
-		Size                                int `json:"size_bytes"`
-		Expected                            []struct {
+		Name, Source, Style, SHA256, Flavor, Fixed string
+		Size                                       int `json:"size_bytes"`
+		Expected                                   []struct {
 			Range  []int
 			Source string
 		}
@@ -60,14 +60,26 @@ func TestCompiledPlatformMD035ProductionAnalysis(t *testing.T) {
 				for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
 					got := acceptance.RunProcess(t, binary, root, args...)
 					out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), args[0])
+					// A preview that rewrites the breaks reports the candidate, which
+					// every fixture leaves with no finding.
+					expected, changes := f.Expected, 0
+					if args[0] == "fix" && f.Fixed != f.Source {
+						expected, changes = nil, 1
+					}
 					status := 0
-					if len(f.Expected) > 0 {
+					if len(expected) > 0 {
 						status = 10
 					}
-					if got.Status != status || !out.Complete || len(out.Diagnostics) != len(f.Expected) || len(out.Changes) != 0 || len(out.Documents) != 0 || len(out.Errors) != 0 {
+					if got.Status != status || !out.Complete || len(out.Diagnostics) != len(expected) || len(out.Changes) != changes || len(out.Documents) != 0 || len(out.Errors) != 0 {
 						t.Fatal(got)
 					}
-					for i, w := range f.Expected {
+					if changes == 1 {
+						c := out.Changes[0]
+						if !reflect.DeepEqual(c.Rules, []string{"MD035"}) || c.Candidate.SHA256 != acceptance.Digest(f.Fixed) || c.Candidate.SizeBytes != len(f.Fixed) {
+							t.Fatal(c)
+						}
+					}
+					for i, w := range expected {
 						d := out.Diagnostics[i]
 						actual := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
 						if !reflect.DeepEqual(actual, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD035" || d.FixAvailable || d.Message != "Horizontal rule marker style does not match the expected style." {
@@ -90,7 +102,7 @@ func TestCompiledPlatformMD035ProductionAnalysis(t *testing.T) {
 				if !found {
 					t.Fatal(p.Rules)
 				}
-				acceptance.ReadinessAssertEqual(t, "manual analysis", before, acceptance.ReadinessState(t, root))
+				acceptance.ReadinessAssertEqual(t, "read-only analysis", before, acceptance.ReadinessState(t, root))
 			})
 		}
 	}
@@ -161,7 +173,7 @@ func TestCompiledPlatformMD035DefaultsAndConfiguration(t *testing.T) {
 	}
 }
 
-func TestCompiledPlatformMD035ManualApplyAndInvalidUTF8(t *testing.T) {
+func TestCompiledPlatformMD035ApplyAndInvalidUTF8(t *testing.T) {
 	t.Parallel()
 	binary := acceptance.SharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
@@ -170,24 +182,11 @@ func TestCompiledPlatformMD035ManualApplyAndInvalidUTF8(t *testing.T) {
 			acceptance.PutFile(t, root, ".mdchk.yaml", md035Configuration(flavor))
 			acceptance.PutFile(t, root, "doc.md", "---\n\n***\n")
 			path := filepath.Join(root, "doc.md")
-			info, e := os.Stat(path)
-			if e != nil {
-				t.Fatal(e)
-			}
-			before := acceptance.ConfigurationBytes(t, root)
 			beforeApply := acceptance.ReadinessState(t, root)
 			got := acceptance.RunProcess(t, binary, root, "fix", "doc.md", "--format=json")
 			out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "fix")
-			after, e := os.Stat(path)
-			if e != nil {
-				t.Fatal(e)
-			}
-			if !out.Complete || len(out.Changes) != 0 || len(out.Documents) != 0 || !reflect.DeepEqual(before, acceptance.ConfigurationBytes(t, root)) || info.Mode() != after.Mode() {
-				t.Fatal(got)
-			}
-			acceptance.ReadinessAssertEqual(t, "manual-only apply", beforeApply, acceptance.ReadinessState(t, root))
 			// The actual acquisition result establishes native capability, not GOOS.
-			// Unsupported adapters refuse before analysis, even with no MD035 edits.
+			// Unsupported adapters refuse before analysis.
 			if got.Status == 13 {
 				if out.Status != "error" || len(out.Errors) != 1 || len(out.Diagnostics) != 0 || len(out.Files) != 0 || len(out.CheckedFiles) != 0 {
 					t.Fatal("not an explicit no-effect adapter refusal", got)
@@ -196,22 +195,25 @@ func TestCompiledPlatformMD035ManualApplyAndInvalidUTF8(t *testing.T) {
 				if failure.Category != result.IO || failure.Code != "write-acquisition" || failure.Scope != "operation" || !strings.HasPrefix(failure.Message, "native replacement is unsupported on ") {
 					t.Fatal(failure)
 				}
+				acceptance.ReadinessAssertEqual(t, "unsupported apply", beforeApply, acceptance.ReadinessState(t, root))
 				t.Log("actual native adapter unsupported; exact refusal and no effects verified")
 			} else {
-				if got.Status != 10 || out.Status != "violations" || len(out.Errors) != 0 || len(out.Diagnostics) != 1 {
+				if got.Status != 0 || out.Status != "clean" || len(out.Errors) != 0 || len(out.Diagnostics) != 0 || len(out.Changes) != 1 || !reflect.DeepEqual(out.Changes[0].Rules, []string{"MD035"}) || acceptance.Saved(t, root) != "---\n\n---\n" {
 					t.Fatal(got)
 				}
-				d := out.Diagnostics[0]
-				if d.Rule != "MD035" || d.FixAvailable || d.Message != "Horizontal rule marker style does not match the expected style." || d.ByteRange.Start != 5 || d.ByteRange.End != 8 {
-					t.Fatal(d)
+				// A second run finds nothing left to correct.
+				got = acceptance.RunProcess(t, binary, root, "fix", "doc.md", "--format=json")
+				out = acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "fix")
+				if got.Status != 0 || len(out.Diagnostics) != 0 || len(out.Changes) != 0 || acceptance.Saved(t, root) != "---\n\n---\n" {
+					t.Fatal(got)
 				}
-				t.Log("actual native acquisition succeeded; manual MD035 finding and no effects verified")
+				t.Log("actual native acquisition succeeded; MD035 correction saved and idempotent")
 			}
 			// Continue mandatory encoding checks on both native capability paths.
-			if e = os.WriteFile(path, []byte{'>', ' ', ' ', 0xff, '\n'}, 0600); e != nil {
+			if e := os.WriteFile(path, []byte{'>', ' ', ' ', 0xff, '\n'}, 0600); e != nil {
 				t.Fatal(e)
 			}
-			before = acceptance.ConfigurationBytes(t, root)
+			before := acceptance.ConfigurationBytes(t, root)
 			for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
 				got = acceptance.RunProcess(t, binary, root, args...)
 				out = acceptance.ValidateOperationJSON(t, []byte(got.Stdout), args[0])
@@ -232,7 +234,7 @@ func TestCompiledPlatformMD035ManualApplyAndInvalidUTF8(t *testing.T) {
 				if got.Status != 13 || out.Complete || len(out.Errors) != 1 || len(out.Diagnostics) != 0 || len(out.Changes) != 0 || len(out.Documents) != 0 {
 					t.Fatal(got)
 				}
-				t.Logf("invalid UTF-8 %s verified after manual apply", args[0])
+				t.Logf("invalid UTF-8 %s verified after apply", args[0])
 			}
 			if !reflect.DeepEqual(before, acceptance.ConfigurationBytes(t, root)) {
 				t.Fatal("invalid input changed")
@@ -247,25 +249,25 @@ func TestCompiledPlatformMD035Composition(t *testing.T) {
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		t.Run(flavor, func(t *testing.T) {
 			root := acceptance.Project(t)
-			conf := strings.Replace(md035Configuration(flavor), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
+			conf := md035Configuration(flavor)
+			for _, id := range []string{"MD009", "MD012", "MD047"} {
+				conf = strings.Replace(conf, id+": {enabled: false}", id+": {enabled: true}", 1)
+			}
 			acceptance.PutFile(t, root, ".mdchk.yaml", conf)
-			candidate := "---\n\n***\n"
-			for pass, source := range []string{"---\n\n***", candidate} {
-				acceptance.PutFile(t, root, "doc.md", source)
+			source, candidate := "a \n\n\n\n---\n\n***", "a\n\n---\n\n---\n"
+			// One preview applies every rule's edits together, and the candidate
+			// needs no further change.
+			for pass, text := range []string{source, candidate} {
+				acceptance.PutFile(t, root, "doc.md", text)
 				before := acceptance.ConfigurationBytes(t, root)
 				got := acceptance.RunProcess(t, binary, root, "fix", "--dry-run", "doc.md", "--format=json")
 				out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "fix")
-				if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || len(out.Changes) != 1-pass || len(out.Documents) != 0 {
+				if got.Status != 0 || !out.Complete || len(out.Diagnostics) != 0 || len(out.Changes) != 1-pass || len(out.Documents) != 0 {
 					t.Fatal(got)
-				}
-				snap := out.Files[0].ResultSnapshot
-				d := out.Diagnostics[0]
-				if snap == nil || snap.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(candidate))) || snap.SizeBytes != 9 || d.Snapshot != *snap || d.Rule != "MD035" || d.ByteRange.Start != 5 || d.ByteRange.End != 8 || d.FixAvailable {
-					t.Fatal(out)
 				}
 				if pass == 0 {
 					c := out.Changes[0]
-					if !reflect.DeepEqual(c.Rules, []string{"MD047"}) || c.EditCount != 1 || c.Candidate != *snap {
+					if !reflect.DeepEqual(c.Rules, []string{"MD009", "MD012", "MD035", "MD047"}) || c.Candidate.SHA256 != acceptance.Digest(candidate) || c.Candidate.SizeBytes != len(candidate) {
 						t.Fatal(c)
 					}
 				}
@@ -273,7 +275,7 @@ func TestCompiledPlatformMD035Composition(t *testing.T) {
 					t.Fatal("dry-run mutation")
 				}
 			}
-			acceptance.PutFile(t, root, "doc.md", "---\n\n***")
+			acceptance.PutFile(t, root, "doc.md", source)
 			before := acceptance.ReadinessState(t, root)
 			got := acceptance.RunProcess(t, binary, root, "fix", "doc.md", "--format=json")
 			out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "fix")
@@ -282,21 +284,82 @@ func TestCompiledPlatformMD035Composition(t *testing.T) {
 					t.Fatal(got)
 				}
 				acceptance.ReadinessAssertEqual(t, "unsupported composition", before, acceptance.ReadinessState(t, root))
-			} else {
-				data, e := os.ReadFile(filepath.Join(root, "doc.md")) //nolint:gosec // Test-owned fixed target under t.TempDir.
-				if e != nil {
-					t.Fatal(e)
-				}
-				if got.Status != 10 || !out.Complete || string(data) != candidate || len(out.Changes) != 1 || len(out.Diagnostics) != 1 || len(out.Documents) != 0 {
-					t.Fatal(got)
-				}
-				snap := out.Files[0].ResultSnapshot
-				d := out.Diagnostics[0]
-				if snap == nil || snap.View != "saved" || snap.SHA256 != fmt.Sprintf("%x", sha256.Sum256(data)) || snap.SizeBytes != 9 || d.Snapshot != *snap || d.Rule != "MD035" || d.ByteRange.Start != 5 || d.ByteRange.End != 8 || d.FixAvailable || !reflect.DeepEqual(out.Changes[0].Rules, []string{"MD047"}) {
-					t.Fatal(out)
-				}
+				return
+			}
+			if got.Status != 0 || !out.Complete || acceptance.Saved(t, root) != candidate || len(out.Changes) != 1 || len(out.Diagnostics) != 0 || len(out.Documents) != 0 {
+				t.Fatal(got)
+			}
+			got = acceptance.RunProcess(t, binary, root, "fix", "doc.md", "--format=json")
+			out = acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "fix")
+			if got.Status != 0 || len(out.Changes) != 0 || len(out.Diagnostics) != 0 || acceptance.Saved(t, root) != candidate {
+				t.Fatal("second run", got)
 			}
 		})
+	}
+}
+
+func TestCompiledPlatformMD035GuardsAndProtectedContent(t *testing.T) {
+	t.Parallel()
+	binary := acceptance.SharedExecutable(t)
+	for _, flavor := range []string{"commonmark", "gfm"} {
+		for _, tc := range []struct {
+			name, source, style, want string
+			remaining                 int
+		}{
+			// Rewriting the break under a paragraph line would make a Setext heading.
+			{"setext", "para\n***\n", "dash", "para\n***\n", 1},
+			{"item-setext", "---\n\n- a\n  * * *\n", "consistent", "---\n\n- a\n  * * *\n", 1},
+			{"list-position", "***\n\n* a\n* * *\n", "consistent", "***\n\n* a\n***\n", 0},
+			{"quote-crlf", "---\r\n\r\n> ***\r\n", "consistent", "---\r\n\r\n> ---\r\n", 0},
+			{"indent-crlf", "---\r\n\r\n  ***  \r\n", "consistent", "---\r\n\r\n  ---  \r\n", 0},
+			{"consistent-spaced", "* * *\n\n---\n", "consistent", "* * *\n\n* * *\n", 0},
+			{"fenced", "---\n\n```\n***\n```\n", "consistent", "---\n\n```\n***\n```\n", 0},
+			{"html", "---\n\n<div>\n***\n</div>\n", "consistent", "---\n\n<div>\n***\n</div>\n", 0},
+			{"front-matter", "---\ntitle: x\n---\n\n***\n\n___\n", "consistent", "---\ntitle: x\n---\n\n***\n\n***\n", 0},
+		} {
+			t.Run(flavor+"/"+tc.name, func(t *testing.T) {
+				root := acceptance.Project(t)
+				conf := strings.Replace(md035Configuration(flavor), "MD035: {}", "MD035: {style: "+tc.style+"}", 1)
+				if tc.name == "front-matter" {
+					conf += "frontmatter: {enabled: true}\n"
+				}
+				acceptance.PutFile(t, root, ".mdchk.yaml", conf)
+				acceptance.PutFile(t, root, "doc.md", tc.source)
+				changes, status := 0, 0
+				if tc.want != tc.source {
+					changes = 1
+				}
+				if tc.remaining > 0 {
+					status = 10
+				}
+				for _, args := range [][]string{{"fix", "--dry-run", "doc.md", "--format=json"}, {"fix", "doc.md", "--format=json"}} {
+					got := acceptance.RunProcess(t, binary, root, args...)
+					out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "fix")
+					if got.Status == 13 {
+						t.Skip("native replacement unsupported")
+					}
+					if got.Status != status || !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != tc.remaining || len(out.Changes) != changes {
+						t.Fatal(got)
+					}
+					for _, d := range out.Diagnostics {
+						if d.Rule != "MD035" || d.FixAvailable {
+							t.Fatal(d)
+						}
+					}
+					if changes == 1 && (out.Changes[0].Candidate.SHA256 != acceptance.Digest(tc.want) || out.Changes[0].Candidate.SizeBytes != len(tc.want)) {
+						t.Fatal(out.Changes[0])
+					}
+				}
+				if acceptance.Saved(t, root) != tc.want {
+					t.Fatalf("%q", acceptance.Saved(t, root))
+				}
+				got := acceptance.RunProcess(t, binary, root, "fix", "doc.md", "--format=json")
+				out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "fix")
+				if got.Status != status || len(out.Changes) != 0 || len(out.Diagnostics) != tc.remaining {
+					t.Fatal("second run", got)
+				}
+			})
+		}
 	}
 }
 
@@ -325,11 +388,15 @@ func TestCompiledPlatformMD035DirectivesBaselineAndSelection(t *testing.T) {
 				for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}, {"inspect", "doc.md", "--lines=" + tc.line, "--format=json"}} {
 					got := acceptance.RunProcess(t, binary, root, args...)
 					out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), args[0])
-					status := 0
-					if args[0] != "inspect" && tc.active > 0 {
+					// A preview corrects every active finding; a suppressed one gets no edit.
+					status, active, changes := 0, tc.active, 0
+					if args[0] == "fix" && active > 0 {
+						active, changes = 0, 1
+					}
+					if args[0] != "inspect" && active > 0 {
 						status = 10
 					}
-					if got.Status != status || !out.Complete || len(out.Diagnostics) != tc.active || len(out.SuppressedDiagnostics) != tc.hidden || len(out.Changes) != 0 {
+					if got.Status != status || !out.Complete || len(out.Diagnostics) != active || len(out.SuppressedDiagnostics) != tc.hidden || len(out.Changes) != changes {
 						t.Fatal(got)
 					}
 				}

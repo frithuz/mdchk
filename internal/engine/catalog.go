@@ -33,7 +33,7 @@ func Catalog() []Metadata {
 		{ID: "MD032", Name: "Blank lines around lists", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD033", Name: "Embedded HTML", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"allowed_tags": list()}},
 		{ID: "MD034", Name: "URLs without link markup", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD035", Name: "Horizontal rule marker style", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "dash", "asterisk", "underscore")}},
+		{ID: "MD035", Name: "Horizontal rule marker style", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "dash", "asterisk", "underscore")}},
 		{ID: "MD036", Name: "Emphasis used as a heading", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD037", Name: "Whitespace within emphasis delimiters", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD038", Name: "Whitespace within inline code delimiters", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},

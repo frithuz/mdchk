@@ -22,6 +22,7 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md027"
 	"github.com/frithuz/mdchk/internal/rules/md030"
 	"github.com/frithuz/mdchk/internal/rules/md032"
+	"github.com/frithuz/mdchk/internal/rules/md035"
 	"github.com/frithuz/mdchk/internal/rules/md047"
 	"github.com/frithuz/mdchk/internal/rules/md064"
 	"github.com/frithuz/mdchk/internal/rules/md077"
@@ -112,8 +113,14 @@ import (
 // which most other edits break; one fix run still applies them all. A document opening with an
 // unrecognized block gets no MD027 group at all.
 //
+// MD035 groups come after MD027 and MD089, in a round with no other group but an MD047
+// edit that analysis withheld, which waits for them in turn. Their checker
+// compares whole parses and block envelopes, which a replacement of a different
+// length moves for every other proof. A document opening with an unrecognized
+// block gets no MD035 group at all.
+//
 // MD064 groups wait for a round in which no other rule proposes an edit, MD010,
-// MD012 and MD027 included, and every other group waits while they remain. A TAB that MD010
+// MD012, MD027, MD035 and MD089 included, and every other group waits while they remain. A TAB that MD010
 // turns into spaces can lengthen a run, so MD064 sees the converted text.
 // Their checker proves that Text values differ only in interior SPACE runs,
 // which an edit from any other rule breaks, and deleting interior spaces moves
@@ -134,7 +141,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var markers, spacing, quotes, pairs, blank, runs, indentation, capitalization, trailing, tabs, prose, styles, lists, alignment, numbering, bullets, continuation, separators, gaps, paragraphs []result.Diagnostic
+	var markers, spacing, quotes, pairs, blank, runs, indentation, capitalization, trailing, tabs, prose, styles, lists, alignment, numbering, bullets, continuation, separators, gaps, paragraphs, rules []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -220,6 +227,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		case "MD089":
 			if !guarded && d.FixAvailable {
 				pairs = append(pairs, d)
+			}
+		case "MD035":
+			if !guarded {
+				rules = append(rules, d)
 			}
 		case "MD076":
 			if !guarded && d.FixAvailable {
@@ -402,6 +413,14 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 			waiting = len(inserted) > 0
 			groups = append(groups, inserted...)
 		}
+		if !waiting {
+			breaks, err := md035.Correction(ctx, c, rules)
+			if err != nil {
+				return nil, err
+			}
+			waiting = len(breaks) > 0
+			groups = append(groups, breaks...)
+		}
 	}
 	editing := false
 	for _, g := range groups {
@@ -448,6 +467,7 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		{Rule: "MD076", Check: listspacing.Check},
 		md004.Checker(),
 		md027.Checker(),
+		md035.Checker(),
 		md064.Checker(),
 		md089.Checker(),
 	}

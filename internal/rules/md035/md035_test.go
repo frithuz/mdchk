@@ -81,7 +81,7 @@ func TestMD035DefaultAvailabilityAndStrictSettings(t *testing.T) {
 		} else {
 			off++
 		}
-		if m.ID == "MD035" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.PlannedFix || len(m.Options) != 1 || m.Options["style"].Default != "consistent") {
+		if m.ID == "MD035" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.ImplementedFix || len(m.Options) != 1 || m.Options["style"].Default != "consistent") {
 			t.Fatal(m)
 		}
 	}

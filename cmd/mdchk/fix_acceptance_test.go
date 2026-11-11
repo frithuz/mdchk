@@ -532,7 +532,6 @@ func TestCompiledReportOnlyRulesProduceNoEdits(t *testing.T) {
 		{"MD028", "{enabled: true}", "> a\n\n> b\n"},
 		{"MD037", "{enabled: true}", "a * b * c\n"},
 		{"MD081", "{enabled: true}", "**aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa**\n"},
-		{"MD035", "{enabled: true}", "---\n\n***\n"},
 		{"MD038", "{enabled: true}", "` a `\n"},
 		{"MD044", "{enabled: true, names: [JavaScript]}", "javascript\n"},
 		{"MD049", "{enabled: true}", "*a* _b_\n"},
