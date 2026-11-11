@@ -192,7 +192,7 @@ No MD012 correction proposal or corrected content is returned.
 MD013 inspection exposes available but default-disabled manual analysis and all four admitted options. Full original physical width and protected/URL context precede line slicing. Each finding selects one original overflowing scalar, retaining exclusive scalar coordinates and exact snapshot identity; no MD013 correction or returned content is produced.
 
 
-MD027 inspection exposes available default-enabled manual analysis. Full final Paragraph, actual quote-prefix and literal/raw ownership precede slicing. Findings select original excess ASCII spaces after the first SPACE; any TAB in the whole separator exempts it. No correction or returned content is produced.
+MD027 inspection exposes available default-enabled analysis. Full final Paragraph, actual quote-prefix and literal/raw ownership precede slicing. Findings select original excess ASCII spaces after the first SPACE; any TAB in the whole separator exempts it. Inspection produces no correction or returned content.
 
 
 MD028 is available and enabled by default. Full original same-parent quote neighbors and protected gap context precede slicing and START suppression. Each qualifying physical line selects its remaining blank body, including a present zero-width position after an atomic retained prefix. Selecting only the later quote does not relocate a gap finding.

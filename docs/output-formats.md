@@ -416,9 +416,10 @@ MD047 candidate, MD012 ranges and snapshot identify that exact candidate.
 MD013 findings use the constant message `Line exceeds maximum width.` and exactly one whole original eligible overflowing scalar per physical line. TAB width does not change scalar diagnostic columns. `fix_available` is false; no MD013 changes or returned documents are added. After an MD047 candidate, manual MD013 ranges identify that exact candidate snapshot.
 
 
-MD027 reports manual original excess-SPACE ranges with constant message
-`Extra spaces after blockquote marker.` and `fix_available: false`. It produces
-no changes or returned content. MD047's separately identified candidate snapshots receive recomputed manual MD027 findings.
+MD027 reports original excess-SPACE ranges with constant message
+`Extra spaces after blockquote marker.`. `fix_available` is true for findings
+its correction handles, and `fix` deletes exactly the reported range; findings it
+can't prove stay under `deferred_fixes`.
 
 
 MD028 reports manual original remaining-body ranges with message `Blank line separates adjacent blockquotes.` and `fix_available: false`. Empty body ranges remain present points. It produces no changes, previews or returned content; MD047 candidates receive recomputed MD028 findings under their own snapshot identity.
