@@ -1,6 +1,6 @@
 # mdchk fix
 
-Current implementation: `fix` applies validated MD047, MD009, MD010, MD012, MD005, MD019, MD021, MD003, MD022, MD023, MD032, MD029, MD030, MD063, MD007, MD077, MD076, MD004, MD027, MD035, MD064, MD085, MD089 and MD038 corrections on Linux,
+Current implementation: `fix` applies validated MD047, MD009, MD010, MD012, MD005, MD019, MD021, MD003, MD022, MD023, MD032, MD029, MD030, MD063, MD007, MD077, MD076, MD004, MD027, MD035, MD064, MD085, MD089, MD038 and MD044 corrections on Linux,
 macOS and Windows, from a build without cgo. Other operating systems refuse writes
 with I/O status 13. `fix --dry-run` supports all four formats and writes nothing. Text/JSON
 include proposed diffs; editor formats report only remaining candidate findings.
@@ -71,7 +71,7 @@ mdchk fix docs/ --dry-run --format json
 ```
 
 Text and JSON previews include proposed diffs when a registered correction
-passes shared candidate validation. MD047 final-newline, MD009 trailing-whitespace, MD010 tab-character, MD012 blank-line-run, MD005 sibling-list alignment, MD019 and MD021 heading-spacing, MD003 heading-style, MD022 heading blank-line, MD023 heading-indentation, MD032 list blank-line, MD029 numbered-list prefix, MD030 list-marker-spacing, MD063 heading-capitalization, MD007 bullet-indentation, MD077 list continuation indentation, MD076 list-item-spacing, MD004 bullet-marker, and MD027 blockquote-spacing, MD035 horizontal-rule-style, MD064 repeated-prose-space, MD085 paragraph-continuation, MD089 CJK/Latin-spacing, and MD038 inline-code-whitespace corrections are implemented. MD004 corrects a list only when its structure stays the same: a bullet list directly beside another bullet list, separated only by blank lines or nothing, would merge, so its findings stay reported with `fix_available: false`. MD001, MD069, MD013, MD028, MD037, MD081, MD088, MD018, MD020, MD024, MD025, MD026, MD036, MD041, MD043, MD080, MD082 and MD093 remain report-only, with no edits or previews for their findings.
+passes shared candidate validation. MD047 final-newline, MD009 trailing-whitespace, MD010 tab-character, MD012 blank-line-run, MD005 sibling-list alignment, MD019 and MD021 heading-spacing, MD003 heading-style, MD022 heading blank-line, MD023 heading-indentation, MD032 list blank-line, MD029 numbered-list prefix, MD030 list-marker-spacing, MD063 heading-capitalization, MD007 bullet-indentation, MD077 list continuation indentation, MD076 list-item-spacing, MD004 bullet-marker, and MD027 blockquote-spacing, MD035 horizontal-rule-style, MD064 repeated-prose-space, MD085 paragraph-continuation, MD089 CJK/Latin-spacing, MD038 inline-code-whitespace, and MD044 configured-name corrections are implemented. MD004 corrects a list only when its structure stays the same: a bullet list directly beside another bullet list, separated only by blank lines or nothing, would merge, so its findings stay reported with `fix_available: false`. MD001, MD069, MD013, MD028, MD037, MD081, MD088, MD018, MD020, MD024, MD025, MD026, MD036, MD041, MD043, MD080, MD082 and MD093 remain report-only, with no edits or previews for their findings.
 
 [MD019](../rules/headings/md019.md) and [MD021](../rules/headings/md021.md)
 corrections remove excess ASCII spaces from a heading delimiter gap: the second
@@ -226,7 +226,7 @@ MD027 and MD010: its edits wait for a round in which no other rule proposes an
 edit, and only an eligible MD047 edit shares that round, so
 `One  two<SPACE><SPACE><SPACE><NEWLINE>end` converges in one run, with MD009 and
 MD047 first, and spaces a TAB replacement adds are collapsed in a later round of
-the same run.
+the same run. MD064 also waits for MD044.
 
 [MD085](../rules/whitespace/md085.md) corrections delete the reported surplus
 SPACE/TAB indentation of a paragraph continuation line, so
@@ -261,6 +261,17 @@ other rule, MD064 included, proposes an edit, and only an eligible MD047 edit
 shares it, so a span with trailing spaces and no final newline converges in one
 run.
 
+[MD044](../rules/formatting/md044.md) corrections replace exactly each reported
+occurrence with the one configured spelling of the same case fold, so
+`Use github.` becomes `Use GitHub.` and a configured `Straße` replaces `STRASSE`.
+An ambiguous occurrence, such as `GITHUB` with names `[GitHub, Github]`, stays
+manual with `fix_available: false`, as do findings under a disable directive, in
+code blocks admitted by `code_blocks: true`, in a document opening with an
+unrecognized block, and in heading text whose lowercase spelling would change.
+MD044 edits wait for a round in which no other rule proposes an edit, ahead of
+MD064 and MD038, and only an eligible MD047 edit shares that round, so a document
+with MD009, MD047, MD064, MD085 and MD044 findings converges in one run.
+
 [MD081 paragraph-emphasis analysis](../rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.
 
@@ -276,7 +287,7 @@ After corrections, mdchk checks the resulting content and reports remaining find
 
 Recognized front matter stays byte-identical, and the body after it is still corrected. Recognition is off by default, though, and an unrecognized header would otherwise read as Markdown, so a correction could rewrite a value inside it.
 
-A document that opens with a complete `---` or `+++` block that isn't recognized, because `frontmatter.enabled` is false or the block's format isn't in `frontmatter.formats`, gets no MD003, MD004, MD005, MD009, MD010, MD012, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD035, MD063, MD007, MD077, MD076, MD064 or MD038 corrections anywhere. That covers the body as well as the block. Their findings are still reported, with `fix_available: false` and no `deferred_fixes` record.
+A document that opens with a complete `---` or `+++` block that isn't recognized, because `frontmatter.enabled` is false or the block's format isn't in `frontmatter.formats`, gets no MD003, MD004, MD005, MD009, MD010, MD012, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD035, MD063, MD007, MD077, MD076, MD064, MD038 or MD044 corrections anywhere. That covers the body as well as the block. Their findings are still reported, with `fix_available: false` and no `deferred_fixes` record.
 
 mdchk can't tell a real header from Markdown of the same shape, so a leading thematic break paired with a later one also triggers this. An opener with no closer doesn't. Set `frontmatter.enabled: true` to restore body corrections for documents with real headers.
 
