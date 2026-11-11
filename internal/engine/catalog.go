@@ -25,7 +25,7 @@ func Catalog() []Metadata {
 		{ID: "MD024", Name: "Repeated heading text", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"siblings_only": boolean(false)}},
 		{ID: "MD025", Name: "Multiple document titles", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"level": headingLevel(1), "frontmatter_title": boolean(false)}},
 		{ID: "MD026", Name: "Punctuation at heading ends", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"punctuation": text(".,:;!?")}},
-		{ID: "MD027", Name: "Whitespace after blockquote markers", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
+		{ID: "MD027", Name: "Whitespace after blockquote markers", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD028", Name: "Empty lines separating blockquotes", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD029", Name: "Numbered list prefixes", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("ordered", "one")}},
 		{ID: "MD030", Name: "Whitespace after list markers", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"spaces": integer(1, 1)}},

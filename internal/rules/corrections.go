@@ -18,6 +18,7 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md021"
 	"github.com/frithuz/mdchk/internal/rules/md022"
 	"github.com/frithuz/mdchk/internal/rules/md023"
+	"github.com/frithuz/mdchk/internal/rules/md027"
 	"github.com/frithuz/mdchk/internal/rules/md030"
 	"github.com/frithuz/mdchk/internal/rules/md032"
 	"github.com/frithuz/mdchk/internal/rules/md047"
@@ -85,13 +86,20 @@ import (
 // MD004 groups come next and share their round only with MD009, MD019, MD021 and
 // MD047; every other group waits for a round without them. MD004 is already
 // withheld by its flags in a document opening with an unrecognized block.
+//
+// MD027 groups go last, after MD010 and MD003, in a round with no other group
+// but an MD047 edit that
+// analysis withheld, which waits for them in turn. Their checker compares whole
+// parses with every list column and text value fixed, which most other edits
+// break; one fix run still applies them all. A document opening with an
+// unrecognized block gets no MD027 group at all.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var markers, spacing, blank, indentation, capitalization, trailing, tabs, styles, lists, alignment, numbering, bullets, continuation, separators, gaps []result.Diagnostic
+	var markers, spacing, quotes, blank, indentation, capitalization, trailing, tabs, styles, lists, alignment, numbering, bullets, continuation, separators, gaps []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -157,6 +165,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		case "MD007":
 			if d.FixAvailable && !guarded {
 				bullets = append(bullets, d)
+			}
+		case "MD027":
+			if !guarded && d.FixAvailable {
+				quotes = append(quotes, d)
 			}
 		case "MD076":
 			if !guarded && d.FixAvailable {
@@ -300,6 +312,14 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		}
 		waiting = len(style) > 0
 		groups = append(groups, style...)
+		if !waiting {
+			spaced, err := md027.Correction(ctx, c, quotes)
+			if err != nil {
+				return nil, err
+			}
+			waiting = len(spaced) > 0
+			groups = append(groups, spaced...)
+		}
 	}
 	if terminal != nil && !tabbed && (eligible || !waiting) {
 		group, err := md047.Correction(ctx, c, *terminal)
@@ -331,5 +351,6 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		md030.Checker(),
 		{Rule: "MD076", Check: listspacing.Check},
 		md004.Checker(),
+		md027.Checker(),
 	}
 }
