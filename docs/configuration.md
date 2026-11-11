@@ -551,7 +551,7 @@ MD085 is available but disabled by default for CommonMark and GFM, with no rule-
 
 MD089 is available for CommonMark and GFM, disabled by default with no options.
 Empty mappings retain that default; strict shared settings and inherited directive
-denials apply even while disabled. PlannedFix metadata supplies no correction.
+denials apply even while disabled. When enabled, `fix` inserts the missing spaces.
 
 MD035 is available and enabled by default for CommonMark and GFM. Its `style`
 option accepts exactly `consistent` (default), `dash`, `asterisk` or `underscore`.

@@ -508,7 +508,8 @@ operation through a narrow CJKSpacing projection. Actual Paragraph, Heading and
 TableCell Exact scalars supply physical pairs under Unicode 17 Han intersect
 Ideographic, Latin intersect Letter and ASCII digits. Actual recognized URL
 owners, raw tags, HTML tails and isolated image alternatives retain protection.
-Zero-width insertion spans and findings are detached and manual. Source/semantic
+Zero-width insertion spans and findings are detached; a separate producer and
+checker insert one SPACE at each through `fix`. Source/semantic
 association comparisons, failed UTF-8/scalar probes, bounded Unicode table
 lookups, traversal state/frames, capacity, copied prefixes and logical records
 reserve work/nodes before use. Empty, clean and protected paths retain caller
