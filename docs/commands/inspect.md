@@ -201,7 +201,7 @@ MD064 is available and enabled by default. Full actual Paragraph/Heading ownersh
 transparent word witnesses and raw/protected context precede slicing. Findings use
 only the surplus original SPACE range START and retain earlier directive state.
 
-MD085 is available but disabled by default. Full original Paragraph content fixes the baseline before directive filtering at the surplus START and line selection. Protected multiline prefixes and actual HardBreak successor exemptions retain their outside-selection context. Inspection reports manual findings and never creates edits.
+MD085 is available but disabled by default. Full original Paragraph content fixes the baseline before directive filtering at the surplus START and line selection. Protected multiline prefixes and actual HardBreak successor exemptions retain their outside-selection context. Inspection never creates edits; `fix` applies eligible MD085 corrections under [its correction policy](../rules/whitespace/md085.md#correction-policy).
 
 MD089 establishes complete original prose ownership and raw lifetime before
 filtering each zero-width insertion START. Hidden or unselected earlier context
