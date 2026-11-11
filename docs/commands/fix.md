@@ -133,8 +133,9 @@ blank run, each whole with its own ending, so exactly `maximum` remain:
 `One\n\n\n\nTwo\n` becomes `One\n\nTwo\n` at `maximum: 1`. A run whose excess
 lines carry different container prefixes, whose removal would change the parse
 or create an MD022, MD031, MD032 or MD065 finding stays manual with
-`fix_available: false`. MD012 corrections wait for a round with no other edit,
-MD009 suffixes above all, and apply later in the same run.
+`fix_available: false`. MD012 corrections wait for a round with no MD076,
+MD004, MD019, MD021, MD022, MD032, MD023, MD029, MD030, MD009, MD005, MD007 or
+MD077 edit, and apply later in the same run; MD063, MD010, MD003 and MD027 wait for MD012.
 [MD029](../rules/lists/md029.md) corrections replace a flagged marker's digits
 with the expected value in plain decimal, so `1. a` then `3. b` becomes `1. a`
 then `2. b`. A wider or narrower number takes its width from, or gives it to,

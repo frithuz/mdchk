@@ -84,10 +84,11 @@ import (
 // replacement changes, and the MD010 proof compares everything else. Their
 // deferrals cost nothing, so they share any round without edits.
 //
-// MD012 groups wait for a round with no other edit, MD009 suffixes above all:
-// those sit on the whitespace-only lines MD012 removes, and a removed line moves
-// what the list and whole-parse proofs compare. MD063 and MD003 wait for MD012 in
-// turn; an MD047 edit that analysis already offers shares the round.
+// MD012 groups wait for a round with no MD004, MD019, MD021, MD022, MD032,
+// MD023, MD029, MD030, MD009, MD005, MD007 or MD077 edit. MD009 suffixes sit on
+// the whitespace-only lines MD012 removes, and a removed line moves what the
+// list and whole-parse proofs compare. MD063, MD010, MD003 and MD027 wait for
+// MD012 in turn; an MD047 edit that analysis already offers shares the round.
 //
 // MD004 groups come next and share their round only with MD009, MD019, MD021 and
 // MD047; every other group waits for a round without them. MD004 is already
