@@ -1,9 +1,11 @@
-// Package md044 checks MD044, which requires configured names to use their configured capitalization.
+// Package md044 checks and corrects MD044, which requires configured names to use their configured capitalization.
 package md044
 
 import (
 	"context"
 	"errors"
+	"sort"
+	"strings"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
@@ -15,21 +17,27 @@ func Registration() engine.Registration {
 }
 
 func configuredNameCapitalization(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
-	items, err := c.ConfiguredNames(ctx)
+	items, replacements, err := c.ConfiguredNameReplacements(ctx)
 	if err != nil {
 		return engine.RuleOutcome{Err: err}
 	}
-	return compareConfiguredNames(ctx, c, items)
+	return compareConfiguredNames(ctx, c, items, replacements)
 }
 
-func compareConfiguredNames(ctx context.Context, c engine.RuleContext, items []parser.Span) (out engine.RuleOutcome) {
+func compareConfiguredNames(ctx context.Context, c engine.RuleContext, items []parser.Span, replacements []string) (out engine.RuleOutcome) {
 	defer func() {
 		out.Err = errors.Join(out.Err, c.SectionCheckpoint(ctx, 0, 0))
 		if out.Err != nil {
 			out.Findings = nil
 		}
 	}()
-	for _, item := range items {
+	headings, err := c.Headings(ctx)
+	if err != nil {
+		out.Err = err
+		return out
+	}
+	edits := c.InteriorEdits()
+	for i, item := range items {
 		if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
 			out.Err = err
 			return out
@@ -49,7 +57,36 @@ func compareConfiguredNames(ctx context.Context, c engine.RuleContext, items []p
 			return out
 		}
 		message := "Configured name uses different capitalization."
-		out.Findings = append(out.Findings, engine.Finding{Span: item, Message: message})
+		finding := engine.Finding{Span: item, Message: message}
+		if ok, err := correctable(c, headings, item, replacements[i]); err != nil {
+			out.Err = err
+			return out
+		} else if ok {
+			finding.FixEligible, err = edits.Eligible(ctx, "MD044", item, item)
+			if err != nil {
+				out.Err = err
+				return out
+			}
+		}
+		out.Findings = append(out.Findings, finding)
 	}
 	return out
+}
+
+// correctable reports whether an occurrence has one replacement that keeps any
+// heading anchor: inside a heading, the simple case fold must stay the same, so a
+// fold such as STRASSE to Straße stays manual there.
+func correctable(c engine.RuleContext, headings []parser.HeadingFact, item parser.Span, replacement string) (bool, error) {
+	if replacement == "" {
+		return false, nil
+	}
+	i := sort.Search(len(headings), func(i int) bool { return headings[i].Envelope.End() >= item.End() })
+	if i == len(headings) || headings[i].Envelope.Start() > item.Start() {
+		return true, nil
+	}
+	text, err := c.Source().Text(item)
+	if err != nil {
+		return false, err
+	}
+	return strings.EqualFold(text, replacement), nil
 }

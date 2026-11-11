@@ -329,7 +329,7 @@ func TestMD009FixEligibility(t *testing.T) {
 
 func TestOnlyImplementedFixes(t *testing.T) {
 	for _, m := range engine.Catalog() {
-		if (m.Fix == engine.ImplementedFix) != (m.ID == "MD003" || m.ID == "MD004" || m.ID == "MD005" || m.ID == "MD007" || m.ID == "MD009" || m.ID == "MD010" || m.ID == "MD012" || m.ID == "MD019" || m.ID == "MD021" || m.ID == "MD022" || m.ID == "MD023" || m.ID == "MD027" || m.ID == "MD029" || m.ID == "MD030" || m.ID == "MD032" || m.ID == "MD035" || m.ID == "MD047" || m.ID == "MD063" || m.ID == "MD076" || m.ID == "MD077" || m.ID == "MD064" || m.ID == "MD038" || m.ID == "MD085" || m.ID == "MD089") {
+		if (m.Fix == engine.ImplementedFix) != (m.ID == "MD003" || m.ID == "MD004" || m.ID == "MD005" || m.ID == "MD007" || m.ID == "MD009" || m.ID == "MD010" || m.ID == "MD012" || m.ID == "MD019" || m.ID == "MD021" || m.ID == "MD022" || m.ID == "MD023" || m.ID == "MD027" || m.ID == "MD029" || m.ID == "MD030" || m.ID == "MD032" || m.ID == "MD035" || m.ID == "MD047" || m.ID == "MD063" || m.ID == "MD076" || m.ID == "MD077" || m.ID == "MD064" || m.ID == "MD038" || m.ID == "MD085" || m.ID == "MD089" || m.ID == "MD044") {
 			t.Errorf("%s fix = %s", m.ID, m.Fix)
 		}
 	}

@@ -194,6 +194,13 @@ func (c RoundContext) DeletableCodeSpanSpaces(ctx context.Context) ([]parser.Spa
 	return engine.DeletableCodeSpanSpaceSpans(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
 }
 
+// ConfiguredNameCorrections returns MD044's occurrence spans and single
+// configured replacements, empty when ambiguous, for this round's own parse
+// under the target's plan.
+func (c RoundContext) ConfiguredNameCorrections(ctx context.Context) ([]parser.Span, []string, error) {
+	return engine.ConfiguredNameCorrections(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
 // BulletIndentation returns MD007's list item facts and resolved indent and
 // start_indented options for this round's own parse under the target's plan.
 func (c RoundContext) BulletIndentation(ctx context.Context) ([]parser.ListItemFact, int, bool, error) {
@@ -265,6 +272,16 @@ func (c CheckContext) MeaningPreservedAcrossProseSpaces(ctx context.Context) (bo
 // and Text value, code span values included, compared exactly.
 func (c CheckContext) MeaningPreserved(ctx context.Context) (bool, error) {
 	return c.MeaningPreservedAcrossListSeparators(ctx, nil)
+}
+
+// MeaningPreservedAcrossNameCase compares both actual round parses, allowing
+// Text and CodeBlock values to differ only where their full case folds match.
+func (c CheckContext) MeaningPreservedAcrossNameCase(ctx context.Context) (bool, error) {
+	before, after := c.Before.Parsed(), c.After.Parsed()
+	if before.Status != parser.Complete || after.Status != parser.Complete || before.Document == nil || after.Document == nil || len(before.Uncertainty) != 0 || len(after.Uncertainty) != 0 {
+		return false, nil
+	}
+	return before.Document.SameMeaningAcrossNameCase(ctx, c.Before.meter.budget, after.Document)
 }
 
 // MeaningPreservedAcrossListSeparators compares both actual round parses. Only a

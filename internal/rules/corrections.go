@@ -24,6 +24,7 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md032"
 	"github.com/frithuz/mdchk/internal/rules/md035"
 	"github.com/frithuz/mdchk/internal/rules/md038"
+	"github.com/frithuz/mdchk/internal/rules/md044"
 	"github.com/frithuz/mdchk/internal/rules/md047"
 	"github.com/frithuz/mdchk/internal/rules/md064"
 	"github.com/frithuz/mdchk/internal/rules/md077"
@@ -144,13 +145,18 @@ import (
 // for a round without MD064 edits. Only an MD047 edit that analysis already
 // offers shares their round; a withheld one waits for them. MD038 is withheld
 // by the interior edit query in a document opening with an unrecognized block.
+//
+// MD044 groups go ahead of MD064 and MD038 in that same isolated round, and both
+// wait for them, since they count as edits. Their checker lets Text and code
+// values differ only in letter case under full folding, which an edit from any
+// other rule breaks. Only an MD047 edit that analysis already offers shares their round.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var markers, spacing, quotes, pairs, blank, runs, indentation, capitalization, trailing, tabs, prose, padding, styles, lists, alignment, numbering, bullets, continuation, separators, gaps, paragraphs, rules []result.Diagnostic
+	var names, markers, spacing, quotes, pairs, blank, runs, indentation, capitalization, trailing, tabs, prose, padding, styles, lists, alignment, numbering, bullets, continuation, separators, gaps, paragraphs, rules []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -172,6 +178,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		case "MD064":
 			if d.FixAvailable {
 				prose = append(prose, d)
+			}
+		case "MD044":
+			if d.FixAvailable {
+				names = append(names, d)
 			}
 		case "MD003":
 			if d.FixAvailable {
@@ -440,6 +450,17 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		editing = editing || len(g.Edits) > 0
 	}
 	if !editing {
+		named, err := md044.Correction(ctx, c, names)
+		if err != nil {
+			return nil, err
+		}
+		waiting = waiting || len(named) > 0
+		groups = append(groups, named...)
+		for _, g := range named {
+			editing = editing || len(g.Edits) > 0
+		}
+	}
+	if !editing {
 		spaces, err := md064.Correction(ctx, c, prose)
 		if err != nil {
 			return nil, err
@@ -490,6 +511,7 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		md004.Checker(),
 		md027.Checker(),
 		md035.Checker(),
+		md044.Checker(),
 		md064.Checker(),
 		md089.Checker(),
 	}
