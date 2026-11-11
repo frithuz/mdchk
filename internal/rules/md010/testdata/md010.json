@@ -19,7 +19,8 @@
           6
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -43,7 +44,8 @@
           6
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -133,7 +135,8 @@
           3
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -145,7 +148,8 @@
           4
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -157,7 +161,8 @@
           6
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -181,7 +186,8 @@
           3
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -193,7 +199,8 @@
           4
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -205,7 +212,8 @@
           6
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -312,7 +320,8 @@
           3
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -348,7 +357,8 @@
           3
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -384,7 +394,8 @@
           3
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -396,7 +407,8 @@
           4
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -444,7 +456,8 @@
           3
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -456,7 +469,8 @@
           4
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -504,7 +518,8 @@
           4
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -528,7 +543,8 @@
           4
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -552,7 +568,8 @@
           4
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -576,7 +593,8 @@
           4
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -1768,7 +1786,8 @@
           5
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -1792,7 +1811,8 @@
           5
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -1828,7 +1848,8 @@
           5
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -1864,7 +1885,8 @@
           5
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -1900,7 +1922,8 @@
           6
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -1936,7 +1959,8 @@
           6
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -1960,7 +1984,8 @@
           14
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -1996,7 +2021,8 @@
           14
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -2044,7 +2070,8 @@
           9
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2080,7 +2107,8 @@
           9
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2195,7 +2223,8 @@
           19
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2231,7 +2260,8 @@
           19
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2267,7 +2297,8 @@
           11
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2303,7 +2334,8 @@
           11
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2349,7 +2381,8 @@
           13
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2373,7 +2406,8 @@
           13
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2397,7 +2431,8 @@
           9
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2421,7 +2456,8 @@
           9
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2445,7 +2481,8 @@
           11
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2469,7 +2506,8 @@
           11
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2493,7 +2531,8 @@
           14
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2517,7 +2556,8 @@
           14
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2541,7 +2581,8 @@
           12
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2565,7 +2606,8 @@
           12
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2589,7 +2631,8 @@
           13
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -2601,7 +2644,8 @@
           23
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -2625,7 +2669,8 @@
           13
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -2637,7 +2682,8 @@
           23
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -3521,7 +3567,8 @@
           4
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -3545,7 +3592,8 @@
           4
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -3569,7 +3617,8 @@
           4
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -3617,7 +3666,8 @@
           4
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -3791,6 +3841,7 @@
   },
   {
     "Name": "table-default",
+    "Flavor": "gfm",
     "Source": "| x\t | y |\n| - | - |\n| a\t | b |\n",
     "SHA256": "ccc87db175184c47167cf1af89a876d4c3b98bd1085e359122cccef394e30776",
     "SizeBytes": 32,
@@ -3827,6 +3878,7 @@
   },
   {
     "Name": "table-code",
+    "Flavor": "gfm",
     "Source": "| x\t | y |\n| - | - |\n| a\t | b |\n",
     "SHA256": "ccc87db175184c47167cf1af89a876d4c3b98bd1085e359122cccef394e30776",
     "SizeBytes": 32,
@@ -3863,6 +3915,7 @@
   },
   {
     "Name": "task-default",
+    "Flavor": "gfm",
     "Source": "- [x]\ttext\n",
     "SHA256": "02f849a8581354719014c423e8cb0a1d3513cdf051567602b321c4ba56c6e68b",
     "SizeBytes": 11,
@@ -3887,6 +3940,7 @@
   },
   {
     "Name": "task-code",
+    "Flavor": "gfm",
     "Source": "- [x]\ttext\n",
     "SHA256": "02f849a8581354719014c423e8cb0a1d3513cdf051567602b321c4ba56c6e68b",
     "SizeBytes": 11,
@@ -4237,7 +4291,8 @@
           3
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -4249,7 +4304,8 @@
           4
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -4261,7 +4317,8 @@
           6
         ],
         "Source": "\t",
-        "Message": "Tab character."
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   },
@@ -4310,6 +4367,458 @@
         ],
         "Source": "\t",
         "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "heading-atx",
+    "Source": "# A\tB\n",
+    "SHA256": "d1eb253a22d163d98cbfecb5b74365a3df35b1b1e2ef6bb935a1709eafbc6881",
+    "SizeBytes": 6,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
+      }
+    ]
+  },
+  {
+    "Name": "heading-setext",
+    "Source": "A\tB\n===\n",
+    "SHA256": "540381d5da1f96473535b425e08e19b7981ebaf91adf0ba4f8f653cba951cea5",
+    "SizeBytes": 8,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
+      }
+    ]
+  },
+  {
+    "Name": "table-cell",
+    "Source": "| a\tb | c |\n| - | - |\n",
+    "SHA256": "5ded0705d6a87a4393f9868934a30ea9f16346a3f594218aea1edfed59d76170",
+    "SizeBytes": 22,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
+      }
+    ]
+  },
+  {
+    "Name": "table-delimiter",
+    "Flavor": "gfm",
+    "Source": "| a | b |\n|\t- | - |\n",
+    "SHA256": "cec8f21e1481fec7d86c90194323ad05e8d7b1e425364241b915982fffe82249",
+    "SizeBytes": 20,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "list-text",
+    "Source": "- a\tb\n",
+    "SHA256": "afd2a2e7ba0b104fdf1dff67e5984679aec5095b3a5bdac33d870a60487cf256",
+    "SizeBytes": 6,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
+      }
+    ]
+  },
+  {
+    "Name": "quote-text",
+    "Source": "> a\tb\n",
+    "SHA256": "6d37471a68dc9581b727a8ea46940f596f6a27826bbc123898b66e03e4ab4465",
+    "SizeBytes": 6,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
+      }
+    ]
+  },
+  {
+    "Name": "link-text",
+    "Source": "[a\tb](u)\n",
+    "SHA256": "ab0920c2763771dececa7c3800274329d9b0e7c3a58ee29fa9f895f946f7e89b",
+    "SizeBytes": 9,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          2,
+          3,
+          1,
+          3,
+          1,
+          4
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
+      }
+    ]
+  },
+  {
+    "Name": "line-end",
+    "Source": "a\t\nb\n",
+    "SHA256": "604182742a16a6115ba0e0983dbade36c55bbf561a04f953297f2a0531249307",
+    "SizeBytes": 5,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "fenced-code",
+    "Source": "```\na\tb\n```\n",
+    "SHA256": "17474b546339f9e38a861139fba06260f6e7cb9f06eced25a06530eb3ad1130e",
+    "SizeBytes": 12,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "indented-code",
+    "Source": "    a\tb\n",
+    "SHA256": "20232ccacfdf7be8d1a8d9bd43f678e8cd4e4b5b10be5af8439d3cf80cd85417",
+    "SizeBytes": 8,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "ordinary-spaces-8",
+    "Source": "Text\tcontinued\n",
+    "SHA256": "5019b58dff1471a55e2764fe713bb220bebb1c7f24d7af51b99c9384563a209e",
+    "SizeBytes": 15,
+    "CodeBlocks": false,
+    "Spaces": 8,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
+      }
+    ]
+  },
+  {
+    "Name": "ordinary-spaces-9",
+    "Source": "Text\tcontinued\n",
+    "SHA256": "5019b58dff1471a55e2764fe713bb220bebb1c7f24d7af51b99c9384563a209e",
+    "SizeBytes": 15,
+    "CodeBlocks": false,
+    "Spaces": 9,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          4,
+          5,
+          1,
+          5,
+          1,
+          6
+        ],
+        "Source": "\t",
+        "Message": "Tab character."
+      }
+    ]
+  },
+  {
+    "Name": "task-default-commonmark",
+    "Flavor": "commonmark",
+    "Source": "- [x]\ttext\n",
+    "SHA256": "02f849a8581354719014c423e8cb0a1d3513cdf051567602b321c4ba56c6e68b",
+    "SizeBytes": 11,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
+      }
+    ]
+  },
+  {
+    "Name": "task-code-commonmark",
+    "Flavor": "commonmark",
+    "Source": "- [x]\ttext\n",
+    "SHA256": "02f849a8581354719014c423e8cb0a1d3513cdf051567602b321c4ba56c6e68b",
+    "SizeBytes": 11,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          5,
+          6,
+          1,
+          6,
+          1,
+          7
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
+      }
+    ]
+  },
+  {
+    "Name": "table-delimiter-commonmark",
+    "Flavor": "commonmark",
+    "Source": "| a | b |\n|\t- | - |\n",
+    "SHA256": "cec8f21e1481fec7d86c90194323ad05e8d7b1e425364241b915982fffe82249",
+    "SizeBytes": 20,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          11,
+          12,
+          2,
+          2,
+          2,
+          3
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
+      }
+    ]
+  },
+  {
+    "Name": "table-default-commonmark",
+    "Flavor": "commonmark",
+    "Source": "| x\t | y |\n| - | - |\n| a\t | b |\n",
+    "SHA256": "ccc87db175184c47167cf1af89a876d4c3b98bd1085e359122cccef394e30776",
+    "SizeBytes": 32,
+    "CodeBlocks": false,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
+      },
+      {
+        "Range": [
+          24,
+          25,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
+      }
+    ]
+  },
+  {
+    "Name": "table-code-commonmark",
+    "Flavor": "commonmark",
+    "Source": "| x\t | y |\n| - | - |\n| a\t | b |\n",
+    "SHA256": "ccc87db175184c47167cf1af89a876d4c3b98bd1085e359122cccef394e30776",
+    "SizeBytes": 32,
+    "CodeBlocks": true,
+    "Spaces": 4,
+    "Recognize": false,
+    "Incomplete": false,
+    "Expected": [
+      {
+        "Range": [
+          3,
+          4,
+          1,
+          4,
+          1,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
+      },
+      {
+        "Range": [
+          24,
+          25,
+          3,
+          4,
+          3,
+          5
+        ],
+        "Source": "\t",
+        "Message": "Tab character.",
+        "FixAvailable": true
       }
     ]
   }

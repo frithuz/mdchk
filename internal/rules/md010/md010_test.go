@@ -38,9 +38,10 @@ func TestMD010AnalysisFixtures(t *testing.T) {
 		SizeBytes                                 int
 
 		Expected []struct {
-			Range   []int
-			Source  string
-			Message string
+			Range        []int
+			Source       string
+			Message      string
+			FixAvailable bool
 		}
 	}
 	if err := json.Unmarshal(data, &fixtures); err != nil {
@@ -76,7 +77,7 @@ func TestMD010AnalysisFixtures(t *testing.T) {
 				for i, w := range f.Expected {
 					d := out.Diagnostics[i]
 					got := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD010" || d.FixAvailable || d.Message != w.Message {
+					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD010" || d.FixAvailable != w.FixAvailable || d.Message != w.Message {
 						t.Fatal(got, d, w)
 					}
 				}
@@ -181,7 +182,7 @@ func TestMD010CatalogOptionsDefaultAndDirectives(t *testing.T) {
 		} else {
 			off++
 		}
-		if m.ID == "MD010" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.PlannedFix || len(m.Options) != 2) {
+		if m.ID == "MD010" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.ImplementedFix || len(m.Options) != 2) {
 			t.Fatal(m)
 		}
 	}

@@ -38,9 +38,10 @@ func TestCompiledPlatformMD010ProductionAnalysis(t *testing.T) {
 		SizeBytes                                 int
 
 		Expected []struct {
-			Range   []int
-			Source  string
-			Message string
+			Range        []int
+			Source       string
+			Message      string
+			FixAvailable bool
 		}
 	}
 	if err := json.Unmarshal(data, &fixtures); err != nil {
@@ -74,13 +75,27 @@ func TestCompiledPlatformMD010ProductionAnalysis(t *testing.T) {
 						if f.Incomplete {
 							status = 15
 						}
+						// A fixable TAB makes the preview a candidate, whose
+						// remaining findings the fix tests cover.
+						fixable := 0
+						for _, w := range f.Expected {
+							if w.FixAvailable {
+								fixable++
+							}
+						}
+						if args[0] == "fix" && fixable > 0 {
+							if out.Complete == f.Incomplete || len(out.Errors) != 0 || len(out.Changes) != 1 || !reflect.DeepEqual(out.Changes[0].Rules, []string{"MD010"}) || out.Changes[0].EditCount != fixable || len(out.Diagnostics) != len(f.Expected)-fixable {
+								t.Fatal(got)
+							}
+							continue
+						}
 						if got.Status != status || out.Complete == f.Incomplete || len(out.Errors) != 0 || len(out.Diagnostics) != len(f.Expected) || len(out.Changes) != 0 || len(out.Documents) != 0 {
 							t.Fatal(got)
 						}
 						for i, w := range f.Expected {
 							d := out.Diagnostics[i]
 							actual := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD010" || d.FixAvailable || d.Message != w.Message || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
+							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD010" || d.FixAvailable != w.FixAvailable || d.Message != w.Message || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
 								t.Fatal(d, w)
 							}
 						}
@@ -365,14 +380,15 @@ func TestCompiledPlatformMD010ActiveLiteralAndStartControls(t *testing.T) {
 		for _, tc := range []struct {
 			name, source                                   string
 			start, line, column, active, hidden, directive int
+			fixable                                        bool
 		}{
-			{"inline-late", "a\t<!-- mdchk:disable MD010 -->\n", 1, 1, 2, 1, 0, 0},
-			{"inline-before", "a <!-- mdchk:disable MD010 -->\tb\n", 30, 1, 31, 0, 1, 0},
-			{"code-span", "a `<!-- mdchk:disable MD010 -->`\tb\n", 32, 1, 33, 1, 0, 0},
-			{"code-block", "```\n<!-- mdchk:disable MD010 -->\n```\na\t\n", 38, 4, 2, 1, 0, 0},
-			{"raw-inline", "a <script><!-- mdchk:disable MD010 -->x</script>\tb\n", 48, 1, 49, 1, 0, 0},
-			{"raw-block", "<script>\n<!-- mdchk:disable MD010 -->\n</script>\na\t\n", 49, 4, 2, 1, 0, 0},
-			{"malformed", "<!-- mdchk:disable MD010 extra -->\na\t\n", 36, 2, 2, 1, 0, 1},
+			{"inline-late", "a\t<!-- mdchk:disable MD010 -->\n", 1, 1, 2, 1, 0, 0, true},
+			{"inline-before", "a <!-- mdchk:disable MD010 -->\tb\n", 30, 1, 31, 0, 1, 0, false},
+			{"code-span", "a `<!-- mdchk:disable MD010 -->`\tb\n", 32, 1, 33, 1, 0, 0, true},
+			{"code-block", "```\n<!-- mdchk:disable MD010 -->\n```\na\t\n", 38, 4, 2, 1, 0, 0, false},
+			{"raw-inline", "a <script><!-- mdchk:disable MD010 -->x</script>\tb\n", 48, 1, 49, 1, 0, 0, true},
+			{"raw-block", "<script>\n<!-- mdchk:disable MD010 -->\n</script>\na\t\n", 49, 4, 2, 1, 0, 0, false},
+			{"malformed", "<!-- mdchk:disable MD010 extra -->\na\t\n", 36, 2, 2, 1, 0, 1, false},
 		} {
 			t.Run(flavor+"/"+tc.name, func(t *testing.T) {
 				root := acceptance.Project(t)
@@ -381,6 +397,10 @@ func TestCompiledPlatformMD010ActiveLiteralAndStartControls(t *testing.T) {
 				acceptance.PutFile(t, root, "doc.md", tc.source)
 				before := acceptance.ConfigurationBytes(t, root)
 				for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}, {"inspect", "doc.md", "--format=json"}} {
+					// A fixable TAB's preview is covered by the fix tests.
+					if tc.fixable && args[0] == "fix" {
+						continue
+					}
 					got := acceptance.RunProcess(t, binary, root, args...)
 					out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), args[0])
 					status := 0
@@ -407,7 +427,7 @@ func TestCompiledPlatformMD010ActiveLiteralAndStartControls(t *testing.T) {
 						t.Fatal(actual)
 					}
 					d := actual[0]
-					if d.Rule != "MD010" || d.Message != "Tab character." || d.FixAvailable || d.ByteRange != (result.ByteRange{Start: tc.start, End: tc.start + 1}) || d.Range.Start != (result.Position{Line: tc.line, Column: tc.column}) || d.Range.End != (result.Position{Line: tc.line, Column: tc.column + 1}) {
+					if d.Rule != "MD010" || d.Message != "Tab character." || d.FixAvailable != tc.fixable || d.ByteRange != (result.ByteRange{Start: tc.start, End: tc.start + 1}) || d.Range.Start != (result.Position{Line: tc.line, Column: tc.column}) || d.Range.End != (result.Position{Line: tc.line, Column: tc.column + 1}) {
 						t.Fatal(d)
 					}
 				}
@@ -432,5 +452,49 @@ func TestCompiledPlatformMD010ActiveLiteralAndStartControls(t *testing.T) {
 				t.Fatal("analysis changed source/config")
 			}
 		})
+	}
+}
+
+func TestCompiledPlatformMD010Corrections(t *testing.T) {
+	t.Parallel()
+	binary := acceptance.SharedExecutable(t)
+	for _, flavor := range []string{"commonmark", "gfm"} {
+		for _, tc := range []struct {
+			name, setting, source, want string
+			rules                       []string
+		}{
+			{"paragraph", "MD010: {enabled: true}", "Text\tcontinued\n", "Text    continued\n", []string{"MD010"}},
+			{"one space", "MD010: {spaces_per_tab: 1}", "Text\tcontinued\n", "Text continued\n", []string{"MD010"}},
+			{"crlf unicode", "MD010: {enabled: true}", "é\tö\r\nx\ty\r\n", "é    ö\r\nx    y\r\n", []string{"MD010"}},
+			{"with MD009 and MD047", "MD010: {enabled: true}", "a\tb \nc\td", "a    b\nc    d\n", []string{"MD009", "MD010", "MD047"}},
+		} {
+			t.Run(flavor+"/"+tc.name, func(t *testing.T) {
+				root := acceptance.Project(t)
+				conf := strings.Replace(md010Configuration(flavor), "MD010: {enabled: true}", tc.setting, 1)
+				for _, id := range tc.rules {
+					conf = strings.Replace(conf, id+": {enabled: false}", id+": {enabled: true}", 1)
+				}
+				acceptance.PutFile(t, root, ".mdchk.yaml", conf)
+				acceptance.PutFile(t, root, "doc.md", tc.source)
+				preview := acceptance.RunFixDryRun(t, binary, root, "fix", "--dry-run", "doc.md", "--format=json")
+				out := preview.Result
+				if preview.Status != 0 || !out.Complete || len(out.Diagnostics) != 0 || len(out.Changes) != 1 || !reflect.DeepEqual(out.Changes[0].Rules, tc.rules) || acceptance.Saved(t, root) != tc.source {
+					t.Fatal(preview)
+				}
+				if s := out.Files[0].ResultSnapshot; s == nil || s.SHA256 != acceptance.Digest(tc.want) || s.SizeBytes != len(tc.want) {
+					t.Fatal(out.Files)
+				}
+				saved := acceptance.RunFix(t, binary, root, "fix", "doc.md", "--format=json")
+				if saved.Status != 0 || len(saved.Result.Changes) != 1 || acceptance.Saved(t, root) != tc.want {
+					t.Fatalf("%v %q", saved, acceptance.Saved(t, root))
+				}
+				for _, args := range [][]string{{"fix", "--dry-run", "doc.md", "--format=json"}, {"fix", "doc.md", "--format=json"}} {
+					again := acceptance.RunFix(t, binary, root, args...)
+					if again.Status != 0 || len(again.Result.Changes) != 0 || len(again.Result.Diagnostics) != 0 || acceptance.Saved(t, root) != tc.want {
+						t.Fatal(args, again)
+					}
+				}
+			})
+		}
 	}
 }
