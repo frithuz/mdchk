@@ -19,7 +19,7 @@ func TestMD044OptionsAndAvailability(t *testing.T) {
 	for _, m := range r.Metadata() {
 		if m.ID == "MD044" {
 			found = true
-			if m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.PlannedFix || len(m.Options) != 2 || m.Options["names"].Domain != engine.ConfiguredNameUTF8 || m.Options["code_blocks"].Default != false {
+			if m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.ImplementedFix || len(m.Options) != 2 || m.Options["names"].Domain != engine.ConfiguredNameUTF8 || m.Options["code_blocks"].Default != false {
 				t.Fatal(m)
 			}
 		}

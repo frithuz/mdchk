@@ -17,6 +17,49 @@ func (d *Document) ConfiguredNames(ctx context.Context, budget *OperationBudget,
 	return d.proseMatches(ctx, budget, index, options, names, codeBlocks, false, false, true, false, nil)
 }
 
+// ConfiguredNameReplacements returns the ConfiguredNames spans with, for each,
+// the one distinct configured spelling whose full case fold equals the span's
+// original bytes. The replacement is empty when more than one distinct spelling
+// folds equal, so the correction is ambiguous.
+func (d *Document) ConfiguredNameReplacements(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, names []string, codeBlocks bool) ([]Span, []string, error) {
+	spans, err := d.ConfiguredNames(ctx, budget, index, options, names, codeBlocks)
+	if err != nil {
+		return nil, nil, err
+	}
+	if err = headingFactCharge(ctx, budget, int64(len(names)+len(spans))+1, int64(len(names)+len(spans))); err != nil {
+		return nil, nil, err
+	}
+	folded := make([]string, len(names))
+	for i, value := range names {
+		if folded[i], err = FoldCase(ctx, budget, value); err != nil {
+			return nil, nil, err
+		}
+	}
+	out := make([]string, len(spans))
+	for i, s := range spans {
+		text := index.source.content[s.start:s.end]
+		fold, err := FoldCase(ctx, budget, text)
+		if err != nil {
+			return nil, nil, err
+		}
+		chosen, distinct := "", 0
+		for j, value := range names {
+			if err = headingFactCharge(ctx, budget, int64(len(value)+len(fold))+1, 0); err != nil {
+				return nil, nil, err
+			}
+			if folded[j] != fold || value == chosen {
+				continue
+			}
+			chosen = value
+			distinct++
+		}
+		if distinct == 1 && chosen != text {
+			out[i] = chosen
+		}
+	}
+	return spans, out, nil
+}
+
 // ProhibitedTerms reports every leftmost-longest configured term occurrence in
 // the same prose islands as ConfiguredNames, never scanning code blocks. Terms
 // compare through full case folding unless caseSensitive selects exact bytes.
