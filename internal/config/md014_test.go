@@ -13,7 +13,7 @@ import (
 )
 
 func TestMD014FrozenInvalidConfigurationsEvenDisabled(t *testing.T) {
-	b, err := os.ReadFile("../rules/testdata/md014-v2.json")
+	b, err := os.ReadFile("../rules/md014/testdata/md014-v2.json")
 	if err != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != "b06f76546386295e38b4dc71b871d21398fc25b5e647ae1093ccdb1e5e787431" {
 		t.Fatal(err)
 	}

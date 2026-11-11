@@ -123,11 +123,6 @@ func md014NativeRun(t *testing.T, binary, cwd string, args ...string) configurat
 	return acceptance.MD014NativeRun(t, binary, cwd, args...)
 }
 
-func md014NativeRunEnv(t *testing.T, binary, cwd string, env []string, args ...string) configurationRun {
-	t.Helper()
-	return acceptance.MD014NativeRunEnv(t, binary, cwd, env, args...)
-}
-
 func md014SchemaCheck(schema, root, data any) error {
 	return acceptance.MD014SchemaCheck(schema, root, data)
 }
@@ -135,9 +130,4 @@ func md014SchemaCheck(schema, root, data any) error {
 func md014NativeJSON(t *testing.T, data []byte, operation string) result.Result {
 	t.Helper()
 	return acceptance.MD014NativeJSON(t, data, operation)
-}
-
-func md014ResultJSON(t *testing.T, data []byte, operation string) result.Result {
-	t.Helper()
-	return acceptance.MD014ResultJSON(t, data, operation)
 }
