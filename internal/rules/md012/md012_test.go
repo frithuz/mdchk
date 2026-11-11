@@ -178,7 +178,7 @@ func TestMD012CatalogAndStrictOptions(t *testing.T) {
 		if m.DefaultEnabled {
 			on++
 		}
-		if m.ID == "MD012" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.PlannedFix || len(m.Options) != 1) {
+		if m.ID == "MD012" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.ImplementedFix || len(m.Options) != 1) {
 			t.Fatal(m)
 		}
 	}

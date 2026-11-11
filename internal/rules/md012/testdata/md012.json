@@ -7,6 +7,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "One\n\nTwo\n",
     "Expected": [
       {
         "Range": [
@@ -30,6 +31,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "One\n\nTwo\n",
     "Expected": []
   },
   {
@@ -40,6 +42,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\n\nb\n",
     "Expected": [
       {
         "Range": [
@@ -63,6 +66,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "> a\n>\n> b\n",
     "Expected": [
       {
         "Range": [
@@ -86,6 +90,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "- a\n\n  b\n",
     "Expected": [
       {
         "Range": [
@@ -109,6 +114,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "-\n\n-\n",
     "Expected": []
   },
   {
@@ -119,6 +125,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "> a\n>\n\n>\n> b\n",
     "Expected": [
       {
         "Range": [
@@ -142,6 +149,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "- a\n\t\n  b\n",
     "Expected": [
       {
         "Range": [
@@ -165,6 +173,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "- a\n  \n\n>\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -188,6 +197,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "> -\n>\n> -\n",
     "Expected": []
   },
   {
@@ -198,6 +208,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "- >\n  >\n\n- >\n",
     "Expected": [
       {
         "Range": [
@@ -221,6 +232,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "- [ ]\n\n- [x]\n",
     "Expected": []
   },
   {
@@ -231,6 +243,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "- a\n\nb\n\nc\n",
     "Expected": [
       {
         "Range": [
@@ -254,6 +267,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "\n \n\n \n\n\u0000\n\nend\n",
     "Expected": []
   },
   {
@@ -264,6 +278,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "\n\\>\n\n\\-\n\nend\n",
     "Expected": []
   },
   {
@@ -274,6 +289,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "\n[x]: /url\n\nend\n",
     "Expected": []
   },
   {
@@ -284,6 +300,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "",
     "Expected": []
   },
   {
@@ -294,6 +311,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "\n",
     "Expected": []
   },
   {
@@ -304,6 +322,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "\n",
     "Expected": [
       {
         "Range": [
@@ -327,6 +346,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "\na\n\n",
     "Expected": [
       {
         "Range": [
@@ -362,6 +382,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\n\n",
     "Expected": [
       {
         "Range": [
@@ -385,6 +406,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\n\n",
     "Expected": []
   },
   {
@@ -395,6 +417,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\n\nb\n",
     "Expected": [
       {
         "Range": [
@@ -418,6 +441,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\n\nb\n\nc\n\nd\n\ne\n\n",
     "Expected": [
       {
         "Range": [
@@ -489,6 +513,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\n\n\nb\n\n",
     "Expected": [
       {
         "Range": [
@@ -524,6 +549,7 @@
     "Maximum": 9223372036854775807,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "\n\n\n",
     "Expected": []
   },
   {
@@ -534,6 +560,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\n\nb\n",
     "Expected": [
       {
         "Range": [
@@ -557,6 +584,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\r\n\r\nb\r\n",
     "Expected": [
       {
         "Range": [
@@ -580,6 +608,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\r\rb\r",
     "Expected": [
       {
         "Range": [
@@ -603,6 +632,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\r\n\r\nb\r\r\nc",
     "Expected": [
       {
         "Range": [
@@ -638,6 +668,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "```\n\n\n```\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -661,6 +692,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "```\n\n \t\n```\n\n",
     "Expected": [
       {
         "Range": [
@@ -684,6 +716,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "```\n\n\n",
     "Expected": []
   },
   {
@@ -694,6 +727,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "> ```\n>\n\n> ```\n",
     "Expected": [
       {
         "Range": [
@@ -717,6 +751,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "    a\n\n    b\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -740,6 +775,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "    a\n\n    \n    b\n\ntext\n",
     "Expected": [
       {
         "Range": [
@@ -763,6 +799,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": ">     a\n>\n>     \n>     b\n>\n> text\n",
     "Expected": [
       {
         "Range": [
@@ -786,6 +823,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "- ```\n\n\n  ```\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -809,6 +847,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a `x\n\ny` z\n",
     "Expected": [
       {
         "Range": [
@@ -832,6 +871,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a `x\n y` z\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -855,6 +895,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a <x title=\"x\n\ny\"> z\n",
     "Expected": [
       {
         "Range": [
@@ -878,6 +919,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "<!-- x\n\n\ny --> tail\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -901,6 +943,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "\n<!-- x\n\n\ny -->\n\nend\n",
     "Expected": []
   },
   {
@@ -911,6 +954,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "x <script>\n\n\n</script>\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -934,6 +978,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "x <script>\n\n\n",
     "Expected": []
   },
   {
@@ -944,6 +989,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "> x <script>\n>\n> \n> </script>\n>\n> end\n",
     "Expected": [
       {
         "Range": [
@@ -967,6 +1013,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "<!-- a --> <script>x\n\n\n</script>\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -990,6 +1037,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "![<script>](u)\n\n",
     "Expected": [
       {
         "Range": [
@@ -1013,6 +1061,7 @@
     "Maximum": 1,
     "Recognize": true,
     "Incomplete": false,
+    "Fixed": "---\n\n\n---\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -1036,6 +1085,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "---\n\n\n---\n\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -1071,6 +1121,7 @@
     "Maximum": 1,
     "Recognize": true,
     "Incomplete": false,
+    "Fixed": "+++\n\n\n+++\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -1094,6 +1145,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "+++\n\n\n+++\n\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -1129,6 +1181,7 @@
     "Maximum": 1,
     "Recognize": true,
     "Incomplete": false,
+    "Fixed": "﻿---\n\n\n---\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -1152,6 +1205,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "﻿---\n\n\n---\n\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -1187,6 +1241,7 @@
     "Maximum": 1,
     "Recognize": true,
     "Incomplete": false,
+    "Fixed": "﻿+++\n\n\n+++\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -1210,6 +1265,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "﻿+++\n\n\n+++\n\n\nend\n",
     "Expected": [
       {
         "Range": [
@@ -1245,6 +1301,7 @@
     "Maximum": 1,
     "Recognize": true,
     "Incomplete": false,
+    "Fixed": "---\n\n\n---\n",
     "Expected": []
   },
   {
@@ -1255,6 +1312,7 @@
     "Maximum": 1,
     "Recognize": true,
     "Incomplete": true,
+    "Fixed": "---\n\n\nx\n",
     "Expected": []
   },
   {
@@ -1265,6 +1323,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\n\n-\n\nb\n",
     "Expected": []
   },
   {
@@ -1275,6 +1334,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "*\n\n*\n",
     "Expected": []
   },
   {
@@ -1285,6 +1345,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "+\n\n+\n",
     "Expected": []
   },
   {
@@ -1295,6 +1356,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "1.\n\n2.\n",
     "Expected": []
   },
   {
@@ -1305,6 +1367,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "1)\n\n2)\n",
     "Expected": []
   },
   {
@@ -1315,6 +1378,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "- \t \n\n-  \n",
     "Expected": []
   },
   {
@@ -1325,6 +1389,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "-\r\n\r\n-\r\n",
     "Expected": []
   },
   {
@@ -1335,6 +1400,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "> 1.\n>\n> 2)\n",
     "Expected": []
   },
   {
@@ -1345,6 +1411,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\n\n-\n\nb\n",
     "Expected": [
       {
         "Range": [
@@ -1380,6 +1447,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\n\n1.\n\nb\n",
     "Expected": [
       {
         "Range": [
@@ -1415,6 +1483,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "> a\n>\n> -\n>\n> b\n",
     "Expected": [
       {
         "Range": [
@@ -1450,6 +1519,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "-\n\n-\n",
     "Expected": [
       {
         "Range": [
@@ -1473,6 +1543,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "a\n\n-\n\nb\n",
     "Expected": [
       {
         "Range": [
@@ -1508,6 +1579,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "-\n",
     "Expected": []
   },
   {
@@ -1518,6 +1590,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "-\n  foo\n",
     "Expected": []
   },
   {
@@ -1528,6 +1601,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "- -\n",
     "Expected": []
   },
   {
@@ -1538,6 +1612,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "> -\n",
     "Expected": []
   },
   {
@@ -1548,6 +1623,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": ">\n",
     "Expected": [
       {
         "Range": [
@@ -1571,6 +1647,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "- >\n",
     "Expected": [
       {
         "Range": [
@@ -1594,6 +1671,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "> > -\n",
     "Expected": []
   },
   {
@@ -1604,6 +1682,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "1. -\n",
     "Expected": []
   },
   {
@@ -1614,6 +1693,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "- 1.\n",
     "Expected": []
   },
   {
@@ -1624,6 +1704,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "> - >\n",
     "Expected": [
       {
         "Range": [
@@ -1647,6 +1728,7 @@
     "Maximum": 0,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "-\t\n\n-\t\n",
     "Expected": [
       {
         "Range": [
@@ -1670,6 +1752,7 @@
     "Maximum": 1,
     "Recognize": false,
     "Incomplete": false,
+    "Fixed": "-\t\n\n-\t\n",
     "Expected": []
   }
 ]

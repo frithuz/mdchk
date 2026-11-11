@@ -14,6 +14,7 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md007"
 	"github.com/frithuz/mdchk/internal/rules/md009"
 	"github.com/frithuz/mdchk/internal/rules/md010"
+	"github.com/frithuz/mdchk/internal/rules/md012"
 	"github.com/frithuz/mdchk/internal/rules/md019"
 	"github.com/frithuz/mdchk/internal/rules/md021"
 	"github.com/frithuz/mdchk/internal/rules/md022"
@@ -39,7 +40,7 @@ import (
 // checkers prove that visible heading text is unchanged, which a capitalization
 // edit breaks. MD063 shares its round with MD047.
 //
-// A document opening with an unrecognized block gets no MD007, MD009 or MD032 group at all,
+// A document opening with an unrecognized block gets no MD007, MD009, MD012 or MD032 group at all,
 // not even a deferral. MD004, MD005, MD019, MD021, MD022, MD023, MD029, MD030 and MD077 are already withheld by their flags, and MD047 stays.
 //
 // MD003 groups wait for a round with no other group. Their edits touch the same
@@ -83,6 +84,11 @@ import (
 // replacement changes, and the MD010 proof compares everything else. Their
 // deferrals cost nothing, so they share any round without edits.
 //
+// MD012 groups wait for a round with no other edit, MD009 suffixes above all:
+// those sit on the whitespace-only lines MD012 removes, and a removed line moves
+// what the list and whole-parse proofs compare. MD063 and MD003 wait for MD012 in
+// turn; an MD047 edit that analysis already offers shares the round.
+//
 // MD004 groups come next and share their round only with MD009, MD019, MD021 and
 // MD047; every other group waits for a round without them. MD004 is already
 // withheld by its flags in a document opening with an unrecognized block.
@@ -98,7 +104,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var markers, spacing, quotes, blank, indentation, capitalization, trailing, tabs, styles, lists, alignment, numbering, bullets, continuation, separators, gaps []result.Diagnostic
+	var markers, spacing, quotes, blank, runs, indentation, capitalization, trailing, tabs, styles, lists, alignment, numbering, bullets, continuation, separators, gaps []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -148,6 +154,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		case "MD030":
 			if d.FixAvailable && !guarded {
 				separators = append(separators, d)
+			}
+		case "MD012":
+			if !guarded {
+				runs = append(runs, d)
 			}
 		case "MD009":
 			if !guarded {
@@ -280,6 +290,17 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		}
 	}
 	groups = append(groups, suffixes...)
+	if !waiting {
+		removals, err := md012.Correction(ctx, c, runs)
+		if err != nil {
+			return nil, err
+		}
+		groups = append(groups, removals...)
+		for _, g := range removals {
+			waiting = waiting || len(g.Edits) > 0
+			blocking = blocking || len(g.Edits) > 0
+		}
+	}
 	if !blocking {
 		cased, err := headingcase.Groups(ctx, c, capitalization)
 		if err != nil {
@@ -340,6 +361,7 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		{Rule: "MD029", Check: orderedprefix.Check},
 		md009.Checker(),
 		md010.Checker(),
+		md012.Checker(),
 		md003.Checker(),
 		md022.Checker(),
 		{Rule: "MD063", Check: headingcase.Check},

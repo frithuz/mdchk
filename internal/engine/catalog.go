@@ -13,7 +13,7 @@ func Catalog() []Metadata {
 		{ID: "MD009", Name: "Whitespace at line ends", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"hard_break_spaces": integer(2, 2), "strict": boolean(false), "code_blocks": boolean(false)}},
 		{ID: "MD010", Name: "Tab characters", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"code_blocks": boolean(false), "spaces_per_tab": integer(4, 1)}},
 		{ID: "MD011", Name: "Swapped link delimiters", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD012", Name: "Runs of empty lines", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"maximum": integer(1, 0)}},
+		{ID: "MD012", Name: "Runs of empty lines", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"maximum": integer(1, 0)}},
 		{ID: "MD013", Name: "Maximum line width", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"length": integer(80, 1), "code_blocks": boolean(false), "tables": boolean(false), "headings": boolean(true)}},
 		{ID: "MD014", Name: "Shell prompts without command output", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"languages": list("sh", "shell", "bash", "zsh", "console")}},
 		{ID: "MD018", Name: "Missing space after opening hashes", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
