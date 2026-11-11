@@ -4,6 +4,7 @@ package md089
 import (
 	"context"
 	"errors"
+	"unicode/utf8"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
@@ -23,6 +24,7 @@ func check(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 }
 
 func compareCJKSpacing(ctx context.Context, c engine.RuleContext, items []parser.Span) (out engine.RuleOutcome) {
+	edits := c.InteriorEdits()
 	defer func() {
 		out.Err = errors.Join(out.Err, c.SectionCheckpoint(ctx, 0, 0))
 		if out.Err != nil {
@@ -49,7 +51,36 @@ func compareCJKSpacing(ctx context.Context, c engine.RuleContext, items []parser
 			return out
 		}
 		message := "Missing space between CJK and Latin text."
-		out.Findings = append(out.Findings, engine.Finding{Span: item, Message: message})
+		finding := engine.Finding{Span: item, Message: message}
+		// The shared query refuses a zero-width span, so eligibility covers the
+		// pair's two scalars; the producer rechecks them.
+		pair, err := pairSpan(c.Source(), item)
+		if err != nil {
+			out.Err = err
+			return out
+		}
+		finding.FixEligible, err = edits.Eligible(ctx, "MD089", item, pair)
+		if err != nil {
+			out.Err = err
+			return out
+		}
+		out.Findings = append(out.Findings, finding)
 	}
 	return out
+}
+
+// pairSpan returns the span of the scalar before point through the scalar after it.
+func pairSpan(src parser.Source, point parser.Span) (parser.Span, error) {
+	around, err := src.Span(max(0, point.Start()-utf8.UTFMax), min(src.Len(), point.End()+utf8.UTFMax))
+	if err != nil {
+		return parser.Span{}, err
+	}
+	text, err := src.Text(around)
+	if err != nil {
+		return parser.Span{}, err
+	}
+	split := point.Start() - around.Start()
+	_, left := utf8.DecodeLastRuneInString(text[:split])
+	_, right := utf8.DecodeRuneInString(text[split:])
+	return src.Span(point.Start()-left, point.End()+right)
 }

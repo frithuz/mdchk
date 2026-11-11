@@ -15,14 +15,14 @@ import (
 // are not compared either: only an MD004 edit in the same round can change one,
 // and its own checker proves it.
 func (d *Document) SameMeaningAcrossLineEndWhitespace(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
-	return d.sameMeaning(ctx, budget, other, true, false, false, nil, 0)
+	return d.sameMeaning(ctx, budget, other, true, false, false, nil, 0, false)
 }
 
 // SameMeaningAcrossIndentation is SameMeaningAcrossLineEndWhitespace for sources
 // that also differ in the leading spaces of list item lines: list content columns
 // may differ, and every other node kind, order, property and text must match.
 func (d *Document) SameMeaningAcrossIndentation(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
-	return d.sameMeaning(ctx, budget, other, true, true, false, nil, 0)
+	return d.sameMeaning(ctx, budget, other, true, true, false, nil, 0, false)
 }
 
 // SameMeaningAcrossProseSpaces compares two completed parses from this operation
@@ -31,7 +31,7 @@ func (d *Document) SameMeaningAcrossIndentation(ctx context.Context, budget *Ope
 // Text value may differ only in the length of its SPACE runs: every run stays
 // present and nothing else changes.
 func (d *Document) SameMeaningAcrossProseSpaces(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
-	return d.sameMeaning(ctx, budget, other, false, false, true, nil, 0)
+	return d.sameMeaning(ctx, budget, other, false, false, true, nil, 0, false)
 }
 
 // SameMeaningAcrossListSeparators compares two completed parses from this
@@ -43,7 +43,7 @@ func (d *Document) SameMeaningAcrossListSeparators(ctx context.Context, budget *
 	if ctx == nil || budget == nil {
 		return false, errors.New("nil list separator meaning context or budget")
 	}
-	return d.sameMeaning(ctx, budget, other, false, false, false, markers, 0)
+	return d.sameMeaning(ctx, budget, other, false, false, false, markers, 0, false)
 }
 
 // SameMeaningAcrossTabs is SameMeaningAcrossLineEndWhitespace for sources that
@@ -53,10 +53,18 @@ func (d *Document) SameMeaningAcrossTabs(ctx context.Context, budget *OperationB
 	if spaces < 1 || spaces > MaxTabSpaces {
 		return false, ErrModel
 	}
-	return d.sameMeaning(ctx, budget, other, true, false, false, nil, spaces)
+	return d.sameMeaning(ctx, budget, other, true, false, false, nil, spaces, false)
 }
 
-func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, other *Document, breaks, indentation, spaces bool, markers map[int]bool, tabs int) (bool, error) {
+// SameMeaningAcrossInsertedSpaces compares two completed parses from this
+// operation whose sources differ only where an ASCII SPACE was inserted between
+// prose scalars. Every node kind, order, property and reference must match, and
+// a Text value may differ only by holding extra ASCII SPACEs.
+func (d *Document) SameMeaningAcrossInsertedSpaces(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
+	return d.sameMeaning(ctx, budget, other, false, false, false, nil, 0, true)
+}
+
+func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, other *Document, breaks, indentation, spaces bool, markers map[int]bool, tabs int, inserted bool) (bool, error) {
 	if ctx == nil || budget == nil {
 		return false, errors.New("nil whitespace meaning context or budget")
 	}
@@ -100,7 +108,7 @@ func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, oth
 				}
 			}
 		}
-		ok, err := sameNodeProperties(ctx, budget, f.a, f.b, breaks && f.beforeBreak, indentation, spaces, retight, tabs)
+		ok, err := sameNodeProperties(ctx, budget, f.a, f.b, breaks && f.beforeBreak, indentation, spaces, retight, tabs, inserted)
 		if err != nil || !ok {
 			return false, err
 		}
@@ -128,7 +136,7 @@ func visibleChildren(children []*Node) []*Node {
 	return out
 }
 
-func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node, beforeBreak, indentation, spaces, retight bool, tabs int) (bool, error) {
+func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node, beforeBreak, indentation, spaces, retight bool, tabs int, inserted bool) (bool, error) {
 	p, q := a.spec.Properties, b.spec.Properties
 	if err := headingFactCharge(ctx, budget, int64(len(p.Literal.Value)+len(q.Literal.Value))+1, 0); err != nil {
 		return false, err
@@ -143,6 +151,10 @@ func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node
 	}
 	if tabs > 0 && a.Kind() == Text {
 		if x.Present != y.Present || !equalAcrossTabs(x.Value, y.Value, tabs) {
+			return false, nil
+		}
+	} else if inserted && a.Kind() == Text {
+		if x.Present != y.Present || !equalAcrossInsertedSpaces(x.Value, y.Value) {
 			return false, nil
 		}
 	} else if x != y {
@@ -257,6 +269,20 @@ func collapseSpaces(s string) string {
 		b.WriteByte(s[i])
 	}
 	return b.String()
+}
+
+// equalAcrossInsertedSpaces reports whether b is a with zero or more ASCII
+// SPACEs inserted.
+func equalAcrossInsertedSpaces(a, b string) bool {
+	i := 0
+	for j := 0; j < len(b); j++ {
+		if i < len(a) && a[i] == b[j] {
+			i++
+		} else if b[j] != ' ' {
+			return false
+		}
+	}
+	return i == len(a)
 }
 
 func sameTitle(a, b *Value) bool {

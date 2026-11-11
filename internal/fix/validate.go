@@ -332,6 +332,26 @@ func (c RoundContext) BlockquoteSpaces(ctx context.Context) ([]parser.Span, erro
 	return c.Parsed().Document.BlockquoteSpaces(ctx, c.meter.budget, c.Lines(), dc.ParseOptions())
 }
 
+// CJKSpacing projects this round's MD089 CJK/Latin insertion points under the
+// target's parse options, charged to the shared residual operation.
+func (c RoundContext) CJKSpacing(ctx context.Context) ([]parser.Span, error) {
+	dc, known := c.trace.DocumentContext()
+	if !known {
+		return nil, errors.New("unknown document context")
+	}
+	return c.Parsed().Document.CJKSpacing(ctx, c.meter.budget, c.Lines(), dc.ParseOptions())
+}
+
+// MeaningPreservedAcrossInsertedSpaces compares both actual round parses, allowing
+// Text values to differ only by inserted ASCII SPACEs.
+func (c CheckContext) MeaningPreservedAcrossInsertedSpaces(ctx context.Context) (bool, error) {
+	before, after := c.Before.Parsed(), c.After.Parsed()
+	if before.Status != parser.Complete || after.Status != parser.Complete || before.Document == nil || after.Document == nil || len(before.Uncertainty) != 0 || len(after.Uncertainty) != 0 {
+		return false, nil
+	}
+	return before.Document.SameMeaningAcrossInsertedSpaces(ctx, c.Before.meter.budget, after.Document)
+}
+
 // OrderedListStyle returns the target plan's admitted MD029 style; true is one.
 func (c RoundContext) OrderedListStyle() (bool, error) {
 	return engine.PlannedOrderedListStyle(c.plan)
