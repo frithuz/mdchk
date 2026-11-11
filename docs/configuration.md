@@ -571,8 +571,9 @@ rule-specific options. Shared `enabled` and `allow_directives` settings apply;
 unknown options fail even when disabled. Analysis first resolves actual CodeSpan
 ownership, normalized value and original paired ASCII SPACE edges over the full
 source. Each excess edge range uses its own start for directive suppression;
-selected inspection lines filter results after full-source analysis. All findings
-remain manual, with no correction eligibility, edits or previews.
+selected inspection lines filter results after full-source analysis. `fix` deletes
+both single padding SPACEs of a span only when its normalized value stays the
+same; other findings remain manual.
 
 
 MD044 configured-name analysis is available but disabled by default for CommonMark
