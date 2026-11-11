@@ -25,6 +25,7 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md047"
 	"github.com/frithuz/mdchk/internal/rules/md064"
 	"github.com/frithuz/mdchk/internal/rules/md077"
+	"github.com/frithuz/mdchk/internal/rules/md085"
 )
 
 // Corrections regenerates every eligible production correction from each round's
@@ -91,6 +92,15 @@ import (
 // list and whole-parse proofs compare. MD063, MD010, MD003 and MD027 wait for
 // MD012 in turn; an MD047 edit that analysis already offers shares the round.
 //
+// MD085 groups wait for a round with no group from MD004, MD019, MD021, MD022,
+// MD023, MD032, MD029 or MD030, and share it with MD009 and MD047: an indentation
+// deletion starts after a line start and an MD009 suffix ends at a line end, so
+// they never overlap, and both proofs compare whole parses across line-end
+// whitespace, which neither edit changes. While MD085 edits remain, MD005, MD007,
+// MD077, MD063 and MD003 wait, since their proofs compare columns or whole parses,
+// and MD012, MD010, MD027 and MD064 wait as for any other edit. A document opening with an unrecognized
+// block gets no MD085 group.
+//
 // MD004 groups come next and share their round only with MD009, MD019, MD021 and
 // MD047; every other group waits for a round without them. MD004 is already
 // withheld by its flags in a document opening with an unrecognized block.
@@ -116,7 +126,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var markers, spacing, quotes, blank, runs, indentation, capitalization, trailing, tabs, prose, styles, lists, alignment, numbering, bullets, continuation, separators, gaps []result.Diagnostic
+	var markers, spacing, quotes, blank, runs, indentation, capitalization, trailing, tabs, prose, styles, lists, alignment, numbering, bullets, continuation, separators, gaps, paragraphs []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -182,6 +192,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		case "MD010":
 			if !guarded {
 				tabs = append(tabs, d)
+			}
+		case "MD085":
+			if d.FixAvailable && !guarded {
+				paragraphs = append(paragraphs, d)
 			}
 		case "MD032":
 			if !guarded && d.FixAvailable {
@@ -278,6 +292,18 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		touched = touched || final
 		blocking = blocking || len(g.Edits) > 0 && !final
 		compared = compared || len(g.Edits) > 0
+	}
+	if len(groups) == 0 {
+		dedented, err := md085.Correction(ctx, c, paragraphs)
+		if err != nil {
+			return nil, err
+		}
+		for _, g := range dedented {
+			waiting = waiting || len(g.Edits) > 0
+			blocking = blocking || len(g.Edits) > 0
+			compared = compared || len(g.Edits) > 0
+		}
+		suffixes = append(suffixes, dedented...)
 	}
 	if !compared {
 		aligned, err := md005.Correction(ctx, c, alignment)
@@ -397,6 +423,7 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		md005.Checker(),
 		md007.Checker(),
 		md077.Checker(),
+		md085.Checker(),
 		md030.Checker(),
 		{Rule: "MD076", Check: listspacing.Check},
 		md004.Checker(),
