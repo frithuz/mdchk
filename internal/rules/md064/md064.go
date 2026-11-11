@@ -1,4 +1,4 @@
-// Package md064 checks MD064, which reports repeated spaces in prose.
+// Package md064 checks and corrects MD064, which reports repeated spaces in prose.
 package md064
 
 import (
@@ -29,6 +29,7 @@ func compareRepeatedProseSpaces(ctx context.Context, c engine.RuleContext, items
 			out.Findings = nil
 		}
 	}()
+	edits := c.InteriorEdits()
 	for _, item := range items {
 		if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
 			out.Err = err
@@ -49,7 +50,14 @@ func compareRepeatedProseSpaces(ctx context.Context, c engine.RuleContext, items
 			return out
 		}
 		message := "Repeated spaces in prose."
-		out.Findings = append(out.Findings, engine.Finding{Span: item, Message: message})
+		finding := engine.Finding{Span: item, Message: message}
+		var err error
+		finding.FixEligible, err = edits.Eligible(ctx, "MD064", item, item)
+		if err != nil {
+			out.Err = err
+			return out
+		}
+		out.Findings = append(out.Findings, finding)
 	}
 	return out
 }

@@ -31,12 +31,12 @@ func TestCompiledPlatformMD064ProductionAnalysis(t *testing.T) {
 		t.Fatal(err)
 	}
 	var fixtures []struct {
-		Name, Source, Flavor  string
-		Recognize, Incomplete bool
-		SHA256                string
-		SizeBytes             int
-		Maximum               int
-		Formats               []string
+		Name, Source, Flavor          string
+		Recognize, Incomplete, Manual bool
+		SHA256                        string
+		SizeBytes                     int
+		Maximum                       int
+		Formats                       []string
 
 		Expected []struct {
 			Range   []int
@@ -83,7 +83,8 @@ func TestCompiledPlatformMD064ProductionAnalysis(t *testing.T) {
 						t.Fatal("literal source provenance", f.Name)
 					}
 					before := acceptance.ConfigurationBytes(t, root)
-					for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
+					// Corrections of these findings are covered by TestCompiledMD064FixWorkflow.
+					for _, args := range [][]string{{"lint", "doc.md", "--format=json"}} {
 						got := acceptance.RunProcess(t, binary, root, args...)
 						out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), args[0])
 						status := 0
@@ -99,7 +100,7 @@ func TestCompiledPlatformMD064ProductionAnalysis(t *testing.T) {
 						for i, w := range f.Expected {
 							d := out.Diagnostics[i]
 							actual := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD064" || d.FixAvailable || d.Message != w.Message || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
+							if !reflect.DeepEqual(actual, w.Range) || d.Rule != "MD064" || d.FixAvailable == (f.Incomplete || f.Manual) || d.Message != w.Message || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source {
 								t.Fatal(d, w)
 							}
 						}
@@ -206,15 +207,26 @@ func TestCompiledPlatformMD064ActiveControls(t *testing.T) {
 				for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}, {"inspect", "doc.md", "--format=json"}} {
 					got := acceptance.RunProcess(t, binary, root, args...)
 					out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), args[0])
+					// The preview corrects every active finding, leaving only directive findings.
+					diagnostics, changes := tc.active+tc.directive, 0
+					if args[0] == "fix" && tc.active > 0 {
+						diagnostics, changes = tc.directive, 1
+					}
 					status := 0
-					if args[0] != "inspect" && tc.active+tc.directive > 0 {
+					if args[0] != "inspect" && diagnostics > 0 {
 						status = 10
 					}
-					if got.Status != status || !out.Complete || len(out.Diagnostics) != tc.active+tc.directive || len(out.SuppressedDiagnostics) != tc.hidden || len(out.Changes) != 0 || len(out.Documents) != 0 {
+					if got.Status != status || !out.Complete || len(out.Diagnostics) != diagnostics || len(out.SuppressedDiagnostics) != tc.hidden || len(out.Changes) != changes || len(out.Documents) != 0 {
 						t.Fatal(got)
 					}
+					for _, raw := range out.SuppressedDiagnostics {
+						var suppressed result.SuppressedDiagnostic
+						if err := json.Unmarshal(raw, &suppressed); err != nil || suppressed.Diagnostic.FixAvailable {
+							t.Fatal("suppressed finding advertised", string(raw), err)
+						}
+					}
 					for _, d := range out.Diagnostics {
-						if d.Rule == "MD064" && (d.FixAvailable || d.ByteRange.End < d.ByteRange.Start || d.Message != "Repeated spaces in prose.") {
+						if d.Rule == "MD064" && (!d.FixAvailable || d.ByteRange.End < d.ByteRange.Start || d.Message != "Repeated spaces in prose.") {
 							t.Fatal(d)
 						}
 					}
@@ -284,12 +296,19 @@ func TestCompiledPlatformMD064ReportersAndReset(t *testing.T) {
 						args = append(args, "--dry-run")
 					}
 					got := acceptance.RunProcess(t, binary, root, args...)
-					if got.Status != 10 || !strings.Contains(got.Stdout, "MD064") {
+					// The preview corrects second.md, so only lint still reports it.
+					if operation == "lint" && (got.Status != 10 || !strings.Contains(got.Stdout, "MD064")) || operation == "fix" && got.Status != 0 {
 						t.Fatal(got)
 					}
 					if format == "json" {
 						out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), operation)
-						if len(out.Diagnostics) != 1 || len(out.SuppressedDiagnostics) != 1 || out.Diagnostics[0].Path != "second.md" || len(out.Changes) != 0 || len(out.Documents) != 0 {
+						if operation == "lint" && (len(out.Diagnostics) != 1 || out.Diagnostics[0].Path != "second.md" || len(out.Changes) != 0) {
+							t.Fatal(got)
+						}
+						if operation == "fix" && (len(out.Diagnostics) != 0 || len(out.Changes) != 1 || out.Changes[0].Path != "second.md") {
+							t.Fatal(got)
+						}
+						if len(out.SuppressedDiagnostics) != 1 || len(out.Documents) != 0 {
 							t.Fatal(got)
 						}
 					}
@@ -302,7 +321,7 @@ func TestCompiledPlatformMD064ReportersAndReset(t *testing.T) {
 	}
 }
 
-func TestCompiledPlatformMD064ManualApplyAndInvalidUTF8(t *testing.T) {
+func TestCompiledPlatformMD064ApplyAndInvalidUTF8(t *testing.T) {
 	t.Parallel()
 	binary := acceptance.SharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
@@ -316,21 +335,19 @@ func TestCompiledPlatformMD064ManualApplyAndInvalidUTF8(t *testing.T) {
 				t.Fatal(e)
 			}
 			before := acceptance.ConfigurationBytes(t, root)
-			beforeApply := acceptance.ReadinessState(t, root)
 			got := acceptance.RunProcess(t, binary, root, "fix", "doc.md", "--format=json")
 			out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "fix")
 			after, e := os.Stat(path)
 			if e != nil {
 				t.Fatal(e)
 			}
-			if !out.Complete || len(out.Changes) != 0 || len(out.Documents) != 0 || !reflect.DeepEqual(before, acceptance.ConfigurationBytes(t, root)) || info.Mode() != after.Mode() {
+			if info.Mode() != after.Mode() {
 				t.Fatal(got)
 			}
-			acceptance.ReadinessAssertEqual(t, "manual-only apply", beforeApply, acceptance.ReadinessState(t, root))
 			// The actual acquisition result establishes native capability, not GOOS.
-			// Unsupported adapters refuse before analysis, even with no MD064 edits.
+			// Unsupported adapters refuse before analysis.
 			if got.Status == 13 {
-				if out.Status != "error" || len(out.Errors) != 1 || len(out.Diagnostics) != 0 || len(out.Files) != 0 || len(out.CheckedFiles) != 0 {
+				if out.Status != "error" || len(out.Errors) != 1 || len(out.Diagnostics) != 0 || len(out.Files) != 0 || len(out.CheckedFiles) != 0 || !reflect.DeepEqual(before, acceptance.ConfigurationBytes(t, root)) {
 					t.Fatal("not an explicit no-effect adapter refusal", got)
 				}
 				failure := out.Errors[0]
@@ -339,14 +356,13 @@ func TestCompiledPlatformMD064ManualApplyAndInvalidUTF8(t *testing.T) {
 				}
 				t.Log("actual native adapter unsupported; exact refusal and no effects verified")
 			} else {
-				if got.Status != 10 || out.Status != "violations" || len(out.Errors) != 0 || len(out.Diagnostics) != 1 {
+				if got.Status != 0 || !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != 0 || len(out.Changes) != 1 || !reflect.DeepEqual(out.Changes[0].Rules, []string{"MD064"}) || out.Changes[0].EditCount != 1 {
 					t.Fatal(got)
 				}
-				d := out.Diagnostics[0]
-				if d.Rule != "MD064" || d.FixAvailable || d.Message != "Repeated spaces in prose." || d.ByteRange.Start != 4 || d.ByteRange.End != 5 {
-					t.Fatal(d)
+				if saved := acceptance.Saved(t, root); saved != "One two\n" {
+					t.Fatalf("saved %q", saved)
 				}
-				t.Log("actual native acquisition succeeded; manual MD064 finding and no effects verified")
+				t.Log("actual native acquisition succeeded; MD064 correction verified")
 			}
 			// Continue mandatory encoding checks on both native capability paths.
 			if e = os.WriteFile(path, []byte{'>', ' ', ' ', 0xff, '\n'}, 0600); e != nil {
@@ -373,7 +389,7 @@ func TestCompiledPlatformMD064ManualApplyAndInvalidUTF8(t *testing.T) {
 				if got.Status != 13 || out.Complete || len(out.Errors) != 1 || len(out.Diagnostics) != 0 || len(out.Changes) != 0 || len(out.Documents) != 0 {
 					t.Fatal(got)
 				}
-				t.Logf("invalid UTF-8 %s verified after manual apply", args[0])
+				t.Logf("invalid UTF-8 %s verified after apply", args[0])
 			}
 			if !reflect.DeepEqual(before, acceptance.ConfigurationBytes(t, root)) {
 				t.Fatal("invalid input changed")
@@ -382,7 +398,7 @@ func TestCompiledPlatformMD064ManualApplyAndInvalidUTF8(t *testing.T) {
 	}
 }
 
-// Root authored fixed composition literals; MD047 alone changes EOF.
+// Root authored fixed composition literals; MD064 and MD047 share one round.
 func TestCompiledPlatformMD064Composition(t *testing.T) {
 	t.Parallel()
 	binary := acceptance.SharedExecutable(t)
@@ -391,9 +407,8 @@ func TestCompiledPlatformMD064Composition(t *testing.T) {
 		t.Fatal(e)
 	}
 	var fixtures []struct {
-		Name, Source, Candidate, CandidateSHA256, ExpectedSource, ExpectedMessage string
-		CandidateSizeBytes                                                        int
-		ExpectedRange                                                             []int
+		Name, Source, Candidate, CandidateSHA256 string
+		CandidateSizeBytes                       int
 	}
 	if e = json.Unmarshal(data, &fixtures); e != nil {
 		t.Fatal(e)
@@ -409,21 +424,16 @@ func TestCompiledPlatformMD064Composition(t *testing.T) {
 					before := acceptance.ConfigurationBytes(t, root)
 					got := acceptance.RunProcess(t, binary, root, "fix", "--dry-run", "doc.md", "--format=json")
 					out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "fix")
-					if got.Status != 10 || !out.Complete || len(out.Diagnostics) != 1 || len(out.Changes) != 1-pass || len(out.Documents) != 0 {
+					if got.Status != 0 || !out.Complete || len(out.Diagnostics) != 0 || len(out.Changes) != 1-pass || len(out.Documents) != 0 {
 						t.Fatal(got)
 					}
 					snap := out.Files[0].ResultSnapshot
 					if snap == nil || snap.SHA256 != f.CandidateSHA256 || snap.SizeBytes != f.CandidateSizeBytes {
 						t.Fatal(out.Files)
 					}
-					d := out.Diagnostics[0]
-					actual := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-					if !reflect.DeepEqual(actual, f.ExpectedRange) || d.Rule != "MD064" || d.FixAvailable || d.Message != f.ExpectedMessage || f.Candidate[d.ByteRange.Start:d.ByteRange.End] != f.ExpectedSource || d.Snapshot != *snap {
-						t.Fatal(d)
-					}
 					if pass == 0 {
 						c := out.Changes[0]
-						if !reflect.DeepEqual(c.Rules, []string{"MD047"}) || c.EditCount != 1 || c.Candidate != *snap {
+						if !reflect.DeepEqual(c.Rules, []string{"MD047", "MD064"}) || c.EditCount != 2 || c.Candidate != *snap {
 							t.Fatal(c)
 						}
 					}

@@ -11,7 +11,7 @@ These rules are part of the [implementation ruleset](../index.md).
 | [MD027](md027.md) | Whitespace after blockquote markers | Implemented; automatic correction |
 | [MD028](md028.md) | Empty lines separating blockquotes | Analysis/configuration implemented; manual |
 | [MD047](md047.md) | Exactly one terminating newline | CommonMark analysis, configuration, previews and Linux, macOS and Windows apply implemented; protected EOF remains manual |
-| [MD064](md064.md) | Repeated spaces in prose | Analysis/configuration implemented; manual |
+| [MD064](md064.md) | Repeated spaces in prose | Analysis, configuration and correction implemented |
 | [MD085](md085.md) | Indented paragraph continuation lines | Analysis/configuration implemented; manual |
 | [MD089](md089.md) | Spacing between CJK and Latin text | Analysis/configuration implemented; manual |
 

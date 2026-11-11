@@ -392,6 +392,35 @@ holds MD047 and MD003 back while they are pending. A line with a TAB and trailin
 whitespace, or a file with a TAB and no final newline, settles over the rounds of one
 `fix`.
 
+### MD064 corrections
+
+`internal/rules/md064.Correction` regenerates one atomic group per fix-available MD064
+finding from each round's own analysis and parse. `RoundContext.RepeatedProseSpaces`
+returns the round's excess spans under the target's resolved `maximum`; a finding with no
+matching span made only of ASCII spaces gets no group. Each group has a stable
+offset-based ID, the diagnostic span as its anchor, one edit deleting exactly that span,
+and the `Meaning`, `ProtectedSyntax` and `DirectiveStructure` requirements. The rule
+callback sets `fix_available` through the shared interior edit query, as MD019 does, so
+directive intervals, protected context and documents opening with an unrecognized block
+withhold the finding before any group is made.
+
+The independently registered checker recomputes the expected spans from the before parse
+and trusts neither producer data nor `fix_available`. Through `CheckContext.Once`, it
+proves `OnlyEditsChanged` and `MeaningPreservedAcrossProseSpaces`: both parses match in
+node kinds and order, break kinds and origins, heading, list, table, code, task and link
+properties, and all reference definitions, and a Text value may differ only in the length
+of its SPACE runs, every run staying present. `Document.SameMeaningAcrossProseSpaces`
+shares its walk with `SameMeaningAcrossLineEndWhitespace`. Each group then checks its own
+span against the recomputed spans, its original space bytes and its empty replacement.
+Any mismatch returns a non-`Preserved` proof. No `ForbidNewFindings` is registered:
+deleting spaces outside comments cannot create a directive finding.
+
+Interior deletions move text that the MD009 whole-parse proof and the heading proofs
+compare exactly, so `Corrections` proposes MD064 groups only in a round in which no other
+rule proposes an edit, and every other group waits while they remain. Only an MD047 edit
+that analysis already offers shares their round; both checkers must accept the combined
+candidate. A document with MD009, MD047 and MD064 findings therefore converges in one run.
+
 ### Production rule integration
 
 `internal/rules.Corrections` regenerates MD047, MD004, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077 and MD076 groups from each

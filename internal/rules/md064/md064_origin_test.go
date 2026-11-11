@@ -13,7 +13,7 @@ func TestMD064OriginFinalPublication(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 1}, {"clean", "clean\n", 1}, {"protected", "```\nx\n```", 1}, {"growth", "a  b  c  d  e  f", 15}} {
+	}{{"empty", "", 1}, {"clean", "clean\n", 1}, {"protected", "```\nx\n```", 1}, {"growth", "a  b  c  d  e  f", 20}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+"/"+reason.Error(), func(t *testing.T) {
 				origin := &ruletest.LateStopContext{Context: context.Background(), Stop: 1 << 20, Reason: reason}
