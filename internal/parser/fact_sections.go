@@ -1,3 +1,6 @@
+// Section facts for MD082, plus SectionCheckpoint, the shared checkpoint
+// that every rule fact facade charges.
+
 package parser
 
 import (

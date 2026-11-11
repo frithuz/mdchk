@@ -1,3 +1,6 @@
+// Raw HTML state for MD092 conflict-marker facts, also shared by the fact
+// collectors of other rules.
+
 package parser
 
 import (

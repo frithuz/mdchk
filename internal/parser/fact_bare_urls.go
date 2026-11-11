@@ -1,3 +1,5 @@
+// Facts for MD034.
+
 package parser
 
 import (

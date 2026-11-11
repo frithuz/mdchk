@@ -1,3 +1,5 @@
+// Facts for MD040.
+
 package parser
 
 import (

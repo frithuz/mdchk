@@ -1,3 +1,5 @@
+// Facts for MD056.
+
 package parser
 
 import (

@@ -1,3 +1,5 @@
+// Facts for MD055.
+
 package parser
 
 import (

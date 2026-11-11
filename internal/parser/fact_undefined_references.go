@@ -1,3 +1,5 @@
+// Facts for MD052.
+
 package parser
 
 import (

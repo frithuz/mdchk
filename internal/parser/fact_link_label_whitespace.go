@@ -1,3 +1,5 @@
+// Facts for MD039.
+
 package parser
 
 import (
