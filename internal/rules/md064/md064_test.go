@@ -27,12 +27,12 @@ func TestMD064AnalysisFixtures(t *testing.T) {
 		t.Fatal(err)
 	}
 	var fixtures []struct {
-		Name, Source, Flavor  string
-		Recognize, Incomplete bool
-		SHA256                string
-		SizeBytes             int
-		Maximum               int
-		Formats               []string
+		Name, Source, Flavor          string
+		Recognize, Incomplete, Manual bool
+		SHA256                        string
+		SizeBytes                     int
+		Maximum                       int
+		Formats                       []string
 
 		Expected []struct {
 			Range   []int
@@ -81,7 +81,7 @@ func TestMD064AnalysisFixtures(t *testing.T) {
 				for i, w := range f.Expected {
 					d := out.Diagnostics[i]
 					got := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD064" || d.FixAvailable || d.Message != w.Message {
+					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD064" || d.FixAvailable == (f.Incomplete || f.Manual) || d.Message != w.Message {
 						t.Fatal(got, d, w)
 					}
 				}
@@ -97,7 +97,7 @@ func TestMD064CatalogStrictSettingsAndDefaults(t *testing.T) {
 		if m.DefaultEnabled {
 			enabled++
 		}
-		if m.ID == "MD064" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.PlannedFix || len(m.Options) != 1) {
+		if m.ID == "MD064" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.ImplementedFix || len(m.Options) != 1) {
 			t.Fatal(m)
 		}
 	}

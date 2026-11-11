@@ -170,6 +170,12 @@ func (c RoundContext) BlankRuns(ctx context.Context) ([][]parser.BlankRunLine, i
 	return engine.BlankRunLines(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
 }
 
+// RepeatedProseSpaces returns MD064's excess prose SPACE spans for this round's
+// own parse under the target's plan.
+func (c RoundContext) RepeatedProseSpaces(ctx context.Context) ([]parser.Span, error) {
+	return engine.RepeatedProseSpaceSpans(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
 // BulletIndentation returns MD007's list item facts and resolved indent and
 // start_indented options for this round's own parse under the target's plan.
 func (c RoundContext) BulletIndentation(ctx context.Context) ([]parser.ListItemFact, int, bool, error) {
@@ -225,6 +231,16 @@ func (c CheckContext) MeaningPreservedAcrossIndentation(ctx context.Context) (bo
 		return false, nil
 	}
 	return before.Document.SameMeaningAcrossIndentation(ctx, c.Before.meter.budget, after.Document)
+}
+
+// MeaningPreservedAcrossProseSpaces compares both actual round parses, allowing
+// Text values to differ only in the length of interior SPACE runs.
+func (c CheckContext) MeaningPreservedAcrossProseSpaces(ctx context.Context) (bool, error) {
+	before, after := c.Before.Parsed(), c.After.Parsed()
+	if before.Status != parser.Complete || after.Status != parser.Complete || before.Document == nil || after.Document == nil || len(before.Uncertainty) != 0 || len(after.Uncertainty) != 0 {
+		return false, nil
+	}
+	return before.Document.SameMeaningAcrossProseSpaces(ctx, c.Before.meter.budget, after.Document)
 }
 
 // MeaningPreservedAcrossListSeparators compares both actual round parses. Only a

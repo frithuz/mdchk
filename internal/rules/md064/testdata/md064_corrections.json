@@ -1,0 +1,169 @@
+[
+  {
+    "Name": "basic",
+    "Source": "One  two\n",
+    "Candidate": "One two\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "maximum-one-of-three",
+    "Source": "One   two\n",
+    "Candidate": "One two\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "maximum-two",
+    "Source": "One   two\n",
+    "Candidate": "One  two\n",
+    "Maximum": 2
+  },
+  {
+    "Name": "maximum-two-clean",
+    "Source": "One  two\n",
+    "Candidate": "One  two\n",
+    "Maximum": 2
+  },
+  {
+    "Name": "maximum-three",
+    "Source": "a     b    c   d\n",
+    "Candidate": "a   b   c   d\n",
+    "Maximum": 3
+  },
+  {
+    "Name": "several",
+    "Source": "a  b   c\n\nd    e\n",
+    "Candidate": "a b c\n\nd e\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "crlf",
+    "Source": "One  two\r\nA  b\r\n",
+    "Candidate": "One two\r\nA b\r\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "unicode",
+    "Source": "Café  naïve  日本  語\n",
+    "Candidate": "Café naïve 日本 語\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "code-span",
+    "Source": "`a  b` c\n",
+    "Candidate": "`a  b` c\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "code-span-beside",
+    "Source": "x  `a  b`  y\n",
+    "Candidate": "x  `a  b`  y\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "fenced",
+    "Source": "```\na  b\n```\n",
+    "Candidate": "```\na  b\n```\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "indented",
+    "Source": "    a  b\n",
+    "Candidate": "    a  b\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "html-block",
+    "Source": "<div>a  b</div>\n",
+    "Candidate": "<div>a  b</div>\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "raw-tag",
+    "Source": "x  <span a=\"1  2\">a  b</span>  y\n",
+    "Candidate": "x  <span a=\"1  2\">a b</span>  y\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "table",
+    "Source": "| a  b | c |\n| - | - |\n| d  e | f |\n",
+    "Candidate": "| a  b | c |\n| - | - |\n| d  e | f |\n",
+    "Maximum": 1,
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "nested-list",
+    "Source": "- a  b\n  - c  d\n    1. e  f\n",
+    "Candidate": "- a b\n  - c d\n    1. e f\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "block-quote",
+    "Source": "> a  b\n> > c  d\n",
+    "Candidate": "> a b\n> > c d\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "atx",
+    "Source": "# One  two\n\n## Three  four ##\n",
+    "Candidate": "# One two\n\n## Three four ##\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "setext",
+    "Source": "One  two\n===\n\nThree  four\n---\n",
+    "Candidate": "One two\n===\n\nThree four\n---\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "emphasis-link",
+    "Source": "*a  b* **c  d** [e  f](u)\n",
+    "Candidate": "*a b* **c d** [e f](u)\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "hard-break",
+    "Source": "a  b  \nc  d\n",
+    "Candidate": "a b  \nc d\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "escape",
+    "Source": "a\\  b\n",
+    "Candidate": "a\\ b\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "unrecognized-front-matter",
+    "Source": "---\nOne  two\n---\nthree  four\n",
+    "Candidate": "---\nOne  two\n---\nthree  four\n",
+    "Maximum": 1
+  },
+  {
+    "Name": "directive-disabled",
+    "Source": "<!-- mdchk:disable MD064 -->\nOne  two\n<!-- mdchk:enable MD064 -->\nThree  four\n",
+    "Candidate": "<!-- mdchk:disable MD064 -->\nOne  two\n<!-- mdchk:enable MD064 -->\nThree four\n",
+    "Maximum": 1,
+    "Config": "directives"
+  },
+  {
+    "Name": "md047",
+    "Source": "One  two",
+    "Candidate": "One two\n",
+    "Maximum": 1,
+    "Config": "md047"
+  },
+  {
+    "Name": "md009-md047",
+    "Source": "One  two \nend",
+    "Candidate": "One two\nend\n",
+    "Maximum": 1,
+    "Config": "md009"
+  },
+  {
+    "Name": "md009-md047-hard-break",
+    "Source": "One  two   \nend",
+    "Candidate": "One two  \nend\n",
+    "Maximum": 1,
+    "Config": "md009"
+  }
+]

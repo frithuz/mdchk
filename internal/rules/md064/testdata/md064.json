@@ -1230,6 +1230,7 @@
   },
   {
     "Name": "yaml-off",
+    "Manual": true,
     "Source": "---\nOne  two\n---\nthree  four",
     "Maximum": 1,
     "Recognize": false,
@@ -1288,6 +1289,7 @@
   },
   {
     "Name": "toml-unselected",
+    "Manual": true,
     "Source": "+++\nOne  two\n+++\nthree  four",
     "Maximum": 1,
     "Recognize": true,
