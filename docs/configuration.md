@@ -537,7 +537,7 @@ unknown options and invalid shared settings fail even while disabled. See
 MD013 is available but disabled by default for CommonMark and GFM. Explicit `enabled: true` activates it; omission, `{}` and options alone retain disablement. Options remain `length: 80` (positive integer), `code_blocks: false`, `tables: false` and `headings: true`. Invalid options reject even when disabled. Permitted directives can enable it with admitted options retained. See [MD013](rules/whitespace/md013.md).
 
 
-MD027 is available and enabled by default for CommonMark and GFM, with no rule-specific options. Empty mappings retain defaults. Shared enabled/allow_directives booleans and inherited denials apply; unknown options and invalid shared values fail even while disabled. PlannedFix metadata grants no executable correction authority.
+MD027 is available and enabled by default for CommonMark and GFM, with no rule-specific options. Empty mappings retain defaults. Shared enabled/allow_directives booleans and inherited denials apply; unknown options and invalid shared values fail even while disabled. `fix` deletes the excess spaces of eligible findings.
 
 
 MD028 is available and enabled by default for CommonMark and GFM, with no rule-specific options. Empty mappings preserve defaults; strict shared enabled/allow_directives booleans and inherited denials apply, including validation while disabled. All findings remain manual under NoFix metadata.
