@@ -1,3 +1,5 @@
+// Facts for MD014.
+
 package parser
 
 import (
@@ -519,23 +521,4 @@ func shellPromptPayload(ctx context.Context, budget *OperationBudget, index Line
 		return nil, false, ErrModel
 	}
 	return dollars, true, nil
-}
-
-func shellPromptGrow[T any](ctx context.Context, budget *OperationBudget, dst []T) ([]T, error) {
-	if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
-		return nil, err
-	}
-	if len(dst) < cap(dst) {
-		return dst, nil
-	}
-	if cap(dst) > int(^uint(0)>>1)/2 {
-		return nil, ErrModel
-	}
-	capacity := max(1, cap(dst)*2)
-	if err := headingFactCharge(ctx, budget, int64(len(dst))+int64(capacity)+1, int64(capacity)); err != nil {
-		return nil, err
-	}
-	next := make([]T, len(dst), capacity)
-	copy(next, dst)
-	return next, nil
 }
