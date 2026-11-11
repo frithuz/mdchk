@@ -213,8 +213,8 @@ MD035 is available and enabled by default for CommonMark and GFM. Its `style`
 option accepts exactly `consistent` (default), `dash`, `asterisk` or `underscore`.
 Consistent compares exact original first-to-last marker bytes against the global
 first eligible break; named styles require only the marker family. Full protected
-and earlier disabled context precedes suppression and line selection. Findings
-remain manual with no MD035 edits or previews.
+and earlier disabled context precedes suppression and line selection. `fix`
+replaces the marker envelope of each finding whose reparse keeps the same blocks.
 
 MD037 is available and enabled by default for CommonMark and GFM, with no
 rule-specific options. Shared `enabled` and `allow_directives` remain strict

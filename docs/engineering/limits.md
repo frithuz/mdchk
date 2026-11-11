@@ -382,8 +382,9 @@ Traversal frames, marker/source associations, comparisons, state, capacity, copi
 prefixes and detached span/finding records reserve the original finite allowance
 before work. Empty, clean and protected inputs retain caller/origin controls and
 final atomic withholding at producer, facade and callback. No reparse, retained
-AST, source/index/options clone, decoder, new allowance or correction authority
-is added. MD035 is default enabled and manual; this analysis produces no edits.
+AST, source/index/options clone, decoder or new allowance is added. MD035 is
+default enabled; ThematicStyleCorrection gives the correction the same envelopes
+and the replacement bytes from each round's own parse.
 
 MD037 borrows completed original source/index/options/profile and operation
 through DelimiterStyle. Actual recognized Emphasis/Strong facts remain distinct
