@@ -8,12 +8,25 @@ import "context"
 // from the global first eligible pattern or the selected marker family. It
 // borrows completed production syntax, source and the original finite allowance.
 func (d *Document) ThematicStyle(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, style string) ([]Span, error) {
+	out, _, err := d.thematicStyle(ctx, budget, index, options, style, false)
+	return out, err
+}
+
+// ThematicStyleCorrection is ThematicStyle with the detached replacement every
+// envelope takes: three markers of the selected family, or a copy of the
+// baseline's exact first-to-last pattern under consistent. The replacement is
+// nil when no envelope is returned.
+func (d *Document) ThematicStyleCorrection(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, style string) ([]Span, []byte, error) {
+	return d.thematicStyle(ctx, budget, index, options, style, true)
+}
+
+func (d *Document) thematicStyle(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, style string, replace bool) ([]Span, []byte, error) {
 	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 1, 1); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	charge := func(work, nodes int64) error { return headingFactCharge(ctx, budget, work, nodes) }
 	if err := charge(int64(len(style))+1, 1); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	var family byte
 	switch style {
@@ -25,7 +38,7 @@ func (d *Document) ThematicStyle(ctx context.Context, budget *OperationBudget, i
 	case "underscore":
 		family = '_'
 	default:
-		return nil, ErrModel
+		return nil, nil, ErrModel
 	}
 	grow := func(length, capacity int) (int, error) {
 		if length < capacity {
@@ -46,7 +59,7 @@ func (d *Document) ThematicStyle(ctx context.Context, budget *OperationBudget, i
 		raw           string
 	}
 	if err := charge(1, 2); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	stack := make([]frame, 1)
 	stack[0].node = d.root
@@ -71,7 +84,7 @@ func (d *Document) ThematicStyle(ctx context.Context, budget *OperationBudget, i
 	raw := ""
 	for len(stack) > 0 {
 		if err := charge(1, 0); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		f := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
@@ -87,14 +100,14 @@ func (d *Document) ThematicStyle(ctx context.Context, budget *OperationBudget, i
 			for _, marker := range n.spec.Markers {
 				// Role comparison and original source association precede use.
 				if err := charge(int64(len(marker.Role))+2, 0); err != nil {
-					return nil, err
+					return nil, nil, err
 				}
 				if marker.Role != "thematic-marker" {
 					continue
 				}
 				s := marker.Source
 				if !s.Present() || s.source.Token() != index.source.Token() || s.start >= s.end || (last.Present() && s.start < last.end) {
-					return nil, ErrModel
+					return nil, nil, ErrModel
 				}
 				if !first.Present() {
 					first = s
@@ -102,30 +115,30 @@ func (d *Document) ThematicStyle(ctx context.Context, budget *OperationBudget, i
 				last = s
 			}
 			if !first.Present() || !last.Present() {
-				return nil, ErrModel
+				return nil, nil, ErrModel
 			}
 			if err := charge(3, 1); err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			pattern := Span{source: index.source, start: first.start, end: last.end, present: true}
 			mismatch := false
 			if family != 0 {
 				if err := charge(1, 0); err != nil {
-					return nil, err
+					return nil, nil, err
 				}
 				mismatch = index.source.content[pattern.start] != family
 			} else if !baseline.Present() {
 				baseline = pattern
 			} else {
 				if err := charge(1, 0); err != nil {
-					return nil, err
+					return nil, nil, err
 				}
 				mismatch = pattern.end-pattern.start != baseline.end-baseline.start
 				if !mismatch {
 					for i := 0; i < pattern.end-pattern.start; i++ {
 						// One checkpoint per pair, including long equal patterns.
 						if err := charge(3, 0); err != nil {
-							return nil, err
+							return nil, nil, err
 						}
 						if index.source.content[pattern.start+i] != index.source.content[baseline.start+i] {
 							mismatch = true
@@ -137,7 +150,7 @@ func (d *Document) ThematicStyle(ctx context.Context, budget *OperationBudget, i
 			if mismatch {
 				capacity, err := grow(len(out), cap(out))
 				if err != nil {
-					return nil, err
+					return nil, nil, err
 				}
 				if capacity != cap(out) {
 					next := make([]Span, len(out), capacity)
@@ -145,17 +158,17 @@ func (d *Document) ThematicStyle(ctx context.Context, budget *OperationBudget, i
 					out = next
 				}
 				if err := charge(1, 1); err != nil {
-					return nil, err
+					return nil, nil, err
 				}
 				out = append(out, pattern)
 			}
 		}
 		if err := charge(1, 0); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		if n.rawTag != "" {
 			if err := charge(2*int64(len(n.rawTag))+int64(len(raw))+1, 0); err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			if raw == "" && !n.rawClosing {
 				raw = n.rawTag
@@ -169,7 +182,7 @@ func (d *Document) ThematicStyle(ctx context.Context, budget *OperationBudget, i
 			raw = ""
 		}
 		if err := push(exit); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		for group := 0; group < 2; group++ {
 			children := n.htmlTail
@@ -178,13 +191,31 @@ func (d *Document) ThematicStyle(ctx context.Context, budget *OperationBudget, i
 			}
 			for i := len(children) - 1; i >= 0; i-- {
 				if err := push(frame{node: children[i]}); err != nil {
-					return nil, err
+					return nil, nil, err
 				}
 			}
 		}
 	}
-	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 0, 0); err != nil {
-		return nil, err
+	var replacement []byte
+	if replace && len(out) > 0 {
+		length := 3
+		if family == 0 {
+			length = baseline.end - baseline.start
+		}
+		if err := charge(int64(length)+1, 1); err != nil {
+			return nil, nil, err
+		}
+		replacement = make([]byte, length)
+		for i := range replacement {
+			if family != 0 {
+				replacement[i] = family
+			} else {
+				replacement[i] = index.source.content[baseline.start+i]
+			}
+		}
 	}
-	return out, nil
+	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 0, 0); err != nil {
+		return nil, nil, err
+	}
+	return out, replacement, nil
 }

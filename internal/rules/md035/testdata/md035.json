@@ -5,6 +5,7 @@
     "source": "---\n\n***\n",
     "sha256": "42029ca3714aeda632f1ac9756dee331edc25aecf9170954db6784efd1da35ee",
     "size_bytes": 9,
+    "fixed": "---\n\n---\n",
     "expected": [
       {
         "range": [
@@ -25,6 +26,7 @@
     "source": "---\n\n---\n",
     "sha256": "c35a0f23724bdc655c65190b796d735ac28b6514e7327ca027a01ce7ffc99afc",
     "size_bytes": 9,
+    "fixed": "---\n\n---\n",
     "expected": []
   },
   {
@@ -33,6 +35,7 @@
     "source": "---\n\n----\n",
     "sha256": "f63ce487137e029695ab53b48a57cb7979972609399be6d52f4b897faf4093f2",
     "size_bytes": 10,
+    "fixed": "---\n\n---\n",
     "expected": [
       {
         "range": [
@@ -53,6 +56,7 @@
     "source": "* * *\n\n***\n",
     "sha256": "bfe1f646fae2afde3a8f5af744f794848266ab9d9636c6f5dcb3b5da7f7b4892",
     "size_bytes": 11,
+    "fixed": "* * *\n\n* * *\n",
     "expected": [
       {
         "range": [
@@ -73,6 +77,7 @@
     "source": "* \t* \t*\n\n* * *\n",
     "sha256": "ae4e31541ad6055e9feacfc32108cd243ef2291e33b726cc56cdb0e1c4a640d0",
     "size_bytes": 15,
+    "fixed": "* \t* \t*\n\n* \t* \t*\n",
     "expected": [
       {
         "range": [
@@ -93,6 +98,7 @@
     "source": "***\n\n   *** \t\n",
     "sha256": "986d1da548af5e791cfc2a5a50ce8be5f414c19d27253644aa8dedce42930c59",
     "size_bytes": 14,
+    "fixed": "***\n\n   *** \t\n",
     "expected": []
   },
   {
@@ -101,6 +107,7 @@
     "source": "*** \t\n\n***\n",
     "sha256": "a144a68152ce8a1111f20e868175194af9182a815e0d08dd76c8ec3633427283",
     "size_bytes": 11,
+    "fixed": "*** \t\n\n***\n",
     "expected": []
   },
   {
@@ -109,6 +116,7 @@
     "source": "***\n\n----\n\n- - -\n",
     "sha256": "62e97579053325f793391aa0e15f410d5784266d8126ae68f4bb1c7aebe59646",
     "size_bytes": 17,
+    "fixed": "---\n\n----\n\n- - -\n",
     "expected": [
       {
         "range": [
@@ -129,6 +137,7 @@
     "source": "---\n\n* * *\n\n___\n",
     "sha256": "99b33c6e49cb21bd94f465352d9a673f9063c29b234fb0326795c17ecb361304",
     "size_bytes": 16,
+    "fixed": "***\n\n* * *\n\n***\n",
     "expected": [
       {
         "range": [
@@ -160,6 +169,7 @@
     "source": "***\n\n_ _ _\n",
     "sha256": "e2d6fc983be8675992ecd5b83a600deff7ed94e58211d3aa6be6393b75630005",
     "size_bytes": 11,
+    "fixed": "___\n\n_ _ _\n",
     "expected": [
       {
         "range": [
@@ -180,6 +190,7 @@
     "source": "___\n",
     "sha256": "c7c82fa9e3c5b6bf74dac205a569181490b2f66411a2415a59d9e4aff50a4978",
     "size_bytes": 4,
+    "fixed": "___\n",
     "expected": []
   },
   {
@@ -188,6 +199,7 @@
     "source": "",
     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "size_bytes": 0,
+    "fixed": "",
     "expected": []
   },
   {
@@ -196,6 +208,7 @@
     "source": "---\n\n> ***\n",
     "sha256": "e88480626e5bcea7f32909261342c3d6f8f1fd74b9dfda0b68b62fa950523953",
     "size_bytes": 11,
+    "fixed": "---\n\n> ---\n",
     "expected": [
       {
         "range": [
@@ -216,6 +229,7 @@
     "source": "> ***\n\n---\n",
     "sha256": "3650ae8203f60e2fe82ee69f3b142f7ff8a391ef45d42acbac28b6d2aad0ecc2",
     "size_bytes": 11,
+    "fixed": "> ***\n\n***\n",
     "expected": [
       {
         "range": [
@@ -236,6 +250,7 @@
     "source": "---\n\n- x\n\n  ***\n",
     "sha256": "71a20f272c65bd8e8cd2e1d9f0972a19cefb556179be1277c8b2aeb70b2fe97d",
     "size_bytes": 16,
+    "fixed": "---\n\n- x\n\n  ---\n",
     "expected": [
       {
         "range": [
@@ -256,6 +271,7 @@
     "source": "***\n\nTitle\n---\n",
     "sha256": "79bb36039f762eebbebec0c28c1d6c26fcd89e682d506d62fdfb2dc42e0907cf",
     "size_bytes": 15,
+    "fixed": "***\n\nTitle\n---\n",
     "expected": []
   },
   {
@@ -264,6 +280,7 @@
     "source": "---\n\n```\n***\n```\n",
     "sha256": "ca49c35b77b87dc6d7cbb0c00044c7bd3012af2d3169c2b4ea561d9ff21c0c28",
     "size_bytes": 17,
+    "fixed": "---\n\n```\n***\n```\n",
     "expected": []
   },
   {
@@ -272,6 +289,7 @@
     "source": "<script>\n***\n</script>\n\n---\n",
     "sha256": "8011f8299f5cb629d625cdc354fe33ee62ab3997e3f8d1b3badf780a70f36413",
     "size_bytes": 28,
+    "fixed": "<script>\n***\n</script>\n\n---\n",
     "expected": []
   },
   {
@@ -280,6 +298,7 @@
     "source": "---\r\n\r\n***\r\n",
     "sha256": "5dc8f69548afcbf5369c757f7bec5b21e561c81a42c8fd6f4bbaefbad3102075",
     "size_bytes": 12,
+    "fixed": "---\r\n\r\n---\r\n",
     "expected": [
       {
         "range": [
@@ -300,6 +319,7 @@
     "source": "---\r\r***\r",
     "sha256": "6b175179314590c409af485162e438c7571d6d19046f224c6b05693d1e874996",
     "size_bytes": 9,
+    "fixed": "---\r\r---\r",
     "expected": [
       {
         "range": [
@@ -320,6 +340,7 @@
     "source": "---\n\n***",
     "sha256": "e88508b451d3751b00bbda957830117dcc25ee98a3ddf6f9572eb7e61c61ca8a",
     "size_bytes": 8,
+    "fixed": "---\n\n---",
     "expected": [
       {
         "range": [
@@ -340,6 +361,7 @@
     "source": "\u00e9\n\n***\n",
     "sha256": "62eaa07d9fd1e041d329eb27b79035b093836a3b0b88c2a5124ed8f6458af4ab",
     "size_bytes": 8,
+    "fixed": "\u00e9\n\n---\n",
     "expected": [
       {
         "range": [
@@ -360,6 +382,7 @@
     "source": "**\n\n*-*\n\n+++\n",
     "sha256": "76116f671e64588644027c43579d463f2f1669e395e3ff2a56e6ad007b5e987d",
     "size_bytes": 13,
+    "fixed": "**\n\n*-*\n\n+++\n",
     "expected": []
   },
   {
@@ -368,6 +391,7 @@
     "source": "* * * *\n\n*****\n",
     "sha256": "77b25d46d99418ec4cbb77cbd228a474d82ff4320bd3c7cee1a3e392f620008d",
     "size_bytes": 15,
+    "fixed": "* * * *\n\n*****\n",
     "expected": []
   }
 ]

@@ -176,6 +176,12 @@ func (c RoundContext) BlankRuns(ctx context.Context) ([][]parser.BlankRunLine, i
 	return engine.BlankRunLines(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
 }
 
+// ThematicStyle returns MD035's mismatched marker envelopes and the replacement
+// each takes for this round's own parse under the target's plan.
+func (c RoundContext) ThematicStyle(ctx context.Context) ([]parser.Span, []byte, error) {
+	return engine.ThematicStyleEdits(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
 // RepeatedProseSpaces returns MD064's excess prose SPACE spans for this round's
 // own parse under the target's plan.
 func (c RoundContext) RepeatedProseSpaces(ctx context.Context) ([]parser.Span, error) {
