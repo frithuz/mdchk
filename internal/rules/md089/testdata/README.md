@@ -8,6 +8,7 @@ lower camel case. Each case records a literal original `source` with its
 `flavor` and `formats` restrict where a case runs. Each expected finding gives a
 `range` of six integers: original byte start and end, then one-based start line
 and Unicode-scalar column and exclusive end line and column, with the exact
-source slice and message. `manual` marks a document opening with an
-unrecognized block, whose findings get no correction and keep
-`fix_available: false`; every other finding is fixable.
+source slice and message. `manual` marks findings that get no correction and keep
+`fix_available: false`: in a document opening with an unrecognized block, in
+heading text, or in a collapsed or shortcut reference label. Every other finding
+is fixable.

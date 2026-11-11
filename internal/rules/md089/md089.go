@@ -31,6 +31,19 @@ func compareCJKSpacing(ctx context.Context, c engine.RuleContext, items []parser
 			out.Findings = nil
 		}
 	}()
+	// Heading and reference-label points name an anchor or a definition, so an
+	// inserted space would break what links to them; they stay manual.
+	manual := map[int]bool{}
+	if len(items) > 0 {
+		points, err := c.CJKSpacingManual(ctx)
+		if err != nil {
+			out.Err = err
+			return out
+		}
+		for _, p := range points {
+			manual[p.Start()] = true
+		}
+	}
 	for _, item := range items {
 		if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
 			out.Err = err
@@ -59,10 +72,12 @@ func compareCJKSpacing(ctx context.Context, c engine.RuleContext, items []parser
 			out.Err = err
 			return out
 		}
-		finding.FixEligible, err = edits.Eligible(ctx, "MD089", item, pair)
-		if err != nil {
-			out.Err = err
-			return out
+		if !manual[item.Start()] {
+			finding.FixEligible, err = edits.Eligible(ctx, "MD089", item, pair)
+			if err != nil {
+				out.Err = err
+				return out
+			}
 		}
 		out.Findings = append(out.Findings, finding)
 	}

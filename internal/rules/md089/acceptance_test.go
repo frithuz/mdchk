@@ -33,8 +33,8 @@ func TestCompiledPlatformMD089ProductionAnalysis(t *testing.T) {
 	var fixtures []struct {
 		Name, Source, Flavor  string
 		Recognize, Incomplete bool
-		// Manual marks a document opening with an unrecognized block, whose
-		// findings get no correction.
+		// Manual marks findings that get no correction: in a document opening
+		// with an unrecognized block, a heading or a reference label.
 		Manual    bool
 		SHA256    string
 		SizeBytes int
