@@ -2,8 +2,6 @@ package rules
 
 import (
 	"context"
-	"crypto/sha256"
-	"fmt"
 	"testing"
 
 	"github.com/frithuz/mdchk/internal/engine"
@@ -173,64 +171,19 @@ func (c *stopAtContext) Err() error {
 
 func originalPosition(source string, at int) result.Position { return ruletest.OriginalPosition(source, at) }
 
-type oracleFinding struct {
-	Rule, Message, Marker string
-	ByteRange             result.ByteRange `json:"byte_range"`
-	Range                 result.Range
-}
+type (
+	oracleFinding = ruletest.OracleFinding
+	auditDecision = ruletest.AuditDecision
+)
 
-// auditDecision is only a test expectation for detached original facts.
-type auditDecision struct {
-	Owner, Effect int
-	Rule, Reason  string
-	Token         result.ByteRange
-	Interval      struct {
-		Start, End int
-		EOF        bool `json:"includes_final_eof"`
-	}
-}
+func equalAuditDecisions(a, b []auditDecision) bool { return ruletest.EqualAuditDecisions(a, b) }
 
-func equalAuditDecisions(a, b []auditDecision) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
-}
-
-// Every raw accessor row is checked before any named requested projection.
 func assertRawDecisions(t *testing.T, source parser.Source, got []engine.SuppressionDecision, want []auditDecision) []auditDecision {
 	t.Helper()
-	if len(got) != len(want) {
-		t.Fatal("complete raw decision inventory", got, want)
-	}
-	out := make([]auditDecision, 0, len(got))
-	for i, d := range got {
-		w := want[i]
-		if d.Owner != w.Owner || d.Effect != w.Effect || d.Rule != w.Rule || d.Reason != w.Reason || d.Token.SourceToken() != source.Token() || d.Token.Start() != w.Token.Start || d.Token.End() != w.Token.End || d.Token.Start() < 0 || d.Token.End() <= d.Token.Start() || d.Token.End() > source.Len() || d.Interval.Start != w.Interval.Start || d.Interval.End != w.Interval.End || d.Interval.Start < 0 || d.Interval.End < d.Interval.Start || d.Interval.End > source.Len() || d.Interval.Enabled || d.Interval.Owner != w.Owner || d.Interval.Token != d.Token || (d.Interval.End == source.Len()) != w.Interval.EOF {
-			t.Fatal("raw original decision", d, w)
-		}
-		text, err := source.Text(d.Token)
-		if err != nil || text != d.Rule {
-			t.Fatal("original decision token spelling", text, err, d)
-		}
-		actual := auditDecision{Owner: d.Owner, Effect: d.Effect, Rule: d.Rule, Reason: d.Reason, Token: result.ByteRange{Start: d.Token.Start(), End: d.Token.End()}}
-		actual.Interval.Start, actual.Interval.End, actual.Interval.EOF = d.Interval.Start, d.Interval.End, d.Interval.End == source.Len()
-		out = append(out, actual)
-	}
-	return out
+	return ruletest.AssertRawDecisions(t, source, got, want)
 }
 
 func assertOracleDiagnostic(t *testing.T, source string, got result.Diagnostic, want oracleFinding) {
 	t.Helper()
-	if got.Rule != want.Rule || got.Severity != "error" || got.Message != want.Message || got.ByteRange != want.ByteRange || got.Range != want.Range || got.FixAvailable || got.Snapshot != (result.Snapshot{View: "original", SizeBytes: len(source), SHA256: fmt.Sprintf("%x", sha256.Sum256([]byte(source)))}) {
-		t.Fatal(got, want)
-	}
-	if want.ByteRange.Start < 0 || want.ByteRange.End > len(source) || want.ByteRange.End <= want.ByteRange.Start || source[want.ByteRange.Start:want.ByteRange.End] != want.Marker {
-		t.Fatal("invalid oracle range", want)
-	}
+	ruletest.AssertOracleDiagnostic(t, source, got, want)
 }

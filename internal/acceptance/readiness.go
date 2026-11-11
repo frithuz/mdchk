@@ -12,6 +12,8 @@ import (
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/frithuz/mdchk/internal/result"
 )
 
 // ReadinessHash returns the hexadecimal SHA-256 of s.
@@ -154,4 +156,16 @@ func ReadinessAssertParentAfterSave(t *testing.T, before, after ReadinessEntry) 
 	if before.Info.Mode() != after.Info.Mode() {
 		t.Fatalf("apply parent: type/mode before=%s after=%s", before.Info.Mode(), after.Info.Mode())
 	}
+}
+
+// ReadinessFile returns the outcome for path in r, failing when it is missing.
+func ReadinessFile(t *testing.T, r result.Result, path string) result.File {
+	t.Helper()
+	for _, f := range r.Files {
+		if f.Path == path {
+			return f
+		}
+	}
+	t.Fatalf("missing file %s: %+v", path, r.Files)
+	return result.File{}
 }

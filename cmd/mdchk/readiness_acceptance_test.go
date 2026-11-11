@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/frithuz/mdchk/internal/acceptance"
 	inspection "github.com/frithuz/mdchk/internal/inspect"
 	"github.com/frithuz/mdchk/internal/result"
 	"github.com/frithuz/mdchk/internal/testenv"
@@ -255,13 +256,7 @@ func readinessSnapshot(t *testing.T, s result.Snapshot, view, contents string) {
 }
 func readinessFile(t *testing.T, r result.Result, path string) result.File {
 	t.Helper()
-	for _, f := range r.Files {
-		if f.Path == path {
-			return f
-		}
-	}
-	t.Fatalf("missing file %s: %+v", path, r.Files)
-	return result.File{}
+	return acceptance.ReadinessFile(t, r, path)
 }
 func readinessDiagnostic(t *testing.T, r result.Result, path string) result.Diagnostic {
 	t.Helper()
