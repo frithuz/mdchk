@@ -1,3 +1,5 @@
+// Facts for MD048.
+
 package parser
 
 import (

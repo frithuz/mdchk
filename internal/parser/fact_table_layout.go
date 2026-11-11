@@ -1,3 +1,5 @@
+// Facts for MD060.
+
 package parser
 
 import (

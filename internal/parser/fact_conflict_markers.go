@@ -1,3 +1,5 @@
+// Facts for MD092.
+
 package parser
 
 import (

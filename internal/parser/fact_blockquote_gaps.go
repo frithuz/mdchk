@@ -1,3 +1,5 @@
+// Facts for MD028.
+
 package parser
 
 import (

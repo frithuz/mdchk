@@ -1,3 +1,5 @@
+// Facts for MD088.
+
 package parser
 
 import (

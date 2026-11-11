@@ -1,3 +1,5 @@
+// Facts for MD042.
+
 package parser
 
 import (

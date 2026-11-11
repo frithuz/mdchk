@@ -1,3 +1,5 @@
+// Facts for MD027.
+
 package parser
 
 import (
