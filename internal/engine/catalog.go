@@ -77,7 +77,7 @@ func Catalog() []Metadata {
 		{ID: "MD082", Name: "Sections without content", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"allow_final_section": boolean(false)}},
 		{ID: "MD083", Name: "Text corrupted by encoding mismatch", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"sequences": {Kind: Strings, Default: []string{"Ã", "Â", "â€"}, Domain: ConfiguredNameUTF8}}},
 		{ID: "MD084", Name: "Hidden or discouraged Unicode characters", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"allowed_codepoints": {Kind: Strings, Default: []string{}, Domain: UnicodeScalarHex}}},
-		{ID: "MD085", Name: "Indented paragraph continuation lines", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
+		{ID: "MD085", Name: "Indented paragraph continuation lines", DefaultEnabled: false, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD086", Name: "Comments lacking a closing delimiter", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD087", Name: "Suppressions that hide no findings", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD088", Name: "Quote and dash normalization", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("ascii")}},

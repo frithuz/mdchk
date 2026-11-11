@@ -44,12 +44,12 @@ func TestMD085FinalPublicationWithholdsAllFindings(t *testing.T) {
 
 func TestMD085CallbackQuotaAndCopyBoundaries(t *testing.T) {
 	for _, kind := range []string{"work", "nodes"} {
-		for _, remaining := range []int64{0, 20, 21} {
-			if kind == "nodes" && remaining == 20 {
-				remaining = 16
+		for _, remaining := range []int64{0, 13448, 13449} {
+			if kind == "nodes" && remaining == 13448 {
+				remaining = 927
 			}
-			if kind == "nodes" && remaining == 21 {
-				remaining = 17
+			if kind == "nodes" && remaining == 13449 {
+				remaining = 928
 			}
 			t.Run(fmt.Sprintf("%s/%d", kind, remaining), func(t *testing.T) {
 				var used int64
@@ -83,7 +83,7 @@ func TestMD085CallbackQuotaAndCopyBoundaries(t *testing.T) {
 				}
 				run(true)
 				out, observed := run(false)
-				success := remaining == 21 || remaining == 17
+				success := remaining == 13449 || remaining == 928
 				if success {
 					if observed.Err != nil || len(observed.Findings) != 5 {
 						t.Fatal(out, observed)

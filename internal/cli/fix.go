@@ -59,6 +59,7 @@ list continuation indentation. MD076 inserts or deletes blank lines between
 sibling list items. MD004 replaces a bullet with the expected marker when the
 list structure stays the same. MD027 removes excess spaces after a blockquote
 marker, keeping one. MD064 removes repeated spaces in prose beyond maximum.
+MD085 removes surplus indentation from a paragraph continuation line.
 Ambiguous contexts stay manual and appear under deferred_fixes.
 Text/JSON include preview diffs; editor formats report remaining findings only.
 VS Code unlocated errors and both editor formats' recovery outcomes use stderr.

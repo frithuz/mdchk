@@ -154,6 +154,12 @@ func (c RoundContext) TabCharacters(ctx context.Context) ([]engine.TabCharacterI
 	return engine.TabCharacterFacts(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
 }
 
+// ParagraphIndentation returns MD085's surplus continuation indentation spans for
+// this round's own parse under the target's plan.
+func (c RoundContext) ParagraphIndentation(ctx context.Context) ([]parser.Span, error) {
+	return engine.ParagraphIndentationFacts(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
 // MeaningPreservedAcrossTabs compares both actual round parses, reading each TAB
 // in Text as spaces ASCII spaces.
 func (c CheckContext) MeaningPreservedAcrossTabs(ctx context.Context, spaces int) (bool, error) {

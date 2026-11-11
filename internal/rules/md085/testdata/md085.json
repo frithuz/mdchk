@@ -15,7 +15,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -35,7 +36,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -55,7 +57,8 @@
           5
         ],
         "Source": " ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -75,7 +78,8 @@
           5
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -95,7 +99,8 @@
           2
         ],
         "Source": "\t",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -115,7 +120,8 @@
           3
         ],
         "Source": "\t",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -135,7 +141,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -155,7 +162,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -175,7 +183,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -195,7 +204,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -215,7 +225,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -235,7 +246,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -255,7 +267,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -289,7 +302,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -316,7 +330,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -343,7 +358,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -363,7 +379,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -390,7 +407,8 @@
           4
         ],
         "Source": " ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -410,7 +428,8 @@
           4
         ],
         "Source": " ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -430,7 +449,8 @@
           4
         ],
         "Source": " ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -450,7 +470,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -499,7 +520,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ],
     "Flavor": "commonmark"
@@ -548,7 +570,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -568,7 +591,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -588,7 +612,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -608,7 +633,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -635,7 +661,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -662,7 +689,8 @@
           2
         ],
         "Source": " ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -682,7 +710,8 @@
           2
         ],
         "Source": " ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -702,7 +731,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -729,7 +759,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -749,7 +780,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -769,7 +801,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -789,7 +822,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       },
       {
         "Range": [
@@ -801,7 +835,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -821,7 +856,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -841,7 +877,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -889,7 +926,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ],
     "Recognize": true
@@ -910,7 +948,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": false
       }
     ]
   },
@@ -930,7 +969,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": false
       }
     ],
     "Recognize": true,
@@ -963,7 +1003,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ],
     "Recognize": true
@@ -984,7 +1025,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -996,7 +1038,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": false
       }
     ]
   },
@@ -1016,7 +1059,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": false
       },
       {
         "Range": [
@@ -1028,7 +1072,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": false
       }
     ],
     "Recognize": true,
@@ -1068,7 +1113,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ]
   },
@@ -1093,7 +1139,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ],
     "SHA256": "e0dfe14dc88eed4af3fd7d3bdba507843b7c1b9b18bbe35701dfe3a6849f168d",
@@ -1113,7 +1160,8 @@
           3
         ],
         "Source": "  ",
-        "Message": "Additional indentation on paragraph continuation."
+        "Message": "Additional indentation on paragraph continuation.",
+        "FixAvailable": true
       }
     ],
     "SHA256": "94e6871e16d7d15ddb7a2aca1885320053c10cbbf60a6d78c4b583cec4b2d14e",

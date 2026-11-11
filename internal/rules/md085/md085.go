@@ -49,8 +49,13 @@ func compareParagraphIndentation(ctx context.Context, c engine.RuleContext, item
 			out.Err = err
 			return out
 		}
+		eligible, err := c.ParagraphIndentationFixEligible(ctx, item)
+		if err != nil {
+			out.Err = err
+			return out
+		}
 		message := "Additional indentation on paragraph continuation."
-		out.Findings = append(out.Findings, engine.Finding{Span: item, Message: message})
+		out.Findings = append(out.Findings, engine.Finding{Span: item, Message: message, FixEligible: eligible})
 	}
 	return out
 }
