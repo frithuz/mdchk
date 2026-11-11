@@ -36,7 +36,7 @@ func Catalog() []Metadata {
 		{ID: "MD035", Name: "Horizontal rule marker style", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "dash", "asterisk", "underscore")}},
 		{ID: "MD036", Name: "Emphasis used as a heading", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD037", Name: "Whitespace within emphasis delimiters", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD038", Name: "Whitespace within inline code delimiters", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
+		{ID: "MD038", Name: "Whitespace within inline code delimiters", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD039", Name: "Whitespace surrounding link labels", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD040", Name: "Missing fenced block language", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"allowed_languages": list()}},
 		{ID: "MD041", Name: "Opening document heading", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"level": headingLevel(1), "frontmatter_title": boolean(false)}},

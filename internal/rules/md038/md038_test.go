@@ -27,7 +27,7 @@ func TestMD038DefaultsSettingsAndAvailability(t *testing.T) {
 		} else {
 			off++
 		}
-		if m.ID == "MD038" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.PlannedFix || len(m.Options) != 0) {
+		if m.ID == "MD038" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.ImplementedFix || len(m.Options) != 0) {
 			t.Fatal(m)
 		}
 	}

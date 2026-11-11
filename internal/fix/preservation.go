@@ -4,6 +4,7 @@ import (
 	"context"
 	"reflect"
 	"slices"
+	"strings"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
@@ -388,7 +389,62 @@ func sameCodeBinding(m editMapping, a, b *parser.Node) (bool, error) {
 			return false, err
 		}
 	}
+	if a.Kind() == parser.CodeSpan {
+		return samePaddedSegments(m, a.Content(), b.Content())
+	}
 	return sameSegments(m, a.Content(), b.Content())
+}
+
+// samePaddedSegments is sameSegments for code span payload, whose edge SPACE
+// padding the planner leaves editable: each segment keeps its semantic value
+// and maps endpoint to endpoint, and its spelling may lose only SPACE bytes at
+// either end. Segment kinds may differ, as a trimmed segment becomes exact.
+func samePaddedSegments(m editMapping, a, b []parser.Segment) (bool, error) {
+	if len(a) != len(b) {
+		return false, nil
+	}
+	for i, s := range a {
+		if err := m.meter.reserve(1, 1); err != nil {
+			return false, err
+		}
+		t := b[i]
+		if s.Semantic != t.Semantic || s.Source.Present() != t.Source.Present() {
+			return false, nil
+		}
+		if !s.Source.Present() {
+			continue
+		}
+		start, ok, err := m.offset(s.Source.Start(), true)
+		if err != nil || !ok || start != t.Source.Start() {
+			return false, err
+		}
+		end, ok, err := m.offset(s.Source.End(), false)
+		if err != nil || !ok || end != t.Source.End() {
+			return false, err
+		}
+		x, err := m.before.Text(s.Source)
+		if err != nil {
+			return false, nil
+		}
+		y, err := m.after.Text(t.Source)
+		if err != nil {
+			return false, nil
+		}
+		if err := m.meter.work(int64(len(x) + len(y))); err != nil {
+			return false, err
+		}
+		if x == y {
+			if s.Transformation != t.Transformation {
+				return false, nil
+			}
+			continue
+		}
+		k := strings.Index(x, y)
+		if k < 0 || strings.Trim(x[:k], " ") != "" || strings.Trim(x[k+len(y):], " ") != "" {
+			return false, nil
+		}
+	}
+	return true, nil
 }
 func sameCodeValue(m editMapping, a, b *parser.Value) (bool, error) {
 	if (a == nil) != (b == nil) {

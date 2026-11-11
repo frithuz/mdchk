@@ -1,0 +1,193 @@
+[
+  {
+    "Name": "basic",
+    "Source": "Use ` text ` here.\n",
+    "Candidate": "Use `text` here.\n"
+  },
+  {
+    "Name": "crlf",
+    "Source": "Use ` text ` here.\r\nAnd ` more `\r\n",
+    "Candidate": "Use `text` here.\r\nAnd `more`\r\n"
+  },
+  {
+    "Name": "unicode",
+    "Source": "Café ` 日本語 ` naïve ` é `\n",
+    "Candidate": "Café `日本語` naïve `é`\n"
+  },
+  {
+    "Name": "several",
+    "Source": "` a ` b ` c `\n\n` d `\n",
+    "Candidate": "`a` b `c`\n\n`d`\n"
+  },
+  {
+    "Name": "double-backtick",
+    "Source": "x `` a ` b `` y\n",
+    "Candidate": "x ``a ` b`` y\n"
+  },
+  {
+    "Name": "mixed",
+    "Source": "` a ` and `  b  `\n",
+    "Candidate": "`a` and `  b  `\n"
+  },
+  {
+    "Name": "two-spaces",
+    "Source": "`  text  `\n",
+    "Candidate": "`  text  `\n"
+  },
+  {
+    "Name": "leading-backtick",
+    "Source": "`` `a` ``\n",
+    "Candidate": "`` `a` ``\n"
+  },
+  {
+    "Name": "padded-backtick",
+    "Source": "``  `a`  ``\n",
+    "Candidate": "``  `a`  ``\n"
+  },
+  {
+    "Name": "trailing-backtick",
+    "Source": "``  a`  ``\n",
+    "Candidate": "``  a`  ``\n"
+  },
+  {
+    "Name": "multiline",
+    "Source": "` a\nb `\n",
+    "Candidate": "`a\nb`\n"
+  },
+  {
+    "Name": "multiline-ambiguous",
+    "Source": "` \na `\n",
+    "Candidate": "` \na `\n"
+  },
+  {
+    "Name": "multiline-crlf",
+    "Source": "` a\r\nb `\r\n",
+    "Candidate": "`a\r\nb`\r\n"
+  },
+  {
+    "Name": "fenced",
+    "Source": "```\n` text `\n```\n",
+    "Candidate": "```\n` text `\n```\n"
+  },
+  {
+    "Name": "indented",
+    "Source": "    ` text `\n",
+    "Candidate": "    ` text `\n"
+  },
+  {
+    "Name": "html-block",
+    "Source": "<div>\n` text `\n</div>\n",
+    "Candidate": "<div>\n` text `\n</div>\n"
+  },
+  {
+    "Name": "inline-html",
+    "Source": "<span>` text `</span>\n",
+    "Candidate": "<span>`text`</span>\n"
+  },
+  {
+    "Name": "raw-lifetime",
+    "Source": "A <script>\n\n` x `\n\n</script>\n\n` y `\n",
+    "Candidate": "A <script>\n\n` x `\n\n</script>\n\n`y`\n"
+  },
+  {
+    "Name": "image-local-raw",
+    "Source": "![<script>` x `](pic) ` y `\n",
+    "Candidate": "![<script>` x `](pic) `y`\n"
+  },
+  {
+    "Name": "partial-tab-prefix",
+    "Source": ">\t` x `\n",
+    "Candidate": ">\t`x`\n"
+  },
+  {
+    "Name": "directive-text-in-code",
+    "Source": "` x\nz <!-- mdchk:disable MD038 -->\ny `\n",
+    "Candidate": "`x\nz <!-- mdchk:disable MD038 -->\ny`\n"
+  },
+  {
+    "Name": "html-comment",
+    "Source": "<!-- ` text ` -->\n",
+    "Candidate": "<!-- ` text ` -->\n"
+  },
+  {
+    "Name": "html-attribute",
+    "Source": "<a title=\"` text `\">x</a>\n",
+    "Candidate": "<a title=\"` text `\">x</a>\n"
+  },
+  {
+    "Name": "unrecognized-leading-block",
+    "Source": "---\n` x `\n---\n` y `\n",
+    "Candidate": "---\n` x `\n---\n` y `\n"
+  },
+  {
+    "Name": "link-label",
+    "Source": "[` text `](u)\n",
+    "Candidate": "[`text`](u)\n"
+  },
+  {
+    "Name": "image-alt",
+    "Source": "![` text `](u)\n",
+    "Candidate": "![`text`](u)\n"
+  },
+  {
+    "Name": "table",
+    "Source": "| a |\n| - |\n| ` text ` |\n",
+    "Candidate": "| a |\n| - |\n| `text` |\n",
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "blockquote",
+    "Source": "> ` text `\n",
+    "Candidate": "> `text`\n"
+  },
+  {
+    "Name": "blockquote-multiline",
+    "Source": "> ` a\n> b `\n",
+    "Candidate": "> `a\n> b`\n"
+  },
+  {
+    "Name": "list",
+    "Source": "- ` text `\n  ` more `\n",
+    "Candidate": "- `text`\n  `more`\n"
+  },
+  {
+    "Name": "nested-containers",
+    "Source": "> 1. a ` b `\n",
+    "Candidate": "> 1. a `b`\n"
+  },
+  {
+    "Name": "heading",
+    "Source": "# A ` b `\n",
+    "Candidate": "# A `b`\n"
+  },
+  {
+    "Name": "md047",
+    "Source": "Use ` text ` here.",
+    "Candidate": "Use `text` here.\n",
+    "Config": "md047"
+  },
+  {
+    "Name": "md009",
+    "Source": "Use ` text ` here. \nend ` x ` z ",
+    "Candidate": "Use `text` here.\nend `x` z\n",
+    "Config": "md009"
+  },
+  {
+    "Name": "md009-crlf",
+    "Source": "Use ` text ` here. \r\nend",
+    "Candidate": "Use `text` here.\r\nend\r\n",
+    "Config": "md009"
+  },
+  {
+    "Name": "directives",
+    "Source": "<!-- mdchk:disable MD038 -->\n` text `\n<!-- mdchk:enable MD038 -->\n` text `\n",
+    "Candidate": "<!-- mdchk:disable MD038 -->\n` text `\n<!-- mdchk:enable MD038 -->\n`text`\n",
+    "Config": "directives"
+  },
+  {
+    "Name": "md047-protected-endpoint",
+    "Source": "a ` x `",
+    "Candidate": "a `x`",
+    "Config": "md047"
+  }
+]

@@ -48,7 +48,7 @@ func TestMD038FrozenAnalysisFixtures(t *testing.T) {
 				}
 				for i, d := range out.Diagnostics {
 					w := f.Ranges[i]
-					if [2]int{d.ByteRange.Start, d.ByteRange.End} != w || d.Range.Start != ruletest.OriginalPosition(f.Source, w[0]) || d.Range.End != ruletest.OriginalPosition(f.Source, w[1]) || d.Rule != "MD038" || d.Message != "Whitespace within inline code delimiters." || d.FixAvailable || d.Snapshot.View != "original" || d.Snapshot.SHA256 != f.SHA256 || d.Snapshot.SizeBytes != len(f.Source) {
+					if [2]int{d.ByteRange.Start, d.ByteRange.End} != w || d.Range.Start != ruletest.OriginalPosition(f.Source, w[0]) || d.Range.End != ruletest.OriginalPosition(f.Source, w[1]) || d.Rule != "MD038" || d.Message != "Whitespace within inline code delimiters." || d.FixAvailable && w[1]-w[0] != 1 || d.Snapshot.View != "original" || d.Snapshot.SHA256 != f.SHA256 || d.Snapshot.SizeBytes != len(f.Source) {
 						t.Fatal(d, f)
 					}
 					for _, b := range []byte(f.Source[w[0]:w[1]]) {

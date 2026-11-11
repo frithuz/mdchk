@@ -44,7 +44,7 @@ func TestMD038CallbackOriginFinalPublication(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 1}, {"clean", "a", 1}, {"protected", "```\nx\n```", 1}, {"findings", "` x `", 7}, {"growth", "` x `\n\n` x `\n\n` x `", 17}} {
+	}{{"empty", "", 1}, {"clean", "a", 1}, {"protected", "```\nx\n```", 1}, {"findings", "` x `", 47}, {"growth", "` x `\n\n` x `\n\n` x `", 117}} {
 		t.Run(tc.name, func(t *testing.T) {
 			origin := &ruletest.LateStopContext{Context: context.Background(), Stop: 1 << 20, Reason: context.Canceled}
 			var observed engine.RuleOutcome
@@ -122,7 +122,8 @@ func TestMD038CallbackManualFindings(t *testing.T) {
 		}
 		return out
 	}}})
-	out := ruletest.AnalyzeDocument(t, r, "` x `", ruletest.OnlyDefault("MD038"), engine.DocumentContext{}, engine.RunOptions{})
+	// A reserved innermost SPACE means deletion would change the code value.
+	out := ruletest.AnalyzeDocument(t, r, "`  x  `", ruletest.OnlyDefault("MD038"), engine.DocumentContext{}, engine.RunOptions{})
 	if !out.Complete || len(out.Diagnostics) != 2 || len(out.Changes)+len(out.DeferredFixes)+len(out.Documents) != 0 {
 		t.Fatal(out)
 	}

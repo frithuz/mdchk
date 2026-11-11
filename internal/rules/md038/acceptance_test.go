@@ -30,9 +30,9 @@ func TestCompiledPlatformMD038ProductionAnalysis(t *testing.T) {
 		name, source, flavor string
 		want                 int
 	}{
-		{"edges", "` x `", "commonmark", 2}, {"unicode-crlf", "> é `  文  `\r\n", "gfm", 2},
-		{"ambiguity", "`   one` and `two   `", "commonmark", 0}, {"entity", "` &amp; `", "gfm", 2},
-		{"owned-code", "``x `  y  ` z``", "gfm", 0}, {"link-label", "[` x `](u)", "commonmark", 2},
+		{"edges", "`  x  `", "commonmark", 2}, {"unicode-crlf", "> é `  文  `\r\n", "gfm", 2},
+		{"ambiguity", "`   one` and `two   `", "commonmark", 0}, {"entity", "`  &amp;  `", "gfm", 2},
+		{"owned-code", "``x `  y  ` z``", "gfm", 0}, {"link-label", "[`  x  `](u)", "commonmark", 2},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			root := acceptance.Project(t)
@@ -168,7 +168,7 @@ func TestCompiledPlatformMD038EncodingAndMD047Composition(t *testing.T) {
 	root := acceptance.Project(t)
 	conf := strings.Replace(md038Configuration("gfm"), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
 	acceptance.PutFile(t, root, ".mdchk.yaml", conf)
-	source := "` x ` tail"
+	source := "`  x  ` tail"
 	acceptance.PutFile(t, root, "doc.md", source)
 	dry := acceptance.RunProcess(t, binary, root, "fix", "--dry-run", "doc.md", "--format=json")
 	preview := acceptance.ValidateOperationJSON(t, []byte(dry.Stdout), "fix")
@@ -215,7 +215,7 @@ func TestCompiledPlatformMD038EncodingAndMD047Composition(t *testing.T) {
 				conf = strings.Replace(conf, "MD094: {enabled: false}", "MD094: {enabled: true}", 1)
 			}
 			acceptance.PutFile(t, root, ".mdchk.yaml", conf)
-			acceptance.PutFile(t, root, "doc.md", "` � `")
+			acceptance.PutFile(t, root, "doc.md", "`  �  `")
 			if err := os.WriteFile(filepath.Join(root, "bad.md"), []byte{'x', 0xff}, 0600); err != nil {
 				t.Fatal(err)
 			}
@@ -308,7 +308,7 @@ func md038MixedEncodingIndependentCorrection(t *testing.T, binary string) {
 	config := strings.Replace(md038Configuration("gfm"), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
 	config = strings.Replace(config, "MD094: {enabled: false}", "MD094: {enabled: true}", 1)
 	acceptance.PutFile(t, root, ".mdchk.yaml", config)
-	source, candidate := "` � ` tail", "` � ` tail\n"
+	source, candidate := "`  �  ` tail", "`  �  ` tail\n"
 	acceptance.PutFile(t, root, "doc.md", source)
 	bad := []byte{'x', 0xff}
 	badPath := filepath.Join(root, "zz-bad.md")
@@ -369,9 +369,9 @@ func md038MixedEncodingIndependentCorrection(t *testing.T, binary string) {
 			for i, d := range out.Diagnostics {
 				start, end := 1, 2
 				if i == 1 {
-					start, end = 5, 6
+					start, end = 7, 8
 				}
-				if d.Rule != "MD038" || d.ByteRange.Start != start || d.ByteRange.End != end || d.Snapshot.View != view || d.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(candidate))) || d.Snapshot.SizeBytes != 13 || d.FixAvailable {
+				if d.Rule != "MD038" || d.ByteRange.Start != start || d.ByteRange.End != end || d.Snapshot.View != view || d.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(candidate))) || d.Snapshot.SizeBytes != 15 || d.FixAvailable {
 					t.Fatal(d)
 				}
 			}
@@ -385,7 +385,7 @@ func TestCompiledPlatformMD038ProtectedEOFCompositionManual(t *testing.T) {
 	root := acceptance.Project(t)
 	conf := strings.Replace(md038Configuration("gfm"), "MD047: {enabled: false}", "MD047: {enabled: true}", 1)
 	acceptance.PutFile(t, root, ".mdchk.yaml", conf)
-	source := "` x `"
+	source := "`  x  `"
 	acceptance.PutFile(t, root, "doc.md", source)
 	before := acceptance.ReadinessState(t, root)
 	got := acceptance.RunProcess(t, binary, root, "fix", "--dry-run", "doc.md", "--format=json")

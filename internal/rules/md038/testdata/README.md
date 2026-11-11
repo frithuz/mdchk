@@ -7,3 +7,7 @@ the excess code-span edge whitespace as original byte `ranges`, a `why`
 explaining them, and an optional `context`. The test pins the whole-file digest
 and runs every case under the listed `flavors`. Expected values must never be
 regenerated from production output.
+
+`md038_corrections.json` lists correction cases for `fix`: each has a `Name`,
+the original `Source`, the expected `Candidate`, an optional `Flavor` and an
+optional `Config` naming extra rules (`md047`, `md009`) or `directives`.

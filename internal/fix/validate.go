@@ -188,6 +188,12 @@ func (c RoundContext) RepeatedProseSpaces(ctx context.Context) ([]parser.Span, e
 	return engine.RepeatedProseSpaceSpans(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
 }
 
+// DeletableCodeSpanSpaces returns MD038's deletable code-span edge SPACE pairs
+// for this round's own parse under the target's plan.
+func (c RoundContext) DeletableCodeSpanSpaces(ctx context.Context) ([]parser.Span, error) {
+	return engine.DeletableCodeSpanSpaceSpans(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
 // BulletIndentation returns MD007's list item facts and resolved indent and
 // start_indented options for this round's own parse under the target's plan.
 func (c RoundContext) BulletIndentation(ctx context.Context) ([]parser.ListItemFact, int, bool, error) {
@@ -253,6 +259,12 @@ func (c CheckContext) MeaningPreservedAcrossProseSpaces(ctx context.Context) (bo
 		return false, nil
 	}
 	return before.Document.SameMeaningAcrossProseSpaces(ctx, c.Before.meter.budget, after.Document)
+}
+
+// MeaningPreserved compares both actual round parses with every node property
+// and Text value, code span values included, compared exactly.
+func (c CheckContext) MeaningPreserved(ctx context.Context) (bool, error) {
+	return c.MeaningPreservedAcrossListSeparators(ctx, nil)
 }
 
 // MeaningPreservedAcrossListSeparators compares both actual round parses. Only a
