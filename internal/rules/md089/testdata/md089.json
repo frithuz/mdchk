@@ -227,6 +227,7 @@
   },
   {
     "name": "root-heading",
+    "manual": true,
     "source": "# 中A\n",
     "sha256": "f819014cfa392c1b11788094e1aabd1d4ee7b7317fe7a57aab7befc18c1129fb",
     "sizeBytes": 7,
@@ -591,6 +592,7 @@
   },
   {
     "name": "qa-reference-setext",
+    "manual": true,
     "source": "[漢A]: /漢B\n\n漢A\n---\n",
     "sha256": "b5b59dff595d37e8bf3b8ccd85d061171461c22d300f815568f01f080d54102c",
     "sizeBytes": 24,

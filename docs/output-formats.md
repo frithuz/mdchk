@@ -425,7 +425,8 @@ can't prove stay under `deferred_fixes`.
 
 MD089 reports zero-width original insertion points with constant message
 `Missing space between CJK and Latin text.`. `fix_available` is true for findings
-its correction handles, and `fix` inserts one ASCII SPACE at the point; findings
+its correction handles, and false in heading text and collapsed or shortcut
+reference labels, and `fix` inserts one ASCII SPACE at the point; findings
 it can't prove stay under `deferred_fixes`.
 
 

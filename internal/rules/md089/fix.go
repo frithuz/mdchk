@@ -37,6 +37,10 @@ func Correction(ctx context.Context, c fix.RoundContext, diagnostics []result.Di
 	for _, p := range points {
 		byStart[p.Start()] = p
 	}
+	manual, err := manualPoints(ctx, c)
+	if err != nil {
+		return nil, err
+	}
 	out := make([]fix.Group, 0, len(diagnostics))
 	for _, d := range diagnostics {
 		p, ok := byStart[d.ByteRange.Start]
@@ -48,7 +52,7 @@ func Correction(ctx context.Context, c fix.RoundContext, diagnostics []result.Di
 			return nil, err
 		}
 		group := fix.Group{ID: fmt.Sprintf("MD089-offset-%d", p.Start()), Rule: "MD089", Provenance: "MD089 missing CJK/Latin space", Anchor: p, Requirements: []fix.Requirement{{Kind: fix.Meaning}, {Kind: fix.ProtectedSyntax}, {Kind: fix.DirectiveStructure}}}
-		if !pair {
+		if !pair || manual[p.Start()] {
 			group.DeferReason = pairNotProven
 		} else {
 			group.Edits = []fix.Edit{{Span: p, Replacement: space}}
@@ -93,6 +97,23 @@ func cjkLatinPair(ctx context.Context, c fix.RoundContext, p parser.Span) (bool,
 	return a != 0 && b != 0 && a != b, nil
 }
 
+// manualPoints returns the offsets of the round's heading and reference-label
+// points, whose insertion would change an anchor or a definition match.
+func manualPoints(ctx context.Context, c fix.RoundContext) (map[int]bool, error) {
+	points, err := c.CJKSpacingManual(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := c.Reserve(ctx, int64(len(points))+1, int64(len(points))+1); err != nil {
+		return nil, err
+	}
+	out := make(map[int]bool, len(points))
+	for _, p := range points {
+		out[p.Start()] = true
+	}
+	return out, nil
+}
+
 // class is 1 for Han Ideographic, 2 for Latin letters and ASCII digits, else 0.
 func class(r rune) byte {
 	switch {
@@ -108,6 +129,7 @@ func class(r rune) byte {
 // computed once, so proof cost does not grow with the group count.
 type spacingRound struct {
 	points    map[int]parser.Span
+	manual    map[int]bool
 	preserved bool
 }
 
@@ -120,7 +142,9 @@ func Checker() fix.CheckerRegistration {
 // neither producer data nor fix flags. Whole-candidate proof runs once for the
 // round. Shared protection, binding and directive checks remain mandatory in
 // Validator, and inserting a space in prose outside comments cannot create a
-// directive finding, so no ForbidNewFindings is registered.
+// directive finding. Heading and reference-label points, whose text names an
+// anchor or a definition, are refused, so no fragment or reference changes and
+// no ForbidNewFindings is registered.
 func checkCJKSpacing(ctx context.Context, c fix.CheckContext) (fix.Proof, error) {
 	shared, err := c.Once("cjk-spacing", func() (any, error) { return cjkSpacingProof(ctx, c) })
 	if err != nil {
@@ -136,7 +160,7 @@ func checkCJKSpacing(ctx context.Context, c fix.CheckContext) (fix.Proof, error)
 	}
 	e := g.Edits[0]
 	p, ok := round.points[e.Span.Start()]
-	if !ok || p != e.Span || g.Anchor != p {
+	if !ok || p != e.Span || g.Anchor != p || round.manual[p.Start()] {
 		return fix.Unsafe, nil
 	}
 	pair, err := cjkLatinPair(ctx, c.Before, p)
@@ -170,8 +194,11 @@ func cjkSpacingProof(ctx context.Context, c fix.CheckContext) (spacingRound, err
 	if err != nil {
 		return failed, err
 	}
+	if round.manual, err = manualPoints(ctx, c.Before); err != nil {
+		return failed, err
+	}
 	for _, e := range edits {
-		if p, ok := round.points[e.Edit.Span.Start()]; !ok || p != e.Edit.Span || len(e.Edit.Expected) != 0 || string(e.Edit.Replacement) != " " {
+		if p, ok := round.points[e.Edit.Span.Start()]; !ok || round.manual[p.Start()] || p != e.Edit.Span || len(e.Edit.Expected) != 0 || string(e.Edit.Replacement) != " " {
 			return failed, nil
 		}
 	}

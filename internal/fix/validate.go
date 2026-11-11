@@ -342,6 +342,16 @@ func (c RoundContext) CJKSpacing(ctx context.Context) ([]parser.Span, error) {
 	return c.Parsed().Document.CJKSpacing(ctx, c.meter.budget, c.Lines(), dc.ParseOptions())
 }
 
+// CJKSpacingManual projects this round's MD089 points in heading or
+// reference-label Text, which no correction may edit.
+func (c RoundContext) CJKSpacingManual(ctx context.Context) ([]parser.Span, error) {
+	dc, known := c.trace.DocumentContext()
+	if !known {
+		return nil, errors.New("unknown document context")
+	}
+	return c.Parsed().Document.CJKSpacingManual(ctx, c.meter.budget, c.Lines(), dc.ParseOptions())
+}
+
 // MeaningPreservedAcrossInsertedSpaces compares both actual round parses, allowing
 // Text values to differ only by inserted ASCII SPACEs.
 func (c CheckContext) MeaningPreservedAcrossInsertedSpaces(ctx context.Context) (bool, error) {

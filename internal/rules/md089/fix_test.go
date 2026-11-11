@@ -192,8 +192,7 @@ func TestMD089FixContainers(t *testing.T) {
 		{"[中A](/x)\n", "[中 A](/x)\n"},
 		{"![中A](/x.png)\n", "![中 A](/x.png)\n"},
 		{"| a | b |\n| - | - |\n| 中A | x |\n", "| a | b |\n| - | - |\n| 中 A | x |\n"},
-		{"# 中A\n", "# 中 A\n"},
-		{"中A\n===\n", "中 A\n===\n"},
+		{"[中A][r]\n\n[r]: /u\n", "[中 A][r]\n\n[r]: /u\n"},
 		{"- [ ] 中A\n", "- [ ] 中 A\n"},
 	} {
 		t.Run(tc.source, func(t *testing.T) {
@@ -210,6 +209,58 @@ func TestMD089FixContainers(t *testing.T) {
 				if d.Rule == "MD089" {
 					t.Fatal("finding after fix", d)
 				}
+			}
+		})
+	}
+}
+
+// Heading text derives an anchor and a collapsed or shortcut label selects a
+// definition, so those points stay manual and never block a safe sibling.
+func TestMD089NamingTextStaysManual(t *testing.T) {
+	for _, tc := range []struct{ source, want string }{
+		{"# 版本2\n\nSee [v](#版本2).\n", "# 版本2\n\nSee [v](#版本2).\n"},
+		{"中A\n===\n", "中A\n===\n"},
+		{"Safe 中A here.\n\nSee [中A].\n\n[中A]: /u\n", "Safe 中 A here.\n\nSee [中A].\n\n[中A]: /u\n"},
+		{"x 中A [中A][] y\n\n[中A]: /u\n", "x 中 A [中A][] y\n\n[中A]: /u\n"},
+		{"![中A]\n\n[中A]: /i.png\n", "![中A]\n\n[中A]: /i.png\n"},
+		{"Note 中A[^中A].\n\n[^中A]: /n\n", "Note 中 A[^中A].\n\n[^中A]: /n\n"},
+	} {
+		t.Run(tc.source, func(t *testing.T) {
+			fixable := 0
+			for _, d := range md089Analysis(t, "gfm", tc.source).Diagnostics {
+				if d.Rule == "MD089" && d.FixAvailable {
+					fixable++
+				}
+			}
+			view := md089Corrected(t, "gfm", tc.source, rules.Corrections)
+			if got := string(view.Candidate.Bytes()); got != tc.want {
+				t.Fatalf("got %q want %q: %+v", got, tc.want, view.Attempts)
+			}
+			accepted := 0
+			for _, a := range view.Attempts {
+				for _, d := range a.Decisions {
+					if d.Group.Rule == "MD089" && !d.Accepted {
+						t.Fatalf("deferred group: %+v", d)
+					}
+					if d.Group.Rule == "MD089" {
+						accepted++
+					}
+				}
+			}
+			if accepted != fixable {
+				t.Fatal("fix_available disagrees with fix", accepted, fixable)
+			}
+			manual := 0
+			for _, d := range view.Analysis.Diagnostics {
+				if d.Rule == "MD089" {
+					manual++
+					if d.FixAvailable {
+						t.Fatal("manual finding fixable", d)
+					}
+				}
+			}
+			if manual == 0 {
+				t.Fatal("manual finding missing", view.Analysis.Diagnostics)
 			}
 		})
 	}

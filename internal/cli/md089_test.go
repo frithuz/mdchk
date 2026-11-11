@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bytes"
+	"os"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -24,7 +25,7 @@ func TestMD089FixPreviewMatchesSavedResult(t *testing.T) {
 	for _, tc := range []struct{ name, source, want string }{
 		{"LF", "版本2\n", "版本 2\n"},
 		{"CRLF", "中A\r\nB中\r\n", "中 A\r\nB 中\r\n"},
-		{"mixed", "# 版本2\n\n- 中A and `中A`\n\n> B中 [中A](/中A)\n", "# 版本 2\n\n- 中 A and `中A`\n\n> B 中 [中 A](/中A)\n"},
+		{"mixed", "版本2\n\n- 中A and `中A`\n\n> B中 [中A](/中A)\n", "版本 2\n\n- 中 A and `中A`\n\n> B 中 [中 A](/中A)\n"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			root := project(t)
@@ -103,5 +104,31 @@ func TestMD089GuardedDocumentStaysManual(t *testing.T) {
 	}
 	if data, _ := readBlockquoteDoc(root); string(data) != source {
 		t.Fatalf("guarded document wrote %q", data)
+	}
+}
+
+// Heading text derives the anchor that same-file and cross-file fragments name,
+// so fix leaves it alone and reports it with fix_available false.
+func TestMD089HeadingAnchorsStay(t *testing.T) {
+	root := project(t)
+	put(t, filepath.Join(root, ".mdchk.yaml"), blockquoteFixConfiguration("MD089", "MD051"))
+	files := map[string]string{"a.md": "# 版本2\n\nSee [v](#版本2).\n", "b.md": "# B\n\nSee [v](a.md#版本2).\n"}
+	for name, source := range files {
+		put(t, filepath.Join(root, name), source)
+	}
+	t.Chdir(root)
+	var stdout, stderr bytes.Buffer
+	if status := Run([]string{"fix", "a.md", "--format=json"}, &stdout, &stderr, "test"); status != 10 {
+		t.Fatal(status, stdout.String(), stderr.String())
+	}
+	out := validateEmitted(t, root, stdout.Bytes())
+	if len(out.Changes) != 0 || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD089" || out.Diagnostics[0].FixAvailable {
+		t.Fatal(out)
+	}
+	for name, source := range files {
+		//nolint:gosec // Access only the synthetic test fixture.
+		if data, _ := os.ReadFile(filepath.Join(root, name)); string(data) != source {
+			t.Fatalf("%s rewritten to %q", name, data)
+		}
 	}
 }

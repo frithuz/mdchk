@@ -13,6 +13,18 @@ import (
 // Unicode 17 Han intersect Ideographic, Latin intersect Letter and ASCII digits.
 // Only physically adjacent Exact scalars within one prose owner participate.
 func (d *Document) CJKSpacing(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions) ([]Span, error) {
+	return d.cjkSpacing(ctx, budget, index, options, false)
+}
+
+// CJKSpacingManual returns the CJKSpacing points whose Text also names
+// something: heading text, which derives the heading's anchor, and the label
+// of a collapsed or shortcut reference link or image, which selects its
+// definition. An inserted space there changes what links resolve to.
+func (d *Document) CJKSpacingManual(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions) ([]Span, error) {
+	return d.cjkSpacing(ctx, budget, index, options, true)
+}
+
+func (d *Document) cjkSpacing(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, manualOnly bool) ([]Span, error) {
 	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 1, 1); err != nil {
 		return nil, err
 	}
@@ -34,6 +46,8 @@ func (d *Document) CJKSpacing(ctx context.Context, budget *OperationBudget, inde
 		return capacity, nil
 	}
 	var out []Span
+	// naming is true while text() runs inside heading or reference-label Text.
+	naming := false
 	// One scalar of adjacency state, never retained beyond this invocation.
 	previous, previousEnd := byte(0), -1
 	boundary := func() error {
@@ -94,7 +108,7 @@ func (d *Document) CJKSpacing(ctx context.Context, budget *OperationBudget, inde
 				} else if r >= '0' && r <= '9' || unicode.Is(unicode.Latin, r) && unicode.IsLetter(r) {
 					class = 2
 				}
-				if previousEnd == at && previous != 0 && class != 0 && previous != class {
+				if previousEnd == at && previous != 0 && class != 0 && previous != class && (!manualOnly || naming) {
 					capacity, err := grow(len(out), cap(out))
 					if err != nil {
 						return err
@@ -118,6 +132,7 @@ func (d *Document) CJKSpacing(ctx context.Context, budget *OperationBudget, inde
 	type frame struct {
 		node        *Node
 		prose, exit bool
+		naming      bool
 		restore     bool
 		raw         string
 	}
@@ -161,13 +176,13 @@ func (d *Document) CJKSpacing(ctx context.Context, budget *OperationBudget, inde
 			}
 			continue
 		}
-		prose := f.prose
+		prose, named := f.prose, f.naming
 		switch n.Kind() {
 		case Paragraph, Heading, TableCell:
 			if err := boundary(); err != nil {
 				return nil, err
 			}
-			prose = true
+			prose, named = true, n.Kind() == Heading
 		case DocumentKind, BlockQuote, List, ListItem, Table, TableRow, CodeBlock, HTMLBlock:
 			if err := boundary(); err != nil {
 				return nil, err
@@ -175,6 +190,7 @@ func (d *Document) CJKSpacing(ctx context.Context, budget *OperationBudget, inde
 			prose = false
 		case Text:
 			if prose && raw == "" {
+				naming = named
 				if err := text(n); err != nil {
 					return nil, err
 				}
@@ -192,11 +208,19 @@ func (d *Document) CJKSpacing(ctx context.Context, budget *OperationBudget, inde
 					return nil, ErrModel
 				}
 				origin := n.spec.Properties.Link.Origin
+				if origin == "collapsed" || origin == "shortcut" {
+					named = true
+				}
 				if origin == "autolink" || origin == "bare-gfm" {
 					if err := boundary(); err != nil {
 						return nil, err
 					}
 					prose = false
+				}
+			}
+			if n.Kind() == Image && n.spec.Properties.Link != nil {
+				if origin := n.spec.Properties.Link.Origin; origin == "collapsed" || origin == "shortcut" {
+					named = true
 				}
 			}
 			if len(n.spec.Children) == 0 {
@@ -239,7 +263,7 @@ func (d *Document) CJKSpacing(ctx context.Context, budget *OperationBudget, inde
 				return nil, err
 			}
 			for i := len(children) - 1; i >= 0; i-- {
-				if err := push(frame{node: children[i], prose: prose}); err != nil {
+				if err := push(frame{node: children[i], prose: prose, naming: named}); err != nil {
 					return nil, err
 				}
 			}
