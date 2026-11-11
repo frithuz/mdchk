@@ -342,6 +342,24 @@ meaning across line-end whitespace (which includes list tightness) and that
 `ForbidNewFindings` for MD022, MD031, MD032 and MD065, so a removal never creates a
 finding that an inserting fixer would then undo.
 
+### MD035 corrections
+
+`internal/rules.Corrections` regenerates one atomic MD035 group per active finding,
+only in a round where no other rule but a withheld MD047 edit proposes one, after
+MD010, MD003, MD027 and MD089. `Document.ThematicStyleCorrection` shares `ThematicStyle`'s
+traversal and also returns the replacement every envelope takes: three markers of
+the selected family, or a copy of the first eligible break's first-to-last pattern
+under `consistent`. `RoundContext.ThematicStyle` reads it under the target's
+resolved `style`. A group's anchor is the envelope, and its one edit replaces exactly
+that envelope, so prefixes, indentation, trailing whitespace and endings stay.
+
+The checker recomputes the envelopes and replacement from the before parse, then
+proves through `CheckContext.Once` that `OnlyEditsChanged` holds, that both parses
+keep the same meaning across line-end whitespace and that `SameStructureAcrossBullets`
+maps every block envelope. A replacement that turns a break into a Setext underline
+or a list item, or merges or splits a paragraph, fails these proofs and the finding
+stays manual.
+
 `editMapping` lookups binary-search cumulative deltas, so preservation checks don't walk
 the edit list per node. A lint target's projector charges each position's search and
 line-prefix cost rather than the whole source, so one finding per line doesn't exhaust
