@@ -8,6 +8,18 @@ import "context"
 // code-span boundaries. It borrows completed production syntax and its original
 // allowance; normalized Literal decides padding policy, never source geometry.
 func (d *Document) CodeSpanSpaces(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions) ([]Span, error) {
+	return d.codeSpanSpaces(ctx, budget, index, options, false)
+}
+
+// DeletableCodeSpanSpaces returns the CodeSpanSpaces ranges of every code span
+// that reports both complete edge runs, as consecutive opening and closing
+// pairs. Deleting both runs of such a span leaves its normalized value
+// unchanged; a span that reserves an innermost SPACE contributes nothing.
+func (d *Document) DeletableCodeSpanSpaces(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions) ([]Span, error) {
+	return d.codeSpanSpaces(ctx, budget, index, options, true)
+}
+
+func (d *Document) codeSpanSpaces(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, deletable bool) ([]Span, error) {
 	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 1, 1); err != nil {
 		return nil, err
 	}
@@ -174,8 +186,17 @@ func (d *Document) CodeSpanSpaces(ctx context.Context, budget *OperationBudget, 
 		}
 		first, last := literal.Value[0], literal.Value[len(literal.Value)-1]
 		if first == ' ' || last == ' ' || first == '`' || last == '`' {
+			if deletable {
+				return nil
+			}
 			left-- // Reserve the innermost original byte on EACH edge.
 			right++
+		}
+		if deletable {
+			l, r, ok := CodeSpanPadding(n)
+			if !ok || l.start != opening.end || l.end != left || r.start != right || r.end != closing.start {
+				return nil
+			}
 		}
 		if err := publish(opening.end, left); err != nil {
 			return err
