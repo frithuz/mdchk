@@ -547,7 +547,7 @@ positive integer, default 1; it is validated even while disabled. Empty mappings
 preserve defaults; shared directive denials remain inherited. `fix` corrects
 findings the shared interior edit query allows; the rest remain manual.
 
-MD085 is available but disabled by default for CommonMark and GFM, with no rule-specific options. Empty mappings preserve that default. Strict shared enabled/allow_directives booleans and inherited denials apply, including validation while disabled. PlannedFix metadata grants no executable correction; all findings remain manual.
+MD085 is available but disabled by default for CommonMark and GFM, with no rule-specific options. Empty mappings preserve that default. Strict shared enabled/allow_directives booleans and inherited denials apply, including validation while disabled. `fix` deletes surplus indentation when the line stays a paragraph continuation; see [MD085's correction policy](rules/whitespace/md085.md#correction-policy).
 
 MD089 is available for CommonMark and GFM, disabled by default with no options.
 Empty mappings retain that default; strict shared settings and inherited directive
