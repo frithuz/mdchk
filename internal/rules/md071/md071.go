@@ -1,10 +1,18 @@
-package rules
+// Package md071 checks MD071, which requires a blank line between complete
+// frontmatter and the document body.
+package md071
 
 import (
 	"context"
 
 	"github.com/frithuz/mdchk/internal/engine"
 )
+
+// Registration returns the MD071 rule ID, its check and its applicability
+// test.
+func Registration() engine.Registration {
+	return engine.Registration{ID: "MD071", Check: metadataBlankLine, Applies: metadataBlankLineApplies}
+}
 
 // metadataBlankLineApplies limits MD071 to documents with header recognition
 // selected. A disabled selection makes the rule inapplicable, not incomplete.

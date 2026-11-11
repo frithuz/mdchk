@@ -1,4 +1,4 @@
-package rules
+package md071_test
 
 import (
 	"context"
@@ -12,16 +12,14 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/result"
+	"github.com/frithuz/mdchk/internal/rules"
+	"github.com/frithuz/mdchk/internal/rules/ruletest"
 )
 
 const md071Message = "Frontmatter requires a blank line before the document body."
 
 func md071Settings() engine.Settings {
-	s := settings()
-	off, on := false, true
-	s["MD047"] = engine.RuleSetting{Enabled: &off}
-	s["MD071"] = engine.RuleSetting{Enabled: &on}
-	return s
+	return ruletest.Settings("MD071")
 }
 
 func md071Context(t *testing.T, flavor string, recognize bool, formats []string) engine.DocumentContext {
@@ -54,13 +52,13 @@ func TestMD071AnalysisFixtures(t *testing.T) {
 	if err := json.Unmarshal(data, &fixtures); err != nil {
 		t.Fatal(err)
 	}
-	r := registry(t, Registrations())
+	r := ruletest.Registry(t, rules.Registrations())
 	for _, f := range fixtures {
 		for _, flavor := range []string{"commonmark", "gfm"} {
 			t.Run(f.Name+"/"+flavor, func(t *testing.T) {
 				dc := md071Context(t, flavor, f.Recognize, f.Formats)
-				out := analyzeHeadings(t, r, f.Source, md071Settings(), dc, engine.RunOptions{})
-				again := analyzeHeadings(t, r, f.Source, md071Settings(), dc, engine.RunOptions{})
+				out := ruletest.AnalyzeDocument(t, r, f.Source, md071Settings(), dc, engine.RunOptions{})
+				again := ruletest.AnalyzeDocument(t, r, f.Source, md071Settings(), dc, engine.RunOptions{})
 				if !reflect.DeepEqual(out, again) || out.Complete == f.Incomplete || len(out.Errors) != 0 || len(out.Interruptions) != 0 || len(out.Diagnostics) != len(f.Expected) {
 					t.Fatal("outcome", out.Complete, out.Diagnostics, out.Errors, out.Interruptions, "expected", f.Expected)
 				}
@@ -93,7 +91,7 @@ func TestMD071AnalysisFixtures(t *testing.T) {
 }
 
 func TestMD071CatalogAndStrictSettings(t *testing.T) {
-	r := registry(t, Registrations())
+	r := ruletest.Registry(t, rules.Registrations())
 	if !r.Available("MD071") || r.Available("MD066") || len(r.Metadata()) != 82 {
 		t.Fatal("catalog")
 	}
@@ -130,14 +128,14 @@ func TestMD071CatalogAndStrictSettings(t *testing.T) {
 }
 
 func TestMD071EnablementAndDirectives(t *testing.T) {
-	r := registry(t, Registrations())
+	r := ruletest.Registry(t, rules.Registrations())
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		dc := md071Context(t, flavor, true, nil)
 		t.Run(flavor+"/disabled", func(t *testing.T) {
 			s := md071Settings()
 			off := false
 			s["MD071"] = engine.RuleSetting{Enabled: &off}
-			out := analyzeHeadings(t, r, "---\ntitle: Guide\n---\n# Guide\n", s, dc, engine.RunOptions{})
+			out := ruletest.AnalyzeDocument(t, r, "---\ntitle: Guide\n---\n# Guide\n", s, dc, engine.RunOptions{})
 			if !out.Complete || len(out.Diagnostics) != 0 || len(out.Coverage) != 0 {
 				t.Fatal(out)
 			}
@@ -145,7 +143,7 @@ func TestMD071EnablementAndDirectives(t *testing.T) {
 		t.Run(flavor+"/omitted-default", func(t *testing.T) {
 			s := md071Settings()
 			delete(s, "MD071")
-			out := analyzeHeadings(t, r, "---\ntitle: Guide\n---\n# Guide\n", s, dc, engine.RunOptions{})
+			out := ruletest.AnalyzeDocument(t, r, "---\ntitle: Guide\n---\n# Guide\n", s, dc, engine.RunOptions{})
 			if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD071" {
 				t.Fatal(out)
 			}
@@ -154,7 +152,7 @@ func TestMD071EnablementAndDirectives(t *testing.T) {
 		// anchor at the start of the comment line remains active.
 		t.Run(flavor+"/body-directive", func(t *testing.T) {
 			source := "---\ntitle: Guide\n---\n<!-- mdchk:disable MD071 -->\n# Guide\n"
-			out := analyzeHeadings(t, r, source, md071Settings(), dc, engine.RunOptions{})
+			out := ruletest.AnalyzeDocument(t, r, source, md071Settings(), dc, engine.RunOptions{})
 			if !out.Complete || len(out.Diagnostics) != 1 || len(out.SuppressedDiagnostics) != 0 {
 				t.Fatal(out)
 			}
@@ -167,7 +165,7 @@ func TestMD071EnablementAndDirectives(t *testing.T) {
 }
 
 func TestMD071InapplicableWithoutRecognition(t *testing.T) {
-	r := registry(t, Registrations())
+	r := ruletest.Registry(t, rules.Registrations())
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, recognize := range []bool{false, true} {
 			t.Run(fmt.Sprintf("%s/%v", flavor, recognize), func(t *testing.T) {

@@ -1,4 +1,6 @@
-package rules
+// Package md084 checks MD084, which reports hidden or discouraged Unicode
+// characters.
+package md084
 
 import (
 	"context"
@@ -9,6 +11,11 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
 )
+
+// Registration returns the MD084 rule ID and its check.
+func Registration() engine.Registration {
+	return engine.Registration{ID: "MD084", Check: hiddenCharacters}
+}
 
 func hiddenCharacters(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 	items, err := c.HiddenCharacters(ctx)

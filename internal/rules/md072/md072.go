@@ -1,4 +1,5 @@
-package rules
+// Package md072 checks MD072, which requires metadata keys to be sorted.
+package md072
 
 import (
 	"context"
@@ -9,6 +10,11 @@ import (
 	"github.com/frithuz/mdchk/internal/metadata"
 	"github.com/frithuz/mdchk/internal/parser"
 )
+
+// Registration returns the MD072 rule ID and its check.
+func Registration() engine.Registration {
+	return engine.Registration{ID: "MD072", Check: metadataKeyOrdering}
+}
 
 // metadataOrderingWithheld explains incomplete coverage by the first decoder
 // problem, located where it was written. Without a problem the cause is a key

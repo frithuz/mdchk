@@ -1,4 +1,4 @@
-package rules
+package md072_test
 
 import (
 	"encoding/json"
@@ -9,12 +9,13 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/result"
+	"github.com/frithuz/mdchk/internal/rules"
+	"github.com/frithuz/mdchk/internal/rules/ruletest"
 )
 
 func md072Settings(recursive, caseSensitive bool) engine.Settings {
-	s := settings()
-	off, on := false, true
-	s["MD047"] = engine.RuleSetting{Enabled: &off}
+	s := ruletest.Settings("MD072")
+	on := true
 	s["MD072"] = engine.RuleSetting{Enabled: &on, Options: engine.Options{"recursive": recursive, "case_sensitive": caseSensitive}}
 	return s
 }
@@ -59,10 +60,10 @@ func TestMD072AnalysisFixtures(t *testing.T) {
 		for _, flavor := range []string{"commonmark", "gfm"} {
 			t.Run(f.Name+"/"+flavor, func(t *testing.T) {
 				s := md072Settings(f.Recursive, !f.Insensitive)
-				r := registry(t, Registrations())
+				r := ruletest.Registry(t, rules.Registrations())
 				dc := md072Context(t, flavor, !f.Disabled, f.Formats)
-				out := analyzeHeadings(t, r, f.Source, s, dc, engine.RunOptions{})
-				again := analyzeHeadings(t, r, f.Source, s, dc, engine.RunOptions{})
+				out := ruletest.AnalyzeDocument(t, r, f.Source, s, dc, engine.RunOptions{})
+				again := ruletest.AnalyzeDocument(t, r, f.Source, s, dc, engine.RunOptions{})
 				if !reflect.DeepEqual(out, again) {
 					t.Fatal("nondeterministic analysis")
 				}
@@ -95,7 +96,7 @@ func TestMD072AnalysisFixtures(t *testing.T) {
 }
 
 func TestMD072CatalogAndOptions(t *testing.T) {
-	r := registry(t, Registrations())
+	r := ruletest.Registry(t, rules.Registrations())
 	if !r.Available("MD072") {
 		t.Fatal("availability")
 	}
@@ -123,7 +124,7 @@ func TestMD072CatalogAndOptions(t *testing.T) {
 	// Left at its default, MD072 does not report out-of-order keys.
 	s := md072Settings(false, true)
 	delete(s, "MD072")
-	out := analyzeHeadings(t, r, "---\nz: 1\na: 2\n---\n", s, md072Context(t, "commonmark", true, nil), engine.RunOptions{})
+	out := ruletest.AnalyzeDocument(t, r, "---\nz: 1\na: 2\n---\n", s, md072Context(t, "commonmark", true, nil), engine.RunOptions{})
 	if !out.Complete || len(out.Diagnostics) != 0 {
 		t.Fatal(out)
 	}
@@ -134,7 +135,7 @@ func TestMD072BodyDirectiveCannotReachHeader(t *testing.T) {
 		on := true
 		s := md072Settings(false, true)
 		s["MD072"] = engine.RuleSetting{Enabled: &on, AllowDirectives: &allowed}
-		out := analyzeHeadings(t, registry(t, Registrations()), "---\nz: 1\na: 2\n---\n<!-- mdchk:disable MD072 -->\n", s, md072Context(t, "gfm", true, nil), engine.RunOptions{})
+		out := ruletest.AnalyzeDocument(t, ruletest.Registry(t, rules.Registrations()), "---\nz: 1\na: 2\n---\n<!-- mdchk:disable MD072 -->\n", s, md072Context(t, "gfm", true, nil), engine.RunOptions{})
 		if len(out.Diagnostics) != 1 || out.Diagnostics[0].Rule != "MD072" || len(out.SuppressedDiagnostics) != 0 {
 			t.Fatal(allowed, out)
 		}
@@ -158,7 +159,7 @@ func TestMD072MetadataCoverageExplainsTheFirstProblem(t *testing.T) {
 	} {
 		for _, flavor := range []string{"commonmark", "gfm"} {
 			t.Run(tc.name+"/"+flavor, func(t *testing.T) {
-				out := analyzeHeadings(t, registry(t, Registrations()), tc.source, md072Settings(tc.recursive, true), md072Context(t, flavor, true, nil), engine.RunOptions{})
+				out := ruletest.AnalyzeDocument(t, ruletest.Registry(t, rules.Registrations()), tc.source, md072Settings(tc.recursive, true), md072Context(t, flavor, true, nil), engine.RunOptions{})
 				coverage := md072Coverage(out)
 				if len(coverage) != 1 || coverage[0].Message != tc.message || coverage[0].Reason != result.ContextUnavailable || out.Complete {
 					t.Fatalf("%+v", coverage)
@@ -182,14 +183,14 @@ func TestMD072MetadataCoverageExplainsTheFirstProblem(t *testing.T) {
 }
 
 func TestMD072ReliableFindingsStandBesideExplainedCoverage(t *testing.T) {
-	out := analyzeHeadings(t, registry(t, Registrations()), "---\nb:\n  z: 1\n  a: 2\nc: !foo 1\n---\n", md072Settings(true, true), md072Context(t, "commonmark", true, nil), engine.RunOptions{})
+	out := ruletest.AnalyzeDocument(t, ruletest.Registry(t, rules.Registrations()), "---\nb:\n  z: 1\n  a: 2\nc: !foo 1\n---\n", md072Settings(true, true), md072Context(t, "commonmark", true, nil), engine.RunOptions{})
 	if len(out.Diagnostics) != 1 || out.Diagnostics[0].ByteRange != (result.ByteRange{Start: 16, End: 17}) || len(md072Coverage(out)) != 1 || md072Coverage(out)[0].Range == nil {
 		t.Fatalf("%+v %+v", out.Diagnostics, out.Coverage)
 	}
 }
 
 func TestMD072CoverageLocatesAProblemInsideAScalar(t *testing.T) {
-	out := analyzeHeadings(t, registry(t, Registrations()), "+++\n中A = [\n+++\n", md072Settings(false, true), md072Context(t, "commonmark", true, nil), engine.RunOptions{})
+	out := ruletest.AnalyzeDocument(t, ruletest.Registry(t, rules.Registrations()), "+++\n中A = [\n+++\n", md072Settings(false, true), md072Context(t, "commonmark", true, nil), engine.RunOptions{})
 	coverage := md072Coverage(out)
 	if len(coverage) != 1 || coverage[0].Message != "Metadata is malformed; the affected key ordering checks were withheld." || coverage[0].Range == nil || coverage[0].Range.Start.Line != 2 {
 		t.Fatalf("%+v", coverage)

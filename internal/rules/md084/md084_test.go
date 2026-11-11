@@ -1,4 +1,4 @@
-package rules
+package md084_test
 
 import (
 	"context"
@@ -8,10 +8,13 @@ import (
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/rules"
+	"github.com/frithuz/mdchk/internal/rules/md084"
+	"github.com/frithuz/mdchk/internal/rules/ruletest"
 )
 
 func TestMD084OptionsAndAvailability(t *testing.T) {
-	r := registry(t, Registrations())
+	r := ruletest.Registry(t, rules.Registrations())
 	found := false
 	for _, m := range r.Metadata() {
 		if m.ID == "MD084" {
@@ -47,7 +50,7 @@ func TestMD084OptionsAndAvailability(t *testing.T) {
 	}
 	s := md084Settings(nil)
 	delete(s, "MD084")
-	out := analyzeHeadings(t, r, "a\u200bb", s, engine.DocumentContext{}, engine.RunOptions{})
+	out := ruletest.AnalyzeDocument(t, r, "a\u200bb", s, engine.DocumentContext{}, engine.RunOptions{})
 	if !out.Complete || len(out.Diagnostics) != 0 {
 		t.Fatal(out)
 	}
@@ -57,15 +60,14 @@ func TestMD084StrictRuleContextOptions(t *testing.T) {
 	// MD061's options are not MD084's shape, so the accessor must refuse them.
 	var spans []parser.Span
 	var observed error
-	r := registry(t, []engine.Registration{{ID: "MD061", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
+	r := ruletest.Registry(t, []engine.Registration{{ID: "MD061", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 		spans, observed = c.HiddenCharacters(ctx)
 		return engine.RuleOutcome{Err: observed}
 	}}})
-	off, on := false, true
-	s := onlyDefaultMD038Settings()
-	s["MD038"] = engine.RuleSetting{Enabled: &off}
+	on := true
+	s := ruletest.Settings("MD061")
 	s["MD061"] = engine.RuleSetting{Enabled: &on, Options: engine.Options{"terms": []string{"a"}}}
-	out := analyzeHeadings(t, r, "a\u200bb", s, engine.DocumentContext{}, engine.RunOptions{})
+	out := ruletest.AnalyzeDocument(t, r, "a\u200bb", s, engine.DocumentContext{}, engine.RunOptions{})
 	if !errors.Is(observed, parser.ErrModel) || spans != nil || out.Complete || len(out.Diagnostics) != 0 {
 		t.Fatal(observed, spans, out)
 	}
@@ -77,16 +79,16 @@ func TestMD084BudgetExhaustion(t *testing.T) {
 		var spans []parser.Span
 		var observed error
 		budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
-		r := registry(t, []engine.Registration{{ID: "MD084", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
+		r := ruletest.Registry(t, []engine.Registration{{ID: "MD084", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 			if kind == "work" {
 				_ = budget.ChargeWork(budget.Limits().WorkUnits)
 			} else {
 				_ = budget.ChargeNodes(budget.Limits().TotalNodes)
 			}
 			spans, observed = c.HiddenCharacters(ctx)
-			return hiddenCharacters(ctx, c)
+			return md084.HiddenCharacters(ctx, c)
 		}}})
-		out := analyzeHeadings(t, r, source, md084Settings(nil), engine.DocumentContext{}, engine.RunOptions{Budget: budget})
+		out := ruletest.AnalyzeDocument(t, r, source, md084Settings(nil), engine.DocumentContext{}, engine.RunOptions{Budget: budget})
 		if observed == nil || spans != nil || out.Complete || len(out.Interruptions) != 1 || out.Interruptions[0].Phase != "analysis" || out.Interruptions[0].Limit == nil || len(out.Errors) != 0 || len(out.Diagnostics) != 0 {
 			t.Fatal(kind, observed, out)
 		}
@@ -106,16 +108,16 @@ func TestMD084BudgetExhaustion(t *testing.T) {
 			t.Fatal(err)
 		}
 		o.err = errors.New("projection not reached")
-		r := registry(t, []engine.Registration{{ID: "MD084", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
+		r := ruletest.Registry(t, []engine.Registration{{ID: "MD084", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 			var spans []parser.Span
 			spans, o.err = c.HiddenCharacters(ctx)
 			o.spans = len(spans)
 			if o.err != nil && spans != nil {
 				t.Fatal(allowance, "spans returned with error")
 			}
-			return reportHiddenCharacters(ctx, c, spans)
+			return md084.ReportHiddenCharacters(ctx, c, spans)
 		}}})
-		out := analyzeHeadings(t, r, source, md084Settings(nil), engine.DocumentContext{}, engine.RunOptions{Budget: budget})
+		out := ruletest.AnalyzeDocument(t, r, source, md084Settings(nil), engine.DocumentContext{}, engine.RunOptions{Budget: budget})
 		o.complete, o.reported = out.Complete, len(out.Diagnostics)
 		return o
 	}
@@ -152,7 +154,7 @@ func TestMD084SourceUnchanged(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, err := registry(t, Registrations()).Lint(context.Background(), []engine.Input{in}, engine.RunOptions{})
+	out, err := ruletest.Registry(t, rules.Registrations()).Lint(context.Background(), []engine.Input{in}, engine.RunOptions{})
 	if err != nil || !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].ByteRange.Start != 4 || string(caller) != source || string(in.Source().Bytes()) != source || len(out.Changes)+len(out.Documents)+len(out.DeferredFixes) != 0 {
 		t.Fatal(out, err)
 	}

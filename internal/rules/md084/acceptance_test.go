@@ -1,4 +1,4 @@
-package main
+package md084_test
 
 import (
 	"crypto/sha256"
@@ -6,15 +6,24 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/frithuz/mdchk/internal/acceptance"
 )
 
+// TestMain removes this process's private builds once every test has finished
+// with them.
+func TestMain(m *testing.M) {
+	m.Run()
+	acceptance.Cleanup()
+}
+
 func md084Configuration(flavor, setting string) string {
-	return strings.Replace(strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1), "MD084: {enabled: false}", "MD084: "+setting, 1)
+	return acceptance.RuleConfiguration(flavor, "MD084", setting)
 }
 
 func TestCompiledPlatformMD084ProductionAnalysis(t *testing.T) {
 	t.Parallel()
-	binary := sharedExecutable(t)
+	binary := acceptance.SharedExecutable(t)
 	for _, tc := range []struct {
 		id, source, flavor, setting string
 		ranges                      [][2]int
@@ -30,14 +39,14 @@ func TestCompiledPlatformMD084ProductionAnalysis(t *testing.T) {
 		{"crlf", "a\r\nb\u200bc", "commonmark", "{enabled: true}", [][2]int{{4, 7}}, []string{"U+200B"}},
 	} {
 		t.Run(tc.id, func(t *testing.T) {
-			root := configurationProject(t)
-			putConfigurationFile(t, root, ".mdchk.yaml", md084Configuration(tc.flavor, tc.setting))
-			putConfigurationFile(t, root, "doc.md", tc.source)
-			before := readinessState(t, root)
+			root := acceptance.Project(t)
+			acceptance.PutFile(t, root, ".mdchk.yaml", md084Configuration(tc.flavor, tc.setting))
+			acceptance.PutFile(t, root, "doc.md", tc.source)
+			before := acceptance.ReadinessState(t, root)
 			for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"inspect", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}, {"fix", "doc.md", "--format=json"}} {
-				got := runConfigurationProcess(t, binary, root, args...)
-				out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
-				if args[0] == "fix" && args[1] == "doc.md" && md038NativeRefusal(t, got, out) {
+				got := acceptance.RunProcess(t, binary, root, args...)
+				out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), args[0])
+				if args[0] == "fix" && args[1] == "doc.md" && acceptance.MD038NativeRefusal(t, got, out) {
 					continue
 				}
 				status := 0
@@ -60,20 +69,20 @@ func TestCompiledPlatformMD084ProductionAnalysis(t *testing.T) {
 					}
 				}
 			}
-			readinessAssertEqual(t, "report-only MD084", before, readinessState(t, root))
+			acceptance.ReadinessAssertEqual(t, "report-only MD084", before, acceptance.ReadinessState(t, root))
 		})
 	}
 }
 
 func TestCompiledPlatformMD084OptionsAndInheritance(t *testing.T) {
 	t.Parallel()
-	binary := sharedExecutable(t)
+	binary := acceptance.SharedExecutable(t)
 	for _, setting := range []string{"{enabled: false, allowed_codepoints: null}", "{enabled: false, allowed_codepoints: [U+200B]}", "{enabled: true, allowed_codepoints: ['0x200b']}", "{enabled: false, allowed_codepoints: [D800]}", "{enabled: false, unknown: true}", "{enabled: false, allow_directives: null}"} {
 		t.Run(setting, func(t *testing.T) {
-			root := configurationProject(t)
-			putConfigurationFile(t, root, ".mdchk.yaml", md084Configuration("gfm", setting))
-			got := runConfigurationProcess(t, binary, root, "lint", "missing.md", "--format=json")
-			out := validateConfigurationJSON(t, []byte(got.Stdout))
+			root := acceptance.Project(t)
+			acceptance.PutFile(t, root, ".mdchk.yaml", md084Configuration("gfm", setting))
+			got := acceptance.RunProcess(t, binary, root, "lint", "missing.md", "--format=json")
+			out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "lint")
 			if got.Status != 12 || len(out.CheckedFiles) != 0 {
 				t.Fatal(got)
 			}
@@ -81,7 +90,7 @@ func TestCompiledPlatformMD084OptionsAndInheritance(t *testing.T) {
 	}
 	for _, denial := range []string{"allowed", "global", "rule"} {
 		t.Run(denial, func(t *testing.T) {
-			root := configurationProject(t)
+			root := acceptance.Project(t)
 			parent := strings.Replace(md084Configuration("commonmark", "{enabled: true}"), "directives: {enabled: false}", "directives: {enabled: true}", 1)
 			if denial == "global" {
 				parent = strings.Replace(parent, "directives: {enabled: true}", "directives: {enabled: false}", 1)
@@ -90,10 +99,10 @@ func TestCompiledPlatformMD084OptionsAndInheritance(t *testing.T) {
 				parent = strings.Replace(parent, "MD084: {enabled: true}", "MD084: {enabled: true, allow_directives: false}", 1)
 			}
 			child := strings.Replace(md084Configuration("commonmark", "{enabled: true, allow_directives: true}"), "directives: {enabled: false}", "directives: {enabled: true}", 1)
-			putConfigurationFile(t, root, ".mdchk.yaml", parent)
-			putConfigurationFile(t, root, "nested/.mdchk.yaml", child)
-			putConfigurationFile(t, root, "nested/doc.md", "<!-- mdchk:disable MD084 -->\na\u200bb")
-			got, p := runInspection(t, binary, filepath.Join(root, "nested"), root, "inspect", "doc.md", "--lines=2", "--format=json")
+			acceptance.PutFile(t, root, ".mdchk.yaml", parent)
+			acceptance.PutFile(t, root, "nested/.mdchk.yaml", child)
+			acceptance.PutFile(t, root, "nested/doc.md", "<!-- mdchk:disable MD084 -->\na\u200bb")
+			got, p := acceptance.RunInspection(t, binary, filepath.Join(root, "nested"), root, "inspect", "doc.md", "--lines=2", "--format=json")
 			active, hidden := 1, 0
 			if denial == "allowed" {
 				active, hidden = 0, 1

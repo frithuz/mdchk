@@ -1,4 +1,4 @@
-package main
+package md071_test
 
 import (
 	"crypto/sha256"
@@ -9,13 +9,21 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/frithuz/mdchk/internal/acceptance"
 	"github.com/frithuz/mdchk/internal/result"
 )
+
+// TestMain removes this process's private builds once every test has finished
+// with them.
+func TestMain(m *testing.M) {
+	m.Run()
+	acceptance.Cleanup()
+}
 
 const md071Violating = "---\ntitle: Guide\n---\n# Guide\n"
 
 func md071Configuration(flavor string) string {
-	return strings.Replace(strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1), "MD071: {enabled: false}", "MD071: {enabled: true}", 1)
+	return acceptance.RuleConfiguration(flavor, "MD071", "{enabled: true}")
 }
 
 func md071Frontmatter(formats []string) string {
@@ -27,8 +35,8 @@ func md071Frontmatter(formats []string) string {
 
 func TestCompiledPlatformMD071ProductionAnalysis(t *testing.T) {
 	t.Parallel()
-	binary := sharedExecutable(t)
-	data, err := os.ReadFile("../../internal/rules/testdata/md071.json")
+	binary := acceptance.SharedExecutable(t)
+	data, err := os.ReadFile("testdata/md071.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,20 +60,20 @@ func TestCompiledPlatformMD071ProductionAnalysis(t *testing.T) {
 		t.Run(flavor, func(t *testing.T) {
 			for _, f := range fixtures {
 				t.Run(f.Name, func(t *testing.T) {
-					root := configurationProject(t)
+					root := acceptance.Project(t)
 					conf := md071Configuration(flavor)
 					if f.Recognize {
 						conf += md071Frontmatter(f.Formats)
 					}
-					putConfigurationFile(t, root, ".mdchk.yaml", conf)
-					putConfigurationFile(t, root, "doc.md", f.Source)
+					acceptance.PutFile(t, root, ".mdchk.yaml", conf)
+					acceptance.PutFile(t, root, "doc.md", f.Source)
 					if f.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(f.Source))) || f.SizeBytes != len(f.Source) {
 						t.Fatal("literal source provenance", f.Name)
 					}
-					before := configurationBytes(t, root)
+					before := acceptance.ConfigurationBytes(t, root)
 					for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}} {
-						got := runConfigurationProcess(t, binary, root, args...)
-						out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
+						got := acceptance.RunProcess(t, binary, root, args...)
+						out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), args[0])
 						status := 0
 						if len(f.Expected) > 0 {
 							status = 10
@@ -94,7 +102,7 @@ func TestCompiledPlatformMD071ProductionAnalysis(t *testing.T) {
 							}
 						}
 					}
-					if !reflect.DeepEqual(before, configurationBytes(t, root)) {
+					if !reflect.DeepEqual(before, acceptance.ConfigurationBytes(t, root)) {
 						t.Fatal("read-only analysis changed bytes")
 					}
 				})
@@ -105,24 +113,24 @@ func TestCompiledPlatformMD071ProductionAnalysis(t *testing.T) {
 
 func TestCompiledPlatformMD071Configuration(t *testing.T) {
 	t.Parallel()
-	binary := sharedExecutable(t)
+	binary := acceptance.SharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, tc := range []struct {
 			setting string
 			want    int
 		}{{"OMITTED", 1}, {"{}", 1}, {"{enabled: true}", 1}, {"{allow_directives: false}", 1}, {"{enabled: false}", 0}, {"{enabled: false, allow_directives: true}", 0}} {
 			t.Run(flavor+"/"+tc.setting, func(t *testing.T) {
-				root := configurationProject(t)
+				root := acceptance.Project(t)
 				conf := md071Configuration(flavor)
 				if tc.setting == "OMITTED" {
 					conf = strings.Replace(conf, "  MD071: {enabled: true}\n", "", 1)
 				} else {
 					conf = strings.Replace(conf, "MD071: {enabled: true}", "MD071: "+tc.setting, 1)
 				}
-				putConfigurationFile(t, root, ".mdchk.yaml", conf+md071Frontmatter(nil))
-				putConfigurationFile(t, root, "doc.md", md071Violating)
-				got := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=json")
-				out := validateConfigurationJSON(t, []byte(got.Stdout))
+				acceptance.PutFile(t, root, ".mdchk.yaml", conf+md071Frontmatter(nil))
+				acceptance.PutFile(t, root, "doc.md", md071Violating)
+				got := acceptance.RunProcess(t, binary, root, "lint", "doc.md", "--format=json")
+				out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "lint")
 				status := 0
 				if tc.want > 0 {
 					status = 10
@@ -134,13 +142,13 @@ func TestCompiledPlatformMD071Configuration(t *testing.T) {
 		}
 		for _, option := range []string{"null", "{unknown: true}", "{enabled: false, unknown: true}", "{enabled: null}", "{enabled: 'false'}", "{allow_directives: null}", "{enabled: false, allow_directives: null}", "{allow_directives: 1}"} {
 			t.Run(flavor+"/invalid_"+option, func(t *testing.T) {
-				root := configurationProject(t)
-				putConfigurationFile(t, root, ".mdchk.yaml", strings.Replace(md071Configuration(flavor), "MD071: {enabled: true}", "MD071: "+option, 1)+md071Frontmatter(nil))
-				putConfigurationFile(t, root, "doc.md", md071Violating)
-				before := configurationBytes(t, root)
-				got := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=json")
-				out := validateConfigurationJSON(t, []byte(got.Stdout))
-				if got.Status != 12 || len(out.Errors) == 0 || len(out.CheckedFiles) != 0 || !reflect.DeepEqual(before, configurationBytes(t, root)) {
+				root := acceptance.Project(t)
+				acceptance.PutFile(t, root, ".mdchk.yaml", strings.Replace(md071Configuration(flavor), "MD071: {enabled: true}", "MD071: "+option, 1)+md071Frontmatter(nil))
+				acceptance.PutFile(t, root, "doc.md", md071Violating)
+				before := acceptance.ConfigurationBytes(t, root)
+				got := acceptance.RunProcess(t, binary, root, "lint", "doc.md", "--format=json")
+				out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "lint")
+				if got.Status != 12 || len(out.Errors) == 0 || len(out.CheckedFiles) != 0 || !reflect.DeepEqual(before, acceptance.ConfigurationBytes(t, root)) {
 					t.Fatal(got)
 				}
 			})
@@ -150,18 +158,18 @@ func TestCompiledPlatformMD071Configuration(t *testing.T) {
 
 func TestCompiledPlatformMD071InapplicableAndDefaults(t *testing.T) {
 	t.Parallel()
-	binary := sharedExecutable(t)
+	binary := acceptance.SharedExecutable(t)
 	for _, flavor := range []string{"commonmark", "gfm"} {
 		for _, recognize := range []bool{false, true} {
 			t.Run(fmt.Sprintf("%s/%v", flavor, recognize), func(t *testing.T) {
-				root := configurationProject(t)
+				root := acceptance.Project(t)
 				conf := md071Configuration(flavor)
 				if recognize {
 					conf += md071Frontmatter(nil)
 				}
-				putConfigurationFile(t, root, ".mdchk.yaml", conf)
-				putConfigurationFile(t, root, "doc.md", md071Violating)
-				got, p := runInspection(t, binary, root, root, "inspect", "doc.md", "--format=json")
+				acceptance.PutFile(t, root, ".mdchk.yaml", conf)
+				acceptance.PutFile(t, root, "doc.md", md071Violating)
+				got, p := acceptance.RunInspection(t, binary, root, root, "inspect", "doc.md", "--format=json")
 				want := 0
 				if recognize {
 					want = 1
@@ -186,10 +194,10 @@ func TestCompiledPlatformMD071InapplicableAndDefaults(t *testing.T) {
 		}
 	}
 	// No definition selects default GFM, where every default-enabled rule runs.
-	root := configurationProject(t)
-	putConfigurationFile(t, root, "doc.md", "# Title\n")
-	got := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=json")
-	out := validateConfigurationJSON(t, []byte(got.Stdout))
+	root := acceptance.Project(t)
+	acceptance.PutFile(t, root, "doc.md", "# Title\n")
+	got := acceptance.RunProcess(t, binary, root, "lint", "doc.md", "--format=json")
+	out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "lint")
 	if got.Status != 0 || !out.Complete || len(out.Diagnostics) != 0 || len(out.Coverage) != 0 {
 		t.Fatal(got)
 	}

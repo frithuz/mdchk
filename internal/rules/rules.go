@@ -53,9 +53,13 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md065"
 	"github.com/frithuz/mdchk/internal/rules/md069"
 	"github.com/frithuz/mdchk/internal/rules/md070"
+	"github.com/frithuz/mdchk/internal/rules/md071"
+	"github.com/frithuz/mdchk/internal/rules/md072"
 	"github.com/frithuz/mdchk/internal/rules/md076"
 	"github.com/frithuz/mdchk/internal/rules/md077"
 	"github.com/frithuz/mdchk/internal/rules/md081"
+	"github.com/frithuz/mdchk/internal/rules/md083"
+	"github.com/frithuz/mdchk/internal/rules/md084"
 	"github.com/frithuz/mdchk/internal/rules/md085"
 	"github.com/frithuz/mdchk/internal/rules/md088"
 	"github.com/frithuz/mdchk/internal/rules/md089"
@@ -124,8 +128,8 @@ func Registrations() []engine.Registration {
 		md065.Registration(),
 		md069.Registration(),
 		md070.Registration(),
-		{ID: "MD071", Check: metadataBlankLine, Applies: metadataBlankLineApplies},
-		{ID: "MD072", Check: metadataKeyOrdering},
+		md071.Registration(),
+		md072.Registration(),
 		{ID: "MD073", Check: tableOfContents},
 		{ID: "MD075", Check: headerlessPipeRows},
 		md076.Registration(),
@@ -133,8 +137,8 @@ func Registrations() []engine.Registration {
 		{ID: "MD080", Check: collidingHeadingAnchors},
 		md081.Registration(),
 		{ID: "MD082", Check: sectionsWithoutContent},
-		{ID: "MD083", Check: suspiciousSequences},
-		{ID: "MD084", Check: hiddenCharacters},
+		md083.Registration(),
+		md084.Registration(),
 		md085.Registration(),
 		{ID: "MD086", Check: unclosedHTMLComments},
 		{ID: "MD087", Check: engine.CheckUnusedSuppressions},

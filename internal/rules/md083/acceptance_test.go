@@ -1,4 +1,4 @@
-package main
+package md083_test
 
 import (
 	"crypto/sha256"
@@ -7,16 +7,24 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/frithuz/mdchk/internal/acceptance"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
+// TestMain removes this process's private builds once every test has finished
+// with them.
+func TestMain(m *testing.M) {
+	m.Run()
+	acceptance.Cleanup()
+}
+
 func md083Configuration(flavor, setting string) string {
-	return strings.Replace(strings.Replace(cleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1), "MD083: {enabled: false}", "MD083: "+setting, 1)
+	return acceptance.RuleConfiguration(flavor, "MD083", setting)
 }
 
 func TestCompiledPlatformMD083ProductionAnalysis(t *testing.T) {
 	t.Parallel()
-	binary := sharedExecutable(t)
+	binary := acceptance.SharedExecutable(t)
 	type finding struct {
 		bytes      [2]int
 		start, end result.Position
@@ -35,14 +43,14 @@ func TestCompiledPlatformMD083ProductionAnalysis(t *testing.T) {
 		{"code-span", "Use `cafÃ©`.", "gfm", "{enabled: true}", nil},
 	} {
 		t.Run(tc.id, func(t *testing.T) {
-			root := configurationProject(t)
-			putConfigurationFile(t, root, ".mdchk.yaml", md083Configuration(tc.flavor, tc.setting))
-			putConfigurationFile(t, root, "doc.md", tc.source)
-			before := readinessState(t, root)
+			root := acceptance.Project(t)
+			acceptance.PutFile(t, root, ".mdchk.yaml", md083Configuration(tc.flavor, tc.setting))
+			acceptance.PutFile(t, root, "doc.md", tc.source)
+			before := acceptance.ReadinessState(t, root)
 			for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"inspect", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}, {"fix", "doc.md", "--format=json"}} {
-				got := runConfigurationProcess(t, binary, root, args...)
-				out := validateConfigurationOperationJSON(t, []byte(got.Stdout), args[0])
-				if args[0] == "fix" && args[1] == "doc.md" && md038NativeRefusal(t, got, out) {
+				got := acceptance.RunProcess(t, binary, root, args...)
+				out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), args[0])
+				if args[0] == "fix" && args[1] == "doc.md" && acceptance.MD038NativeRefusal(t, got, out) {
 					continue
 				}
 				status := 0
@@ -62,19 +70,19 @@ func TestCompiledPlatformMD083ProductionAnalysis(t *testing.T) {
 					}
 				}
 			}
-			readinessAssertEqual(t, "report-only MD083", before, readinessState(t, root))
+			acceptance.ReadinessAssertEqual(t, "report-only MD083", before, acceptance.ReadinessState(t, root))
 		})
 	}
 }
 
 func TestCompiledPlatformMD083DefaultDisabled(t *testing.T) {
 	t.Parallel()
-	binary := sharedExecutable(t)
-	root := configurationProject(t)
-	putConfigurationFile(t, root, ".mdchk.yaml", availableConfiguration)
-	putConfigurationFile(t, root, "doc.md", "# cafÃ©\n")
-	got := runConfigurationProcess(t, binary, root, "lint", "doc.md", "--format=json")
-	out := validateConfigurationOperationJSON(t, []byte(got.Stdout), "lint")
+	binary := acceptance.SharedExecutable(t)
+	root := acceptance.Project(t)
+	acceptance.PutFile(t, root, ".mdchk.yaml", acceptance.AvailableConfiguration)
+	acceptance.PutFile(t, root, "doc.md", "# cafÃ©\n")
+	got := acceptance.RunProcess(t, binary, root, "lint", "doc.md", "--format=json")
+	out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "lint")
 	if got.Status != 0 || !out.Complete {
 		t.Fatal(got)
 	}
@@ -92,13 +100,13 @@ func TestCompiledPlatformMD083DefaultDisabled(t *testing.T) {
 
 func TestCompiledPlatformMD083OptionsAndInheritance(t *testing.T) {
 	t.Parallel()
-	binary := sharedExecutable(t)
+	binary := acceptance.SharedExecutable(t)
 	for _, setting := range []string{"{enabled: false, sequences: null}", "{enabled: false, sequences: Ã}", "{enabled: false, sequences: [Ã, 1]}", "{enabled: false, unknown: true}", "{enabled: false, allow_directives: null}"} {
 		t.Run(setting, func(t *testing.T) {
-			root := configurationProject(t)
-			putConfigurationFile(t, root, ".mdchk.yaml", md083Configuration("gfm", setting))
-			got := runConfigurationProcess(t, binary, root, "lint", "missing.md", "--format=json")
-			out := validateConfigurationJSON(t, []byte(got.Stdout))
+			root := acceptance.Project(t)
+			acceptance.PutFile(t, root, ".mdchk.yaml", md083Configuration("gfm", setting))
+			got := acceptance.RunProcess(t, binary, root, "lint", "missing.md", "--format=json")
+			out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "lint")
 			if got.Status != 12 || len(out.CheckedFiles) != 0 {
 				t.Fatal(got)
 			}
@@ -106,7 +114,7 @@ func TestCompiledPlatformMD083OptionsAndInheritance(t *testing.T) {
 	}
 	for _, denial := range []string{"allowed", "global", "rule"} {
 		t.Run(denial, func(t *testing.T) {
-			root := configurationProject(t)
+			root := acceptance.Project(t)
 			parent := strings.Replace(md083Configuration("commonmark", "{enabled: true}"), "directives: {enabled: false}", "directives: {enabled: true}", 1)
 			if denial == "global" {
 				parent = strings.Replace(parent, "directives: {enabled: true}", "directives: {enabled: false}", 1)
@@ -115,10 +123,10 @@ func TestCompiledPlatformMD083OptionsAndInheritance(t *testing.T) {
 				parent = strings.Replace(parent, "MD083: {enabled: true}", "MD083: {enabled: true, allow_directives: false}", 1)
 			}
 			child := strings.Replace(md083Configuration("commonmark", "{enabled: true, allow_directives: true}"), "directives: {enabled: false}", "directives: {enabled: true}", 1)
-			putConfigurationFile(t, root, ".mdchk.yaml", parent)
-			putConfigurationFile(t, root, "nested/.mdchk.yaml", child)
-			putConfigurationFile(t, root, "nested/doc.md", "<!-- mdchk:disable MD083 -->\ncafÃ©")
-			got, p := runInspection(t, binary, filepath.Join(root, "nested"), root, "inspect", "doc.md", "--lines=2", "--format=json")
+			acceptance.PutFile(t, root, ".mdchk.yaml", parent)
+			acceptance.PutFile(t, root, "nested/.mdchk.yaml", child)
+			acceptance.PutFile(t, root, "nested/doc.md", "<!-- mdchk:disable MD083 -->\ncafÃ©")
+			got, p := acceptance.RunInspection(t, binary, filepath.Join(root, "nested"), root, "inspect", "doc.md", "--lines=2", "--format=json")
 			active, hidden := 1, 0
 			if denial == "allowed" {
 				active, hidden = 0, 1
