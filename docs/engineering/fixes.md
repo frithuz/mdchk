@@ -402,7 +402,9 @@ offset-based ID, the diagnostic span as its anchor, one edit deleting exactly th
 and the `Meaning`, `ProtectedSyntax` and `DirectiveStructure` requirements. The rule
 callback sets `fix_available` through the shared interior edit query, as MD019 does, so
 directive intervals, protected context and documents opening with an unrecognized block
-withhold the finding before any group is made.
+withhold the finding before any group is made. A finding inside a heading's envelope is
+withheld too: deleting a space would change the heading's anchor, which `SameMeaning`
+comparisons of Text cannot see and links elsewhere may target.
 
 The independently registered checker recomputes the expected spans from the before parse
 and trusts neither producer data nor `fix_available`. Through `CheckContext.Once`, it
@@ -417,7 +419,7 @@ deleting spaces outside comments cannot create a directive finding.
 
 Interior deletions move text that the MD009 whole-parse proof and the heading proofs
 compare exactly, so `Corrections` proposes MD064 groups only in a round in which no other
-rule proposes an edit, and every other group waits while they remain. Only an MD047 edit
+rule proposes an edit, MD010 included, so runs a TAB replacement lengthens are seen, and every other group waits while they remain. Only an MD047 edit
 that analysis already offers shares their round; both checkers must accept the combined
 candidate. A document with MD009, MD047 and MD064 findings therefore converges in one run.
 

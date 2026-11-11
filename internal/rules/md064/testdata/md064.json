@@ -789,6 +789,7 @@
   },
   {
     "Name": "heading",
+    "Manual": true,
     "Source": "# One  two",
     "Maximum": 1,
     "Flavor": "",
@@ -813,6 +814,7 @@
   },
   {
     "Name": "setext",
+    "Manual": true,
     "Source": "One  two\n===",
     "Maximum": 1,
     "Flavor": "",

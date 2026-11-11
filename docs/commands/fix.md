@@ -212,10 +212,13 @@ same run.
 [MD064](../rules/whitespace/md064.md) corrections delete exactly each reported
 excess span of spaces between prose words, keeping the first `maximum` spaces, so
 `One  two` becomes `One two`. A finding under a disable directive or in protected
-content stays manual with `fix_available: false`, and its bytes are left alone.
-MD064 waits even for MD027: its edits wait for a round in which no other rule
-proposes an edit, and only an eligible MD047 edit shares that round, so `One  two<SPACE><SPACE><SPACE><NEWLINE>end`
-converges in one run, with MD009 and MD047 first.
+content, or in heading text, whose anchor a deletion would change, stays manual
+with `fix_available: false`, and its bytes are left alone. MD064 waits even for
+MD027 and MD010: its edits wait for a round in which no other rule proposes an
+edit, and only an eligible MD047 edit shares that round, so
+`One  two<SPACE><SPACE><SPACE><NEWLINE>end` converges in one run, with MD009 and
+MD047 first, and spaces a TAB replacement adds are collapsed in a later round of
+the same run.
 
 [MD081 paragraph-emphasis analysis](../rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.
@@ -232,7 +235,7 @@ After corrections, mdchk checks the resulting content and reports remaining find
 
 Recognized front matter stays byte-identical, and the body after it is still corrected. Recognition is off by default, though, and an unrecognized header would otherwise read as Markdown, so a correction could rewrite a value inside it.
 
-A document that opens with a complete `---` or `+++` block that isn't recognized, because `frontmatter.enabled` is false or the block's format isn't in `frontmatter.formats`, gets no MD003, MD004, MD005, MD009, MD012, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077, MD076 or MD064 corrections anywhere. That covers the body as well as the block. Their findings are still reported, with `fix_available: false` and no `deferred_fixes` record.
+A document that opens with a complete `---` or `+++` block that isn't recognized, because `frontmatter.enabled` is false or the block's format isn't in `frontmatter.formats`, gets no MD003, MD004, MD005, MD009, MD010, MD012, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077, MD076 or MD064 corrections anywhere. That covers the body as well as the block. Their findings are still reported, with `fix_available: false` and no `deferred_fixes` record.
 
 mdchk can't tell a real header from Markdown of the same shape, so a leading thematic break paired with a later one also triggers this. An opener with no closer doesn't. Set `frontmatter.enabled: true` to restore body corrections for documents with real headers.
 

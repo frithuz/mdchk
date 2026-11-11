@@ -4,6 +4,7 @@ package md064
 import (
 	"context"
 	"errors"
+	"sort"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
@@ -29,6 +30,11 @@ func compareRepeatedProseSpaces(ctx context.Context, c engine.RuleContext, items
 			out.Findings = nil
 		}
 	}()
+	headings, err := c.Headings(ctx)
+	if err != nil {
+		out.Err = err
+		return out
+	}
 	edits := c.InteriorEdits()
 	for _, item := range items {
 		if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
@@ -51,13 +57,23 @@ func compareRepeatedProseSpaces(ctx context.Context, c engine.RuleContext, items
 		}
 		message := "Repeated spaces in prose."
 		finding := engine.Finding{Span: item, Message: message}
-		var err error
-		finding.FixEligible, err = edits.Eligible(ctx, "MD064", item, item)
-		if err != nil {
-			out.Err = err
-			return out
+		// Heading text stays manual: deleting a space changes the heading's anchor,
+		// which links in this or other documents may target.
+		if !inHeading(headings, item) {
+			finding.FixEligible, err = edits.Eligible(ctx, "MD064", item, item)
+			if err != nil {
+				out.Err = err
+				return out
+			}
 		}
 		out.Findings = append(out.Findings, finding)
 	}
 	return out
+}
+
+// inHeading reports whether span lies inside one of the headings, which are in
+// document order and do not overlap.
+func inHeading(headings []parser.HeadingFact, span parser.Span) bool {
+	i := sort.Search(len(headings), func(i int) bool { return headings[i].Envelope.End() >= span.End() })
+	return i < len(headings) && headings[i].Envelope.Start() <= span.Start()
 }
