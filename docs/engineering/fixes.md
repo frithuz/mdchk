@@ -474,6 +474,32 @@ overlap, and the MD009 proof also compares across line-end whitespace. While MD0
 edits remain, MD005, MD007, MD077, MD063 and MD003 wait, and MD012, MD010, MD027
 and MD064 wait as for any other edit. A document opening with an unrecognized block gets no MD085 group.
 
+### MD038 corrections
+
+`internal/rules/md038.Correction` regenerates one atomic group per inline code span
+whose two fix-available MD038 findings match a pair from
+`RoundContext.DeletableCodeSpanSpaces`. That fact returns the edge runs of every span
+that reports both complete runs, which `parser.CodeSpanPadding` confirms are single
+exact or normalized SPACE bytes around a value that neither is all SPACE nor starts or
+ends with SPACE or a backtick; deleting both then leaves the normalized value unchanged.
+Each group deletes both runs, uses the opening run as its anchor and carries the
+`Meaning`, `ProtectedSyntax` and `DirectiveStructure` requirements, so a span is never
+half-corrected. The rule callback sets `fix_available` on both findings only when each
+passes the shared interior edit query.
+
+`Document.LiteralSpans` leaves exactly those padding bytes outside the protected code
+payload, and shared preservation compares code span segments allowing only SPACE bytes
+lost at a segment's ends, with every literal, semantic value and endpoint mapping
+unchanged. The independently registered checker recomputes the pairs from the before
+parse, proves `OnlyEditsChanged` and `MeaningPreserved`, which compares every node
+property and Text and code value exactly, and checks each group's two spans, original
+bytes and empty replacements.
+
+`Corrections` proposes MD038 groups only in a round in which no other rule proposes an
+edit, MD064 included, since the exact comparison fails on any other text change. Only an
+MD047 edit that analysis already offers shares their round, so a document with MD009,
+MD047 and MD038 findings converges in one run.
+
 ### Production rule integration
 
 `internal/rules.Corrections` regenerates MD047, MD004, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077, MD076 and MD085 groups from each
