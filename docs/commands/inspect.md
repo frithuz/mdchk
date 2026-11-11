@@ -183,11 +183,11 @@ It classifies full original source ownership before selecting lines; each findin
 covers one original TAB byte and one scalar column. CodeSpan stays protected
 with code_blocks enabled. No MD010 correction proposal or content is returned.
 
-MD012 inspection exposes available manual analysis and admitted `maximum`.
+MD012 inspection exposes available analysis and admitted `maximum`.
 Full original physical runs and protected context precede line slicing and START
 suppression: hidden earlier blanks consume the allowance, and selecting a later
 suffix cannot invent a finding. Empty-body ranges can have equal byte endpoints.
-No MD012 correction proposal or corrected content is returned.
+Inspection returns no correction proposal or corrected content; MD012 runs are corrected by [`fix`](fix.md).
 
 MD013 inspection exposes available but default-disabled manual analysis and all four admitted options. Full original physical width and protected/URL context precede line slicing. Each finding selects one original overflowing scalar, retaining exclusive scalar coordinates and exact snapshot identity; no MD013 correction or returned content is produced.
 

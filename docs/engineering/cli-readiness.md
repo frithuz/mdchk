@@ -97,7 +97,7 @@ context tests establish interruption behavior separately.
 Readiness is bounded by the [current capabilities](../index.md) and
 [platform limitations](../engineering.md#platform-and-process-acceptance). The CommonMark 652-example parser gate
 establishes core syntax conformance, not every consumer or rule. MD047 is the
-first ordinary production rule and correction, and MD003, MD005, MD009, MD010, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077, MD076, MD004 and MD027 also correct; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082 and MD093 analysis are also available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD087 and MD093 are disabled by default. Unavailable implicit rules
+first ordinary production rule and correction, and MD003, MD005, MD009, MD010, MD012, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077, MD076, MD004 and MD027 also correct; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082 and MD093 analysis are also available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD087 and MD093 are disabled by default. Unavailable implicit rules
 remain coverage gaps (15), explicit unavailable rules reject configuration (12),
 and default GFM now uses the verified whole profile. Actual GFM lint/fix/inspect
 consumer journeys include source facts and native saved-byte checks. Optional contexts/resources, MCP delivery, broader traversal accounting, the remaining
@@ -119,8 +119,10 @@ MD009/MD047 candidate composition.
 MD012 analysis/configuration is available for both flavors. Literal fixtures and
 compiled CLI checks cover original body ranges, actual protection and container
 transitions, active directives/metadata, inherited denials, slicing, strict options
-and all reporters. Findings remain manual, including zero-width bodies. MD012
-produces no edits; reanalysis identifies a correction candidate's snapshot.
+and all reporters. Analysis findings, including zero-width bodies, keep
+`fix_available: false`; `fix` and `fix --dry-run` remove excess lines through a
+separately proven producer (see [MD012 corrections](fixes.md#md012-corrections)),
+and reanalysis identifies the candidate's snapshot.
 
 [MD088 ASCII-punctuation analysis](../rules/formatting/md088.md) is available for CommonMark and GFM,
 disabled by default with sole string option `style: ascii`. Invalid styles and

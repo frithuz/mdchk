@@ -752,7 +752,7 @@ preserves physical phase and residual atomic TAB ownership without grammar or
 public model changes. Corrections of inline-text TABs follow
 [MD010 corrections](engineering/fixes.md#md010-corrections).
 
-MD012 projects manual first-excess body spans from global maximal original
+MD012 projects first-excess body spans, with `fix_available: false`, from global maximal original
 physical blank runs. It borrows completed production syntax, actual local prefix
 ends and protected code/raw/header intervals under the original allowance. Empty
 payload endings retain ownership; protected lines break runs. Full context precedes
