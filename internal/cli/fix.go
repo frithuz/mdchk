@@ -46,7 +46,7 @@ Usage returns 11, configuration 12, I/O 13 and internal failures 14.
 MD047 corrects safe final-newline changes. MD009 corrects trailing whitespace: it
 removes a suffix, or normalizes a real hard break to hard_break_spaces. MD010
 replaces a TAB in paragraph, heading or table-cell text with spaces_per_tab
-spaces. MD019 and
+spaces. MD012 removes excess blank lines from a run. MD019 and
 MD021 remove excess spaces from heading delimiter gaps. MD003 rewrites heading
 delimiters to the expected style. MD022 inserts missing blank lines around
 headings. MD023 removes leaf indentation from heading lines. MD032 inserts a

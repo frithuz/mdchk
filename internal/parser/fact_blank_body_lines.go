@@ -22,14 +22,130 @@ func (d *Document) BlankBodyLines(ctx context.Context, budget *OperationBudget, 
 	if maximum < 0 {
 		return nil, ErrModel
 	}
-	type lineState struct {
-		suffix, prefix, item int
-		protected            bool
+	lines, err := d.blankLineStates(ctx, budget, index)
+	if err != nil {
+		return nil, err
 	}
+	var out []Span
+	grow := func(length, capacity int) (int, error) {
+		if length < capacity {
+			return capacity, nil
+		}
+		if capacity > int(^uint(0)>>1)/2 {
+			return 0, ErrModel
+		}
+		capacity = max(1, capacity*2)
+		if err := headingFactCharge(ctx, budget, int64(length)+1, int64(capacity)); err != nil {
+			return 0, err
+		}
+		return capacity, nil
+	}
+	run, reported := 0, false
+	for i, s := range lines {
+		if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
+			return nil, err
+		}
+		if !s.blank() {
+			run, reported = 0, false
+			continue
+		}
+		// Compare observed source counts without maximum+1 or threshold storage.
+		if run < maximum {
+			run++
+			continue
+		}
+		if reported {
+			continue
+		}
+		reported = true
+		capacity, e := grow(len(out), cap(out))
+		if e != nil {
+			return nil, e
+		}
+		if capacity != cap(out) {
+			next := make([]Span, len(out), capacity)
+			copy(next, out)
+			out = next
+		}
+		if err := headingFactCharge(ctx, budget, 1, 1); err != nil {
+			return nil, err
+		}
+		out = append(out, Span{source: index.source, start: max(index.lines[i].start, s.prefix), end: index.lines[i].end, present: true})
+	}
+	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 0, 0); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// BlankRunLine is one physical line of a maximal blank run. Line runs from the
+// line start through its ending; Prefix holds the retained container prefixes.
+type BlankRunLine struct {
+	Line, Prefix Span
+}
+
+// BlankRuns returns every maximal physical blank run longer than maximum, from
+// the same analysis as BlankBodyLines. Each run's first excess line starts the
+// matching BlankBodyLines span after its prefix.
+func (d *Document) BlankRuns(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, maximum int) ([][]BlankRunLine, error) {
+	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 1, 1); err != nil {
+		return nil, err
+	}
+	if maximum < 0 {
+		return nil, ErrModel
+	}
+	lines, err := d.blankLineStates(ctx, budget, index)
+	if err != nil {
+		return nil, err
+	}
+	var out [][]BlankRunLine
+	var run []BlankRunLine
+	flush := func() {
+		if len(run) > maximum {
+			out = append(out, run)
+		}
+		run = nil
+	}
+	for i, s := range lines {
+		if err := headingFactCharge(ctx, budget, 1, 1); err != nil {
+			return nil, err
+		}
+		if !s.blank() {
+			flush()
+			continue
+		}
+		l := index.lines[i]
+		run = append(run, BlankRunLine{
+			Line:   Span{source: index.source, start: l.start, end: l.next, present: true},
+			Prefix: Span{source: index.source, start: l.start, end: max(l.start, s.prefix), present: true},
+		})
+	}
+	flush()
+	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 0, 0); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// blankLineState is one physical line's whitespace suffix start, retained prefix
+// end, item-prefix end and protection.
+type blankLineState struct {
+	suffix, prefix, item int
+	protected            bool
+}
+
+// blank reports whether the line belongs to a blank run. A line whose last
+// retained prefix is an item-prefix is a marker line and is nonblank.
+func (s blankLineState) blank() bool {
+	return !s.protected && s.suffix <= s.prefix && s.item != s.prefix
+}
+
+// blankLineStates computes every physical line's state for MD012.
+func (d *Document) blankLineStates(ctx context.Context, budget *OperationBudget, index LineIndex) ([]blankLineState, error) {
 	if err := headingFactCharge(ctx, budget, int64(len(index.lines))+1, int64(len(index.lines))); err != nil {
 		return nil, err
 	}
-	lines := make([]lineState, len(index.lines))
+	lines := make([]blankLineState, len(index.lines))
 	// Discover original ASCII whitespace, including source omitted from Text.
 	for i, l := range index.lines {
 		if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
@@ -101,7 +217,6 @@ func (d *Document) BlankBodyLines(ctx context.Context, budget *OperationBudget, 
 	stack := make([]frame, 1)
 	stack[0].node = d.root
 	raw, rawStart := "", 0
-	var out []Span
 	grow := func(length, capacity int) (int, error) {
 		if length < capacity {
 			return capacity, nil
@@ -233,40 +348,5 @@ func (d *Document) BlankBodyLines(ctx context.Context, budget *OperationBudget, 
 			return nil, err
 		}
 	}
-	run, reported := 0, false
-	for i, s := range lines {
-		if err := headingFactCharge(ctx, budget, 1, 0); err != nil {
-			return nil, err
-		}
-		if s.protected || s.suffix > s.prefix || s.item == s.prefix {
-			run, reported = 0, false
-			continue
-		}
-		// Compare observed source counts without maximum+1 or threshold storage.
-		if run < maximum {
-			run++
-			continue
-		}
-		if reported {
-			continue
-		}
-		reported = true
-		capacity, e := grow(len(out), cap(out))
-		if e != nil {
-			return nil, e
-		}
-		if capacity != cap(out) {
-			next := make([]Span, len(out), capacity)
-			copy(next, out)
-			out = next
-		}
-		if err := headingFactCharge(ctx, budget, 1, 1); err != nil {
-			return nil, err
-		}
-		out = append(out, Span{source: index.source, start: max(index.lines[i].start, s.prefix), end: index.lines[i].end, present: true})
-	}
-	if err := d.headingProjectionCheckpoint(ctx, budget, index, options, 0, 0); err != nil {
-		return nil, err
-	}
-	return out, nil
+	return lines, nil
 }

@@ -164,6 +164,12 @@ func (c CheckContext) MeaningPreservedAcrossTabs(ctx context.Context, spaces int
 	return before.Document.SameMeaningAcrossTabs(ctx, c.Before.meter.budget, after.Document, spaces)
 }
 
+// BlankRuns returns MD012's excess blank runs and resolved maximum for this
+// round's own parse under the target's plan.
+func (c RoundContext) BlankRuns(ctx context.Context) ([][]parser.BlankRunLine, int, error) {
+	return engine.BlankRunLines(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
 // BulletIndentation returns MD007's list item facts and resolved indent and
 // start_indented options for this round's own parse under the target's plan.
 func (c RoundContext) BulletIndentation(ctx context.Context) ([]parser.ListItemFact, int, bool, error) {
