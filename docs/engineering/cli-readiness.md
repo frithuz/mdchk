@@ -97,7 +97,7 @@ context tests establish interruption behavior separately.
 Readiness is bounded by the [current capabilities](../index.md) and
 [platform limitations](../engineering.md#platform-and-process-acceptance). The CommonMark 652-example parser gate
 establishes core syntax conformance, not every consumer or rule. MD047 is the
-first ordinary production rule and correction, and MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077, MD076 and MD004 also correct; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082 and MD093 analysis are also available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD087 and MD093 are disabled by default. Unavailable implicit rules
+first ordinary production rule and correction, and MD003, MD005, MD009, MD010, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077, MD076 and MD004 also correct; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD027, MD028, MD064, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082 and MD093 analysis are also available. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD087 and MD093 are disabled by default. Unavailable implicit rules
 remain coverage gaps (15), explicit unavailable rules reject configuration (12),
 and default GFM now uses the verified whole profile. Actual GFM lint/fix/inspect
 consumer journeys include source facts and native saved-byte checks. Optional contexts/resources, MCP delivery, broader traversal accounting, the remaining
@@ -107,10 +107,14 @@ rules and release/install artifacts are separate work.
 GFM, disabled by default and permanently report-only, with no edits or previews.
 
 MD010 analysis/configuration is available for CommonMark and GFM. Each original
-TAB is a separate manual one-byte finding; code_blocks only admits actual code
-block bytes, while CodeSpan/HTML/recognized metadata remain protected. Positive
-spaces_per_tab is analysis-neutral. Required acceptance includes full-context
-directives and inspection, unchanged source/configuration, and MD047 candidate composition; MD010 adds no edit or apply capability.
+TAB is a separate one-byte finding; code_blocks only admits actual code block
+bytes, while CodeSpan/HTML/recognized metadata remain protected. Positive
+spaces_per_tab never changes findings. `fix` replaces a TAB in paragraph,
+heading or table-cell text with spaces_per_tab spaces, deferring above 8 with
+expansion-limit; every other finding stays manual. See
+[MD010 corrections](fixes.md#md010-corrections). Required acceptance includes
+full-context directives and inspection, unchanged source/configuration, and
+MD009/MD047 candidate composition.
 
 MD012 analysis/configuration is available for both flavors. Literal fixtures and
 compiled CLI checks cover original body ranges, actual protection and container
