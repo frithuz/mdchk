@@ -410,8 +410,10 @@ or table-cell text that `fix` replaces with `spaces_per_tab` spaces; see
 MD012 reports one manual finding per excessive maximal physical blank body run,
 with message `Too many consecutive blank body lines.`. Its first-excess remaining
 body range excludes prefixes and endings and can be present zero-width evidence.
-`fix_available` is false; MD012 adds no changes or returned documents. After an
-MD047 candidate, MD012 ranges and snapshot identify that exact candidate.
+`fix_available` is false, because only `fix` proves a removal keeps the parse;
+`fix` removes the excess lines of the runs its
+[correction policy](rules/whitespace/md012.md#correction-policy) accepts, and the
+remaining findings identify that exact candidate snapshot.
 
 MD013 findings use the constant message `Line exceeds maximum width.` and exactly one whole original eligible overflowing scalar per physical line. TAB width does not change scalar diagnostic columns. `fix_available` is false; no MD013 changes or returned documents are added. After an MD047 candidate, manual MD013 ranges identify that exact candidate snapshot.
 

@@ -758,7 +758,9 @@ ends and protected code/raw/header intervals under the original allowance. Empty
 payload endings retain ownership; protected lines break runs. Full context precedes
 START suppression and inspection slicing. Capacity, copies, records and lookups
 are reserved before work; caller/origin final checks withhold interrupted output.
-See [MD012 policy](rules/whitespace/md012.md); no correction provider is added.
+The same per-line analysis supplies the excess runs that a separate producer and checker
+remove; see [MD012 corrections](engineering/fixes.md#md012-corrections) and
+[MD012 policy](rules/whitespace/md012.md).
 
 MD013 maximum-line-width analysis is available but disabled by default. A narrow completed-original projection borrows immutable source/index/options/profile/reference facts and the originating operation, returning detached first eligible scalar spans. Four admitted options pass through the facade; precharged ownership/raw-prefix/URL work and final producer/facade/callback checkpoints retain caller and origin controls. Findings are manual, with no correction authority.
 

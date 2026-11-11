@@ -324,6 +324,24 @@ mismatch returns a non-`Preserved` proof, and the shared `commonPreservation` ch
 mandatory. No `ForbidNewFindings` is registered: changing line-end whitespace outside
 comments cannot create a directive finding.
 
+### MD012 corrections
+
+`internal/rules.Corrections` regenerates one atomic MD012 group per active finding,
+and only in a round where no other rule proposes an edit. `Document.BlankRuns` shares
+`BlankBodyLines`' per-line analysis and returns each excess run's physical lines with
+their retained prefixes; `RoundContext.BlankRuns` reads it under the target's resolved
+`maximum`. A group's anchor covers the excess lines, and it holds one edit per excess
+line that removes the line from its start through its ending. A run whose excess lines
+keep different prefixes than the surviving neighbour gets a zero-edit group with
+`DeferReason` `prefix-mismatch`.
+
+The checker recomputes the runs and edits from the before parse, then proves through
+`CheckContext.Once` that `OnlyEditsChanged` holds, that both parses keep the same
+meaning across line-end whitespace (which includes list tightness) and that
+`SameStructureAcrossBullets` maps every block envelope. It registers
+`ForbidNewFindings` for MD022, MD031, MD032 and MD065, so a removal never creates a
+finding that an inserting fixer would then undo.
+
 `editMapping` lookups binary-search cumulative deltas, so preservation checks don't walk
 the edit list per node. A lint target's projector charges each position's search and
 line-prefix cost rather than the whole source, so one finding per line doesn't exhaust
