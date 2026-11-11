@@ -1,6 +1,6 @@
 # mdchk fix
 
-Current implementation: `fix` applies validated MD047, MD009, MD010, MD012, MD005, MD019, MD021, MD003, MD022, MD023, MD032, MD029, MD030, MD063, MD007, MD077, MD076, MD004, MD027 and MD064 corrections on Linux,
+Current implementation: `fix` applies validated MD047, MD009, MD010, MD012, MD005, MD019, MD021, MD003, MD022, MD023, MD032, MD029, MD030, MD063, MD007, MD077, MD076, MD004, MD027, MD064 and MD085 corrections on Linux,
 macOS and Windows, from a build without cgo. Other operating systems refuse writes
 with I/O status 13. `fix --dry-run` supports all four formats and writes nothing. Text/JSON
 include proposed diffs; editor formats report only remaining candidate findings.
@@ -71,7 +71,7 @@ mdchk fix docs/ --dry-run --format json
 ```
 
 Text and JSON previews include proposed diffs when a registered correction
-passes shared candidate validation. MD047 final-newline, MD009 trailing-whitespace, MD010 tab-character, MD012 blank-line-run, MD005 sibling-list alignment, MD019 and MD021 heading-spacing, MD003 heading-style, MD022 heading blank-line, MD023 heading-indentation, MD032 list blank-line, MD029 numbered-list prefix, MD030 list-marker-spacing, MD063 heading-capitalization, MD007 bullet-indentation, MD077 list continuation indentation, MD076 list-item-spacing, MD004 bullet-marker, and MD027 blockquote-spacing, and MD064 repeated-prose-space corrections are implemented. MD004 corrects a list only when its structure stays the same: a bullet list directly beside another bullet list, separated only by blank lines or nothing, would merge, so its findings stay reported with `fix_available: false`. MD001, MD069, MD013, MD028, MD085, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD020, MD024, MD025, MD026, MD036, MD041, MD043, MD080, MD082 and MD093 remain report-only, with no edits or previews for their findings.
+passes shared candidate validation. MD047 final-newline, MD009 trailing-whitespace, MD010 tab-character, MD012 blank-line-run, MD005 sibling-list alignment, MD019 and MD021 heading-spacing, MD003 heading-style, MD022 heading blank-line, MD023 heading-indentation, MD032 list blank-line, MD029 numbered-list prefix, MD030 list-marker-spacing, MD063 heading-capitalization, MD007 bullet-indentation, MD077 list continuation indentation, MD076 list-item-spacing, MD004 bullet-marker, and MD027 blockquote-spacing, MD064 repeated-prose-space, and MD085 paragraph-continuation corrections are implemented. MD004 corrects a list only when its structure stays the same: a bullet list directly beside another bullet list, separated only by blank lines or nothing, would merge, so its findings stay reported with `fix_available: false`. MD001, MD069, MD013, MD028, MD089, MD035, MD037, MD038, MD081, MD088, MD018, MD020, MD024, MD025, MD026, MD036, MD041, MD043, MD080, MD082 and MD093 remain report-only, with no edits or previews for their findings.
 
 [MD019](../rules/headings/md019.md) and [MD021](../rules/headings/md021.md)
 corrections remove excess ASCII spaces from a heading delimiter gap: the second
@@ -219,6 +219,15 @@ edit, and only an eligible MD047 edit shares that round, so
 `One  two<SPACE><SPACE><SPACE><NEWLINE>end` converges in one run, with MD009 and
 MD047 first, and spaces a TAB replacement adds are collapsed in a later round of
 the same run.
+
+[MD085](../rules/whitespace/md085.md) corrections delete the reported surplus
+SPACE/TAB indentation of a paragraph continuation line, so
+`a<NEWLINE><SPACE><SPACE>b<NEWLINE>` becomes `a<NEWLINE>b<NEWLINE>`. A line that
+would start a block, or become a setext underline or table delimiter row, stays
+manual with `fix_available: false`, as does a line in a disabled interval or a
+document opening with an unrecognized block. MD085 shares its round with MD009
+and MD047, so `a<SPACE><NEWLINE><SPACE><SPACE>b<EOF>` becomes
+`a<NEWLINE>b<NEWLINE>` in one run; MD012, MD010, MD027 and MD064 wait for it.
 
 [MD081 paragraph-emphasis analysis](../rules/formatting/md081.md) is available for CommonMark and
 GFM, disabled by default and permanently report-only, with no edits or previews.

@@ -423,9 +423,42 @@ rule proposes an edit, MD010 included, so runs a TAB replacement lengthens are s
 that analysis already offers shares their round; both checkers must accept the combined
 candidate. A document with MD009, MD047 and MD064 findings therefore converges in one run.
 
+### MD085 corrections
+
+`internal/rules.Corrections` regenerates one atomic MD085 group per active finding
+whose `fix_available` is set, from each round's own analysis and parse. The round
+fact, `engine.ParagraphIndentationFacts`, returns `Document.ParagraphIndentation`'s
+surplus SPACE/TAB spans for the target's plan. Analysis sets `fix_available` only
+when the anchor is enabled, syntax is reliable, the document does not open with an
+unrecognized block, and `Document.ParagraphIndentationPreserved` shows the line
+stays a paragraph continuation: it parses the previous physical line and the line,
+with and without the span, both as a paragraph start and after a neutral opening
+line, and compares each pair across line-end whitespace. A line that would start a
+block or become a setext underline or table delimiter row gets no group.
+
+Each group has the ID `MD085-byte-<offset>`, the finding range as both anchor and
+edit span, the current bytes as `Expected`, an empty replacement, and the
+`Meaning`, `ProtectedSyntax` and `DirectiveStructure` requirements.
+
+The independently registered checker recomputes the spans from the before parse and
+trusts neither producer data nor `fix_available`. Through `CheckContext.Once`, it
+proves `OnlyEditsChanged` and `MeaningPreservedAcrossLineEndWhitespace`: leading
+whitespace of a paragraph continuation is not Text, so both parses must match in
+node kinds, order, properties, Text and reference definitions. Each group then
+checks its own span, original bytes and empty replacement. No `ForbidNewFindings` is
+registered: deleting paragraph indentation outside comments cannot create a
+directive finding.
+
+MD085 groups wait for a round with no MD004, MD019, MD021, MD022, MD023, MD032,
+MD029 or MD030 group and share it with MD009 and MD047. An indentation deletion
+starts after a line start and an MD009 suffix ends at a line end, so they never
+overlap, and the MD009 proof also compares across line-end whitespace. While MD085
+edits remain, MD005, MD007, MD077, MD063 and MD003 wait, and MD012, MD010, MD027
+and MD064 wait as for any other edit. A document opening with an unrecognized block gets no MD085 group.
+
 ### Production rule integration
 
-`internal/rules.Corrections` regenerates MD047, MD004, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077 and MD076 groups from each
+`internal/rules.Corrections` regenerates MD047, MD004, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077, MD076 and MD085 groups from each
 current round's actual shared analysis and source-owned diagnostic ranges. For
 MD047, the source's retained physical-line index supplies the same terminal facts
 as analysis; the shared `fix.InsertionEnding` chooses inserted spelling without
