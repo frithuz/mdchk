@@ -125,6 +125,7 @@ class MutationHarness(unittest.TestCase):
             self.assertEqual(stale.read_text(), "preserved previous evidence")
             self.assertFalse((output / "run.json").exists())
 
+    @patch.dict(MUTATION.AREAS, {"rules": ("md001.go",)})
     def test_report_refuses_incomplete_malformed_empty_and_wrong_scope(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -164,6 +165,7 @@ class MutationHarness(unittest.TestCase):
             self.assertEqual(lived[0]["identity"], rows[0]["identity"],
                              "review identity must remain stable when test outcomes change")
 
+    @patch.dict(MUTATION.AREAS, {"rules": ("md001.go",)})
     def test_flat_area_report_keeps_package_file(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

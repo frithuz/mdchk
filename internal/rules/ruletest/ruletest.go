@@ -10,11 +10,13 @@ import (
 	"context"
 	"encoding/json"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/resource"
 	"github.com/frithuz/mdchk/internal/result"
 )
 
@@ -140,4 +142,60 @@ func (c *LateStopContext) Err() error {
 		return c.Reason
 	}
 	return c.Context.Err()
+}
+
+// CorrectedFlavor validates producer's corrections of text as doc.md in
+// flavor with the default limits, with only the named rules enabled.
+func CorrectedFlavor(t *testing.T, registrations []engine.Registration, checkers []fix.CheckerRegistration, text, flavor string, producer fix.Producer, ids ...string) (fix.FileView, fix.Validated) {
+	t.Helper()
+	r := Registry(t, registrations)
+	selection, err := r.SelectRules(Settings(ids...), engine.ValidationProviders{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	plan, err := selection.Plan(engine.DocumentContext{Flavor: flavor}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	validator, err := fix.NewValidator(r, checkers)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return Corrected(t, validator, plan, text, producer)
+}
+
+// HeadingFacts are the parser and anchor facts of one heading that a
+// correction must preserve.
+type HeadingFacts struct {
+	Level                                   int
+	Style, Visible, Label, Containers, Base string
+	Closed                                  bool
+}
+
+// HeadingFactsOf parses text in flavor and returns the facts of each heading.
+func HeadingFactsOf(t *testing.T, text, flavor string) []HeadingFacts {
+	t.Helper()
+	ctx := context.Background()
+	budget, _ := parser.NewOperationBudget(parser.DefaultLimits())
+	source := parser.NewSource([]byte(text))
+	options := engine.DocumentContext{Flavor: flavor}.ParseOptions()
+	parsed := parser.ParseWithOptions(ctx, source, budget, options)
+	headings, err := parsed.Document.Headings(ctx, budget)
+	if err != nil {
+		t.Fatal(err)
+	}
+	anchors, availability, err := resource.OriginalHeadingAnchors(ctx, parsed, budget, parser.NewLineIndex(source), options, "github")
+	if err != nil || availability != resource.Available || len(anchors) != len(headings) {
+		t.Fatal(err, availability, len(anchors))
+	}
+	out := make([]HeadingFacts, len(headings))
+	for i, h := range headings {
+		label, _ := source.Text(h.Label)
+		kinds := make([]string, len(h.Containers))
+		for j, c := range h.Containers {
+			kinds[j] = string(c.Kind)
+		}
+		out[i] = HeadingFacts{h.Level, h.Style, h.Visible, label, strings.Join(kinds, ","), anchors[i].Base.Value, h.Closed}
+	}
+	return out
 }

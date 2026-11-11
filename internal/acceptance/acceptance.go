@@ -91,6 +91,20 @@ func StableStat(path string) (os.FileInfo, error) {
 	return info, errors.Join(err, f.Close())
 }
 
+// Digest returns the hexadecimal SHA-256 of text.
+func Digest(text string) string { return fmt.Sprintf("%x", sha256.Sum256([]byte(text))) }
+
+// Saved returns the bytes of doc.md under root.
+func Saved(t *testing.T, root string) string {
+	t.Helper()
+	//nolint:gosec // Paths originate in the test-owned fixture tree.
+	data, err := os.ReadFile(filepath.Join(root, "doc.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(data)
+}
+
 // ConfigurationBytes returns a digest of every regular file under root.
 func ConfigurationBytes(t *testing.T, root string) map[string][32]byte {
 	t.Helper()

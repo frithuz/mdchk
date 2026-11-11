@@ -23,7 +23,7 @@ bytes are checked after execution. Do not edit the candidate during a run.
 
 | Area | Mutated files | Executed tests |
 | --- | --- | --- |
-| Heading rule | internal/rules/md001.go | internal/rules package |
+| Heading rule | internal/rules/md001/md001.go | ./internal/rules/md001 package |
 | Configuration permissions | internal/config/validate.go, policy.go | internal/config package |
 | Safe fix structure and semantic validation | internal/fix/plan.go, validate.go | internal/fix package |
 
