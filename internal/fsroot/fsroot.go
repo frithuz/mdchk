@@ -9,6 +9,10 @@
 // contained symlink between check and open is detected by the identity
 // comparison and can never lead outside the root.
 //
+// Reader is the read-only side: a confined reader anchored at a directory the
+// caller names, used by internal/config (anchored at the discovery cap or the
+// volume root) and internal/configscan (anchored at the volume root).
+//
 // The package contains no platform-specific code beyond the open flags that
 // keep a raced FIFO from blocking a read.
 package fsroot

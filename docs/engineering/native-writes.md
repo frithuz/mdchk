@@ -58,6 +58,17 @@ escaping symlink is refused by `os.Root` itself. Absolute canonical paths must
 already name the intended non-symlink scope; inspection's explicit symlink
 exception grants no write access.
 
+`internal/fsroot` also provides `Reader`, the read-only confined reader that
+`internal/config` and `internal/configscan` use. `OpenReader` anchors it at a
+directory the caller names: config discovery uses the canonical discovery cap,
+while `config.Load` and the config scan use the volume root (`VolumeRoot`). The
+reader walks each intermediate component with `Lstat`, `OpenRoot` and an
+`os.SameFile` check, then offers only a leaf `Lstat` and an identity-checked
+read-only `Open` of a regular file or directory. It has no write-capable
+methods and never exposes its directory handles. Distinct sentinel errors
+(`ErrOutside`, `ErrNotDir`, `ErrDirChanged`, `ErrWrongKind`, `ErrLeafChanged`)
+let each caller keep its own error wording.
+
 `WriteSet` owns the observations and residual budget. Fresh equal-byte Sources,
 mutable acquisition descriptions and detached `fix.FileView` values cannot
 manufacture approval. `fix.Validated.Publish` uses its privately retained
