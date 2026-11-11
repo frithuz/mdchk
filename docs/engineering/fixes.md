@@ -311,7 +311,8 @@ planner reports without blocking other groups.
 The expansion limit is why `hard_break_spaces` can't grow a file arbitrarily. Growth is
 capped per suffix, so it stays a few bytes per line, and the check runs before any
 replacement is built, so a huge value allocates nothing. No shared growth limit exists:
-every other production fixer deletes bytes or adds one line ending.
+MD010 caps its own growth the same way, and every other production fixer deletes bytes
+or adds one line ending.
 
 The independently registered checker recomputes the expected edits from the before parse
 and trusts neither producer data nor `fix_available`. Through `CheckContext.Once`, it
@@ -335,6 +336,43 @@ adds the final newline: `foo<SPACE><SPACE><SPACE><EOF>` becomes `foo<NEWLINE>`. 
 therefore sets `fix_available` for a suffix at EOF as for any other suffix. A document
 opening with an unrecognized block is the exception: `Corrections` makes no MD009 group
 there, not even a deferral, so nothing touches MD047's insertion and it applies alone.
+
+### MD010 corrections
+
+`internal/rules.Corrections` regenerates one atomic MD010 group per active finding whose
+TAB sits in inline text, from each round's own analysis and parse. The round fact,
+`engine.TabCharacterFacts`, joins `Document.TabCharacters` with
+`Document.InlineTextTabs`: a TAB in the exact Text content of a paragraph, heading or
+table cell, outside image descriptions, with a non-whitespace byte of the same block
+before it and after it on its line. Indentation, container prefixes, code, HTML,
+destinations, titles, definitions, delimiter rows and cell trimming own no such Text,
+so they get no group at all. Line-end TABs are excluded too: they belong to MD009, and
+spaces there could form a hard break.
+
+Each group has the ID `MD010-byte-<offset>`, the one-byte finding range as both anchor
+and edit span, and the `Meaning`, `ProtectedSyntax` and `DirectiveStructure`
+requirements. The edit replaces the TAB with `spaces_per_tab` spaces from the target's
+resolved plan. When that exceeds `parser.MaxTabSpaces` (8), the group has no edit and
+the `expansion-limit` `DeferReason`, and the finding's `fix_available` is false. The
+cost is charged before the spaces are built, and the cap keeps growth to a few bytes
+per TAB.
+
+The independently registered checker recomputes the facts and expected edits from the
+before parse and trusts neither producer data nor `fix_available`. Through
+`CheckContext.Once`, it proves `OnlyEditsChanged` and `SameMeaningAcrossTabs`: both
+parses match in node kinds and order, break kinds and origins, heading, list, table,
+code, task and link properties and all reference definitions, and Text values match
+when every TAB on either side reads as `spaces_per_tab` spaces, compared without
+allocating the expansion. Each group then checks its own span, original byte and
+replacement. No `ForbidNewFindings` is registered: replacing a TAB in inline text
+outside comments cannot create a directive finding.
+
+MD010 groups take a round of their own. Every other proof compares the Text an MD010
+edit changes, and the MD010 proof compares exact Text elsewhere, so `Corrections`
+proposes MD010 edits only in a round with no other edit, MD009 and MD047 included, and
+holds MD047 and MD003 back while they are pending. A line with a TAB and trailing
+whitespace, or a file with a TAB and no final newline, settles over the rounds of one
+`fix`.
 
 ### Production rule integration
 

@@ -522,9 +522,11 @@ all options. `fix` corrects MD009 findings, except for literal code and the case
 hard break past 8 spaces, whatever `hard_break_spaces` says.
 
 MD010 is available and enabled by default for both flavors, with boolean
-`code_blocks: false` and positive integer `spaces_per_tab: 4`. The latter is
-analysis-neutral in Pass 1, including maximum admitted int, and never changes
-parser tab stops. All findings are manual; see [MD010](rules/whitespace/md010.md).
+`code_blocks: false` and positive integer `spaces_per_tab: 4`. The latter never
+changes findings or parser tab stops, including maximum admitted int. `fix`
+replaces a TAB in paragraph, heading or table-cell text with `spaces_per_tab`
+spaces and leaves every other finding manual; above 8 spaces it corrects
+nothing. See [MD010's correction policy](rules/whitespace/md010.md#correction-policy).
 
 MD012 is available and enabled by default for CommonMark and GFM. `maximum`
 is a nonnegative integer, default 1; zero reports each run's first blank, while

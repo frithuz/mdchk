@@ -749,7 +749,8 @@ production ownership and the original operation. CodeSpan remains protected;
 actual code Content/intrinsic indentation and trimmed semantic raw-body boundaries
 follow [MD010 policy](rules/whitespace/md010.md). Charged confirmed-prefix replay
 preserves physical phase and residual atomic TAB ownership without grammar or
-public model changes. This analysis produces no edits.
+public model changes. Corrections of inline-text TABs follow
+[MD010 corrections](engineering/fixes.md#md010-corrections).
 
 MD012 projects manual first-excess body spans from global maximal original
 physical blank runs. It borrows completed production syntax, actual local prefix

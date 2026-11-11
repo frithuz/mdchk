@@ -60,7 +60,9 @@ Malformed directives change no rule state. An enable directive explicitly enable
 Fix applies only safe corrections. Current MD047 leaves protected EOF contexts
 manual. MD009 leaves literal code and some title, backslash and task suffixes
 manual; see
-[its correction policy](rules/whitespace/md009.md#correction-policy). Remaining
+[its correction policy](rules/whitespace/md009.md#correction-policy). MD010
+corrects only TABs in paragraph, heading and table-cell text; see
+[its correction policy](rules/whitespace/md010.md#correction-policy). Remaining
 findings return `10`. Heading jumps and missing fenced-code
 languages are examples of future report-only checks, not currently implemented
 findings.

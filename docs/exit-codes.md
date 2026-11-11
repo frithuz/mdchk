@@ -17,7 +17,7 @@ for these outcomes, including usage and configuration failures when a valid
 format is selected. Inspect supports text/JSON. Editor reporters use their
 documented diagnostic and operational streams. Apply uses one portable
 native replacement on Linux, macOS and Windows; hosts outside those return I/O/13. MD047 previews
-safe final-newline corrections and defers unsafe EOF contexts; MD009 previews trailing-whitespace corrections. MCP remains planned.
+safe final-newline corrections and defers unsafe EOF contexts; MD009 previews trailing-whitespace corrections and MD010 previews inline-text TAB corrections. MCP remains planned.
 An output-delivery error, including a short write, returns `13` unless a
 previously established internal failure requires `14`; it may prevent a complete
 report from reaching stdout.
