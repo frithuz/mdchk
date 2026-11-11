@@ -88,10 +88,9 @@ import (
 // withheld by its flags in a document opening with an unrecognized block.
 //
 // MD027 groups go last, after MD010 and MD003, in a round with no other group
-// but an MD047 edit that
-// analysis withheld, which waits for them in turn. Their checker compares whole
-// parses with every list column and text value fixed, which most other edits
-// break; one fix run still applies them all. A document opening with an
+// but an MD047 edit that analysis withheld, which waits for them in turn. Their
+// checker compares whole parses with every list column and text value fixed,
+// which most other edits break; one fix run still applies them all. A document opening with an
 // unrecognized block gets no MD027 group at all.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
