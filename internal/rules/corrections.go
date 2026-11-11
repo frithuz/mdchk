@@ -5,14 +5,15 @@ import (
 
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/result"
-	"github.com/frithuz/mdchk/internal/rules/internal/headingblanks"
 	"github.com/frithuz/mdchk/internal/rules/internal/headingcase"
-	"github.com/frithuz/mdchk/internal/rules/internal/headingindent"
-	"github.com/frithuz/mdchk/internal/rules/internal/headingspacing"
-	"github.com/frithuz/mdchk/internal/rules/internal/headingstyle"
 	"github.com/frithuz/mdchk/internal/rules/internal/listspacing"
 	"github.com/frithuz/mdchk/internal/rules/internal/orderedprefix"
+	"github.com/frithuz/mdchk/internal/rules/md003"
 	"github.com/frithuz/mdchk/internal/rules/md009"
+	"github.com/frithuz/mdchk/internal/rules/md019"
+	"github.com/frithuz/mdchk/internal/rules/md021"
+	"github.com/frithuz/mdchk/internal/rules/md022"
+	"github.com/frithuz/mdchk/internal/rules/md023"
 	"github.com/frithuz/mdchk/internal/rules/md047"
 )
 
@@ -169,13 +170,13 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	if len(groups) > 0 {
 		styles, blank, indentation, capitalization, lists, alignment, numbering, bullets, continuation, separators = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
 	}
-	headings, err := headingspacing.Groups(ctx, c, spacing)
+	headings, err := md019.Correction(ctx, c, spacing)
 	if err != nil {
 		return nil, err
 	}
 	groups = append(groups, headings...)
 	spaced := len(groups)
-	insertions, err := headingblanks.Groups(ctx, c, blank)
+	insertions, err := md022.Correction(ctx, c, blank)
 	if err != nil {
 		return nil, err
 	}
@@ -187,7 +188,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		}
 		groups = append(groups, blanks...)
 		if len(blanks) == 0 {
-			indents, err := headingindent.Groups(ctx, c, indentation)
+			indents, err := md023.Correction(ctx, c, indentation)
 			if err != nil {
 				return nil, err
 			}
@@ -262,7 +263,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	}
 	eligible := terminal != nil && (terminal.FixAvailable || touched)
 	if !waiting && !eligible {
-		style, err := headingstyle.Groups(ctx, c, styles)
+		style, err := md003.Correction(ctx, c, styles)
 		if err != nil {
 			return nil, err
 		}
@@ -283,13 +284,13 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 func CorrectionCheckers() []fix.CheckerRegistration {
 	return []fix.CheckerRegistration{
 		md047.Checker(),
-		{Rule: "MD019", Check: headingspacing.Check},
-		{Rule: "MD021", Check: headingspacing.Check},
-		{Rule: "MD023", Check: headingindent.Check},
+		md019.Checker(),
+		md021.Checker(),
+		md023.Checker(),
 		{Rule: "MD029", Check: orderedprefix.Check},
 		md009.Checker(),
-		{Rule: "MD003", Check: headingstyle.Check},
-		{Rule: "MD022", Check: headingblanks.Check},
+		md003.Checker(),
+		md022.Checker(),
 		{Rule: "MD063", Check: headingcase.Check},
 		{Rule: "MD032", Check: checkListBlankLine},
 		{Rule: "MD005", Check: checkListAlignment},

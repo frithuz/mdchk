@@ -194,9 +194,12 @@ Every rule package exports `Registration() engine.Registration`, which returns
 the rule ID and its check. A rule with a fixer also exports
 `Correction(ctx, fix.RoundContext, result.Diagnostic) (fix.Group, error)` and
 `Checker() fix.CheckerRegistration`. MD009 builds every group of a round in one
-pass, so its `Correction` takes and returns slices. Helpers that other packages
-already call, such as `md047.TerminalNewline`, stay exported; everything else is
-unexported.
+pass, so its `Correction` takes and returns slices. So do fixers whose groups
+come from a shared helper in `internal/rules/internal/`, such as the heading
+rules MD003 and MD019-MD023. MD019 and MD021 share `headingspacing`, so
+`Corrections` passes both rules' findings to `md019.Correction` in one call.
+Helpers that other packages already call, such as `md047.TerminalNewline`, stay
+exported; everything else is unexported.
 
 Tests use the external package `mdNNN_test`, which may import
 `internal/rules` to run the rule with every production registration and

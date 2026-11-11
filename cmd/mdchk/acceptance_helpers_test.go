@@ -55,6 +55,13 @@ func configurationBytes(t *testing.T, root string) map[string][32]byte {
 	return acceptance.ConfigurationBytes(t, root)
 }
 
+func spacingDigest(text string) string { return acceptance.Digest(text) }
+
+func spacingSaved(t *testing.T, root string) string {
+	t.Helper()
+	return acceptance.Saved(t, root)
+}
+
 func runConfigurationProcess(t *testing.T, binary, cwd string, args ...string) configurationRun {
 	t.Helper()
 	return acceptance.RunProcess(t, binary, cwd, args...)

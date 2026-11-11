@@ -16,12 +16,12 @@ import tempfile
 import time
 
 PIN = "github.com/go-gremlins/gremlins/cmd/gremlins@v0.6.0"
-AREAS = {"rules": ("md001.go",), "config": ("validate.go", "policy.go"),
+AREAS = {"rules/md001": ("md001.go",), "config": ("validate.go", "policy.go"),
          "fix": ("plan.go", "validate.go")}
 STATUSES = {"KILLED", "LIVED", "NOT COVERED", "NOT VIABLE", "TIMED OUT", "SKIPPED"}
 # Each replay is a token mutation that the campaign must independently report killed.
 REPLAYS = [
-    ("rules", "md001.go", "heading.Level > previous+1", ">", ">=",
+    ("rules/md001", "md001.go", "heading.Level > previous+1", ">", ">=",
      "CONDITIONALS_BOUNDARY", "TestMD001AnalysisFixtures", ("unexpected outcome:",)),
     ("config", "policy.go", "Allowed: len(restrictions) == 0", "==", "!=",
      "CONDITIONALS_NEGATION", "TestDirectivePermissionMatrix", ("wrong effective decision:",)),

@@ -5,10 +5,18 @@ package rules
 
 import (
 	"github.com/frithuz/mdchk/internal/engine"
+	"github.com/frithuz/mdchk/internal/rules/md001"
+	"github.com/frithuz/mdchk/internal/rules/md003"
 	"github.com/frithuz/mdchk/internal/rules/md009"
 	"github.com/frithuz/mdchk/internal/rules/md010"
 	"github.com/frithuz/mdchk/internal/rules/md012"
 	"github.com/frithuz/mdchk/internal/rules/md013"
+	"github.com/frithuz/mdchk/internal/rules/md018"
+	"github.com/frithuz/mdchk/internal/rules/md019"
+	"github.com/frithuz/mdchk/internal/rules/md020"
+	"github.com/frithuz/mdchk/internal/rules/md021"
+	"github.com/frithuz/mdchk/internal/rules/md022"
+	"github.com/frithuz/mdchk/internal/rules/md023"
 	"github.com/frithuz/mdchk/internal/rules/md027"
 	"github.com/frithuz/mdchk/internal/rules/md028"
 	"github.com/frithuz/mdchk/internal/rules/md047"
@@ -19,8 +27,8 @@ import (
 
 func Registrations() []engine.Registration {
 	return []engine.Registration{
-		{ID: "MD001", Check: headingIncrements},
-		{ID: "MD003", Check: headingStyle},
+		md001.Registration(),
+		md003.Registration(),
 		{ID: "MD004", Check: bulletMarkerStyle},
 		{ID: "MD005", Check: siblingListAlignment},
 		{ID: "MD007", Check: bulletNestingIndentation},
@@ -30,12 +38,12 @@ func Registrations() []engine.Registration {
 		md012.Registration(),
 		md013.Registration(),
 		{ID: "MD014", Check: shellPrompts},
-		{ID: "MD018", Check: openingHashSpacing},
-		{ID: "MD019", Check: extraOpeningHashSpaces},
-		{ID: "MD020", Check: closingHashSpacing},
-		{ID: "MD021", Check: closedHeadingSpaces},
-		{ID: "MD022", Check: headingBlankLines},
-		{ID: "MD023", Check: indentedHeadings},
+		md018.Registration(),
+		md019.Registration(),
+		md020.Registration(),
+		md021.Registration(),
+		md022.Registration(),
+		md023.Registration(),
 		{ID: "MD024", Check: repeatedHeadingText},
 		{ID: "MD025", Check: multipleDocumentTitles},
 		{ID: "MD026", Check: headingEndPunctuation},

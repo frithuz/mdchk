@@ -538,7 +538,7 @@ rule's eligibility should still use `InteriorEditQuery`, so `fix_available` stay
 accurate. Keep ambiguous rules report-only until independent proof and production acceptance exist. Retained
 compiled fixtures in `internal/rules/md047/testdata/md047_corrections.json` are available
 for later consumer acceptance; they do not claim filesystem apply or MCP support.
-`cmd/mdchk/testdata/heading_spacing_corrections.json` and
+`internal/rules/md019/testdata/heading_spacing_corrections.json` and
 `cmd/mdchk/testdata/md007_corrections.json` run through preview and saved modes.
 
 Original selected-file UTF-8 failures remain local observations during correction
