@@ -105,14 +105,28 @@
   {
     "Name": "atx",
     "Source": "# One  two\n\n## Three  four ##\n",
-    "Candidate": "# One two\n\n## Three four ##\n",
+    "Candidate": "# One  two\n\n## Three  four ##\n",
     "Maximum": 1
   },
   {
     "Name": "setext",
     "Source": "One  two\n===\n\nThree  four\n---\n",
-    "Candidate": "One two\n===\n\nThree four\n---\n",
+    "Candidate": "One  two\n===\n\nThree  four\n---\n",
     "Maximum": 1
+  },
+  {
+    "Name": "heading-anchor",
+    "Source": "# Hello  world\n\nSee [x](#hello--world)  now.\n",
+    "Candidate": "# Hello  world\n\nSee [x](#hello--world) now.\n",
+    "Maximum": 1,
+    "Flavor": "gfm"
+  },
+  {
+    "Name": "md010",
+    "Source": "a\t b  c\n",
+    "Candidate": "a b c\n",
+    "Maximum": 1,
+    "Config": "md010"
   },
   {
     "Name": "emphasis-link",

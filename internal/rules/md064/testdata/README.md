@@ -19,5 +19,5 @@ its SHA-256 and size. Both are read by `acceptance_test.go`.
 `md064_corrections.json` holds the correction cases run by `fix_test.go` and
 `fix_acceptance_test.go`. Each case gives the original `Source`, the corrected
 `Candidate`, the `Maximum`, an optional `Flavor`, and an optional `Config`:
-`md047` also enables MD047, `md009` enables MD009 and MD047, and `directives`
+`md047` also enables MD047, `md009` enables MD009 and MD047, `md010` enables MD010, and `directives`
 turns on directive processing, which only the compiled test runs.

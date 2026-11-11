@@ -18,7 +18,7 @@ func TestMD064FinalPublicationWithholdsAllFindings(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 1}, {"clean", "a\nb", 1}, {"protected", "```\nx\n```", 1}, {"violation", "a  b  c  d  e  f", 20}} {
+	}{{"empty", "", 4}, {"clean", "a\nb", 4}, {"protected", "```\nx\n```", 4}, {"violation", "a  b  c  d  e  f", 25}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+reason.Error(), func(t *testing.T) {
 				var observed engine.RuleOutcome
@@ -44,11 +44,11 @@ func TestMD064FinalPublicationWithholdsAllFindings(t *testing.T) {
 
 func TestMD064CallbackQuotaAndCopyBoundaries(t *testing.T) {
 	for _, kind := range []string{"work", "nodes"} {
-		for _, remaining := range []int64{0, 69, 70} {
-			if kind == "nodes" && remaining == 69 {
+		for _, remaining := range []int64{0, 74, 75} {
+			if kind == "nodes" && remaining == 74 {
 				remaining = 24
 			}
-			if kind == "nodes" && remaining == 70 {
+			if kind == "nodes" && remaining == 75 {
 				remaining = 25
 			}
 			t.Run(fmt.Sprintf("%s/%d", kind, remaining), func(t *testing.T) {
@@ -83,7 +83,7 @@ func TestMD064CallbackQuotaAndCopyBoundaries(t *testing.T) {
 				}
 				run(true)
 				out, observed := run(false)
-				success := remaining == 70 || remaining == 25
+				success := remaining == 75 || remaining == 25
 				if success {
 					if observed.Err != nil || len(observed.Findings) != 5 {
 						t.Fatal(out, observed)

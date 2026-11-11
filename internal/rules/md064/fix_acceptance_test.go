@@ -19,6 +19,8 @@ func correctionConfiguration(flavor string, maximum int, variant string) string 
 	switch variant {
 	case "directives":
 		config = strings.Replace(config, "directives: {enabled: false}", "directives: {enabled: true}", 1)
+	case "md010":
+		config = strings.Replace(config, "MD010: {enabled: false}", "MD010: {enabled: true}", 1)
 	case "md009":
 		config = strings.Replace(config, "MD009: {enabled: false}", "MD009: {enabled: true}", 1)
 		fallthrough
@@ -110,6 +112,7 @@ func TestCompiledMD064FixAvailability(t *testing.T) {
 	}{
 		{"prose", "One  two", 4, 5, true},
 		{"code span", "`a  b`", 0, 0, false},
+		{"heading", "# One  two\n", 6, 7, false},
 		{"unrecognized front matter", "---\nOne  two\n---\n", 8, 9, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

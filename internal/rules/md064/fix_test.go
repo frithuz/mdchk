@@ -65,6 +65,8 @@ func caseRules(config string) []string {
 		return []string{"MD047"}
 	case "md009":
 		return []string{"MD009", "MD047"}
+	case "md010":
+		return []string{"MD010"}
 	}
 	return nil
 }
@@ -115,7 +117,7 @@ func TestMD064CorrectionFixtures(t *testing.T) {
 					t.Fatal("rounds", view.ChangingRounds)
 				}
 				for _, d := range view.Analysis.Diagnostics {
-					if (d.Rule == "MD064" || d.Rule == "MD009" || d.Rule == "MD047") && d.FixAvailable {
+					if (d.Rule == "MD064" || d.Rule == "MD009" || d.Rule == "MD010" || d.Rule == "MD047") && d.FixAvailable {
 						t.Fatal("remaining finding advertised", d)
 					}
 				}
