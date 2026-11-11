@@ -582,8 +582,9 @@ Names must be valid UTF-8 even when disabled; empty and duplicate entries are va
 and all other characters remain literal. This narrow domain does not constrain
 other rules' lists. Shared enabled/allow_directives types and inherited denials
 remain strict. Code opt-in exposes actual block payload only, never inline code.
-All findings are manual under PlannedFix; see [MD044](rules/formatting/md044.md)
-for Unicode folding, whole-word, exact-island and accepted-variant matching.
+`fix` replaces an occurrence with its one configured spelling; see
+[MD044's correction policy](rules/formatting/md044.md#correction-policy) and
+[MD044](rules/formatting/md044.md) for Unicode folding, whole-word, exact-island and accepted-variant matching.
 
 MD061 prohibited-vocabulary analysis is available but disabled by default for
 CommonMark and GFM. `terms` defaults to an empty string list; `case_sensitive`

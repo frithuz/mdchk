@@ -440,6 +440,41 @@ compare exactly, so `Corrections` proposes MD064 groups only in a round in which
 rule proposes an edit, MD010 included, so runs a TAB replacement lengthens are seen, and every other group waits while they remain. Only an MD047 edit
 that analysis already offers shares their round; both checkers must accept the combined
 candidate. A document with MD009, MD047 and MD064 findings therefore converges in one run.
+MD064 also waits for MD044 groups, which go first in that isolated round.
+
+### MD044 corrections
+
+`internal/rules/md044.Correction` regenerates one atomic group per fix-available MD044
+finding from each round's own analysis and parse. `RoundContext.ConfiguredNameCorrections`
+returns the round's `ConfiguredNames` spans, unchanged, each with the one distinct
+configured spelling whose full case fold equals the span's original bytes, or no
+replacement when several distinct spellings do; byte-identical duplicates count once. Each
+group has the ID `MD044-name-<start>`, the diagnostic span as its anchor, one edit
+replacing exactly that span with the configured spelling byte for byte, its original bytes
+as `Expected`, and the `Meaning`, `ProtectedSyntax` and `DirectiveStructure` requirements.
+A replacement may change byte length when a fold expands. The rule callback sets
+`fix_available` only for an occurrence with one replacement, through the shared interior
+edit query, so directive intervals, protected context, code payload admitted by
+`code_blocks: true` and documents opening with an unrecognized block withhold the finding
+before any group is made. Inside a heading's envelope, an occurrence whose lowercase
+spelling would change is withheld too, since the heading's anchor would change.
+
+The independently registered checker recomputes the occurrences and replacements from the
+before parse and trusts neither producer data nor `fix_available`. Through
+`CheckContext.Once`, it proves `OnlyEditsChanged` and `MeaningPreservedAcrossNameCase`:
+both parses match in node kinds and order, break kinds and origins, heading, list, table,
+code, task and link properties, and all reference definitions, and a Text or CodeBlock
+value may differ only where the full case folds of both values are equal.
+`Document.SameMeaningAcrossNameCase` shares its walk with the other whole-parse
+comparisons. Each group then checks its span, anchor, original bytes and replacement
+against the recomputed occurrence. Any mismatch returns a non-`Preserved` proof. No
+`ForbidNewFindings` is registered: changing letter case outside comments cannot create a
+directive finding.
+
+`Corrections` proposes MD044 groups only in a round in which no other rule proposes an
+edit, ahead of MD064 and MD038, which wait for them. Only an MD047 edit that analysis already offers
+shares their round. A document with MD009, MD047, MD064, MD085 and MD044 findings converges
+in one run.
 
 ### MD085 corrections
 
