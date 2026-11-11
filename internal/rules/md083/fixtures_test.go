@@ -1,4 +1,4 @@
-package rules
+package md083_test
 
 import (
 	"crypto/sha256"
@@ -10,12 +10,13 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/result"
+	"github.com/frithuz/mdchk/internal/rules"
+	"github.com/frithuz/mdchk/internal/rules/ruletest"
 )
 
 func md083Settings(sequences []string) engine.Settings {
-	s := onlyDefaultMD038Settings()
-	off, on := false, true
-	s["MD038"] = engine.RuleSetting{Enabled: &off}
+	s := ruletest.Settings("MD083")
+	on := true
 	s["MD083"] = engine.RuleSetting{Enabled: &on, Options: engine.Options{"sequences": sequences}}
 	return s
 }
@@ -63,7 +64,7 @@ func TestMD083FrozenAnalysisFixtures(t *testing.T) {
 				if f.Frontmatter {
 					dc.Frontmatter = fm
 				}
-				out := analyzeHeadings(t, registry(t, Registrations()), f.Source, settings, dc, engine.RunOptions{})
+				out := ruletest.AnalyzeDocument(t, ruletest.Registry(t, rules.Registrations()), f.Source, settings, dc, engine.RunOptions{})
 				if !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != len(f.Findings) || len(out.Changes)+len(out.Documents)+len(out.DeferredFixes) != 0 {
 					t.Fatal(out)
 				}

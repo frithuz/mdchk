@@ -1,4 +1,4 @@
-package rules
+package md083_test
 
 import (
 	"context"
@@ -8,10 +8,12 @@ import (
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
+	"github.com/frithuz/mdchk/internal/rules"
+	"github.com/frithuz/mdchk/internal/rules/ruletest"
 )
 
 func TestMD083OptionsAndAvailability(t *testing.T) {
-	r := registry(t, Registrations())
+	r := ruletest.Registry(t, rules.Registrations())
 	found := false
 	for _, m := range r.Metadata() {
 		if m.ID == "MD083" {
@@ -48,7 +50,7 @@ func TestMD083OptionsAndAvailability(t *testing.T) {
 	s := md083Settings([]string{"Ã"})
 	off := false
 	s["MD083"] = engine.RuleSetting{Enabled: &off}
-	out := analyzeHeadings(t, r, "cafÃ©", s, engine.DocumentContext{}, engine.RunOptions{})
+	out := ruletest.AnalyzeDocument(t, r, "cafÃ©", s, engine.DocumentContext{}, engine.RunOptions{})
 	if !out.Complete || len(out.Diagnostics) != 0 {
 		t.Fatal(out)
 	}
@@ -104,13 +106,13 @@ func TestMD083ProtectedAndNestedSource(t *testing.T) {
 			if sequences == nil {
 				sequences = []string{"Ã", "Â", "â€"}
 			}
-			out := analyzeHeadings(t, registry(t, Registrations()), tc.source, md083Settings(sequences), engine.DocumentContext{Flavor: "gfm", Frontmatter: fm}, engine.RunOptions{})
+			out := ruletest.AnalyzeDocument(t, ruletest.Registry(t, rules.Registrations()), tc.source, md083Settings(sequences), engine.DocumentContext{Flavor: "gfm", Frontmatter: fm}, engine.RunOptions{})
 			if !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != len(tc.ranges) || len(out.Changes)+len(out.Documents)+len(out.DeferredFixes) != 0 {
 				t.Fatal(out)
 			}
 			for i, d := range out.Diagnostics {
 				w := tc.ranges[i]
-				if [2]int{d.ByteRange.Start, d.ByteRange.End} != w || d.Range.Start != originalPosition(tc.source, w[0]) || d.Range.End != originalPosition(tc.source, w[1]) || d.Message != "Text may be corrupted by an encoding mismatch." || d.FixAvailable {
+				if [2]int{d.ByteRange.Start, d.ByteRange.End} != w || d.Range.Start != ruletest.OriginalPosition(tc.source, w[0]) || d.Range.End != ruletest.OriginalPosition(tc.source, w[1]) || d.Message != "Text may be corrupted by an encoding mismatch." || d.FixAvailable {
 					t.Fatal(d, w)
 				}
 			}
@@ -119,9 +121,9 @@ func TestMD083ProtectedAndNestedSource(t *testing.T) {
 }
 
 func TestMD083LineEndingsAndDirectives(t *testing.T) {
-	r := registry(t, Registrations())
-	lf := analyzeHeadings(t, r, "a\nbÃ", md083Settings([]string{"Ã"}), engine.DocumentContext{}, engine.RunOptions{})
-	crlf := analyzeHeadings(t, r, "a\r\nbÃ", md083Settings([]string{"Ã"}), engine.DocumentContext{}, engine.RunOptions{})
+	r := ruletest.Registry(t, rules.Registrations())
+	lf := ruletest.AnalyzeDocument(t, r, "a\nbÃ", md083Settings([]string{"Ã"}), engine.DocumentContext{}, engine.RunOptions{})
+	crlf := ruletest.AnalyzeDocument(t, r, "a\r\nbÃ", md083Settings([]string{"Ã"}), engine.DocumentContext{}, engine.RunOptions{})
 	if len(lf.Diagnostics) != 1 || len(crlf.Diagnostics) != 1 || lf.Diagnostics[0].Range != crlf.Diagnostics[0].Range || lf.Diagnostics[0].Range.Start.Line != 2 || lf.Diagnostics[0].Range.Start.Column != 2 || lf.Diagnostics[0].ByteRange.Start != 3 || crlf.Diagnostics[0].ByteRange.Start != 4 {
 		t.Fatal(lf, crlf)
 	}
@@ -131,7 +133,7 @@ func TestMD083LineEndingsAndDirectives(t *testing.T) {
 		rule := s["MD083"]
 		rule.AllowDirectives = &allow
 		s["MD083"] = rule
-		out := analyzeHeadings(t, r, source, s, engine.DocumentContext{}, engine.RunOptions{})
+		out := ruletest.AnalyzeDocument(t, r, source, s, engine.DocumentContext{}, engine.RunOptions{})
 		want := 3
 		if allow {
 			want = 2
@@ -144,7 +146,7 @@ func TestMD083LineEndingsAndDirectives(t *testing.T) {
 
 func TestMD083UnavailableSyntaxAndUTF8(t *testing.T) {
 	fm, _ := parser.NewFrontmatterOptions(true, nil)
-	out := analyzeHeadings(t, registry(t, Registrations()), "---\nÃ", md083Settings([]string{"Ã"}), engine.DocumentContext{Frontmatter: fm}, engine.RunOptions{})
+	out := ruletest.AnalyzeDocument(t, ruletest.Registry(t, rules.Registrations()), "---\nÃ", md083Settings([]string{"Ã"}), engine.DocumentContext{Frontmatter: fm}, engine.RunOptions{})
 	if out.Complete || len(out.Diagnostics) != 0 {
 		t.Fatal(out)
 	}
@@ -152,11 +154,11 @@ func TestMD083UnavailableSyntaxAndUTF8(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, err = registry(t, Registrations()).Lint(context.Background(), []engine.Input{in}, engine.RunOptions{})
+	out, err = ruletest.Registry(t, rules.Registrations()).Lint(context.Background(), []engine.Input{in}, engine.RunOptions{})
 	if err != nil || out.Complete || len(out.Diagnostics) != 0 || len(out.Errors) != 1 || out.Errors[0].Code != "invalid-utf8" {
 		t.Fatal(out, err)
 	}
-	_, err = registry(t, Registrations()).ResolveSettings(engine.Settings{"MD083": {Options: engine.Options{"sequences": []string{"Ã", string([]byte{255})}}}}, engine.ValidationProviders{})
+	_, err = ruletest.Registry(t, rules.Registrations()).ResolveSettings(engine.Settings{"MD083": {Options: engine.Options{"sequences": []string{"Ã", string([]byte{255})}}}}, engine.ValidationProviders{})
 	var detail *engine.SettingError
 	if !errors.As(err, &detail) || detail.RuleID != "MD083" || detail.Option != "sequences" || detail.Element == nil || *detail.Element != 1 {
 		t.Fatal(err)

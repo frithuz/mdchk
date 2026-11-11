@@ -81,6 +81,13 @@ func MD047Configuration(enabled, permission bool) string {
 	return strings.Replace(config, "MD047: {enabled: false}", fmt.Sprintf("MD047: {enabled: %t, allow_directives: %t}", enabled, permission), 1)
 }
 
+// RuleConfiguration returns CleanConfiguration with the given flavor and the
+// rule id set to setting.
+func RuleConfiguration(flavor, id, setting string) string {
+	config := strings.Replace(CleanConfiguration(), "flavor: commonmark", "flavor: "+flavor, 1)
+	return strings.Replace(config, id+": {enabled: false}", id+": "+setting, 1)
+}
+
 // StableStat returns the file information of an open handle to path.
 func StableStat(path string) (os.FileInfo, error) {
 	f, err := os.Open(path) //nolint:gosec // Test-owned synthetic fixture path.
