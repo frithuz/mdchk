@@ -633,10 +633,13 @@ def cmd_merge(job):
         print(f"{job['id']}: needs-human: {why.splitlines()[0]}")
 
     git(job, "fetch", "origin", BASE)
-    merged = git(job, "merge", "--no-edit", f"origin/{BASE}", check=False)
-    if merged.returncode != 0:
-        git(job, "merge", "--abort", check=False)
-        return fail(f"The branch conflicts with {BASE}:\n\n```\n{merged.stdout.strip()}\n```")
+    # Rebase, not merge: the repo allows only rebase merges, and GitHub
+    # refuses to rebase-merge a branch that contains a merge commit.
+    synced = git(job, "rebase", f"origin/{BASE}", check=False)
+    if synced.returncode != 0:
+        git(job, "rebase", "--abort", check=False)
+        out = (synced.stdout + synced.stderr).strip()
+        return fail(f"The branch conflicts with {BASE}:\n\n```\n{out}\n```")
     gate = subprocess.run([str(BIN / "gate"), job["id"], "--merge"], capture_output=True, text=True)
     if gate.returncode == 2:  # no verdict: the job stays in merging, so run this again
         die(gate.stderr.strip())
@@ -644,7 +647,7 @@ def cmd_merge(job):
         return fail(f"The gate failed after syncing with {BASE}. "
                     f"See round-{job['round']}/merge-checks.md.\n\n{gate.stdout.strip()}")
     try:
-        git(job, "push", "origin", job["branch"])
+        git(job, "push", "--force-with-lease", "origin", job["branch"])
         if gh_json("pr", "view", str(job["pr"]), "--json", "isDraft")["isDraft"]:
             gh("pr", "ready", str(job["pr"]))
         gh("pr", "merge", str(job["pr"]), f"--{CONFIG['merge_method']}")
