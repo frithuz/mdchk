@@ -18,7 +18,7 @@ func TestMD089FinalPublicationWithholdsAllFindings(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 1}, {"clean", "a\nb", 1}, {"protected", "```\nx\n```", 1}, {"violation", "中A中A中A", 15}} {
+	}{{"empty", "", 1}, {"clean", "a\nb", 1}, {"protected", "```\nx\n```", 1}, {"violation", "中A中A中A", 20}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+reason.Error(), func(t *testing.T) {
 				var observed engine.RuleOutcome
@@ -28,7 +28,8 @@ func TestMD089FinalPublicationWithholdsAllFindings(t *testing.T) {
 						t.Fatal(err)
 					}
 					// Fixed independent counts: one check per item, optional
-					// finding growth/emission, then the final publication check.
+					// finding growth/emission, one fix eligibility check per finding,
+					// then the final publication check.
 					late := &ruletest.LateStopContext{Context: ctx, Reason: reason, Stop: tc.final}
 					observed = md089.CompareCJKSpacing(late, c, items)
 					return observed
@@ -44,12 +45,13 @@ func TestMD089FinalPublicationWithholdsAllFindings(t *testing.T) {
 
 func TestMD089CallbackQuotaAndCopyBoundaries(t *testing.T) {
 	for _, kind := range []string{"work", "nodes"} {
-		for _, remaining := range []int64{0, 20, 21} {
-			if kind == "nodes" && remaining == 20 {
-				remaining = 16
+		// Fix eligibility charges each finding's directive lookup and source read.
+		for _, remaining := range []int64{0, 69, 70} {
+			if kind == "nodes" && remaining == 69 {
+				remaining = 24
 			}
-			if kind == "nodes" && remaining == 21 {
-				remaining = 17
+			if kind == "nodes" && remaining == 70 {
+				remaining = 25
 			}
 			t.Run(fmt.Sprintf("%s/%d", kind, remaining), func(t *testing.T) {
 				var used int64
@@ -83,7 +85,7 @@ func TestMD089CallbackQuotaAndCopyBoundaries(t *testing.T) {
 				}
 				run(true)
 				out, observed := run(false)
-				success := remaining == 21 || remaining == 17
+				success := remaining == 70 || remaining == 25
 				if success {
 					if observed.Err != nil || len(observed.Findings) != 5 {
 						t.Fatal(out, observed)

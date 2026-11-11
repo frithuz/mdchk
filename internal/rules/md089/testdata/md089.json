@@ -1017,6 +1017,7 @@
   },
   {
     "name": "yaml-off",
+    "manual": true,
     "source": "---\n中A\n---\n",
     "recognize": false,
     "formats": [],
@@ -1040,6 +1041,7 @@
   },
   {
     "name": "yaml-unselected",
+    "manual": true,
     "source": "---\n中A\n---\n",
     "recognize": true,
     "formats": [
