@@ -132,12 +132,11 @@ func resolveValidated(options SelectionOptions, registry *engine.Registry, provi
 		return nil, err
 	}
 	canonicalStart := filepath.Join(canonicalCap, rel)
-	root, err := os.OpenRoot(canonicalCap)
+	access, err := openRootAccess(canonicalCap)
 	if err != nil {
 		return nil, pathError(cap, err)
 	}
-	defer closeReadHandle(root)
-	access := &rootAccess{root: root, base: canonicalCap}
+	defer closeReadHandle(access)
 	explicit := options.ExplicitPath
 	rawExplicit := explicit
 	if explicit != "" {

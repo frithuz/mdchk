@@ -140,7 +140,7 @@ func scan(ctx context.Context, options Options, hooks Hooks, wrap func(scanAcces
 		s.fail(root, "root", err)
 		return s.result
 	}
-	defer closeHandle(native.root)
+	defer closeHandle(native.reader)
 	s.access = native
 	if wrap != nil {
 		s.access = wrap(s.access)

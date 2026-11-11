@@ -11,7 +11,6 @@ import (
 	"slices"
 
 	"github.com/frithuz/mdchk/internal/engine"
-	"github.com/frithuz/mdchk/internal/fsroot"
 	"github.com/frithuz/mdchk/internal/parser"
 )
 
@@ -94,32 +93,17 @@ func (a *boundedDiscovery) readRegular(path string) ([]byte, error) {
 	if err := b.charge(8*int64(len(path)) + 1); err != nil {
 		return nil, err
 	}
-	parent, name, err := a.access.parent(path)
-	if err != nil {
-		return nil, err
-	}
-	defer closeReadHandle(parent)
-	before, err := parent.Lstat(name)
-	if err != nil {
-		return nil, err
-	}
-	if !before.Mode().IsRegular() {
-		return nil, errors.New("configuration must be a nonsymlink regular file")
-	}
-	if before.Size() > b.SourceBytes {
-		return nil, &parser.LimitExceeded{Name: "config-bytes", Observed: before.Size(), Allowed: b.SourceBytes}
-	}
-	file, err := parent.OpenFile(name, os.O_RDONLY|fsroot.ReadFlags, 0)
+	file, err := a.access.openRegular(path)
 	if err != nil {
 		return nil, err
 	}
 	defer closeReadHandle(file)
-	actual, err := file.Stat()
+	before, err := file.Stat()
 	if err != nil {
 		return nil, err
 	}
-	if !actual.Mode().IsRegular() || !os.SameFile(before, actual) {
-		return nil, errors.New("configuration changed during access")
+	if before.Size() > b.SourceBytes {
+		return nil, &parser.LimitExceeded{Name: "config-bytes", Observed: before.Size(), Allowed: b.SourceBytes}
 	}
 	var data []byte
 	var scratch [32768]byte
@@ -154,9 +138,9 @@ func (a *boundedDiscovery) readRegular(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	observed, err := parent.Lstat(name)
+	observed, err := a.access.reader.Lstat(path)
 	if err != nil {
-		return nil, err
+		return nil, accessError(err)
 	}
 	if !os.SameFile(before, after) || !os.SameFile(before, observed) || before.Size() != after.Size() || before.ModTime() != after.ModTime() || int64(len(data)) != after.Size() {
 		return nil, errors.New("configuration changed during acquisition")

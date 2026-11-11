@@ -4,6 +4,8 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+
+	"github.com/frithuz/mdchk/internal/fsroot"
 )
 
 // Load reads one explicitly named nonsymlink regular YAML file and decodes its
@@ -17,13 +19,12 @@ func Load(path string) (*Definition, error) {
 	if err != nil {
 		return nil, pathError(path, err)
 	}
-	base := filepath.VolumeName(absolute) + string(filepath.Separator)
-	root, err := os.OpenRoot(base)
+	base := fsroot.VolumeRoot(absolute)
+	access, err := openRootAccess(base)
 	if err != nil {
 		return nil, pathError(path, err)
 	}
-	defer closeReadHandle(root)
-	access := &rootAccess{root: root, base: base}
+	defer closeReadHandle(access)
 	raw := path
 	if !filepath.IsAbs(raw) {
 		cwd, e := os.Getwd()
