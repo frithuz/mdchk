@@ -23,6 +23,7 @@ func check(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 }
 
 func compareBlockquoteSpaces(ctx context.Context, c engine.RuleContext, items []parser.Span) (out engine.RuleOutcome) {
+	edits := c.InteriorEdits()
 	defer func() {
 		out.Err = errors.Join(out.Err, c.SectionCheckpoint(ctx, 0, 0))
 		if out.Err != nil {
@@ -49,7 +50,15 @@ func compareBlockquoteSpaces(ctx context.Context, c engine.RuleContext, items []
 			return out
 		}
 		message := "Extra spaces after blockquote marker."
-		out.Findings = append(out.Findings, engine.Finding{Span: item, Message: message})
+		finding := engine.Finding{Span: item, Message: message}
+		// The fact holds only ASCII SPACEs; the producer rechecks the bytes.
+		var err error
+		finding.FixEligible, err = edits.Eligible(ctx, "MD027", item, item)
+		if err != nil {
+			out.Err = err
+			return out
+		}
+		out.Findings = append(out.Findings, finding)
 	}
 	return out
 }

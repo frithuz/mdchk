@@ -33,8 +33,11 @@ func TestMD027AnalysisFixtures(t *testing.T) {
 	var fixtures []struct {
 		Name, Source, Flavor  string
 		Recognize, Incomplete bool
-		SHA256                string
-		SizeBytes             int
+		// Manual marks a document opening with an unrecognized block, whose
+		// findings get no correction.
+		Manual    bool
+		SHA256    string
+		SizeBytes int
 
 		Expected []struct {
 			Range   []int
@@ -76,7 +79,7 @@ func TestMD027AnalysisFixtures(t *testing.T) {
 				for i, w := range f.Expected {
 					d := out.Diagnostics[i]
 					got := []int{d.ByteRange.Start, d.ByteRange.End, d.Range.Start.Line, d.Range.Start.Column, d.Range.End.Line, d.Range.End.Column}
-					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD027" || d.FixAvailable || d.Message != w.Message {
+					if !reflect.DeepEqual(got, w.Range) || f.Source[d.ByteRange.Start:d.ByteRange.End] != w.Source || d.Rule != "MD027" || d.FixAvailable == f.Manual || d.Message != w.Message {
 						t.Fatal(got, d, w)
 					}
 				}
@@ -88,7 +91,7 @@ func TestMD027FinalPublicationWithholdsAllFindings(t *testing.T) {
 	for _, tc := range []struct {
 		name, source string
 		final        int
-	}{{"empty", "", 1}, {"clean", "a\nb", 1}, {"protected", "```\nx\n```", 1}, {"violation", ">  a\n>  a\n>  a\n>  a\n>  a\n", 15}} {
+	}{{"empty", "", 1}, {"clean", "a\nb", 1}, {"protected", "```\nx\n```", 1}, {"violation", ">  a\n>  a\n>  a\n>  a\n>  a\n", 20}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(tc.name+reason.Error(), func(t *testing.T) {
 				var observed engine.RuleOutcome
@@ -98,7 +101,8 @@ func TestMD027FinalPublicationWithholdsAllFindings(t *testing.T) {
 						t.Fatal(err)
 					}
 					// Fixed independent counts: one check per item, optional
-					// finding growth/emission, then the final publication check.
+					// finding growth/emission, one fix eligibility check per finding,
+					// then the final publication check.
 					late := &ruletest.LateStopContext{Context: ctx, Reason: reason, Stop: tc.final}
 					observed = md027.CompareBlockquoteSpaces(late, c, items)
 					return observed
@@ -114,12 +118,13 @@ func TestMD027FinalPublicationWithholdsAllFindings(t *testing.T) {
 
 func TestMD027CallbackQuotaAndCopyBoundaries(t *testing.T) {
 	for _, kind := range []string{"work", "nodes"} {
-		for _, remaining := range []int64{0, 20, 21} {
-			if kind == "nodes" && remaining == 20 {
-				remaining = 16
+		// Fix eligibility charges each finding's directive lookup and source read.
+		for _, remaining := range []int64{0, 99, 100} {
+			if kind == "nodes" && remaining == 99 {
+				remaining = 54
 			}
-			if kind == "nodes" && remaining == 21 {
-				remaining = 17
+			if kind == "nodes" && remaining == 100 {
+				remaining = 55
 			}
 			t.Run(fmt.Sprintf("%s/%d", kind, remaining), func(t *testing.T) {
 				var used int64
@@ -153,7 +158,7 @@ func TestMD027CallbackQuotaAndCopyBoundaries(t *testing.T) {
 				}
 				run(true)
 				out, observed := run(false)
-				success := remaining == 21 || remaining == 17
+				success := remaining == 100 || remaining == 55
 				if success {
 					if observed.Err != nil || len(observed.Findings) != 5 {
 						t.Fatal(out, observed)
@@ -175,7 +180,7 @@ func TestMD027CatalogStrictSettingsAndDefaults(t *testing.T) {
 		if m.DefaultEnabled {
 			enabled++
 		}
-		if m.ID == "MD027" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.PlannedFix || len(m.Options) != 0) {
+		if m.ID == "MD027" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.ImplementedFix || len(m.Options) != 0) {
 			t.Fatal(m)
 		}
 	}

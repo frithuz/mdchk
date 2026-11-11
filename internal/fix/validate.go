@@ -294,6 +294,16 @@ func (c RoundContext) ListItems(ctx context.Context) ([]parser.ListItemFact, err
 	return c.Parsed().Document.ListItems(ctx, c.meter.budget, c.Lines(), dc.ParseOptions())
 }
 
+// BlockquoteSpaces projects this round's MD027 excess quote-marker spaces under
+// the target's parse options, charged to the shared residual operation.
+func (c RoundContext) BlockquoteSpaces(ctx context.Context) ([]parser.Span, error) {
+	dc, known := c.trace.DocumentContext()
+	if !known {
+		return nil, errors.New("unknown document context")
+	}
+	return c.Parsed().Document.BlockquoteSpaces(ctx, c.meter.budget, c.Lines(), dc.ParseOptions())
+}
+
 // OrderedListStyle returns the target plan's admitted MD029 style; true is one.
 func (c RoundContext) OrderedListStyle() (bool, error) {
 	return engine.PlannedOrderedListStyle(c.plan)

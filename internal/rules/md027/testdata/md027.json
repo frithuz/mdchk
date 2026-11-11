@@ -885,6 +885,7 @@
   },
   {
     "Name": "yaml-off",
+    "Manual": true,
     "Source": "---\n>  text\n---\n\n>  body",
     "SHA256": "a1cfcb95688b65106062e550f83e8e4b9c9b9ad65edf3f9e91b96eb2534ece7f",
     "SizeBytes": 24,
@@ -950,6 +951,7 @@
   },
   {
     "Name": "toml-off",
+    "Manual": true,
     "Source": "+++\n>  text\n+++\n\n>  body",
     "SHA256": "2b2afeb22ffb106bb1fc050aa390f94039d8d0bbb594d27de44d7b1686271537",
     "SizeBytes": 24,
