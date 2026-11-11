@@ -21,7 +21,7 @@ import (
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/report"
 	"github.com/frithuz/mdchk/internal/result"
-	"github.com/frithuz/mdchk/internal/testenv"
+	"github.com/frithuz/mdchk/internal/testutil/testenv"
 )
 
 func documentedMatcher(t *testing.T) *regexp.Regexp {

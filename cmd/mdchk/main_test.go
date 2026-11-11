@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/frithuz/mdchk/internal/testenv"
+	"github.com/frithuz/mdchk/internal/testutil/testenv"
 )
 
 func TestExecutableStatuses(t *testing.T) {

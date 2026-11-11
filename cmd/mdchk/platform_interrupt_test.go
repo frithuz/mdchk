@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/frithuz/mdchk/internal/testenv"
+	"github.com/frithuz/mdchk/internal/testutil/testenv"
 )
 
 // Only startup synchronization is overlaid. The production signal registration,

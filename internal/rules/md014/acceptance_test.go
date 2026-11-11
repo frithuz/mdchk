@@ -20,7 +20,7 @@ import (
 	inspection "github.com/frithuz/mdchk/internal/inspect"
 	"github.com/frithuz/mdchk/internal/result"
 	"github.com/frithuz/mdchk/internal/rules"
-	"github.com/frithuz/mdchk/internal/testenv"
+	"github.com/frithuz/mdchk/internal/testutil/testenv"
 )
 
 // TestMain removes this process's private builds once every test has finished
