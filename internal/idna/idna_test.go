@@ -104,7 +104,9 @@ func TestCanonicalizeLargeInput(t *testing.T) {
 		if _, err := ToUnicode(in); err == nil && strings.HasPrefix(in, "xn--") {
 			t.Errorf("ToUnicode accepted %d-byte A-label", len(in))
 		}
-		if d := time.Since(start); d > 10*time.Second {
+		// The bound guards against quadratic work; race instrumentation alone
+		// can exceed it, so only the rejections are checked under -race.
+		if d := time.Since(start); !raceEnabled && d > 10*time.Second {
 			t.Errorf("%d-byte input took %v", len(in), d)
 		}
 	}
