@@ -117,7 +117,7 @@ flavor: commonmark
 This configuration works with the current production executable. The following
 examples of available features are not exhaustive; see the
 [current rule inventory](../rules/index.md) for availability and defaults.
-CommonMark 0.31.2, GFM, directive processing, MD001/MD003/MD004/MD005/MD007/MD029/MD030/MD032/MD069/MD076/MD077/MD009/MD010/MD012/MD013/MD027/MD028/MD064/MD085/MD089/MD035/MD037/MD038/MD081/MD088/MD033/MD086/MD087/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD093/MD034 analysis and MD047 analysis/correction
+CommonMark 0.31.2, GFM, directive processing, MD001/MD003/MD004/MD005/MD007/MD029/MD030/MD032/MD069/MD076/MD077/MD009/MD010/MD012/MD013/MD027/MD028/MD064/MD085/MD089/MD035/MD037/MD038/MD081/MD088/MD033/MD086/MD087/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD093/MD034 analysis, MD027 correction and MD047 analysis/correction
 are available.
 
 MD039 link-label-whitespace analysis is also available for
