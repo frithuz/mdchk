@@ -15,7 +15,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/frithuz/mdchk/internal/result"
-	"github.com/frithuz/mdchk/internal/testenv"
+	"github.com/frithuz/mdchk/internal/testutil/testenv"
 )
 
 // MD014NativeEnvironment returns the inherited environment with fixture-owned

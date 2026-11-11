@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/frithuz/mdchk/internal/testenv"
+	"github.com/frithuz/mdchk/internal/testutil/testenv"
 )
 
 func TestCompiledEditorPartialNativePublication(t *testing.T) {

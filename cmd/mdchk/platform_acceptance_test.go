@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/frithuz/mdchk/internal/testenv"
+	"github.com/frithuz/mdchk/internal/testutil/testenv"
 )
 
 // The host's actual filesystem and compiled command are the oracle. Logical

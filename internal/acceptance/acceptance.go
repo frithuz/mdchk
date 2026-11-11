@@ -27,6 +27,7 @@ import (
 	"github.com/frithuz/mdchk/internal/engine"
 	inspection "github.com/frithuz/mdchk/internal/inspect"
 	"github.com/frithuz/mdchk/internal/result"
+	"github.com/frithuz/mdchk/internal/testutil/filestat"
 )
 
 // AvailableConfiguration admits production CommonMark with directives disabled.
@@ -90,12 +91,7 @@ func RuleConfiguration(flavor, id, setting string) string {
 
 // StableStat returns the file information of an open handle to path.
 func StableStat(path string) (os.FileInfo, error) {
-	f, err := os.Open(path) //nolint:gosec // Test-owned synthetic fixture path.
-	if err != nil {
-		return nil, err
-	}
-	info, err := f.Stat()
-	return info, errors.Join(err, f.Close())
+	return filestat.StableStat(path)
 }
 
 // Digest returns the hexadecimal SHA-256 of text.

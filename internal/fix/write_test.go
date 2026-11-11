@@ -3,9 +3,7 @@ package fix_test
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
@@ -15,19 +13,10 @@ import (
 	"github.com/frithuz/mdchk/internal/fix"
 	"github.com/frithuz/mdchk/internal/parser"
 	"github.com/frithuz/mdchk/internal/rules"
+	"github.com/frithuz/mdchk/internal/testutil/filestat"
 )
 
-// stableStat takes identity from an open handle. On Windows a path-based os.Stat
-// result loads its file ID lazily, when SameFile first asks, so comparing it
-// with a later stat of the same path would compare the current file with itself.
-func stableStat(path string) (fs.FileInfo, error) {
-	f, err := os.Open(path) //nolint:gosec // The path names an independently created synthetic test fixture.
-	if err != nil {
-		return nil, err
-	}
-	info, err := f.Stat()
-	return info, errors.Join(err, f.Close())
-}
+var stableStat = filestat.StableStat
 
 func TestRetainedProductionApprovalNativePublication(t *testing.T) {
 	root, err := filepath.EvalSymlinks(t.TempDir())

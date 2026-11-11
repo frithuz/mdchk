@@ -14,7 +14,7 @@ import (
 	"testing"
 
 	inspection "github.com/frithuz/mdchk/internal/inspect"
-	"github.com/frithuz/mdchk/internal/testenv"
+	"github.com/frithuz/mdchk/internal/testutil/testenv"
 )
 
 func TestVersionFromBuildInfo(t *testing.T) {

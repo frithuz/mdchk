@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/frithuz/mdchk/internal/acceptance"
+	"github.com/frithuz/mdchk/internal/testutil/filestat"
 )
 
 // Snapshots include identity and timestamps, not merely a content checksum.
@@ -46,7 +46,7 @@ func unchangedFixFixture(t *testing.T, root string) func() {
 // stableStat takes identity from an open handle. On Windows a path-based os.Stat
 // result loads its file ID lazily, when SameFile first asks, so comparing it
 // with a later stat of the same path would compare the current file with itself.
-func stableStat(path string) (os.FileInfo, error) { return acceptance.StableStat(path) }
+func stableStat(path string) (os.FileInfo, error) { return filestat.StableStat(path) }
 
 func readFixture(t *testing.T, path string) string {
 	t.Helper()
