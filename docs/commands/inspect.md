@@ -206,6 +206,8 @@ MD085 is available but disabled by default. Full original Paragraph content fixe
 MD089 establishes complete original prose ownership and raw lifetime before
 filtering each zero-width insertion START. Hidden or unselected earlier context
 remains binding; line selection cannot create source adjacency or reset raw state.
+Inspection returns no correction proposal or corrected content; MD089 spaces are
+inserted by [`fix`](fix.md).
 
 MD035 is available and enabled by default for CommonMark and GFM. Its `style`
 option accepts exactly `consistent` (default), `dash`, `asterisk` or `underscore`.

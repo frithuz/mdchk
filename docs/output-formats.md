@@ -423,6 +423,11 @@ MD027 reports original excess-SPACE ranges with constant message
 its correction handles, and `fix` deletes exactly the reported range; findings it
 can't prove stay under `deferred_fixes`.
 
+MD089 reports zero-width original insertion points with constant message
+`Missing space between CJK and Latin text.`. `fix_available` is true for findings
+its correction handles, and `fix` inserts one ASCII SPACE at the point; findings
+it can't prove stay under `deferred_fixes`.
+
 
 MD028 reports manual original remaining-body ranges with message `Blank line separates adjacent blockquotes.` and `fix_available: false`. Empty body ranges remain present points. It produces no changes, previews or returned content; MD047 candidates receive recomputed MD028 findings under their own snapshot identity.
 
