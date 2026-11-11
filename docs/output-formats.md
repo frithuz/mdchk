@@ -401,10 +401,11 @@ for hidden and observational findings, for suffixes whose correction could chang
 or grow past the expansion limit, and for a suffix at physical EOF while MD047 is active
 there. See [MD009's correction policy](rules/whitespace/md009.md#correction-policy).
 
-MD010 reports one original TAB byte per manual finding, with message
+MD010 reports one original TAB byte per finding, with message
 “Tab character.”, one scalar column and exclusive end. Adjacent TABs produce
-separate findings. `fix_available` is false; MD010 produces no changes or returned
-content. MD047 candidate reanalysis uses candidate ranges and snapshot identity.
+separate findings. `fix_available` is true only for a TAB in paragraph, heading
+or table-cell text that `fix` replaces with `spaces_per_tab` spaces; see
+[MD010's correction policy](rules/whitespace/md010.md#correction-policy). MD047 candidate reanalysis uses candidate ranges and snapshot identity.
 
 MD012 reports one manual finding per excessive maximal physical blank body run,
 with message `Too many consecutive blank body lines.`. Its first-excess remaining
