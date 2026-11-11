@@ -179,8 +179,11 @@ Code that two rules share goes in a small, specifically named package under
 
 Every rule has its own package under `internal/rules/`, named by rule ID,
 such as `internal/rules/md047`. `internal/rules` itself holds only
-`rules.go`, `corrections.go` and `testdata/md094.json`, the fixture for MD094,
-which the engine checks. MD087 is checked by the engine too, so
+`rules.go`, `corrections.go`, the layout test `layout_test.go`, `internal/`,
+`ruletest/` and the rule folders. MD094 is checked by the engine, so
+`internal/rules/md094/` holds only its fixture in `testdata/`. The layout test
+fails on an `mdNNN*.go` file at the top level and on a registered rule with no
+`mdNNN/` folder. MD087 is checked by the engine too, so
 `internal/rules/md087` only registers `engine.CheckUnusedSuppressions` and
 holds its tests. A rule package has this layout:
 

@@ -46,7 +46,7 @@ func md094Message(want md094Expected) string {
 // md094Cases reads the shared hex fixture, pinned by its SHA-256.
 func md094Cases(t *testing.T) map[string]md094Case {
 	t.Helper()
-	b, err := os.ReadFile("../../internal/rules/testdata/md094.json")
+	b, err := os.ReadFile("../../internal/rules/md094/testdata/md094.json")
 	if err != nil || fmt.Sprintf("%x", sha256.Sum256(b)) != "651f3353d42bbf33707fc1d227ecc7a1aba34375d60cf85fee3e924be07ae810" {
 		t.Fatal("root fixture identity", err)
 	}

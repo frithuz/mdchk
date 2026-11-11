@@ -28,7 +28,7 @@ type md094FixtureCase struct {
 // The fixture bytes are hex because JSON strings cannot hold invalid UTF-8.
 // Each case runs with MD094 attribution on and off; only Rule may differ.
 func TestMD094Fixtures(t *testing.T) {
-	data, err := os.ReadFile("../rules/testdata/md094.json")
+	data, err := os.ReadFile("../rules/md094/testdata/md094.json")
 	if err != nil {
 		t.Fatal(err)
 	}
