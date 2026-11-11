@@ -1,3 +1,5 @@
+// Facts for MD070.
+
 package parser
 
 import (
@@ -171,31 +173,6 @@ func (d *Document) NestedExamples(ctx context.Context, budget *OperationBudget, 
 	}
 	out.Availability = Available
 	return out, nil
-}
-
-// Locked stages use the parser's ordinary metering helpers. The borrowed index
-// gets this stage's context; no original context or syntax is mutated.
-func nestedExampleLocked(ctx context.Context, budget *OperationBudget, index LineIndex, action func(*parserContext, LineIndex) error) (err error) {
-	if err = headingFactCharge(ctx, budget, 2, 2); err != nil {
-		return err
-	}
-	budget.mu.Lock()
-	defer budget.mu.Unlock()
-	defer func() {
-		if caught := recover(); caught != nil {
-			if stop, ok := caught.(budgetStop); ok {
-				copy := *stop.exceeded
-				err = &copy
-				return
-			}
-			panic(caught)
-		}
-	}()
-	work := &parserContext{Context: ctx, budget: &parseBudget{operation: budget}}
-	index.ctx = work
-	err = action(work, index)
-	meterWork(work, 1)
-	return errors.Join(err, ctx.Err())
 }
 
 func nestedExampleAppend[T any](ctx context.Context, values []T, value T) []T {
