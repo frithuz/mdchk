@@ -15,14 +15,14 @@ import (
 // are not compared either: only an MD004 edit in the same round can change one,
 // and its own checker proves it.
 func (d *Document) SameMeaningAcrossLineEndWhitespace(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
-	return d.sameMeaning(ctx, budget, other, true, false, nil)
+	return d.sameMeaning(ctx, budget, other, true, false, nil, 0)
 }
 
 // SameMeaningAcrossIndentation is SameMeaningAcrossLineEndWhitespace for sources
 // that also differ in the leading spaces of list item lines: list content columns
 // may differ, and every other node kind, order, property and text must match.
 func (d *Document) SameMeaningAcrossIndentation(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
-	return d.sameMeaning(ctx, budget, other, true, true, nil)
+	return d.sameMeaning(ctx, budget, other, true, true, nil, 0)
 }
 
 // SameMeaningAcrossListSeparators compares two completed parses from this
@@ -34,10 +34,20 @@ func (d *Document) SameMeaningAcrossListSeparators(ctx context.Context, budget *
 	if ctx == nil || budget == nil {
 		return false, errors.New("nil list separator meaning context or budget")
 	}
-	return d.sameMeaning(ctx, budget, other, false, false, markers)
+	return d.sameMeaning(ctx, budget, other, false, false, markers, 0)
 }
 
-func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, other *Document, breaks, indentation bool, markers map[int]bool) (bool, error) {
+// SameMeaningAcrossTabs is SameMeaningAcrossLineEndWhitespace for sources that
+// also differ where a TAB became a run of spaces: Text values may differ
+// only by reading every TAB on either side as that many spaces.
+func (d *Document) SameMeaningAcrossTabs(ctx context.Context, budget *OperationBudget, other *Document, spaces int) (bool, error) {
+	if spaces < 1 || spaces > MaxTabSpaces {
+		return false, ErrModel
+	}
+	return d.sameMeaning(ctx, budget, other, true, false, nil, spaces)
+}
+
+func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, other *Document, breaks, indentation bool, markers map[int]bool, tabs int) (bool, error) {
 	if ctx == nil || budget == nil {
 		return false, errors.New("nil whitespace meaning context or budget")
 	}
@@ -81,7 +91,7 @@ func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, oth
 				}
 			}
 		}
-		ok, err := sameNodeProperties(ctx, budget, f.a, f.b, breaks && f.beforeBreak, indentation, retight)
+		ok, err := sameNodeProperties(ctx, budget, f.a, f.b, breaks && f.beforeBreak, indentation, retight, tabs)
 		if err != nil || !ok {
 			return false, err
 		}
@@ -109,7 +119,7 @@ func visibleChildren(children []*Node) []*Node {
 	return out
 }
 
-func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node, beforeBreak, indentation, retight bool) (bool, error) {
+func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node, beforeBreak, indentation, retight bool, tabs int) (bool, error) {
 	p, q := a.spec.Properties, b.spec.Properties
 	if err := headingFactCharge(ctx, budget, int64(len(p.Literal.Value)+len(q.Literal.Value))+1, 0); err != nil {
 		return false, err
@@ -119,7 +129,11 @@ func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node
 		x.Value = strings.TrimRight(x.Value, " \t")
 		y.Value = strings.TrimRight(y.Value, " \t")
 	}
-	if x != y {
+	if tabs > 0 && a.Kind() == Text {
+		if x.Present != y.Present || !equalAcrossTabs(x.Value, y.Value, tabs) {
+			return false, nil
+		}
+	} else if x != y {
 		return false, nil
 	}
 	if (p.Task == nil) != (q.Task == nil) || (p.Table == nil) != (q.Table == nil) || (p.Row == nil) != (q.Row == nil) || (p.Cell == nil) != (q.Cell == nil) || (p.Heading == nil) != (q.Heading == nil) || (p.List == nil) != (q.List == nil) || (p.Code == nil) != (q.Code == nil) || (p.HTML == nil) != (q.HTML == nil) || (p.Delimiter == nil) != (q.Delimiter == nil) || (p.Break == nil) != (q.Break == nil) || (p.Link == nil) != (q.Link == nil) {
@@ -181,6 +195,43 @@ func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node
 		}
 	}
 	return true, nil
+}
+
+// equalAcrossTabs compares a and b reading each TAB as spaces ASCII spaces,
+// without allocating the expansion.
+func equalAcrossTabs(a, b string, spaces int) bool {
+	i, j, ri, rj := 0, 0, 0, 0
+	next := func(s string, k, r *int) (byte, bool) {
+		if *r > 0 {
+			*r--
+			if *r == 0 {
+				*k++
+			}
+			return ' ', true
+		}
+		if *k >= len(s) {
+			return 0, false
+		}
+		if s[*k] == '\t' {
+			*r = spaces - 1
+			if *r == 0 {
+				*k++
+			}
+			return ' ', true
+		}
+		*k++
+		return s[*k-1], true
+	}
+	for {
+		x, more := next(a, &i, &ri)
+		y, other := next(b, &j, &rj)
+		if more != other || x != y {
+			return false
+		}
+		if !more {
+			return true
+		}
+	}
 }
 
 func sameTitle(a, b *Value) bool {

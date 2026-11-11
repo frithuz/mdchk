@@ -6,7 +6,6 @@ import (
 	"errors"
 
 	"github.com/frithuz/mdchk/internal/engine"
-	"github.com/frithuz/mdchk/internal/parser"
 )
 
 // Registration returns the MD010 rule ID and its check.
@@ -22,7 +21,7 @@ func check(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 	return compareTabCharacters(ctx, c, items)
 }
 
-func compareTabCharacters(ctx context.Context, c engine.RuleContext, items []parser.Span) (out engine.RuleOutcome) {
+func compareTabCharacters(ctx context.Context, c engine.RuleContext, items []engine.TabCharacterItem) (out engine.RuleOutcome) {
 	defer func() {
 		out.Err = errors.Join(out.Err, c.SectionCheckpoint(ctx, 0, 0))
 		if out.Err != nil {
@@ -49,7 +48,7 @@ func compareTabCharacters(ctx context.Context, c engine.RuleContext, items []par
 			return out
 		}
 		message := "Tab character."
-		out.Findings = append(out.Findings, engine.Finding{Span: item, Message: message})
+		out.Findings = append(out.Findings, engine.Finding{Span: item.Span, Message: message, FixEligible: item.FixEligible})
 	}
 	return out
 }

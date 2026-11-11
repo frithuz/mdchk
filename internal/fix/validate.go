@@ -148,6 +148,22 @@ func (c RoundContext) TrailingWhitespace(ctx context.Context) ([]parser.Trailing
 	return engine.TrailingWhitespaceSuffixes(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
 }
 
+// TabCharacters returns MD010's TAB facts and resolved spaces_per_tab for this
+// round's own parse under the target's plan.
+func (c RoundContext) TabCharacters(ctx context.Context) ([]engine.TabCharacterItem, int, error) {
+	return engine.TabCharacterFacts(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
+// MeaningPreservedAcrossTabs compares both actual round parses, reading each TAB
+// in Text as spaces ASCII spaces.
+func (c CheckContext) MeaningPreservedAcrossTabs(ctx context.Context, spaces int) (bool, error) {
+	before, after := c.Before.Parsed(), c.After.Parsed()
+	if before.Status != parser.Complete || after.Status != parser.Complete || before.Document == nil || after.Document == nil || len(before.Uncertainty) != 0 || len(after.Uncertainty) != 0 {
+		return false, nil
+	}
+	return before.Document.SameMeaningAcrossTabs(ctx, c.Before.meter.budget, after.Document, spaces)
+}
+
 // BulletIndentation returns MD007's list item facts and resolved indent and
 // start_indented options for this round's own parse under the target's plan.
 func (c RoundContext) BulletIndentation(ctx context.Context) ([]parser.ListItemFact, int, bool, error) {

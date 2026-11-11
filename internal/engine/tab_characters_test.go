@@ -92,7 +92,7 @@ func TestRuleContextTabCharactersFinalPublication(t *testing.T) {
 	for _, tc := range []struct {
 		source string
 		final  int
-	}{{"", 8}, {"clean\n", 19}, {"a\tb\tc\td\te\t\n", 47}} {
+	}{{"", 12}, {"clean\n", 28}, {"a\tb\tc\td\te\t\n", 64}} {
 		for _, origin := range []bool{false, true} {
 			c := listContext(t, tc.source, parser.DefaultLimits(), context.Background())
 			c.options = Options{"spaces_per_tab": 4, "code_blocks": false}
