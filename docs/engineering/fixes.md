@@ -440,7 +440,7 @@ compare exactly, so `Corrections` proposes MD064 groups only in a round in which
 rule proposes an edit, MD010 included, so runs a TAB replacement lengthens are seen, and every other group waits while they remain. Only an MD047 edit
 that analysis already offers shares their round; both checkers must accept the combined
 candidate. A document with MD009, MD047 and MD064 findings therefore converges in one run.
-MD064 also waits for MD044 groups, which go first in that isolated round.
+MD064 also waits for MD044 and MD049 groups, which go first in that isolated round.
 
 ### MD044 corrections
 
@@ -474,6 +474,43 @@ directive finding.
 `Corrections` proposes MD044 groups only in a round in which no other rule proposes an
 edit, ahead of MD064 and MD038, which wait for them. Only an MD047 edit that analysis already offers
 shares their round. A document with MD009, MD047, MD064, MD085 and MD044 findings converges
+in one run.
+
+### MD049 corrections
+
+`internal/rules/md049.Correction` regenerates one atomic group per fix-available MD049
+finding from each round's own analysis and parse. `RoundContext.ItalicStyleCorrections`
+returns the round's mismatched italic `DelimiterStyle` facts and the expected marker: the
+configured `style`, or in `consistent` mode the marker of the earliest italic opening. Each
+group has the ID `MD049-italic-<start>`, the opening marker as its anchor, two one-byte
+edits replacing the opening and closing markers with the expected marker, their original
+bytes as `Expected`, and the `Meaning`, `ProtectedSyntax` and `DirectiveStructure`
+requirements. An italic is never half-corrected, and strong markers are never edited; in a
+triple run only the italic member's byte changes.
+
+The rule callback sets `fix_available` only for an italic that the shared interior edit
+query admits at both markers, anchored on the opening, so directive intervals, an italic
+whose closing marker is in a different directive state, protected context and documents
+opening with an unrecognized block withhold the finding. `Document.ItalicSwapsPreserved`
+then reparses the document with every admitted rewrite applied and compares it through
+`SameMeaningAcrossItalicMarkers`. When the parse differs, only the rewrites whose italic
+survived at the same markers are reparsed once more; if that still differs, every finding
+stays manual. Intraword rewrites and rewrites that pair differently with neighbouring
+delimiter runs therefore stay reported with `fix_available: false`.
+
+The independently registered checker recomputes the mismatched italics and expected marker
+from the before parse and trusts neither producer data nor `fix_available`. Through
+`CheckContext.Once`, it proves `OnlyEditsChanged` and `MeaningPreservedAcrossItalicMarkers`:
+both parses list the same emphasis and strong nodes with the same marker offsets and widths,
+only a recomputed mismatched italic may change its marker, and only to the expected one, and
+every other node property, Text value and reference definition compares exactly through the
+shared whole-parse walk. Each group then checks its anchor, spans, original bytes and
+replacement against the recomputed italic. No `ForbidNewFindings` is registered: rewriting
+emphasis markers outside comments cannot create a directive finding.
+
+`Corrections` proposes MD049 groups after MD044 in the round in which no other rule proposes
+an edit, ahead of MD064 and MD038, which wait for them. Only an MD047 edit that analysis
+already offers shares their round. A document with MD009, MD047 and MD049 findings converges
 in one run.
 
 ### MD085 corrections
