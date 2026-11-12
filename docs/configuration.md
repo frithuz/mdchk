@@ -85,7 +85,7 @@ minima, each defaulting to 1; MD072 accepts boolean `recursive` (default false) 
 (default `<!-- toc -->`) and `end_marker` (default `<!-- /toc -->`) and heading levels
 `min_level` (default 1) and `max_level` (default 6). MD001, MD003, MD004, MD007, MD029, MD032, MD069, MD076,
 MD018, MD020, MD022, MD024, MD025, MD026, MD036, MD041, MD043,
-MD061, MD072, MD073, MD080, MD083, MD084, MD082, MD081, MD088, MD033, MD086, MD087, MD093, MD095 and MD071 are report-only.
+MD061, MD072, MD073, MD080, MD083, MD084, MD082, MD081, MD033, MD086, MD087, MD093, MD095 and MD071 are report-only.
 Rules marked unavailable in the linked inventory remain pending. Every default-enabled
 rule is available for CommonMark and GFM; an enabled rule without an implementation
 would produce a coverage deficit rather than a clean result. Valid UTF-8 with all
@@ -97,8 +97,9 @@ GFM, disabled by default and permanently report-only, with no edits or previews.
 
 [MD088 ASCII-punctuation analysis](rules/formatting/md088.md) is available for CommonMark and GFM,
 disabled by default with sole string option `style: ascii`. Invalid styles and
-unknown `replacements` reject even when disabled. Findings are manual in Pass 1;
-PlannedFix retains future correction scope. No MD088 edits or previews are emitted.
+unknown `replacements` reject even when disabled. `fix` replaces each eligible
+curly quote or dash with its ASCII spelling when reparsing keeps the same
+structure; other findings stay manual.
 
 ## Define project expectations
 

@@ -536,9 +536,10 @@ escapes, normalized and partial-tab contributions create no source candidates.
 
 Emit one original three-byte/one-code-point range per eligible scalar with exactly
 `Use ASCII quotes and dashes in prose.` Em dash is one finding. Full context
-precedes shared START suppression and inspect intersection. This pass is analysis
-and configuration only: PlannedFix remains future metadata; this analysis produces no edits;
-MD088 creates no edits, previews or corrected content.
+precedes shared START suppression and inspect intersection. After comparison,
+`ASCIIPunctuationCorrections` reparses the source with the candidate scalars
+rewritten and grants `fix_available` only when the structure stays the same and
+the edit is not a dash in a heading; see [MD088 corrections](fixes.md#md088-corrections).
 
 ### Corrections
 
