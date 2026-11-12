@@ -15,10 +15,13 @@ import (
 // execution, independently of an already-exhausted execution allowance.
 type reportingReserve struct{ budget *parser.OperationBudget }
 
+// reportingReserveTime is the reporting reserve's operation-time limit.
+var reportingReserveTime = 2 * time.Second
+
 func (r *reportingReserve) charge(units int64) error {
 	if r.budget == nil {
 		limits := parser.DefaultLimits()
-		limits.OperationTime = 2 * time.Second
+		limits.OperationTime = reportingReserveTime
 		r.budget, _ = parser.NewOperationBudget(limits)
 	}
 	// Zero forces an elapsed-time checkpoint even for cached/short projections.

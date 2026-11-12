@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/frithuz/mdchk/internal/engine"
 	"github.com/frithuz/mdchk/internal/parser"
@@ -403,6 +404,9 @@ func TestAllReservedIDsRejected(t *testing.T) {
 
 func denseProjection(t *testing.T) result.Result {
 	t.Helper()
+	// Lift the reserve's 2s limit so only work units bound projection; under
+	// load the time limit could otherwise trip first and vary the result.
+	engine.SetReportingReserveTimeForTest(t, 10*time.Minute)
 	source := []byte(strings.Repeat("π\t", 32768))
 	m := metadata("MD001")
 	r := registry(t, []engine.Metadata{m}, engine.Registration{ID: m.ID, Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
@@ -433,6 +437,9 @@ func denseProjection(t *testing.T) result.Result {
 		omission := out.Omissions[0]
 		if omission.Section != "/diagnostics" || omission.Count == nil || *omission.Count != 10000-len(out.Diagnostics) {
 			t.Fatal(omission)
+		}
+		if !strings.Contains(omission.Message, "work-units") || strings.Contains(omission.Message, "operation-time") {
+			t.Fatal("reporting reserve was not bounded by work units", omission.Message)
 		}
 		for i, d := range out.Diagnostics {
 			if d.Range.Start != (parser.Position{Line: 1, Column: 2*i + 1}) || d.Range.End != (parser.Position{Line: 1, Column: 2*i + 2}) {
