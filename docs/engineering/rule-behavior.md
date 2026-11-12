@@ -155,9 +155,11 @@ seed or report. Consistent selects the minimum original Strong Opening.Start
 per immutable document before suppression or inspection slicing; fixed styles
 select their marker. Nested/triple/longer consumed roles, transformed children,
 authored labels and alternatives retain actual ownership and shared protections.
-One manual finding per mismatch covers exactly the complete two-byte Opening
+One finding per mismatch covers exactly the complete two-byte Opening
 with `Bold delimiter style does not match the expected style.` Opening START
-alone governs suppression. No correction authority or alternate parser is added.
+alone governs suppression. After comparison, `BoldMarkerCorrections` reparses the
+source with both markers rewritten and grants `fix_available` only when the
+Strong nodes and text stay the same; see [MD050 corrections](fixes.md#md050-corrections).
 
 ### Md011
 

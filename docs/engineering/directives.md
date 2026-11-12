@@ -212,6 +212,8 @@ same; other findings remain manual.
 MD050 retains the earliest actual eligible Strong opening across full original
 context, including hidden intervals. Finding suppression uses only that Strong's
 two-byte Opening START, independently of closing state or inspect selection.
+`fix` rewrites both markers of a Strong under the same Opening START only when
+reparsing keeps the same Strong nodes and text; other findings remain manual.
 
 MD065 evaluates full immediate source-body context, including retained definitions,
 before filtering each missing-side zero-width point at its own START. Recognized
