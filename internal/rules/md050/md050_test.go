@@ -101,7 +101,7 @@ func TestMD050FrozenAnalysisFixtures(t *testing.T) {
 				}
 				for i, d := range out.Diagnostics {
 					w := f.Findings[i]
-					if d.Rule != "MD050" || d.Message != w.Message || [2]int{d.ByteRange.Start, d.ByteRange.End} != w.Bytes || d.Range.Start != (result.Position{Line: w.Start[0], Column: w.Start[1]}) || d.Range.End != (result.Position{Line: w.End[0], Column: w.End[1]}) || f.Source[w.Bytes[0]:w.Bytes[1]] != w.Text || d.Snapshot.SHA256 != f.SHA || d.Snapshot.SizeBytes != len(f.Source) || d.Snapshot.View != "original" || d.FixAvailable {
+					if d.Rule != "MD050" || d.Message != w.Message || [2]int{d.ByteRange.Start, d.ByteRange.End} != w.Bytes || d.Range.Start != (result.Position{Line: w.Start[0], Column: w.Start[1]}) || d.Range.End != (result.Position{Line: w.End[0], Column: w.End[1]}) || f.Source[w.Bytes[0]:w.Bytes[1]] != w.Text || d.Snapshot.SHA256 != f.SHA || d.Snapshot.SizeBytes != len(f.Source) || d.Snapshot.View != "original" {
 						t.Fatal(d, w)
 					}
 				}
@@ -129,7 +129,7 @@ func TestMD050OptionsAvailabilityAndDefaults(t *testing.T) {
 		} else {
 			off++
 		}
-		if m.ID == "MD050" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.PlannedFix) {
+		if m.ID == "MD050" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.ImplementedFix) {
 			t.Fatal(m)
 		}
 	}

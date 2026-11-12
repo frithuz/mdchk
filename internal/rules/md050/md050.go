@@ -1,4 +1,4 @@
-// Package md050 checks MD050, which requires one bold delimiter style.
+// Package md050 checks and corrects MD050, which requires one bold delimiter style.
 package md050
 
 import (
@@ -31,7 +31,49 @@ func boldDelimiterStyle(ctx context.Context, c engine.RuleContext) (out engine.R
 		out.Err = err
 		return out
 	}
-	return compareBoldDelimiterStyle(ctx, c, style, items.Valid)
+	out = compareBoldDelimiterStyle(ctx, c, style, items.Valid)
+	if out.Err == nil && len(out.Findings) != 0 {
+		out.Err = markFixEligible(ctx, c, items.Valid, out.Findings)
+	}
+	return out
+}
+
+// markFixEligible marks each finding whose Strong both markers can be rewritten
+// to the expected marker, as BoldMarkerCorrections decides on this parse, when
+// the shared interior edit query allows both marker edits under the opening.
+func markFixEligible(ctx context.Context, c engine.RuleContext, items []parser.DelimiterFact, findings []engine.Finding) error {
+	facts, _, err := c.BoldMarkerCorrections(ctx)
+	if err != nil {
+		return err
+	}
+	if err := c.SectionCheckpoint(ctx, int64(len(facts)+len(items))+1, int64(len(facts))+1); err != nil {
+		return err
+	}
+	correctable := make(map[int]parser.DelimiterFact, len(facts))
+	for _, f := range facts {
+		correctable[f.Opening.Start()] = f
+	}
+	edits := c.InteriorEdits()
+	for i := range findings {
+		if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
+			return err
+		}
+		f, ok := correctable[findings[i].Span.Start()]
+		if !ok || f.Opening != findings[i].Span {
+			continue
+		}
+		for _, span := range [2]parser.Span{f.Opening, f.Closing} {
+			eligible, err := edits.Eligible(ctx, "MD050", f.Opening, span)
+			if err != nil {
+				return err
+			}
+			findings[i].FixEligible = eligible
+			if !eligible {
+				break
+			}
+		}
+	}
+	return nil
 }
 
 // The inventory need not be in opener order. Select the minimum original opener
