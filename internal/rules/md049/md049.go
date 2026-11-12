@@ -1,4 +1,4 @@
-// Package md049 checks MD049, which requires one italic delimiter style.
+// Package md049 checks and corrects MD049, which requires one italic delimiter style.
 package md049
 
 import (
@@ -103,6 +103,7 @@ func compareItalicDelimiterStyle(ctx context.Context, c engine.RuleContext, styl
 			first, expected = f.Opening.Start(), f.Marker
 		}
 	}
+	var mismatched []parser.DelimiterFact
 	for i := 0; ; i++ {
 		if err := c.SectionCheckpoint(ctx, 5, 0); err != nil {
 			out.Err = err
@@ -130,6 +131,53 @@ func compareItalicDelimiterStyle(ctx context.Context, c engine.RuleContext, styl
 			return out
 		}
 		out.Findings = append(out.Findings, engine.Finding{Span: f.Opening, Message: "Italic delimiter style does not match the expected style."})
+		mismatched = append(mismatched, f)
+	}
+	if err := markCorrectable(ctx, c, out.Findings, mismatched, expected); err != nil {
+		out.Err = err
 	}
 	return out
+}
+
+// markCorrectable sets FixEligible on each finding whose italic the interior
+// edit query admits at both markers and whose marker rewrite, together with
+// every other admitted one, keeps the parse. Each finding belongs to the
+// mismatched italic at the same index.
+func markCorrectable(ctx context.Context, c engine.RuleContext, findings []engine.Finding, mismatched []parser.DelimiterFact, expected byte) error {
+	if len(findings) == 0 {
+		return nil
+	}
+	edits := c.InteriorEdits()
+	var swaps []parser.DelimiterFact
+	var owners []int
+	for i, f := range mismatched {
+		if err := c.SectionCheckpoint(ctx, 2, 2); err != nil {
+			return err
+		}
+		ok, err := edits.Eligible(ctx, "MD049", f.Opening, f.Opening)
+		if err != nil {
+			return err
+		}
+		if ok {
+			ok, err = edits.Eligible(ctx, "MD049", f.Opening, f.Closing)
+			if err != nil {
+				return err
+			}
+		}
+		if ok {
+			swaps = append(swaps, f)
+			owners = append(owners, i)
+		}
+	}
+	if len(swaps) == 0 {
+		return nil
+	}
+	preserved, err := c.ItalicSwapsPreserved(ctx, swaps, expected)
+	if err != nil {
+		return err
+	}
+	for k, ok := range preserved {
+		findings[owners[k]].FixEligible = ok
+	}
+	return nil
 }

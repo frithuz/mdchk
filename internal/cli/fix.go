@@ -63,7 +63,8 @@ marker, keeping one. MD064 removes repeated spaces in prose beyond maximum.
 MD085 removes surplus indentation from a paragraph continuation line. MD089
 inserts one space between adjacent CJK and Latin text. MD038 deletes the
 padding SPACE inside inline code delimiters when the code value stays the same. MD044 rewrites a configured name to its
-one configured capitalization.
+one configured capitalization. MD049 rewrites both delimiters of a mismatched
+italic to the expected marker when the parse stays the same.
 Ambiguous contexts stay manual and appear under deferred_fixes.
 Text/JSON include preview diffs; editor formats report remaining findings only.
 VS Code unlocated errors and both editor formats' recovery outcomes use stderr.

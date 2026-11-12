@@ -40,12 +40,10 @@ func TestCompiledPlatformMD049ProductionAnalysis(t *testing.T) {
 			acceptance.PutFile(t, root, ".mdchk.yaml", md049Configuration(tc.flavor))
 			acceptance.PutFile(t, root, "doc.md", tc.source)
 			before := acceptance.ReadinessState(t, root)
-			for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"inspect", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}, {"fix", "doc.md", "--format=json"}} {
+			// fix_acceptance_test.go covers the fix workflow.
+			for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"inspect", "doc.md", "--format=json"}} {
 				got := acceptance.RunProcess(t, binary, root, args...)
 				out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), args[0])
-				if args[0] == "fix" && args[1] == "doc.md" && acceptance.MD038NativeRefusal(t, got, out) {
-					continue
-				}
 				status := 0
 				if len(tc.ranges) > 0 && args[0] != "inspect" {
 					status = 10
@@ -55,23 +53,16 @@ func TestCompiledPlatformMD049ProductionAnalysis(t *testing.T) {
 				}
 				for i, d := range out.Diagnostics {
 					w := tc.ranges[i]
-					view := "original"
-					if args[0] == "fix" {
-						view = "saved"
-						if args[1] == "--dry-run" {
-							view = "candidate"
-						}
-					}
-					if d.Snapshot.View != view {
+					if d.Snapshot.View != "original" {
 						t.Fatal(d.Snapshot)
 					}
 
-					if d.Rule != "MD049" || d.Message != "Italic delimiter style does not match the expected style." || d.ByteRange.Start != w[0] || d.ByteRange.End != w[1] || d.FixAvailable || d.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(tc.source))) || d.Snapshot.SizeBytes != len(tc.source) {
+					if d.Rule != "MD049" || d.Message != "Italic delimiter style does not match the expected style." || d.ByteRange.Start != w[0] || d.ByteRange.End != w[1] || d.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(tc.source))) || d.Snapshot.SizeBytes != len(tc.source) {
 						t.Fatal(d)
 					}
 				}
 			}
-			acceptance.ReadinessAssertEqual(t, "manual MD049", before, acceptance.ReadinessState(t, root))
+			acceptance.ReadinessAssertEqual(t, "MD049 analysis", before, acceptance.ReadinessState(t, root))
 		})
 	}
 }
