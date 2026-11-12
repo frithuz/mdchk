@@ -7,3 +7,11 @@ Its 123 selected flavor executions reuse 64 independent literals and 62 authored
 opening ranges. Batch/reverse/concurrent cases are additional isolation checks,
 not independent oracle counts. Expected output must not be regenerated from
 production results.
+
+`md049_corrections.json` holds the correction cases run by `fix_test.go` and
+`fix_acceptance_test.go`. Each case gives the original `Source` and the corrected
+`Candidate`, which equals `Source` when every finding stays manual. Optional
+`Style` (default `consistent`) sets the MD049 option, `Flavor` restricts the
+case to one flavor, and `Config` adds rules: `md047` enables MD047,
+`composition` enables MD009 and MD047, and `directives` turns on directive
+processing, which only the compiled test runs.

@@ -47,7 +47,7 @@ func Catalog() []Metadata {
 		{ID: "MD046", Name: "Indented versus fenced code", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "fenced", "indented")}},
 		{ID: "MD047", Name: "Exactly one terminating newline", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: false, Options: OptionSchema{}},
 		{ID: "MD048", Name: "Backtick versus tilde fences", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "backtick", "tilde")}},
-		{ID: "MD049", Name: "Italic delimiter style", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "asterisk", "underscore")}},
+		{ID: "MD049", Name: "Italic delimiter style", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "asterisk", "underscore")}},
 		{ID: "MD050", Name: "Bold delimiter style", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("consistent", "asterisk", "underscore")}},
 		{ID: "MD051", Name: "Unresolved fragment targets", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{"cross_file": boolean(false)}},
 		{ID: "MD052", Name: "References without definitions", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},

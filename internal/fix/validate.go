@@ -201,6 +201,12 @@ func (c RoundContext) ConfiguredNameCorrections(ctx context.Context) ([]parser.S
 	return engine.ConfiguredNameCorrections(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
 }
 
+// ItalicStyleCorrections returns MD049's mismatched italic facts and expected
+// marker for this round's own parse under the target's plan.
+func (c RoundContext) ItalicStyleCorrections(ctx context.Context) ([]parser.DelimiterFact, byte, error) {
+	return engine.ItalicStyleCorrections(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
 // BulletIndentation returns MD007's list item facts and resolved indent and
 // start_indented options for this round's own parse under the target's plan.
 func (c RoundContext) BulletIndentation(ctx context.Context) ([]parser.ListItemFact, int, bool, error) {
@@ -282,6 +288,18 @@ func (c CheckContext) MeaningPreservedAcrossNameCase(ctx context.Context) (bool,
 		return false, nil
 	}
 	return before.Document.SameMeaningAcrossNameCase(ctx, c.Before.meter.budget, after.Document)
+}
+
+// MeaningPreservedAcrossItalicMarkers compares both actual round parses with
+// every node property and Text value compared exactly, except that an italic
+// whose opening marker starts at an original offset in allowed may change its
+// marker to marker. Every emphasis and strong node keeps its marker offsets.
+func (c CheckContext) MeaningPreservedAcrossItalicMarkers(ctx context.Context, allowed map[int]bool, marker byte) (bool, error) {
+	before, after := c.Before.Parsed(), c.After.Parsed()
+	if before.Status != parser.Complete || after.Status != parser.Complete || before.Document == nil || after.Document == nil || len(before.Uncertainty) != 0 || len(after.Uncertainty) != 0 {
+		return false, nil
+	}
+	return before.Document.SameMeaningAcrossItalicMarkers(ctx, c.Before.meter.budget, after.Document, allowed, marker)
 }
 
 // MeaningPreservedAcrossListSeparators compares both actual round parses. Only a

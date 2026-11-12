@@ -14,20 +14,24 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/ruletest"
 )
 
-// Source-derived phase costs in Working/issue-75-static-ledger-v1.md.
+// Source-derived phase costs in Working/issue-75-static-ledger-v1.md. A
+// mismatch also pays for the reparse that decides its fix flag.
 var md049PhaseCases = []struct {
 	name, source, style string
 	work, nodes         int64
 	final, want         int
+	// origin is the final call count on the originating context when it
+	// differs from final: the fix flag reparse polls the two differently.
+	origin int
 }{
-	{"empty", "", "consistent", 103, 0, 4, 0},
-	{"clean", "---", "consistent", 103, 0, 4, 0},
-	{"protected", "```\nx\n```", "consistent", 103, 0, 4, 0},
-	{"matching", "*x*", "consistent", 172, 0, 6, 0},
-	{"mismatch", "*x*", "underscore", 174, 2, 8, 1},
-	{"mixed", "*a* _b_", "consistent", 243, 2, 10, 1},
-	{"nested", "*outer _inner_*", "consistent", 243, 2, 10, 1},
-	{"growth", "_a_ _b_ _c_", "asterisk", 319, 9, 16, 3},
+	{"empty", "", "consistent", 103, 0, 4, 0, 0},
+	{"clean", "---", "consistent", 103, 0, 4, 0, 0},
+	{"protected", "```\nx\n```", "consistent", 103, 0, 4, 0, 0},
+	{"matching", "*x*", "consistent", 172, 0, 6, 0, 0},
+	{"mismatch", "*x*", "underscore", 858, 74, 117, 1, 99},
+	{"mixed", "*a* _b_", "consistent", 1354, 121, 171, 1, 150},
+	{"nested", "*outer _inner_*", "consistent", 1559, 109, 163, 1, 143},
+	{"growth", "_a_ _b_ _c_", "asterisk", 1900, 181, 259, 3, 211},
 }
 
 func TestMD049CallbackFinalCallerAndOrigin(t *testing.T) {
@@ -42,17 +46,21 @@ func TestMD049CallbackFinalCallerAndOrigin(t *testing.T) {
 						if err != nil {
 							t.Fatal(err)
 						}
-						stop := &ruletest.LateStopContext{Context: context.Background(), Stop: tc.final, Reason: reason}
+						final := tc.final
+						stop := &ruletest.LateStopContext{Context: context.Background(), Stop: final, Reason: reason}
 						caller := context.Context(stop)
 						if originating {
+							if tc.origin != 0 {
+								final = tc.origin
+							}
 							origin.Calls = 0
-							origin.Stop = tc.final
+							origin.Stop = final
 							caller = context.Background()
 							stop = origin
 						}
 						observed = md049.CompareItalicDelimiterStyle(caller, c, tc.style, items.Valid)
-						if !errors.Is(observed.Err, reason) || observed.Findings != nil || stop.Calls != tc.final {
-							t.Fatal(observed, stop.Calls, tc.final)
+						if !errors.Is(observed.Err, reason) || observed.Findings != nil || stop.Calls != final {
+							t.Fatal(observed, stop.Calls, final)
 						}
 						return observed
 					}}})
@@ -178,7 +186,7 @@ func TestMD049WholeCallbackFinalWithdrawal(t *testing.T) {
 	for _, tc := range []struct {
 		source, style string
 		final         int
-	}{{"", "consistent", 27}, {"*x*", "consistent", 70}, {"*x*", "underscore", 72}} {
+	}{{"", "consistent", 27}, {"*x*", "consistent", 70}, {"*x*", "underscore", 181}} {
 		for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 			t.Run(fmt.Sprintf("%s/%s/%s", tc.source, tc.style, reason), func(t *testing.T) {
 				r := ruletest.Registry(t, []engine.Registration{{ID: "MD049", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
@@ -203,7 +211,7 @@ func TestMD049WholeCallbackStaticBoundaries(t *testing.T) {
 		name, source, style string
 		work, nodes         int64
 		want                int
-	}{{"empty", "", "consistent", 224, 4, 0}, {"matching", "*x*", "consistent", 941, 20, 0}, {"mismatch", "*x*", "underscore", 943, 22, 1}} {
+	}{{"empty", "", "consistent", 224, 4, 0}, {"matching", "*x*", "consistent", 941, 20, 0}, {"mismatch", "*x*", "underscore", 1627, 94, 1}} {
 		for _, kind := range []string{"work", "nodes"} {
 			exact := tc.work
 			if kind == "nodes" {

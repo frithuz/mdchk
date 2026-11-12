@@ -48,7 +48,7 @@ func TestMD049FactValidationAndUnorderedMinimum(t *testing.T) {
 				}
 				observed = md049.CompareItalicDelimiterStyle(ctx, c, style, items.Valid)
 				if invalid == "reversed" {
-					if observed.Err != nil || len(observed.Findings) != 1 || observed.Findings[0].Span.Start() != 4 || observed.Findings[0].FixEligible {
+					if observed.Err != nil || len(observed.Findings) != 1 || observed.Findings[0].Span.Start() != 4 || !observed.Findings[0].FixEligible {
 						t.Fatal(observed)
 					}
 				} else if !errors.Is(observed.Err, parser.ErrModel) || observed.Findings != nil {
