@@ -170,6 +170,7 @@ func TestCompiledMD088ManualFindings(t *testing.T) {
 		{"thematic break", "– – –\n", "", 3},
 		{"table delimiter cell", "| a |\n| – |\n", "gfm", 1},
 		{"comment opener", "<!—x\n", "", 1},
+		{"comment opener mid-line", "a <!— b\n\nc\n", "", 1},
 		{"escape", "\\“a\n", "", 1},
 		{"autolink domain", "www.example.com.—x\n", "gfm", 1},
 		{"autolink email", "a—b@example.com\n", "gfm", 1},
@@ -205,5 +206,36 @@ func TestCompiledMD088ManualFindings(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+// Escaped dashes among many fixable scalars cost no reparse: the compiled
+// preview and saved run complete, correct every fixable scalar and leave
+// exactly the escaped dashes manual.
+func TestCompiledMD088ManyEscapedDashes(t *testing.T) {
+	t.Parallel()
+	binary := acceptance.SharedExecutable(t)
+	for _, flavor := range []string{"commonmark", "gfm"} {
+		t.Run(flavor, func(t *testing.T) {
+			source, want := paragraphs(300, 8, "\\— esc")
+			root := acceptance.Project(t)
+			acceptance.PutFile(t, root, ".mdchk.yaml", correctionConfiguration(flavor, ""))
+			acceptance.PutFile(t, root, "doc.md", source)
+			for _, args := range [][]string{{"fix", "--dry-run", "doc.md", "--format=json"}, {"fix", "doc.md", "--format=json"}} {
+				got := acceptance.RunProcess(t, binary, root, args...)
+				out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "fix")
+				if !out.Complete || len(out.Interruptions) != 0 || len(out.Changes) != 1 || len(out.Diagnostics) != 8 || out.Files[0].ResultSnapshot.SHA256 != acceptance.Digest(want) {
+					t.Fatal(got)
+				}
+				for _, d := range out.Diagnostics {
+					if d.Rule != "MD088" || d.FixAvailable {
+						t.Fatal(d)
+					}
+				}
+			}
+			if acceptance.Saved(t, root) != want {
+				t.Fatal("saved content")
+			}
+		})
 	}
 }
