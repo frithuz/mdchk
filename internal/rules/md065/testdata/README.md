@@ -6,6 +6,7 @@ before engineering or product/parser/helper probes. All 80 records retain origin
 source size/SHA, selected settings/flavors, independent side/line/prefix witnesses
 and exact zero-width byte/scalar/message expectations. They represent 76 distinct
 source byte strings, 75 authored ranges and 159 flavor repetitions. The fixture
-test asserts the whole-file digest and original snapshot/manual/no-edit evidence;
-supplementary tests cover ownership floors, raw tails, strict configuration,
-suppression owners, incomplete syntax, isolation and original-operation controls.
+test asserts the whole-file digest and original snapshot/no-edit evidence; the
+correction tests cover fix eligibility, and supplementary tests cover ownership
+floors, raw tails, strict configuration, suppression owners, incomplete syntax,
+isolation and original-operation controls.

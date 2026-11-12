@@ -16,7 +16,10 @@ import (
 
 // Production totals are source-derived before execution; comparison totals
 // include the terminal probe, five predicates, two boundary bytes, two source
-// associations, one emission and each actual growth/copy.
+// associations, one emission, each actual growth/copy and the insertion
+// eligibility query of each finding whose blank line can be derived. That query
+// checks only the caller's context, so the originating context sees fewer
+// checks (ofinal) than the caller (cfinal).
 var md065PhaseCases = []struct {
 	name, source  string
 	want          int
@@ -24,15 +27,16 @@ var md065PhaseCases = []struct {
 	pfinal        int
 	cwork, cnodes int64
 	cfinal        int
+	ofinal        int
 }{
-	{"empty", "", 0, 16, 4, 15, 1, 0, 2},
-	{"clean", "clean", 0, 53, 15, 40, 1, 0, 2},
-	{"edge", "***", 0, 39, 11, 32, 1, 0, 2},
-	{"protected", "```\nx\n```", 0, 45, 11, 34, 1, 0, 2},
-	{"violation", "Text\n***\nMore", 2, 128, 38, 90, 26, 5, 10},
-	{"definitions", "[r]: /x\n***", 1, 61, 14, 43, 13, 2, 6},
-	{"rollback", "> Text\n> ***\n> More", 2, 211, 53, 119, 26, 5, 10},
-	{"growth", "***\n***\n***\n***", 6, 159, 62, 103, 78, 19, 24},
+	{"empty", "", 0, 16, 4, 15, 1, 0, 2, 2},
+	{"clean", "clean", 0, 53, 15, 40, 1, 0, 2, 2},
+	{"edge", "***", 0, 39, 11, 32, 1, 0, 2, 2},
+	{"protected", "```\nx\n```", 0, 45, 11, 34, 1, 0, 2, 2},
+	{"violation", "Text\n***\nMore", 2, 128, 38, 90, 71, 32, 40, 12},
+	{"definitions", "[r]: /x\n***", 1, 61, 14, 43, 30, 9, 20, 7},
+	{"rollback", "> Text\n> ***\n> More", 2, 211, 53, 119, 75, 36, 42, 12},
+	{"growth", "***\n***\n***\n***", 6, 159, 62, 103, 147, 38, 84, 30},
 }
 
 func TestMD065ComparisonAndWholeStaticBoundaries(t *testing.T) {
@@ -134,6 +138,9 @@ func TestMD065ComparisonAndWholeFinalCallerAndOrigin(t *testing.T) {
 								}
 							}
 							final := tc.cfinal
+							if originating {
+								final = tc.ofinal
+							}
 							if whole {
 								final += tc.pfinal + 4
 							}

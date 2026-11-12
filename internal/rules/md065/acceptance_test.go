@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -25,16 +26,19 @@ func md065Configuration(flavor string) string {
 func TestCompiledPlatformMD065ProductionAnalysis(t *testing.T) {
 	t.Parallel()
 	binary := acceptance.SharedExecutable(t)
+	// Fixable findings are corrected by fix, which TestCompiledMD065FixWorkflow
+	// covers; here a dry run must propose their correction and nothing is saved.
 	for _, tc := range []struct {
 		name, source, flavor string
 		points               [][3]int
+		fixable              bool
 	}{
-		{"basic", "Text\n***\nMore", "commonmark", [][3]int{{5, 2, 1}, {8, 2, 4}}},
-		{"unicode-crlf", "雪\r\n***\r\nMore", "gfm", [][3]int{{5, 2, 1}, {8, 2, 4}}},
-		{"quote", " > Text\n > ***\n > More", "gfm", [][3]int{{11, 2, 4}, {14, 2, 7}}},
-		{"partial-tab", "- Text\n\t***\n\tMore", "commonmark", [][3]int{{8, 2, 2}, {11, 2, 5}}},
-		{"accepted", "Text\n\n***\n\nMore", "gfm", nil},
-		{"code-protected", "`***`", "gfm", nil},
+		{"basic", "Text\n***\nMore", "commonmark", [][3]int{{5, 2, 1}, {8, 2, 4}}, true},
+		{"unicode-crlf", "雪\r\n***\r\nMore", "gfm", [][3]int{{5, 2, 1}, {8, 2, 4}}, true},
+		{"quote", " > Text\n > ***\n > More", "gfm", [][3]int{{11, 2, 4}, {14, 2, 7}}, true},
+		{"partial-tab", "- Text\n\t***\n\tMore", "commonmark", [][3]int{{8, 2, 2}, {11, 2, 5}}, false},
+		{"accepted", "Text\n\n***\n\nMore", "gfm", nil, false},
+		{"code-protected", "`***`", "gfm", nil, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			root := acceptance.Project(t)
@@ -42,20 +46,27 @@ func TestCompiledPlatformMD065ProductionAnalysis(t *testing.T) {
 			acceptance.PutFile(t, root, "doc.md", tc.source)
 			before := acceptance.ReadinessState(t, root)
 			for _, args := range [][]string{{"lint", "doc.md", "--format=json"}, {"inspect", "doc.md", "--format=json"}, {"fix", "--dry-run", "doc.md", "--format=json"}, {"fix", "doc.md", "--format=json"}} {
+				corrected := tc.fixable && args[0] == "fix"
+				if corrected && args[1] == "doc.md" {
+					continue
+				}
 				got := acceptance.RunProcess(t, binary, root, args...)
 				out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), args[0])
 				if args[0] == "fix" && args[1] == "doc.md" && acceptance.MD038NativeRefusal(t, got, out) {
 					continue
 				}
-				status := 0
+				status, points, changes := 0, tc.points, 0
 				if len(tc.points) > 0 && args[0] != "inspect" {
 					status = 10
 				}
-				if got.Status != status || !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != len(tc.points) || len(out.Changes)+len(out.DeferredFixes)+len(out.Documents) != 0 {
+				if corrected {
+					status, points, changes = 0, nil, 1
+				}
+				if got.Status != status || !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != len(points) || len(out.Changes) != changes || len(out.DeferredFixes)+len(out.Documents) != 0 {
 					t.Fatal(got)
 				}
 				for i, d := range out.Diagnostics {
-					w := tc.points[i]
+					w := points[i]
 					view := "original"
 					if args[0] == "fix" {
 						view = "saved"
@@ -63,7 +74,7 @@ func TestCompiledPlatformMD065ProductionAnalysis(t *testing.T) {
 							view = "candidate"
 						}
 					}
-					if d.Rule != "MD065" || d.Message != []string{"Horizontal rule requires a blank body line before it.", "Horizontal rule requires a blank body line after it."}[i] || d.ByteRange.Start != w[0] || d.ByteRange.End != w[0] || d.Range.Start.Line != w[1] || d.Range.Start.Column != w[2] || d.Range.End != d.Range.Start || d.FixAvailable || d.Snapshot.View != view || d.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(tc.source))) || d.Snapshot.SizeBytes != len(tc.source) {
+					if d.Rule != "MD065" || d.Message != []string{"Horizontal rule requires a blank body line before it.", "Horizontal rule requires a blank body line after it."}[i] || d.ByteRange.Start != w[0] || d.ByteRange.End != w[0] || d.Range.Start.Line != w[1] || d.Range.Start.Column != w[2] || d.Range.End != d.Range.Start || d.FixAvailable != tc.fixable || d.Snapshot.View != view || d.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(tc.source))) || d.Snapshot.SizeBytes != len(tc.source) {
 						t.Fatal(d)
 					}
 				}
@@ -212,28 +223,21 @@ func TestCompiledPlatformMD065MD047Composition(t *testing.T) {
 					acceptance.ReadinessAssertEqual(t, "native refusal", before, acceptance.ReadinessState(t, root))
 					return
 				}
-				want, view, disposition := source, "saved", "written"
-				changes, deferred, diagnostics := 1, 0, 2
-				if !protected {
-					want += "\n"
-				} else {
-					changes, deferred, diagnostics = 0, 1, 1
+				want, disposition := "Text\n\n***\n\nMore\n", "written"
+				status, changes, deferred, diagnostics := 0, 1, 0, 0
+				if protected {
+					want = source
+					status, changes, deferred, diagnostics = 10, 0, 1, 1
 				}
 				if dry {
-					view, disposition = "candidate", "proposed"
+					disposition = "proposed"
 				}
-				if got.Status != 10 || !out.Complete || len(out.Errors) != 0 || len(out.Changes) != changes || len(out.DeferredFixes) != deferred || len(out.Diagnostics) != diagnostics || len(out.Documents) != 0 {
+				if got.Status != status || !out.Complete || len(out.Errors) != 0 || len(out.Changes) != changes || len(out.DeferredFixes) != deferred || len(out.Diagnostics) != diagnostics || len(out.Documents) != 0 {
 					t.Fatal(got, out)
 				}
 				if !protected {
-					for i, d := range out.Diagnostics {
-						point := []int{5, 8}[i]
-						if d.Rule != "MD065" || d.ByteRange.Start != point || d.ByteRange.End != point || d.FixAvailable || d.Snapshot.View != view || d.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(want))) || d.Snapshot.SizeBytes != 14 {
-							t.Fatal(d)
-						}
-					}
 					ch := out.Changes[0]
-					if len(ch.Rules) != 1 || ch.Rules[0] != "MD047" || ch.Disposition != disposition {
+					if !slices.Equal(ch.Rules, []string{"MD047", "MD065"}) || ch.EditCount != 3 || ch.Disposition != disposition || out.Files[0].ResultSnapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(want))) {
 						t.Fatal(ch)
 					}
 				} else if out.Diagnostics[0].Rule != "MD047" || out.Diagnostics[0].FixAvailable {

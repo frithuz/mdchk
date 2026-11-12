@@ -24,7 +24,7 @@ func TestMD065AvailabilityDefaultsAndStrictOptions(t *testing.T) {
 		} else {
 			off++
 		}
-		if m.ID == "MD065" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.PlannedFix) {
+		if m.ID == "MD065" && (!m.DefaultEnabled || !m.RequiresSyntax || m.UsesFrontmatter || m.Fix != engine.ImplementedFix) {
 			t.Fatal(m)
 		}
 	}
