@@ -555,18 +555,26 @@ findings converges in one run.
 from each round's own analysis and parse. `RoundContext.ASCIIPunctuationCorrections`
 returns the `ASCIIPunctuation` facts whose scalar can be rewritten, as
 `Document.ASCIIPunctuationCorrections` decides on that parse. The fact leaves out en and
-em dashes inside a Heading, since `anchorBase` keeps `-` but drops the dash, and the
-dashes of a line that, after leading spaces, TABs and `>`, opens with an en dash before a
-space, TAB or line end, or holds only dashes, hyphens, spaces and TABs: a list marker,
-thematic break or setext underline that no reparse could accept. The dashes of one line
+em dashes inside a Heading, since `anchorBase` keeps `-` but drops the dash, and these
+shapes, which no reparse could accept, without reparsing: the dashes of a line that,
+after leading spaces, TABs and `>`, opens with an en dash before a space, TAB or line
+end, or holds only dashes, hyphens, spaces and TABs (and in GFM `|` and `:`), a list
+marker, thematic break, setext underline or delimiter row; the dashes of a line where a
+dash follows `<!` or `<!-`, a comment opener anywhere on the line; a scalar after an odd
+backslash run, and the other dashes of its line; and in GFM a scalar whose run of
+non-whitespace bytes holds `www.`, `://` or `@`, which a bare autolink could grow over.
+These local checks keep the common unsafe shapes from costing reparses. The dashes of one line
 form one unit and each quote is its own unit. A set of units passes when reparsing the
 source with them rewritten completes without uncertainty and
 `SameMeaningAcrossASCIIPunctuation` matches it. All units are reparsed together first.
 When that fails, a greedy bisection keeps the accepted set A and tries A with each half of
 the remaining units, splitting only a half that fails, so k unsafe units among n cost
 about 2k log2(n/k) reparses and the returned facts always passed one reparse together.
-At most 64 reparses run per call; undecided units then stay manual. All work is charged to
-the shared operation budget. Each group has the ID `MD088-<start>`, the scalar's span as
+Each call runs at most 64 reparses and, after the first, reparses at most 128 KiB of
+source in all, so a fix run's several calls stay a small share of the operation budget
+whatever the document size. When those bounds stop the search before every unit is
+decided, the call returns no facts: every finding stays manual, and later rounds don't
+repeat a partial search. All work is charged to the shared operation budget. Each group has the ID `MD088-<start>`, the scalar's span as
 its anchor and only edit, the original three bytes as `Expected`, the mapping (`'`, `"`,
 `-` or `--`) as `Replacement`, and the `Meaning`, `ProtectedSyntax` and
 `DirectiveStructure` requirements. After analysis reports, the rule callback runs the
