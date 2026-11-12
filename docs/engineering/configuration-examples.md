@@ -40,8 +40,9 @@ conditions describe a test environment, not the current implementation status.
 
 [MD088 ASCII-punctuation analysis](../rules/formatting/md088.md) is available for CommonMark and GFM,
 disabled by default with sole string option `style: ascii`. Invalid styles and
-unknown `replacements` reject even when disabled. Findings are manual in Pass 1;
-PlannedFix retains future correction scope. No MD088 edits or previews are emitted.
+unknown `replacements` reject even when disabled. `fix` replaces each eligible
+curly quote or dash with its ASCII spelling when reparsing keeps the same
+structure; other findings stay manual.
 
 ## Valid definitions
 
@@ -117,7 +118,7 @@ flavor: commonmark
 This configuration works with the current production executable. The following
 examples of available features are not exhaustive; see the
 [current rule inventory](../rules/index.md) for availability and defaults.
-CommonMark 0.31.2, GFM, directive processing, MD001/MD003/MD004/MD005/MD007/MD029/MD030/MD032/MD069/MD076/MD077/MD009/MD010/MD012/MD013/MD027/MD028/MD064/MD085/MD089/MD035/MD037/MD038/MD081/MD088/MD033/MD086/MD087/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD093/MD034 analysis, MD027, MD089 and MD035 correction and MD047 analysis/correction
+CommonMark 0.31.2, GFM, directive processing, MD001/MD003/MD004/MD005/MD007/MD029/MD030/MD032/MD069/MD076/MD077/MD009/MD010/MD012/MD013/MD027/MD028/MD064/MD085/MD089/MD035/MD037/MD038/MD081/MD088/MD033/MD086/MD087/MD018/MD019/MD020/MD021/MD022/MD023/MD024/MD025/MD026/MD036/MD041/MD043/MD063/MD080/MD082/MD093/MD034 analysis, MD027, MD089, MD035 and MD088 correction and MD047 analysis/correction
 are available.
 
 MD039 link-label-whitespace analysis is also available for

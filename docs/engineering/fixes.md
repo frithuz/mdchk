@@ -440,7 +440,7 @@ compare exactly, so `Corrections` proposes MD064 groups only in a round in which
 rule proposes an edit, MD010 included, so runs a TAB replacement lengthens are seen, and every other group waits while they remain. Only an MD047 edit
 that analysis already offers shares their round; both checkers must accept the combined
 candidate. A document with MD009, MD047 and MD064 findings therefore converges in one run.
-MD064 also waits for MD050, MD044 and MD049 groups, which go first in that isolated round.
+MD064 also waits for MD050, MD044, MD049 and MD088 groups, which go first in that isolated round.
 
 ### MD044 corrections
 
@@ -548,6 +548,47 @@ a directive finding.
 edit, ahead of MD044, MD049, MD064 and MD038, which wait for them. Only an MD047 edit that
 analysis already offers shares their round. A document with MD009, MD047 and MD050
 findings converges in one run.
+
+### MD088 corrections
+
+`internal/rules/md088.Correction` regenerates one group per fix-available MD088 finding
+from each round's own analysis and parse. `RoundContext.ASCIIPunctuationCorrections`
+returns the `ASCIIPunctuation` facts whose scalar can be rewritten, as
+`Document.ASCIIPunctuationCorrections` decides on that parse. The fact leaves out en and
+em dashes inside a Heading, since `anchorBase` keeps `-` but drops the dash, and the
+dashes of a line that, after leading spaces, TABs and `>`, opens with an en dash before a
+space, TAB or line end, or holds only dashes, hyphens, spaces and TABs: a list marker,
+thematic break or setext underline that no reparse could accept. The dashes of one line
+form one unit and each quote is its own unit. A set of units passes when reparsing the
+source with them rewritten completes without uncertainty and
+`SameMeaningAcrossASCIIPunctuation` matches it. All units are reparsed together first.
+When that fails, a greedy bisection keeps the accepted set A and tries A with each half of
+the remaining units, splitting only a half that fails, so k unsafe units among n cost
+about 2k log2(n/k) reparses and the returned facts always passed one reparse together.
+At most 64 reparses run per call; undecided units then stay manual. All work is charged to
+the shared operation budget. Each group has the ID `MD088-<start>`, the scalar's span as
+its anchor and only edit, the original three bytes as `Expected`, the mapping (`'`, `"`,
+`-` or `--`) as `Replacement`, and the `Meaning`, `ProtectedSyntax` and
+`DirectiveStructure` requirements. After analysis reports, the rule callback runs the
+fact only when there are findings and sets `fix_available` on a finding only when the
+fact admits its span and the shared interior edit query allows the edit, so directive
+intervals, protected context and documents opening with an unrecognized block withhold
+the finding.
+
+The independently registered checker recomputes the facts from the before parse and
+trusts neither producer data nor `fix_available`. Through `CheckContext.Once`, it proves
+`OnlyEditsChanged`, `MeaningPreservedAcrossASCIIPunctuation` and unchanged heading anchor
+bases. The whole-parse comparison matches node kinds, order, nesting and properties
+exactly and lets a Text value differ only where one of the six scalars became exactly its
+mapping; code and every other literal value stay exact. Each group then needs one edit
+whose span is a recomputed fact, whose `Expected` equals the before bytes and whose
+`Replacement` is that scalar's mapping. No `ForbidNewFindings` is registered: rewriting
+prose scalars outside comments cannot create a directive finding.
+
+`Corrections` proposes MD088 groups only in a round in which no other rule proposes an
+edit, after MD050, MD044 and MD049 and ahead of MD064 and MD038, which wait for them. Only
+an MD047 edit that analysis already offers shares their round. A document with MD009,
+MD047 and MD088 findings converges in one run.
 
 ### MD085 corrections
 

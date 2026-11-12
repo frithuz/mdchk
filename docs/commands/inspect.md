@@ -26,7 +26,7 @@ enough physical lines.
 MD088 ASCII-punctuation analysis is available for CommonMark and GFM, disabled
 by default. Full original raw/link/image context is analyzed before the selected
 line intersection; findings use exact original scalar ranges and shared directive
-START states. The rule emits no correction or preview in this pass.
+START states. Inspect proposes no edits; `fix` corrects eligible findings.
 
 ## Options
 

@@ -46,8 +46,9 @@ alias construction, semantic validation and exclusion matching.
 
 [MD088 ASCII-punctuation analysis](../rules/formatting/md088.md) is available for CommonMark and GFM,
 disabled by default with sole string option `style: ascii`. Invalid styles and
-unknown `replacements` reject even when disabled. Findings are manual in Pass 1;
-PlannedFix retains future correction scope. No MD088 edits or previews are emitted.
+unknown `replacements` reject even when disabled. `fix` replaces each eligible
+curly quote or dash with its ASCII spelling when reparsing keeps the same
+structure; other findings stay manual.
 
 ## Implemented configuration boundary
 

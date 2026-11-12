@@ -42,8 +42,9 @@ mdchk uses one Markdown analysis and correction engine for both its command-line
 
 [MD088 ASCII-punctuation analysis](rules/formatting/md088.md) is available for CommonMark and GFM,
 disabled by default with sole string option `style: ascii`. Invalid styles and
-unknown `replacements` reject even when disabled. Findings are manual in Pass 1;
-PlannedFix retains future correction scope. No MD088 edits or previews are emitted.
+unknown `replacements` reject even when disabled. `fix` replaces each eligible
+curly quote or dash with its ASCII spelling when reparsing keeps the same
+structure; other findings stay manual.
 
 ## Confirmed choices
 
@@ -160,7 +161,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction, and MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD065, MD063, MD007, MD077, MD076, MD004, MD064, MD038, MD044, MD049 and MD050 also correct; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
+production correction, and MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD065, MD063, MD007, MD077, MD076, MD004, MD064, MD038, MD044, MD049, MD050 and MD088 also correct; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
 analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation
 analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis,
 MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD014 shell-prompt analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD065 horizontal-rule blank-line analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD018 missing opening-hash spacing, MD019 extra
@@ -816,10 +817,13 @@ stack/output growth, copied prefixes and retained facts/findings. Producer, styl
 getter, facade, comparison and distinct outer callback final gates retain caller
 AND originating controls and sticky work/node/elapsed limits; any error atomically
 withholds all dependent MD088 output, including empty/clean/protected/post-output.
-No reparse, renderer, public-tree/source/index clone, new allowance or calibration
-is used. Finite application accounting is not a CPU/RSS or throughput guarantee.
+Analysis itself uses no reparse, renderer, public-tree/source/index clone, new
+allowance or calibration. When there are findings, fix eligibility reparses the
+source with candidate scalars rewritten, at most 64 times, charged to the same
+operation budget. Finite application accounting is not a CPU/RSS or throughput guarantee.
 
 Exactly one original three-byte/one-code-point range per eligible scalar uses
 `Use ASCII quotes and dashes in prose.` Full context precedes shared START
-suppression and inspect intersection. Default OFF/style ascii/PlannedFix remain;
-this pass creates no MD088 edits, previews or corrected content.
+suppression and inspect intersection. Default OFF and style ascii remain; the
+catalog records ImplementedFix, and `fix` replaces each eligible scalar with its
+ASCII mapping.

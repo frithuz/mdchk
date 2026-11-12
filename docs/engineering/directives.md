@@ -238,8 +238,9 @@ finding START suppression. Its default is OFF, but permitted directives may
 enable it with the admitted ascii style. Link-descendant raw transitions remain
 global even when labels are ineligible; images are isolated. Earlier unselected
 raw context remains effective for inspect line intersections. Later inline
-instructions cannot retroactively suppress an earlier scalar. This analysis
-produces manual findings only; it adds no correction authority.
+instructions cannot retroactively suppress an earlier scalar. `fix` replaces a
+scalar under the same finding START only when the shared interior edit query
+allows it and reparsing keeps the same structure; other findings remain manual.
 
 MD033 embedded-HTML analysis is available for CommonMark and GFM, disabled by
 default and report-only. Its full original named-tag inventory and global raw

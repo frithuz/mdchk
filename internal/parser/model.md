@@ -2050,13 +2050,16 @@ stack/output growth, copied prefixes and retained facts/findings. Producer, styl
 getter, facade, comparison and distinct outer callback final gates retain caller
 AND originating controls and sticky work/node/elapsed limits; any error atomically
 withholds all dependent MD088 output, including empty/clean/protected/post-output.
-No reparse, renderer, public-tree/source/index clone, new allowance or calibration
-is used. Finite application accounting is not a CPU/RSS or throughput guarantee.
+Analysis itself uses no reparse, renderer, public-tree/source/index clone, new
+allowance or calibration. When there are findings, fix eligibility reparses the
+source with candidate scalars rewritten, at most 64 times, charged to the same
+operation budget. Finite application accounting is not a CPU/RSS or throughput guarantee.
 
 Exactly one original three-byte/one-code-point range per eligible scalar uses
 `Use ASCII quotes and dashes in prose.` Full context precedes shared START
-suppression and inspect intersection. Default OFF/style ascii/PlannedFix remain;
-this pass creates no MD088 edits, previews or corrected content.
+suppression and inspect intersection. Default OFF and style ascii remain; the
+catalog records ImplementedFix, and `fix` replaces each eligible scalar with its
+ASCII mapping.
 
 ## MD033 embedded HTML inventory
 
