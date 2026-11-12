@@ -107,7 +107,7 @@ func (d *Document) SameMeaningAcrossItalicMarkers(ctx context.Context, budget *O
 			return false, nil
 		}
 	}
-	return d.sameMeaning(ctx, budget, other, false, false, false, nil, 0, false, false, Emphasis)
+	return d.sameMeaning(ctx, budget, other, false, false, false, nil, 0, false, false, false, Emphasis)
 }
 
 // delimiterNode is one emphasis or strong node by its marker offsets.

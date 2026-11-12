@@ -14,20 +14,26 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/ruletest"
 )
 
-// Source-derived phase totals, including both publication boundaries.
+// Source-derived phase totals, including both publication boundaries. The
+// whole check adds the fix eligibility pass (ework, enodes) when there are
+// findings: the correction fact, its reparses and the interior edit queries.
+// The reparses check the caller and originating contexts a different number of
+// times, so the caller sees efinal checks and the originating context eorigin.
 var md088PhaseCases = []struct {
-	name, source  string
-	want          int
-	pwork, pnodes int64
-	pfinal        int
-	cwork, cnodes int64
-	cfinal        int
+	name, source    string
+	want            int
+	pwork, pnodes   int64
+	pfinal          int
+	cwork, cnodes   int64
+	cfinal          int
+	ework, enodes   int64
+	efinal, eorigin int
 }{
-	{"empty", "", 0, 33, 2, 12, 10, 0, 3}, {"clean", "clean", 0, 715, 4, 50, 10, 0, 3},
-	{"protected", "```\nx\n```", 0, 62, 3, 23, 10, 0, 3}, {"code-only", "`ab`", 0, 91, 4, 34, 10, 0, 3},
-	{"one-offender", "—", 1, 330, 6, 47, 110, 2, 8}, {"six-class", "‘’“”–—", 6, 860, 25, 80, 615, 19, 31},
-	{"nested", "***—***", 1, 388, 8, 69, 110, 2, 8}, {"raw", "<script>\n—\n</script>", 0, 74, 3, 23, 10, 0, 3},
-	{"mixed-transformed", "a&amp;—", 1, 560, 6, 54, 110, 2, 8}, {"growth", "—\n\n—", 2, 630, 13, 83, 211, 5, 13},
+	{"empty", "", 0, 33, 2, 12, 10, 0, 3, 0, 0, 0, 0}, {"clean", "clean", 0, 715, 4, 50, 10, 0, 3, 0, 0, 0, 0},
+	{"protected", "```\nx\n```", 0, 62, 3, 23, 10, 0, 3, 0, 0, 0, 0}, {"code-only", "`ab`", 0, 91, 4, 34, 10, 0, 3, 0, 0, 0, 0},
+	{"one-offender", "—", 1, 330, 6, 47, 110, 2, 8, 371, 8, 59, 59}, {"six-class", "‘’“”–—", 6, 860, 25, 80, 615, 19, 31, 1550, 77, 187, 146},
+	{"nested", "***—***", 1, 388, 8, 69, 110, 2, 8, 1387, 92, 201, 188}, {"raw", "<script>\n—\n</script>", 0, 74, 3, 23, 10, 0, 3, 0, 0, 0, 0},
+	{"mixed-transformed", "a&amp;—", 1, 560, 6, 54, 110, 2, 8, 1125, 49, 116, 105}, {"growth", "—\n\n—", 2, 630, 13, 83, 211, 5, 13, 696, 16, 100, 100},
 }
 
 func TestMD088ComparisonAndWholeStaticBoundaries(t *testing.T) {
@@ -40,9 +46,9 @@ func TestMD088ComparisonAndWholeStaticBoundaries(t *testing.T) {
 				}
 				if whole {
 					if kind == "work" {
-						exact += tc.pwork + 39
+						exact += tc.pwork + 39 + tc.ework
 					} else {
-						exact += tc.pnodes
+						exact += tc.pnodes + tc.enodes
 					}
 				}
 				for _, delta := range []int64{-1, 0} {
@@ -130,7 +136,10 @@ func TestMD088ComparisonAndWholeFinalCallerAndOrigin(t *testing.T) {
 							}
 							final := tc.cfinal
 							if whole {
-								final += tc.pfinal + 9
+								final += tc.pfinal + 9 + tc.efinal
+								if originating {
+									final += tc.eorigin - tc.efinal
+								}
 							}
 							stop := &ruletest.LateStopContext{Context: context.Background(), Stop: final, Reason: reason}
 							var caller context.Context = stop

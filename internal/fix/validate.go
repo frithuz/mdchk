@@ -200,6 +200,12 @@ func (c RoundContext) BoldMarkerCorrections(ctx context.Context) ([]parser.Delim
 	return engine.BoldMarkerCorrections(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
 }
 
+// ASCIIPunctuationCorrections returns MD088's rewritable scalar facts for this
+// round's own parse under the target's plan.
+func (c RoundContext) ASCIIPunctuationCorrections(ctx context.Context) ([]parser.ASCIIPunctuationFact, error) {
+	return engine.ASCIIPunctuationCorrections(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
 // ConfiguredNameCorrections returns MD044's occurrence spans and single
 // configured replacements, empty when ambiguous, for this round's own parse
 // under the target's plan.
@@ -316,6 +322,17 @@ func (c CheckContext) MeaningPreservedAcrossBoldMarkers(ctx context.Context) (bo
 		return false, nil
 	}
 	return before.Document.SameMeaningAcrossBoldMarkers(ctx, c.Before.meter.budget, after.Document)
+}
+
+// MeaningPreservedAcrossASCIIPunctuation compares both actual round parses,
+// allowing Text values to differ only where one of MD088's six scalars became
+// exactly its ASCII spelling.
+func (c CheckContext) MeaningPreservedAcrossASCIIPunctuation(ctx context.Context) (bool, error) {
+	before, after := c.Before.Parsed(), c.After.Parsed()
+	if before.Status != parser.Complete || after.Status != parser.Complete || before.Document == nil || after.Document == nil || len(before.Uncertainty) != 0 || len(after.Uncertainty) != 0 {
+		return false, nil
+	}
+	return before.Document.SameMeaningAcrossASCIIPunctuation(ctx, c.Before.meter.budget, after.Document)
 }
 
 // MeaningPreservedAcrossListSeparators compares both actual round parses. Only a

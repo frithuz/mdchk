@@ -80,7 +80,7 @@ func Catalog() []Metadata {
 		{ID: "MD085", Name: "Indented paragraph continuation lines", DefaultEnabled: false, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD086", Name: "Comments lacking a closing delimiter", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD087", Name: "Suppressions that hide no findings", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
-		{ID: "MD088", Name: "Quote and dash normalization", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("ascii")}},
+		{ID: "MD088", Name: "Quote and dash normalization", DefaultEnabled: false, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("ascii")}},
 		{ID: "MD089", Name: "Spacing between CJK and Latin text", DefaultEnabled: false, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD091", Name: "Markdown syntax inside HTML blocks", DefaultEnabled: false, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD092", Name: "Unresolved version-control conflict markers", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},

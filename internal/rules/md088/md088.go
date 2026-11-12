@@ -1,4 +1,5 @@
-// Package md088 checks MD088, which requires ASCII quotes and dashes in prose.
+// Package md088 checks and corrects MD088, which requires ASCII quotes and
+// dashes in prose.
 package md088
 
 import (
@@ -31,7 +32,44 @@ func asciiPunctuation(ctx context.Context, c engine.RuleContext) (out engine.Rul
 		out.Err = err
 		return out
 	}
-	return compareASCIIPunctuation(ctx, c, items, style)
+	out = compareASCIIPunctuation(ctx, c, items, style)
+	if out.Err == nil && len(out.Findings) != 0 {
+		out.Err = markFixEligible(ctx, c, out.Findings)
+	}
+	return out
+}
+
+// markFixEligible marks each finding whose scalar can be rewritten to its ASCII
+// spelling, as ASCIIPunctuationCorrections decides on this parse, when the
+// shared interior edit query allows the edit.
+func markFixEligible(ctx context.Context, c engine.RuleContext, findings []engine.Finding) error {
+	facts, err := c.ASCIIPunctuationCorrections(ctx)
+	if err != nil {
+		return err
+	}
+	if err := c.SectionCheckpoint(ctx, int64(len(facts))+1, int64(len(facts))+1); err != nil {
+		return err
+	}
+	correctable := make(map[int]parser.Span, len(facts))
+	for _, f := range facts {
+		correctable[f.Span.Start()] = f.Span
+	}
+	edits := c.InteriorEdits()
+	for i := range findings {
+		if err := c.SectionCheckpoint(ctx, 1, 0); err != nil {
+			return err
+		}
+		s, ok := correctable[findings[i].Span.Start()]
+		if !ok || s != findings[i].Span {
+			continue
+		}
+		eligible, err := edits.Eligible(ctx, "MD088", s, s)
+		if err != nil {
+			return err
+		}
+		findings[i].FixEligible = eligible
+	}
+	return nil
 }
 
 func compareASCIIPunctuation(ctx context.Context, c engine.RuleContext, items []parser.ASCIIPunctuationFact, style string) (out engine.RuleOutcome) {

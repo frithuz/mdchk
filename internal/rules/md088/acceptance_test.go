@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -26,14 +27,15 @@ func TestCompiledPlatformMD088ProductionAnalysis(t *testing.T) {
 	binary := acceptance.SharedExecutable(t)
 	for _, tc := range []struct {
 		name, source, flavor string
-		starts               []int
+		starts, manual       []int
+		fixed                string
 	}{
-		{"six-class", "‘’“”–—", "commonmark", []int{0, 3, 6, 9, 12, 15}},
-		{"quote-crlf", "> - 😀\t“x”—\r\n", "gfm", []int{9, 13, 16}},
-		{"heading", "# “x”—", "commonmark", []int{2, 6, 9}},
-		{"image", "![<script>](x) —", "gfm", []int{15}},
-		{"protected", "`“a”—`", "gfm", nil},
-		{"link", "[“x”](u) —", "commonmark", []int{13}},
+		{"six-class", "‘’“”–—", "commonmark", []int{0, 3, 6, 9, 12, 15}, nil, `''""---`},
+		{"quote-crlf", "> - 😀\t“x”—\r\n", "gfm", []int{9, 13, 16}, nil, "> - 😀\t\"x\"--\r\n"},
+		{"heading", "# “x”—", "commonmark", []int{2, 6, 9}, []int{9}, "# \"x\"—"},
+		{"image", "![<script>](x) —", "gfm", []int{15}, nil, "![<script>](x) --"},
+		{"protected", "`“a”—`", "gfm", nil, nil, ""},
+		{"link", "[“x”](u) —", "commonmark", []int{13}, nil, "[“x”](u) --"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			root := acceptance.Project(t)
@@ -50,6 +52,20 @@ func TestCompiledPlatformMD088ProductionAnalysis(t *testing.T) {
 				if len(tc.starts) > 0 && args[0] != "inspect" {
 					status = 10
 				}
+				if tc.fixed != "" && args[0] == "fix" {
+					if len(tc.manual) == 0 {
+						status = 0
+					}
+					if got.Status != status || !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != len(tc.manual) || len(out.Changes) != 1 || len(out.DeferredFixes)+len(out.Documents) != 0 || out.Changes[0].Rules[0] != "MD088" {
+						t.Fatal(got)
+					}
+					for _, d := range out.Diagnostics {
+						if d.Rule != "MD088" || d.FixAvailable {
+							t.Fatal(d)
+						}
+					}
+					continue
+				}
 				if got.Status != status || !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != len(tc.starts) || len(out.Changes)+len(out.Documents)+len(out.DeferredFixes) != 0 {
 					t.Fatal(got, out)
 				}
@@ -61,10 +77,18 @@ func TestCompiledPlatformMD088ProductionAnalysis(t *testing.T) {
 							view = "candidate"
 						}
 					}
-					if d.Rule != "MD088" || d.Message != "Use ASCII quotes and dashes in prose." || d.FixAvailable || d.ByteRange.Start != tc.starts[i] || d.ByteRange.End != tc.starts[i]+3 || d.Range.End.Line != d.Range.Start.Line || d.Range.End.Column != d.Range.Start.Column+1 || d.Snapshot.View != view || d.Snapshot.SizeBytes != len(tc.source) || d.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(tc.source))) {
+					if d.Rule != "MD088" || d.Message != "Use ASCII quotes and dashes in prose." || d.FixAvailable == slices.Contains(tc.manual, tc.starts[i]) || d.ByteRange.Start != tc.starts[i] || d.ByteRange.End != tc.starts[i]+3 || d.Range.End.Line != d.Range.Start.Line || d.Range.End.Column != d.Range.Start.Column+1 || d.Snapshot.View != view || d.Snapshot.SizeBytes != len(tc.source) || d.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(tc.source))) {
 						t.Fatal(d)
 					}
 				}
+			}
+			if tc.fixed != "" {
+				//nolint:gosec // Isolated fixed test-owned document.
+				actual, err := os.ReadFile(filepath.Join(root, "doc.md"))
+				if err != nil || string(actual) != tc.fixed {
+					t.Fatal(string(actual), err)
+				}
+				return
 			}
 			acceptance.ReadinessAssertEqual(t, "manual MD088", before, acceptance.ReadinessState(t, root))
 		})
@@ -220,28 +244,22 @@ func TestCompiledPlatformMD088MD047Composition(t *testing.T) {
 					acceptance.ReadinessAssertEqual(t, "refusal", before, acceptance.ReadinessState(t, root))
 					return
 				}
-				want, view, disposition := source, "saved", "written"
-				changes, deferred, diagnostics := 1, 0, 3
+				want, disposition := source, "written"
+				changes, deferred, diagnostics, status := 1, 0, 0, 0
 				if protected {
-					changes, deferred, diagnostics = 0, 1, 1
+					changes, deferred, diagnostics, status = 0, 1, 1, 10
 				} else {
-					want += "\n"
+					want = "\"a\"--\n"
 				}
 				if dry {
-					view, disposition = "candidate", "proposed"
+					disposition = "proposed"
 				}
-				if got.Status != 10 || !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != diagnostics || len(out.Changes) != changes || len(out.DeferredFixes) != deferred || len(out.Documents) != 0 {
+				if got.Status != status || !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != diagnostics || len(out.Changes) != changes || len(out.DeferredFixes) != deferred || len(out.Documents) != 0 {
 					t.Fatal(got, out)
 				}
 				if !protected {
-					for i, d := range out.Diagnostics {
-						start := []int{0, 4, 7}[i]
-						if d.Rule != "MD088" || d.FixAvailable || d.ByteRange.Start != start || d.ByteRange.End != start+3 || d.Snapshot.View != view || d.Snapshot.SizeBytes != 11 || d.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(want))) {
-							t.Fatal(d)
-						}
-					}
 					ch := out.Changes[0]
-					if len(ch.Rules) != 1 || ch.Rules[0] != "MD047" || ch.Disposition != disposition {
+					if len(ch.Rules) != 2 || ch.Rules[0] != "MD047" || ch.Rules[1] != "MD088" || ch.Disposition != disposition || out.Files[0].ResultSnapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(want))) {
 						t.Fatal(ch)
 					}
 				} else if out.Diagnostics[0].Rule != "MD047" || out.Diagnostics[0].FixAvailable || out.DeferredFixes[0].Rule != "MD047" {
