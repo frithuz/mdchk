@@ -1117,8 +1117,9 @@ physical ASCII SPACE/TAB blank. Deeper syntax and opaque payload blanks remain
 content. Emit each deficient side separately, including both sides of a shared
 gap, at present zero-width original points: before own indentation after actual
 prefixes, and after trailing content before the whole physical ending. Full raw
-and body context precedes START suppression and inspection selection. This rule
-is analysis-only and grants no insertion/correction authority.
+and body context precedes START suppression and inspection selection. `fix`
+inserts one prefix-only blank line at an eligible side's line boundary; see
+[MD065](../rules/formatting/md065.md#correction-policy) for the deferral cases.
 
 ### Table body spacing
 

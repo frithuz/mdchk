@@ -44,8 +44,9 @@ indentation analysis, MD024 repeated heading analysis, MD025 multiple-title anal
 MD026 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041
 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization
 analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD034 bare-URL analysis and MD093 inline-formatting-in-headings analysis
-are implemented. MD065 is enabled by default for CommonMark and GFM; its findings
-are manual and corrections are deferred. Other ordinary callbacks, MCP integration and production rendering
+are implemented. MD065 is enabled by default for CommonMark and GFM; `fix`
+inserts its missing blank lines when the shared insertion checks allow it, and
+other findings stay manual. Other ordinary callbacks, MCP integration and production rendering
 remain separate deliveries.
 
 The current Go `Parse` API has no flavor or configuration option. CLI `flavor: commonmark` selection is delivered; it does not add a switch to that Go API. GFM is available, including selection by omission. Enabled YAML/TOML frontmatter is recognized and protected in shared lint/fix/inspect; MD001, MD025 and MD041 can consume a semantic title when their `frontmatter_title` options is enabled. CommonMark alone still leaves missing default-rule coverage (`15`); use the [current reduced setup](index.md#get-started-with-this-build) for a complete MD047-only run. See the [delivered core contract](engineering.md#delivered-commonmark-core) for APIs, source guarantees, UTF-8/resource outcomes and [reproduction commands](engineering.md#reproduce-the-core-delivery).
@@ -54,7 +55,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction, and MD003, MD005, MD009, MD010, MD012, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077, MD076, MD004, MD027, MD035, MD064, MD085, MD089, MD038, MD044, MD049 and MD050 also correct; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD014, MD027, MD028, MD085, MD089, MD035, MD037, MD038, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD034 and MD093 analysis are also available. MD065 horizontal-rule blank-line analysis is enabled by default and report-only, with corrections deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD087 and MD093 are available but disabled by default. MD034 is available and enabled by default for CommonMark and GFM, with manual
+production correction, and MD003, MD005, MD009, MD010, MD012, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD065, MD063, MD007, MD077, MD076, MD004, MD027, MD035, MD064, MD085, MD089, MD038, MD044, MD049 and MD050 also correct; MD001, MD003, MD004, MD005, MD007, MD029, MD030, MD032, MD069, MD076, MD077, MD010, MD012, MD013, MD014, MD027, MD028, MD085, MD089, MD035, MD037, MD038, MD065, MD081, MD088, MD033, MD086, MD087, MD018, MD019, MD020, MD021, MD022, MD023, MD024, MD025, MD026, MD036, MD041, MD043, MD063, MD080, MD082, MD034 and MD093 analysis are also available. MD065 horizontal-rule blank-line analysis is enabled by default, and `fix` corrects its eligible findings. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD087 and MD093 are available but disabled by default. MD034 is available and enabled by default for CommonMark and GFM, with manual
 findings; URL corrections remain deferred. Other named rules remain unavailable. See the [parser verification record](engineering/gfm-verification.md).
 
 [MD088 ASCII-punctuation analysis](rules/formatting/md088.md) is available for CommonMark and GFM,
@@ -118,7 +119,7 @@ recognition is a configuration error, never a silent fallback.
 Parsing an unrecognized block as Markdown is not safe to correct. When a document
 opens with a complete `---` or `+++` block under the delimiter rules above, and
 recognition is disabled or the block's format is unselected, `fix` withholds MD003,
-MD004, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063 and MD076 corrections for the whole document. Their findings stay reported
+MD004, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD065 and MD076 corrections for the whole document. Their findings stay reported
 with `fix_available: false`. A leading thematic break paired with a later one has
 the same shape and triggers this too; an opener with no closer doesn't. MD047 still
 applies. Setting `frontmatter.enabled: true` restores body corrections for real
