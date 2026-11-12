@@ -440,7 +440,7 @@ compare exactly, so `Corrections` proposes MD064 groups only in a round in which
 rule proposes an edit, MD010 included, so runs a TAB replacement lengthens are seen, and every other group waits while they remain. Only an MD047 edit
 that analysis already offers shares their round; both checkers must accept the combined
 candidate. A document with MD009, MD047 and MD064 findings therefore converges in one run.
-MD064 also waits for MD044 and MD049 groups, which go first in that isolated round.
+MD064 also waits for MD050, MD044 and MD049 groups, which go first in that isolated round.
 
 ### MD044 corrections
 
@@ -512,6 +512,42 @@ emphasis markers outside comments cannot create a directive finding.
 an edit, ahead of MD064 and MD038, which wait for them. Only an MD047 edit that analysis
 already offers shares their round. A document with MD009, MD047 and MD049 findings converges
 in one run.
+
+### MD050 corrections
+
+`internal/rules/md050.Correction` regenerates one atomic group per fix-available MD050
+finding from each round's own analysis and parse. `RoundContext.BoldMarkerCorrections`
+returns the expected marker, chosen as analysis chooses it (the configured marker, or for
+`consistent` the marker of the minimum Strong opening), and the Strong facts of
+`DelimiterStyle` whose markers differ from it and can both be rewritten.
+`Document.BoldMarkerCorrections` admits a fact only when no byte next to either two-byte
+marker is `*` or `_`, so runs of three or more and adjacent or nested runs are deferred,
+and when reparsing the source with the markers rewritten gives a complete parse that
+`SameMeaningAcrossBoldMarkers` matches and the same delimiter inventory at the same
+offsets, with only those Strong markers changed. It reparses all candidates together
+first and each one alone only when that fails. Each group has the ID
+`MD050-bold-<opening start>`, the opening marker as its anchor, two edits replacing the
+opening and closing markers with two bytes of the expected marker, their original bytes
+as `Expected`, and the `Meaning`, `ProtectedSyntax` and `DirectiveStructure`
+requirements, so a Strong is never half-corrected. After analysis reports, the rule
+callback sets `fix_available` on a finding only when the fact admits its Strong and both
+marker edits pass the shared interior edit query under the opening, so directive
+intervals and documents opening with an unrecognized block withhold the finding.
+
+The independently registered checker recomputes the facts from the before parse and
+trusts neither producer data nor `fix_available`. Through `CheckContext.Once`, it proves
+`OnlyEditsChanged` and `MeaningPreservedAcrossBoldMarkers`: both parses match exactly
+as `MeaningPreserved` compares them, except that a Strong node's delimiter marker may
+differ at the same width. The shared whole-parse walk takes the one delimiter kind that
+may change its marker, Strong here and Emphasis for MD049. Each group then checks its two
+spans, anchor, original bytes and replacements against the recomputed fact. No
+`ForbidNewFindings` is registered: rewriting Strong markers outside comments cannot create
+a directive finding.
+
+`Corrections` proposes MD050 groups only in a round in which no other rule proposes an
+edit, ahead of MD044, MD049, MD064 and MD038, which wait for them. Only an MD047 edit that
+analysis already offers shares their round. A document with MD009, MD047 and MD050
+findings converges in one run.
 
 ### MD085 corrections
 
