@@ -328,10 +328,12 @@ changes the structure, mdchk bisects the candidates, keeping those already
 accepted, so the rest are still corrected. A dash in a heading, whose anchor
 would change, stays manual with `fix_available: false`. So do the dashes of a
 line that would become a list marker, thematic break or setext underline, such
-as `– item`, `– – –` or `———` under a paragraph line, a dash in a GFM table
-delimiter cell, `<!—` at the start of a block, a scalar after a backslash, a
-scalar the mapping would pull into a GFM bare autolink, findings under a disable
-directive and findings in a document opening with an unrecognized block. Quotes
+as `– item`, `– – –` or `———` under a paragraph line, the dashes of a GFM table
+delimiter row, the dashes of a line holding `<!—` anywhere, a scalar after a
+backslash, a GFM scalar next to `www.`, `://` or `@` that a bare autolink could
+grow over, findings under a disable directive and findings in a document
+opening with an unrecognized block. Those shapes cost no reparse; the
+bisection is bounded, and when its bounds stop it every finding stays manual. Quotes
 in headings are corrected. Code, link labels and destinations, images, raw HTML,
 comments, reference definitions and recognized front matter hold no findings.
 MD088 edits wait for a round in which no other rule proposes an edit, after

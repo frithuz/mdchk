@@ -2052,8 +2052,8 @@ AND originating controls and sticky work/node/elapsed limits; any error atomical
 withholds all dependent MD088 output, including empty/clean/protected/post-output.
 Analysis itself uses no reparse, renderer, public-tree/source/index clone, new
 allowance or calibration. When there are findings, fix eligibility reparses the
-source with candidate scalars rewritten, at most 64 times, charged to the same
-operation budget. Finite application accounting is not a CPU/RSS or throughput guarantee.
+source with candidate scalars rewritten, at most 64 times and 128 KiB after the
+first, charged to the same operation budget. Finite application accounting is not a CPU/RSS or throughput guarantee.
 
 Exactly one original three-byte/one-code-point range per eligible scalar uses
 `Use ASCII quotes and dashes in prose.` Full context precedes shared START
