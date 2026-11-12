@@ -4,6 +4,7 @@ package parser
 
 import (
 	"context"
+	"slices"
 	"strings"
 	"unicode/utf8"
 )
@@ -24,22 +25,33 @@ func ASCIIPunctuationReplacement(r rune) string {
 	return ""
 }
 
-// maxASCIIPunctuationReparses bounds the reparses of one
-// ASCIIPunctuationCorrections call. Units still undecided when it is reached
-// stay manual.
-const maxASCIIPunctuationReparses = 64
+// One ASCIIPunctuationCorrections call runs at most
+// maxASCIIPunctuationReparses reparses and, after the first, reparses at most
+// maxASCIIPunctuationReparseBytes source bytes in all, so its cost stays a
+// fixed share of the operation budget whatever the document size. When either
+// bound stops the search before every unit is decided, every candidate stays
+// manual, so later fix rounds don't repeat the search over the rest.
+const (
+	maxASCIIPunctuationReparses     = 64
+	maxASCIIPunctuationReparseBytes = 1 << 17
+)
 
 // ASCIIPunctuationCorrections returns the ASCIIPunctuation facts whose scalar
-// can be rewritten to its ASCII spelling. En and em dashes inside a Heading are
-// left out, since the heading anchor keeps "-" but drops the scalar, and so are
-// the dashes of a line shaped like a list marker, thematic break or setext
-// underline (see dashLine), which no reparse could accept. The rest qualify when reparsing the source with them rewritten gives the same tree,
-// compared through SameMeaningAcrossASCIIPunctuation. The dashes of one line
-// are tried as one unit, so a thematic break, setext underline or delimiter row
-// is never half-rewritten. All units are first reparsed together; when that
-// fails, a greedy bisection keeps the accepted set and tries it with each half
-// of the remaining units before splitting further, so the returned facts always
-// passed one reparse together. At most maxASCIIPunctuationReparses reparses run.
+// can be rewritten to its ASCII spelling. These are left out before any
+// reparse: en and em dashes inside a Heading, since the heading anchor keeps "-"
+// but drops the scalar; a scalar after an odd run of backslashes, which would
+// become an escape; every dash of a line shaped like a list marker, thematic
+// break, setext underline or GFM delimiter row (see dashLine), or holding an
+// escaped dash or a dash right after "<!" or "<!-", which would open a comment;
+// and in GFM a scalar whose run of non-whitespace bytes holds "www.", "://" or
+// "@", which a bare autolink could grow over. The rest qualify when reparsing
+// the source with them rewritten gives the same tree, compared through
+// SameMeaningAcrossASCIIPunctuation. The dashes of one line are tried as one
+// unit, so a line is never half-rewritten. All units are first reparsed
+// together; when that fails, a greedy bisection keeps the accepted set and
+// tries it with each half of the remaining units before splitting further, so
+// the returned facts always passed one reparse together, or are none when the
+// reparse bounds above stop the search.
 func (d *Document) ASCIIPunctuationCorrections(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions) ([]ASCIIPunctuationFact, error) {
 	facts, err := d.ASCIIPunctuation(ctx, budget, index, options)
 	if err != nil || len(facts) == 0 {
@@ -53,9 +65,10 @@ func (d *Document) ASCIIPunctuationCorrections(ctx context.Context, budget *Oper
 	var candidates []ASCIIPunctuationFact
 	var units [][]int
 	// line is the unit index of the current line's dashes, -1 before its first
-	// dash and -2 when dashLine keeps them manual.
+	// dash and -2 when they all stay manual.
 	line := -1
 	previous, h := 0, 0
+	run, linked := Span{}, false // the last non-whitespace run checked for autolinks
 	for _, f := range facts {
 		if err := headingFactCharge(ctx, budget, int64(f.Span.start-previous)+8, 1); err != nil {
 			return nil, err
@@ -69,7 +82,7 @@ func (d *Document) ASCIIPunctuationCorrections(ctx context.Context, budget *Oper
 			h++
 		}
 		if dash && line == -1 {
-			shaped, err := dashLine(ctx, budget, content, f.Span)
+			shaped, err := dashLine(ctx, budget, content, f.Span, options.GFM)
 			if err != nil {
 				return nil, err
 			}
@@ -77,7 +90,23 @@ func (d *Document) ASCIIPunctuationCorrections(ctx context.Context, budget *Oper
 				line = -2
 			}
 		}
-		if dash && (line == -2 || h < len(headings) && contains(headings[h], f.Span)) {
+		escaped, err := afterEscape(ctx, budget, content, f.Span)
+		if err != nil {
+			return nil, err
+		}
+		if options.GFM && !escaped && (f.Span.start >= run.end || f.Span.start < run.start || run.end == 0) {
+			if run, linked, err = autolinkRun(ctx, budget, content, f.Span); err != nil {
+				return nil, err
+			}
+		}
+		escaped = escaped || options.GFM && linked
+		if dash && (escaped || strings.HasSuffix(content[:f.Span.start], "<!") || strings.HasSuffix(content[:f.Span.start], "<!-")) {
+			if line >= 0 {
+				units[line] = nil
+			}
+			line = -2
+		}
+		if escaped || dash && (line == -2 || h < len(headings) && contains(headings[h], f.Span)) {
 			continue
 		}
 		candidates = append(candidates, f)
@@ -91,11 +120,16 @@ func (d *Document) ASCIIPunctuationCorrections(ctx context.Context, budget *Oper
 			units[line] = append(units[line], len(candidates)-1)
 		}
 	}
+	units = slices.DeleteFunc(units, func(u []int) bool { return u == nil })
 	accepted := make([]bool, len(candidates))
-	reparses := 0
+	reparses, allowed, cut := 0, min(maxASCIIPunctuationReparses, 1+maxASCIIPunctuationReparseBytes/max(len(content), 1)), false
 	var search func([][]int) error
 	search = func(units [][]int) error {
-		if len(units) == 0 || reparses == maxASCIIPunctuationReparses {
+		if len(units) == 0 {
+			return nil
+		}
+		if reparses == allowed {
+			cut = true
 			return nil
 		}
 		reparses++
@@ -119,7 +153,7 @@ func (d *Document) ASCIIPunctuationCorrections(ctx context.Context, budget *Oper
 		}
 		return search(units[len(units)/2:])
 	}
-	if err := search(units); err != nil {
+	if err := search(units); err != nil || cut {
 		return nil, err
 	}
 	var out []ASCIIPunctuationFact
@@ -166,9 +200,10 @@ func (d *Document) asciiPunctuationPreserved(ctx context.Context, budget *Operat
 
 // dashLine reports whether the line holding the dash at s, after its leading
 // spaces, tabs and ">", opens with an en dash before a space, tab or line end,
-// or holds only dashes, hyphens, spaces and tabs. Hyphens there would open a
-// list item or form a thematic break or setext underline.
-func dashLine(ctx context.Context, budget *OperationBudget, content string, s Span) (bool, error) {
+// or holds only dashes, hyphens, spaces and tabs, and in GFM also "|" and ":".
+// Hyphens there would open a list item or form a thematic break, setext
+// underline or table delimiter row.
+func dashLine(ctx context.Context, budget *OperationBudget, content string, s Span, gfm bool) (bool, error) {
 	start, end := strings.LastIndexAny(content[:s.start], "\r\n")+1, len(content)
 	if i := strings.IndexAny(content[s.start:], "\r\n"); i >= 0 {
 		end = s.start + i
@@ -180,7 +215,39 @@ func dashLine(ctx context.Context, budget *OperationBudget, content string, s Sp
 	if r, width := utf8.DecodeRuneInString(rest); r == '–' && (width == len(rest) || rest[width] == ' ' || rest[width] == '\t') {
 		return true, nil
 	}
-	return strings.Trim(rest, " \t-–—") == "", nil
+	cutset := " \t-–—"
+	if gfm {
+		cutset += "|:"
+	}
+	return strings.Trim(rest, cutset) == "", nil
+}
+
+// autolinkRun returns the run of non-whitespace bytes around s and whether it
+// holds "www.", "://" or "@", the anchors of GFM bare autolinks.
+func autolinkRun(ctx context.Context, budget *OperationBudget, content string, s Span) (Span, bool, error) {
+	start := strings.LastIndexAny(content[:s.start], " \t\r\n") + 1
+	end := len(content)
+	if i := strings.IndexAny(content[s.end:], " \t\r\n"); i >= 0 {
+		end = s.end + i
+	}
+	if err := headingFactCharge(ctx, budget, int64(end-start)*4+1, 0); err != nil {
+		return Span{}, false, err
+	}
+	text := content[start:end]
+	return Span{start: start, end: end}, strings.Contains(text, "www.") || strings.Contains(text, "://") || strings.Contains(text, "@"), nil
+}
+
+// afterEscape reports whether an odd run of backslashes ends right before s, so
+// that the first byte of an ASCII mapping there would be escaped.
+func afterEscape(ctx context.Context, budget *OperationBudget, content string, s Span) (bool, error) {
+	i := s.start
+	for i > 0 && content[i-1] == '\\' {
+		i--
+	}
+	if err := headingFactCharge(ctx, budget, int64(s.start-i)+1, 0); err != nil {
+		return false, err
+	}
+	return (s.start-i)%2 == 1, nil
 }
 
 // headingEnvelopes returns the envelope of every Heading in document order.

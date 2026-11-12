@@ -3,6 +3,7 @@ package md088_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 	"sync"
@@ -203,6 +204,7 @@ func TestMD088FixDeferralsStayManual(t *testing.T) {
 		{"thematic break", "– – –\n", "", 3},
 		{"table delimiter cell", "| a |\n| – |\n", "gfm", 1},
 		{"comment opener", "<!—x\n", "", 1},
+		{"comment opener mid-line", "a <!— b\n\nc\n", "", 1},
 		{"escape quote", "\\“a\n", "", 1},
 		{"escape dash", "\\—a\n", "", 1},
 		{"autolink domain", "www.example.com.—x\n", "gfm", 1},
@@ -369,5 +371,73 @@ func TestMD088FixBoundedWork(t *testing.T) {
 	}
 	if len(view.Analysis.Diagnostics) != 1 || view.Analysis.Diagnostics[0].ByteRange.Start != 0 || view.Analysis.Diagnostics[0].FixAvailable {
 		t.Fatal(view.Analysis.Diagnostics)
+	}
+}
+
+// paragraphs returns n paragraphs of one fixable quote pair and dash each, with
+// unsafe inserted as its own block k times at even intervals.
+func paragraphs(n, k int, unsafe string) (source, want string) {
+	var b, w strings.Builder
+	for i := range n {
+		fmt.Fprintf(&b, "text “q%d” — x\n\n", i)
+		fmt.Fprintf(&w, "text \"q%d\" -- x\n\n", i)
+		if i%(n/k) == 0 && i/(n/k) < k {
+			b.WriteString(unsafe + "\n\n")
+			w.WriteString(unsafe + "\n\n")
+		}
+	}
+	return b.String(), w.String()
+}
+
+// Unsafe shapes that a local check recognizes cost no reparse, so many of them
+// beside many fixable scalars still correct every fixable one within the
+// default budget.
+func TestMD088FixManyRecognizedDeferrals(t *testing.T) {
+	for _, unsafe := range []string{"\\— esc", "<!— c", "a—b@example.com", "| a |\n| – |"} {
+		for _, k := range []int{8, 20} {
+			for _, flavor := range []string{"commonmark", "gfm"} {
+				source, want := paragraphs(300, k, unsafe)
+				if flavor == "commonmark" && (unsafe == "a—b@example.com" || strings.HasPrefix(unsafe, "|")) {
+					continue
+				}
+				t.Run(fmt.Sprintf("%s/%q/%d", flavor, unsafe, k), func(t *testing.T) {
+					view := md088Corrected(t, source, flavor, "", nil, rules.Corrections)
+					if got := string(view.Candidate.Bytes()); got != want {
+						t.Fatalf("got %q", got)
+					}
+					if len(view.Analysis.Diagnostics) != k {
+						t.Fatal(len(view.Analysis.Diagnostics))
+					}
+					for _, d := range view.Analysis.Diagnostics {
+						if d.Rule != "MD088" || d.FixAvailable {
+							t.Fatal(d)
+						}
+					}
+				})
+			}
+		}
+	}
+}
+
+// An unsafe shape only a reparse finds costs bisection reparses. Once their
+// bounds stop the search, every finding stays manual and the run still
+// completes within the default budget, unchanged.
+func TestMD088FixReparseBoundsKeepFindingsManual(t *testing.T) {
+	for _, k := range []int{8, 20} {
+		t.Run(fmt.Sprint(k), func(t *testing.T) {
+			source, _ := paragraphs(300, k, "[r]: /u\n“t”")
+			view := md088Corrected(t, source, "commonmark", "", nil, rules.Corrections)
+			if string(view.Candidate.Bytes()) != source || view.ChangingRounds != 0 {
+				t.Fatal("changed")
+			}
+			if len(view.Analysis.Diagnostics) != 300*3+2*k {
+				t.Fatal(len(view.Analysis.Diagnostics))
+			}
+			for _, d := range view.Analysis.Diagnostics {
+				if d.FixAvailable {
+					t.Fatal(d)
+				}
+			}
+		})
 	}
 }
