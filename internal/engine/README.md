@@ -578,13 +578,17 @@ MD065 analysis uses a narrow completed-original ThematicSpacing projection and a
 optionless RuleContext facade. A full tree/inline/tail walk preserves semantic raw
 lifetimes and image isolation; a separate body walk merges retained definitions
 with direct source participants. Actual prefix rollback and terminal list/item
-content floors preserve immediate physical separators. Detached Point/Before facts
-carry present zero-width original evidence only. No source, parse, index, options,
-allowance, AST inspection field or correction capability is added. Producer,
+content floors preserve immediate physical separators. Each detached fact carries
+its present zero-width Point and Before, and the insertion evidence a correction
+needs: the boundary line start, that line's active container prefix, the previous
+line's ending, the whole neighbour line, and whether the owning list item's list
+is not known to be loose or the neighbour has fewer quote markers. No source,
+parse, index, options, allowance or AST inspection field is added. Producer,
 facade, comparison and whole callback reserve work/storage before use and finalize
 under both caller and originating controls; any error withholds dependent output,
-including empty, clean, protected-only and post-construction paths. MD065 remains
-default enabled and report-only for CommonMark and GFM.
+including empty, clean, protected-only and post-construction paths. MD065 is
+default enabled for CommonMark and GFM, and `fix` inserts the missing blank lines
+of eligible findings; see [MD065 corrections](../../docs/engineering/fixes.md#production-rule-integration).
 
 
 MD081 uses ParagraphEmphasis to borrow the completed private original production

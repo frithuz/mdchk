@@ -221,6 +221,8 @@ headers are outside the root body; nested containers keep independent edges.
 Before points follow actual ancestor/owner prefixes, and after points precede
 physical endings on the same thematic line. Disabled neighbors remain context;
 inspection selection cannot recompute adjacency or reset semantic raw lifetimes.
+`fix` inserts a blank line only for a finding whose point and whole neighbour
+line the directive state allows MD065 to edit.
 
 
 MD081 counts the complete original actual Paragraph before filtering its full

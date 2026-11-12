@@ -610,7 +610,7 @@ MD047 and MD038 findings converges in one run.
 
 ### Production rule integration
 
-`internal/rules.Corrections` regenerates MD047, MD004, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077, MD076 and MD085 groups from each
+`internal/rules.Corrections` regenerates MD047, MD004, MD009, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD065, MD063, MD007, MD077, MD076 and MD085 groups from each
 current round's actual shared analysis and source-owned diagnostic ranges. For
 MD047, the source's retained physical-line index supplies the same terminal facts
 as analysis; the shared `fix.InsertionEnding` chooses inserted spelling without
@@ -645,7 +645,7 @@ the source while recognition is off or the format is unselected. Such a block ma
 real metadata, or a pair of thematic breaks, and each round's own parse answers this
 once with the shared delimiter detection, so no fact is carried between rounds or
 from saved input. `InteriorEditQuery` and MD009's eligibility return false, and
-`Corrections` makes no MD009, MD032, MD007 or MD076 group, and MD004, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD063 and MD077 are withheld by their flags. MD047 stays, because a line
+`Corrections` makes no MD009, MD032, MD065, MD007 or MD076 group, and MD004, MD005, MD019, MD021, MD022, MD023, MD029, MD030, MD063 and MD077 are withheld by their flags. MD047 stays, because a line
 ending at EOF can't change a value inside the block.
 
 Combined rounds propose all of a document's eligible corrections together, so a
@@ -701,6 +701,29 @@ same whole-document comparison as MD009 once per round, then recomputes each
 group's line from the before parse. A "before" and an "after" insertion at one
 offset, or one at another group's boundary, conflict in the planner, and the loser waits
 for the next round.
+
+MD065 inserts one blank body line per finding: at the start of the break's line
+for a missing before side, and at the start of the next line for a missing after
+side. `Document.ThematicSpacing` reports, for each side, that boundary, the
+boundary line's active ancestor prefix, the previous line's ending, the whole
+neighbour line across the boundary, whether the owning item's list is not known
+to be loose (`Loosens`) and whether the neighbour carries fewer active quote
+markers than the break's line (`Lazy`). `RoundContext.ThematicSpacing` projects
+the same facts for a round's own parse. The analysis goes through
+`blankpoints.CompareEligible`, which MD058 does not use, and grants
+`fix_available` only when the prefix holds just spaces and `>` markers, neither
+flag is set and `RuleInteriorEdits.InsertionEligible` accepts the point with its
+neighbour line. The inserted bytes are the prefix without trailing whitespace
+plus that ending. The producer and checker index facts by boundary: one break's
+after side and the next break's before side derive the same line there and
+propose identical edits, which the planner applies once, while facts deriving
+different lines at one boundary get no group. The checker proves
+`OnlyEditsChanged`, `MeaningPreservedAcrossLineEndWhitespace` and the same
+thematic breaks, with the same markers, container kinds and mapped envelopes,
+once per round, then requires each group's edit to be the exact insertion that
+the before parse's fact at its anchor requires. MD065 groups are proposed only
+in a round with no MD022 or MD032 group, and MD023 groups only in a round with
+no MD065 group, because those insertions and deletions share line-start offsets.
 
 MD005's checker compares the list item facts of both parses in `Once`: the same count and order,
 marker kind, width and padding, an unchanged marker, and group, item, parent and

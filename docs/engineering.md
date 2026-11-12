@@ -160,7 +160,7 @@ GFM uses CommonMark 0.31.2 and all five pinned extensions: 2,117 approved
 comparison units pass, including every published case. Default and explicit GFM
 selection share the real lint, fix and inspection pipeline, including source
 facts, directives, protected regions and candidate reparsing. MD047 is the first
-production correction, and MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD063, MD007, MD077, MD076, MD004, MD064, MD038, MD044, MD049 and MD050 also correct; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
+production correction, and MD003, MD005, MD009, MD019, MD021, MD022, MD023, MD029, MD030, MD032, MD065, MD063, MD007, MD077, MD076, MD004, MD064, MD038, MD044, MD049 and MD050 also correct; MD001 heading-increment, MD003 heading-style, MD004 bullet-marker
 analysis, MD005 sibling-list alignment analysis, MD007 bullet nesting indentation
 analysis, MD029 numbered-list prefix analysis, MD030 list-marker separator analysis,
 MD032 list-boundary blank-line analysis, MD069 repeated-list-marker analysis, MD076 list-item spacing analysis, MD077 list-continuation indentation analysis, MD010 tab-character analysis, MD012 blank-body-run analysis, MD013 maximum-line-width analysis, MD014 shell-prompt analysis, MD027 blockquote-separator analysis, MD028 blockquote-gap analysis, MD064 repeated-prose-space analysis, MD085 paragraph-continuation analysis, MD089 CJK/Latin-spacing analysis, MD035 horizontal-rule-style analysis, MD037 emphasis-whitespace analysis, MD038 inline-code-whitespace analysis, MD065 horizontal-rule blank-line analysis, MD081 paragraph-emphasis analysis, MD088 ASCII-punctuation analysis, MD033 embedded-HTML analysis, MD086 unmatched-comment analysis, MD087 unused-suppression analysis, MD018 missing opening-hash spacing, MD019 extra
@@ -170,8 +170,9 @@ analysis, MD024 repeated heading analysis, MD025 multiple-title analysis, MD026
 heading-end punctuation analysis, MD036 emphasis-as-heading analysis, MD041
 opening-heading analysis, MD043 required-outline analysis, MD063 heading-capitalization
 analysis, MD080 heading-anchor collision analysis, MD082 empty-section analysis, MD034 bare-URL analysis, MD039 link-label-whitespace analysis, MD042 links-without-destinations, MD045 image-alternative-text and MD051 unresolved-fragment analysis and MD052 references-without-definitions analysis and MD053 unneeded-definition analysis and MD062 whitespace-in-destination analysis and MD054 link-and-image-representation-style analysis and MD057 missing-local-target analysis and MD059 uninformative-link-label analysis and MD055 GFM outer-table-pipe analysis and MD056 GFM mismatched-cell-count analysis and MD058 GFM blank-lines-around-tables analysis and MD060 GFM table-column-layout analysis and MD075 GFM pipe-rows-without-header analysis and MD093 inline-formatting-in-headings analysis
-are also available. MD065 is enabled by default for CommonMark and GFM; its
-findings are manual and corrections are deferred. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD054, MD060, MD087 and MD093 are
+are also available. MD065 is enabled by default for CommonMark and GFM; `fix`
+inserts its missing blank lines when the shared insertion checks allow it, and
+other findings stay manual. MD013, MD026, MD036, MD043, MD063, MD080, MD082, MD085, MD089, MD081, MD088, MD033, MD054, MD060, MD087 and MD093 are
 available but disabled by default. MD034, MD039, MD042, MD045, MD051, MD052, MD053, MD057, MD062 and MD059 are available and enabled by default for CommonMark and GFM, with manual
 findings; MD055, MD056, MD058 and MD075 are available and enabled by default for GFM only, with manual findings; MD060 is available but disabled by default for GFM only, with manual findings. MD039, MD042, MD045, MD051, MD052, MD057, MD062, MD059, MD056 and MD075 are permanently report-only, and MD053, MD054, MD055, MD058 and MD060 are report-only until their planned corrections land (MD051 reads other documents only with `cross_file: true`, and MD057 checks local target existence without reading content, through the bounded read-only resource service in `lint`, `inspect` and `fix`); URL corrections remain deferred. Other named rules remain unavailable. See the [parser
 verification record](engineering/gfm-verification.md).
@@ -770,13 +771,17 @@ MD065 analysis uses a narrow completed-original ThematicSpacing projection and a
 optionless RuleContext facade. A full tree/inline/tail walk preserves semantic raw
 lifetimes and image isolation; a separate body walk merges retained definitions
 with direct source participants. Actual prefix rollback and terminal list/item
-content floors preserve immediate physical separators. Detached Point/Before facts
-carry present zero-width original evidence only. No source, parse, index, options,
-allowance, AST inspection field or correction capability is added. Producer,
+content floors preserve immediate physical separators. Each detached fact carries
+its present zero-width Point and Before, and the insertion evidence a correction
+needs: the boundary line start, that line's active container prefix, the previous
+line's ending, the whole neighbour line, and whether the owning list item's list
+is not known to be loose or the neighbour has fewer quote markers. No source,
+parse, index, options, allowance or AST inspection field is added. Producer,
 facade, comparison and whole callback reserve work/storage before use and finalize
 under both caller and originating controls; any error withholds dependent output,
-including empty, clean, protected-only and post-construction paths. MD065 remains
-default enabled and report-only for CommonMark and GFM.
+including empty, clean, protected-only and post-construction paths. MD065 is
+default enabled for CommonMark and GFM, and `fix` inserts the missing blank lines
+of eligible findings; see [MD065 corrections](engineering/fixes.md#production-rule-integration).
 
 
 MD081 uses ParagraphEmphasis to borrow the completed private original production
