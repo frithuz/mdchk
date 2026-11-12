@@ -27,6 +27,7 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md044"
 	"github.com/frithuz/mdchk/internal/rules/md047"
 	"github.com/frithuz/mdchk/internal/rules/md049"
+	"github.com/frithuz/mdchk/internal/rules/md050"
 	"github.com/frithuz/mdchk/internal/rules/md064"
 	"github.com/frithuz/mdchk/internal/rules/md077"
 	"github.com/frithuz/mdchk/internal/rules/md085"
@@ -157,13 +158,19 @@ import (
 // Text value exact and lets only mismatched italics change their marker, which
 // an edit from any other rule breaks. Only an MD047 edit that analysis already
 // offers shares their round.
+//
+// MD050 groups go ahead of MD044, MD049, MD064 and MD038 in that same isolated
+// round, and all four wait for them. Their checker lets Strong nodes differ only in
+// their delimiter marker, which an edit from any other rule can break, and
+// their eligibility reparses the whole document with only the markers changed.
+// Only an MD047 edit that analysis already offers shares their round.
 func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	analysis, err := c.BoundedAnalysis(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var names, italics, markers, spacing, quotes, pairs, blank, runs, indentation, capitalization, trailing, tabs, prose, padding, styles, lists, alignment, numbering, bullets, continuation, separators, gaps, paragraphs, rules []result.Diagnostic
+	var bold, names, italics, markers, spacing, quotes, pairs, blank, runs, indentation, capitalization, trailing, tabs, prose, padding, styles, lists, alignment, numbering, bullets, continuation, separators, gaps, paragraphs, rules []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -185,6 +192,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		case "MD064":
 			if d.FixAvailable {
 				prose = append(prose, d)
+			}
+		case "MD050":
+			if d.FixAvailable {
+				bold = append(bold, d)
 			}
 		case "MD044":
 			if d.FixAvailable {
@@ -461,6 +472,17 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		editing = editing || len(g.Edits) > 0
 	}
 	if !editing {
+		rewritten, err := md050.Correction(ctx, c, bold)
+		if err != nil {
+			return nil, err
+		}
+		waiting = waiting || len(rewritten) > 0
+		groups = append(groups, rewritten...)
+		for _, g := range rewritten {
+			editing = editing || len(g.Edits) > 0
+		}
+	}
+	if !editing {
 		named, err := md044.Correction(ctx, c, names)
 		if err != nil {
 			return nil, err
@@ -535,6 +557,7 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		md035.Checker(),
 		md044.Checker(),
 		md049.Checker(),
+		md050.Checker(),
 		md064.Checker(),
 		md089.Checker(),
 	}

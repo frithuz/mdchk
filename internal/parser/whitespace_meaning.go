@@ -15,14 +15,14 @@ import (
 // are not compared either: only an MD004 edit in the same round can change one,
 // and its own checker proves it.
 func (d *Document) SameMeaningAcrossLineEndWhitespace(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
-	return d.sameMeaning(ctx, budget, other, true, false, false, nil, 0, false, false, false)
+	return d.sameMeaning(ctx, budget, other, true, false, false, nil, 0, false, false, "")
 }
 
 // SameMeaningAcrossIndentation is SameMeaningAcrossLineEndWhitespace for sources
 // that also differ in the leading spaces of list item lines: list content columns
 // may differ, and every other node kind, order, property and text must match.
 func (d *Document) SameMeaningAcrossIndentation(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
-	return d.sameMeaning(ctx, budget, other, true, true, false, nil, 0, false, false, false)
+	return d.sameMeaning(ctx, budget, other, true, true, false, nil, 0, false, false, "")
 }
 
 // SameMeaningAcrossProseSpaces compares two completed parses from this operation
@@ -31,7 +31,7 @@ func (d *Document) SameMeaningAcrossIndentation(ctx context.Context, budget *Ope
 // Text value may differ only in the length of its SPACE runs: every run stays
 // present and nothing else changes.
 func (d *Document) SameMeaningAcrossProseSpaces(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
-	return d.sameMeaning(ctx, budget, other, false, false, true, nil, 0, false, false, false)
+	return d.sameMeaning(ctx, budget, other, false, false, true, nil, 0, false, false, "")
 }
 
 // SameMeaningAcrossListSeparators compares two completed parses from this
@@ -43,7 +43,7 @@ func (d *Document) SameMeaningAcrossListSeparators(ctx context.Context, budget *
 	if ctx == nil || budget == nil {
 		return false, errors.New("nil list separator meaning context or budget")
 	}
-	return d.sameMeaning(ctx, budget, other, false, false, false, markers, 0, false, false, false)
+	return d.sameMeaning(ctx, budget, other, false, false, false, markers, 0, false, false, "")
 }
 
 // SameMeaningAcrossTabs is SameMeaningAcrossLineEndWhitespace for sources that
@@ -53,7 +53,7 @@ func (d *Document) SameMeaningAcrossTabs(ctx context.Context, budget *OperationB
 	if spaces < 1 || spaces > MaxTabSpaces {
 		return false, ErrModel
 	}
-	return d.sameMeaning(ctx, budget, other, true, false, false, nil, spaces, false, false, false)
+	return d.sameMeaning(ctx, budget, other, true, false, false, nil, spaces, false, false, "")
 }
 
 // SameMeaningAcrossInsertedSpaces compares two completed parses from this
@@ -61,7 +61,7 @@ func (d *Document) SameMeaningAcrossTabs(ctx context.Context, budget *OperationB
 // prose scalars. Every node kind, order, property and reference must match, and
 // a Text value may differ only by holding extra ASCII SPACEs.
 func (d *Document) SameMeaningAcrossInsertedSpaces(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
-	return d.sameMeaning(ctx, budget, other, false, false, false, nil, 0, true, false, false)
+	return d.sameMeaning(ctx, budget, other, false, false, false, nil, 0, true, false, "")
 }
 
 // SameMeaningAcrossNameCase compares two completed parses from this operation
@@ -69,10 +69,18 @@ func (d *Document) SameMeaningAcrossInsertedSpaces(ctx context.Context, budget *
 // SameMeaningAcrossListSeparators without the tightness exception, except that
 // Text and CodeBlock values may differ as long as their full case folds match.
 func (d *Document) SameMeaningAcrossNameCase(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
-	return d.sameMeaning(ctx, budget, other, false, false, false, nil, 0, false, true, false)
+	return d.sameMeaning(ctx, budget, other, false, false, false, nil, 0, false, true, "")
 }
 
-func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, other *Document, breaks, indentation, spaces bool, markers map[int]bool, tabs int, inserted, folds, delimiters bool) (bool, error) {
+// SameMeaningAcrossBoldMarkers compares two completed parses from this operation
+// whose sources differ only in the marker bytes of Strong delimiters. It is
+// SameMeaningAcrossListSeparators without the tightness exception, except that a
+// Strong node may change its delimiter marker but not its width.
+func (d *Document) SameMeaningAcrossBoldMarkers(ctx context.Context, budget *OperationBudget, other *Document) (bool, error) {
+	return d.sameMeaning(ctx, budget, other, false, false, false, nil, 0, false, false, Strong)
+}
+
+func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, other *Document, breaks, indentation, spaces bool, markers map[int]bool, tabs int, inserted, folds bool, delimiter Kind) (bool, error) {
 	if ctx == nil || budget == nil {
 		return false, errors.New("nil whitespace meaning context or budget")
 	}
@@ -116,7 +124,7 @@ func (d *Document) sameMeaning(ctx context.Context, budget *OperationBudget, oth
 				}
 			}
 		}
-		ok, err := sameNodeProperties(ctx, budget, f.a, f.b, breaks && f.beforeBreak, indentation, spaces, retight, tabs, inserted, folds, delimiters)
+		ok, err := sameNodeProperties(ctx, budget, f.a, f.b, breaks && f.beforeBreak, indentation, spaces, retight, tabs, inserted, folds, delimiter)
 		if err != nil || !ok {
 			return false, err
 		}
@@ -144,7 +152,7 @@ func visibleChildren(children []*Node) []*Node {
 	return out
 }
 
-func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node, beforeBreak, indentation, spaces, retight bool, tabs int, inserted, folds, delimiters bool) (bool, error) {
+func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node, beforeBreak, indentation, spaces, retight bool, tabs int, inserted, folds bool, delimiter Kind) (bool, error) {
 	p, q := a.spec.Properties, b.spec.Properties
 	if err := headingFactCharge(ctx, budget, int64(len(p.Literal.Value)+len(q.Literal.Value))+1, 0); err != nil {
 		return false, err
@@ -189,7 +197,7 @@ func sameNodeProperties(ctx context.Context, budget *OperationBudget, a, b *Node
 	if p.Heading != nil && *p.Heading != *q.Heading {
 		return false, nil
 	}
-	if p.Delimiter != nil && *p.Delimiter != *q.Delimiter && !(delimiters && a.Kind() == Emphasis && p.Delimiter.Width == q.Delimiter.Width) {
+	if p.Delimiter != nil && *p.Delimiter != *q.Delimiter && !(delimiter != "" && a.Kind() == delimiter && p.Delimiter.Width == q.Delimiter.Width) {
 		return false, nil
 	}
 	if p.Break != nil && *p.Break != *q.Break {

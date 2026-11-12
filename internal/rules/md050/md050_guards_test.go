@@ -177,8 +177,8 @@ func TestMD050CallbackStickyControlsAndAtomicOutcome(t *testing.T) {
 func TestMD050WholeCallbackFinalWithdrawal(t *testing.T) {
 	for _, tc := range []struct {
 		source, style string
-		final         int
-	}{{"", "consistent", 27}, {"**x**", "consistent", 70}, {"**x**", "underscore", 72}} {
+		final, origin int
+	}{{"", "consistent", 27, 27}, {"**x**", "consistent", 70, 70}, {"**x**", "underscore", 282, 264}} {
 		for _, originating := range []bool{false, true} {
 			for _, reason := range []error{context.Canceled, context.DeadlineExceeded} {
 				t.Run(fmt.Sprintf("%s/%s/origin-%t/%s", tc.source, tc.style, originating, reason), func(t *testing.T) {
@@ -186,13 +186,17 @@ func TestMD050WholeCallbackFinalWithdrawal(t *testing.T) {
 					r := ruletest.Registry(t, []engine.Registration{{ID: "MD050", Check: func(ctx context.Context, c engine.RuleContext) engine.RuleOutcome {
 						stop := &ruletest.LateStopContext{Context: context.Background(), Stop: tc.final, Reason: reason}
 						caller := context.Context(stop)
+						final := tc.final
 						if originating {
-							origin.Calls, origin.Stop = 0, tc.final
+							// The eligibility reparse consults the caller and origin contexts a
+							// different number of times.
+							final = tc.origin
+							origin.Calls, origin.Stop = 0, final
 							caller, stop = context.Background(), origin
 						}
 						out := md050.Registration().Check(caller, c)
-						if !errors.Is(out.Err, reason) || out.Findings != nil || stop.Calls != tc.final {
-							t.Fatal(out, stop.Calls, tc.final)
+						if !errors.Is(out.Err, reason) || out.Findings != nil || stop.Calls != final {
+							t.Fatal(out, stop.Calls, final)
 						}
 						return out
 					}}})
@@ -215,7 +219,7 @@ func TestMD050WholeCallbackStaticBoundaries(t *testing.T) {
 		name, source, style string
 		work, nodes         int64
 		want                int
-	}{{"empty", "", "consistent", 230, 4, 0}, {"matching", "**x**", "consistent", 953, 20, 0}, {"mismatch", "**x**", "underscore", 955, 22, 1}} {
+	}{{"empty", "", "consistent", 230, 4, 0}, {"matching", "**x**", "consistent", 953, 20, 0}, {"mismatch", "**x**", "underscore", 3041, 124, 1}} {
 		for _, kind := range []string{"work", "nodes"} {
 			exact := tc.work
 			if kind == "nodes" {

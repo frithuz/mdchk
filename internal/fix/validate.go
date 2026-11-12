@@ -194,6 +194,12 @@ func (c RoundContext) DeletableCodeSpanSpaces(ctx context.Context) ([]parser.Spa
 	return engine.DeletableCodeSpanSpaceSpans(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
 }
 
+// BoldMarkerCorrections returns MD050's rewritable Strong facts and the
+// expected bold marker for this round's own parse under the target's plan.
+func (c RoundContext) BoldMarkerCorrections(ctx context.Context) ([]parser.DelimiterFact, byte, error) {
+	return engine.BoldMarkerCorrections(ctx, c.Parsed(), c.Lines(), c.plan, c.meter.budget)
+}
+
 // ConfiguredNameCorrections returns MD044's occurrence spans and single
 // configured replacements, empty when ambiguous, for this round's own parse
 // under the target's plan.
@@ -300,6 +306,16 @@ func (c CheckContext) MeaningPreservedAcrossItalicMarkers(ctx context.Context, a
 		return false, nil
 	}
 	return before.Document.SameMeaningAcrossItalicMarkers(ctx, c.Before.meter.budget, after.Document, allowed, marker)
+}
+
+// MeaningPreservedAcrossBoldMarkers compares both actual round parses, allowing
+// Strong nodes to differ only in their delimiter marker.
+func (c CheckContext) MeaningPreservedAcrossBoldMarkers(ctx context.Context) (bool, error) {
+	before, after := c.Before.Parsed(), c.After.Parsed()
+	if before.Status != parser.Complete || after.Status != parser.Complete || before.Document == nil || after.Document == nil || len(before.Uncertainty) != 0 || len(after.Uncertainty) != 0 {
+		return false, nil
+	}
+	return before.Document.SameMeaningAcrossBoldMarkers(ctx, c.Before.meter.budget, after.Document)
 }
 
 // MeaningPreservedAcrossListSeparators compares both actual round parses. Only a

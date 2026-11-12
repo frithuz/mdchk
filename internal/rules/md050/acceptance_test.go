@@ -28,12 +28,13 @@ func TestCompiledPlatformMD050ProductionAnalysis(t *testing.T) {
 	for _, tc := range []struct {
 		id, source, flavor string
 		ranges             [][2]int
+		fixed              string
 	}{
-		{"basic", "**one** and __two__", "commonmark", [][2]int{{12, 14}}},
-		{"scalar", "é **a** __b__", "gfm", [][2]int{{9, 11}}},
-		{"nested", "**outer __inner__**", "commonmark", [][2]int{{8, 10}}},
-		{"italic-does-not-seed", "*italic* __a__ **b**", "gfm", [][2]int{{15, 17}}},
-		{"code-protected", "`__a__` **b**", "gfm", nil},
+		{"basic", "**one** and __two__", "commonmark", [][2]int{{12, 14}}, "**one** and **two**"},
+		{"scalar", "é **a** __b__", "gfm", [][2]int{{9, 11}}, "é **a** **b**"},
+		{"nested", "**outer __inner__**", "commonmark", [][2]int{{8, 10}}, ""},
+		{"italic-does-not-seed", "*italic* __a__ **b**", "gfm", [][2]int{{15, 17}}, "*italic* __a__ __b__"},
+		{"code-protected", "`__a__` **b**", "gfm", nil, ""},
 	} {
 		t.Run(tc.id, func(t *testing.T) {
 			root := acceptance.Project(t)
@@ -49,6 +50,12 @@ func TestCompiledPlatformMD050ProductionAnalysis(t *testing.T) {
 				status := 0
 				if len(tc.ranges) > 0 && args[0] != "inspect" {
 					status = 10
+				}
+				if tc.fixed != "" && args[0] == "fix" {
+					if got.Status != 0 || !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != 0 || len(out.Changes) != 1 || len(out.DeferredFixes)+len(out.Documents) != 0 || out.Changes[0].Rules[0] != "MD050" {
+						t.Fatal(got)
+					}
+					continue
 				}
 				if got.Status != status || !out.Complete || len(out.Errors) != 0 || len(out.Diagnostics) != len(tc.ranges) || len(out.Changes)+len(out.DeferredFixes)+len(out.Documents) != 0 {
 					t.Fatal(got)
@@ -66,10 +73,18 @@ func TestCompiledPlatformMD050ProductionAnalysis(t *testing.T) {
 						t.Fatal(d.Snapshot)
 					}
 
-					if d.Rule != "MD050" || d.Message != "Bold delimiter style does not match the expected style." || d.ByteRange.Start != w[0] || d.ByteRange.End != w[1] || d.FixAvailable || d.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(tc.source))) || d.Snapshot.SizeBytes != len(tc.source) {
+					if d.Rule != "MD050" || d.Message != "Bold delimiter style does not match the expected style." || d.ByteRange.Start != w[0] || d.ByteRange.End != w[1] || d.FixAvailable != (tc.fixed != "") || d.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(tc.source))) || d.Snapshot.SizeBytes != len(tc.source) {
 						t.Fatal(d)
 					}
 				}
+			}
+			if tc.fixed != "" {
+				//nolint:gosec // Isolated fixed test-owned document.
+				actual, err := os.ReadFile(filepath.Join(root, "doc.md"))
+				if err != nil || string(actual) != tc.fixed {
+					t.Fatal(string(actual), err)
+				}
+				return
 			}
 			acceptance.ReadinessAssertEqual(t, "manual MD050", before, acceptance.ReadinessState(t, root))
 		})
@@ -197,7 +212,7 @@ func TestCompiledPlatformMD050DefaultsStylesAndOriginalContext(t *testing.T) {
 			}
 		case "json":
 			out := acceptance.ValidateOperationJSON(t, []byte(got.Stdout), "lint")
-			if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].ByteRange.Start != 6 || out.Diagnostics[0].ByteRange.End != 8 || out.Diagnostics[0].Range.Start.Column != 7 || out.Diagnostics[0].Range.End.Column != 9 || out.Diagnostics[0].FixAvailable {
+			if !out.Complete || len(out.Diagnostics) != 1 || out.Diagnostics[0].ByteRange.Start != 6 || out.Diagnostics[0].ByteRange.End != 8 || out.Diagnostics[0].Range.Start.Column != 7 || out.Diagnostics[0].Range.End.Column != 9 || !out.Diagnostics[0].FixAvailable {
 				t.Fatal(out)
 			}
 		case "github":
@@ -236,26 +251,22 @@ func TestCompiledPlatformMD050MD047Composition(t *testing.T) {
 					acceptance.ReadinessAssertEqual(t, "native refusal", before, acceptance.ReadinessState(t, root))
 					return
 				}
-				want, view, disposition := source, "saved", "written"
-				changes, deferred, diagnostics := 1, 0, 1
+				want, disposition := source, "written"
+				changes, deferred, diagnostics, status := 1, 0, 0, 0
 				if !protected {
-					want += "\n"
+					want = "**a** **b**\n"
 				} else {
-					changes, deferred = 0, 1
+					changes, deferred, diagnostics, status = 0, 1, 1, 10
 				}
 				if dry {
-					view, disposition = "candidate", "proposed"
+					disposition = "proposed"
 				}
-				if got.Status != 10 || !out.Complete || len(out.Errors) != 0 || len(out.Changes) != changes || len(out.DeferredFixes) != deferred || len(out.Diagnostics) != diagnostics || len(out.Documents) != 0 {
+				if got.Status != status || !out.Complete || len(out.Errors) != 0 || len(out.Changes) != changes || len(out.DeferredFixes) != deferred || len(out.Diagnostics) != diagnostics || len(out.Documents) != 0 {
 					t.Fatal(got, out)
 				}
 				if !protected {
-					d := out.Diagnostics[0]
-					if d.Rule != "MD050" || d.ByteRange.Start != 6 || d.ByteRange.End != 8 || d.FixAvailable || d.Snapshot.View != view || d.Snapshot.SHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(want))) || d.Snapshot.SizeBytes != len(want) {
-						t.Fatal(d)
-					}
 					ch := out.Changes[0]
-					if len(ch.Rules) != 1 || ch.Rules[0] != "MD047" || ch.Disposition != disposition {
+					if len(ch.Rules) != 2 || ch.Rules[0] != "MD047" || ch.Rules[1] != "MD050" || ch.Disposition != disposition {
 						t.Fatal(ch)
 					}
 				} else if out.Diagnostics[0].Rule != "MD047" {
