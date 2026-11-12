@@ -532,7 +532,6 @@ func TestCompiledReportOnlyRulesProduceNoEdits(t *testing.T) {
 		{"MD028", "{enabled: true}", "> a\n\n> b\n"},
 		{"MD037", "{enabled: true}", "a * b * c\n"},
 		{"MD081", "{enabled: true}", "**aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa**\n"},
-		{"MD088", "{enabled: true}", "a — b\n"},
 	} {
 		for _, flavor := range []string{"commonmark", "gfm"} {
 			t.Run(tc.rule+"/"+flavor, func(t *testing.T) {

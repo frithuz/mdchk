@@ -116,7 +116,7 @@ func TestMD088FrozenAnalysisFixtures(t *testing.T) {
 				}
 				for i, d := range out.Diagnostics {
 					w := f.Findings[i]
-					if d.Rule != "MD088" || d.Message != "Use ASCII quotes and dashes in prose." || d.Message != w.Message || [2]int{d.ByteRange.Start, d.ByteRange.End} != w.Bytes || d.Range.Start != (result.Position{Line: w.Start[0], Column: w.Start[1]}) || d.Range.End != (result.Position{Line: w.End[0], Column: w.End[1]}) || f.Source[w.Bytes[0]:w.Bytes[1]] != w.Text || d.Snapshot.SHA256 != f.SHA || d.Snapshot.SizeBytes != f.Bytes || d.Snapshot.View != "original" || d.FixAvailable {
+					if d.Rule != "MD088" || d.Message != "Use ASCII quotes and dashes in prose." || d.Message != w.Message || [2]int{d.ByteRange.Start, d.ByteRange.End} != w.Bytes || d.Range.Start != (result.Position{Line: w.Start[0], Column: w.Start[1]}) || d.Range.End != (result.Position{Line: w.End[0], Column: w.End[1]}) || f.Source[w.Bytes[0]:w.Bytes[1]] != w.Text || d.Snapshot.SHA256 != f.SHA || d.Snapshot.SizeBytes != f.Bytes || d.Snapshot.View != "original" {
 						t.Fatal(d, w)
 					}
 				}
@@ -138,7 +138,7 @@ func TestMD088AvailabilityAndStrictOptions(t *testing.T) {
 		t.Fatal(m)
 	}
 	for _, metadata := range r.Metadata() {
-		if metadata.ID == "MD088" && (metadata.DefaultEnabled || !metadata.RequiresSyntax || metadata.UsesFrontmatter || metadata.Fix != engine.PlannedFix) {
+		if metadata.ID == "MD088" && (metadata.DefaultEnabled || !metadata.RequiresSyntax || metadata.UsesFrontmatter || metadata.Fix != engine.ImplementedFix) {
 			t.Fatal(metadata)
 		}
 	}
