@@ -51,7 +51,8 @@ horizontal rule marker to the expected style. MD019 and
 MD021 remove excess spaces from heading delimiter gaps. MD003 rewrites heading
 delimiters to the expected style. MD022 inserts missing blank lines around
 headings. MD023 removes leaf indentation from heading lines. MD032 inserts a
-blank line before or after a list. MD063 capitalizes required lowercase heading
+blank line before or after a list. MD065 inserts a blank line before or after a
+horizontal rule. MD063 capitalizes required lowercase heading
 initials. MD005 re-indents a misaligned sibling list marker to its group's first
 item. MD007 shifts a misindented bullet item and its content to the expected
 column. MD029 renumbers ordered list markers. MD030 rewrites the separator of a

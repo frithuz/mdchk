@@ -117,7 +117,7 @@ func TestMD065FrozenAnalysisFixtures(t *testing.T) {
 					if w.Bytes[0] != w.Bytes[1] || w.Text != "" || w.Line != w.Start[0] || (w.Side != "before" && w.Side != "after") || w.Message != "Horizontal rule requires a blank body line "+w.Side+" it." {
 						t.Fatal("oracle witness", w)
 					}
-					if d.Rule != "MD065" || d.Message != w.Message || [2]int{d.ByteRange.Start, d.ByteRange.End} != w.Bytes || d.Range.Start != (result.Position{Line: w.Start[0], Column: w.Start[1]}) || d.Range.End != (result.Position{Line: w.End[0], Column: w.End[1]}) || f.Source[w.Bytes[0]:w.Bytes[1]] != w.Text || d.Snapshot.SHA256 != f.SHA || d.Snapshot.SizeBytes != len(f.Source) || d.Snapshot.View != "original" || d.FixAvailable {
+					if d.Rule != "MD065" || d.Message != w.Message || [2]int{d.ByteRange.Start, d.ByteRange.End} != w.Bytes || d.Range.Start != (result.Position{Line: w.Start[0], Column: w.Start[1]}) || d.Range.End != (result.Position{Line: w.End[0], Column: w.End[1]}) || f.Source[w.Bytes[0]:w.Bytes[1]] != w.Text || d.Snapshot.SHA256 != f.SHA || d.Snapshot.SizeBytes != len(f.Source) || d.Snapshot.View != "original" {
 						t.Fatal(d, w)
 					}
 				}

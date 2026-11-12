@@ -55,6 +55,48 @@ func TestThematicSpacingOwnershipAndFloors(t *testing.T) {
 	}
 }
 
+// Each side carries the boundary that receives an insertion, that line's active
+// container prefix, the previous line's ending and the line across the boundary.
+func TestThematicSpacingInsertionFacts(t *testing.T) {
+	type side struct {
+		point, at            int
+		prefix, ending, near string
+		loosens, lazy        bool
+	}
+	for _, tc := range []struct {
+		source string
+		sides  []side
+	}{
+		{"Text\n***\nMore", []side{{5, 5, "", "\n", "Text\n", false, false}, {8, 9, "", "\n", "More", false, false}}},
+		{"Text\r\n***\r\nMore\r\n", []side{{6, 6, "", "\r\n", "Text\r\n", false, false}, {9, 11, "", "\r\n", "More\r\n", false, false}}},
+		{"> a\n> ***\n> b\n", []side{{6, 4, "> ", "\n", "> a\n", false, false}, {9, 10, "> ", "\n", "> b\n", false, false}}},
+		{"> a\nb\n> ***\n", []side{{8, 6, "> ", "\n", "b\n", false, true}}},
+		{"> a\n>\t***\n", []side{{6, 4, ">\t", "\n", "> a\n", false, false}}},
+		{"- a\n  ***\n- b\n", []side{{6, 4, "  ", "\n", "- a\n", true, false}}},
+		{"- a\n\n  b\n  ***\n- c\n", []side{{11, 9, "  ", "\n", "  b\n", false, false}}},
+		{"Text\n\n***\n***\n\nMore", []side{{9, 10, "", "\n", "***\n", false, false}, {10, 10, "", "\n", "***\n", false, false}}},
+	} {
+		t.Run(tc.source, func(t *testing.T) {
+			source := NewSource([]byte(tc.source))
+			b, _ := NewOperationBudget(DefaultLimits())
+			p := ParseWithOptions(context.Background(), source, b, ParseOptions{})
+			got, err := p.Document.ThematicSpacing(context.Background(), b, NewLineIndex(source), ParseOptions{})
+			if err != nil || len(got) != len(tc.sides) {
+				t.Fatal(got, err)
+			}
+			for i, f := range got {
+				w := tc.sides[i]
+				prefix, _ := source.Text(f.Prefix)
+				ending, _ := source.Text(f.Ending)
+				near, _ := source.Text(f.Neighbour)
+				if f.Point.Start() != w.point || f.At.Start() != w.at || f.At.End() != w.at || f.Prefix.Start() != w.at || prefix != w.prefix || ending != w.ending || f.Ending.End() != w.at || near != w.near || f.Loosens != w.loosens || f.Lazy != w.lazy {
+					t.Fatalf("%d: %+v want %+v", i, f, w)
+				}
+			}
+		})
+	}
+}
+
 func TestThematicSpacingRejectsDetachedAndMalformedAuthority(t *testing.T) {
 	d, b, index := sectionParse(t, "Text\n***\nMore")
 	constructed, err := NewDocument(d.Root(), d.References())

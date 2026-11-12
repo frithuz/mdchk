@@ -10,9 +10,19 @@ import (
 
 // ThematicSpacingFact identifies one missing source-body separator. Points are
 // detached original spans; they confer no edit or mutable syntax authority.
+// At is the line boundary a blank line would be inserted at: the start of the
+// break's line for a before side and the start of the next line for an after
+// side. Prefix runs from At through that line's active ancestor container
+// prefixes, Ending is the previous line's terminator and Neighbour is the whole
+// line on the far side of At, with its ending. Loosens reports that the owning
+// body is a list item whose list is not known to be loose, and Lazy that the
+// neighbour carries fewer active quote markers than the target's line, as a lazy
+// continuation does.
 type ThematicSpacingFact struct {
-	Point  Span
-	Before bool
+	Point                         Span
+	Before                        bool
+	At, Prefix, Ending, Neighbour Span
+	Loosens, Lazy                 bool
 }
 
 // TableSpacingFact identifies one missing source-body separator around a
@@ -54,7 +64,7 @@ func (d *Document) TableSpacing(ctx context.Context, budget *OperationBudget, in
 // retain their entire boundary.
 func (d *Document) bodySpacing(ctx context.Context, budget *OperationBudget, index LineIndex, options ParseOptions, eligible []*Node) ([]ThematicSpacingFact, error) {
 	target := 0
-	type lineState struct{ last, prefix int }
+	type lineState struct{ last, prefix, quotes int }
 	if err := headingFactCharge(ctx, budget, int64(len(index.lines))+1, int64(len(index.lines))); err != nil {
 		return nil, err
 	}
@@ -97,7 +107,7 @@ func (d *Document) bodySpacing(ctx context.Context, budget *OperationBudget, ind
 		marker, floor int
 		entered       bool
 	}
-	type rollback struct{ line, prefix int }
+	type rollback struct{ line, prefix, quotes int }
 	stack := make([]frame, 1)
 	stack[0].node = d.root
 	var undo []rollback
@@ -132,7 +142,9 @@ func (d *Document) bodySpacing(ctx context.Context, budget *OperationBudget, ind
 		}
 		return capacity, nil
 	}
-	emit := func(point int, before bool) error {
+	// emit records one side. boundary is the line receiving the insertion, neighbour
+	// the line across from it and target the line of the target's own syntax.
+	emit := func(f *frame, point int, before bool, boundary, neighbour, target int) error {
 		capacity, err := grow(len(out), cap(out))
 		if err != nil {
 			return err
@@ -145,7 +157,20 @@ func (d *Document) bodySpacing(ctx context.Context, budget *OperationBudget, ind
 		if err := headingFactCharge(ctx, budget, 1, 1); err != nil {
 			return err
 		}
-		out = append(out, ThematicSpacingFact{Point: Span{source: index.source, start: point, end: point, present: true}, Before: before})
+		fact := ThematicSpacingFact{Point: Span{source: index.source, start: point, end: point, present: true}, Before: before}
+		if boundary > 0 && boundary < len(index.lines) && neighbour >= 0 && neighbour < len(index.lines) {
+			line, previous, far := index.lines[boundary], index.lines[boundary-1], index.lines[neighbour]
+			fact.At = Span{source: index.source, start: line.start, end: line.start, present: true}
+			fact.Prefix = Span{source: index.source, start: line.start, end: max(line.start, lines[boundary].prefix), present: true}
+			fact.Ending = Span{source: index.source, start: previous.end, end: previous.next, present: true}
+			fact.Neighbour = Span{source: index.source, start: far.start, end: far.next, present: true}
+			fact.Lazy = lines[neighbour].quotes < lines[target].quotes
+		}
+		if f.node.Kind() == ListItem {
+			parent := stack[len(stack)-2].node.spec.Properties.List
+			fact.Loosens = parent == nil || !parent.Tight.Present || parent.Tight.Value
+		}
+		out = append(out, fact)
 		return nil
 	}
 	accept := func(f *frame, current participant) error {
@@ -171,7 +196,7 @@ func (d *Document) bodySpacing(ctx context.Context, budget *OperationBudget, ind
 				}
 				blank := last+1 < first && lines[last+1].last < lines[last+1].prefix
 				if !blank {
-					if err := emit(index.lines[last].end, false); err != nil {
+					if err := emit(f, index.lines[last].end, false, last+1, last+1, last); err != nil {
 						return err
 					}
 				}
@@ -182,7 +207,7 @@ func (d *Document) bodySpacing(ctx context.Context, budget *OperationBudget, ind
 				}
 				blank := first-1 > last && lines[first-1].last < lines[first-1].prefix
 				if !blank {
-					if err := emit(max(index.lines[first].start, lines[first].prefix), true); err != nil {
+					if err := emit(f, max(index.lines[first].start, lines[first].prefix), true, first, first-1, first); err != nil {
 						return err
 					}
 				}
@@ -235,8 +260,11 @@ func (d *Document) bodySpacing(ctx context.Context, budget *OperationBudget, ind
 				if err := headingFactCharge(ctx, budget, 1, 1); err != nil {
 					return nil, err
 				}
-				undo = append(undo, rollback{line: line, prefix: lines[line].prefix})
+				undo = append(undo, rollback{line: line, prefix: lines[line].prefix, quotes: lines[line].quotes})
 				lines[line].prefix = max(lines[line].prefix, marker.Source.End())
+				if marker.Role == "quote-prefix" {
+					lines[line].quotes++
+				}
 			}
 		}
 		end := f.node.spec.Envelope.End()
@@ -301,7 +329,7 @@ func (d *Document) bodySpacing(ctx context.Context, budget *OperationBudget, ind
 				return nil, err
 			}
 			r := undo[len(undo)-1]
-			lines[r.line].prefix = r.prefix
+			lines[r.line].prefix, lines[r.line].quotes = r.prefix, r.quotes
 			undo = undo[:len(undo)-1]
 		}
 		current := participant{span: f.node.spec.Envelope, marker: f.marker, floor: f.floor}

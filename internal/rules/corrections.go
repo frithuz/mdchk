@@ -29,6 +29,7 @@ import (
 	"github.com/frithuz/mdchk/internal/rules/md049"
 	"github.com/frithuz/mdchk/internal/rules/md050"
 	"github.com/frithuz/mdchk/internal/rules/md064"
+	"github.com/frithuz/mdchk/internal/rules/md065"
 	"github.com/frithuz/mdchk/internal/rules/md077"
 	"github.com/frithuz/mdchk/internal/rules/md085"
 	"github.com/frithuz/mdchk/internal/rules/md089"
@@ -48,7 +49,7 @@ import (
 // checkers prove that visible heading text is unchanged, which a capitalization
 // edit breaks. MD063 shares its round with MD047.
 //
-// A document opening with an unrecognized block gets no MD007, MD009, MD012 or MD032 group at all,
+// A document opening with an unrecognized block gets no MD007, MD009, MD012, MD032 or MD065 group at all,
 // not even a deferral. MD004, MD005, MD019, MD021, MD022, MD023, MD029, MD030 and MD077 are already withheld by their flags, and MD047 stays.
 //
 // MD003 groups wait for a round with no other group. Their edits touch the same
@@ -56,13 +57,16 @@ import (
 // edits are exactly the style rewrites, so they share a round only with each other.
 // A withheld MD047 edit in turn waits for them.
 //
-// MD032 groups wait for a round with no MD022 group, and MD023 groups for a round
-// with neither. A blank inserted before an indented heading, by MD022 or by MD032
-// after a list, starts at the same offset as the indentation deletion, and both
-// insertions land at the same offset between a list and a heading, so each pair
-// would conflict and one edit of it wait for a later round.
+// MD032 groups wait for a round with no MD022 group, MD065 groups for a round
+// with neither, and MD023 groups for a round with none of the three. A blank
+// inserted before an indented heading, by MD022, by MD032 after a list or by
+// MD065 after a horizontal rule, starts at the same offset as the indentation
+// deletion, and the insertions land at the same offset between a list, a
+// heading or a horizontal rule and its neighbour, so each pair would conflict
+// and one edit of it wait for a later round. MD065 groups count like MD032
+// groups for every rule that waits for those.
 //
-// MD009, MD022, MD023 and MD032 prove their round by comparing whole parses across
+// MD009, MD022, MD023, MD032 and MD065 prove their round by comparing whole parses across
 // line-end whitespace, which a moved list marker breaks, so MD005 groups wait for a
 // round with no edit from those rules.
 //
@@ -170,7 +174,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		return nil, err
 	}
 	var terminal *result.Diagnostic
-	var bold, names, italics, markers, spacing, quotes, pairs, blank, runs, indentation, capitalization, trailing, tabs, prose, padding, styles, lists, alignment, numbering, bullets, continuation, separators, gaps, paragraphs, rules []result.Diagnostic
+	var bold, names, italics, markers, spacing, quotes, pairs, blank, runs, indentation, capitalization, trailing, tabs, prose, padding, styles, lists, horizontal, alignment, numbering, bullets, continuation, separators, gaps, paragraphs, rules []result.Diagnostic
 	guarded := c.Parsed().Document.UnrecognizedBlock()
 	for i, d := range analysis.Diagnostics {
 		if err := c.Checkpoint(ctx, 1); err != nil {
@@ -261,6 +265,10 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 			if !guarded && d.FixAvailable {
 				lists = append(lists, d)
 			}
+		case "MD065":
+			if !guarded && d.FixAvailable {
+				horizontal = append(horizontal, d)
+			}
 		case "MD007":
 			if d.FixAvailable && !guarded {
 				bullets = append(bullets, d)
@@ -303,7 +311,7 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 	}
 	// Other list and whole-parse proofs compare what MD004 edits, so they wait.
 	if len(groups) > 0 {
-		styles, blank, indentation, capitalization, lists, alignment, numbering, bullets, continuation, separators = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+		styles, blank, indentation, capitalization, lists, horizontal, alignment, numbering, bullets, continuation, separators = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
 	}
 	headings, err := md019.Correction(ctx, c, spacing)
 	if err != nil {
@@ -323,11 +331,18 @@ func Corrections(ctx context.Context, c fix.RoundContext) ([]fix.Group, error) {
 		}
 		groups = append(groups, blanks...)
 		if len(blanks) == 0 {
-			indents, err := md023.Correction(ctx, c, indentation)
+			separated, err := md065.Correction(ctx, c, horizontal)
 			if err != nil {
 				return nil, err
 			}
-			groups = append(groups, indents...)
+			groups = append(groups, separated...)
+			if len(separated) == 0 {
+				indents, err := md023.Correction(ctx, c, indentation)
+				if err != nil {
+					return nil, err
+				}
+				groups = append(groups, indents...)
+			}
 		}
 	}
 	if len(groups) == spaced {
@@ -559,6 +574,7 @@ func CorrectionCheckers() []fix.CheckerRegistration {
 		md049.Checker(),
 		md050.Checker(),
 		md064.Checker(),
+		md065.Checker(),
 		md089.Checker(),
 	}
 }

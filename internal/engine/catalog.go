@@ -63,7 +63,7 @@ func Catalog() []Metadata {
 		{ID: "MD062", Name: "Whitespace in destination URLs", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD063", Name: "Heading capitalization", DefaultEnabled: false, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"style": choice("sentence", "title"), "proper_names": list()}},
 		{ID: "MD064", Name: "Repeated spaces in prose", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{"maximum": integer(1, 1)}},
-		{ID: "MD065", Name: "Blank lines around horizontal rules", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
+		{ID: "MD065", Name: "Blank lines around horizontal rules", DefaultEnabled: true, Fix: ImplementedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD069", Name: "Repeated list markers", DefaultEnabled: true, Fix: NoFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD070", Name: "Outer fence length for nested examples", DefaultEnabled: false, Fix: PlannedFix, RequiresSyntax: true, Options: OptionSchema{}},
 		{ID: "MD071", Name: "Blank line following metadata", DefaultEnabled: true, Fix: PlannedFix, RequiresSyntax: true, UsesFrontmatter: true, Options: OptionSchema{}},

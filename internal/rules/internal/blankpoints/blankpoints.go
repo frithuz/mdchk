@@ -13,7 +13,13 @@ import (
 
 // Compare validates detached zero-width points and reports each
 // one as a missing blank body line before or after the named construct.
-func Compare(ctx context.Context, c engine.RuleContext, items []parser.ThematicSpacingFact, construct string) (out engine.RuleOutcome) {
+func Compare(ctx context.Context, c engine.RuleContext, items []parser.ThematicSpacingFact, construct string) engine.RuleOutcome {
+	return CompareEligible(ctx, c, items, construct, nil)
+}
+
+// CompareEligible is Compare with an opt-in correction hook: when eligible is
+// not nil, it decides each finding's fix eligibility from its fact.
+func CompareEligible(ctx context.Context, c engine.RuleContext, items []parser.ThematicSpacingFact, construct string, eligible func(context.Context, parser.ThematicSpacingFact) (bool, error)) (out engine.RuleOutcome) {
 	defer func() {
 		out.Err = errors.Join(out.Err, c.SectionCheckpoint(ctx, 0, 0))
 		if out.Err != nil {
@@ -70,7 +76,14 @@ func Compare(ctx context.Context, c engine.RuleContext, items []parser.ThematicS
 		if item.Before {
 			message = construct + " requires a blank body line before it."
 		}
-		out.Findings = append(out.Findings, engine.Finding{Span: item.Point, Message: message})
+		finding := engine.Finding{Span: item.Point, Message: message}
+		if eligible != nil {
+			if finding.FixEligible, err = eligible(ctx, item); err != nil {
+				out.Err = err
+				return out
+			}
+		}
+		out.Findings = append(out.Findings, finding)
 	}
 	return out
 }
